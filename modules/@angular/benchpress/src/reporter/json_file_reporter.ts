@@ -14,6 +14,7 @@ import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
 
+import {formatStats, sortedProps} from './util';
 
 
 /**
@@ -34,10 +35,15 @@ export class JsonFileReporter extends Reporter {
   reportMeasureValues(measureValues: MeasureValues): Promise<any> { return Promise.resolve(null); }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
+    const stats: {[key: string]: string} = {};
+    sortedProps(this._description.metrics).forEach((metricName) => {
+      stats[metricName] = formatStats(validSample, metricName);
+    });
     var content = Json.stringify({
       'description': this._description,
+      'stats': stats,
       'completeSample': completeSample,
-      'validSample': validSample
+      'validSample': validSample,
     });
     var filePath =
         `${this._path}/${this._description.id}_${DateWrapper.toMillis(this._now())}.json`;

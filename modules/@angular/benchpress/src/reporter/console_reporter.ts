@@ -14,7 +14,8 @@ import {Math} from '../facade/math';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
-import {Statistic} from '../statistic';
+
+import {formatNum, formatStats, sortedProps} from './util';
 
 
 /**
@@ -37,15 +38,6 @@ export class ConsoleReporter extends Reporter {
     return result + value;
   }
 
-  private static _formatNum(n: number) { return NumberWrapper.toFixed(n, 2); }
-
-  private static _sortedProps(obj: {[key: string]: any}) {
-    var props: string[] = [];
-    StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
-    props.sort();
-    return props;
-  }
-
   private _metricNames: string[];
 
   constructor(
@@ -53,14 +45,14 @@ export class ConsoleReporter extends Reporter {
       sampleDescription: SampleDescription,
       @Inject(ConsoleReporter.PRINT) private _print: Function) {
     super();
-    this._metricNames = ConsoleReporter._sortedProps(sampleDescription.metrics);
+    this._metricNames = sortedProps(sampleDescription.metrics);
     this._printDescription(sampleDescription);
   }
 
   private _printDescription(sampleDescription: SampleDescription) {
     this._print(`BENCHMARK ${sampleDescription.id}`);
     this._print('Description:');
-    var props = ConsoleReporter._sortedProps(sampleDescription.description);
+    var props = sortedProps(sampleDescription.description);
     props.forEach((prop) => { this._print(`- ${prop}: ${sampleDescription.description[prop]}`); });
     this._print('Metrics:');
     this._metricNames.forEach((metricName) => {
@@ -74,7 +66,7 @@ export class ConsoleReporter extends Reporter {
   reportMeasureValues(measureValues: MeasureValues): Promise<any> {
     var formattedValues = this._metricNames.map(metricName => {
       var value = measureValues.values[metricName];
-      return ConsoleReporter._formatNum(value);
+      return formatNum(value);
     });
     this._printStringRow(formattedValues);
     return Promise.resolve(null);
@@ -82,15 +74,8 @@ export class ConsoleReporter extends Reporter {
 
   reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]): Promise<any> {
     this._printStringRow(this._metricNames.map((_) => ''), '=');
-    this._printStringRow(this._metricNames.map(metricName => {
-      var samples = validSamples.map(measureValues => measureValues.values[metricName]);
-      var mean = Statistic.calculateMean(samples);
-      var cv = Statistic.calculateCoefficientOfVariation(samples, mean);
-      var formattedMean = ConsoleReporter._formatNum(mean);
-      // Note: Don't use the unicode character for +- as it might cause
-      // hickups for consoles...
-      return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
-    }));
+    this._printStringRow(
+        this._metricNames.map(metricName => formatStats(validSamples, metricName)));
     return Promise.resolve(null);
   }
 

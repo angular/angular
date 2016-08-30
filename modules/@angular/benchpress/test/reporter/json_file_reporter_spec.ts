@@ -44,7 +44,7 @@ export function main() {
            sampleId: 'someId',
            descriptions: [{'a': 2}],
            path: 'somePath',
-           metrics: {'script': 'script time'}
+           metrics: {'a': 'script time', 'b': 'render time'}
          })
              .reportSample(
                  [mv(0, 0, {'a': 3, 'b': 6})],
@@ -53,8 +53,12 @@ export function main() {
          expect(isPresent(loggedFile['filename'].match(regExp))).toBe(true);
          var parsedContent = Json.parse(loggedFile['content']);
          expect(parsedContent).toEqual({
-           'description':
-               {'id': 'someId', 'description': {'a': 2}, 'metrics': {'script': 'script time'}},
+           'description': {
+             'id': 'someId',
+             'description': {'a': 2},
+             'metrics': {'a': 'script time', 'b': 'render time'}
+           },
+           'stats': {'a': '4.00+-25%', 'b': '7.50+-20%'},
            'completeSample': [
              {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}
            ],
