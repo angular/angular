@@ -53,7 +53,7 @@ export class RadioControlRegistry {
       controlPair: [NgControl, RadioControlValueAccessor],
       accessor: RadioControlValueAccessor): boolean {
     if (!controlPair[0].control) return false;
-    return controlPair[0].control.root === accessor._control.control.root &&
+    return controlPair[0]._parent === accessor._control._parent &&
         controlPair[1].name === accessor.name;
   }
 }

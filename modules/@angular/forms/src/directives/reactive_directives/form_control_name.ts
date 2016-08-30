@@ -109,12 +109,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
   constructor(
-      @Optional() @Host() @SkipSelf() private _parent: ControlContainer,
+      @Optional() @Host() @SkipSelf() parent: ControlContainer,
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           Array<Validator|AsyncValidatorFn>,
       @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
+    this._parent = parent;
     this._rawValidators = validators || [];
     this._rawAsyncValidators = asyncValidators || [];
     this.valueAccessor = selectValueAccessor(this, valueAccessors);

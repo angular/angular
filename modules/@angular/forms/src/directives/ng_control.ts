@@ -8,6 +8,7 @@
 
 
 import {AbstractControlDirective} from './abstract_control_directive';
+import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -24,6 +25,8 @@ function unimplemented(): any {
  * @stable
  */
 export abstract class NgControl extends AbstractControlDirective {
+  /** @internal */
+  _parent: ControlContainer = null;
   name: string = null;
   valueAccessor: ControlValueAccessor = null;
   /** @internal */
