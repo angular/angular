@@ -108,23 +108,19 @@ export class CodeGenerator {
       return ngModules;
     }, <StaticSymbol[]>[]);
     const analyzedNgModules = this.compiler.analyzeModules(ngModules);
-    return Promise
-        .all(fileMetas.map(
-            (fileMeta) => this.compiler
-                              .compile(
-                                  fileMeta.fileUrl, analyzedNgModules, fileMeta.components,
-                                  fileMeta.ngModules)
-                              .then((generatedModules) => {
-                                generatedModules.forEach((generatedModule) => {
-                                  const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
-                                  const emitPath =
-                                      this.calculateEmitPath(generatedModule.moduleUrl);
-                                  this.host.writeFile(
-                                      emitPath, PREAMBLE + generatedModule.source, false, () => {},
-                                      [sourceFile]);
-                                });
-                              })))
-        .catch((e) => { console.error(e.stack); });
+    return Promise.all(fileMetas.map(
+        (fileMeta) =>
+            this.compiler
+                .compile(
+                    fileMeta.fileUrl, analyzedNgModules, fileMeta.components, fileMeta.ngModules)
+                .then((generatedModules) => {
+                  generatedModules.forEach((generatedModule) => {
+                    const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
+                    const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
+                    this.host.writeFile(
+                        emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+                  });
+                })));
   }
 
   static create(
