@@ -31,9 +31,11 @@ function publishRepo {
   BUILD_VER="2.0.0-${SHORT_SHA}"
   if [[ ${TRAVIS} ]]; then
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
-    UMD=$(find $REPO_DIR/ -type f -name "*umd.js" -print0)
+    UMD=$(find $REPO_DIR/ -type f -name "*umd.js" -print)
     if [[ ${UMD} ]]; then
-      sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD}
+      for UMD_FILE in ${UMD}; do
+        sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD_FILE}
+      done
     fi
   else
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
