@@ -6,9 +6,7 @@ export default {
   globals: {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
-    '@angular/compiler': 'ng.compiler',
     '@angular/platform-browser': 'ng.platformBrowser',
-    '@angular/platform-browser-dynamic': 'ng.platformBrowserDynamic',
 
     'rxjs/BehaviorSubject': 'Rx',
     'rxjs/Observable': 'Rx',

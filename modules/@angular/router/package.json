@@ -22,10 +22,8 @@
   "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER",
     "rxjs": "5.0.0-beta.11"
   }
 }
