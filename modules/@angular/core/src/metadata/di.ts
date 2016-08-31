@@ -428,8 +428,8 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  *
  * - If the argument is a type, a directive or a component with the type will be bound.
  *
- If the argument is a string, the string is interpreted as a selector. An element containing the
- matching template variable (e.g. `#child`) will be bound.
+ * If the argument is a string, the string is interpreted as a selector. An element containing the
+ * matching template variable (e.g. `#child`) will be bound.
  *
  * In either case, `@ViewChild()` assigns the first (looking from above) element if there are
  multiple matches.
