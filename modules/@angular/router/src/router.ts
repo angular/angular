@@ -546,7 +546,7 @@ export class Router {
                   resolvePromise(false);
                 }
               },
-              e => {
+            (e: any) => {
                 if (e instanceof NavigationCancelingError) {
                   this.navigated = true;
                   this.routerEvents.next(
