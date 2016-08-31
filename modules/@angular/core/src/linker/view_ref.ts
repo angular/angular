@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {triggerQueuedAnimations} from '../animation/animation_queue';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectorStatus} from '../change_detection/constants';
 import {unimplemented} from '../facade/errors';
+
 import {AppView} from './view';
+
 
 /**
  * @stable
@@ -104,7 +107,10 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
 
   markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
   detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
-  detectChanges(): void { this._view.detectChanges(false); }
+  detectChanges(): void {
+    this._view.detectChanges(false);
+    triggerQueuedAnimations();
+  }
   checkNoChanges(): void { this._view.detectChanges(true); }
   reattach(): void {
     this._view.cdMode = this._originalMode;

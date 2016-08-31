@@ -37,6 +37,7 @@ export class CompileView implements NameResolver {
 
   public classStatements: o.Statement[] = [];
   public createMethod: CompileMethod;
+  public animationBindingsMethod: CompileMethod;
   public injectorGetMethod: CompileMethod;
   public updateContentQueriesMethod: CompileMethod;
   public dirtyParentQueriesMethod: CompileMethod;
@@ -74,6 +75,7 @@ export class CompileView implements NameResolver {
       public animations: CompiledAnimationTriggerResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
     this.createMethod = new CompileMethod(this);
+    this.animationBindingsMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
     this.updateContentQueriesMethod = new CompileMethod(this);
     this.dirtyParentQueriesMethod = new CompileMethod(this);
