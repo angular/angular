@@ -9,14 +9,9 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
 
-import {Route, Router, RouterOutletMap, UrlSerializer} from '../index';
-import {Routes} from '../src/config';
-import {ROUTES} from '../src/router_config_loader';
-import {ROUTER_PROVIDERS, RouterModule, provideRoutes} from '../src/router_module';
-import {flatten} from '../src/utils/collection';
-
-
+import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
 
 /**
  * A spy for {@link NgModuleFactoryLoader} that allows tests to simulate the loading of ng module

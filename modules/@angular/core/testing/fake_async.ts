@@ -7,7 +7,6 @@
  */
 
 
-
 const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
 type ProxyZoneSpec = {
   setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
@@ -87,6 +86,7 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
       return res;
     } finally {
       _inFakeAsyncCall = false;
+      resetFakeAsyncZone();
     }
   };
 }

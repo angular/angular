@@ -208,7 +208,7 @@
       "version": "1.0.2"
     },
     "balanced-match": {
-      "version": "0.3.0"
+      "version": "0.4.2"
     },
     "base62": {
       "version": "0.1.1"
@@ -1427,7 +1427,7 @@
       }
     },
     "brace-expansion": {
-      "version": "1.1.2"
+      "version": "1.1.6"
     },
     "braces": {
       "version": "1.8.3"
@@ -1598,6 +1598,9 @@
     },
     "buffers": {
       "version": "0.1.1"
+    },
+    "bufferutil": {
+      "version": "1.2.1"
     },
     "builtin-modules": {
       "version": "1.1.1"
@@ -2336,6 +2339,9 @@
     },
     "fs-tree-diff": {
       "version": "0.3.1"
+    },
+    "fs.realpath": {
+      "version": "1.0.0"
     },
     "fsevents": {
       "version": "1.0.6",
@@ -3101,7 +3107,7 @@
       }
     },
     "gulp-tslint": {
-      "version": "5.0.0"
+      "version": "6.1.1"
     },
     "gulp-typescript": {
       "version": "2.10.0",
@@ -5339,11 +5345,14 @@
               "version": "0.1.32"
             }
           }
+        },
+        "typescript": {
+          "version": "1.9.0-dev.20160409"
         }
       }
     },
     "tsickle": {
-      "version": "0.1.6",
+      "version": "0.1.7",
       "dependencies": {
         "source-map": {
           "version": "0.4.4"
@@ -5359,7 +5368,7 @@
       }
     },
     "tslint": {
-      "version": "3.10.0-dev.2",
+      "version": "3.15.0-dev.0",
       "dependencies": {
         "findup-sync": {
           "version": "0.3.0",
@@ -5370,7 +5379,12 @@
           }
         },
         "glob": {
-          "version": "7.0.3"
+          "version": "7.0.6",
+          "dependencies": {
+            "minimatch": {
+              "version": "3.0.3"
+            }
+          }
         },
         "resolve": {
           "version": "1.1.7"
@@ -5404,7 +5418,7 @@
       "version": "0.0.6"
     },
     "typescript": {
-      "version": "1.9.0-dev.20160409"
+      "version": "2.1.0-dev.20160827"
     },
     "ua-parser-js": {
       "version": "0.7.10"

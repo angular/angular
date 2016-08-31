@@ -167,7 +167,7 @@ export interface MetadataGlobalReferenceExpression extends MetadataSymbolicExpre
 }
 export function isMetadataGlobalReferenceExpression(value: any):
     value is MetadataGlobalReferenceExpression {
-  return isMetadataSymbolicReferenceExpression(value) && value.name && !value.module;
+  return value && value.name && !value.module && isMetadataSymbolicReferenceExpression(value);
 }
 
 export interface MetadataModuleReferenceExpression extends MetadataSymbolicExpression {
@@ -176,8 +176,8 @@ export interface MetadataModuleReferenceExpression extends MetadataSymbolicExpre
 }
 export function isMetadataModuleReferenceExpression(value: any):
     value is MetadataModuleReferenceExpression {
-  return isMetadataSymbolicReferenceExpression(value) && value.module && !value.name &&
-      !value.default;
+  return value && value.module && !value.name && !value.default &&
+      isMetadataSymbolicReferenceExpression(value);
 }
 
 export interface MetadataImportedSymbolReferenceExpression extends MetadataSymbolicExpression {
@@ -188,7 +188,7 @@ export interface MetadataImportedSymbolReferenceExpression extends MetadataSymbo
 }
 export function isMetadataImportedSymbolReferenceExpression(value: any):
     value is MetadataImportedSymbolReferenceExpression {
-  return isMetadataSymbolicReferenceExpression(value) && value.module && !!value.name;
+  return value && value.module && !!value.name && isMetadataSymbolicReferenceExpression(value);
 }
 
 export interface MetadataImportedDefaultReferenceExpression extends MetadataSymbolicExpression {
@@ -200,7 +200,7 @@ export interface MetadataImportedDefaultReferenceExpression extends MetadataSymb
 }
 export function isMetadataImportDefaultReference(value: any):
     value is MetadataImportedDefaultReferenceExpression {
-  return isMetadataSymbolicReferenceExpression(value) && value.module && value.default;
+  return value.module && value.default && isMetadataSymbolicReferenceExpression(value);
 }
 
 export type MetadataSymbolicReferenceExpression = MetadataGlobalReferenceExpression |

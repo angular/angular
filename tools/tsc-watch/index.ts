@@ -97,6 +97,21 @@ if (platform == 'node') {
         ]
       },
       BaseConfig));
+} else if (platform == 'router') {
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onStartCmds: [
+          [
+            'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
+            'modules/@angular/router/karma.conf.js'
+          ],
+        ],
+        onChangeCmds: [
+          ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
+        ]
+      },
+      BaseConfig));
 } else if (platform == 'browserNoRouter') {
   tscWatch = new TscWatch(Object.assign(
       {

@@ -7,7 +7,7 @@
  */
 
 import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
-import {ComponentStillLoadingError} from '../core_private';
+
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -17,6 +17,7 @@ import {NgModuleCompiler} from './ng_module_compiler';
 import * as ir from './output/output_ast';
 import {interpretStatements} from './output/output_interpreter';
 import {jitStatements} from './output/output_jit';
+import {ComponentStillLoadingError} from './private_import_core';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';

@@ -9,7 +9,6 @@
 import {CommonModule, PlatformLocation} from '@angular/common';
 import {ApplicationModule, ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 
-import {wtfInit} from '../core_private';
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 
@@ -51,7 +50,6 @@ export const platformBrowser =
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
-  wtfInit();
   BrowserGetTestability.init();
 }
 

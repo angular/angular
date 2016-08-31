@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, NgModuleMetadataType, PipeMetadataType} from '../index';
-import {unimplemented} from '../src/facade/errors';
-import {Type} from '../src/type';
+import {Compiler, CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, NgModuleMetadataType, PipeMetadataType, Type} from '@angular/core';
+
+import {unimplemented} from './facade/errors';
 import {MetadataOverride} from './metadata_override';
+
 
 /**
  * Special interface to the compiler only used by testing

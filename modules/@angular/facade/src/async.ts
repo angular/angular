@@ -8,8 +8,6 @@
 
 import {Subject} from 'rxjs/Subject';
 
-import {global, noop} from './lang';
-
 export {Observable} from 'rxjs/Observable';
 export {Subject} from 'rxjs/Subject';
 

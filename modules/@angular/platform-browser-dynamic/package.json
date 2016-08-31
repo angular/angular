@@ -1,9 +1,9 @@
 {
   "name": "@angular/platform-browser-dynamic",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
-  "main": "index.js",
-  "jsnext:main": "esm/index.js",
+  "description": "Angular 2 platform-browser-dynamic",
+  "main": "bundles/platform-browser-dynamic.umd.js",
+  "module": "index.js",
   "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",

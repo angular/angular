@@ -21,8 +21,8 @@ import {ComponentMetadata, NgModuleMetadata, ViewEncapsulation} from '@angular/c
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
-import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler, ParseError} from './compiler_private';
-import {Console} from './core_private';
+import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler, ParseError} from './private_import_compiler';
+import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
@@ -30,25 +30,25 @@ import {StaticReflector, StaticSymbol} from './static_reflector';
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost) {
-  const htmlParser = new compiler.i18n.HtmlParser(new HtmlParser());
+  const htmlParser = new compiler.I18NHtmlParser(new HtmlParser());
   const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host, htmlParser);
-  const bundlePromise: Promise<compiler.i18n.MessageBundle> = extractor.extract();
+  const bundlePromise: Promise<compiler.MessageBundle> = extractor.extract();
 
   return (bundlePromise).then(messageBundle => {
     let ext: string;
-    let serializer: compiler.i18n.Serializer;
+    let serializer: compiler.Serializer;
     const format = (cliOptions.i18nFormat || 'xlf').toLowerCase();
 
     switch (format) {
       case 'xmb':
         ext = 'xmb';
-        serializer = new compiler.i18n.Xmb();
+        serializer = new compiler.Xmb();
         break;
       case 'xliff':
       case 'xlf':
       default:
         ext = 'xlf';
-        serializer = new compiler.i18n.Xliff(htmlParser, compiler.DEFAULT_INTERPOLATION_CONFIG);
+        serializer = new compiler.Xliff(htmlParser, compiler.DEFAULT_INTERPOLATION_CONFIG);
         break;
     }
 
@@ -62,7 +62,7 @@ const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 export class Extractor {
   constructor(
       private program: ts.Program, public host: ts.CompilerHost,
-      private staticReflector: StaticReflector, private messageBundle: compiler.i18n.MessageBundle,
+      private staticReflector: StaticReflector, private messageBundle: compiler.MessageBundle,
       private reflectorHost: ReflectorHost, private metadataResolver: CompileMetadataResolver,
       private directiveNormalizer: DirectiveNormalizer,
       private compiler: compiler.OfflineCompiler) {}
@@ -97,7 +97,7 @@ export class Extractor {
     return result;
   }
 
-  extract(): Promise<compiler.i18n.MessageBundle> {
+  extract(): Promise<compiler.MessageBundle> {
     const filePaths =
         this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
     const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
@@ -145,7 +145,7 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
-      compilerHost: ts.CompilerHost, htmlParser: compiler.i18n.HtmlParser,
+      compilerHost: ts.CompilerHost, htmlParser: compiler.I18NHtmlParser,
       reflectorHostContext?: ReflectorHostContext): Extractor {
     const resourceLoader: compiler.ResourceLoader = {
       get: (s: string) => {
@@ -184,7 +184,7 @@ export class Extractor {
         new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost), null, null);
 
     // TODO(vicb): implicit tags & attributes
-    let messageBundle = new compiler.i18n.MessageBundle(htmlParser, [], {});
+    let messageBundle = new compiler.MessageBundle(htmlParser, [], {});
 
     return new Extractor(
         program, compilerHost, staticReflector, messageBundle, reflectorHost, resolver, normalizer,

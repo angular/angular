@@ -7,15 +7,15 @@
  */
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
-import {MockDirectiveResolver} from '@angular/compiler/testing';
 import {Compiler, Component, ComponentFactory, Injectable, Injector, Input, NgModule, NgModuleFactory, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {ViewMetadata} from '../core_private';
 import {stringify} from '../src/facade/lang';
+import {MockDirectiveResolver} from '../testing/index';
 
+import {ViewMetadata} from './private_import_core';
 import {SpyResourceLoader} from './spies';
 
 @Component({selector: 'child-cmp'})

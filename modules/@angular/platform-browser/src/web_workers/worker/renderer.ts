@@ -8,9 +8,9 @@
 
 import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../../core_private';
 import {ListWrapper} from '../../facade/collection';
 import {isBlank, isPresent} from '../../facade/lang';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';

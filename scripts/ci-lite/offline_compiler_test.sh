@@ -13,6 +13,7 @@ PKGS=(
   rxjs
   @types/{node,jasmine}
   jasmine
+  webpack@2.1.0-beta.21
   @angular2-material/{core,button}
 )
 
@@ -42,7 +43,8 @@ cp -v package.json $TMP
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
-  ./node_modules/.bin/jasmine test/*_spec.js
+  ./node_modules/.bin/webpack ./webpack.config.js
+  ./node_modules/.bin/jasmine ./all_spec.js
 
   # Compile again with a differently named tsconfig file
   mv tsconfig.json othername.json

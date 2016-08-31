@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the core/testing package.
+ */
+
 export * from './async';
 export * from './component_fixture';
 export * from './fake_async';
 export * from './test_bed';
 export * from './testing';
 export * from './metadata_override';
-
-export * from '../private_export_testing';
+export * from './private_export_testing';

@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
-import {LocationStrategy} from '../index';
-import {EventEmitter} from '../src/facade/async';
+import {LocationStrategy} from '@angular/common';
+import {EventEmitter, Injectable} from '@angular/core';
 
 
 

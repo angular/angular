@@ -1,6 +1,6 @@
 export default {
-  entry: '../../../dist/packages-dist/router/esm/index.js',
-  dest: '../../../dist/packages-dist/router/esm/router.umd.js',
+  entry: '../../../dist/packages-dist/router/index.js',
+  dest: '../../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
   moduleName: 'ng.router',
   globals: {
@@ -32,8 +32,5 @@ export default {
     'rxjs/observable/forkJoin': 'Rx.Observable',
     'rxjs/observable/of': 'Rx.Observable',
     'rxjs/util/EmptyError': 'Rx.EmptyError'
-  },
-  plugins: [
-//    nodeResolve({ jsnext: true, main: true }),
-  ]
+  }
 }

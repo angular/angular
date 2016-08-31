@@ -176,7 +176,7 @@ export function main() {
            return defaultPlatform.bootstrapModule(EmptyModule)
                .then(() => fail('expecting error'), (error) => {
                  expect(error.message)
-                     .toEqual('No ExceptionHandler. Is platform module (BrowserModule) included?');
+                     .toEqual('No ErrorHandler. Is platform module (BrowserModule) included?');
                });
          }));
 

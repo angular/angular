@@ -6,4 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ServerModule, platformDynamicServer, platformServer} from './src/server';
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the platform-server package.
+ */
+export * from './src/platform-server';
+
+// This file only reexports content of the `src` folder. Keep it that way.

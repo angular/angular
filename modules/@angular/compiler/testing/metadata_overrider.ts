@@ -7,7 +7,7 @@
  */
 
 import {MetadataOverride} from '@angular/core/testing';
-import {stringify} from '../src/facade/lang';
+import {stringify} from './facade/lang';
 
 type StringMap = {
   [key: string]: any
