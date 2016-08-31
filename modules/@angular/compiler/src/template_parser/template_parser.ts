@@ -925,7 +925,9 @@ class TemplateParseVisitor implements html.Visitor {
   private _assertOnlyOneComponent(directives: DirectiveAst[], sourceSpan: ParseSourceSpan) {
     const componentTypeNames = this._findComponentDirectiveNames(directives);
     if (componentTypeNames.length > 1) {
-      this._reportError(`More than one component: ${componentTypeNames.join(',')}`, sourceSpan);
+      this._reportError(
+          `Multiple components matched on one element. Make sure that only one component is active on any given element. Conflicting components are: ${componentTypeNames.join(', ')}`,
+          sourceSpan);
     }
   }
 
