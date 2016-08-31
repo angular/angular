@@ -525,13 +525,14 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   importedModules: CompileNgModuleMetadata[];
   exportedModules: CompileNgModuleMetadata[];
   schemas: SchemaMetadata[];
+  loadToken: string;
 
   transitiveModule: TransitiveCompileNgModuleMetadata;
 
   constructor(
       {type, providers, declaredDirectives, exportedDirectives, declaredPipes, exportedPipes,
        entryComponents, bootstrapComponents, importedModules, exportedModules, schemas,
-       transitiveModule}: {
+       transitiveModule, loadToken}: {
         type?: CompileTypeMetadata,
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
@@ -544,7 +545,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         importedModules?: CompileNgModuleMetadata[],
         exportedModules?: CompileNgModuleMetadata[],
         transitiveModule?: TransitiveCompileNgModuleMetadata,
-        schemas?: SchemaMetadata[]
+        schemas?: SchemaMetadata[],
+        loadToken?: string
       } = {}) {
     this.type = type;
     this.declaredDirectives = _normalizeArray(declaredDirectives);
@@ -557,6 +559,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
     this.importedModules = _normalizeArray(importedModules);
     this.exportedModules = _normalizeArray(exportedModules);
     this.schemas = _normalizeArray(schemas);
+    this.loadToken = loadToken;
     this.transitiveModule = transitiveModule;
   }
 
