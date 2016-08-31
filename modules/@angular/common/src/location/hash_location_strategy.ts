@@ -27,18 +27,8 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  *
  * ### Example
  *
- * ```
- * import {Component, NgModule} from '@angular/core';
- * import {
- *   LocationStrategy,
- *   HashLocationStrategy
- * } from '@angular/common';
- *
- * @NgModule({
- *   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
- * })
- * class AppModule {}
- * ```
+ * {@example common/location/ts/hash_location_strategy/hash_location_strategy_spec.ts
+ * region='hash_location_strategy'}
  *
  * @stable
  */
