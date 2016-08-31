@@ -37,6 +37,7 @@ env:
     - MODE=browserstack_optional
 
 matrix:
+  fast_finish: true
   allow_failures:
   - env: "MODE=saucelabs_optional"
   - env: "MODE=browserstack_optional"
