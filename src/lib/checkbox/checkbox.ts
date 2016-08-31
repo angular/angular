@@ -30,7 +30,7 @@ export const MD_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
 /**
  * Represents the different states that require custom transitions between them.
  */
-enum TransitionCheckState {
+export enum TransitionCheckState {
   /** The initial state of the component before any user interaction. */
   Init,
   /** The state representing the component when it's becoming checked. */
