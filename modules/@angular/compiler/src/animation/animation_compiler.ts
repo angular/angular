@@ -486,10 +486,13 @@ class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
     t.templateVisitAll(this, ast.children);
   }
 
+  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {
+    t.templateVisitAll(this, ast.children);
+  }
+
   visitEvent(ast: t.BoundEventAst, ctx: any): any {}
   visitBoundText(ast: t.BoundTextAst, ctx: any): any {}
   visitText(ast: t.TextAst, ctx: any): any {}
-  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {}
   visitNgContent(ast: t.NgContentAst, ctx: any): any {}
   visitAttr(ast: t.AttrAst, ctx: any): any {}
   visitDirective(ast: t.DirectiveAst, ctx: any): any {}

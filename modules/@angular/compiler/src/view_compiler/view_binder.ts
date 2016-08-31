@@ -28,7 +28,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
   private _nodeIndex: number = 0;
   private _animationOutputsMap: {[key: string]: AnimationOutput} = {};
 
-  constructor(public view: CompileView, animationOutputs: AnimationOutput[]) {
+  constructor(public view: CompileView, public animationOutputs: AnimationOutput[]) {
     animationOutputs.forEach(
         entry => { this._animationOutputsMap[entry.fullPropertyName] = entry; });
   }
@@ -108,7 +108,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       var providerInstance = compileElement.instances.get(providerAst.token.reference);
       bindInjectableDestroyLifecycleCallbacks(providerAst, providerInstance, compileElement);
     });
-    bindView(compileElement.embeddedView, ast.children, []);
+    bindView(compileElement.embeddedView, ast.children, this.animationOutputs);
     return null;
   }
 
