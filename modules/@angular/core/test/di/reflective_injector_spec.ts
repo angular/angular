@@ -336,25 +336,6 @@ export function main() {
         }
       });
 
-      it('should provide context when throwing an exception ', () => {
-        var engineProvider =
-            ReflectiveInjector.resolve([{provide: Engine, useClass: BrokenEngine}])[0];
-        var protoParent = new ReflectiveProtoInjector([engineProvider]);
-
-        var carProvider = ReflectiveInjector.resolve([Car])[0];
-        var protoChild = new ReflectiveProtoInjector([carProvider]);
-
-        var parent = new ReflectiveInjector_(protoParent, null, () => 'parentContext');
-        var child = new ReflectiveInjector_(protoChild, parent, () => 'childContext');
-
-        try {
-          child.get(Car);
-          throw 'Must throw';
-        } catch (e) {
-          expect(e.context).toEqual('childContext');
-        }
-      });
-
       it('should instantiate an object after a failed attempt', () => {
         var isBroken = true;
 
