@@ -37,11 +37,13 @@ syntax(ts):
 `@Injectable()
 class MyService() {}`|`@Injectable()`
 syntax(js):
-`var OtherService = ng.core.Class({constructor: function() { }});
-var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});`|`var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});`
+`var OtherService = ng.core.Class(
+    {constructor: function() { }});
+var MyService = ng.core.Class(
+    {constructor: [OtherService, function(otherService) { }]});`|`var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});`
 description:
 {@target ts}Declares that a class has dependencies that should be injected into the constructor when the dependency injector is creating an instance of this class.
 {@endtarget}
 {@target js}
-Declares a service to inject into a class by providing an array with the services with the final item being the function which will receive the injected services.
+Declares a service to inject into a class by providing an array with the services, with the final item being the function to receive the injected services.
 {@endtarget}
