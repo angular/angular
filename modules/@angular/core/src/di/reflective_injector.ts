@@ -473,12 +473,6 @@ export abstract class ReflectiveInjector implements Injector {
    */
   get parent(): Injector { return unimplemented(); }
 
-
-  /**
-   * @internal
-   */
-  debugContext(): any { return null; }
-
   /**
    * Resolves an array of providers and creates a child injector from those providers.
    *
@@ -603,18 +597,11 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   /**
    * Private
    */
-  constructor(
-      _proto: any /* ProtoInjector */, _parent: Injector = null,
-      private _debugContext: Function = null) {
+  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null) {
     this._proto = _proto;
     this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
-
-  /**
-   * @internal
-   */
-  debugContext(): any { return this._debugContext(); }
 
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
