@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/list",
-  "version": "2.0.0-alpha.7-11",
+  "version": "2.0.0-alpha.7-12",
   "description": "Angular 2 Material list",
   "main": "./list.js",
   "typings": "./list.d.ts",
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-11"
+    "@angular2-material/core": "2.0.0-alpha.7-12"
   }
 }
