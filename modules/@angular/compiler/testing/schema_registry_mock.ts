@@ -8,7 +8,6 @@
 
 import {ElementSchemaRegistry} from '@angular/compiler';
 import {SchemaMetadata, SecurityContext} from '@angular/core';
-import {ElementSchemaRegistry} from '../index';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
