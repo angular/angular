@@ -1266,6 +1266,59 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(ifCalls).toEqual(2);
            expect(loadingCalls).toEqual(2);
          }));
+
+
+      it('should allow animation triggers to trigger on the component when bound to embedded views via ngFor',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngFor="let item of items"
+                  (@trigger.start)="callback($event, item, 'start')"
+                  (@trigger.done)="callback($event, item, 'done')"
+                  @trigger>{{ item }}</div>
+              `,
+               animations: [trigger('trigger', [transition('* => *', [animate(1000)])])]
+             }
+           });
+
+           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
+           let fixture = TestBed.createComponent(DummyIfCmp);
+           var cmp = fixture.debugElement.componentInstance;
+
+           var startCalls = [0, 0, 0, 0, 0];
+           var doneCalls = [0, 0, 0, 0, 0];
+           cmp.callback = (e: any, index: number, phase: string) => {
+             (phase == 'start' ? startCalls : doneCalls)[index] = 1;
+           };
+
+           cmp.items = [0, 1, 2, 3, 4];
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           for (var i = 0; i < cmp.items.length; i++) {
+             expect(startCalls[i]).toEqual(1);
+           }
+
+           driver.log[0]['player'].finish();
+           driver.log[2]['player'].finish();
+           driver.log[4]['player'].finish();
+
+           expect(doneCalls[0]).toEqual(1);
+           expect(doneCalls[1]).toEqual(0);
+           expect(doneCalls[2]).toEqual(1);
+           expect(doneCalls[3]).toEqual(0);
+           expect(doneCalls[4]).toEqual(1);
+
+           driver.log[1]['player'].finish();
+           driver.log[3]['player'].finish();
+
+           expect(doneCalls[0]).toEqual(1);
+           expect(doneCalls[1]).toEqual(1);
+           expect(doneCalls[2]).toEqual(1);
+           expect(doneCalls[3]).toEqual(1);
+           expect(doneCalls[4]).toEqual(1);
+         }));
     });
 
     describe('ng directives', () => {
