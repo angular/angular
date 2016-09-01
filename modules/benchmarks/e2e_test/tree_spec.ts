@@ -31,6 +31,12 @@ describe('tree benchmark spec', () => {
     });
   });
 
+  it('should work for the baseline dom', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/baseline_dom/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
   it('should work for polymer binary tree', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/polymer/index.html',
