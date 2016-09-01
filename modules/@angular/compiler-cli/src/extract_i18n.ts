@@ -133,8 +133,7 @@ export class Extractor {
                     });
               }));
             }))
-            .then(_ => this.messageBundle)
-            .catch((e) => { console.error(e.stack); });
+            .then(_ => this.messageBundle);
 
     if (errors.length) {
       throw new Error(errors.map(e => e.toString()).join('\n'));
