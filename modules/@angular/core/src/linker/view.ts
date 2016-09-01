@@ -9,6 +9,7 @@
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
 import {AnimationOutput} from '../animation/animation_output';
 import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
+import {queueAnimation} from '../animation/animation_queue';
 import {AnimationTransitionEvent} from '../animation/animation_transition_event';
 import {ViewAnimationMap} from '../animation/view_animation_map';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
@@ -84,23 +85,18 @@ export abstract class AppView<T> {
   queueAnimation(
       element: any, animationName: string, player: AnimationPlayer, totalTime: number,
       fromState: string, toState: string): void {
+    queueAnimation(player);
     var event = new AnimationTransitionEvent(
         {'fromState': fromState, 'toState': toState, 'totalTime': totalTime});
     this.animationPlayers.set(element, animationName, player);
+
     player.onDone(() => {
       // TODO: make this into a datastructure for done|start
       this.triggerAnimationOutput(element, animationName, 'done', event);
       this.animationPlayers.remove(element, animationName);
     });
-    player.onStart(() => { this.triggerAnimationOutput(element, animationName, 'start', event); });
-  }
 
-  triggerQueuedAnimations() {
-    this.animationPlayers.getAllPlayers().forEach(player => {
-      if (!player.hasStarted()) {
-        player.play();
-      }
-    });
+    player.onStart(() => { this.triggerAnimationOutput(element, animationName, 'start', event); });
   }
 
   triggerAnimationOutput(

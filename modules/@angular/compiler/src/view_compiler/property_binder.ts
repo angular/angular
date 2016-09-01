@@ -105,6 +105,7 @@ function bindAndWriteToRenderer(
     var oldRenderValue: o.Expression = sanitizedValue(boundProp, fieldExpr);
     var renderValue: o.Expression = sanitizedValue(boundProp, currValExpr);
     var updateStmts: any[] /** TODO #9100 */ = [];
+    var compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
       case PropertyBindingType.Property:
         if (view.genConfig.logBindingUpdate) {
@@ -150,6 +151,8 @@ function bindAndWriteToRenderer(
           targetViewExpr = compileElement.appElement.prop('componentView');
         }
 
+        compileMethod = view.animationBindingsMethod;
+
         var animationFnExpr =
             targetViewExpr.prop('componentType').prop('animations').key(o.literal(animationName));
 
@@ -178,19 +181,12 @@ function bindAndWriteToRenderer(
             animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
                 .toStmt());
 
-        if (!_animationViewCheckedFlagMap.get(view)) {
-          _animationViewCheckedFlagMap.set(view, true);
-          var triggerStmt = o.THIS_EXPR.callMethod('triggerQueuedAnimations', []).toStmt();
-          view.afterViewLifecycleCallbacksMethod.addStmt(triggerStmt);
-          view.detachMethod.addStmt(triggerStmt);
-        }
-
         break;
     }
 
     bind(
-        view, currValExpr, fieldExpr, boundProp.value, context, updateStmts,
-        view.detectChangesRenderPropertiesMethod, view.bindings.length);
+        view, currValExpr, fieldExpr, boundProp.value, context, updateStmts, compileMethod,
+        view.bindings.length);
   });
 }
 
