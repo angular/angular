@@ -9,12 +9,11 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
+import {NgModule} from '../../../../../tools/public_api_guard/core/index';
 
 export function main() {
   describe('Focus Directive', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
-    });
+    beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
 
     it('Should set focus when the directive get truthy boolean', async(() => {
          var template = '<div class="test-input" [ngFocus]="inFocus" ></div>';
@@ -49,6 +48,10 @@ export function main() {
   });
 }
 
+
+@NgModule({imports: [CommonModule], declarations: [TestComponent], exports: [TestComponent]})
+export class TestModule {
+}
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
