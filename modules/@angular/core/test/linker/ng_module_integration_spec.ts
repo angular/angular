@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, getNgModule, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef, getModuleFactory} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -249,10 +249,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('id', () => {
       const token = 'myid';
-      @NgModule({ id: token })
+      @NgModule({id: token})
       class SomeModule {
       }
-      @NgModule({ id: token })
+      @NgModule({id: token})
       class SomeOtherModule {
       }
 
@@ -260,7 +260,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should register loaded modules', () => {
         createModule(SomeModule);
-        let factory = getNgModule(token);
+        let factory = getModuleFactory(token);
         expect(factory).toBeTruthy();
         expect(factory.moduleType).toBe(SomeModule);
       });

@@ -72,7 +72,7 @@ export class NgModuleCompiler {
     let stmts: o.Statement[] = [injectorClass, ngModuleFactoryStmt];
     if (ngModuleMeta.id) {
       let registerFactoryStmt =
-          o.importExpr(resolveIdentifier(Identifiers.RegisterLoadedModuleFn))
+          o.importExpr(resolveIdentifier(Identifiers.RegisterModuleFactoryFn))
               .callFn([o.literal(ngModuleMeta.id), o.variable(ngModuleFactoryVar)])
               .toStmt();
       stmts.push(registerFactoryStmt);

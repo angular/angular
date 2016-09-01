@@ -25,7 +25,7 @@ export const CodegenComponentFactoryResolver: typeof r.CodegenComponentFactoryRe
 export const AppView: typeof r.AppView = r.AppView;
 export const DebugAppView: typeof r.DebugAppView = r.DebugAppView;
 export const NgModuleInjector: typeof r.NgModuleInjector = r.NgModuleInjector;
-export const registerLoadedModule: typeof r.registerLoadedModule = r.registerLoadedModule;
+export const registerModuleFactory: typeof r.registerModuleFactory = r.registerModuleFactory;
 export type ViewType = typeof r._ViewType;
 export const ViewType: typeof r.ViewType = r.ViewType;
 export const MAX_INTERPOLATION_VALUES: typeof r.MAX_INTERPOLATION_VALUES =
