@@ -69,8 +69,16 @@ export class NgModuleCompiler {
                              [o.importType(ngModuleMeta.type)], [o.TypeModifier.Const])))
             .toDeclStmt(null, [o.StmtModifier.Final]);
 
-    return new NgModuleCompileResult(
-        [injectorClass, ngModuleFactoryStmt], ngModuleFactoryVar, deps);
+    let stmts: o.Statement[] = [injectorClass, ngModuleFactoryStmt];
+    if (ngModuleMeta.id) {
+      let registerFactoryStmt =
+          o.importExpr(resolveIdentifier(Identifiers.RegisterModuleFactoryFn))
+              .callFn([o.literal(ngModuleMeta.id), o.variable(ngModuleFactoryVar)])
+              .toStmt();
+      stmts.push(registerFactoryStmt);
+    }
+
+    return new NgModuleCompileResult(stmts, ngModuleFactoryVar, deps);
   }
 }
 

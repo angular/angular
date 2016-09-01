@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef, getModuleFactory} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../src/facade/lang';
 import {NgModuleInjector} from '../../src/linker/ng_module_factory';
+import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 
 class Engine {}
 
@@ -244,6 +245,30 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(() => createModule(SomeModule)).not.toThrow();
          });
+    });
+
+    describe('id', () => {
+      const token = 'myid';
+      @NgModule({id: token})
+      class SomeModule {
+      }
+      @NgModule({id: token})
+      class SomeOtherModule {
+      }
+
+      afterEach(() => clearModulesForTest());
+
+      it('should register loaded modules', () => {
+        createModule(SomeModule);
+        let factory = getModuleFactory(token);
+        expect(factory).toBeTruthy();
+        expect(factory.moduleType).toBe(SomeModule);
+      });
+
+      it('should throw when registering a duplicate module', () => {
+        createModule(SomeModule);
+        expect(() => createModule(SomeOtherModule)).toThrowError(/Duplicate module registered/);
+      });
     });
 
     describe('entryComponents', () => {

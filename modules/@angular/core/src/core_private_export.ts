@@ -24,6 +24,7 @@ import * as component_factory_resolver from './linker/component_factory_resolver
 import * as debug_context from './linker/debug_context';
 import * as element from './linker/element';
 import * as ng_module_factory from './linker/ng_module_factory';
+import * as ng_module_factory_loader from './linker/ng_module_factory_loader';
 import * as template_ref from './linker/template_ref';
 import * as view from './linker/view';
 import * as view_type from './linker/view_type';
@@ -61,6 +62,7 @@ export var __core_private__: {
   DebugAppView: typeof view.DebugAppView, _DebugAppView?: view.DebugAppView<any>,
   NgModuleInjector: typeof ng_module_factory.NgModuleInjector,
   _NgModuleInjector?: ng_module_factory.NgModuleInjector<any>,
+  registerModuleFactory: typeof ng_module_factory_loader.registerModuleFactory,
   ViewType: typeof view_type.ViewType, _ViewType?: view_type.ViewType,
   MAX_INTERPOLATION_VALUES: typeof view_utils.MAX_INTERPOLATION_VALUES,
   checkBinding: typeof view_utils.checkBinding,
@@ -131,6 +133,7 @@ export var __core_private__: {
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,
   NgModuleInjector: ng_module_factory.NgModuleInjector,
+  registerModuleFactory: ng_module_factory_loader.registerModuleFactory,
   ViewType: view_type.ViewType,
   MAX_INTERPOLATION_VALUES: view_utils.MAX_INTERPOLATION_VALUES,
   checkBinding: view_utils.checkBinding,
