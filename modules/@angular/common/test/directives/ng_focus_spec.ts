@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFocus} from '@angular/common/src/directives/ng_focus';
-import {Component, NgModule} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
-import {CommonModule} from '../../../../../tools/public_api_guard/common/index';
-
+import {CommonModule} from '@angular/common';
+import {Component} from '@angular/core';
+import {TestBed, async} from '@angular/core/testing';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Focus Directive', () => {
