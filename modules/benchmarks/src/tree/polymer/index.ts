@@ -1,4 +1,4 @@
-import {bindAction} from '../../util';
+import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
 
 declare var Polymer: any;
@@ -11,6 +11,11 @@ export function main() {
 
   function createDom() { rootEl.data = buildTree(); }
 
+  function noop() {}
+
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
+
+  bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
+  bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
 }

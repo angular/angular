@@ -5,9 +5,12 @@ import {TreeNode, emptyTree, maxDepth} from '../util';
 
 function createTreeComponent(level: number, isLeaf: boolean) {
   const nextTreeEl = `tree${level+1}`;
-  const template = isLeaf ?
-      `<span> {{data.value}} </span>` :
-      `<span> {{data.value}} <span><${nextTreeEl} [data]='data.right'></${nextTreeEl}></span><span><${nextTreeEl} [data]='data.left'></${nextTreeEl}></span></span>`;
+  let template =
+      `<span [style.backgroundColor]="data.depth % 2 ? '' : 'grey'"> {{data.value}} </span>`;
+  if (!isLeaf) {
+    template +=
+        `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
+  }
 
   @Component({selector: `tree${level}`, template: template})
   class TreeComponent {
