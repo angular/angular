@@ -9,7 +9,7 @@ Built-in directives
 syntax:
 `<section *ngIf="showSection">`|`*ngIf`
 description:
-Removes or recreates a portion of the DOM tree based on the showSection expression.
+Removes or recreates a portion of the DOM tree based on the `showSection` expression.
 
 @cheatsheetItem
 syntax:
@@ -25,7 +25,7 @@ syntax:
   <template ngSwitchDefault>...</template>
 </div>`|`[ngSwitch]`|`[ngSwitchCase]`|`ngSwitchCase`|`ngSwitchDefault`
 description:
-Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of conditionExpression.
+Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of `conditionExpression`.
 
 @cheatsheetItem
 syntax:

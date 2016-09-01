@@ -19,7 +19,7 @@ syntax(ts):
 syntax(js):
 `viewProviders: [MyService, { provide: ... }]`|`viewProviders:`
 description:
-Array of dependency injection providers scoped to this component's view.
+List of dependency injection providers scoped to this component's view.
 
 
 @cheatsheetItem
