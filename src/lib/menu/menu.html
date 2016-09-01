@@ -1,5 +1,5 @@
 <template>
-  <div class="md-menu" [ngClass]="_classList" (click)="_emitCloseEvent()">
+  <div class="md-menu" [ngClass]="_classList" (click)="_emitCloseEvent()" (keydown)="_handleKeydown($event)">
     <ng-content></ng-content>
   </div>
 </template>

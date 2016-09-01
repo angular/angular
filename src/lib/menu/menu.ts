@@ -2,17 +2,17 @@ import {NgModule, ModuleWithProviders} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {OverlayModule, OVERLAY_PROVIDERS} from '@angular2-material/core/core';
 import {MdMenu} from './menu-directive';
-import {MdMenuItem, MdMenuAnchor} from './menu-item';
+import {MdMenuItem} from './menu-item';
 import {MdMenuTrigger} from './menu-trigger';
 export {MdMenu} from './menu-directive';
-export {MdMenuItem, MdMenuAnchor} from './menu-item';
+export {MdMenuItem} from './menu-item';
 export {MdMenuTrigger} from './menu-trigger';
 
 
 @NgModule({
   imports: [OverlayModule, CommonModule],
-  exports: [MdMenu, MdMenuItem, MdMenuTrigger, MdMenuAnchor],
-  declarations: [MdMenu, MdMenuItem, MdMenuTrigger, MdMenuAnchor],
+  exports: [MdMenu, MdMenuItem, MdMenuTrigger],
+  declarations: [MdMenu, MdMenuItem, MdMenuTrigger],
 })
 export class MdMenuModule {
   static forRoot(): ModuleWithProviders {

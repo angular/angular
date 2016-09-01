@@ -1,6 +1,7 @@
 <div>
   <div style="float:left">
     <div id="text">{{ selected }}</div>
+    <button id="start">START</button>
     <button [md-menu-trigger-for]="menu" id="trigger">TRIGGER</button>
     <button [md-menu-trigger-for]="menu" id="trigger-two">TRIGGER 2</button>
 
@@ -8,6 +9,7 @@
       <button md-menu-item (click)="selected='one'">One</button>
       <button md-menu-item (click)="selected='two'">Two</button>
       <button md-menu-item (click)="selected='three'" disabled>Three</button>
+      <button md-menu-item>Four</button>
     </md-menu>
 
     <button [md-menu-trigger-for]="beforeMenu" id="before-t">

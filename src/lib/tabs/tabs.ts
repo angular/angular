@@ -19,14 +19,7 @@ import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-
-// Due to a bug in the ChromeDriver, Angular 2 keyboard events are not triggered by `sendKeys`
-// during E2E tests when using dot notation such as `(keydown.rightArrow)`. To get around this,
-// we are temporarily using a single (keydown) handler.
-// See: https://github.com/angular/angular/issues/9419
-const RIGHT_ARROW = 39;
-const LEFT_ARROW = 37;
-const ENTER = 13;
+import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '@angular2-material/core/keyboard/keycodes';
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;

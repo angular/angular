@@ -12,7 +12,7 @@ describe('menu', () => {
     page.trigger().click();
 
     page.expectMenuPresent(true);
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree");
+    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
   });
 
   it('should close menu when area outside menu is clicked', () => {
@@ -45,14 +45,14 @@ describe('menu', () => {
 
   it('should support multiple triggers opening the same menu', () => {
     page.triggerTwo().click();
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree");
+    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
     page.expectMenuAlignedWith(page.menu(), 'trigger-two');
 
     page.body().click();
     page.expectMenuPresent(false);
 
     page.trigger().click();
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree");
+    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
     page.expectMenuAlignedWith(page.menu(), 'trigger');
 
     page.body().click();
@@ -64,6 +64,84 @@ describe('menu', () => {
     page.menu().getAttribute('class').then((classes) => {
       expect(classes).toEqual('md-menu custom');
     });
+  });
+
+  describe('keyboard events', () => {
+    beforeEach(() => {
+      // click start button to avoid tabbing past navigation
+      page.start().click();
+      page.pressKey(protractor.Key.TAB);
+    });
+
+    it('should auto-focus the first item when opened with keyboard', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.expectFocusOn(page.items(0));
+    });
+
+    it('should not focus the first item when opened with mouse', () => {
+      page.trigger().click();
+      page.expectFocusOn(page.trigger());
+    });
+
+    it('should focus subsequent items when down arrow is pressed', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.DOWN);
+      page.expectFocusOn(page.items(1));
+    });
+
+    it('should focus previous items when up arrow is pressed', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(protractor.Key.UP);
+      page.expectFocusOn(page.items(0));
+    });
+
+    it('should skip disabled items using arrow keys', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(protractor.Key.DOWN);
+      page.expectFocusOn(page.items(3));
+
+      page.pressKey(protractor.Key.UP);
+      page.expectFocusOn(page.items(1));
+    });
+
+    it('should close the menu when tabbing past items', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.TAB);
+      page.expectMenuPresent(false);
+
+      page.start().click();
+      page.pressKey(protractor.Key.TAB);
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
+      page.expectMenuPresent(false);
+    });
+
+    it('should wrap back to menu when arrow keying past items', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(protractor.Key.DOWN);
+      page.expectFocusOn(page.items(0));
+
+      page.pressKey(protractor.Key.UP);
+      page.expectFocusOn(page.items(3));
+    });
+
+    it('should focus before and after trigger when tabbing past items', () => {
+      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(protractor.Key.TAB);
+      page.expectFocusOn(page.triggerTwo());
+
+      // navigate back to trigger
+      page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
+      page.pressKey(protractor.Key.ENTER);
+
+      page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
+      page.expectFocusOn(page.start());
+    });
+
   });
 
   describe('position - ', () => {

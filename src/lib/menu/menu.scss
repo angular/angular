@@ -52,7 +52,7 @@ $md-menu-vertical-padding: 8px !default;
     cursor: default;
   }
 
-  &:hover:not([disabled]) {
+  &:hover:not([disabled]), &:focus:not([disabled]) {
     background: md-color($md-background, 'hover');
   }
 }
