@@ -360,10 +360,10 @@ export abstract class AbstractControl {
 
 
   private _calculateStatus(): string {
+    if (this._allControlsDisabled()) return DISABLED;
     if (isPresent(this._errors)) return INVALID;
     if (this._anyControlsHaveStatus(PENDING)) return PENDING;
     if (this._anyControlsHaveStatus(INVALID)) return INVALID;
-    if (this._allControlsDisabled()) return DISABLED;
     return VALID;
   }
 
