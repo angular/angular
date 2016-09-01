@@ -37,6 +37,14 @@ describe('tree benchmark spec', () => {
       ignoreBrowserSynchronization: true,
     });
   });
+
+  it('should work for the incremental dom', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/incremental_dom/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
+
   it('should work for polymer binary tree', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/polymer/index.html',

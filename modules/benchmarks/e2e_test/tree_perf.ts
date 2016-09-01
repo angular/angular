@@ -41,6 +41,15 @@ describe('tree benchmark perf', () => {
       ignoreBrowserSynchronization: true,
     }).then(done, done.fail);
   });
+
+  it('should run for the incremental dom', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.incrementalDom',
+      url: 'all/benchmarks/src/tree/incremental_dom/index.html',
+      ignoreBrowserSynchronization: true,
+    }).then(done, done.fail);
+  });
+
   it('should run for polymer binary tree', (done) => {
     runTreeBenchmark({
       id: 'deepTree.polymer',
