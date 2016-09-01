@@ -31,8 +31,8 @@ export function main() {
       tree = appRef.components[0].instance;
       bindAction('#destroyDom', destroyDom);
       bindAction('#createDom', createDom);
-      bindAction('#updateDomProfile', profile(createDom, noop, 'ng2-update'));
-      bindAction('#createDomProfile', profile(createDom, destroyDom, 'ng2-create'));
+      bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
+      bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
     });
   }
 

@@ -14,7 +14,10 @@
   (<any>global).benchmarksBootstrap = benchmarksBootstrap;
 
   function benchmarksBootstrap() {
-    System.config({defaultJSExtensions: true});
+    System.config({
+      defaultJSExtensions: true,
+      map: {'incremental-dom': '/all/benchmarks/vendor/incremental-dom-cjs.js'}
+    });
 
     // BOOTSTRAP the app!
     System.import('index').then(function(m: any) { m.main(); }, console.error.bind(console));
