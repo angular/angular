@@ -117,6 +117,16 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
+/** @experimental */
+export declare class NgComponentOutlet implements OnChanges {
+    componentRef: ComponentRef<any>;
+    ngComponentOutlet: Type<any>;
+    ngComponentOutletContent: any[][];
+    ngComponentOutletInjector: Injector;
+    constructor(_cmpFactoryResolver: ComponentFactoryResolver, _viewContainerRef: ViewContainerRef);
+    ngOnChanges(changes: SimpleChanges): void;
+}
+
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
