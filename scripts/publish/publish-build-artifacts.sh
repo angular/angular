@@ -18,7 +18,7 @@ function publishRepo {
     cd $REPO_DIR && \
     git init && \
     git remote add origin $REPO_URL && \
-    git fetch origin master && \
+    git fetch origin master --depth=1 && \
     git checkout origin/master && \
     git checkout -b master
   )
@@ -49,9 +49,8 @@ function publishRepo {
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" && \
-    git push origin master && \
     git tag "${BUILD_VER}" && \
-    git push origin --tags --force
+    git push origin master --tags --force
   )
 }
 
