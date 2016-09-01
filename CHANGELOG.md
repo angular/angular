@@ -263,6 +263,8 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 
 * forms: deprecated forms APIs in @angular/common have been removed. Please update to the new forms API in @angular/forms. See angular.io for more information.
 
+* forms: @angular/forms version now matches @angular version (i.e., "@angular/forms": "2.0.0-rc.6").
+
 * webworkers: web worker platform is now exported via separate packages.
 
   Please use @angular/platform-webworker and @angular/platform-webworker-dynamic
