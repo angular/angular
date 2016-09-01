@@ -13,6 +13,7 @@
  */
 export {NgClass} from './directives/ng_class';
 export {NgFor} from './directives/ng_for';
+export {NgFocus} from './directives/ng_focus';
 export {NgIf} from './directives/ng_if';
 export {NgPlural, NgPluralCase} from './directives/ng_plural';
 export {NgStyle} from './directives/ng_style';
