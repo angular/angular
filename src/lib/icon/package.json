@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular/http": "2.0.0-rc.5",
+    "@angular/http": "2.0.0-rc.6",
     "@angular2-material/core": "2.0.0-alpha.7-12"
   }
 }

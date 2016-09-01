@@ -1,5 +1,5 @@
 /***********************************************************************************************
- * SystemJS Configuration used for the unittests.
+ * User Configuration.
  **********************************************************************************************/
 
 const components = [
@@ -38,7 +38,6 @@ const packages: any = {
     defaultExtension: 'js'
   }
 };
-
 components.forEach(name => {
   packages[`@angular2-material/${name}`] = {
     format: 'cjs',
@@ -51,24 +50,41 @@ components.forEach(name => {
 /***********************************************************************************************
  * Everything underneath this line is managed by the CLI.
  **********************************************************************************************/
-const barrels: string[] = [
+const angularPackages = {
   // Angular specific barrels.
-  '@angular/core',
-  '@angular/common',
-  '@angular/compiler',
-  '@angular/http',
-  '@angular/forms',
-  '@angular/router',
-  '@angular/platform-browser',
-  '@angular/platform-browser-dynamic',
+  '@angular/core': { main: 'bundles/core.umd.js'},
+  '@angular/core/testing': { main: '../bundles/core-testing.umd.js'},
+  '@angular/common': { main: 'bundles/common.umd.js'},
+  '@angular/compiler': { main: 'bundles/compiler.umd.js'},
+  '@angular/compiler/testing': { main: '../bundles/compiler-testing.umd.js'},
+  '@angular/http': { main: 'bundles/http.umd.js'},
+  '@angular/http/testing': { main: '../bundles/http-testing.umd.js'},
+  '@angular/forms': { main: 'bundles/forms.umd.js'},
+  '@angular/router': { main: 'bundles/router.umd.js'},
+  '@angular/platform-browser': { main: 'bundles/platform-browser.umd.js'},
+  '@angular/platform-browser/testing': { main: '../bundles/platform-browser-testing.umd.js'},
+  '@angular/platform-browser-dynamic': { main: 'bundles/platform-browser-dynamic.umd.js'},
+  '@angular/platform-browser-dynamic/testing': {
+    main: '../bundles/platform-browser-dynamic-testing.umd.js'
+  },
+};
 
+const barrels: string[] = [
   // Thirdparty barrels.
   'rxjs',
 
+  // App specific barrels.
+  'demo-app',
+  'button-toggle',
+  'gestures',
+  'live-announcer',
+  'portal',
+  'overlay',
   ...components
+  /** @cli-barrel */
 ];
 
-const _cliSystemConfig = {};
+const _cliSystemConfig = angularPackages;
 barrels.forEach((barrelName: string) => {
   (<any> _cliSystemConfig)[barrelName] = { main: 'index' };
 });
@@ -80,7 +96,8 @@ declare var System: any;
 System.config({
   map: {
     '@angular': 'vendor/@angular',
-    'rxjs': 'vendor/rxjs'
+    'rxjs': 'vendor/rxjs',
+    'main': 'main.js'
   },
   packages: _cliSystemConfig
 });

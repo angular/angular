@@ -24,6 +24,6 @@
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
     "@angular2-material/core": "2.0.0-alpha.7-12",
-    "@angular/forms": "^0.3.0"
+    "@angular/forms": "2.0.0-rc.6"
   }
 }
