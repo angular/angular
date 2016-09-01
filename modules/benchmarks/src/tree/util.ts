@@ -5,7 +5,7 @@ export class TreeNode {
 }
 
 let treeCreateCount: number;
-let maxDepth: number;
+export let maxDepth: number;
 let numberData: string[];
 let charData: string[];
 

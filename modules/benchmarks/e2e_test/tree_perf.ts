@@ -19,6 +19,13 @@ describe('tree benchmark perf', () => {
     }).then(done, done.fail);
   });
 
+  it('should run for ng2 static', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.ng2.static',
+      url: 'all/benchmarks/src/tree/ng2_static/index.html',
+    }).then(done, done.fail);
+  });
+
   it('should run for the baseline', (done) => {
     runTreeBenchmark({
       id: 'deepTree.baseline',

@@ -18,6 +18,12 @@ describe('tree benchmark spec', () => {
     });
   });
 
+  it('should work for ng2 static', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/ng2_static/index.html',
+    });
+  });
+
   it('should work for the baseline', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/baseline/index.html',
