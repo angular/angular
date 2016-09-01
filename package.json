@@ -71,6 +71,7 @@
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.2.0",
     "hash-files": "^1.0.0",
+    "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
     "jpm": "1.0.0",
     "js-yaml": "^3.2.7",
