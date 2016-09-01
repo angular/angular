@@ -6,7 +6,7 @@ ROOT_DIR=$(cd $(dirname $0)/../..; pwd)
 cd ${ROOT_DIR}
 
 gulp clean
-gulp build.js buildRouter.dev
+node --max-old-space-size=6000 ./node_modules/.bin/gulp build.js buildRouter.dev
 
 NPM_DIR=${ROOT_DIR}/dist/npm
 rm -fr ${NPM_DIR}
@@ -37,4 +37,4 @@ cp ${ROOT_DIR}/dist/js/bundle/router* ${PUBLISH_DIR}/angular2/
 rm -f ${PUBLISH_DIR}/{,**/}{*.dart,*.dart.md}
 
 # Actually publish to npm
-npm publish ${PUBLISH_DIR} --tag pre-release --access public
+npm publish ${PUBLISH_DIR} --tag latest --access public

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../dist/all/",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
+      "rxjs/*": ["../node_modules/rxjs/*"],
+      "@angular/*": ["./@angular/*"],
+      "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "target": "es5"
+  },
+  "exclude": [
+    "angular1_router",
+    "angular2",
+    "benchmarks/e2e_test/old",
+    "benchmarks/src/old",
+    "benchmarks_external",
+    "payload_tests",
+    "rollup-test",
+    "@angular/compiler-cli/integrationtest"
+  ]
+}

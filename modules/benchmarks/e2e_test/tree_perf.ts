@@ -1,45 +1,59 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-describe('ng2 tree benchmark', function() {
+import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
 
-  var URL = 'benchmarks/src/tree/tree_benchmark.html';
+describe('tree benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log the ng stats', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-      id: 'ng2.tree.create.plain',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+  it('should run for ng2', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.ng2',
+      url: 'all/benchmarks/src/tree/ng2/index.html',
     }).then(done, done.fail);
   });
 
-  it('should log the ng stats (update)', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#ng2CreateDom'],
-      id: 'ng2.tree.update',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+  it('should run for the baseline', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.baseline',
+      url: 'all/benchmarks/src/tree/baseline/index.html',
+      ignoreBrowserSynchronization: true,
     }).then(done, done.fail);
   });
 
-  it('should log the baseline stats', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      id: 'baseline.tree.create',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+  it('should run for polymer binary tree', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.polymer',
+      url: 'all/benchmarks/src/tree/polymer/index.html',
+      ignoreBrowserSynchronization: true,
     }).then(done, done.fail);
   });
 
-  it('should log the baseline stats (update)', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#baselineCreateDom'],
-      id: 'baseline.tree.update',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+  it('should run for polymer leaves', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.polymerLeaves',
+      url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
+      ignoreBrowserSynchronization: true,
     }).then(done, done.fail);
   });
 
+  function runTreeBenchmark(
+      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean}) {
+    return runBenchmark({
+      id: config.id,
+      url: config.url,
+      ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
+      params: [{name: 'depth', value: 9}],
+      work: () => {
+        $('#createDom').click();
+        $('#destroyDom').click();
+      }
+    });
+  }
 });

@@ -1,0 +1,29 @@
+{
+  "name": "@angular/router",
+  "version": "3.0.0-rc.1",
+  "description": "Angular 2 router",
+  "main": "bundles/router.umd.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
+  "keywords": [
+    "angular2",
+    "angular",
+    "router"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angular/angular.git"
+  },
+  "author": "angular",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "rxjs": "5.0.0-beta.11"
+  }
+}

@@ -1,5 +1,6 @@
-import {Component} from 'angular2/core';
-import {bootstrap} from 'angular2/platform/browser';
+import {Component, NgModule} from '@angular/core';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
   selector: 'hello-app',
@@ -12,4 +13,10 @@ class HelloCmp {
   name = 'World';
 }
 
-bootstrap(HelloCmp);
+@NgModule({
+  bootstrap: [HelloCmp],
+  imports: [BrowserModule]
+})
+class ExampleModule {}
+
+platformBrowserDynamic().bootstrapModule(ExampleModule);

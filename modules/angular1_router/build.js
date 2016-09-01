@@ -40,8 +40,10 @@ function main(modulesDirectory) {
     return prev + transform(fs.readFileSync(dir + file, 'utf8'));
   }, '');
 
-  var out = moduleTemplate.replace('//{{FACADES}}', facades)
-                .replace('//{{SHARED_CODE}}', sharedCode);
+  // we have to use a function callback for replace to prevent it from interpreting `$`
+  // as a replacement command character
+  var out = moduleTemplate.replace('//{{FACADES}}', function() { return facades; })
+                .replace('//{{SHARED_CODE}}', function() { return sharedCode; });
   return PRELUDE + transform(directives) + out + POSTLUDE;
 }
 

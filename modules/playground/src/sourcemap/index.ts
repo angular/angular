@@ -1,18 +1,28 @@
-import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {bootstrap} from 'angular2/bootstrap';
-import {Component, View} from 'angular2/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'error-app',
-})
-@View({
   template: `
            <button class="errorButton" (click)="createError()">create error</button>`
 })
 export class ErrorComponent {
-  createError(): void { throw new BaseException('Sourcemap test'); }
+  createError(): void { throw new Error('Sourcemap test'); }
+}
+
+@NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})
+class ExampleModule {
 }
 
 export function main() {
-  bootstrap(ErrorComponent);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

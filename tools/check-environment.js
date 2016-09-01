@@ -79,9 +79,13 @@ function printWarning(issues) {
   console.warn('');
   console.warn(Array(110).join('!'));
   console.warn('!!!  Your environment is not in a good shape. Following issues were found:');
-  issues.forEach(function(issue) {console.warn('!!!   - ' + issue)});
+  issues.forEach(function(issue) {console.warn('!!!   - ' + issue);});
   console.warn(Array(110).join('!'));
   console.warn('');
+
+  if (process.env.CI) {
+    process.exit(1);
+  }
 }
 
 

@@ -1,0 +1,19 @@
+{
+  "name": "@angular/http",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular 2 http",
+  "main": "bundles/http.umd.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "rxjs": "5.0.0-beta.11",
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  }
+}

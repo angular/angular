@@ -8,24 +8,119 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 __karma__.loaded = function() {};
 
 System.config({
-  baseURL: '/base/',
+  baseURL: '/base',
   defaultJSExtensions: true,
-  paths: {
+  map: {
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
-    'angular2/*': 'dist/js/dev/es5/angular2/*.js',
-    'angular2_material/*': 'dist/js/dev/es5/angular2_material/*.js',
-    'rxjs/*': 'node_modules/rxjs/*.js'
+    '@angular': 'dist/all/@angular',
+    'rxjs': 'node_modules/rxjs',
+    'parse5/index': 'dist/all/empty.js',
+    '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
+    'angular2/*': 'dist/all/angular2/*.js',
+    'angular2/src/alt_router/router_testing_providers': 'dist/all/angular2/src/alt_router/router_testing_providers.js'
+  },
+  packages: {
+    '@angular/core/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/core': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/compiler/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/compiler': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/common/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/common': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/forms': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    // remove after all tests imports are fixed
+    '@angular/facade': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/router/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/router': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/http/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/http': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/upgrade': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-browser/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-browser': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-browser-dynamic/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-browser-dynamic': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-server/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-server': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-webworker': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-webworker-dynamic': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    }
   }
 });
 
+
 // Set up the test injector, then import all the specs, execute their `main()`
 // method and kick off Karma (Jasmine).
-System.import('angular2/testing').then(function(testing) {
-  return System.import('angular2/platform/testing/browser').then(function(testing_platform_browser) {
-    testing.setBaseTestProviders(testing_platform_browser.TEST_BROWSER_PLATFORM_PROVIDERS,
-                                 testing_platform_browser.TEST_BROWSER_APPLICATION_PROVIDERS);
-  });
-}).then(function() {
+System.import('@angular/core/testing')
+  .then(function(coreTesting){
+    return System.import('@angular/platform-browser-dynamic/testing')
+      .then(function(browserTesting) {
+         coreTesting.TestBed.initTestEnvironment(
+           browserTesting.BrowserDynamicTestingModule,
+           browserTesting.platformBrowserDynamicTesting());
+      });
+  })
+.then(function() {
   return Promise.all(
     Object.keys(window.__karma__.files) // All files served by Karma.
     .filter(onlySpecFiles)

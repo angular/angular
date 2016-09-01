@@ -2,6 +2,11 @@
 
 set -e -x
 
+# Setup environment
+cd `dirname $0`
+source ../ci-lite/env.sh
+
+
 # This script basically follows the instructions to download an old version of Chromium: https://www.chromium.org/getting-involved/download-chromium
 # 1) It retrieves the current stable version number from https://www.chromium.org/developers/calendar (via the https://omahaproxy.appspot.com/all file), e.g. 359700 for Chromium 48.
 # 2) It checks the Travis cache for this specific version
@@ -9,7 +14,25 @@ set -e -x
 
 #Build version read from the OmahaProxy CSV Viewer at https://www.chromium.org/developers/calendar
 #Let's use the following version of Chromium, and inform about availability of newer build from https://omahaproxy.appspot.com/all
-CHROMIUM_VERSION=359700
+#
+# CHROMIUM_VERSION <<< this variable is now set via env.sh
+
+PLATFORM="$(uname -s)"
+case "$PLATFORM" in
+  (Darwin)
+    ARCHITECTURE=Mac
+    DIST_FILE=chrome-mac.zip
+    ;;
+  (Linux)
+    ARCHITECTURE=Linux_x64
+    DIST_FILE=chrome-linux.zip
+    ;;
+  (*)
+    echo Unsupported platform $PLATFORM.  Exiting ... >&2
+    exit 3
+    ;;
+esac
+
 TMP=$(curl -s "https://omahaproxy.appspot.com/all") || true
 oldIFS="$IFS"
 IFS='
@@ -47,7 +70,7 @@ if [[ "$EXISTING_VERSION" != "$CHROMIUM_VERSION" ]]; then
   while [[ $STATUS == 404 && $NEXT -ge 0 ]]
   do
     echo Fetch Chromium version: ${NEXT}
-    STATUS=$(curl "https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/${NEXT}/chrome-linux.zip" -s -w %{http_code} --create-dirs -o $FILE) || true
+    STATUS=$(curl "https://storage.googleapis.com/chromium-browser-snapshots/${ARCHITECTURE}/${NEXT}/${DIST_FILE}" -s -w %{http_code} --create-dirs -o $FILE) || true
     NEXT=$[$NEXT-1]
   done
 

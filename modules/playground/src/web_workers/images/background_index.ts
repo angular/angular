@@ -1,7 +1,21 @@
-import {ImageDemo} from "./index_common";
-import {platform} from "angular2/core";
-import {WORKER_APP_PLATFORM, WORKER_APP_APPLICATION} from "angular2/platform/worker_app";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {NgModule} from '@angular/core';
+import {WorkerAppModule} from '@angular/platform-webworker';
+import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
+
+import {ImageDemo} from './index_common';
+
+@NgModule({imports: [WorkerAppModule], bootstrap: [ImageDemo], declarations: [ImageDemo]})
+class ExampleModule {
+}
 
 export function main() {
-  platform([WORKER_APP_PLATFORM]).application([WORKER_APP_APPLICATION]).bootstrap(ImageDemo)
+  platformWorkerAppDynamic().bootstrapModule(ExampleModule);
 }

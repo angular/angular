@@ -118,14 +118,16 @@ function ngOutletDirective($animate, $q: ng.IQService, $rootRouter) {
         newScope.$$router = this.controller.$$router;
         this.deferredActivation = $q.defer();
 
-        let clone = $transclude(newScope, clone => {
+        let clone = $transclude(newScope, clone => {});
+
+        let activateView = () => {
           $animate.enter(clone, null, this.currentElement || element);
           this.cleanupLastView();
-        });
+          this.currentElement = clone;
+          this.currentScope = newScope;
+        };
 
-        this.currentElement = clone;
-        this.currentScope = newScope;
-        return this.deferredActivation.promise;
+        return this.deferredActivation.promise.then(activateView, activateView);
       }
     }
 
@@ -207,13 +209,17 @@ function ngLinkDirective($rootRouter, $parse) {
       return;
     }
 
-    let instruction = null;
+    let navigationInstruction = null;
     let link = attrs.ngLink || '';
 
     function getLink(params) {
-      instruction = router.generate(params);
+      if (!params) {
+        return;
+      }
 
-      scope.$watch(function() { return router.isRouteActive(instruction); },
+      navigationInstruction = router.generate(params);
+
+      scope.$watch(function() { return router.isRouteActive(navigationInstruction); },
                    function(active) {
                      if (active) {
                        element.addClass('ng-link-active');
@@ -222,7 +228,8 @@ function ngLinkDirective($rootRouter, $parse) {
                      }
                    });
 
-      return './' + angular.stringifyInstruction(instruction);
+      const navigationHref = navigationInstruction.toLinkUrl();
+      return $rootRouter._location.prepareExternalUrl(navigationHref);
     }
 
     let routeParamsGetter = $parse(link);
@@ -236,11 +243,11 @@ function ngLinkDirective($rootRouter, $parse) {
     }
 
     element.on('click', event => {
-      if (event.which !== 1 || !instruction) {
+      if (event.which !== 1 || !navigationInstruction) {
         return;
       }
 
-      $rootRouter.navigateByInstruction(instruction);
+      $rootRouter.navigateByInstruction(navigationInstruction);
       event.preventDefault();
     });
   }

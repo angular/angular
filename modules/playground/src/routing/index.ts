@@ -1,9 +1,26 @@
-import {InboxApp} from './inbox-app';
-import {provide} from 'angular2/core';
-import {bootstrap} from 'angular2/bootstrap';
-import {ROUTER_PROVIDERS, HashLocationStrategy, LocationStrategy} from 'angular2/router';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {RouterModule} from '@angular/router';
+
+import {DbService, DraftsCmp, InboxApp, InboxCmp, ROUTER_CONFIG} from './app/inbox-app';
 
 export function main() {
-  bootstrap(InboxApp,
-            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
+  @NgModule({
+    providers: [DbService],
+    declarations: [InboxCmp, DraftsCmp, InboxApp],
+    imports: [RouterModule.forRoot(ROUTER_CONFIG, {useHash: true}), BrowserModule],
+    bootstrap: [InboxApp]
+  })
+  class RoutingExampleModule {
+  }
+  platformBrowserDynamic().bootstrapModule(RoutingExampleModule);
 }

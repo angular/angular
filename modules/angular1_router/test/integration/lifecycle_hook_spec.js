@@ -3,6 +3,7 @@
 describe('Navigation lifecycle', function () {
   var elt,
     $compile,
+    $q,
     $rootScope,
     $rootRouter,
     $compileProvider;
@@ -14,8 +15,9 @@ describe('Navigation lifecycle', function () {
       $compileProvider = _$compileProvider_;
     });
 
-    inject(function (_$compile_, _$rootScope_, _$rootRouter_) {
+    inject(function (_$compile_, _$q_, _$rootScope_, _$rootRouter_) {
       $compile = _$compile_;
+      $q = _$q_;
       $rootScope = _$rootScope_;
       $rootRouter = _$rootRouter_;
     });
@@ -87,6 +89,46 @@ describe('Navigation lifecycle', function () {
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith(instructionFor('activateCmp'),
                                      instructionFor('oneCmp'));
+  });
+
+  describe('activate hook with promise', () => {
+    var activateDeferred;
+    beforeEach(() => {
+      activateDeferred = $q.defer();
+      var activate = registerComponent('activateCmp', {
+        template: 'hi',
+        $routerOnActivate: function() {
+          return activateDeferred.promise;
+        }
+      });
+
+      $rootRouter.config([
+        { path: '/user/:name', component: 'oneCmp' },
+        { path: '/post', component: 'activateCmp' },
+      ]);
+      compile('<div ng-outlet></div>');
+
+      $rootRouter.navigateByUrl('/user/fabian');
+      $rootScope.$digest();
+      $rootRouter.navigateByUrl('/post');
+      $rootScope.$digest();
+    });
+
+    it('should update the view once the promise gets resolved', () => {
+      expect(elt.text()).toBe('one');
+
+      activateDeferred.resolve();
+      $rootScope.$digest();
+      expect(elt.text()).toBe('hi');
+    });
+
+    it('should update the view once the promise gets rejected', () => {
+      expect(elt.text()).toBe('one');
+
+      activateDeferred.reject();
+      $rootScope.$digest();
+      expect(elt.text()).toBe('hi');
+    });
   });
 
   it('should inject $scope into the controller constructor', function () {

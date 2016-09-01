@@ -1,6 +1,14 @@
-import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-describe("WebWorker Router", () => {
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+
+describe('WebWorker Router', () => {
   beforeEach(() => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
@@ -12,43 +20,43 @@ describe("WebWorker Router", () => {
     browser.ignoreSynchronization = false;
   });
 
-  let contentSelector = "app main h1";
-  let navSelector = "app nav ul";
-  var baseUrl = "playground/src/web_workers/router/index.html";
+  let contentSelector = 'app main h1';
+  let navSelector = 'app nav ul';
+  var baseUrl = 'all/playground/src/web_workers/router/index.html';
 
-  it("should route on click", () => {
+  it('should route on click', () => {
     browser.get(baseUrl);
 
     waitForElement(contentSelector);
     var content = element(by.css(contentSelector));
-    expect(content.getText()).toEqual("Start");
+    expect(content.getText()).toEqual('Start');
 
-    let aboutBtn = element(by.css(navSelector + " .about"));
+    let aboutBtn = element(by.css(navSelector + ' .about'));
     aboutBtn.click();
     waitForUrl(/\/about/);
     waitForElement(contentSelector);
-    waitForElementText(contentSelector, "About");
+    waitForElementText(contentSelector, 'About');
     content = element(by.css(contentSelector));
-    expect(content.getText()).toEqual("About");
+    expect(content.getText()).toEqual('About');
     expect(browser.getCurrentUrl()).toMatch(/\/about/);
 
-    let contactBtn = element(by.css(navSelector + " .contact"));
+    let contactBtn = element(by.css(navSelector + ' .contact'));
     contactBtn.click();
     waitForUrl(/\/contact/);
     waitForElement(contentSelector);
-    waitForElementText(contentSelector, "Contact");
+    waitForElementText(contentSelector, 'Contact');
     content = element(by.css(contentSelector));
-    expect(content.getText()).toEqual("Contact");
+    expect(content.getText()).toEqual('Contact');
     expect(browser.getCurrentUrl()).toMatch(/\/contact/);
   });
 
-  it("should load the correct route from the URL", () => {
-    browser.get(baseUrl + "#/about");
+  it('should load the correct route from the URL', () => {
+    browser.get(baseUrl + '#/about');
 
     waitForElement(contentSelector);
-    waitForElementText(contentSelector, "About");
+    waitForElementText(contentSelector, 'About');
     let content = element(by.css(contentSelector));
-    expect(content.getText()).toEqual("About");
+    expect(content.getText()).toEqual('About');
   });
 
   function waitForElement(selector: string): void {
@@ -64,7 +72,7 @@ describe("WebWorker Router", () => {
     }, 5000);
   }
 
-  function waitForUrl(regex): void {
+  function waitForUrl(regex: any /** TODO #9100 */): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
       browser.getCurrentUrl().then(

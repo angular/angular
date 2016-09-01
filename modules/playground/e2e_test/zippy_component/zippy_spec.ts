@@ -1,11 +1,19 @@
-import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('Zippy Component', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
-    var URL = 'playground/src/zippy_component/index.html';
+    var URL = 'all/playground/src/zippy_component/index.html';
 
     beforeEach(function() { browser.get(URL); });
 

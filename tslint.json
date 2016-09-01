@@ -1,0 +1,10 @@
+{
+    "rules": {
+      "requireInternalWithUnderscore": true,
+      "duplicateModuleImport": true,
+      "enforce-copyright-header": true,
+      "no-duplicate-variable": true,
+      "semicolon": true,
+      "variable-name": [true, "ban-keywords"]
+    }
+}

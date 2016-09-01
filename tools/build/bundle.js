@@ -13,6 +13,7 @@ module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConf
   var Builder = require('systemjs-builder');
   var builder = new Builder();
   builder.config(buildConfig);
+  builder.loader.baseURL = 'file:' + process.cwd() + '/';
   if (sfx) {
     return builder.buildSFX(moduleName, outputFile, outputConfig);
   } else {
