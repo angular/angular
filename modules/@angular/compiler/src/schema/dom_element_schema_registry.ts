@@ -144,6 +144,7 @@ const SCHEMA: string[] = ([
   'th,td^abbr|abbr,align,axis,bgColor,ch,chOff,#colSpan,headers,height,!noWrap,#rowSpan,scope,vAlign,width',
   'col,colgroup^abbr|align,ch,chOff,#span,vAlign,width',
   'table^abbr|align,bgColor,border,%caption,cellPadding,cellSpacing,frame,rules,summary,%tFoot,%tHead,width',
+  'time^abbr|datetime',
   'tr^abbr|align,bgColor,ch,chOff,vAlign',
   'tfoot,thead,tbody^abbr|align,ch,chOff,vAlign',
   'template^abbr|',
