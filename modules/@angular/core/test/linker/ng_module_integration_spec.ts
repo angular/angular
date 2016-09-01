@@ -269,7 +269,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         createModule(SomeModule);
         expect(() => createModule(SomeOtherModule)).toThrowError(/Duplicate module registered/);
       });
-    })
+    });
 
     describe('entryComponents', () => {
       it('should create ComponentFactories in root modules', () => {

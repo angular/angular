@@ -37,7 +37,8 @@ export function clearModulesForTest() {
 
 /**
  * Returns the NgModuleFactory with the given id, if it exists and has been loaded.
- * Modules that do not specify an `id` cannot be retrieved. Throws if the module cannot be found.
+ * Factories for modules that do not specify an `id` cannot be retrieved. Throws if the module
+ * cannot be found.
  * @experimental
  */
 export function getModuleFactory(id: string): NgModuleFactory<any> {

@@ -540,6 +540,9 @@ export interface ForwardRefFn {
 export declare function getDebugNode(nativeNode: any): DebugNode;
 
 /** @experimental */
+export declare function getModuleFactory(id: string): NgModuleFactory<any>;
+
+/** @experimental */
 export declare function getPlatform(): PlatformRef;
 
 /** @experimental */
@@ -749,6 +752,7 @@ export declare class NgModuleMetadata extends InjectableMetadata implements NgMo
     declarations: Array<Type<any> | any[]>;
     entryComponents: Array<Type<any> | any[]>;
     exports: Array<Type<any> | any[]>;
+    id: string;
     imports: Array<Type<any> | ModuleWithProviders | any[]>;
     providers: Provider[];
     schemas: Array<SchemaMetadata | any[]>;
@@ -767,6 +771,7 @@ export interface NgModuleMetadataType {
     declarations?: Array<Type<any> | any[]>;
     entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
+    id?: string;
     imports?: Array<Type<any> | ModuleWithProviders | any[]>;
     providers?: Provider[];
     schemas?: Array<SchemaMetadata | any[]>;
