@@ -247,12 +247,12 @@ function declareTests({useJit}: {useJit: boolean}) {
          });
     });
 
-    describe('loadToken', () => {
-      const token = 'myLoadToken';
-      @NgModule({ loadToken: token })
+    describe('id', () => {
+      const token = 'myid';
+      @NgModule({ id: token })
       class SomeModule {
       }
-      @NgModule({ loadToken: token })
+      @NgModule({ id: token })
       class SomeOtherModule {
       }
 

@@ -329,7 +329,7 @@ export class CompileMetadataResolver {
         importedModules: importedModules,
         exportedModules: exportedModules,
         transitiveModule: transitiveModule,
-        loadToken: meta.loadToken,
+        id: meta.id,
       });
       transitiveModule.modules.push(compileMeta);
       this._verifyModule(compileMeta);

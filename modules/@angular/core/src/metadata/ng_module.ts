@@ -59,7 +59,7 @@ export interface NgModuleMetadataType {
   entryComponents?: Array<Type<any>|any[]>;
   bootstrap?: Array<Type<any>|any[]>;
   schemas?: Array<SchemaMetadata|any[]>;
-  loadToken?: string;
+  id?: string;
 }
 
 /**
@@ -179,10 +179,10 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
   schemas: Array<SchemaMetadata|any[]>;
 
   /**
-   * An opaque token identifying this module, e.g. a name or a path. Used to identify which
-   * module was loaded through `getNgModule`.
+   * An opaque ID for this module, e.g. a name or a path. Used to identify modules in `getNgModule`.
+   * If left `undefined`, the `NgModule` will not be registered with `getNgModule`.
    */
-  loadToken: string|undefined;
+  id: string|undefined;
 
   constructor(options: NgModuleMetadataType = {}) {
     // We cannot use destructuring of the constructor argument because `exports` is a
@@ -195,6 +195,6 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
     this.entryComponents = options.entryComponents;
     this.bootstrap = options.bootstrap;
     this.schemas = options.schemas;
-    this.loadToken = options.loadToken;
+    this.id = options.id;
   }
 }
