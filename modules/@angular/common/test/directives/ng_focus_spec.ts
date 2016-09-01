@@ -9,7 +9,6 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Focus Directive', () => {
@@ -21,11 +20,10 @@ export function main() {
          var template = '<div class="test-input" [ngFocus]="inFocus" ></div>';
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
-
+         fixture.autoDetectChanges();
          let el = fixture.nativeElement.querySelector('.test-input');
          let spy = spyOn(el, 'focus').and.callThrough();
          fixture.componentInstance.inFocus = true;
-         fixture.detectChanges();
          fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
 
 
