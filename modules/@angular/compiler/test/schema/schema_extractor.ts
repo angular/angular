@@ -8,7 +8,7 @@
 
 const SVG_PREFIX = ':svg:';
 const HTMLELEMENT_NAMES =
-    'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
+    'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,time,u,var,wbr';
 const HTMLELEMENT_NAME = 'abbr';
 
 const _G: any = global;

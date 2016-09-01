@@ -218,6 +218,8 @@ const SCHEMA: string[] = ([
   ':svg:title^:svg:|',
   ':svg:use^:svg:graphics|',
   ':svg:view^:svg:|#zoomAndPan',
+  // TODO: should be auto-generated https://github.com/angular/angular/issues/11219
+  'time^abbr|datetime' 
 ]);
 
 const _ATTR_TO_PROP: {[name: string]: string} = {
