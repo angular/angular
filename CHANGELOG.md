@@ -103,6 +103,7 @@
 * **compiler:** Added "strictMetadataEmit" option to ngc ([#10951](https://github.com/angular/angular/issues/10951)) ([39a2c39](https://github.com/angular/angular/commit/39a2c39))
 * **compiler-cli:** allow ngc implementations to provide XHR ([#10708](https://github.com/angular/angular/issues/10708)) ([6e842fc](https://github.com/angular/angular/commit/6e842fc))
 * **compiler-cli:** support pathmapping using a separate reflector ([#10985](https://github.com/angular/angular/issues/10985)) ([e0fbca9](https://github.com/angular/angular/commit/e0fbca9))
+* **core:** support animation trigger template callbacks ([45e8e73](https://github.com/angular/angular/commit/45e8e73670b96387fc109921fad299742d3f7cbf))
 * **core:** make sure animation callback reports the totalTime ([#11022](https://github.com/angular/angular/issues/11022)) ([4f8f8cf](https://github.com/angular/angular/commit/4f8f8cf))
 * **core:** add NO_ERRORS_SCHEMA that allows any properties to be set on any element ([#10956](https://github.com/angular/angular/issues/10956)) ([c631cfc](https://github.com/angular/angular/commit/c631cfc))
 * **core:** make ngprobe tokens pluggable ([f48142e](https://github.com/angular/angular/commit/f48142e))
