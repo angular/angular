@@ -137,7 +137,7 @@
 
 ### BREAKING CHANGES
 
-* npm packages: code in ESM format is now published at the default location in the npm package with `package.json`'s `main` entry pointing to an UMD bundle (primarily for node, and webpack 1 users).
+* npm packages: code in ESM (ES6 Modules) format is now published at the default location in the npm package with `package.json`'s `main` entry pointing to an UMD bundle (primarily for node, and webpack 1 users).
 
   If you are using SystemJS to load Angular, you should adjust your SystemJS configuration to point to the UMD bundles (present in the npm package).
 
@@ -145,7 +145,7 @@
 
 * testing config: due to zone.js peer-dependency upgrade, the order in which various zone specs are loaded has changed.
 
-  Please see [this example Karma config](https://github.com/angular/quickstart/blob/3b7452cc444c49c139ea39523ced0468c2362c16/karma.conf.js#L31-L38).
+  Please see this [example Karma config](https://github.com/angular/quickstart/blob/3b7452cc444c49c139ea39523ced0468c2362c16/karma.conf.js#L31-L38).
 
 * core: `Type` is now `Type<T>` which means that in most cases you have to
 use `Type<any>` in place of `Type`.
