@@ -34,6 +34,13 @@ describe('tree benchmark perf', () => {
     }).then(done, done.fail);
   });
 
+  it('should run for the baseline dom', (done) => {
+    runTreeBenchmark({
+      id: 'deepTree.baselineDom',
+      url: 'all/benchmarks/src/tree/baseline_dom/index.html',
+      ignoreBrowserSynchronization: true,
+    }).then(done, done.fail);
+  });
   it('should run for polymer binary tree', (done) => {
     runTreeBenchmark({
       id: 'deepTree.polymer',
