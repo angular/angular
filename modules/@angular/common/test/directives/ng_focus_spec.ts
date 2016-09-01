@@ -7,9 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {NgModule} from '../../../../../tools/public_api_guard/core/index';
 
 export function main() {
   describe('Focus Directive', () => {
