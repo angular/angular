@@ -1,74 +1,61 @@
-import {__platform_browser_private__} from '@angular/platform-browser';
 import {TreeNode} from '../util';
 
-// Note: We are using the DomAdapter also in the Baseline
-// so that Ng2 can actually reach the baseline. Once Ng2 is able to generate
-// code that does not use the DomAdapter any more, we should remove this.
-__platform_browser_private__.initDomAdapter();
-const getDOM = __platform_browser_private__.getDOM;
+export class TreeComponent {
+  private _renderNodes: any[];
 
-const BASELINE_TREE_TEMPLATE = document.createElement('template');
-BASELINE_TREE_TEMPLATE.innerHTML =
-    '<span>_<template class="ng-provider"></template><template class="ng-provider"></template></span>';
-const BASELINE_IF_TEMPLATE = document.createElement('template');
-BASELINE_IF_TEMPLATE.innerHTML = '<span template="if"><tree></tree></span>';
+  constructor(private _rootEl: any) {}
 
-export class BaseLineTreeComponent {
-  value: BaseLineInterpolation;
-  left: BaseLineIf;
-  right: BaseLineIf;
-  constructor(public element: HTMLElement) {
-    var clone = getDOM().clone(BASELINE_TREE_TEMPLATE.content.firstChild);
-    getDOM().appendChild(element, clone);
-
-    var child = clone.firstChild;
-    this.value = new BaseLineInterpolation(child);
-    child = getDOM().nextSibling(child);
-    this.left = new BaseLineIf(child);
-    child = getDOM().nextSibling(child);
-    this.right = new BaseLineIf(child);
-  }
-  update(value: TreeNode) {
-    this.value.update(value.value);
-    this.left.update(value.left);
-    this.right.update(value.right);
-  }
-}
-
-export class BaseLineInterpolation {
-  value: string;
-  constructor(public textNode: Node) { this.value = null; }
-  update(value: string) {
-    if (this.value !== value) {
-      this.value = value;
-      getDOM().setText(this.textNode, value + ' ');
+  set data(data: TreeNode) {
+    if (!data.left) {
+      this._destroy();
+    } else if (this._renderNodes) {
+      this._update(data, 0);
+    } else {
+      this._create(this._rootEl, data, 0);
     }
   }
-}
 
-export class BaseLineIf {
-  condition: boolean;
-  component: BaseLineTreeComponent;
-  constructor(public anchor: Node) {
-    this.condition = false;
-    this.component = null;
+  private _create(parentNode: any, dataNode: TreeNode, index: number) {
+    if (!this._renderNodes) {
+      this._renderNodes = new Array(dataNode.transitiveChildCount);
+    }
+
+    const span = document.createElement('span');
+    if (dataNode.depth % 2 === 0) {
+      span.style.backgroundColor = 'grey';
+    }
+    parentNode.appendChild(span);
+    this._renderNodes[index] = span;
+    this._updateNode(span, dataNode);
+
+    if (dataNode.left) {
+      const leftTree = document.createElement('tree');
+      parentNode.appendChild(leftTree);
+      this._create(leftTree, dataNode.left, index + 1);
+    }
+    if (dataNode.right) {
+      const rightTree = document.createElement('tree');
+      parentNode.appendChild(rightTree);
+      this._create(rightTree, dataNode.right, index + dataNode.left.transitiveChildCount + 1);
+    }
   }
-  update(value: TreeNode) {
-    var newCondition = !!value;
-    if (this.condition !== newCondition) {
-      this.condition = newCondition;
-      if (this.component) {
-        getDOM().remove(this.component.element);
-        this.component = null;
-      }
-      if (this.condition) {
-        var element = getDOM().firstChild((<any>getDOM().clone(BASELINE_IF_TEMPLATE)).content);
-        this.anchor.parentNode.insertBefore(element, getDOM().nextSibling(this.anchor));
-        this.component = new BaseLineTreeComponent(<HTMLElement>getDOM().firstChild(element));
-      }
+
+  private _updateNode(renderNode: any, dataNode: TreeNode) {
+    renderNode.textContent = ` ${dataNode.value} `;
+  }
+
+  private _update(dataNode: TreeNode, index: number) {
+    this._updateNode(this._renderNodes[index], dataNode);
+    if (dataNode.left) {
+      this._update(dataNode.left, index + 1);
     }
-    if (this.component) {
-      this.component.update(value);
+    if (dataNode.right) {
+      this._update(dataNode.right, index + dataNode.left.transitiveChildCount + 1);
     }
+  }
+
+  private _destroy() {
+    while (this._rootEl.lastChild) this._rootEl.lastChild.remove();
+    this._renderNodes = null;
   }
 }
