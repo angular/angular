@@ -12,6 +12,7 @@
  * Common directives shipped with Angular.
  */
 export {NgClass} from './directives/ng_class';
+export {NgComponentOutlet} from './directives/ng_component_outlet';
 export {NgFor} from './directives/ng_for';
 export {NgIf} from './directives/ng_if';
 export {NgPlural, NgPluralCase} from './directives/ng_plural';
