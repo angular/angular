@@ -56,6 +56,13 @@ export function main() {
         expect(c.status).toBe('DISABLED');
       });
 
+      it('should honor boxed value with disabled control when validating', () => {
+        const c = new FormControl({value: '', disabled: true}, Validators.required);
+        expect(c.disabled).toBe(true);
+        expect(c.valid).toBe(false);
+        expect(c.status).toBe('DISABLED');
+      });
+
       it('should not treat objects as boxed values if they have more than two props', () => {
         const c = new FormControl({value: '', disabled: true, test: 'test'}, null, null);
         expect(c.value).toEqual({value: '', disabled: true, test: 'test'});
