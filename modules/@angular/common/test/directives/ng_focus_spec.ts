@@ -47,12 +47,11 @@ export function main() {
   });
 }
 
-
-@NgModule({imports: [CommonModule], declarations: [TestComponent], exports: [TestComponent]})
-export class TestModule {
-}
-
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   inFocus: boolean;
+}
+
+@NgModule({imports: [CommonModule], declarations: [TestComponent], exports: [TestComponent]})
+export class TestModule {
 }
