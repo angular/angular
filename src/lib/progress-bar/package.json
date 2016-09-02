@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/progress-bar",
-  "version": "2.0.0-alpha.8",
+  "version": "2.0.0-alpha.8-1",
   "description": "Angular 2 Material progress-bar",
   "main": "./progress-bar.umd.js",
   "module": "./index.js",
@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.8"
+    "@angular2-material/core": "2.0.0-alpha.8-1"
   }
 }
