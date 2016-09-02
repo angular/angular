@@ -37,7 +37,7 @@ export interface ClassDefinition {
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
-  [x: string]: Type<any>|Function|any[];
+  [x: string]: Type<any>|Function|any[]|undefined;
 }
 
 /**
