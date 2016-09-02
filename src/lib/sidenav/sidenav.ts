@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     AfterContentInit,
     Component,
     ContentChildren,
@@ -389,4 +390,11 @@ export class MdSidenavLayout implements AfterContentInit {
   exports: [MdSidenavLayout, MdSidenav],
   declarations: [MdSidenavLayout, MdSidenav],
 })
-export class MdSidenavModule { }
+export class MdSidenavModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdSidenavModule,
+      providers: []
+    };
+  }
+}

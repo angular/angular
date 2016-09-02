@@ -1,5 +1,6 @@
 import {
   NgModule,
+  ModuleWithProviders,
   Directive,
   ElementRef,
   HostBinding,
@@ -173,4 +174,11 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   exports: [MdRipple],
   declarations: [MdRipple],
 })
-export class MdRippleModule { }
+export class MdRippleModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdRippleModule,
+      providers: []
+    };
+  }
+}

@@ -1,5 +1,6 @@
 import {
   NgModule,
+  ModuleWithProviders,
   Component,
   ViewEncapsulation,
   AfterContentChecked,
@@ -156,4 +157,11 @@ export class MdGridList implements OnInit, AfterContentChecked {
   exports: [MdGridList, MdGridTile, MdGridTileText, MdLineModule],
   declarations: [MdGridList, MdGridTile, MdGridTileText],
 })
-export class MdGridListModule { }
+export class MdGridListModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdGridListModule,
+      providers: []
+    };
+  }
+}

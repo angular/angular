@@ -8,7 +8,7 @@ describe('MdProgressCircular', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdProgressCircleModule],
+      imports: [MdProgressCircleModule.forRoot()],
       declarations: [
         BasicProgressSpinner,
         IndeterminateProgressSpinner,

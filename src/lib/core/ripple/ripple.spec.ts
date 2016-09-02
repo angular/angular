@@ -63,7 +63,7 @@ describe('MdRipple', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MdRippleModule],
+      imports: [MdRippleModule.forRoot()],
       declarations: [BasicRippleContainer, RippleContainerWithInputBindings],
     });
   });

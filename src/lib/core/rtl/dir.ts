@@ -1,4 +1,12 @@
-import {NgModule, Directive, HostBinding, Output, Input, EventEmitter} from '@angular/core';
+import {
+    NgModule,
+    ModuleWithProviders,
+    Directive,
+    HostBinding,
+    Output,
+    Input,
+    EventEmitter
+} from '@angular/core';
 
 export type LayoutDirection = 'ltr' | 'rtl';
 
@@ -39,4 +47,11 @@ export class Dir {
   exports: [Dir],
   declarations: [Dir]
 })
-export class RtlModule { }
+export class RtlModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: RtlModule,
+      providers: []
+    };
+  }
+}

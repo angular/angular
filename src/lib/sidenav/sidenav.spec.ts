@@ -18,7 +18,7 @@ describe('MdSidenav', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule],
+      imports: [MdSidenavModule.forRoot()],
       declarations: [
         BasicTestApp,
         SidenavLayoutTwoSidenavTestApp,

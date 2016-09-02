@@ -25,7 +25,7 @@ describe('Portals', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [PortalModule, PortalTestModule],
+      imports: [PortalModule.forRoot(), PortalTestModule],
     });
 
     TestBed.compileComponents();

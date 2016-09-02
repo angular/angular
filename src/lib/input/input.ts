@@ -15,6 +15,7 @@ import {
   EventEmitter,
   Output,
   NgModule,
+  ModuleWithProviders,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -312,4 +313,11 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   imports: [CommonModule, FormsModule],
   exports: [MdPlaceholder, MdInput, MdHint],
 })
-export class MdInputModule { }
+export class MdInputModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdInputModule,
+      providers: []
+    };
+  }
+}

@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     ComponentRef,
     Directive,
     TemplateRef,
@@ -107,4 +108,11 @@ export class PortalHostDirective extends BasePortalHost {
   exports: [TemplatePortalDirective, PortalHostDirective],
   declarations: [TemplatePortalDirective, PortalHostDirective],
 })
-export class PortalModule { }
+export class PortalModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: PortalModule,
+      providers: []
+    };
+  }
+}

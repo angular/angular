@@ -12,7 +12,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule, ReactiveFormsModule],
+      imports: [MdSliderModule.forRoot(), ReactiveFormsModule],
       declarations: [
         StandardSlider,
         DisabledSlider,

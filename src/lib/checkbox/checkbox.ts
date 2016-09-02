@@ -9,6 +9,7 @@ import {
     ViewEncapsulation,
     forwardRef,
     NgModule,
+    ModuleWithProviders,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
@@ -309,4 +310,11 @@ export class MdCheckbox implements ControlValueAccessor {
   exports: [MdCheckbox],
   declarations: [MdCheckbox],
 })
-export class MdCheckboxModule { }
+export class MdCheckboxModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdCheckboxModule,
+      providers: []
+    };
+  }
+}

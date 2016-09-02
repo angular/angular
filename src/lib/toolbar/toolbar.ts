@@ -1,5 +1,6 @@
 import {
   NgModule,
+  ModuleWithProviders,
   Component,
   ChangeDetectionStrategy,
   Input,
@@ -56,4 +57,11 @@ export class MdToolbar {
   exports: [MdToolbar, MdToolbarRow],
   declarations: [MdToolbar, MdToolbarRow],
 })
-export class MdToolbarModule { }
+export class MdToolbarModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdToolbarModule,
+      providers: []
+    };
+  }
+}

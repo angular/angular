@@ -11,7 +11,7 @@ import {MdInput, MdInputModule} from './input';
 describe('MdInput', function () {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdInputModule, FormsModule],
+      imports: [MdInputModule.forRoot(), FormsModule],
       declarations: [
         MdInputNumberTypeConservedTestComponent,
         MdInputPlaceholderRequiredTestComponent,

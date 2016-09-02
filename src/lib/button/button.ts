@@ -7,6 +7,7 @@ import {
   ElementRef,
   Renderer,
   NgModule,
+  ModuleWithProviders,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {BooleanFieldValue} from '@angular2-material/core';
@@ -161,4 +162,11 @@ export class MdAnchor extends MdButton {
   exports: [MdButton, MdAnchor],
   declarations: [MdButton, MdAnchor],
 })
-export class MdButtonModule { }
+export class MdButtonModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdButtonModule,
+      providers: []
+    };
+  }
+}

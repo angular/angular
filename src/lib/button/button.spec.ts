@@ -11,7 +11,7 @@ describe('MdButton', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdButtonModule],
+      imports: [MdButtonModule.forRoot()],
       declarations: [TestApp],
     });
 

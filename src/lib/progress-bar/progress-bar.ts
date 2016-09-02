@@ -1,5 +1,6 @@
 import {
     NgModule,
+    ModuleWithProviders,
     Component,
     ChangeDetectionStrategy,
     HostBinding,
@@ -92,4 +93,11 @@ function clamp(v: number, min = 0, max = 100) {
   exports: [MdProgressBar],
   declarations: [MdProgressBar],
 })
-export class MdProgressBarModule { }
+export class MdProgressBarModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdProgressBarModule,
+      providers: []
+    };
+  }
+}

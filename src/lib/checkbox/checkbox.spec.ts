@@ -21,7 +21,7 @@ describe('MdCheckbox', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdCheckboxModule, FormsModule],
+      imports: [MdCheckboxModule.forRoot(), FormsModule],
       declarations: [
         SingleCheckbox,
         CheckboxWithFormDirectives,

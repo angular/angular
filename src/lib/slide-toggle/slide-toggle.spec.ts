@@ -8,7 +8,7 @@ describe('MdSlideToggle', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSlideToggleModule, FormsModule],
+      imports: [MdSlideToggleModule.forRoot(), FormsModule],
       declarations: [SlideToggleTestApp],
     });
 

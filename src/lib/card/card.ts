@@ -1,5 +1,6 @@
 import {
   NgModule,
+  ModuleWithProviders,
   Component,
   ViewEncapsulation,
   ChangeDetectionStrategy,
@@ -124,4 +125,11 @@ export class MdCardTitleGroup {}
     MdCardActions
   ],
 })
-export class MdCardModule { }
+export class MdCardModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdCardModule,
+      providers: []
+    };
+  }
+}

@@ -9,7 +9,7 @@ describe('MdTabGroup', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule],
+      imports: [MdTabsModule.forRoot()],
       declarations: [
         SimpleTabsTestApp,
         AsyncTabsTestApp,

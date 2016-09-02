@@ -9,6 +9,7 @@ import {
     Renderer,
     AfterContentInit,
     NgModule,
+    ModuleWithProviders,
 } from '@angular/core';
 import {MdLine, MdLineSetter, MdLineModule} from '@angular2-material/core';
 
@@ -76,4 +77,11 @@ export class MdListItem implements AfterContentInit {
   exports: [MdList, MdListItem, MdListDivider, MdListAvatar, MdLineModule],
   declarations: [MdList, MdListItem, MdListDivider, MdListAvatar],
 })
-export class MdListModule { }
+export class MdListModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdListModule,
+      providers: []
+    };
+  }
+}

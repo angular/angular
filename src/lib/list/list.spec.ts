@@ -8,7 +8,7 @@ describe('MdList', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdListModule],
+      imports: [MdListModule.forRoot()],
       declarations: [
         ListWithOneAnchorItem,
         ListWithOneItem,
