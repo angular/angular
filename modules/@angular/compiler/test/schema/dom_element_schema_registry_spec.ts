@@ -31,6 +31,14 @@ export function main() {
       expect(registry.hasElement('abc', [])).toBeFalsy();
     });
 
+    // https://github.com/angular/angular/issues/11219
+    it('should detect elements missing from chrome', () => {
+      expect(registry.hasElement('data', [])).toBeTruthy();
+      expect(registry.hasElement('menuitem', [])).toBeTruthy();
+      expect(registry.hasElement('summary', [])).toBeTruthy();
+      expect(registry.hasElement('time', [])).toBeTruthy();
+    });
+
     it('should detect properties on regular elements', () => {
       expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
@@ -44,6 +52,16 @@ export function main() {
       expect(registry.hasProperty('textarea', 'disabled', [])).toBeTruthy();
       expect(registry.hasProperty('input', 'disabled', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'unknown', [])).toBeFalsy();
+    });
+
+    // https://github.com/angular/angular/issues/11219
+    it('should detect properties on elements missing from Chrome', () => {
+      expect(registry.hasProperty('data', 'value', [])).toBeTruthy();
+
+      expect(registry.hasProperty('menuitem', 'type', [])).toBeTruthy();
+      expect(registry.hasProperty('menuitem', 'default', [])).toBeTruthy();
+
+      expect(registry.hasProperty('time', 'dateTime', [])).toBeTruthy();
     });
 
     it('should detect different kinds of types', () => {
