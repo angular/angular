@@ -15,11 +15,10 @@ export function main() {
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
 
     it('Should set focus when the directive get truthy boolean', async(() => {
-         var template = '<div class="test-input" [ngFocus]="inFocus" ></div>';
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
          let fixture = TestBed.createComponent(TestComponent);
          fixture.autoDetectChanges();
-         let el = fixture.nativeElement.querySelector('.test-input');
+         let el = fixture.nativeElement.querySelector('[ngFocus]');
          let spy = spyOn(el, 'focus').and.callThrough();
          fixture.componentInstance.inFocus = true;
          fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
@@ -27,27 +26,12 @@ export function main() {
 
        }));
 
-    it('Should get out of focus when the directive get falsey boolean', async(() => {
-         var template = '<div><input class="test-input" [ngFocus]="inFocus" ></div>';
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-
-         let el = fixture.nativeElement.querySelector('.test-input');
-         let spy = spyOn(el, 'blur').and.callThrough();
-         fixture.componentInstance.inFocus = true;
-         fixture.detectChanges();
-         fixture.componentInstance.inFocus = false;
-         fixture.detectChanges();
-         fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
-
-
-       }));
 
 
   });
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({selector: 'test-cmp', template: '<div [ngFocus]="inFocus" ></div>'})
 class TestComponent {
   inFocus: boolean;
 }
