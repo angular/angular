@@ -74,6 +74,7 @@
     "protractor": "^3.3.0",
     "protractor-accessibility-plugin": "0.1.1",
     "resolve-bin": "^0.4.0",
+    "rollup": "^0.34.13",
     "run-sequence": "^1.2.2",
     "sass": "^0.5.0",
     "strip-ansi": "^3.0.0",

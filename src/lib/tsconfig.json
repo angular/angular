@@ -5,7 +5,7 @@
     "experimentalDecorators": true,
     "lib": ["es6", "es2015", "dom"],
     "mapRoot": "",
-    "module": "commonjs",
+    "module": "umd",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
@@ -25,11 +25,14 @@
       "../../node_modules/@types"
     ],
     "types": [
-      "jasmine"
     ]
   },
+  "exclude": [
+    "**/*.spec.*",
+    "system-config-spec"
+  ],
   "angularCompilerOptions": {
-    "genDir": "../dist",
+    "genDir": "../../dist",
     "skipTemplateCodegen": true,
     "debug": true
   }

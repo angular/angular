@@ -10,7 +10,7 @@ import {
     AfterContentInit,
     NgModule,
 } from '@angular/core';
-import {MdLine, MdLineSetter, MdLineModule} from '@angular2-material/core/line/line';
+import {MdLine, MdLineSetter, MdLineModule} from '@angular2-material/core';
 
 @Directive({
   selector: 'md-divider'

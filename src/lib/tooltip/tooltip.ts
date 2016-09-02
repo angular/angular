@@ -17,7 +17,7 @@ import {
   OverlayConnectionPosition,
   OriginConnectionPosition,
   OVERLAY_PROVIDERS,
-} from '@angular2-material/core/core';
+} from '@angular2-material/core';
 
 export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
 

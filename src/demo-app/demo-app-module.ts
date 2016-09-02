@@ -4,7 +4,7 @@ import {HttpModule} from '@angular/http';
 import {FormsModule} from '@angular/forms';
 import {DemoApp, Home} from './demo-app/demo-app';
 import {RouterModule} from '@angular/router';
-import {MaterialModule} from '@angular2-material/all/all';
+import {MaterialModule} from '@angular2-material/all';
 import {DEMO_APP_ROUTES} from './demo-app/routes';
 import {ProgressBarDemo} from './progress-bar/progress-bar-demo';
 import {JazzDialog, DialogDemo} from './dialog/dialog-demo';

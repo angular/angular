@@ -30,7 +30,8 @@ const components = [
 const packages: any = {
   '@angular2-material/core': {
     format: 'cjs',
-    defaultExtension: 'js'
+    defaultExtension: 'js',
+    main: 'index'
   },
   // Set the default extension for the root package, because otherwise the demo-app can't
   // be built within the production mode. Due to missing file extensions.
@@ -41,7 +42,8 @@ const packages: any = {
 components.forEach(name => {
   packages[`@angular2-material/${name}`] = {
     format: 'cjs',
-    defaultExtension: 'js'
+    defaultExtension: 'js',
+    main: 'index'
   };
 });
 

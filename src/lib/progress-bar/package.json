@@ -2,8 +2,9 @@
   "name": "@angular2-material/progress-bar",
   "version": "2.0.0-alpha.7-12",
   "description": "Angular 2 Material progress-bar",
-  "main": "./progress-bar.js",
-  "typings": "./progress-bar.d.ts",
+  "main": "./progress-bar.umd.js",
+  "module": "./index.js",
+  "typings": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"

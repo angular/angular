@@ -2,8 +2,9 @@
   "name": "@angular2-material/tabs",
   "version": "2.0.0-alpha.7-12",
   "description": "Angular 2 Material Tabs",
-  "main": "./tabs.js",
-  "typings": "./tabs.d.ts",
+  "main": "./tabs.umd.js",
+  "module": "./index.js",
+  "typings": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"

@@ -34,10 +34,8 @@ export {
   OverlayOrigin,
   OverlayModule,
 } from './overlay/overlay-directives';
-export {
-  OverlayConnectionPosition,
-  OriginConnectionPosition
-} from './overlay/position/connected-position';
+export * from './overlay/position/connected-position-strategy';
+export * from './overlay/position/connected-position';
 
 // Gestures
 export {MdGestureConfig} from './gestures/MdGestureConfig';
@@ -58,6 +56,21 @@ export {
 } from './coordination/unique-selection-dispatcher';
 
 export {MdLineModule, MdLine, MdLineSetter} from './line/line';
+
+// Style
+export {applyCssTransform} from './style/apply-transform';
+
+// Error
+export {MdError} from './errors/error';
+
+// Annotations.
+export {BooleanFieldValue} from './annotations/field-value';
+
+// Misc
+export {ComponentType} from './overlay/generic-component-type';
+
+// Keybindings
+export * from './keyboard/keycodes';
 
 
 @NgModule({

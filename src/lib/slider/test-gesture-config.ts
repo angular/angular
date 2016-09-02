@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MdGestureConfig} from '@angular2-material/core/gestures/MdGestureConfig';
+import {MdGestureConfig} from '@angular2-material/core';
 
 /**
  * An extension of MdGestureConfig that exposes the underlying HammerManager instances.

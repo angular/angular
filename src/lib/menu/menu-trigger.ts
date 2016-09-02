@@ -13,19 +13,15 @@ import {
 import {MdMenu} from './menu-directive';
 import {MdMenuMissingError} from './menu-errors';
 import {
+    ENTER,
     Overlay,
     OverlayState,
     OverlayRef,
-    TemplatePortal
-} from '@angular2-material/core/core';
-import {
-    ConnectedPositionStrategy
-} from '@angular2-material/core/overlay/position/connected-position-strategy';
-import {
-  HorizontalConnectionPos,
-  VerticalConnectionPos
-} from '@angular2-material/core/overlay/position/connected-position';
-import {ENTER} from '@angular2-material/core/keyboard/keycodes';
+    TemplatePortal,
+    ConnectedPositionStrategy,
+    HorizontalConnectionPos,
+    VerticalConnectionPos
+} from '@angular2-material/core';
 
 /**
  * This directive is intended to be used in conjunction with an md-menu tag.  It is

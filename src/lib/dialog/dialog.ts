@@ -7,8 +7,8 @@ import {
   OverlayState,
   ComponentPortal,
   OVERLAY_PROVIDERS,
-} from '@angular2-material/core/core';
-import {ComponentType} from '@angular2-material/core/overlay/generic-component-type';
+} from '@angular2-material/core';
+import {ComponentType} from '@angular2-material/core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';

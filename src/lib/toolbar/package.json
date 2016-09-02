@@ -2,8 +2,9 @@
   "name": "@angular2-material/toolbar",
   "version": "2.0.0-alpha.7-12",
   "description": "Angular 2 Material toolbar",
-  "main": "./toolbar.js",
-  "typings": "./toolbar.d.ts",
+  "main": "./toolbar.umd.js",
+  "module": "./index.js",
+  "typings": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/material2.git"

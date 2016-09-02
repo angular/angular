@@ -15,10 +15,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir} from '@angular2-material/core/rtl/dir';
-import {PromiseCompleter} from '@angular2-material/core/async/promise-completer';
-import {MdError} from '@angular2-material/core/errors/error';
-import { BooleanFieldValue } from '@angular2-material/core/annotations/field-value';
+import {Dir, MdError, BooleanFieldValue} from '@angular2-material/core';
 
 /** Exception thrown when two MdSidenav are matching the same side. */
 export class MdDuplicatedSidenavError extends MdError {
@@ -123,18 +120,18 @@ export class MdSidenav {
 
     if (isOpen) {
       if (this._openPromise == null) {
-        let completer = new PromiseCompleter<void>();
-        this._openPromise = completer.promise;
-        this._openPromiseReject = completer.reject;
-        this._openPromiseResolve = completer.resolve;
+        this._openPromise = new Promise((resolve, reject) => {
+          this._openPromiseResolve = resolve;
+          this._openPromiseReject = reject;
+        });
       }
       return this._openPromise;
     } else {
       if (this._closePromise == null) {
-        let completer = new PromiseCompleter<void>();
-        this._closePromise = completer.promise;
-        this._closePromiseReject = completer.reject;
-        this._closePromiseResolve = completer.resolve;
+        this._closePromise = new Promise((resolve, reject) => {
+          this._closePromiseResolve = resolve;
+          this._closePromiseReject = reject;
+        });
       }
       return this._closePromise;
     }

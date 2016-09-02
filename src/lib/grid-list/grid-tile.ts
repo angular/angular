@@ -8,7 +8,7 @@ import {
   QueryList,
   AfterContentInit
 } from '@angular/core';
-import { MdLine, MdLineSetter } from '@angular2-material/core/line/line';
+import { MdLine, MdLineSetter } from '@angular2-material/core';
 import {coerceToNumber} from './grid-list-measure';
 
 @Component({

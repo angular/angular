@@ -1,6 +1,6 @@
 /*global jasmine, __karma__, window*/
 Error.stackTraceLimit = Infinity;
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 
 __karma__.loaded = function () {
 };
@@ -28,7 +28,7 @@ System.config({
   baseURL: distPath
 });
 
-System.import(distPath + '@angular2-material/system-config.js').then(function() {
+System.import(distPath + '@angular2-material/system-config-spec.js').then(function() {
   // Load and configure the TestComponentBuilder.
   return Promise.all([
     System.import('@angular/core/testing'),

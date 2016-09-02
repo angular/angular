@@ -15,7 +15,7 @@ import {
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
-import {UP_ARROW, DOWN_ARROW, TAB} from '@angular2-material/core/keyboard/keycodes';
+import {UP_ARROW, DOWN_ARROW, TAB} from '@angular2-material/core';
 
 @Component({
   moduleId: module.id,

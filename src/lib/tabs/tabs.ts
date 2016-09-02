@@ -12,14 +12,14 @@ import {
     ContentChildren
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {PortalModule} from '@angular2-material/core/portal/portal-directives';
+import {PortalModule} from '@angular2-material/core';
 import {MdTabLabel} from './tab-label';
 import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '@angular2-material/core/keyboard/keycodes';
+import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '@angular2-material/core';
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;

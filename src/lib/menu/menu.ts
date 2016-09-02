@@ -1,6 +1,6 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {OverlayModule, OVERLAY_PROVIDERS} from '@angular2-material/core/core';
+import {OverlayModule, OVERLAY_PROVIDERS} from '@angular2-material/core';
 import {MdMenu} from './menu-directive';
 import {MdMenuItem} from './menu-item';
 import {MdMenuTrigger} from './menu-trigger';

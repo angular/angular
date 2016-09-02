@@ -30,7 +30,7 @@ const components = [
 const packages: any = {
   '@angular2-material/core': {
     format: 'cjs',
-    defaultExtension: 'js'
+    main: 'core.umd.js'
   },
   // Set the default extension for the root package, because otherwise the demo-app can't
   // be built within the production mode. Due to missing file extensions.
@@ -41,7 +41,7 @@ const packages: any = {
 components.forEach(name => {
   packages[`@angular2-material/${name}`] = {
     format: 'cjs',
-    defaultExtension: 'js'
+    main: `${name}.umd.js`
   };
 });
 
@@ -81,9 +81,9 @@ const barrels: string[] = [
   /** @cli-barrel */
 ];
 
-const _cliSystemConfig = angularPackages;
+const _cliSystemConfig: any = angularPackages;
 barrels.forEach((barrelName: string) => {
-  (<any> _cliSystemConfig)[barrelName] = { main: 'index' };
+  _cliSystemConfig[barrelName] = { main: 'index' };
 });
 
 /** Type declaration for ambient System. */
