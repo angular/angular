@@ -7,7 +7,7 @@
  */
 
 import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
-import {ComponentStillLoadingError} from '../core_private';
+
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -17,6 +17,7 @@ import {NgModuleCompiler} from './ng_module_compiler';
 import * as ir from './output/output_ast';
 import {interpretStatements} from './output/output_interpreter';
 import {jitStatements} from './output/output_jit';
+import {ComponentStillLoadingError} from './private_import_core';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';
@@ -81,7 +82,7 @@ export class RuntimeCompiler implements Compiler {
     moduleMeta.transitiveModule.modules.forEach((moduleMeta) => {
       moduleMeta.declaredDirectives.forEach((dirMeta) => {
         if (dirMeta.isComponent) {
-          const template = this._createCompiledHostTemplate(dirMeta.type.runtime);
+          const template = this._createCompiledHostTemplate(dirMeta.type.reference);
           templates.add(template);
           componentFactories.push(template.proxyComponentFactory);
         }
@@ -105,11 +106,11 @@ export class RuntimeCompiler implements Compiler {
       const moduleMeta = this._metadataResolver.getNgModuleMetadata(moduleType);
       // Always provide a bound Compiler
       const extraProviders = [this._metadataResolver.getProviderMetadata(new ProviderMeta(
-          Compiler, {useFactory: () => new ModuleBoundCompiler(this, moduleMeta.type.runtime)}))];
+          Compiler, {useFactory: () => new ModuleBoundCompiler(this, moduleMeta.type.reference)}))];
       var compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
       compileResult.dependencies.forEach((dep) => {
-        dep.placeholder.runtime =
-            this._assertComponentKnown(dep.comp.runtime, true).proxyComponentFactory;
+        dep.placeholder.reference =
+            this._assertComponentKnown(dep.comp.reference, true).proxyComponentFactory;
         dep.placeholder.name = `compFactory_${dep.comp.name}`;
       });
       if (!this._compilerConfig.useJit) {
@@ -120,7 +121,7 @@ export class RuntimeCompiler implements Compiler {
             `${moduleMeta.type.name}.ngfactory.js`, compileResult.statements,
             compileResult.ngModuleFactoryVar);
       }
-      this._compiledNgModuleCache.set(moduleMeta.type.runtime, ngModuleFactory);
+      this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
     }
     return ngModuleFactory;
   }
@@ -138,21 +139,21 @@ export class RuntimeCompiler implements Compiler {
         if (dirMeta.isComponent) {
           templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
           dirMeta.entryComponents.forEach((entryComponentType) => {
-            templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
+            templates.add(this._createCompiledHostTemplate(entryComponentType.reference));
           });
           // TODO: what about entryComponents of entryComponents? maybe skip here and just do the
           // below?
         }
       });
       localModuleMeta.entryComponents.forEach((entryComponentType) => {
-        templates.add(this._createCompiledHostTemplate(entryComponentType.runtime));
+        templates.add(this._createCompiledHostTemplate(entryComponentType.reference));
         // TODO: what about entryComponents of entryComponents?
       });
     });
     templates.forEach((template) => {
       if (template.loading) {
         if (isSync) {
-          throw new ComponentStillLoadingError(template.compType.runtime);
+          throw new ComponentStillLoadingError(template.compType.reference);
         } else {
           loadingPromises.push(template.loading);
         }
@@ -203,14 +204,14 @@ export class RuntimeCompiler implements Compiler {
 
   private _createCompiledTemplate(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata): CompiledTemplate {
-    var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.runtime);
+    var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.reference);
     if (isBlank(compiledTemplate)) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
           false, compMeta.selector, compMeta.type, ngModule.transitiveModule.directives,
           ngModule.transitiveModule.pipes, ngModule.schemas,
           this._templateNormalizer.normalizeDirective(compMeta));
-      this._compiledTemplateCache.set(compMeta.type.runtime, compiledTemplate);
+      this._compiledTemplateCache.set(compMeta.type.reference, compiledTemplate);
     }
     return compiledTemplate;
   }
@@ -262,13 +263,13 @@ export class RuntimeCompiler implements Compiler {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewFactoryDependency) {
         let vfd = <ViewFactoryDependency>dep;
-        depTemplate = this._assertComponentLoaded(vfd.comp.runtime, false);
-        vfd.placeholder.runtime = depTemplate.proxyViewFactory;
+        depTemplate = this._assertComponentLoaded(vfd.comp.reference, false);
+        vfd.placeholder.reference = depTemplate.proxyViewFactory;
         vfd.placeholder.name = `viewFactory_${vfd.comp.name}`;
       } else if (dep instanceof ComponentFactoryDependency) {
         let cfd = <ComponentFactoryDependency>dep;
-        depTemplate = this._assertComponentLoaded(cfd.comp.runtime, true);
-        cfd.placeholder.runtime = depTemplate.proxyComponentFactory;
+        depTemplate = this._assertComponentLoaded(cfd.comp.reference, true);
+        cfd.placeholder.reference = depTemplate.proxyComponentFactory;
         cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       }
     });
@@ -279,7 +280,8 @@ export class RuntimeCompiler implements Compiler {
       factory = interpretStatements(statements, compileResult.viewFactoryVar);
     } else {
       factory = jitStatements(
-          `${template.compType.name}.ngfactory.js`, statements, compileResult.viewFactoryVar);
+          `${template.compType.name}${template.isHost?'_Host':''}.ngfactory.js`, statements,
+          compileResult.viewFactoryVar);
     }
     template.compiled(factory);
   }
@@ -290,7 +292,7 @@ export class RuntimeCompiler implements Compiler {
       var nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl);
       var nestedStylesArr = this._resolveAndEvalStylesCompileResult(
           nestedCompileResult, externalStylesheetsByModuleUrl);
-      dep.valuePlaceholder.runtime = nestedStylesArr;
+      dep.valuePlaceholder.reference = nestedStylesArr;
       dep.valuePlaceholder.name = `importedStyles${i}`;
     });
   }
@@ -325,7 +327,7 @@ class CompiledTemplate {
       _normalizeResult: SyncAsyncResult<CompileDirectiveMetadata>) {
     viewDirectivesAndComponents.forEach((dirMeta) => {
       if (dirMeta.isComponent) {
-        this.viewComponentTypes.push(dirMeta.type.runtime);
+        this.viewComponentTypes.push(dirMeta.type.reference);
       } else {
         this.viewDirectives.push(dirMeta);
       }
@@ -338,7 +340,7 @@ class CompiledTemplate {
       return this._viewFactory.apply(null, args);
     };
     this.proxyComponentFactory = isHost ?
-        new ComponentFactory<any>(selector, this.proxyViewFactory, compType.runtime) :
+        new ComponentFactory<any>(selector, this.proxyViewFactory, compType.reference) :
         null;
     if (_normalizeResult.syncResult) {
       this._normalizedCompMeta = _normalizeResult.syncResult;

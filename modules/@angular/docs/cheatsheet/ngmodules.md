@@ -7,51 +7,52 @@ NgModules
 
 @cheatsheetItem
 syntax(ts):
-`@NgModule({ declarations: ..., imports: ..., exports: ..., bootstrap: ...})
+`@NgModule({ declarations: ..., imports: ...,
+     exports: ..., providers: ..., bootstrap: ...})
 class MyModule {}`|`NgModule`
 description:
-Defines a module that contains components, directives, pipes and providers.
+Defines a module that contains components, directives, pipes, and providers.
 
 syntax(js):
-`ng.core.NgModule({declarations: ..., imports: ..., exports: ..., bootstrap: ...}).
+`ng.core.NgModule({declarations: ..., imports: ...,
+     exports: ..., providers: ..., bootstrap: ...}).
 class({ constructor: function() {}})`
 description:
-Defines a module that contains components, directives, pipes and providers.
+Defines a module that contains components, directives, pipes, and providers.
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `declarations: [MyRedComponent, MyBlueComponent, MyDatePipe]`|`declarations:`
 description:
-List of components, directives and pipes that belong to this module.
+List of components, directives, and pipes that belong to this module.
 
 @cheatsheetItem
 syntax(ts):
 `imports: [BrowserModule, SomeOtherModule]`|`imports:`
 description:
-List of modules that are being imported into this module. Everything from the imported modules will
-be available to `declarations` of this module.
+List of modules to import into this module. Everything from the imported modules
+is available to `declarations` of this module.
 
 syntax(js):
 `imports: [ng.platformBrowser.BrowserModule, SomeOtherModule]`|`imports:`
 description:
-List of modules that are being imported into this module. Everything from the imported modules will
-be available to `declarations` of this module.
+List of modules to import into this module. Everything from the imported modules
+is available to `declarations` of this module.
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `exports: [MyRedComponent, MyDatePipe]`|`exports:`
 description:
-List of components, directives and pipes that will be visible to modules that import this module.
+List of components, directives, and pipes visible to modules that import this module.
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `providers: [MyService, { provide: ... }]`|`providers:`
 description:
-Array of dependency injection providers visible to contents of this module as well as everyone
-importing this module.
+List of dependency injection providers visible both to the contents of this module and to importers of this module.
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `bootstrap: [MyAppComponent]`|`bootstrap:`
 description:
-Array of components to bootstrap when this module is bootstrapped.
+List of components to bootstrap when this module is bootstrapped.

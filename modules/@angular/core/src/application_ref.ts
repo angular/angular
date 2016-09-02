@@ -77,20 +77,13 @@ export function createPlatform(injector: Injector): PlatformRef {
 }
 
 /**
- * Factory for a platform.
- *
- * @experimental
- */
-export type PlatformFactory = (extraProviders?: Provider[]) => PlatformRef;
-
-/**
  * Creates a factory for a platform
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlaformFactory: PlatformFactory, name: string,
-    providers: Provider[] = []): PlatformFactory {
+    parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
+    providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
   const marker = new OpaqueToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
     if (!getPlatform()) {
@@ -221,7 +214,7 @@ export abstract class PlatformRef {
   get destroyed(): boolean { throw unimplemented(); }
 }
 
-function _callAndReportToExceptionHandler(errorHandler: ErrorHandler, callback: () => any): any {
+function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () => any): any {
   try {
     const result = callback();
     if (isPromise(result)) {
@@ -283,11 +276,11 @@ export class PlatformRef_ extends PlatformRef {
       const moduleRef = <NgModuleInjector<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
-        throw new Error('No ExceptionHandler. Is platform module (BrowserModule) included?');
+        throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
       ngZone.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
-      return _callAndReportToExceptionHandler(exceptionHandler, () => {
+      return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         return initStatus.donePromise.then(() => {
           this._moduleDoBootstrap(moduleRef);

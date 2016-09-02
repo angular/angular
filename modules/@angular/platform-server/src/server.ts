@@ -8,10 +8,8 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PLATFORM_INITIALIZER, PlatformRef, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-
-import {wtfInit} from '../core_private';
 
 import {Parse5DomAdapter} from './parse5_adapter';
 
@@ -39,7 +37,6 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | a
 
 function initParse5Adapter() {
   Parse5DomAdapter.makeCurrent();
-  wtfInit();
 }
 
 /**

@@ -1,3 +1,274 @@
+<a name="2.0.0-rc.6"></a>
+# [2.0.0-rc.6](https://github.com/angular/angular/compare/2.0.0-rc.5...2.0.0-rc.6) (2016-08-31)
+
+
+### Bug Fixes
+
+* **compiler:** allow tsc-wrapped to be compile with TypeScript 2.0 ([#11086](https://github.com/angular/angular/issues/11086)) ([fc2fe00](https://github.com/angular/angular/commit/fc2fe00))
+* **compiler:** correctly handles references to static methods ([#11013](https://github.com/angular/angular/issues/11013)) ([14a30f3](https://github.com/angular/angular/commit/14a30f3))
+* **compiler:** do not autoinclude components declared as entry points ([#10898](https://github.com/angular/angular/issues/10898)) ([c56f3f2](https://github.com/angular/angular/commit/c56f3f2))
+* **compiler:** generate temporary variables for guarded expressions ([#10657](https://github.com/angular/angular/issues/10657)) ([2d520ae](https://github.com/angular/angular/commit/2d520ae))
+* **compiler:** handle invalid host bindings and events ([#11101](https://github.com/angular/angular/issues/11101)) ([f25c976](https://github.com/angular/angular/commit/f25c976))
+* **compiler:** make ShadowCSS shim work on Android browser ([#11139](https://github.com/angular/angular/issues/11139)) ([38069ab](https://github.com/angular/angular/commit/38069ab)), closes [#11123](https://github.com/angular/angular/issues/11123)
+* **compiler:** no longer use assetCacheKey and Function#name for token identity. ([51877ef](https://github.com/angular/angular/commit/51877ef)), closes [#10545](https://github.com/angular/angular/issues/10545) [#10538](https://github.com/angular/angular/issues/10538)
+* **compiler:** only emit metadata for exported enums ([#10957](https://github.com/angular/angular/issues/10957)) ([a7b7682](https://github.com/angular/angular/commit/a7b7682))
+* **compiler:** throw descriptive error meesage for invalid NgModule providers ([#10947](https://github.com/angular/angular/issues/10947)) ([aa5c8ca](https://github.com/angular/angular/commit/aa5c8ca)), closes [#10714](https://github.com/angular/angular/issues/10714)
+* **compiler:** detect invalid elements in templates via DomSchemaRegistry ([1df69cb](https://github.com/angular/angular/commit/1df69cb))
+* **compiler:** ExtractorMerger returns return errors together with nodes (as a ParseTreeResult)  ([39c0f9e](https://github.com/angular/angular/commit/39c0f9e))
+* **compiler:** throw better errors when components are passed to imports or modules are passed to declarations. ([#10888](https://github.com/angular/angular/issues/10888)) ([c4fd862](https://github.com/angular/angular/commit/c4fd862)), closes [#10823](https://github.com/angular/angular/issues/10823)
+* **compiler:** properly shim selectors after :host and :host-context ([#10997](https://github.com/angular/angular/issues/10997)) ([af63378](https://github.com/angular/angular/commit/af63378)), closes [#5390](https://github.com/angular/angular/issues/5390)
+* **compiler:** disallow event-property binding even with the NO_ERRORS_SCHEMA ([1818056](https://github.com/angular/angular/commit/1818056)), closes [#11026](https://github.com/angular/angular/issues/11026)
+* **compiler-cli:** make ngc to work on Windows ([#10919](https://github.com/angular/angular/issues/10919)) ([6c77d71](https://github.com/angular/angular/commit/6c77d71)), closes [#10792](https://github.com/angular/angular/issues/10792)
+* **compiler-cli:** treat empty array of metadata like absent file ([#10610](https://github.com/angular/angular/issues/10610)) ([9a11ec2](https://github.com/angular/angular/commit/9a11ec2))
+* **compiler-cli:** codegen allows --strictNullChecks ([#10991](https://github.com/angular/angular/issues/10991)) ([01111b0](https://github.com/angular/angular/commit/01111b0))
+* **compiler-cli:** comment out a private keyword in codegen. ([#10949](https://github.com/angular/angular/issues/10949)) ([8560e1e](https://github.com/angular/angular/commit/8560e1e))
+* **compiler-cli:** don't codegen foo.d.ngfactory.ts from foo.d.ts ([#10833](https://github.com/angular/angular/issues/10833)) ([cd8cbd3](https://github.com/angular/angular/commit/cd8cbd3))
+* **compiler-cli:** don't quote properties in literal maps ([#11110](https://github.com/angular/angular/issues/11110)) ([abad667](https://github.com/angular/angular/commit/abad667)), closes [#11050](https://github.com/angular/angular/issues/11050)
+* **common:** allow float for DatePipe input ([#10687](https://github.com/angular/angular/issues/10687)) ([712c7d5](https://github.com/angular/angular/commit/712c7d5))
+* **common:** remove bidi control chars in DatePipe output ([#10870](https://github.com/angular/angular/issues/10870)) ([9198038](https://github.com/angular/angular/commit/9198038)), closes [#10080](https://github.com/angular/angular/issues/10080)
+* **core:** report errors for missing host-level referenced animations ([#10650](https://github.com/angular/angular/issues/10650)) ([f12d519](https://github.com/angular/angular/commit/f12d519))
+* **core:** assign an overriden name to constructor named constructor ([#11043](https://github.com/angular/angular/issues/11043)) ([bd510cc](https://github.com/angular/angular/commit/bd510cc)), closes [#10545](https://github.com/angular/angular/issues/10545)
+* **core:** don't strip sourceMappingURL in shimmed stylesheets ([#9664](https://github.com/angular/angular/issues/9664)) ([bc6d1c8](https://github.com/angular/angular/commit/bc6d1c8))
+* **core:** FactoryProvider's deps property should be optional ([eb7d8c7](https://github.com/angular/angular/commit/eb7d8c7))
+* **core/testing:** have fakeAsync use Proxy zone. ([#10797](https://github.com/angular/angular/issues/10797)) ([8a5eb08](https://github.com/angular/angular/commit/8a5eb08)), closes [#10503](https://github.com/angular/angular/issues/10503)
+* **forms:** fix conflicting getter name ([#11081](https://github.com/angular/angular/issues/11081)) ([ce08982](https://github.com/angular/angular/commit/ce08982))
+* **forms:** fully support rebinding form group directive ([#11051](https://github.com/angular/angular/issues/11051)) ([515ff61](https://github.com/angular/angular/commit/515ff61))
+* **forms:** remove deprecated form provider functions ([#10741](https://github.com/angular/angular/issues/10741)) ([79afcf0](https://github.com/angular/angular/commit/79afcf0))
+* **forms:** remove deprecated forms APIs ([#10624](https://github.com/angular/angular/issues/10624)) ([7606c96](https://github.com/angular/angular/commit/7606c96))
+* **forms:** support radio buttons with same name but diff parent ([#11152](https://github.com/angular/angular/issues/11152)) ([e8a1566](https://github.com/angular/angular/commit/e8a1566)), closes [#10065](https://github.com/angular/angular/issues/10065)
+* **forms:** update validity when validator dir changes ([d2ad871](https://github.com/angular/angular/commit/d2ad871)), closes [#11116](https://github.com/angular/angular/issues/11116)
+* **http:** deep copy for constructor using existing Headers ([#10679](https://github.com/angular/angular/issues/10679)) ([654ff61](https://github.com/angular/angular/commit/654ff61)), closes [#6845](https://github.com/angular/angular/issues/6845)
+* **http:** encode correct value for %3D ([#9790](https://github.com/angular/angular/issues/9790)) ([7555320](https://github.com/angular/angular/commit/7555320))
+* **http:** expose jsonpFactory for AoT compilation ([#10730](https://github.com/angular/angular/issues/10730)) ([203b2ba](https://github.com/angular/angular/commit/203b2ba))
+* **http:** inline HTTP_PROVIDERS and JSONP_PROVIDERS until the metadata collector can do it automatically. ([#10928](https://github.com/angular/angular/issues/10928)) ([477e425](https://github.com/angular/angular/commit/477e425))
+* **http:** restructure exports so that we don't leak private factory functions ([#11016](https://github.com/angular/angular/issues/11016)) ([7dfcaac](https://github.com/angular/angular/commit/7dfcaac))
+* **http:** return empty string if no body is present ([#10668](https://github.com/angular/angular/issues/10668)) ([7cd4741](https://github.com/angular/angular/commit/7cd4741))
+* **i18n:** change default locale from `en_US` to `en-US` ([#11103](https://github.com/angular/angular/issues/11103)) ([b9647b7](https://github.com/angular/angular/commit/b9647b7))
+* **i18n:** Currency/Date/Number pipe use injected locale ([#11093](https://github.com/angular/angular/issues/11093)) ([0a053a4](https://github.com/angular/angular/commit/0a053a4))
+* **i18n:** ICU placeholders are replaced by their translations ([#10586](https://github.com/angular/angular/issues/10586)) ([43512aa](https://github.com/angular/angular/commit/43512aa))
+* **i18n:** update NgLocalLocalization ([#10771](https://github.com/angular/angular/issues/10771)) ([4df48b2](https://github.com/angular/angular/commit/4df48b2))
+* **platform-browser:** remove export for private symbol _WORKER_UI_PLATFORM_PROVIDERS. ([#11018](https://github.com/angular/angular/issues/11018)) ([05bbb8e](https://github.com/angular/angular/commit/05bbb8e))
+* **router:** use encodeUri/decodeUri to encode fragment ([bb9dfbc](https://github.com/angular/angular/commit/bb9dfbc))
+* **router:** add an option to disable initial navigation ([a2deafc](https://github.com/angular/angular/commit/a2deafc))
+* **router:** canLoad should cancel a navigation instead of failing it ([#11001](https://github.com/angular/angular/issues/11001)) ([f1ce760](https://github.com/angular/angular/commit/f1ce760))
+* **router:** do not use rx/add/operator ([c350ba2](https://github.com/angular/angular/commit/c350ba2))
+* **router:** fix the order of guards, so canActivateChild runs before canActivate ([0bb516f](https://github.com/angular/angular/commit/0bb516f))
+* **router:** lazy loading keeps refetching modules ([#10707](https://github.com/angular/angular/issues/10707)) ([cc6749c](https://github.com/angular/angular/commit/cc6749c))
+* **router:** location changes and redirects break the back button ([#10742](https://github.com/angular/angular/issues/10742)) ([04c6b2f](https://github.com/angular/angular/commit/04c6b2f))
+* **router:** make routerLinkActiveOptions public ([#10758](https://github.com/angular/angular/issues/10758)) ([73c0a9d](https://github.com/angular/angular/commit/73c0a9d))
+* **router:** support guards navigating synchronously ([#11150](https://github.com/angular/angular/issues/11150)) ([e2241a2](https://github.com/angular/angular/commit/e2241a2))
+* **router:** support relative param-only navigation ([#10613](https://github.com/angular/angular/issues/10613)) ([c7f3aa7](https://github.com/angular/angular/commit/c7f3aa7))
+* **router:** update the location before activating components ([2ffecc0](https://github.com/angular/angular/commit/2ffecc0))
+* **router:** fix type ([#11181](https://github.com/angular/angular/issues/11181)) ([0f68351](https://github.com/angular/angular/commit/0f68351))
+* **router:** merge artifacts ([fc1e45d](https://github.com/angular/angular/commit/fc1e45d)), closes [#11063](https://github.com/angular/angular/issues/11063) [#11102](https://github.com/angular/angular/issues/11102)
+* **compiler/testing:** override metadata subclasses properly ([#10767](https://github.com/angular/angular/issues/10767)) ([87fe477](https://github.com/angular/angular/commit/87fe477))
+* **bundles:** correct RxJS mapping in rollup config for umd/es5 bundles ([174c016](https://github.com/angular/angular/commit/174c016))
+* **closure:** prevent closure renaming of testability interface ([#11146](https://github.com/angular/angular/issues/11146)) ([875e664](https://github.com/angular/angular/commit/875e664))
+* **closure:** replace property accesses ([#11078](https://github.com/angular/angular/issues/11078)) ([dc6f72e](https://github.com/angular/angular/commit/dc6f72e))
+
+
+### Code Refactoring
+
+* **common:** remove deprecated ReplacePipe ([#10772](https://github.com/angular/angular/issues/10772)) ([33ced70](https://github.com/angular/angular/commit/33ced70))
+* **core:** remove all previously deprecated ApplicationRef apis ([f84c3fd](https://github.com/angular/angular/commit/f84c3fd))
+* **core:** remove deprecated NgZoneError ([#10822](https://github.com/angular/angular/issues/10822)) ([3f5331b](https://github.com/angular/angular/commit/3f5331b))
+* **core:** remove deprecated @Component.directives and @Component.pipes ([4a740f2](https://github.com/angular/angular/commit/4a740f2))
+* **core:** remove deprecated coreBootstrap and coreLoadAndBootstrap ([3329977](https://github.com/angular/angular/commit/3329977))
+* **core:** remove deprecated DynamicComponentLoader ([#10759](https://github.com/angular/angular/issues/10759)) ([4a9745e](https://github.com/angular/angular/commit/4a9745e))
+* **core:** remove deprecated SystemJsComponentResolver and SystemJsCmpFactoryResolver ([b238414](https://github.com/angular/angular/commit/b238414))
+* **core:** remove deprecated DebugNode.inject() ([#10751](https://github.com/angular/angular/issues/10751)) ([a235ae1](https://github.com/angular/angular/commit/a235ae1))
+* **core:** remove deprecated properties and events from metadata ([#10753](https://github.com/angular/angular/issues/10753)) ([156a52e](https://github.com/angular/angular/commit/156a52e))
+* **core:** remove deprecated Query and ViewQuery ([#10820](https://github.com/angular/angular/issues/10820)) ([48751cc](https://github.com/angular/angular/commit/48751cc))
+* **core:** remove deprecated lockRunMode ([#10763](https://github.com/angular/angular/issues/10763)) ([2eb4ee8](https://github.com/angular/angular/commit/2eb4ee8))
+* **core:** remove deprecated ComponentResolver (#10858) ([73a9ee4](https://github.com/angular/angular/commit/73a9ee4))
+* **core:** remove deprecated PlatformRef#registerDisposeListener, #disposed, #dispose() ([44e1b23](https://github.com/angular/angular/commit/44e1b23))
+* **core:** remove deprecated provider/bind API ([#10652](https://github.com/angular/angular/issues/10652)) ([bec5c5f](https://github.com/angular/angular/commit/bec5c5f)), closes [#9751](https://github.com/angular/angular/issues/9751)
+* **core:** remove supporter deprecated `var` / `#` ([#11084](https://github.com/angular/angular/issues/11084)) ([b867764](https://github.com/angular/angular/commit/b867764))
+* **core:** removed deprecated disposePlatform ([d282507](https://github.com/angular/angular/commit/d282507))
+* **core:** merge Type and ConcreteType<?> into Type<?> ([#10616](https://github.com/angular/angular/issues/10616)) ([b96869a](https://github.com/angular/angular/commit/b96869a)), closes [#9729](https://github.com/angular/angular/issues/9729)
+* **core:** remove deprecated animations trigger APIs ([#10825](https://github.com/angular/angular/issues/10825)) ([9adf803](https://github.com/angular/angular/commit/9adf803))
+* **core:** rename Exception to Error; remove from public API ([86ba072](https://github.com/angular/angular/commit/86ba072)), ([7c07bff](https://github.com/angular/angular/commit/7c07bff))
+* **core/testing:** remove deprecated TestComponentBuilder ([a29f9f3](https://github.com/angular/angular/commit/a29f9f3))
+* **http:** remove deprecated HTTP_PROVIDERS and JSONP_PROVIDERS ([#10864](https://github.com/angular/angular/issues/10864)) ([675e582](https://github.com/angular/angular/commit/675e582))
+* **platform-browser-dynamic:** Rename CACHED_TEMPLATE_PROVIDER to RESOURCE_CACHE_PROVIDER ([#10866](https://github.com/angular/angular/issues/10866)) ([40e160c](https://github.com/angular/angular/commit/40e160c)), closes [#9741](https://github.com/angular/angular/issues/9741)
+* **upgrade:** remove deprecated addProvider ([12b0a3d](https://github.com/angular/angular/commit/12b0a3d))
+* **webworkers:** move webworkers to separate @angular/platform-webworker and @angular/platform-webworker-dynamic packages ([71ae2c4](https://github.com/angular/angular/commit/71ae2c4))
+* **core & platform-browser:** rename SanitizationService to Sanitizer and DomSanitizationService to DomSanitizer ([#11085](https://github.com/angular/angular/issues/11085)) ([811962b](https://github.com/angular/angular/commit/811962b))
+
+
+### Features
+
+* **npm packages:** use ES modules for primary build ([#11120](https://github.com/angular/angular/issues/11120)) ([9796579](https://github.com/angular/angular/commit/9796579))
+* **compiler:** Add an error message when the locale is not provided ([#11104](https://github.com/angular/angular/issues/11104)) ([e220a80](https://github.com/angular/angular/commit/e220a80))
+* **compiler:** Added "strictMetadataEmit" option to ngc ([#10951](https://github.com/angular/angular/issues/10951)) ([39a2c39](https://github.com/angular/angular/commit/39a2c39))
+* **compiler-cli:** allow ngc implementations to provide XHR ([#10708](https://github.com/angular/angular/issues/10708)) ([6e842fc](https://github.com/angular/angular/commit/6e842fc))
+* **compiler-cli:** support pathmapping using a separate reflector ([#10985](https://github.com/angular/angular/issues/10985)) ([e0fbca9](https://github.com/angular/angular/commit/e0fbca9))
+* **core:** support animation trigger template callbacks ([45e8e73](https://github.com/angular/angular/commit/45e8e73670b96387fc109921fad299742d3f7cbf))
+* **core:** make sure animation callback reports the totalTime ([#11022](https://github.com/angular/angular/issues/11022)) ([4f8f8cf](https://github.com/angular/angular/commit/4f8f8cf))
+* **core:** add NO_ERRORS_SCHEMA that allows any properties to be set on any element ([#10956](https://github.com/angular/angular/issues/10956)) ([c631cfc](https://github.com/angular/angular/commit/c631cfc))
+* **core:** make ngprobe tokens pluggable ([f48142e](https://github.com/angular/angular/commit/f48142e))
+* **core:** throw a descriptive error when BrowserModule is installed a second time (via lazy loading). ([#10899](https://github.com/angular/angular/issues/10899)) ([628d06c](https://github.com/angular/angular/commit/628d06c))
+* **core:** update public api ([951ecb4](https://github.com/angular/angular/commit/951ecb4))
+* **core:** allow configurable module prefixes and suffixes. ([#11049](https://github.com/angular/angular/issues/11049)) ([8b78281](https://github.com/angular/angular/commit/8b78281))
+* **core/testing:** add TestBed.get ([4648b3e](https://github.com/angular/angular/commit/4648b3e))
+* **forms:** add control status classes to form groups ([#10667](https://github.com/angular/angular/issues/10667)) ([2291929](https://github.com/angular/angular/commit/2291929))
+* **forms:** add NgForm method that resets submit state ([#10715](https://github.com/angular/angular/issues/10715)) ([97f3571](https://github.com/angular/angular/commit/97f3571))
+* **forms:** add support for disabled controls ([#10994](https://github.com/angular/angular/issues/10994)) ([2b313e4](https://github.com/angular/angular/commit/2b313e4))
+* **forms:** add support to bind validation attributes ([0b665c0](https://github.com/angular/angular/commit/0b665c0))
+* **i18n:** add an HtmlParser decorator ([#10645](https://github.com/angular/angular/issues/10645)) ([50345b8](https://github.com/angular/angular/commit/50345b8))
+* **i18n:** Add NgLocaleLocalization which returns plural cases given a locale ([#10744](https://github.com/angular/angular/issues/10744)) ([161a4dd](https://github.com/angular/angular/commit/161a4dd))
+* **i18n:** pass translation config directly into ngc ([#10622](https://github.com/angular/angular/issues/10622)) ([6580d67](https://github.com/angular/angular/commit/6580d67))
+* **i18n:** provide LOCALE_ID and NgLocalization ([ce4eae6](https://github.com/angular/angular/commit/ce4eae6))
+* **i18n:** xliff ([72bb38f](https://github.com/angular/angular/commit/72bb38f))
+* **i18n:** xliff integration  ([f6a7d65](https://github.com/angular/angular/commit/f6a7d65))
+* **router:** add support for custom error handlers ([2fc5c57](https://github.com/angular/angular/commit/2fc5c57))
+* **router:** add syntax sugar for confuguring RouterTestingModule ([#10906](https://github.com/angular/angular/issues/10906)) ([53c99cf](https://github.com/angular/angular/commit/53c99cf))
+* **router:** extend support for lazy loading children ([#10705](https://github.com/angular/angular/issues/10705)) ([6b26102](https://github.com/angular/angular/commit/6b26102))
+* **router:** make router.config public ([947f9c3](https://github.com/angular/angular/commit/947f9c3))
+* **router:** throw a helpful error when misusing forRoot() from a lazy module. ([#10996](https://github.com/angular/angular/issues/10996)) ([5ddecb1](https://github.com/angular/angular/commit/5ddecb1))
+
+
+### PEER-DEPENDENCY UPDATES ###
+
+* **core**: zone.js@0.6.17
+* **core**: rxjs@5.0.0-beta.11
+* **core**: reflect-metadata dependency is now optional when in AOT mode
+* **compiler-cli**: typescript@2.0.2
+
+
+### BREAKING CHANGES
+
+* npm packages: code in ESM (ES6 Modules) format is now published at the default location in the npm package with `package.json`'s `main` entry pointing to an UMD bundle (primarily for node, and webpack 1 users).
+
+  If you are using SystemJS to load Angular, you should adjust your SystemJS configuration to point to the UMD bundles (present in the npm package).
+
+  Please see this [example SystemJS config](https://github.com/angular/quickstart/blob/3b7452cc444c49c139ea39523ced0468c2362c16/systemjs.config.js#L17-L34).
+
+* testing config: due to zone.js peer-dependency upgrade, the order in which various zone specs are loaded has changed.
+
+  Please see this [example Karma config](https://github.com/angular/quickstart/blob/3b7452cc444c49c139ea39523ced0468c2362c16/karma.conf.js#L31-L38).
+
+* core: `Type` is now `Type<T>` which means that in most cases you have to
+use `Type<any>` in place of `Type`.
+
+  We don't expect that any user applications use the `Type` type directly.
+  
+* core: Previously inconsistently named APIs SanitizationService and DomSanitizationService were renamed to Sanitizer and DomSanitizer
+
+* core: previously deprecated @Component.directives and @Component.pipes support was removed.
+
+  All the components and pipes now must be declared via an NgModule. NgModule is the basic compilation block passed into the Angular compiler via Compiler#compileModuleSync or #compileModuleAsync.
+
+  Because of this change, the Compiler#compileComponentAsync and #compileComponentSync were removed as well - any code doing compilation should compile module instead using the APIs mentioned above.
+
+  Lastly, since modules are the basic compilation unit, the ngUpgrade module was modified to always require an NgModule to be passed into the UpgradeAdapter's constructor - previously this was optional.
+
+* core: deprecated ComponentResolver was removed. Please use ComponentFactoryResolver instead.
+
+* core: animations defined using an at-symbol prefix that are not property bound are now invalid.
+  
+  ```html
+  <!-- this is now invalid -->
+  <div @flip="flipState"></div>
+  
+  <!-- change that to -->
+  <div [@flip]="flipState"></div>
+  ```
+
+* core: Animations that are not bound using the at-symbol
+prefix using `animate-` must now be preixed using `bind-animate-`.
+
+```html
+<!-- this is now invalid -->
+<div animate-flip="flipState"></div>
+
+<!-- is valid now -->
+<div bind-animate-flip="flipState"></div>
+```
+
+* core: These forms of providers are no longer accepted:
+  ```
+  bind(MyClass).toFactory(...)
+  new Provider(MyClass, toFactory: ...)
+  ```
+
+  We now only accept:
+  ```
+  {provider: MyClass, toFactory: ...}
+  ```
+  
+* core: previously deprecated NgZoneError has been removed
+
+* core: Exceptions are no longer part of the public API. We don't expect that anyone should be referring to the Exception types.
+
+  ```
+  ExceptionHandler.call(exception: any, stackTrace?: any, reason?: string): void;
+  ```
+  change to:
+  ```
+  ErrorHandler.handleError(error: any): void;
+  ```
+  
+* core: deprecated DynamicComponentLoader was removed; see deprecation notice for migration instructions.
+
+* core: deprecated SystemJsComponentResolver and SystemJsCmpFactoryResolver have been removed.
+
+* core: previously deprecated coreBootstrap and coreLoadAndBootstrap have been removed.
+
+* core: all previously deprecated ApplicationRef apis have been removed.
+
+* core: deprecated PlatformRef#registerDisposeListener, #disposed, #dispose() - follow deprecation instructions to upgrade
+
+* core: deprecated disposePlatform was removed; see deprecation notice for migration instructions.
+
+* core: deprecated DirectiveMetadataType#properties and DirectiveMetadataType#events were removed; see deprecation notice for migration instructions.
+
+* core: deprecated lockRunMode was removed; see deprecation notice for migration instructions.
+
+* core: deprecated DebugNode#inject was removed, see deprecation notice for migration instructions.
+
+* core: deprecated Query and ViewQuery  were removed; see deprecation notice for migration instructions.
+
+* core/testing: deprecated TestComponentBuilder was removed, please use TestBed instead
+
+* compiler: Previously deprecated`#` and `var` are not supported any more in expressions within templates, use `let`:
+  - `var-<name>` cannot be used any more on templates, use `let-<name>`
+  - `var-<name>` cannot be used any more to create a reference, use `ref-<name>`
+
+* http: any code which relies on the fact that a newly created Headers object is referencing an existing Headers map is now broken, but that should normally not be the case since this behavior is not documented and not in accordance with the spec.
+
+* http: previously deprecated HTTP_PROVIDERS and JSONP_PROVIDERS were removed; see deprecation notice for migration instructions.
+
+* platform-browser-dynamic: `CACHED_TEMPLATE_PROVIDER` is now renamed to `RESOURCE_CACHE_PROVIDER`
+
+  Before:
+  
+  ```js
+  import {CACHED_TEMPLATE_PROVIDER} from '@angular/platform-browser-dynamic';
+  ```
+  
+  After:
+  
+  ```js
+  import {RESOURCE_CACHE_PROVIDER} from '@angular/platform-browser-dynamic';
+  ```
+
+* common: previously deprecated NgSwitchWhen directive was removed, use NgSwitchCase instead
+
+* common: previously deprecated ReplacePipe was removed
+
+* upgrade: deprecated UpgradeAdapter#addProvider was removed, see deprecation notice for migration instructions.
+
+* forms: deprecated `provideForms()` and `disableDeprecatedForms()` functions have been removed. Please import the `FormsModule` or the `ReactiveFormsModule` from @angular/forms instead.
+
+* forms: deprecated forms APIs in @angular/common have been removed. Please update to the new forms API in @angular/forms. See angular.io for more information.
+
+* webworkers: web worker platform is now exported via separate packages.
+
+  Please use @angular/platform-webworker and @angular/platform-webworker-dynamic
+  
+
+
 <a name="2.0.0-rc.5"></a>
 # [2.0.0-rc.5](https://github.com/angular/angular/compare/2.0.0-rc.4...2.0.0-rc.5) (2016-08-09)
 

@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {AssetUrl, ImportGenerator} from './compiler_private';
+import {AssetUrl, ImportGenerator} from './private_import_compiler';
 import {StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
@@ -59,6 +59,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   getCanonicalFileName(fileName: string): string { return fileName; }
 
   protected resolve(m: string, containingFile: string) {
+    m = m.replace(EXT, '');
     const resolved =
         ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
             .resolvedModule;

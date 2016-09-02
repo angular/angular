@@ -9,7 +9,7 @@
 
 import {CompilePipeMetadata} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 
 import {CompileView} from './compile_view';
@@ -42,7 +42,8 @@ export class CompilePipe {
   constructor(public view: CompileView, public meta: CompilePipeMetadata) {
     this.instance = o.THIS_EXPR.prop(`_pipe_${meta.name}_${view.pipeCount++}`);
     var deps = this.meta.type.diDeps.map((diDep) => {
-      if (diDep.token.equalsTo(identifierToken(Identifiers.ChangeDetectorRef))) {
+      if (diDep.token.reference ===
+          resolveIdentifierToken(Identifiers.ChangeDetectorRef).reference) {
         return getPropertyInView(o.THIS_EXPR.prop('ref'), this.view, this.view.componentView);
       }
       return injectFromViewParentInjector(diDep.token, false);
@@ -66,7 +67,7 @@ export class CompilePipe {
           pipeInstanceSeenFromPureProxy.prop('transform')
               .callMethod(o.BuiltinMethod.Bind, [pipeInstanceSeenFromPureProxy]),
           args.length, purePipeProxyInstance, callingView);
-      return o.importExpr(Identifiers.castByValue)
+      return o.importExpr(resolveIdentifier(Identifiers.castByValue))
           .callFn([purePipeProxyInstance, pipeInstanceSeenFromPureProxy.prop('transform')])
           .callFn(args);
     } else {

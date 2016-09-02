@@ -11,22 +11,23 @@ import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
 import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
-import {MockSchemaRegistry} from '@angular/compiler/testing';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {SchemaMetadata, SecurityContext} from '@angular/core';
+import {SchemaMetadata, SecurityContext, Type} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {Identifiers, identifierToken} from '../../src/identifiers';
+import {Identifiers, identifierToken, resolveIdentifierToken} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
+import {MockSchemaRegistry} from '../../testing/index';
 import {unparse} from '../expression_parser/unparser';
 
-var someModuleUrl = 'package:someModule';
+const someModuleUrl = 'package:someModule';
 
-var MOCK_SCHEMA_REGISTRY = [{
+const MOCK_SCHEMA_REGISTRY = [{
   provide: ElementSchemaRegistry,
-  useValue: new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'})
+  useValue: new MockSchemaRegistry(
+      {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false}),
 }];
 
 export function main() {
@@ -44,12 +45,14 @@ export function main() {
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       var component = CompileDirectiveMetadata.create({
         selector: 'root',
-        type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Root'}),
+        type: new CompileTypeMetadata(
+            {moduleUrl: someModuleUrl, name: 'Root', reference: {} as Type<any>}),
         isComponent: true
       });
       ngIf = CompileDirectiveMetadata.create({
         selector: '[ngIf]',
-        type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'NgIf'}),
+        type: new CompileTypeMetadata(
+            {moduleUrl: someModuleUrl, name: 'NgIf', reference: {} as Type<any>}),
         inputs: ['ngIf']
       });
 
@@ -176,7 +179,8 @@ export function main() {
          inject([TemplateParser], (parser: TemplateParser) => {
            const component = CompileDirectiveMetadata.create({
              selector: 'test',
-             type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'Test'}),
+             type: new CompileTypeMetadata(
+                 {moduleUrl: someModuleUrl, name: 'Test', reference: {} as Type<any>}),
              isComponent: true,
              template: new CompileTemplateMetadata({interpolation: ['{%', '%}']})
            });
@@ -253,13 +257,27 @@ export function main() {
         });
 
         describe('errors', () => {
-          it('should throw error when binding to an unkonown property', () => {
+          it('should throw error when binding to an unknown property', () => {
             expect(() => parse('<my-component [invalidProp]="bar"></my-component>', []))
                 .toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 1. If 'my-component' is an Angular component and it has 'invalidProp' input, then verify that it is part of this module.
 2. If 'my-component' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schema' of this component to suppress this message.
  ("<my-component [ERROR ->][invalidProp]="bar"></my-component>"): TestComp@0:14`);
+          });
+
+          it('should throw error when binding to an unknown element w/o bindings', () => {
+            expect(() => parse('<unknown></unknown>', [])).toThrowError(`Template parse errors:
+'unknown' is not a known element:
+1. If 'unknown' is an Angular component, then verify that it is part of this module.
+2. If 'unknown' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schema' of this component to suppress this message. ("[ERROR ->]<unknown></unknown>"): TestComp@0:0`);
+          });
+
+          it('should throw error when binding to an unknown custom element w/o bindings', () => {
+            expect(() => parse('<un-known></un-known>', [])).toThrowError(`Template parse errors:
+'un-known' is not a known element:
+1. If 'un-known' is an Angular component, then verify that it is part of this module.
+2. If 'un-known' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schema' of this component to suppress this message. ("[ERROR ->]<un-known></un-known>"): TestComp@0:0`);
           });
         });
 
@@ -305,7 +323,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
            () => {
              var dirA = CompileDirectiveMetadata.create({
                selector: 'div',
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+               type: new CompileTypeMetadata(
+                   {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
                host: {'[@prop]': 'expr'}
              });
 
@@ -316,7 +335,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should throw descriptive error when a host binding is not a string expression', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'broken',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             host: {'[class.foo]': null}
           });
 
@@ -328,7 +348,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should throw descriptive error when a host event is not a string expression', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'broken',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             host: {'(click)': null}
           });
 
@@ -390,7 +411,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
              var dirA = CompileDirectiveMetadata.create({
                selector: 'template',
                outputs: ['e'],
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+               type: new CompileTypeMetadata(
+                   {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
              });
              expect(humanizeTplAst(parse('<template (e)="f"></template>', [dirA]))).toEqual([
                [EmbeddedTemplateAst],
@@ -426,15 +448,18 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
            () => {
              var dirA = CompileDirectiveMetadata.create({
                selector: '[a]',
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+               type: new CompileTypeMetadata(
+                   {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
              });
              var dirB = CompileDirectiveMetadata.create({
                selector: '[b]',
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirB'})
+               type: new CompileTypeMetadata(
+                   {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>})
              });
              var dirC = CompileDirectiveMetadata.create({
                selector: '[c]',
-               type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirC'})
+               type: new CompileTypeMetadata(
+                   {moduleUrl: someModuleUrl, name: 'DirC', reference: {} as Type<any>})
              });
              expect(humanizeTplAst(parse('<div a c b a b>', [dirA, dirB, dirC]))).toEqual([
                [ElementAst, 'div'], [AttrAst, 'a', ''], [AttrAst, 'c', ''], [AttrAst, 'b', ''],
@@ -446,11 +471,13 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should locate directives in property bindings', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a=b]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
           });
           var dirB = CompileDirectiveMetadata.create({
             selector: '[b]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirB'})
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>})
           });
           expect(humanizeTplAst(parse('<div [a]="b">', [dirA, dirB]))).toEqual([
             [ElementAst, 'div'],
@@ -462,7 +489,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should locate directives in event bindings', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirB'})
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>})
           });
 
           expect(humanizeTplAst(parse('<div (a)="b">', [dirA]))).toEqual([
@@ -473,7 +501,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should parse directive host properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             host: {'[a]': 'expr'}
           });
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
@@ -485,7 +514,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should parse directive host listeners', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             host: {'(a)': 'expr'}
           });
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
@@ -496,7 +526,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should parse directive properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             inputs: ['aProp']
           });
           expect(humanizeTplAst(parse('<div [aProp]="expr"></div>', [dirA]))).toEqual([
@@ -508,7 +539,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should parse renamed directive properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             inputs: ['b:a']
           });
           expect(humanizeTplAst(parse('<div [a]="expr"></div>', [dirA]))).toEqual([
@@ -519,7 +551,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should parse literal directive properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             inputs: ['a']
           });
           expect(humanizeTplAst(parse('<div a="literal"></div>', [dirA]))).toEqual([
@@ -531,7 +564,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should favor explicit bound properties over literal properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             inputs: ['a']
           });
           expect(humanizeTplAst(parse('<div a="literal" [a]="\'literal2\'"></div>', [dirA])))
@@ -544,7 +578,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should support optional directive properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             inputs: ['a']
           });
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
@@ -560,9 +595,10 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         function createToken(value: string): CompileTokenMetadata {
           let token: CompileTokenMetadata;
           if (value.startsWith('type:')) {
+            const name = value.substring(5);
             token = new CompileTokenMetadata({
-              identifier:
-                  new CompileTypeMetadata({moduleUrl: someModuleUrl, name: value.substring(5)})
+              identifier: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name, reference: name as any as Type<any>})
             });
           } else {
             token = new CompileTokenMetadata({value: value});
@@ -593,10 +629,11 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         function createProvider(
             token: string, {multi = false, deps = []}: {multi?: boolean, deps?: string[]} = {}):
             CompileProviderMetadata {
+          const name = `provider${nextProviderId++}`;
           return new CompileProviderMetadata({
             token: createToken(token),
             multi: multi,
-            useClass: new CompileTypeMetadata({name: `provider${nextProviderId++}`}),
+            useClass: new CompileTypeMetadata({name, reference: name as any as Type<any>}),
             deps: deps.map(createDep)
           });
         }
@@ -611,8 +648,12 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           var isComponent = !selector.startsWith('[');
           return CompileDirectiveMetadata.create({
             selector: selector,
-            type: new CompileTypeMetadata(
-                {moduleUrl: someModuleUrl, name: selector, diDeps: deps.map(createDep)}),
+            type: new CompileTypeMetadata({
+              moduleUrl: someModuleUrl,
+              name: selector,
+              diDeps: deps.map(createDep),
+              reference: selector as any as Type<any>
+            }),
             isComponent: isComponent,
             template: new CompileTemplateMetadata({ngContentSelectors: []}),
             providers: providers,
@@ -860,7 +901,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
         it('should assign references to directives via exportAs', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             exportAs: 'dirA'
           });
           expect(humanizeTplAst(parse('<div a #a="dirA"></div>', [dirA]))).toEqual([
@@ -904,7 +946,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
             isComponent: true,
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
             exportAs: 'dirA',
             template: new CompileTemplateMetadata({ngContentSelectors: []})
           });
@@ -919,7 +962,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         it('should not locate directives in references', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
           });
           expect(humanizeTplAst(parse('<div ref-a>', [dirA]))).toEqual([
             [ElementAst, 'div'], [ReferenceAst, 'a', null]
@@ -945,13 +989,15 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         it('should support references via #...', () => {
           expect(humanizeTplAst(parse('<template #a>', []))).toEqual([
-            [EmbeddedTemplateAst], [ReferenceAst, 'a', identifierToken(Identifiers.TemplateRef)]
+            [EmbeddedTemplateAst],
+            [ReferenceAst, 'a', resolveIdentifierToken(Identifiers.TemplateRef)]
           ]);
         });
 
         it('should support references via ref-...', () => {
           expect(humanizeTplAst(parse('<template ref-a>', []))).toEqual([
-            [EmbeddedTemplateAst], [ReferenceAst, 'a', identifierToken(Identifiers.TemplateRef)]
+            [EmbeddedTemplateAst],
+            [ReferenceAst, 'a', resolveIdentifierToken(Identifiers.TemplateRef)]
           ]);
         });
 
@@ -963,7 +1009,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         it('should not locate directives in variables', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: '[a]',
-            type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+            type: new CompileTypeMetadata(
+                {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
           });
           expect(humanizeTplAst(parse('<template let-a="b"></template>', [dirA]))).toEqual([
             [EmbeddedTemplateAst], [VariableAst, 'a', 'b']
@@ -1005,12 +1052,14 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           it('should locate directives in property bindings', () => {
             var dirA = CompileDirectiveMetadata.create({
               selector: '[a=b]',
-              type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
               inputs: ['a']
             });
             var dirB = CompileDirectiveMetadata.create({
               selector: '[b]',
-              type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirB'})
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>})
             });
             expect(humanizeTplAst(parse('<div template="a b" b>', [dirA, dirB]))).toEqual([
               [EmbeddedTemplateAst], [DirectiveAst, dirA], [BoundDirectivePropertyAst, 'a', 'b'],
@@ -1021,7 +1070,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           it('should not locate directives in variables', () => {
             var dirA = CompileDirectiveMetadata.create({
               selector: '[a]',
-              type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
             });
             expect(humanizeTplAst(parse('<div template="let a=b">', [dirA]))).toEqual([
               [EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']
@@ -1031,7 +1081,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           it('should not locate directives in references', () => {
             var dirA = CompileDirectiveMetadata.create({
               selector: '[a]',
-              type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
             });
             expect(humanizeTplAst(parse('<div ref-a>', [dirA]))).toEqual([
               [ElementAst, 'div'], [ReferenceAst, 'a', null]
@@ -1065,8 +1116,11 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         return CompileDirectiveMetadata.create({
           selector: selector,
           isComponent: true,
-          type:
-              new CompileTypeMetadata({moduleUrl: someModuleUrl, name: `SomeComp${compCounter++}`}),
+          type: new CompileTypeMetadata({
+            moduleUrl: someModuleUrl,
+            name: `SomeComp${compCounter++}`,
+            reference: {} as Type<any>
+          }),
           template: new CompileTemplateMetadata({ngContentSelectors: ngContentSelectors})
         });
       }
@@ -1074,8 +1128,11 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
       function createDir(selector: string): CompileDirectiveMetadata {
         return CompileDirectiveMetadata.create({
           selector: selector,
-          type: new CompileTypeMetadata(
-              {moduleUrl: someModuleUrl, name: `SomeDir${compCounter++}`})
+          type: new CompileTypeMetadata({
+            moduleUrl: someModuleUrl,
+            name: `SomeDir${compCounter++}`,
+            reference: {} as Type<any>
+          })
         });
       }
 
@@ -1242,7 +1299,8 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ER
       it('should report invalid host property names', () => {
         var dirA = CompileDirectiveMetadata.create({
           selector: 'div',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
           host: {'[invalidProp]': 'someProp'}
         });
         expect(() => parse('<div></div>', [dirA])).toThrowError(`Template parse errors:
@@ -1258,7 +1316,8 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
          () => {
            var dirA = CompileDirectiveMetadata.create({
              selector: 'div',
-             type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+             type: new CompileTypeMetadata(
+                 {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
              inputs: ['invalidProp']
            });
            expect(() => parse('<div [invalid-prop]></div>', [dirA])).not.toThrow();
@@ -1268,13 +1327,15 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
         var dirA = CompileDirectiveMetadata.create({
           selector: 'div',
           isComponent: true,
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
         var dirB = CompileDirectiveMetadata.create({
           selector: 'div',
           isComponent: true,
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirB'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
         expect(() => parse('<div>', [dirB, dirA])).toThrowError(`Template parse errors:
@@ -1286,7 +1347,8 @@ More than one component: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
            var dirA = CompileDirectiveMetadata.create({
              selector: '[a]',
              isComponent: true,
-             type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+             type: new CompileTypeMetadata(
+                 {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
              template: new CompileTemplateMetadata({ngContentSelectors: []})
            });
            expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
@@ -1300,7 +1362,8 @@ Property binding a not used by any directive on an embedded template. Make sure 
         var dirA = CompileDirectiveMetadata.create({
           selector: '[a]',
           isComponent: true,
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
         expect(() => parse('<div *a="b"></div>', [dirA])).toThrowError(`Template parse errors:
@@ -1452,12 +1515,14 @@ Property binding a not used by any directive on an embedded template. Make sure 
       it('should support directive', () => {
         var dirA = CompileDirectiveMetadata.create({
           selector: '[a]',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
         });
         var comp = CompileDirectiveMetadata.create({
           selector: 'div',
           isComponent: true,
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'ZComp'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'ZComp', reference: {} as Type<any>}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
         expect(humanizeTplAstSourceSpans(parse('<div a>', [dirA, comp]))).toEqual([
@@ -1469,11 +1534,13 @@ Property binding a not used by any directive on an embedded template. Make sure 
       it('should support directive in namespace', () => {
         var tagSel = CompileDirectiveMetadata.create({
           selector: 'circle',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'elDir'})
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'elDir', reference: {} as Type<any>})
         });
         var attrSel = CompileDirectiveMetadata.create({
           selector: '[href]',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'attrDir'})
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'attrDir', reference: {} as Type<any>})
         });
 
         expect(humanizeTplAstSourceSpans(
@@ -1491,7 +1558,8 @@ Property binding a not used by any directive on an embedded template. Make sure 
       it('should support directive property', () => {
         var dirA = CompileDirectiveMetadata.create({
           selector: 'div',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'}),
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
           inputs: ['aProp']
         });
         expect(humanizeTplAstSourceSpans(parse('<div [aProp]="foo"></div>', [dirA]))).toEqual([
@@ -1506,7 +1574,8 @@ Property binding a not used by any directive on an embedded template. Make sure 
       it('should allow pipes that have been defined as dependencies', () => {
         var testPipe = new CompilePipeMetadata({
           name: 'test',
-          type: new CompileTypeMetadata({moduleUrl: someModuleUrl, name: 'DirA'})
+          type: new CompileTypeMetadata(
+              {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
         });
         expect(() => parse('{{a | test}}', [], [testPipe])).not.toThrow();
       });

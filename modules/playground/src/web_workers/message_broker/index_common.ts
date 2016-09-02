@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {PRIMITIVE, ServiceMessageBrokerFactory} from '@angular/platform-browser';
+import {PRIMITIVE, ServiceMessageBrokerFactory} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 

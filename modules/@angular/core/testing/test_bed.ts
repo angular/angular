@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata} from '../index';
-import {ListWrapper} from '../src/facade/collection';
-import {FunctionWrapper, stringify} from '../src/facade/lang';
-import {Type} from '../src/type';
-
+import {CompilerOptions, ComponentMetadataType, DirectiveMetadataType, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleMetadataType, NgModuleRef, NgZone, OpaqueToken, PipeMetadataType, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
+import {ListWrapper} from './facade/collection';
+import {FunctionWrapper, stringify} from './facade/lang';
 import {MetadataOverride} from './metadata_override';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
@@ -44,7 +42,7 @@ export var ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone'
  */
 export type TestModuleMetadata = {
   providers?: any[]; declarations?: any[]; imports?: any[]; schemas?: Array<SchemaMetadata|any[]>;
-}
+};
 
 /**
  * @experimental

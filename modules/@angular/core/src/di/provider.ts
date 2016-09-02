@@ -46,6 +46,7 @@ export interface TypeProvider extends Type<any> {}
  * Configures the {@link Injector} to return a value for a token.
  *
  * ### Example
+ * ```javascript
  * const injector = Injector.resolveAndCreate([
  *   {provide: String, useValue: 'Hello'}
  * ]);
@@ -74,8 +75,8 @@ export interface ValueProvider {
    * var locale = new OpaqueToken('local');
    *
    * const injector = Injector.resolveAndCreate([
-   *   { provide: locale, useValue: 'en' },
-   *   { provide: locale, useValue: 'sk' },
+   *   { provide: locale, multi: true, useValue: 'en' },
+   *   { provide: locale, multi: true, useValue: 'sk' },
    * ]);
    *
    * const locales: string[] = injector.get(locale);

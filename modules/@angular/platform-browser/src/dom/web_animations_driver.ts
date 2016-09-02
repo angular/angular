@@ -8,9 +8,10 @@
 
 import {AUTO_STYLE} from '@angular/core';
 
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../private_import_core';
+
 import {AnimationDriver} from './animation_driver';
 import {DomAnimatePlayer} from './dom_animate_player';
 import {dashCaseToCamelCase} from './util';

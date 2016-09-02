@@ -23,20 +23,20 @@ export class ExternalClass {
 var testDataIdentifier = new CompileIdentifierMetadata({
   name: 'ExternalClass',
   moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
-  runtime: ExternalClass
+  reference: ExternalClass
 });
 
 var eventEmitterIdentifier = new CompileIdentifierMetadata(
-    {name: 'EventEmitter', moduleUrl: assetUrl('core'), runtime: EventEmitter});
+    {name: 'EventEmitter', moduleUrl: assetUrl('core'), reference: EventEmitter});
 
 var enumIdentifier = new CompileIdentifierMetadata({
   name: 'ViewType.HOST',
   moduleUrl: assetUrl('core', 'linker/view_type'),
-  runtime: ViewType.HOST
+  reference: ViewType.HOST
 });
 
 var baseErrorIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), runtime: BaseError});
+    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), reference: BaseError});
 
 export var codegenExportsVars = [
   'getExpressions',

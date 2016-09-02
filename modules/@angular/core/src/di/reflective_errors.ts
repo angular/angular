@@ -68,8 +68,6 @@ export class AbstractProviderError extends BaseError {
     this.keys.push(key);
     this.message = this.constructResolvingMessage(this.keys);
   }
-
-  get context() { return this.injectors[this.injectors.length - 1].debugContext(); }
 }
 
 /**
@@ -174,8 +172,6 @@ export class InstantiationError extends WrappedError {
   }
 
   get causeKey(): ReflectiveKey { return this.keys[0]; }
-
-  get context() { return this.injectors[this.injectors.length - 1].debugContext(); }
 }
 
 /**

@@ -72,7 +72,7 @@ if (platform == 'node') {
           processOutputEmitterCodeGen,
           [
             'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
-            '@angular/compiler-cli/test/**/*_spec.js'
+            '@angular/compiler-cli/test/**/*_spec.js', '@angular/benchpress/test/**/*_spec.js'
           ]
         ]
       },
@@ -93,6 +93,21 @@ if (platform == 'node') {
         ],
         onChangeCmds: [
           ['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js', '--port=9876'],
+          ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
+        ]
+      },
+      BaseConfig));
+} else if (platform == 'router') {
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onStartCmds: [
+          [
+            'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
+            'modules/@angular/router/karma.conf.js'
+          ],
+        ],
+        onChangeCmds: [
           ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
         ]
       },

@@ -4,7 +4,6 @@ Routing and navigation
 @description
 {@target ts}`import { Routes, RouterModule, ... } from '@angular/router';`{@endtarget}
 {@target js}Available from the `ng.router` namespace{@endtarget}
-{@target dart}`import 'package:angular2/router.dart';`{@endtarget}
 
 
 @cheatsheetItem
@@ -30,17 +29,8 @@ syntax(js):
 ]);
 
 var routing = ng.router.RouterModule.forRoot(routes);`|`ng.router.Routes`
-syntax(dart):
-`@RouteConfig(const [
-  const Route(path: '', component: HomeComponent, name: 'Home'),
-  const Route(path: ':routeParam', component: MyComponent, name: 'MyCmp'),
-  const Route(path: 'staticPath', component: ..., name: 'StaticCmp'),
-  const Route(path: '**', component: ..., name: 'WildcardCmp'),
-  const Route(path: '/oldPath', redirectTo: ['/StaticCmp']),
-  const Route(path: ..., component: ..., data: { message: 'Custom' })
-])class MyComponent() {}`|`@RouteConfig`
 description:
-Configures routes for the application. Supports static, parameterized, redirect and wildcard routes. Also supports custom route data{@target ts js} and resolve{@endtarget}.
+Configures routes for the application. Supports static, parameterized, redirect, and wildcard routes. Also supports custom route data and resolve.
 
 
 @cheatsheetItem
@@ -54,7 +44,7 @@ Marks the location to load the component of the active route.
 
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `
 <a routerLink="/path">
 <a [routerLink]="[ '/path', routeParam ]">
@@ -62,21 +52,14 @@ syntax(ts js):
 <a [routerLink]="[ '/path' ]" [queryParams]="{ page: 1 }">
 <a [routerLink]="[ '/path' ]" fragment="anchor">
 `|`[routerLink]`
-syntax(dart):
-`
-<a [routerLink]="[ '/MyCmp', { routeParam: 'value' } ]">
-<a [routerLink]="[ '/MyCmp', { matrixParam: 'value' } ]">
-`|`[routerLink]`
 description:
-Creates a link to a different view based on a route instruction consisting of a route path, required and optional parameters, query parameters and a fragment. Add the '/' prefix to navigate to a root route; add the './' prefix for a child route; add the '../sibling' prefix for a sibling or parent route.
+Creates a link to a different view based on a route instruction consisting of a route path, required and optional parameters, query parameters, and a fragment. To navigate to a root route, use the `/` prefix; for a child route, use the `./`prefix; for a sibling or parent, use the `../` prefix.
 
 @cheatsheetItem
-syntax(ts js):
+syntax:
 `<a [routerLink]="[ '/path' ]" routerLinkActive="active">`
-syntax(dart):
-`<a [routerLink]="[ '/MyCmp', { myParam: 'value' } ]">`|`routerLink`
 description:
-The provided class(es) will be added to the element when the routerLink becomes the current active route.
+The provided classes are added to the element when the `routerLink` becomes the current active route.
 
 @cheatsheetItem
 syntax(ts):
@@ -96,11 +79,8 @@ syntax(js):
 });
 
 { path: ..., canActivate: [CanActivateGuard] }`|`CanActivate`
-syntax(dart):
-`@CanActivate(() => ...)class MyComponent() {}`|`@CanActivate`
 description:
-{@target js ts}An interface for defining a class that the router should call first to determine if it should activate this component. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
-{@target dart}A component decorator defining a function that the router should call first to determine if it should activate this component. Should return a boolean or a future.{@endtarget}
+An interface for defining a class that the router should call first to determine if it should activate this component. Should return a boolean or an Observable/Promise that resolves to a boolean.
 
 @cheatsheetItem
 syntax(ts):
@@ -121,12 +101,8 @@ syntax(js):
 });
 
 { path: ..., canDeactivate: [CanDeactivateGuard] }`|`CanDeactivate`
-syntax(dart):
-`routerCanDeactivate(nextInstruction, prevInstruction) { ... }`|`routerCanDeactivate`
 description:
-{@target js ts}An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
-{@target dart}
-The router calls the routerCanDeactivate methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a future that completes successfully{@endtarget}.
+An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return a boolean or an Observable/Promise that resolves to a boolean.
 
 @cheatsheetItem
 syntax(ts):
@@ -137,7 +113,8 @@ syntax(ts):
     ): Observable<boolean>|Promise<boolean>|boolean { ... }
 }
 
-{ path: ..., canActivateChild: [CanActivateGuard], children: ... }`|`CanActivateChild`
+{ path: ..., canActivateChild: [CanActivateGuard],
+    children: ... }`|`CanActivateChild`
 syntax(js):
 `var CanActivateChildGuard = ng.core.Class({
   canActivateChild: function(route, state) {
@@ -145,9 +122,10 @@ syntax(js):
   }
 });
 
-{ path: ..., canActivateChild: [CanActivateChildGuard], children: ... }`|`CanActivateChild`
+{ path: ..., canActivateChild: [CanActivateChildGuard],
+    children: ... }`|`CanActivateChild`
 description:
-{@target js ts}An interface for defining a class that the router should call first to determine if it should activate the child route. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
+An interface for defining a class that the router should call first to determine if it should activate the child route. Should return a boolean or an Observable/Promise that resolves to a boolean.
 
 @cheatsheetItem
 syntax(ts):
@@ -168,7 +146,7 @@ syntax(js):
 
 { path: ..., resolve: [ResolveGuard] }`|`Resolve`
 description:
-{@target js ts}An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return an Observable/Promise that resolves a value or a value{@endtarget}
+An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return a value or an Observable/Promise that resolves to a value.
 
 @cheatsheetItem
 syntax(ts):
@@ -188,38 +166,5 @@ syntax(js):
 
 { path: ..., canLoad: [CanLoadGuard], loadChildren: ... }`|`CanLoad`
 description:
-{@target js ts}An interface for defining a class that the router should call first to check if the lazy loaded module should be loaded. Should return an Observable/Promise that resolves a boolean or a boolean{@endtarget}
+An interface for defining a class that the router should call first to check if the lazy loaded module should be loaded. Should return a boolean or an Observable/Promise that resolves to a boolean.
 
-@cheatsheetItem
-syntax(dart):
-`routerOnActivate(nextInstruction, prevInstruction) { ... }`|`routerOnActivate`
-description:
-{@target dart}After navigating to a component, the router calls the component's routerOnActivate method (if defined).{@endtarget}
-
-
-@cheatsheetItem
-syntax(dart):
-`routerCanReuse(nextInstruction, prevInstruction) { ... }`|`routerCanReuse`
-description:
-{@target dart}The router calls a component's routerCanReuse method (if defined) to determine whether to reuse the instance or destroy it and create a new instance. Should return a boolean or a future{@endtarget}.
-
-
-@cheatsheetItem
-syntax(dart):
-`routerOnReuse(nextInstruction, prevInstruction) { ... }`|`routerOnReuse`
-description:
-{@target dart}The router calls the component's routerOnReuse method (if defined) when it re-uses a component instance.{@endtarget}
-
-
-@cheatsheetItem
-syntax(dart):
-`routerCanDeactivate(nextInstruction, prevInstruction) { ... }`|`routerCanDeactivate`
-description:
-{@target dart}The router calls the routerCanDeactivate methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a future that completes successfully.{@endtarget}
-
-
-@cheatsheetItem
-syntax(dart):
-`routerOnDeactivate(nextInstruction, prevInstruction) { ... }`|`routerOnDeactivate`
-description:
-{@target dart}Called before the directive is removed as the result of a route change. May return a future that pauses removing the directive until the future completes.{@endtarget}

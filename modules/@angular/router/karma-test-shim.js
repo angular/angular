@@ -34,7 +34,15 @@ System.config(
       '@angular': 'dist/all/@angular'
     },
     packages: {
+      '@angular/core/testing': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
       '@angular/core': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
+      '@angular/compiler/testing': {
         main: 'index.js',
         defaultExtension: 'js'
       },
@@ -42,7 +50,15 @@ System.config(
         main: 'index.js',
         defaultExtension: 'js'
       },
+      '@angular/common/testing': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
       '@angular/common': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
+      '@angular/platform-browser/testing': {
         main: 'index.js',
         defaultExtension: 'js'
       },
@@ -50,7 +66,15 @@ System.config(
         main: 'index.js',
         defaultExtension: 'js'
       },
+      '@angular/platform-browser-dynamic/testing': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
       '@angular/platform-browser-dynamic': {
+        main: 'index.js',
+        defaultExtension: 'js'
+      },
+      '@angular/router/testing': {
         main: 'index.js',
         defaultExtension: 'js'
       },

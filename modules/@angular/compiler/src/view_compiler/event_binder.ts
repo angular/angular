@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationOutput} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {AnimationOutput} from '../private_import_core';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileBinding} from './compile_binding';
@@ -130,7 +130,7 @@ export class CompileEventListener {
                        'registerAnimationOutput',
                        [
                          this.compileElement.renderNode,
-                         o.importExpr(Identifiers.AnimationOutput).instantiate([
+                         o.importExpr(resolveIdentifier(Identifiers.AnimationOutput)).instantiate([
                            o.literal(output.name), o.literal(output.phase)
                          ]),
                          outputListener
@@ -165,7 +165,7 @@ export function collectEventListeners(
   });
   dirs.forEach((directiveAst) => {
     var directiveInstance =
-        compileElement.instances.get(identifierToken(directiveAst.directive.type));
+        compileElement.instances.get(identifierToken(directiveAst.directive.type).reference);
     directiveAst.hostEvents.forEach((hostEvent) => {
       compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
       var listener = CompileEventListener.getOrCreate(

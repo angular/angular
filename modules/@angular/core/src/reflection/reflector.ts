@@ -176,6 +176,13 @@ export class Reflector extends ReflectorReader {
   _containsReflectionInfo(typeOrFunc: any) { return this._injectableInfo.has(typeOrFunc); }
 
   importUri(type: any): string { return this.reflectionCapabilities.importUri(type); }
+
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
+    return this.reflectionCapabilities.resolveIdentifier(name, moduleUrl, runtime);
+  }
+  resolveEnum(identifier: any, name: string): any {
+    return this.reflectionCapabilities.resolveEnum(identifier, name);
+  }
 }
 
 function _mergeMaps(target: Map<string, Function>, config: {[key: string]: Function}): void {

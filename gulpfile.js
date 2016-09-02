@@ -12,7 +12,7 @@ const os = require('os');
 
 const srcsToFmt =
     ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts',
-    'modules/benchpress/**/*.ts', 'modules/playground/**/*.ts'];
+    'modules/playground/**/*.ts', 'modules/benchmarks/**/*.ts', 'modules/e2e_util/**/*.ts'];
 
 gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');
@@ -30,22 +30,24 @@ gulp.task('format', () => {
 
 const entrypoints = [
   'dist/packages-dist/core/index.d.ts',
-  'dist/packages-dist/core/testing.d.ts',
+  'dist/packages-dist/core/testing/index.d.ts',
   'dist/packages-dist/common/index.d.ts',
-  'dist/packages-dist/common/testing.d.ts',
+  'dist/packages-dist/common/testing/index.d.ts',
   // The API surface of the compiler is currently unstable - all of the important APIs are exposed
   // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/upgrade/index.d.ts',
   'dist/packages-dist/platform-browser/index.d.ts',
-  'dist/packages-dist/platform-browser/testing.d.ts',
+  'dist/packages-dist/platform-browser/testing/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/testing.d.ts',
+  'dist/packages-dist/platform-browser-dynamic/testing/index.d.ts',
+  'dist/packages-dist/platform-webworker/index.d.ts',
+  'dist/packages-dist/platform-webworker-dynamic/index.d.ts',
   'dist/packages-dist/platform-server/index.d.ts',
-  'dist/packages-dist/platform-server/testing.d.ts',
+  'dist/packages-dist/platform-server/testing/index.d.ts',
   'dist/packages-dist/http/index.d.ts',
-  'dist/packages-dist/http/testing.d.ts',
+  'dist/packages-dist/http/testing/index.d.ts',
   'dist/packages-dist/forms/index.d.ts',
   'dist/packages-dist/router/index.d.ts'
 ];
@@ -102,9 +104,10 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
     .pipe(tslint({
       tslint: require('tslint').default,
       configuration: tslintConfig,
-      rulesDirectory: 'dist/tools/tslint'
+      rulesDirectory: 'dist/tools/tslint',
+      formatter: 'prose'
     }))
-    .pipe(tslint.report('prose', {emitError: true}));
+    .pipe(tslint.report({emitError: true}));
 });
 
 gulp.task('tools:build', (done) => { tsc('tools/', done); });

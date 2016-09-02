@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
+import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 
 import {AppModule} from './index_common';
 

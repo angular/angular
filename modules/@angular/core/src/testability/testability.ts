@@ -11,7 +11,17 @@ import {Map, MapWrapper} from '../facade/collection';
 import {scheduleMicroTask} from '../facade/lang';
 import {NgZone} from '../zone/ng_zone';
 
-
+/**
+ * Testability API.
+ * `declare` keyword causes tsickle to generate externs, so these methods are
+ * not renamed by Closure Compiler.
+ * @experimental
+ */
+export declare interface PublicTestability {
+  isStable(): boolean;
+  whenStable(callback: Function): void;
+  findProviders(using: any, provider: string, exactMatch: boolean): any[];
+}
 
 /**
  * The Testability service provides testing hooks that can be accessed from
@@ -20,7 +30,7 @@ import {NgZone} from '../zone/ng_zone';
  * @experimental
  */
 @Injectable()
-export class Testability {
+export class Testability implements PublicTestability {
   /** @internal */
   _pendingCount: number = 0;
   /** @internal */

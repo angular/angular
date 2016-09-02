@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Input, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, Directive, ElementRef, Input, NO_ERRORS_SCHEMA, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 export function main() {
   describe('ViewChild', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [ViewChildTypeSelectorComponent, ViewChildStringSelectorComponent, Simple]
+        declarations: [ViewChildTypeSelectorComponent, ViewChildStringSelectorComponent, Simple],
+        schemas: [NO_ERRORS_SCHEMA],
       });
     });
 
@@ -42,7 +43,8 @@ export function main() {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations:
-            [ViewChildrenTypeSelectorComponent, ViewChildrenStringSelectorComponent, Simple]
+            [ViewChildrenTypeSelectorComponent, ViewChildrenStringSelectorComponent, Simple],
+        schemas: [NO_ERRORS_SCHEMA],
       });
     });
 
@@ -61,7 +63,8 @@ export function main() {
       TestBed.overrideComponent(
           ViewChildrenStringSelectorComponent,
           {set: {template: `<simple #child1></simple><simple #child2></simple>`}});
-      const view = TestBed.createComponent(ViewChildrenStringSelectorComponent);
+      const view = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                       .createComponent(ViewChildrenStringSelectorComponent);
       view.detectChanges();
       expect(view.componentInstance.children).toBeDefined();
       expect(view.componentInstance.children.length).toBe(2);

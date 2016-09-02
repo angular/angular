@@ -18,7 +18,7 @@ function publishRepo {
     cd $REPO_DIR && \
     git init && \
     git remote add origin $REPO_URL && \
-    git fetch origin master && \
+    git fetch origin master --depth=1 && \
     git checkout origin/master && \
     git checkout -b master
   )
@@ -31,13 +31,12 @@ function publishRepo {
   BUILD_VER="2.0.0-${SHORT_SHA}"
   if [[ ${TRAVIS} ]]; then
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
-    UMD=$(find $REPO_DIR/ -type f -name "*umd.js" -print0)
-    if [[ ${UMD} ]]; then
-      sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD}
-    fi
-  else
-    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
-    find $REPO_DIR/ -type f -name "*umd.js" -print0 | xargs -0 sed -i '' "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
+
+    # Find umd.js and umd.min.js
+    UMD_FILES=$(find $REPO_DIR/ -type f -name "*.umd*.js" -print)
+    for UMD_FILE in ${UMD_FILES}; do
+      sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD_FILE}
+    done
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
@@ -50,9 +49,8 @@ function publishRepo {
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" && \
-    git push origin master && \
     git tag "${BUILD_VER}" && \
-    git push origin --tags --force
+    git push origin master --tags --force
   )
 }
 

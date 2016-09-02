@@ -7,7 +7,7 @@
  */
 
 import {NgLocalization} from '@angular/common';
-import {ResourceLoader, i18n} from '@angular/compiler';
+import {ResourceLoader} from '@angular/compiler';
 import {Component, DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';

@@ -4,7 +4,6 @@ Directive configuration
 @description
 {@target ts}`@Directive({ property1: value1, ... })`{@endtarget}
 {@target js}`ng.core.Directive({ property1: value1, ... }).Class({...})`{@endtarget}
-{@target dart}`@Directive(property1: value1, ...)`{@endtarget}
 
 @cheatsheetItem
 syntax:
@@ -16,9 +15,9 @@ Specifies a CSS selector that identifies this directive within a template. Suppo
 Does not support parent-child relationship selectors.
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `providers: [MyService, { provide: ... }]`|`providers:`
 syntax(js):
 `providers: [MyService, { provide: ... }]`|`providers:`
 description:
-Array of dependency injection providers for this directive and its children.
+List of dependency injection providers for this directive and its children.

@@ -38,7 +38,7 @@ import {Lexer} from './expression_parser/lexer';
 import {DirectiveResolver} from './directive_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {NgModuleResolver} from './ng_module_resolver';
-import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from '../core_private';
+import {Console, Reflector, reflector, ReflectorReader, ReflectionCapabilities} from './private_import_core';
 import {ResourceLoader} from './resource_loader';
 import * as i18n from './i18n/index';
 
@@ -61,9 +61,9 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   Parser,
   HtmlParser,
   {
-    provide: i18n.HtmlParser,
+    provide: i18n.I18NHtmlParser,
     useFactory: (parser: HtmlParser, translations: string, format: string) =>
-                    new i18n.HtmlParser(parser, translations, format),
+                    new i18n.I18NHtmlParser(parser, translations, format),
     deps: [
       HtmlParser,
       [new OptionalMetadata(), new Inject(TRANSLATIONS)],

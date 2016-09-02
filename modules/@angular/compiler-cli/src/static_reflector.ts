@@ -8,7 +8,7 @@
 
 import {AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, NgModuleMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
-import {ReflectorReader} from './core_private';
+import {ReflectorReader} from './private_import_core';
 
 const SUPPORTED_SCHEMA_VERSION = 1;
 
@@ -72,6 +72,16 @@ export class StaticReflector implements ReflectorReader {
   importUri(typeOrFunc: StaticSymbol): string {
     var staticSymbol = this.host.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
     return staticSymbol ? staticSymbol.filePath : null;
+  }
+
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
+    const result = this.host.findDeclaration(moduleUrl, name, '');
+    return result;
+  }
+
+  resolveEnum(enumIdentifier: any, name: string): any {
+    const staticSymbol: StaticSymbol = enumIdentifier;
+    return this.host.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
   }
 
   public annotations(type: StaticSymbol): any[] {

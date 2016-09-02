@@ -8,10 +8,10 @@
 
 import {AnimationPlayer} from '@angular/core';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
+import {AnimationDriver} from '@angular/platform-browser';
 
-import {AnimationKeyframe, AnimationStyles} from '../core_private';
-import {AnimationDriver} from '../src/dom/animation_driver';
-import {StringMapWrapper} from '../src/facade/collection';
+import {StringMapWrapper} from './facade/collection';
+import {AnimationKeyframe, AnimationStyles} from './private_import_core';
 
 export class MockAnimationDriver extends AnimationDriver {
   public log: {[key: string]: any}[] = [];
@@ -39,8 +39,8 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
   var flatStyles: {[key: string]: any} = {};
-  styles.styles.forEach(entry => StringMapWrapper.forEach(entry, (val: any, prop: string) => {
-    flatStyles[prop] = val;
-  }));
+  styles.styles.forEach((entry: {[key: string]: string | number;}) => {
+    StringMapWrapper.forEach(entry, (val: any, prop: string) => { flatStyles[prop] = val; });
+  });
   return flatStyles;
 }

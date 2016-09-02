@@ -8,13 +8,13 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../../core_private';
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken} from '../identifiers';
+import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ProviderAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {createDiTokenExpression} from '../util';
 
@@ -148,7 +148,8 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
                   'projectNodes',
                   [
                     parentRenderNode,
-                    o.importExpr(Identifiers.flattenNestedViewRenderNodes).callFn([nodesExpression])
+                    o.importExpr(resolveIdentifier(Identifiers.flattenNestedViewRenderNodes))
+                        .callFn([nodesExpression])
                   ])
               .toStmt());
     } else if (this._isRootNode(parent)) {
@@ -396,7 +397,8 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
             .set(o.literalArr(
                 view.nodes.map(createStaticNodeDebugInfo),
                 new o.ArrayType(
-                    new o.ExternalType(Identifiers.StaticNodeDebugInfo), [o.TypeModifier.Const])))
+                    new o.ExternalType(resolveIdentifier(Identifiers.StaticNodeDebugInfo)),
+                    [o.TypeModifier.Const])))
             .toDeclStmt(null, [o.StmtModifier.Final]));
   }
 
@@ -404,8 +406,9 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
   var renderCompTypeVar: o.ReadVarExpr =
       o.variable(`renderType_${view.component.type.name}`);  // fix highlighting: `
   if (view.viewIndex === 0) {
-    targetStatements.push(renderCompTypeVar.set(o.NULL_EXPR)
-                              .toDeclStmt(o.importType(Identifiers.RenderComponentType)));
+    targetStatements.push(
+        renderCompTypeVar.set(o.NULL_EXPR)
+            .toDeclStmt(o.importType(resolveIdentifier(Identifiers.RenderComponentType))));
   }
 
   var viewClass = createViewClass(view, renderCompTypeVar, nodeDebugInfosVar);
@@ -429,23 +432,29 @@ function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
               [varName, isPresent(token) ? createDiTokenExpression(token) : o.NULL_EXPR]);
         });
   }
-  return o.importExpr(Identifiers.StaticNodeDebugInfo)
+  return o.importExpr(resolveIdentifier(Identifiers.StaticNodeDebugInfo))
       .instantiate(
           [
             o.literalArr(providerTokens, new o.ArrayType(o.DYNAMIC_TYPE, [o.TypeModifier.Const])),
             componentToken,
             o.literalMap(varTokenEntries, new o.MapType(o.DYNAMIC_TYPE, [o.TypeModifier.Const]))
           ],
-          o.importType(Identifiers.StaticNodeDebugInfo, null, [o.TypeModifier.Const]));
+          o.importType(
+              resolveIdentifier(Identifiers.StaticNodeDebugInfo), null, [o.TypeModifier.Const]));
 }
 
 function createViewClass(
     view: CompileView, renderCompTypeVar: o.ReadVarExpr,
     nodeDebugInfosVar: o.Expression): o.ClassStmt {
   var viewConstructorArgs = [
-    new o.FnParam(ViewConstructorVars.viewUtils.name, o.importType(Identifiers.ViewUtils)),
-    new o.FnParam(ViewConstructorVars.parentInjector.name, o.importType(Identifiers.Injector)),
-    new o.FnParam(ViewConstructorVars.declarationEl.name, o.importType(Identifiers.AppElement))
+    new o.FnParam(
+        ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
+    new o.FnParam(
+        ViewConstructorVars.parentInjector.name,
+        o.importType(resolveIdentifier(Identifiers.Injector))),
+    new o.FnParam(
+        ViewConstructorVars.declarationEl.name,
+        o.importType(resolveIdentifier(Identifiers.AppElement)))
   ];
   var superConstructorArgs = [
     o.variable(view.className), renderCompTypeVar, ViewTypeEnum.fromValue(view.viewType),
@@ -462,7 +471,7 @@ function createViewClass(
   var viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
-        generateCreateMethod(view), o.importType(Identifiers.AppElement)),
+        generateCreateMethod(view), o.importType(resolveIdentifier(Identifiers.AppElement))),
     new o.ClassMethod(
         'injectorGetInternal',
         [
@@ -482,17 +491,23 @@ function createViewClass(
   ].concat(view.eventHandlerMethods);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
   var viewClass = new o.ClassStmt(
-      view.className, o.importExpr(superClass, [getContextType(view)]), view.fields, view.getters,
-      viewConstructor, viewMethods.filter((method) => method.body.length > 0));
+      view.className, o.importExpr(resolveIdentifier(superClass), [getContextType(view)]),
+      view.fields, view.getters, viewConstructor,
+      viewMethods.filter((method) => method.body.length > 0));
   return viewClass;
 }
 
 function createViewFactory(
     view: CompileView, viewClass: o.ClassStmt, renderCompTypeVar: o.ReadVarExpr): o.Statement {
   var viewFactoryArgs = [
-    new o.FnParam(ViewConstructorVars.viewUtils.name, o.importType(Identifiers.ViewUtils)),
-    new o.FnParam(ViewConstructorVars.parentInjector.name, o.importType(Identifiers.Injector)),
-    new o.FnParam(ViewConstructorVars.declarationEl.name, o.importType(Identifiers.AppElement))
+    new o.FnParam(
+        ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
+    new o.FnParam(
+        ViewConstructorVars.parentInjector.name,
+        o.importType(resolveIdentifier(Identifiers.Injector))),
+    new o.FnParam(
+        ViewConstructorVars.declarationEl.name,
+        o.importType(resolveIdentifier(Identifiers.AppElement)))
   ];
   var initRenderCompTypeStmts: any[] = [];
   var templateUrlInfo: string;
@@ -522,7 +537,7 @@ function createViewFactory(
                                o.variable(viewClass.name)
                                    .instantiate(viewClass.constructorMethod.params.map(
                                        (param) => o.variable(param.name))))]),
-          o.importType(Identifiers.AppView, [getContextType(view)]))
+          o.importType(resolveIdentifier(Identifiers.AppView), [getContextType(view)]))
       .toDeclStmt(view.viewFactory.name, [o.StmtModifier.Final]);
 }
 
@@ -559,12 +574,14 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
 
 function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   var stmts: any[] = [];
-  if (view.detectChangesInInputsMethod.isEmpty() && view.updateContentQueriesMethod.isEmpty() &&
+  if (view.animationBindingsMethod.isEmpty() && view.detectChangesInInputsMethod.isEmpty() &&
+      view.updateContentQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
       view.detectChangesRenderPropertiesMethod.isEmpty() &&
       view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty()) {
     return stmts;
   }
+  ListWrapper.addAll(stmts, view.animationBindingsMethod.finish());
   ListWrapper.addAll(stmts, view.detectChangesInInputsMethod.finish());
   stmts.push(
       o.THIS_EXPR.callMethod('detectContentChildrenChanges', [DetectChangesVars.throwOnChange])
@@ -589,12 +606,14 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
     varStmts.push(DetectChangesVars.changed.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE));
   }
   if (SetWrapper.has(readVars, DetectChangesVars.changes.name)) {
-    varStmts.push(DetectChangesVars.changes.set(o.NULL_EXPR)
-                      .toDeclStmt(new o.MapType(o.importType(Identifiers.SimpleChange))));
+    varStmts.push(
+        DetectChangesVars.changes.set(o.NULL_EXPR)
+            .toDeclStmt(new o.MapType(o.importType(resolveIdentifier(Identifiers.SimpleChange)))));
   }
   if (SetWrapper.has(readVars, DetectChangesVars.valUnwrapper.name)) {
     varStmts.push(
-        DetectChangesVars.valUnwrapper.set(o.importExpr(Identifiers.ValueUnwrapper).instantiate([]))
+        DetectChangesVars.valUnwrapper
+            .set(o.importExpr(resolveIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
             .toDeclStmt(null, [o.StmtModifier.Final]));
   }
   return varStmts.concat(stmts);

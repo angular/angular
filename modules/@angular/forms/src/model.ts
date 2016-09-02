@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PromiseObservable} from 'rxjs/observable/PromiseObservable';
+import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
@@ -63,7 +63,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
 }
 
 function toObservable(r: any): Observable<any> {
-  return isPromise(r) ? PromiseObservable.create(r) : r;
+  return isPromise(r) ? fromPromise(r) : r;
 }
 
 function coerceToValidator(validator: ValidatorFn | ValidatorFn[]): ValidatorFn {
@@ -253,6 +253,12 @@ export abstract class AbstractControl {
     }
   }
 
+  /** @internal */
+  _updateTreeValidity({emitEvent}: {emitEvent?: boolean} = {emitEvent: true}) {
+    this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity({emitEvent}));
+    this.updateValueAndValidity({onlySelf: true, emitEvent});
+  }
+
   private _runValidator(): {[key: string]: any} {
     return isPresent(this.validator) ? this.validator(this) : null;
   }
@@ -354,10 +360,10 @@ export abstract class AbstractControl {
 
 
   private _calculateStatus(): string {
+    if (this._allControlsDisabled()) return DISABLED;
     if (isPresent(this._errors)) return INVALID;
     if (this._anyControlsHaveStatus(PENDING)) return PENDING;
     if (this._anyControlsHaveStatus(INVALID)) return INVALID;
-    if (this._allControlsDisabled()) return DISABLED;
     return VALID;
   }
 

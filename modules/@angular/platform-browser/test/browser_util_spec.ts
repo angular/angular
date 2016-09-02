@@ -23,7 +23,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: true
+        isChromeDesktop: true,
+        isOldChrome: false
       },
       {
         name: 'Chrome mobile',
@@ -35,7 +36,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Firefox',
@@ -47,7 +49,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE9',
@@ -59,7 +62,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE10',
@@ -71,7 +75,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE11',
@@ -83,7 +88,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IEMobile',
@@ -95,7 +101,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Edge',
@@ -107,7 +114,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.1',
@@ -119,7 +127,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.2',
@@ -131,7 +140,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.3',
@@ -143,7 +153,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.4',
@@ -155,7 +166,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: true
       },
       {
         name: 'Safari7',
@@ -167,7 +179,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Safari8',
@@ -179,7 +192,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS7',
@@ -191,7 +205,8 @@ export function main() {
         isWebkit: true,
         isIOS7: true,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS8',
@@ -203,7 +218,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       }
     ];
 
@@ -218,6 +234,7 @@ export function main() {
         expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
         expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
         expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
+        expect(bd.isOldChrome).toBe(StringMapWrapper.get(browser, 'isOldChrome'));
       });
     });
   });

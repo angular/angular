@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/map';
-
 import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
+import {map} from 'rxjs/operator/map';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -1227,7 +1226,14 @@ describe('Integration', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
             providers: [
-              {provide: 'alwaysFalse', useValue: (a: any) => false},
+              {provide: 'alwaysFalse', useValue: (a: any) => false}, {
+                provide: 'returnFalseAndNavigate',
+                useFactory: (router: any) => (a: any) => {
+                  router.navigate(['blank']);
+                  return false;
+                },
+                deps: [Router]
+              },
               {provide: 'alwaysTrue', useValue: (a: any) => true}
             ]
           });
@@ -1275,7 +1281,6 @@ describe('Integration', () => {
 
                  recordedEvents.splice(0);
 
-
                  // successful navigation
                  router.navigateByUrl('/lazyTrue/loaded');
                  advance(fixture);
@@ -1287,6 +1292,32 @@ describe('Integration', () => {
                    [NavigationEnd, '/lazyTrue/loaded']
                  ]);
                })));
+
+        it('should support navigating from within the guard',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([
+               {path: 'lazyFalse', canLoad: ['returnFalseAndNavigate'], loadChildren: 'lazyFalse'},
+               {path: 'blank', component: BlankCmp}
+             ]);
+
+             const recordedEvents: any[] = [];
+             router.events.forEach(e => recordedEvents.push(e));
+
+
+             router.navigateByUrl('/lazyFalse/loaded');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/blank');
+
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/lazyFalse/loaded'], [NavigationStart, '/blank'],
+               [RoutesRecognized, '/blank'], [NavigationCancel, '/lazyFalse/loaded'],
+               [NavigationEnd, '/blank']
+             ]);
+           })));
       });
     });
 
@@ -1425,7 +1456,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
-         const native = fixture.debugElement.nativeElement.querySelector('link-parent');
+         const native = fixture.debugElement.nativeElement.querySelector('#link-parent');
          expect(native.className).toEqual('active');
 
          router.navigateByUrl('/team/22/link/simple');
@@ -1759,7 +1790,7 @@ class TeamCmp {
   recordedParams: Params[] = [];
 
   constructor(public route: ActivatedRoute) {
-    this.id = route.params.map(p => p['id']);
+    this.id = map.call(route.params, (p: any) => p['id']);
     route.params.forEach(_ => this.recordedParams.push(_));
   }
 }
@@ -1770,7 +1801,7 @@ class UserCmp {
   recordedParams: Params[] = [];
 
   constructor(route: ActivatedRoute) {
-    this.name = route.params.map(p => p['name']);
+    this.name = map.call(route.params, (p: any) => p['name']);
     route.params.forEach(_ => this.recordedParams.push(_));
   }
 }
@@ -1786,7 +1817,7 @@ class QueryParamsAndFragmentCmp {
   fragment: Observable<string>;
 
   constructor(route: ActivatedRoute) {
-    this.name = route.queryParams.map(p => p['name']);
+    this.name = map.call(route.queryParams, (p: any) => p['name']);
     this.fragment = route.fragment;
   }
 }
@@ -1814,9 +1845,9 @@ class LinkInNgIf {
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet>
-                    <link-parent routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
-                      <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
-                    </link-parent>`
+             <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
+               <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
+             </div>`
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;

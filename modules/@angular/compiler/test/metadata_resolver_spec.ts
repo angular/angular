@@ -27,7 +27,7 @@ export function main() {
            expect(meta.selector).toEqual('someSelector');
            expect(meta.exportAs).toEqual('someExportAs');
            expect(meta.isComponent).toBe(true);
-           expect(meta.type.runtime).toBe(ComponentWithEverything);
+           expect(meta.type.reference).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
            expect(meta.type.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
            expect(meta.changeDetection).toBe(ChangeDetectionStrategy.Default);

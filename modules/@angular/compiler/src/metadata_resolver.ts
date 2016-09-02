@@ -8,17 +8,17 @@
 
 import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
 
-import {LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from '../core_private';
 import {StringMapWrapper} from '../src/facade/collection';
 
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveResolver} from './directive_resolver';
 import {isArray, isBlank, isPresent, isString, stringify} from './facade/lang';
-import {Identifiers, identifierToken} from './identifiers';
+import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
+import {LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {getUrlScheme} from './url_resolver';
 import {MODULE_SUFFIX, ValueTransformer, sanitizeIdentifier, visitValue} from './util';
@@ -328,7 +328,8 @@ export class CompileMetadataResolver {
         exportedPipes: exportedPipes,
         importedModules: importedModules,
         exportedModules: exportedModules,
-        transitiveModule: transitiveModule
+        transitiveModule: transitiveModule,
+        id: meta.id,
       });
       transitiveModule.modules.push(compileMeta);
       this._verifyModule(compileMeta);
@@ -340,15 +341,15 @@ export class CompileMetadataResolver {
 
   private _verifyModule(moduleMeta: cpl.CompileNgModuleMetadata) {
     moduleMeta.exportedDirectives.forEach((dirMeta) => {
-      if (!moduleMeta.transitiveModule.directivesSet.has(dirMeta.type.runtime)) {
+      if (!moduleMeta.transitiveModule.directivesSet.has(dirMeta.type.reference)) {
         throw new Error(
-            `Can't export directive ${stringify(dirMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
+            `Can't export directive ${stringify(dirMeta.type.reference)} from ${stringify(moduleMeta.type.reference)} as it was neither declared nor imported!`);
       }
     });
     moduleMeta.exportedPipes.forEach((pipeMeta) => {
-      if (!moduleMeta.transitiveModule.pipesSet.has(pipeMeta.type.runtime)) {
+      if (!moduleMeta.transitiveModule.pipesSet.has(pipeMeta.type.reference)) {
         throw new Error(
-            `Can't export pipe ${stringify(pipeMeta.type.runtime)} from ${stringify(moduleMeta.type.runtime)} as it was neither declared nor imported!`);
+            `Can't export pipe ${stringify(pipeMeta.type.reference)} from ${stringify(moduleMeta.type.reference)} as it was neither declared nor imported!`);
       }
     });
   }
@@ -397,11 +398,11 @@ export class CompileMetadataResolver {
       dirMeta: cpl.CompileDirectiveMetadata, moduleType: any,
       transitiveModule: cpl.TransitiveCompileNgModuleMetadata,
       declaredDirectives: cpl.CompileDirectiveMetadata[], force: boolean = false): boolean {
-    if (force || !transitiveModule.directivesSet.has(dirMeta.type.runtime)) {
-      transitiveModule.directivesSet.add(dirMeta.type.runtime);
+    if (force || !transitiveModule.directivesSet.has(dirMeta.type.reference)) {
+      transitiveModule.directivesSet.add(dirMeta.type.reference);
       transitiveModule.directives.push(dirMeta);
       declaredDirectives.push(dirMeta);
-      this._addTypeToModule(dirMeta.type.runtime, moduleType);
+      this._addTypeToModule(dirMeta.type.reference, moduleType);
       return true;
     }
     return false;
@@ -411,11 +412,11 @@ export class CompileMetadataResolver {
       pipeMeta: cpl.CompilePipeMetadata, moduleType: any,
       transitiveModule: cpl.TransitiveCompileNgModuleMetadata,
       declaredPipes: cpl.CompilePipeMetadata[], force: boolean = false): boolean {
-    if (force || !transitiveModule.pipesSet.has(pipeMeta.type.runtime)) {
-      transitiveModule.pipesSet.add(pipeMeta.type.runtime);
+    if (force || !transitiveModule.pipesSet.has(pipeMeta.type.reference)) {
+      transitiveModule.pipesSet.add(pipeMeta.type.reference);
       transitiveModule.pipes.push(pipeMeta);
       declaredPipes.push(pipeMeta);
-      this._addTypeToModule(pipeMeta.type.runtime, moduleType);
+      this._addTypeToModule(pipeMeta.type.reference, moduleType);
       return true;
     }
     return false;
@@ -427,7 +428,7 @@ export class CompileMetadataResolver {
     return new cpl.CompileTypeMetadata({
       name: this.sanitizeTokenName(type),
       moduleUrl: moduleUrl,
-      runtime: type,
+      reference: type,
       diDeps: this.getDependenciesMetadata(type, dependencies),
       lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, type)),
     });
@@ -439,7 +440,7 @@ export class CompileMetadataResolver {
     return new cpl.CompileFactoryMetadata({
       name: this.sanitizeTokenName(factory),
       moduleUrl: moduleUrl,
-      runtime: factory,
+      reference: factory,
       diDeps: this.getDependenciesMetadata(factory, dependencies)
     });
   }
@@ -542,7 +543,7 @@ export class CompileMetadataResolver {
     } else {
       compileToken = new cpl.CompileTokenMetadata({
         identifier: new cpl.CompileIdentifierMetadata({
-          runtime: token,
+          reference: token,
           name: this.sanitizeTokenName(token),
           moduleUrl: staticTypeModuleUrl(token)
         })
@@ -565,7 +566,8 @@ export class CompileMetadataResolver {
         compileProvider = this.getProvidersMetadata(provider, targetEntryComponents, debugInfo);
       } else if (provider instanceof cpl.ProviderMeta) {
         let tokenMeta = this.getTokenMetadata(provider.token);
-        if (tokenMeta.equalsTo(identifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS))) {
+        if (tokenMeta.reference ===
+            resolveIdentifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS).reference) {
           targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
         } else {
           compileProvider = this.getProviderMetadata(provider);
@@ -608,7 +610,7 @@ export class CompileMetadataResolver {
     }
     convertToCompileValue(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
-      let dirMeta = this.getDirectiveMetadata(identifier.runtime, false);
+      let dirMeta = this.getDirectiveMetadata(identifier.reference, false);
       if (dirMeta) {
         components.push(dirMeta.type);
       }
@@ -682,8 +684,8 @@ function getTransitiveModules(
     targetModules: cpl.CompileNgModuleMetadata[] = [],
     visitedModules = new Set<Type<any>>()): cpl.CompileNgModuleMetadata[] {
   modules.forEach((ngModule) => {
-    if (!visitedModules.has(ngModule.type.runtime)) {
-      visitedModules.add(ngModule.type.runtime);
+    if (!visitedModules.has(ngModule.type.reference)) {
+      visitedModules.add(ngModule.type.reference);
       const nestedModules = includeImports ?
           ngModule.importedModules.concat(ngModule.exportedModules) :
           ngModule.exportedModules;
@@ -745,9 +747,9 @@ class _CompileValueConverter extends ValueTransformer {
     let identifier: cpl.CompileIdentifierMetadata;
     if (cpl.isStaticSymbol(value)) {
       identifier = new cpl.CompileIdentifierMetadata(
-          {name: value.name, moduleUrl: value.filePath, runtime: value});
+          {name: value.name, moduleUrl: value.filePath, reference: value});
     } else {
-      identifier = new cpl.CompileIdentifierMetadata({runtime: value});
+      identifier = new cpl.CompileIdentifierMetadata({reference: value});
     }
     targetIdentifiers.push(identifier);
     return identifier;

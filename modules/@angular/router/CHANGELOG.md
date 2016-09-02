@@ -1,3 +1,27 @@
+# 3.0.0-rc.2 (2016-08-31)
+
+## Features
+* feat(router): use ES modules for primary build in the npm package ([#11120](https://github.com/angular/angular/issues/11120)) ([9796579](https://github.com/angular/angular/commit/9796579))
+
+## Bug Fixes
+
+* fix(router): use encodeUri/decodeUri to encode fragment ([bb9dfbc](https://github.com/angular/angular/commit/bb9dfbc))
+* fix(router): add an option to disable initial navigation ([a2deafc](https://github.com/angular/angular/commit/a2deafc))
+* fix(router): canLoad should cancel a navigation instead of failing it ([#11001](https://github.com/angular/angular/issues/11001)) ([f1ce760](https://github.com/angular/angular/commit/f1ce760))
+* fix(router): do not use rx/add/operator ([c350ba2](https://github.com/angular/angular/commit/c350ba2))
+* fix(router): fix the order of guards, so canActivateChild runs before canActivate ([0bb516f](https://github.com/angular/angular/commit/0bb516f))
+* fix(router): lazy loading keeps refetching modules ([#10707](https://github.com/angular/angular/issues/10707)) ([cc6749c](https://github.com/angular/angular/commit/cc6749c))
+* fix(router): location changes and redirects break the back button ([#10742](https://github.com/angular/angular/issues/10742)) ([04c6b2f](https://github.com/angular/angular/commit/04c6b2f))
+* fix(router): make routerLinkActiveOptions public ([#10758](https://github.com/angular/angular/issues/10758)) ([73c0a9d](https://github.com/angular/angular/commit/73c0a9d))
+* fix(router): support guards navigating synchronously ([#11150](https://github.com/angular/angular/issues/11150)) ([e2241a2](https://github.com/angular/angular/commit/e2241a2))
+* fix(router): support relative param-only navigation ([#10613](https://github.com/angular/angular/issues/10613)) ([c7f3aa7](https://github.com/angular/angular/commit/c7f3aa7))
+* fix(router): update the location before activating components ([2ffecc0](https://github.com/angular/angular/commit/2ffecc0))
+* fix(router): fix type ([#11181](https://github.com/angular/angular/issues/11181)) ([0f68351](https://github.com/angular/angular/commit/0f68351))
+* fix(router): merge artifacts ([fc1e45d](https://github.com/angular/angular/commit/fc1e45d)), closes [#11063](https://github.com/angular/angular/issues/11063) [#11102](https://github.com/angular/angular/issues/11102)
+* fix(router): correct RxJS mapping in rollup config for umd/es5 bundles ([174c016](https://github.com/angular/angular/commit/174c016))
+
+
+
 # 3.0.0-rc.1 (2016-08-09)
 
 ## Features

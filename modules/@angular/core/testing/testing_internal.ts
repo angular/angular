@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../src/facade/collection';
-import {Math, global, isPromise} from '../src/facade/lang';
-
 import {AsyncTestCompleter} from './async_test_completer';
+import {StringMapWrapper} from './facade/collection';
+import {Math, global, isPromise} from './facade/lang';
 import {TestBed, getTestBed, inject} from './test_bed';
 
 export {AsyncTestCompleter} from './async_test_completer';
 export {MockAnimationPlayer} from './mock_animation_player';
 export {inject} from './test_bed';
+
 export * from './logger';
 export * from './ng_zone_mock';
 

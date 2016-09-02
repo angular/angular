@@ -363,7 +363,7 @@ export interface ContentChildrenMetadataFactory {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: PlatformFactory, name: string, providers?: Provider[]): PlatformFactory;
+export declare function createPlatformFactory(parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -538,6 +538,9 @@ export interface ForwardRefFn {
 
 /** @experimental */
 export declare function getDebugNode(nativeNode: any): DebugNode;
+
+/** @experimental */
+export declare function getModuleFactory(id: string): NgModuleFactory<any>;
 
 /** @experimental */
 export declare function getPlatform(): PlatformRef;
@@ -749,6 +752,7 @@ export declare class NgModuleMetadata extends InjectableMetadata implements NgMo
     declarations: Array<Type<any> | any[]>;
     entryComponents: Array<Type<any> | any[]>;
     exports: Array<Type<any> | any[]>;
+    id: string;
     imports: Array<Type<any> | ModuleWithProviders | any[]>;
     providers: Provider[];
     schemas: Array<SchemaMetadata | any[]>;
@@ -767,6 +771,7 @@ export interface NgModuleMetadataType {
     declarations?: Array<Type<any> | any[]>;
     entryComponents?: Array<Type<any> | any[]>;
     exports?: Array<Type<any> | any[]>;
+    id?: string;
     imports?: Array<Type<any> | ModuleWithProviders | any[]>;
     providers?: Provider[];
     schemas?: Array<SchemaMetadata | any[]>;
@@ -888,7 +893,7 @@ export interface PipeTransform {
 export declare const PLATFORM_INITIALIZER: any;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: (TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[])[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
@@ -1120,7 +1125,7 @@ export declare abstract class TemplateRef<C> {
 }
 
 /** @experimental */
-export declare class Testability {
+export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
     decreasePendingRequestCount(): number;
     findBindings(using: any, provider: string, exactMatch: boolean): any[];

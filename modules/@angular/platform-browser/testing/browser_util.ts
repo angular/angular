@@ -7,9 +7,10 @@
  */
 
 import {NgZone} from '@angular/core';
-import {getDOM} from '../src/dom/dom_adapter';
-import {ListWrapper} from '../src/facade/collection';
-import {RegExp, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
+
+import {ListWrapper} from './facade/collection';
+import {RegExp, StringWrapper, global, isPresent, isString} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {
   private _overrideUa: string;
@@ -49,13 +50,23 @@ export class BrowserDetection {
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
 
-  // The Intl API is only properly supported in recent Chrome and Opera.
-  // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
-  // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-  get supportsIntlApi(): boolean { return !!(<any>global).Intl; }
+  // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
+  // This detector is needed in tests to make the difference between:
+  // 1) IE11/Edge: they have a native Intl API, but with some discrepancies
+  // 2) IE9/IE10: they use the polyfill, and so no discrepancies
+  get supportsNativeIntlApi(): boolean {
+    return !!(<any>global).Intl && (<any>global).Intl !== (<any>global).IntlPolyfill;
+  }
 
   get isChromeDesktop(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
+        this._ua.indexOf('Edge') == -1;
+  }
+
+  // "Old Chrome" means Chrome 3X, where there are some discrepancies in the Intl API.
+  // Android 4.4 and 5.X have such browsers by default (respectively 30 and 39).
+  get isOldChrome(): boolean {
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
         this._ua.indexOf('Edge') == -1;
   }
 }

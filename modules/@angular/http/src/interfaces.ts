@@ -71,4 +71,4 @@ export type ResponseOptionsArgs = {
   headers?: Headers;
   type?: ResponseType;
   url?: string;
-}
+};

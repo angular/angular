@@ -6,4 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the forms package.
+ */
 export * from './src/forms';
+
+// This file only reexports content of the `src` folder. Keep it that way.

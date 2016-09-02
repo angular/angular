@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation, forwardRef} from '@angular/core';
+import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
-import {ViewMetadata} from '@angular/core/src/metadata/view';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -457,8 +456,8 @@ export function main() {
       main.detectChanges();
       expect(getDOM().getInnerHTML(main.debugElement.nativeElement))
           .toEqual(
-              '<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b>' +
-              '<cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
+              '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
+              '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
     });
 
     it('should create nested components in the right order', () => {
@@ -652,7 +651,7 @@ class Tree {
 }
 
 
-@Component({selector: 'cmp-d', template: `<d>{{tagName}}</d>`})
+@Component({selector: 'cmp-d', template: `<i>{{tagName}}</i>`})
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
@@ -661,7 +660,7 @@ class CmpD {
 }
 
 
-@Component({selector: 'cmp-c', template: `<c>{{tagName}}</c>`})
+@Component({selector: 'cmp-c', template: `<b>{{tagName}}</b>`})
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {

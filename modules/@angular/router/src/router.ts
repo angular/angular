@@ -6,12 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/mergeAll';
-import 'rxjs/add/operator/reduce';
-import 'rxjs/add/operator/every';
-
 import {Location} from '@angular/common';
 import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
@@ -19,6 +13,11 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
+import {every} from 'rxjs/operator/every';
+import {map} from 'rxjs/operator/map';
+import {mergeAll} from 'rxjs/operator/mergeAll';
+import {mergeMap} from 'rxjs/operator/mergeMap';
+import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
 import {ResolveData, Routes, validateConfig} from './config';
@@ -37,7 +36,7 @@ import {TreeNode} from './utils/tree';
 declare var Zone: any;
 
 /**
- * @experimental
+ * @stable
  */
 export interface NavigationExtras {
   /**
@@ -236,7 +235,7 @@ export class Router {
   /**
    * Indicates if at least one navigation happened.
    *
-   * @experimental
+   * @stable
    */
   navigated: boolean = false;
 
@@ -476,41 +475,43 @@ export class Router {
       const storedState = this.currentRouterState;
       const storedUrl = this.currentUrlTree;
 
-      applyRedirects(this.injector, this.configLoader, url, this.config)
-          .mergeMap(u => {
-            appliedUrl = u;
-            return recognize(
-                this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl));
-          })
+      const redirectsApplied$ = applyRedirects(this.injector, this.configLoader, url, this.config);
 
-          .map((newRouterStateSnapshot) => {
-            this.routerEvents.next(new RoutesRecognized(
-                id, this.serializeUrl(url), this.serializeUrl(appliedUrl), newRouterStateSnapshot));
-            return newRouterStateSnapshot;
+      const snapshot$ = mergeMap.call(redirectsApplied$, (u: UrlTree) => {
+        appliedUrl = u;
+        return recognize(
+            this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl));
+      });
 
-          })
-          .map((routerStateSnapshot) => {
-            return createRouterState(routerStateSnapshot, this.currentRouterState);
+      const emitRecognzied$ = map.call(snapshot$, (newRouterStateSnapshot: RouterStateSnapshot) => {
+        this.routerEvents.next(new RoutesRecognized(
+            id, this.serializeUrl(url), this.serializeUrl(appliedUrl), newRouterStateSnapshot));
+        return newRouterStateSnapshot;
+      });
 
-          })
-          .map((newState: RouterState) => {
-            state = newState;
-            preActivation =
-                new PreActivation(state.snapshot, this.currentRouterState.snapshot, this.injector);
-            preActivation.traverse(this.outletMap);
-          })
-          .mergeMap(_ => {
-            return preActivation.checkGuards();
+      const routerState$ = map.call(emitRecognzied$, (routerStateSnapshot: RouterStateSnapshot) => {
+        return createRouterState(routerStateSnapshot, this.currentRouterState);
+      });
 
-          })
-          .mergeMap(shouldActivate => {
-            if (shouldActivate) {
-              return preActivation.resolveData().map(() => shouldActivate);
-            } else {
-              return of (shouldActivate);
-            }
+      const preactivation$ = map.call(routerState$, (newState: RouterState) => {
+        state = newState;
+        preActivation =
+            new PreActivation(state.snapshot, this.currentRouterState.snapshot, this.injector);
+        preActivation.traverse(this.outletMap);
+      });
 
-          })
+      const preactivation2$ =
+          mergeMap.call(preactivation$, () => { return preActivation.checkGuards(); });
+
+      const resolveData$ = mergeMap.call(preactivation2$, (shouldActivate: boolean) => {
+        if (shouldActivate) {
+          return map.call(preActivation.resolveData(), () => shouldActivate);
+        } else {
+          return of (shouldActivate);
+        }
+      });
+
+      resolveData$
           .forEach((shouldActivate: boolean) => {
             if (!shouldActivate || id !== this.navigationId) {
               navigationIsSuccessful = false;
@@ -545,7 +546,7 @@ export class Router {
                   resolvePromise(false);
                 }
               },
-              e => {
+              (e: any) => {
                 if (e instanceof NavigationCancelingError) {
                   this.navigated = true;
                   this.routerEvents.next(
@@ -559,9 +560,12 @@ export class Router {
                     rejectPromise(ee);
                   }
                 }
-                this.currentRouterState = storedState;
-                this.currentUrlTree = storedUrl;
-                this.location.replaceState(this.serializeUrl(storedUrl));
+
+                if (id === this.navigationId) {
+                  this.currentRouterState = storedState;
+                  this.currentUrlTree = storedUrl;
+                  this.location.replaceState(this.serializeUrl(storedUrl));
+                }
               });
     });
   }
@@ -592,34 +596,34 @@ export class PreActivation {
 
   checkGuards(): Observable<boolean> {
     if (this.checks.length === 0) return of (true);
-    return from(this.checks)
-        .map(s => {
-          if (s instanceof CanActivate) {
-            return andObservables(
-                from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
-          } else if (s instanceof CanDeactivate) {
-            // workaround https://github.com/Microsoft/TypeScript/issues/7271
-            const s2 = s as CanDeactivate;
-            return this.runCanDeactivate(s2.component, s2.route);
-          } else {
-            throw new Error('Cannot be reached');
-          }
-        })
-        .mergeAll()
-        .every(result => result === true);
+    const checks$ = from(this.checks);
+    const runningChecks$ = map.call(checks$, (s: any) => {
+      if (s instanceof CanActivate) {
+        return andObservables(
+            from([this.runCanActivateChild(s.path), this.runCanActivate(s.route)]));
+      } else if (s instanceof CanDeactivate) {
+        // workaround https://github.com/Microsoft/TypeScript/issues/7271
+        const s2 = s as CanDeactivate;
+        return this.runCanDeactivate(s2.component, s2.route);
+      } else {
+        throw new Error('Cannot be reached');
+      }
+    });
+    const mergedChecks$ = mergeAll.call(runningChecks$);
+    return every.call(mergedChecks$, (result: any) => result === true);
   }
 
   resolveData(): Observable<any> {
     if (this.checks.length === 0) return of (null);
-    return from(this.checks)
-        .mergeMap(s => {
-          if (s instanceof CanActivate) {
-            return this.runResolve(s.route);
-          } else {
-            return of (null);
-          }
-        })
-        .reduce((_, __) => _);
+    const checks$ = from(this.checks);
+    const runningChecks$ = mergeMap.call(checks$, (s: any) => {
+      if (s instanceof CanActivate) {
+        return this.runResolve(s.route);
+      } else {
+        return of (null);
+      }
+    });
+    return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
 
   private traverseChildRoutes(
@@ -703,7 +707,7 @@ export class PreActivation {
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);
-    const obs = from(canActivate).map(c => {
+    const obs = map.call(from(canActivate), (c: any) => {
       const guard = this.getToken(c, future);
       if (guard.canActivate) {
         return wrapIntoObservable(guard.canActivate(future, this.future));
@@ -722,8 +726,8 @@ export class PreActivation {
                                        .map(p => this.extractCanActivateChild(p))
                                        .filter(_ => _ !== null);
 
-    return andObservables(from(canActivateChildGuards).map(d => {
-      const obs = from(d.guards).map(c => {
+    return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
+      const obs = map.call(from(d.guards), (c: any) => {
         const guard = this.getToken(c, c.node);
         if (guard.canActivateChild) {
           return wrapIntoObservable(guard.canActivateChild(future, this.future));
@@ -745,22 +749,21 @@ export class PreActivation {
   private runCanDeactivate(component: Object, curr: ActivatedRouteSnapshot): Observable<boolean> {
     const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
-    return from(canDeactivate)
-        .map(c => {
-          const guard = this.getToken(c, curr);
-          if (guard.canDeactivate) {
-            return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
-          } else {
-            return wrapIntoObservable(guard(component, curr, this.curr));
-          }
-        })
-        .mergeAll()
-        .every(result => result === true);
+    const canDeactivate$ = map.call(from(canDeactivate), (c: any) => {
+      const guard = this.getToken(c, curr);
+      if (guard.canDeactivate) {
+        return wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
+      } else {
+        return wrapIntoObservable(guard(component, curr, this.curr));
+      }
+    });
+    const merged$ = mergeAll.call(canDeactivate$);
+    return every.call(merged$, (result: any) => result === true);
   }
 
   private runResolve(future: ActivatedRouteSnapshot): Observable<any> {
     const resolve = future._resolve;
-    return this.resolveNode(resolve.current, future).map(resolvedData => {
+    return map.call(this.resolveNode(resolve.current, future), (resolvedData: any): any => {
       resolve.resolvedData = resolvedData;
       future.data = merge(future.data, resolve.flattenedResolvedData);
       return null;

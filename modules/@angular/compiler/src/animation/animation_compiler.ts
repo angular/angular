@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers} from '../identifiers';
+import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 import * as t from '../template_parser/template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
@@ -114,8 +114,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
           o.literalMap(StringMapWrapper.keys(entry).map(key => [key, o.literal(entry[key])])));
     });
 
-    return o.importExpr(Identifiers.AnimationStyles).instantiate([
-      o.importExpr(Identifiers.collectAndResolveStyles).callFn([
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationStyles)).instantiate([
+      o.importExpr(resolveIdentifier(Identifiers.collectAndResolveStyles)).callFn([
         _ANIMATION_COLLECTED_STYLES, o.literalArr(stylesArr)
       ])
     ]);
@@ -123,7 +123,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   visitAnimationKeyframe(ast: AnimationKeyframeAst, context: _AnimationBuilderContext):
       o.Expression {
-    return o.importExpr(Identifiers.AnimationKeyframe).instantiate([
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationKeyframe)).instantiate([
       o.literal(ast.offset), ast.styles.visit(this, context)
     ]);
   }
@@ -144,10 +144,11 @@ class _AnimationBuilder implements AnimationAstVisitor {
   _visitEndStateAnimation(ast: AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
     var startingStylesExpr = ast.startingStyles.visit(this, context);
     var keyframeExpressions = ast.keyframes.map(keyframe => keyframe.visit(this, context));
-    var keyframesExpr = o.importExpr(Identifiers.balanceAnimationKeyframes).callFn([
-      _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
-      o.literalArr(keyframeExpressions)
-    ]);
+    var keyframesExpr =
+        o.importExpr(resolveIdentifier(Identifiers.balanceAnimationKeyframes)).callFn([
+          _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
+          o.literalArr(keyframeExpressions)
+        ]);
 
     return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr, context);
   }
@@ -166,13 +167,16 @@ class _AnimationBuilder implements AnimationAstVisitor {
   visitAnimationSequence(ast: AnimationSequenceAst, context: _AnimationBuilderContext):
       o.Expression {
     var playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(Identifiers.AnimationSequencePlayer).instantiate([o.literalArr(
-        playerExprs)]);
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
+      o.literalArr(playerExprs)
+    ]);
   }
 
   visitAnimationGroup(ast: AnimationGroupAst, context: _AnimationBuilderContext): o.Expression {
     var playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(Identifiers.AnimationGroupPlayer).instantiate([o.literalArr(playerExprs)]);
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
+      o.literalArr(playerExprs)
+    ]);
   }
 
   visitAnimationStateDeclaration(
@@ -265,18 +269,18 @@ class _AnimationBuilder implements AnimationAstVisitor {
         _ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
 
-    var RENDER_STYLES_FN = o.importExpr(Identifiers.renderStyles);
+    var RENDER_STYLES_FN = o.importExpr(resolveIdentifier(Identifiers.renderStyles));
 
     // before we start any animation we want to clear out the starting
     // styles from the element's style property (since they were placed
     // there at the end of the last animation
-    statements.push(
-        RENDER_STYLES_FN
-            .callFn([
-              _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-              o.importExpr(Identifiers.clearStyles).callFn([_ANIMATION_START_STATE_STYLES_VAR])
-            ])
-            .toStmt());
+    statements.push(RENDER_STYLES_FN
+                        .callFn([
+                          _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                          o.importExpr(resolveIdentifier(Identifiers.clearStyles))
+                              .callFn([_ANIMATION_START_STATE_STYLES_VAR])
+                        ])
+                        .toStmt());
 
     ast.stateTransitions.forEach(transAst => statements.push(transAst.visit(this, context)));
 
@@ -284,7 +288,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
     // so that the onDone callback can be used for tracking
     statements.push(new o.IfStmt(
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR),
-        [_ANIMATION_PLAYER_VAR.set(o.importExpr(Identifiers.NoOpAnimationPlayer).instantiate([]))
+        [_ANIMATION_PLAYER_VAR
+             .set(o.importExpr(resolveIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
              .toStmt()]));
 
     // once complete we want to apply the styles on the element
@@ -295,14 +300,16 @@ class _AnimationBuilder implements AnimationAstVisitor {
             .callMethod(
                 'onDone',
                 [o.fn(
-                    [], [RENDER_STYLES_FN
-                             .callFn([
-                               _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                               o.importExpr(Identifiers.prepareFinalAnimationStyles).callFn([
+                    [],
+                    [RENDER_STYLES_FN
+                         .callFn([
+                           _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                           o.importExpr(resolveIdentifier(Identifiers.prepareFinalAnimationStyles))
+                               .callFn([
                                  _ANIMATION_START_STATE_STYLES_VAR, _ANIMATION_END_STATE_STYLES_VAR
                                ])
-                             ])
-                             .toStmt()])])
+                         ])
+                         .toStmt()])])
             .toStmt());
 
     statements.push(_ANIMATION_FACTORY_VIEW_VAR
@@ -319,7 +326,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         [
           new o.FnParam(
               _ANIMATION_FACTORY_VIEW_VAR.name,
-              o.importType(Identifiers.AppView, [o.DYNAMIC_TYPE])),
+              o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
           new o.FnParam(_ANIMATION_FACTORY_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_CURRENT_STATE_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_NEXT_STATE_VAR.name, o.DYNAMIC_TYPE)
@@ -479,10 +486,13 @@ class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
     t.templateVisitAll(this, ast.children);
   }
 
+  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {
+    t.templateVisitAll(this, ast.children);
+  }
+
   visitEvent(ast: t.BoundEventAst, ctx: any): any {}
   visitBoundText(ast: t.BoundTextAst, ctx: any): any {}
   visitText(ast: t.TextAst, ctx: any): any {}
-  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {}
   visitNgContent(ast: t.NgContentAst, ctx: any): any {}
   visitAttr(ast: t.AttrAst, ctx: any): any {}
   visitDirective(ast: t.DirectiveAst, ctx: any): any {}

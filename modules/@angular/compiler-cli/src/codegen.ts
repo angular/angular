@@ -16,9 +16,9 @@ import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './compiler_private';
-import {Console} from './core_private';
 import {PathMappedReflectorHost} from './path_mapped_reflector_host';
+import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler} from './private_import_compiler';
+import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
@@ -108,23 +108,19 @@ export class CodeGenerator {
       return ngModules;
     }, <StaticSymbol[]>[]);
     const analyzedNgModules = this.compiler.analyzeModules(ngModules);
-    return Promise
-        .all(fileMetas.map(
-            (fileMeta) => this.compiler
-                              .compile(
-                                  fileMeta.fileUrl, analyzedNgModules, fileMeta.components,
-                                  fileMeta.ngModules)
-                              .then((generatedModules) => {
-                                generatedModules.forEach((generatedModule) => {
-                                  const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
-                                  const emitPath =
-                                      this.calculateEmitPath(generatedModule.moduleUrl);
-                                  this.host.writeFile(
-                                      emitPath, PREAMBLE + generatedModule.source, false, () => {},
-                                      [sourceFile]);
-                                });
-                              })))
-        .catch((e) => { console.error(e.stack); });
+    return Promise.all(fileMetas.map(
+        (fileMeta) =>
+            this.compiler
+                .compile(
+                    fileMeta.fileUrl, analyzedNgModules, fileMeta.components, fileMeta.ngModules)
+                .then((generatedModules) => {
+                  generatedModules.forEach((generatedModule) => {
+                    const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
+                    const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
+                    this.host.writeFile(
+                        emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+                  });
+                })));
   }
 
   static create(
@@ -159,7 +155,7 @@ export class CodeGenerator {
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
-        new compiler.i18n.HtmlParser(new HtmlParser(), transContent, cliOptions.i18nFormat);
+        new compiler.I18NHtmlParser(new HtmlParser(), transContent, cliOptions.i18nFormat);
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,
       defaultEncapsulation: ViewEncapsulation.Emulated,

@@ -10,7 +10,7 @@ import {Injector, NgModule, NgModuleMetadata} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
 import {isBlank, stringify} from '../src/facade/lang';
-import {MockNgModuleResolver} from '../testing';
+import {MockNgModuleResolver} from '../testing/index';
 
 export function main() {
   describe('MockNgModuleResolver', () => {

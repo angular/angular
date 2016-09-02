@@ -18,6 +18,13 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * ### Example
  *
  * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canActivate(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
  * @Injectable()
  * class CanActivateTeam implements CanActivate {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -40,8 +47,9 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *       }
  *     ])
  *   ],
- *   providers: [CanActivateTeam]
+ *   providers: [CanActivateTeam, UserToken, Permissions]
  * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
@@ -64,6 +72,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *     }
  *   ]
  * })
+ * class AppModule {}
  * ```
  *
  * @stable
@@ -79,6 +88,13 @@ export interface CanActivate {
  * ### Example
  *
  * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canActivate(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
  * @Injectable()
  * class CanActivateTeam implements CanActivate {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -106,8 +122,9 @@ export interface CanActivate {
  *       }
  *     ])
  *   ],
- *   providers: [CanActivateTeam]
+ *   providers: [CanActivateTeam, UserToken, Permissions]
  * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
@@ -135,6 +152,7 @@ export interface CanActivate {
  *     }
  *   ]
  * })
+ * class AppModule {}
  * ```
  *
  * @stable
@@ -151,6 +169,13 @@ export interface CanActivateChild {
  * ### Example
  *
  * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canDeactivate(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
  * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -174,8 +199,9 @@ export interface CanActivateChild {
  *       }
  *     ])
  *   ],
- *   providers: [CanDeactivateTeam]
+ *   providers: [CanDeactivateTeam, UserToken, Permissions]
  * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
@@ -198,6 +224,7 @@ export interface CanActivateChild {
  *     }
  *   ]
  * })
+ * class AppModule {}
  * ```
  *
  * @stable
@@ -213,6 +240,12 @@ export interface CanDeactivate<T> {
  * ### Example
  *
  * ```
+ * class Backend {
+ *   fetchTeam(id: string) {
+ *     return 'someTeam';
+ *   }
+ * }
+ *
  * @Injectable()
  * class TeamResolver implements Resolve<Team> {
  *   constructor(private backend: Backend) {}
@@ -239,6 +272,7 @@ export interface CanDeactivate<T> {
  *   ],
  *   providers: [TeamResolver]
  * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class.
@@ -263,6 +297,7 @@ export interface CanDeactivate<T> {
  *     }
  *   ]
  * })
+ * class AppModule {}
  * ```
  * @stable
  */
@@ -278,6 +313,13 @@ export interface Resolve<T> {
  * ### Example
  *
  * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canLoadChildren(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
  * @Injectable()
  * class CanLoadTeamSection implements CanLoad {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -300,8 +342,9 @@ export interface Resolve<T> {
  *       }
  *     ])
  *   ],
- *   providers: [CanLoadTeamSection]
+ *   providers: [CanLoadTeamSection, UserToken, Permissions]
  * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
@@ -325,6 +368,7 @@ export interface Resolve<T> {
  *     }
  *   ]
  * })
+ * class AppModule {}
  * ```
  *
  * @stable

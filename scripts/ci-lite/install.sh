@@ -58,7 +58,7 @@ echo 'travis_fold:end:install.browserstack'
 # node tools/chromedriverpatch.js
 $(npm bin)/webdriver-manager update
 
-# TODO: install bower packages
-# bower install
+# install bower packages
+$(npm bin)/bower install
 
 echo 'travis_fold:end:INSTALL'

@@ -8,8 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {WorkerAppModule} from '@angular/platform-browser';
-import {platformWorkerAppDynamic} from '@angular/platform-browser-dynamic';
+import {WorkerAppModule} from '@angular/platform-webworker';
+import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 
 import {TodoApp} from './index_common';
 

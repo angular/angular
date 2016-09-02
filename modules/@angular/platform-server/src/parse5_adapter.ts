@@ -9,9 +9,9 @@
 var parse5 = require('parse5/index');
 
 import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
-import {DomAdapter, setRootDomAdapter} from '../platform_browser_private';
+import {DomAdapter, setRootDomAdapter} from './private_import_platform-browser';
 import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/facade/lang';
-import {SelectorMatcher, CssSelector} from '../compiler_private';
+import {SelectorMatcher, CssSelector} from './private_import_compiler';
 import {Type} from '@angular/core';
 import {ResourceLoader} from '@angular/compiler';
 
@@ -604,8 +604,6 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  requestAnimationFrame(callback: any /** TODO #9100 */): number { return setTimeout(callback, 0); }
-  cancelAnimationFrame(id: number) { clearTimeout(id); }
   supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return DateWrapper.toMillis(DateWrapper.now()); }
   getAnimationPrefix(): string { return ''; }

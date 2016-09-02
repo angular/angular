@@ -23,11 +23,12 @@ import {Tree, TreeNode} from './utils/tree';
  * ### Usage
  *
  * ```
+ * @Component({template:''})
  * class MyComponent {
  *   constructor(router: Router) {
  *     const state = router.routerState;
- *     const id: Observable<string> = state.firstChild(state.root).params.map(p => p.id);
- *     const isDebug: Observable<string> = state.queryParams.map(q => q.debug);
+ *     const id: Observable<string> = state.root.firstChild.params.map(p => p.id);
+ *     const isDebug: Observable<string> = state.root.queryParams.map(q => q.debug);
  *   }
  * }
  * ```
@@ -79,6 +80,7 @@ export function createEmptyStateSnapshot(
  * ### Usage
  *
  * ```
+ * @Component({template:''})
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
  *     const id: Observable<string> = route.params.map(p => p.id);
@@ -153,6 +155,7 @@ export class InheritedResolve {
  * ### Usage
  *
  * ```
+ * @Component({template:''})
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
  *     const id: string = route.snapshot.params.id;
@@ -218,6 +221,7 @@ export class ActivatedRouteSnapshot {
  * ### Usage
  *
  * ```
+ * @Component({template:''})
  * class MyComponent {
  *   constructor(router: Router) {
  *     const snapshot = router.routerState.snapshot;

@@ -177,8 +177,6 @@ export abstract class DomAdapter {
   abstract getComputedStyle(element: any /** TODO #9100 */): any;
   abstract getData(element: any /** TODO #9100 */, name: string): string;
   abstract setGlobalVar(name: string, value: any): any /** TODO #9100 */;
-  abstract requestAnimationFrame(callback: any /** TODO #9100 */): number;
-  abstract cancelAnimationFrame(id: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract supportsWebAnimation(): boolean;
   abstract performanceNow(): number;
   abstract getAnimationPrefix(): string;

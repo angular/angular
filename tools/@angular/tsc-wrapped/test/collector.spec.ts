@@ -397,7 +397,7 @@ describe('Collector', () => {
           __symbolic: 'call',
           expression: {
             __symbolic: 'select',
-            expression: {__symbolic: 'reference', module: './static-method.ts', name: 'MyModule'},
+            expression: {__symbolic: 'reference', module: './static-method', name: 'MyModule'},
             member: 'with'
           },
           arguments: ['a']
@@ -429,7 +429,7 @@ describe('Collector', () => {
           provide: 'a',
           useValue: {
             __symbolic: 'select',
-            expression: {__symbolic: 'reference', module: './static-field.ts', name: 'MyModule'},
+            expression: {__symbolic: 'reference', module: './static-field', name: 'MyModule'},
             member: 'VALUE'
           }
         }]
@@ -496,7 +496,7 @@ describe('Collector', () => {
     let metadata = collector.getMetadata(source);
     expect(metadata.exports).toEqual([
       {from: './static-field', export: ['MyModule']},
-      {from: './static-field-reference.ts', export: [{name: 'Foo', as: 'OtherModule'}]},
+      {from: './static-field-reference', export: [{name: 'Foo', as: 'OtherModule'}]},
       {from: 'angular2/core'}
     ]);
   });
@@ -852,7 +852,7 @@ const FILES: Directory = {
   `,
   'static-method-call.ts': `
     import {Component} from 'angular2/core';
-    import {MyModule} from './static-method.ts';
+    import {MyModule} from './static-method';
 
     @Component({
       providers: MyModule.with('a')
@@ -869,7 +869,7 @@ const FILES: Directory = {
   `,
   'static-field-reference.ts': `
     import {Component} from 'angular2/core';
-    import {MyModule} from './static-field.ts';
+    import {MyModule} from './static-field';
 
     @Component({
       providers: [ { provide: 'a', useValue: MyModule.VALUE } ]
@@ -891,7 +891,7 @@ const FILES: Directory = {
   `,
   're-exports.ts': `
     export {MyModule} from './static-field';
-    export {Foo as OtherModule} from './static-field-reference.ts';
+    export {Foo as OtherModule} from './static-field-reference';
     export * from 'angular2/core';
   `,
   'local-symbol-ref.ts': `

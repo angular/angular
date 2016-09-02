@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages-dist/upgrade",
+    "paths": {
+      "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/common": ["../../../dist/packages-dist/common"],
+      "@angular/compiler": ["../../../dist/packages-dist/compiler"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
+      "@angular/platform-browser-dynamic": ["../../../dist/packages-dist/platform-browser-dynamic"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "skipLibCheck": true,
+    "lib": [ "es2015", "dom" ]
+  },
+  "files": [
+    "index.ts",
+    "../../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
+}

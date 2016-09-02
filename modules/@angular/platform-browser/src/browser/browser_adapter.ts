@@ -330,7 +330,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
   hasShadowRoot(node: any /** TODO #9100 */): boolean {
-    return node instanceof HTMLElement && isPresent(node.shadowRoot);
+    return isPresent(node.shadowRoot) && node instanceof HTMLElement;
   }
   isShadowRoot(node: any /** TODO #9100 */): boolean { return node instanceof DocumentFragment; }
   importIntoDoc(node: Node): any {
@@ -397,10 +397,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getComputedStyle(element: any /** TODO #9100 */): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  requestAnimationFrame(callback: any /** TODO #9100 */): number {
-    return window.requestAnimationFrame(callback);
-  }
-  cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
   supportsWebAnimation(): boolean { return isFunction((<any>Element).prototype['animate']); }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see

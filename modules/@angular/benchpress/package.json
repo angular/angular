@@ -1,0 +1,33 @@
+{
+  "name": "@angular/benchpress",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Benchpress - a framework for e2e performance tests",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "dependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "5.0.0-beta.11"
+  },
+  "optionalDependencies": {
+    "jpm": "1.1.4",
+    "firefox-profile": "0.4.0",
+    "selenium-webdriver": "3.0.0-beta-2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  },
+  "keywords": [
+    "angular",
+    "benchmarks"
+  ],
+  "contributors": [
+    "Tobias Bosch <tbosch@google.com> (https://angular.io/)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/tree/master/modules/@angular/compiler-cli"
+}

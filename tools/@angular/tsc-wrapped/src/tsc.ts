@@ -1,3 +1,4 @@
+import {existsSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -66,8 +67,17 @@ export class Tsc implements CompilerInterface {
     const {config, error} = ts.readConfigFile(project, this.readFile);
     check([error]);
 
-    this.parsed =
-        ts.parseJsonConfigFileContent(config, {readDirectory: this.readDirectory}, basePath);
+    // Do not inline `host` into `parseJsonConfigFileContent` until after
+    // g3 is updated to the latest TypeScript.
+    // The issue is that old typescript only has `readDirectory` while
+    // the newer TypeScript has additional `useCaseSensitiveFileNames` and
+    // `fileExists`. Inlining will trigger an error of extra parameters.
+    let host = {
+      useCaseSensitiveFileNames: true,
+      fileExists: existsSync,
+      readDirectory: this.readDirectory
+    };
+    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath);
 
     check(this.parsed.errors);
 
