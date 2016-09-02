@@ -7,9 +7,17 @@
  */
 
 const SVG_PREFIX = ':svg:';
-const HTMLELEMENT_NAMES =
-    'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
-const HTMLELEMENT_NAME = 'abbr';
+
+// Element | Node interfaces
+// see https://developer.mozilla.org/en-US/docs/Web/API/Element
+// see https://developer.mozilla.org/en-US/docs/Web/API/Node
+const ELEMENT_IF = '[Element]';
+// HTMLElement interface
+// see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+const HTMLELEMENT_IF = '[HTMLElement]';
+
+const HTMLELEMENT_TAGS =
+  'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
 
 const _G: any = global;
 const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
@@ -36,13 +44,14 @@ export function extractSchema(): Map<string, string[]> {
   let visited: {[name: string]: boolean} = {};
 
   // HTML top level
-  extractProperties(Node, element, visited, descMap, '*', '');
-  extractProperties(Element, element, visited, descMap, '*', '');
-  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_NAMES, '*');
-  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_NAME);
+  extractProperties(Node, element, visited, descMap, ELEMENT_IF, '');
+  extractProperties(Element, element, visited, descMap, ELEMENT_IF, '');
+  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_IF, ELEMENT_IF);
+  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_TAGS, HTMLELEMENT_IF);
+  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_IF);
 
   // SVG top level
-  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_NAME);
+  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_IF);
   extractProperties(
       SVGGraphicsElement, svgText, visited, descMap, SVG_PREFIX + 'graphics', SVG_PREFIX);
   extractProperties(
@@ -81,23 +90,21 @@ function extractRecursiveProperties(
 
   let superName: string;
   switch (name) {
-    case '*':
+    case ELEMENT_IF:
+      // ELEMENT_IF is the top most interface (Element | Node)
       superName = '';
       break;
-    case HTMLELEMENT_NAME:
-      superName = '*';
+    case HTMLELEMENT_IF:
+      superName = ELEMENT_IF;
       break;
     default:
       superName =
           extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
   }
 
-  // If the ancestor is an HTMLElement, use one of the multiple implememtation
-  superName = superName.split(',')[0];
-
   let instance: HTMLElement = null;
   name.split(',').forEach(tagName => {
-    instance = isSVG(type) ?
+    instance = type['name'].startsWith('SVG') ?
         document.createElementNS('http://www.w3.org/2000/svg', tagName.replace(SVG_PREFIX, '')) :
         document.createElement(tagName);
 
@@ -105,6 +112,7 @@ function extractRecursiveProperties(
 
     switch (tagName) {
       case 'cite':
+        // <cite> interface is `HTMLQuoteElement`
         htmlType = HTMLElement;
         break;
       default:
@@ -160,9 +168,9 @@ function extractName(type: Function): string {
     // see https://www.w3.org/TR/html5/index.html
     // TODO(vicb): generate this map from all the element types
     case 'Element':
-      return '*';
+      return ELEMENT_IF;
     case 'HTMLElement':
-      return HTMLELEMENT_NAME;
+      return HTMLELEMENT_IF;
     case 'HTMLImageElement':
       return 'img';
     case 'HTMLAnchorElement':
@@ -215,10 +223,6 @@ function extractName(type: Function): string {
   }
 
   return null;
-}
-
-function isSVG(type: Function): boolean {
-  return type['name'].startsWith('SVG');
 }
 
 const _TYPE_MNEMONICS: {[type: string]: string} = {

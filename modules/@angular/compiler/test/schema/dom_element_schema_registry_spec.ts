@@ -47,8 +47,8 @@ export function main() {
     });
 
     it('should detect different kinds of types', () => {
-      // inheritance: video => media => HTMLElement
-      expect(registry.hasProperty('video', 'className', [])).toBeTruthy();   // from *
+      // inheritance: video => media => [HTMLElement] => [Element]
+      expect(registry.hasProperty('video', 'className', [])).toBeTruthy();   // from [Element]
       expect(registry.hasProperty('video', 'id', [])).toBeTruthy();          // string
       expect(registry.hasProperty('video', 'scrollLeft', [])).toBeTruthy();  // number
       expect(registry.hasProperty('video', 'height', [])).toBeTruthy();      // number
