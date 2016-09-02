@@ -96,9 +96,11 @@ export const controlNameBinding: any = {
  */
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
+  private _added = false;
   /** @internal */
   viewModel: any;
-  private _added = false;
+  /** @internal */
+  _control: FormControl;
 
   @Input('formControlName') name: string;
 
@@ -122,12 +124,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!this._added) {
-      this._checkParentType();
-      this.formDirective.addControl(this);
-      if (this.control.disabled) this.valueAccessor.setDisabledState(true);
-      this._added = true;
-    }
+    if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
       this.viewModel = this.model;
       this.formDirective.updateModel(this, this.model);
@@ -155,7 +152,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     return composeAsyncValidators(this._rawAsyncValidators);
   }
 
-  get control(): FormControl { return this.formDirective.getControl(this); }
+  get control(): FormControl { return this._control; }
 
   private _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) &&
@@ -166,5 +163,12 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
         !(this._parent instanceof FormArrayName)) {
       ReactiveErrors.controlParentException();
     }
+  }
+
+  private _setUpControl() {
+    this._checkParentType();
+    this._control = this.formDirective.addControl(this);
+    if (this.control.disabled) this.valueAccessor.setDisabledState(true);
+    this._added = true;
   }
 }

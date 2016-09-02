@@ -806,6 +806,49 @@ export function main() {
 
       });
 
+      describe('setControl()', () => {
+        let c: FormControl;
+        let a: FormArray;
+
+        beforeEach(() => {
+          c = new FormControl('one');
+          a = new FormArray([c]);
+        });
+
+        it('should replace existing control with new control', () => {
+          const c2 = new FormControl('new!', Validators.minLength(10));
+          a.setControl(0, c2);
+
+          expect(a.controls[0]).toEqual(c2);
+          expect(a.value).toEqual(['new!']);
+          expect(a.valid).toBe(false);
+        });
+
+        it('should add control if control did not exist before', () => {
+          const c2 = new FormControl('new!', Validators.minLength(10));
+          a.setControl(1, c2);
+
+          expect(a.controls[1]).toEqual(c2);
+          expect(a.value).toEqual(['one', 'new!']);
+          expect(a.valid).toBe(false);
+        });
+
+        it('should remove control if new control is null', () => {
+          a.setControl(0, null);
+          expect(a.controls[0]).not.toBeDefined();
+          expect(a.value).toEqual([]);
+        });
+
+        it('should only emit value change event once', () => {
+          const logger: string[] = [];
+          const c2 = new FormControl('new!');
+          a.valueChanges.subscribe(() => logger.push('change!'));
+          a.setControl(0, c2);
+          expect(logger).toEqual(['change!']);
+        });
+
+      });
+
     });
   });
 }

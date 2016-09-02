@@ -15,10 +15,10 @@ import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
-import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {cleanUpControl, composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
 
+import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any = {
@@ -105,7 +105,8 @@ export const formDirectiveProvider: any = {
 export class FormGroupDirective extends ControlContainer implements Form,
     OnChanges {
   private _submitted: boolean = false;
-  directives: NgControl[] = [];
+  private _oldForm: FormGroup;
+  directives: FormControlName[] = [];
 
   @Input('formGroup') form: FormGroup = null;
   @Output() ngSubmit = new EventEmitter();
@@ -119,12 +120,9 @@ export class FormGroupDirective extends ControlContainer implements Form,
   ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
     if (StringMapWrapper.contains(changes, 'form')) {
-      var sync = composeValidators(this._validators);
-      this.form.validator = Validators.compose([this.form.validator, sync]);
-
-      var async = composeAsyncValidators(this._asyncValidators);
-      this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
-      this._updateDomValue(changes);
+      this._updateValidators();
+      this._updateDomValue();
+      this._updateRegistrations();
     }
   }
 
@@ -136,16 +134,17 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   get path(): string[] { return []; }
 
-  addControl(dir: NgControl): void {
+  addControl(dir: FormControlName): FormControl {
     const ctrl: any = this.form.get(dir.path);
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
+    return ctrl;
   }
 
-  getControl(dir: NgControl): FormControl { return <FormControl>this.form.get(dir.path); }
+  getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
 
-  removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
+  removeControl(dir: FormControlName): void { ListWrapper.remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
     var ctrl: any = this.form.get(dir.path);
@@ -167,7 +166,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
 
-  updateModel(dir: NgControl, value: any): void {
+  updateModel(dir: FormControlName, value: any): void {
     var ctrl  = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
@@ -186,19 +185,31 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   /** @internal */
-  _updateDomValue(changes: SimpleChanges) {
-    const oldForm = changes['form'].previousValue;
-
+  _updateDomValue() {
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
-      const oldCtrl = oldForm.get(dir.path);
-      if (oldCtrl !== newCtrl) {
-        cleanUpControl(oldCtrl, dir);
+      if (dir._control !== newCtrl) {
+        cleanUpControl(dir._control, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
+        dir._control = newCtrl;
       }
     });
 
     this.form._updateTreeValidity({emitEvent: false});
+  }
+
+  private _updateRegistrations() {
+    this.form._registerOnCollectionChange(() => this._updateDomValue());
+    if (this._oldForm) this._oldForm._registerOnCollectionChange(() => {});
+    this._oldForm = this.form;
+  }
+
+  private _updateValidators() {
+    const sync = composeValidators(this._validators);
+    this.form.validator = Validators.compose([this.form.validator, sync]);
+
+    const async = composeAsyncValidators(this._asyncValidators);
+    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
   }
 
   private _checkFormPresent() {

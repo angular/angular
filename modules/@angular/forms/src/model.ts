@@ -81,6 +81,8 @@ function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidato
 export abstract class AbstractControl {
   /** @internal */
   _value: any;
+  /** @internal */
+  _onCollectionChange = () => {};
 
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
@@ -420,6 +422,9 @@ export abstract class AbstractControl {
     return isStringMap(formState) && Object.keys(formState).length === 2 && 'value' in formState &&
         'disabled' in formState;
   }
+
+  /** @internal */
+  _registerOnCollectionChange(fn: () => void): void { this._onCollectionChange = fn; }
 }
 
 /**
@@ -530,6 +535,7 @@ export class FormControl extends AbstractControl {
   _clearChangeFns(): void {
     this._onChange = [];
     this._onDisabledChange = null;
+    this._onCollectionChange = () => {};
   }
 
   /**
@@ -574,7 +580,7 @@ export class FormGroup extends AbstractControl {
       asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
-    this._setParentForControls();
+    this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
@@ -585,6 +591,7 @@ export class FormGroup extends AbstractControl {
     if (this.controls[name]) return this.controls[name];
     this.controls[name] = control;
     control.setParent(this);
+    control._registerOnCollectionChange(this._onCollectionChange);
     return control;
   }
 
@@ -594,14 +601,28 @@ export class FormGroup extends AbstractControl {
   addControl(name: string, control: AbstractControl): void {
     this.registerControl(name, control);
     this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
    * Remove a control from this group.
    */
   removeControl(name: string): void {
+    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     StringMapWrapper.delete(this.controls, name);
     this.updateValueAndValidity();
+    this._onCollectionChange();
+  }
+
+  /**
+   * Replace an existing control.
+   */
+  setControl(name: string, control: AbstractControl): void {
+    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    StringMapWrapper.delete(this.controls, name);
+    if (control) this.registerControl(name, control);
+    this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
@@ -666,8 +687,11 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _setParentForControls() {
-    this._forEachChild((control: AbstractControl, name: string) => { control.setParent(this); });
+  _setUpControls() {
+    this._forEachChild((control: AbstractControl) => {
+      control.setParent(this);
+      control._registerOnCollectionChange(this._onCollectionChange);
+    });
   }
 
   /** @internal */
@@ -750,7 +774,7 @@ export class FormArray extends AbstractControl {
       asyncValidator: AsyncValidatorFn = null) {
     super(validator, asyncValidator);
     this._initObservables();
-    this._setParentForControls();
+    this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
@@ -764,8 +788,9 @@ export class FormArray extends AbstractControl {
    */
   push(control: AbstractControl): void {
     this.controls.push(control);
-    control.setParent(this);
+    this._registerControl(control);
     this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
@@ -773,16 +798,35 @@ export class FormArray extends AbstractControl {
    */
   insert(index: number, control: AbstractControl): void {
     ListWrapper.insert(this.controls, index, control);
-    control.setParent(this);
+    this._registerControl(control);
     this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
    * Remove the control at the given `index` in the array.
    */
   removeAt(index: number): void {
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     ListWrapper.removeAt(this.controls, index);
     this.updateValueAndValidity();
+    this._onCollectionChange();
+  }
+
+  /**
+   * Replace an existing control.
+   */
+  setControl(index: number, control: AbstractControl): void {
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    ListWrapper.removeAt(this.controls, index);
+
+    if (control) {
+      ListWrapper.insert(this.controls, index, control);
+      this._registerControl(control);
+    }
+
+    this.updateValueAndValidity();
+    this._onCollectionChange();
   }
 
   /**
@@ -849,8 +893,8 @@ export class FormArray extends AbstractControl {
   }
 
   /** @internal */
-  _setParentForControls(): void {
-    this._forEachChild((control: AbstractControl) => { control.setParent(this); });
+  _setUpControls(): void {
+    this._forEachChild((control: AbstractControl) => this._registerControl(control));
   }
 
   /** @internal */
@@ -868,5 +912,10 @@ export class FormArray extends AbstractControl {
       if (control.enabled) return false;
     }
     return !!this.controls.length;
+  }
+
+  private _registerControl(control: AbstractControl) {
+    control.setParent(this);
+    control._registerOnCollectionChange(this._onCollectionChange);
   }
 }
