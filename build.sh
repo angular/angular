@@ -130,3 +130,5 @@ do
 
   fi
 done
+
+./modules/@angular/examples/build.sh
