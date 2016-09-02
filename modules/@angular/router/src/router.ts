@@ -69,7 +69,7 @@ export interface NavigationExtras {
   *    constructor(private router: Router, private route: ActivatedRoute) {}
   *
   *    go() {
-  *      this.router.navigate('../list', { relativeTo: this.route });
+  *      this.router.navigate(['../list'], { relativeTo: this.route });
   *    }
   *  }
   * ```
@@ -80,7 +80,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Navigate to /results?page=1
-  * this.router.navigate('/results', { queryParams: { page: 1 } });
+  * this.router.navigate(['/results'], { queryParams: { page: 1 } });
   * ```
   */
   queryParams?: Params;
@@ -89,7 +89,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Navigate to /results#top
-  * this.router.navigate('/results', { fragment: 'top' });
+  * this.router.navigate(['/results'], { fragment: 'top' });
   * ```
   */
   fragment?: string;
@@ -98,7 +98,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Preserve query params from /results?page=1 to /view?page=1
-  * this.router.navigate('/view', { preserveQueryParams: true });
+  * this.router.navigate(['/view'], { preserveQueryParams: true });
   * ```
   */
   preserveQueryParams?: boolean;
@@ -107,7 +107,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Preserve fragment from /results#top to /view#top
-  * this.router.navigate('/view', { preserveFragment: true });
+  * this.router.navigate(['/view'], { preserveFragment: true });
   * ```
   */
   preserveFragment?: boolean;
@@ -116,7 +116,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Navigate silently to /view
-  * this.router.navigate('/view', { skipLocationChange: true });
+  * this.router.navigate(['/view'], { skipLocationChange: true });
   * ```
   */
   skipLocationChange?: boolean;
@@ -125,7 +125,7 @@ export interface NavigationExtras {
   *
   * ```
   * // Navigate to /view
-  * this.router.navigate('/view', { replaceUrl: true });
+  * this.router.navigate(['/view'], { replaceUrl: true });
   * ```
   */
   replaceUrl?: boolean;
