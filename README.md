@@ -39,46 +39,46 @@ High level items planned for September 2016:
 
 #### Feature status:
 
-| Feature          | Status                              | Docs         | Issue  |
-|------------------|-------------------------------------|--------------|--------|
-| button           |                           Available | [README][1]  |      - |
-| cards            |                           Available | [README][2]  |      - |
-| checkbox         |                           Available | [README][3]  |      - |
-| radio            |                           Available | [README][4]  |      - |
-| input            |                           Available | [README][5]  |      - |
-| sidenav          |                           Available | [README][6]  |      - |
-| toolbar          |                           Available | [README][7]  |      - |
-| list             |                           Available | [README][8]  |   #107 |
-| grid-list        |                           Available | [README][9]  |      - |
-| icon             |                           Available | [README][10] |      - |
-| progress-circle  |                           Available | [README][11] |      - |
-| progress-bar     |                           Available | [README][12] |      - |
-| tabs             |                           Available | [README][13] |      - |
-| slide-toggle     |                           Available | [README][14] |      - |
-| button-toggle    |                           Available | [README][15] |      - |
-| slider           |                           Available | [README][16] |      - |
-| menu             | Initial version, needs enhancements | [README][17] |   #119 |
-| tooltip          | Initial version, needs enhancements | [README][18] |      - |
-| ripples          |  Available, but needs to be applied | [README][19] |   #108 |
-| dialog           |  Started, not yet ready for release |           -  |   #114 |
-| snackbar / toast |                    Proof-of-concept |           -  |   #115 |
-| select           |                         Not started |           -  |   #118 |
-| textarea         |                         Not started |           -  |   #546 |
-| autocomplete     |                         Not started |           -  |   #117 |
-| chips            |                         Not started |           -  |   #120 |
-| theming          |               Designed, no code yet |           -  |   #123 |
-| prod build       |                         Not started |           -  |      - |
-| docs site        |   UX design and tooling in progress |           -  |      - |
-| typography       |                         Not started |           -  |   #205 |
-| layout           |                         Not started |           -  |      - |
-| fab speed-dial   |                         Not started |           -  |   #860 |
-| fab toolbar      |                         Not started |           -  |      - |
-| bottom-sheet     |                         Not started |           -  |      - |
-| bottom-nav       |                         Not started |           -  |   #408 |
-| virtual-repeat   |                         Not started |           -  |   #823 |
-| datepicker       |                         Not started |           -  |   #675 |
-| data-table       |                         Not started |           -  |   #581 |
-| stepper          |                         Not started |           -  |   #508 |
+| Feature          | Status                              | Docs         | Issue          |
+|------------------|-------------------------------------|--------------|----------------|
+| button           |                           Available | [README][1]  |              - |
+| cards            |                           Available | [README][2]  |              - |
+| checkbox         |                           Available | [README][3]  |              - |
+| radio            |                           Available | [README][4]  |              - |
+| input            |                           Available | [README][5]  |              - |
+| sidenav          |                           Available | [README][6]  |              - |
+| toolbar          |                           Available | [README][7]  |              - |
+| list             |                           Available | [README][8]  |   [#107][0107] |
+| grid-list        |                           Available | [README][9]  |              - |
+| icon             |                           Available | [README][10] |              - |
+| progress-circle  |                           Available | [README][11] |              - |
+| progress-bar     |                           Available | [README][12] |              - |
+| tabs             |                           Available | [README][13] |              - |
+| slide-toggle     |                           Available | [README][14] |              - |
+| button-toggle    |                           Available | [README][15] |              - |
+| slider           |                           Available | [README][16] |              - |
+| menu             | Initial version, needs enhancements | [README][17] |   [#119][0119] |
+| tooltip          | Initial version, needs enhancements | [README][18] |              - |
+| ripples          |  Available, but needs to be applied | [README][19] |   [#108][0108] |
+| dialog           |  Started, not yet ready for release |           -  |   [#114][0114] |
+| snackbar / toast |                    Proof-of-concept |           -  |   [#115][0115] |
+| select           |                         Not started |           -  |   [#118][0118] |
+| textarea         |                         Not started |           -  |   [#546][0546] |
+| autocomplete     |                         Not started |           -  |   [#117][0117] |
+| chips            |                         Not started |           -  |   [#120][0120] |
+| theming          |               Designed, no code yet |           -  |   [#123][0123] |
+| prod build       |                         Not started |           -  |              - |
+| docs site        |   UX design and tooling in progress |           -  |              - |
+| typography       |                         Not started |           -  |   [#205][0205] |
+| layout           |                         Not started |           -  |              - |
+| fab speed-dial   |                         Not started |           -  |   [#860][0860] |
+| fab toolbar      |                         Not started |           -  |              - |
+| bottom-sheet     |                         Not started |           -  |              - |
+| bottom-nav       |                         Not started |           -  |   [#408][0408] |
+| virtual-repeat   |                         Not started |           -  |   [#823][0823] |
+| datepicker       |                         Not started |           -  |   [#675][0675] |
+| data-table       |                         Not started |           -  |   [#581][0581] |
+| stepper          |                         Not started |           -  |   [#508][0508] |
 
  [1]: https://github.com/angular/material2/blob/master/src/lib/button/README.md
  [2]: https://github.com/angular/material2/blob/master/src/lib/card/README.md
@@ -99,6 +99,24 @@ High level items planned for September 2016:
 [17]: https://github.com/angular/material2/blob/master/src/lib/menu/README.md
 [18]: https://github.com/angular/material2/blob/master/src/lib/tooltip/README.md
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
+
+[0107]: https://github.com/angular/material2/issues/107
+[0119]: https://github.com/angular/material2/issues/119
+[0108]: https://github.com/angular/material2/issues/108
+[0114]: https://github.com/angular/material2/issues/114
+[0115]: https://github.com/angular/material2/issues/115
+[0118]: https://github.com/angular/material2/issues/118
+[0546]: https://github.com/angular/material2/issues/546
+[0117]: https://github.com/angular/material2/issues/117
+[0120]: https://github.com/angular/material2/issues/120
+[0123]: https://github.com/angular/material2/issues/123
+[0205]: https://github.com/angular/material2/issues/205
+[0860]: https://github.com/angular/material2/issues/860
+[0408]: https://github.com/angular/material2/issues/408
+[0508]: https://github.com/angular/material2/issues/508
+[0823]: https://github.com/angular/material2/issues/823
+[0675]: https://github.com/angular/material2/issues/675
+[0581]: https://github.com/angular/material2/issues/581
 
 
 "Available" means that the components or feature is published and available for use, but may still
