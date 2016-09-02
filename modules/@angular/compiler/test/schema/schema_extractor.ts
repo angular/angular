@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MapWrapper} from '../../src/facade/collection';
+
 const SVG_PREFIX = ':svg:';
 
 // Element | Node interfaces
@@ -17,7 +19,24 @@ const ELEMENT_IF = '[Element]';
 const HTMLELEMENT_IF = '[HTMLElement]';
 
 const HTMLELEMENT_TAGS =
-  'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
+    'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
+
+const ALL_HTML_TAGS =
+    // https://www.w3.org/TR/html5/index.html
+    'a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,blockquote,body,br,button,canvas,caption,cite,code,col,colgroup,data,datalist,dd,del,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,head,header,hr,html,i,iframe,img,input,ins,kbd,keygen,label,legend,li,link,main,map,mark,meta,meter,nav,noscript,object,ol,optgroup,option,output,p,param,pre,progress,q,rb,rp,rt,rtc,ruby,s,samp,script,section,select,small,source,span,strong,style,sub,sup,table,tbody,td,template,textarea,tfoot,th,thead,time,title,tr,track,u,ul,var,video,wbr,' +
+    // https://html.spec.whatwg.org/
+    'details,summary,menu,menuitem';
+
+// Elements missing from Chrome (HtmlUnknownElement), to be manually added
+const MISSING_FROM_CHROME: {[el: string]: string[]} = {
+  'data^[HTMLElement]': ['value'],
+  // TODO(vicb): Figure out why Chrome and WhatWG do not agree on the props
+  // 'menu^[HTMLElement]': ['type', 'label'],
+  'menuitem^[HTMLElement]':
+      ['type', 'label', 'icon', '!disabled', '!checked', 'radiogroup', '!default'],
+  'summary^[HTMLElement]': [],
+  'time^[HTMLElement]': ['dateTime'],
+};
 
 const _G: any = global;
 const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
@@ -77,7 +96,27 @@ export function extractSchema(): Map<string, string[]> {
 
   types.forEach(type => { extractRecursiveProperties(visited, descMap, (window as any)[type]); });
 
+  // Add elements missed by Chrome auto-detection
+  Object.keys(MISSING_FROM_CHROME).forEach(elHierarchy => {
+    descMap.set(elHierarchy, MISSING_FROM_CHROME[elHierarchy]);
+  });
+
+  assertNoMissingTags(descMap);
+
   return descMap;
+}
+
+function assertNoMissingTags(descMap: Map<string, string[]>): void {
+  const extractedTags: string[] = [];
+
+  MapWrapper.keys(descMap).forEach(
+      (key: string) => { extractedTags.push(...key.split('|')[0].split('^')[0].split(',')); });
+
+  const missingTags = ALL_HTML_TAGS.split(',').filter(tag => extractedTags.indexOf(tag) == -1);
+
+  if (missingTags.length) {
+    throw new Error(`DOM schema misses tags: ${missingTags.join(',')}`);
+  }
 }
 
 function extractRecursiveProperties(
