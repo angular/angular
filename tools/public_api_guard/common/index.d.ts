@@ -149,14 +149,6 @@ export declare class NgStyle implements DoCheck {
   ngDoCheck(): void;
 }
 
-
-/** @stable */
-export declare class NgFocus {
-  ngFocus: boolean;
-  constructor(public renderer: Renderer, public elementRef: ElementRef) {}
-  ngDoCheck(): void;
-}
-
 /** @stable */
 export declare class NgSwitch { ngSwitch: any; }
 
