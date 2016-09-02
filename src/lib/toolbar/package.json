@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/toolbar",
-  "version": "2.0.0-alpha.7-12",
+  "version": "2.0.0-alpha.8",
   "description": "Angular 2 Material toolbar",
   "main": "./toolbar.umd.js",
   "module": "./index.js",
@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-12"
+    "@angular2-material/core": "2.0.0-alpha.8"
   }
 }

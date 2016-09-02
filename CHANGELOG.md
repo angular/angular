@@ -1,3 +1,64 @@
+<a name="2.0.0-alpha.8"></a>
+# [2.0.0-alpha.8 ectoplasm-helicopter](https://github.com/angular/material2/compare/g3_v2_0...2.0.0-alpha.8) (2016-09-01)
+
+### Breaking Changes
+
+* all: we've updated our packaging to match angular/angular's packaging.  If you're using SystemJS in your project, you will probably want to
+switch to using our UMD bundles.  Example config:
+
+```ts
+'@angular2-material/core': {
+    format: 'cjs',
+    main: 'core.umd.js'
+  }
+```
+
+You can see a more detailed example in our demo app's system config [here](https://github.com/angular/material2/blob/master/src/demo-app/system-config.ts).
+
+* all: material modules must be included with `forRoot()` when bootstrapping. See the [ngModules guide](https://angular.io/docs/ts/latest/cookbook/ngmodule-faq.html#!#q-for-root) for 
+more information.
+
+```ts
+@NgModule({
+    imports: [
+        MdCoreModule.forRoot()
+        MdRadioModule.forRoot(),
+        MdIconModule.forRoot()
+    ]
+...
+});
+```
+
+* input: `md-input` attributes now match the casing of native attributes. Previously they were camel-cased; now they are all lowercase. 
+Example: `autoComplete` is now `autocomplete`.   See [#1066](https://github.com/angular/material2/pull/1066) for a full list.
+
+* overlay: overlays are now synchronous. This means actions like creating an overlay no longer return a promise.
+
+
+### Bug Fixes
+
+* **button:** hover styles no longer applied to disabled buttons ([#909](https://github.com/angular/material2/issues/909)) ([21e419d](https://github.com/angular/material2/commit/21e419d)), closes [#866](https://github.com/angular/material2/issues/866)
+* **button:** stop using `Type` from [@angular](https://github.com/angular) ([#991](https://github.com/angular/material2/issues/991)) ([97d3ed3](https://github.com/angular/material2/commit/97d3ed3))
+* **button-toggle:** toggle group should not emit an initial change event. ([#1144](https://github.com/angular/material2/issues/1144)) ([e5830d1](https://github.com/angular/material2/commit/e5830d1))
+* **card:** remove unnecessary intermediate div ([#1068](https://github.com/angular/material2/issues/1068)) ([b5e1e33](https://github.com/angular/material2/commit/b5e1e33))
+* **checkbox:** export TransitionCheckState enum ([#1147](https://github.com/angular/material2/issues/1147)) ([cda90f3](https://github.com/angular/material2/commit/cda90f3))
+* **input:** make attributes match native ones ([#1066](https://github.com/angular/material2/issues/1066)) ([f3a7b91](https://github.com/angular/material2/commit/f3a7b91)), closes [#1065](https://github.com/angular/material2/issues/1065)
+* **ngc:** _onDragStart/End are called with one param ([#1113](https://github.com/angular/material2/issues/1113)) ([6e5d260](https://github.com/angular/material2/commit/6e5d260)), closes [#1112](https://github.com/angular/material2/issues/1112)
+* **ngc:** don't emit HTMLElement in JS files ([#1061](https://github.com/angular/material2/issues/1061)) ([32eacd2](https://github.com/angular/material2/commit/32eacd2))
+* **rc6:** add directives for custom elements that are part of the APIs. ([#1121](https://github.com/angular/material2/issues/1121)) ([2c0dfcb](https://github.com/angular/material2/commit/2c0dfcb))
+* **sidenav:** turn off view encapsulation and refactor css ([#1114](https://github.com/angular/material2/issues/1114)) ([97fe211](https://github.com/angular/material2/commit/97fe211))
+* **tabs:** change missed md-active to md-tab-active ([#1044](https://github.com/angular/material2/issues/1044)) ([87b6193](https://github.com/angular/material2/commit/87b6193))
+
+### Features
+
+* **menu:** add keyboard events and improve accessibility ([#1132](https://github.com/angular/material2/issues/1132)) ([3669f06](https://github.com/angular/material2/commit/3669f06))
+* **modules:** add `forRoot()` to material modules with providers ([#1122](https://github.com/angular/material2/issues/1122)) ([9ff6196](https://github.com/angular/material2/commit/9ff6196))
+* **modules:** add `forRoot()` to all modules ([#1166](https://github.com/angular/material2/issues/1166)) ([21dc44a](https://github.com/angular/material2/commit/21dc44a))
+* **overlay:** make overlays synchronous ([#1079](https://github.com/angular/material2/issues/1079)) ([cdad90b](https://github.com/angular/material2/commit/cdad90b))
+* **slider:** add thumb-label ([#976](https://github.com/angular/material2/issues/976)) ([22d70ae](https://github.com/angular/material2/commit/22d70ae))
+* **slider:** support ngModel ([#1029](https://github.com/angular/material2/issues/1029)) ([8828358](https://github.com/angular/material2/commit/8828358))
+* **tabs:** support for `disabled` tabs ([#934](https://github.com/angular/material2/issues/934)) ([9d51deb](https://github.com/angular/material2/commit/9d51deb)), closes [#880](https://github.com/angular/material2/issues/880)
+
 <a name="2.0.0-alpha.7"></a>
 # [2.0.0-alpha.7 wax-umpire](https://github.com/angular/material2/compare/2.0.0-alpha.6...2.0.0-alpha.7) (2016-08-09)
 

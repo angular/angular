@@ -1,6 +1,6 @@
 {
   "name": "@angular2-material/button-toggle",
-  "version": "2.0.0-alpha.7-12",
+  "version": "2.0.0-alpha.8",
   "description": "Angular 2 Material Button Toggle",
   "main": "./button-toggle.umd.js",
   "module": "./index.js",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
-    "@angular2-material/core": "2.0.0-alpha.7-12",
+    "@angular2-material/core": "2.0.0-alpha.8",
     "@angular/forms": "2.0.0-rc.6"
   }
 }
