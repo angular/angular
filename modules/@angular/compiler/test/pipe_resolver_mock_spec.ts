@@ -36,4 +36,5 @@ export function main() {
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
+  transform(value: any, modifier: any){};
 }

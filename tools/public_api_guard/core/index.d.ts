@@ -874,8 +874,8 @@ export declare class PipeMetadata extends InjectableMetadata implements PipeMeta
 
 /** @stable */
 export interface PipeMetadataFactory {
-    (obj: PipeMetadataType): any;
-    new (obj: PipeMetadataType): any;
+    <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
+    new <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
 }
 
 /** @stable */
