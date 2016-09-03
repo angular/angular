@@ -17,6 +17,7 @@ import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetad
 import {ViewEncapsulation} from './metadata/view';
 import {Type} from './type';
 import {TypeDecorator, makeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
+import {PipeTransform} from './change_detection';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
@@ -220,8 +221,8 @@ export interface ViewChildMetadataFactory {
  * @stable
  */
 export interface PipeMetadataFactory {
-  (obj: PipeMetadataType): any;
-  new (obj: PipeMetadataType): any;
+  <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
+  new <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
 }
 
 /**
