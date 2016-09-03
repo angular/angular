@@ -11,13 +11,13 @@
  * to be used by the decorator versions of these annotations.
  */
 
+import {PipeTransform} from './change_detection';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
 import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation} from './metadata/view';
 import {Type} from './type';
 import {TypeDecorator, makeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
-import {PipeTransform} from './change_detection';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 export {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
@@ -222,7 +222,7 @@ export interface ViewChildMetadataFactory {
  */
 export interface PipeMetadataFactory {
   <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
-  new <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
+  new<T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
 }
 
 /**

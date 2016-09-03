@@ -77,7 +77,7 @@ export function main() {
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            @Pipe({name: 'somePipe'})
            class SomePipe {
-            transform(){};
+             transform(){};
            }
            @NgModule({imports: [SomePipe]})
            class ModuleWithImportedPipe {
