@@ -552,6 +552,7 @@ export function main() {
         parent.form = new FormGroup({'name': formModel});
         controlNameDir = new FormControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';
+        controlNameDir._control = formModel;
       });
 
       it('should reexport control properties', () => {

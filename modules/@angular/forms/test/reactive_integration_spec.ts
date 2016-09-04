@@ -256,6 +256,91 @@ export function main() {
         expect(inputs[2]).not.toBeDefined();
       });
 
+      describe('nested control rebinding', () => {
+
+        it('should attach dir to control when leaf control changes', () => {
+          const form = new FormGroup({'login': new FormControl('oldValue')});
+          const fixture = TestBed.createComponent(FormGroupComp);
+          fixture.debugElement.componentInstance.form = form;
+          fixture.detectChanges();
+
+          form.removeControl('login');
+          form.addControl('login', new FormControl('newValue'));
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('newValue');
+
+          input.nativeElement.value = 'user input';
+          dispatchEvent(input.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(form.value).toEqual({login: 'user input'});
+
+          form.setValue({login: 'Carson'});
+          fixture.detectChanges();
+          expect(input.nativeElement.value).toEqual('Carson');
+        });
+
+        it('should attach dirs to all child controls when group control changes', () => {
+          const fixture = TestBed.createComponent(NestedFormGroupComp);
+          const form = new FormGroup({
+            signin: new FormGroup(
+                {login: new FormControl('oldLogin'), password: new FormControl('oldPassword')})
+          });
+          fixture.debugElement.componentInstance.form = form;
+          fixture.detectChanges();
+
+          form.removeControl('signin');
+          form.addControl(
+              'signin',
+              new FormGroup(
+                  {login: new FormControl('newLogin'), password: new FormControl('newPassword')}));
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.value).toEqual('newLogin');
+          expect(inputs[1].nativeElement.value).toEqual('newPassword');
+
+          inputs[0].nativeElement.value = 'user input';
+          dispatchEvent(inputs[0].nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(form.value).toEqual({signin: {login: 'user input', password: 'newPassword'}});
+
+          form.setValue({signin: {login: 'Carson', password: 'Drew'}});
+          fixture.detectChanges();
+          expect(inputs[0].nativeElement.value).toEqual('Carson');
+          expect(inputs[1].nativeElement.value).toEqual('Drew');
+        });
+
+        it('should attach dirs to all present child controls when array control changes', () => {
+          const fixture = TestBed.createComponent(FormArrayComp);
+          const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.debugElement.componentInstance.form = form;
+          fixture.debugElement.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          form.removeControl('cities');
+          form.addControl('cities', new FormArray([new FormControl('LA')]));
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('LA');
+
+          input.nativeElement.value = 'MTV';
+          dispatchEvent(input.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(form.value).toEqual({cities: ['MTV']});
+
+          form.setValue({cities: ['LA']});
+          fixture.detectChanges();
+          expect(input.nativeElement.value).toEqual('LA');
+        });
+
+      });
 
     });
 

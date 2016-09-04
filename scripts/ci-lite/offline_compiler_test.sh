@@ -7,14 +7,14 @@ LINKABLE_PKGS=(
   $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(
-  reflect-metadata
-  typescript@next
-  zone.js
-  rxjs
-  @types/{node,jasmine}
-  jasmine
+  reflect-metadata@0.1.8
+  typescript@2.0.2
+  zone.js@0.6.17
+  rxjs@5.0.0-beta.11
+  @types/{node@6.0.38,jasmine@2.2.33}
+  jasmine@2.4.1
   webpack@2.1.0-beta.21
-  @angular2-material/{core,button}
+  @angular2-material/{core,button}@2.0.0-alpha.8-1
 )
 
 TMPDIR=${TMPDIR:-.}

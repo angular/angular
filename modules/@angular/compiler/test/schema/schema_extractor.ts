@@ -6,10 +6,37 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MapWrapper} from '../../src/facade/collection';
+
 const SVG_PREFIX = ':svg:';
-const HTMLELEMENT_NAMES =
+
+// Element | Node interfaces
+// see https://developer.mozilla.org/en-US/docs/Web/API/Element
+// see https://developer.mozilla.org/en-US/docs/Web/API/Node
+const ELEMENT_IF = '[Element]';
+// HTMLElement interface
+// see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+const HTMLELEMENT_IF = '[HTMLElement]';
+
+const HTMLELEMENT_TAGS =
     'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
-const HTMLELEMENT_NAME = 'abbr';
+
+const ALL_HTML_TAGS =
+    // https://www.w3.org/TR/html5/index.html
+    'a,abbr,address,area,article,aside,audio,b,base,bdi,bdo,blockquote,body,br,button,canvas,caption,cite,code,col,colgroup,data,datalist,dd,del,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,head,header,hr,html,i,iframe,img,input,ins,kbd,keygen,label,legend,li,link,main,map,mark,meta,meter,nav,noscript,object,ol,optgroup,option,output,p,param,pre,progress,q,rb,rp,rt,rtc,ruby,s,samp,script,section,select,small,source,span,strong,style,sub,sup,table,tbody,td,template,textarea,tfoot,th,thead,time,title,tr,track,u,ul,var,video,wbr,' +
+    // https://html.spec.whatwg.org/
+    'details,summary,menu,menuitem';
+
+// Elements missing from Chrome (HtmlUnknownElement), to be manually added
+const MISSING_FROM_CHROME: {[el: string]: string[]} = {
+  'data^[HTMLElement]': ['value'],
+  // TODO(vicb): Figure out why Chrome and WhatWG do not agree on the props
+  // 'menu^[HTMLElement]': ['type', 'label'],
+  'menuitem^[HTMLElement]':
+      ['type', 'label', 'icon', '!disabled', '!checked', 'radiogroup', '!default'],
+  'summary^[HTMLElement]': [],
+  'time^[HTMLElement]': ['dateTime'],
+};
 
 const _G: any = global;
 const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
@@ -36,13 +63,14 @@ export function extractSchema(): Map<string, string[]> {
   let visited: {[name: string]: boolean} = {};
 
   // HTML top level
-  extractProperties(Node, element, visited, descMap, '*', '');
-  extractProperties(Element, element, visited, descMap, '*', '');
-  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_NAMES, '*');
-  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_NAME);
+  extractProperties(Node, element, visited, descMap, ELEMENT_IF, '');
+  extractProperties(Element, element, visited, descMap, ELEMENT_IF, '');
+  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_IF, ELEMENT_IF);
+  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_TAGS, HTMLELEMENT_IF);
+  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_IF);
 
   // SVG top level
-  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_NAME);
+  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_IF);
   extractProperties(
       SVGGraphicsElement, svgText, visited, descMap, SVG_PREFIX + 'graphics', SVG_PREFIX);
   extractProperties(
@@ -68,7 +96,27 @@ export function extractSchema(): Map<string, string[]> {
 
   types.forEach(type => { extractRecursiveProperties(visited, descMap, (window as any)[type]); });
 
+  // Add elements missed by Chrome auto-detection
+  Object.keys(MISSING_FROM_CHROME).forEach(elHierarchy => {
+    descMap.set(elHierarchy, MISSING_FROM_CHROME[elHierarchy]);
+  });
+
+  assertNoMissingTags(descMap);
+
   return descMap;
+}
+
+function assertNoMissingTags(descMap: Map<string, string[]>): void {
+  const extractedTags: string[] = [];
+
+  MapWrapper.keys(descMap).forEach(
+      (key: string) => { extractedTags.push(...key.split('|')[0].split('^')[0].split(',')); });
+
+  const missingTags = ALL_HTML_TAGS.split(',').filter(tag => extractedTags.indexOf(tag) == -1);
+
+  if (missingTags.length) {
+    throw new Error(`DOM schema misses tags: ${missingTags.join(',')}`);
+  }
 }
 
 function extractRecursiveProperties(
@@ -81,23 +129,21 @@ function extractRecursiveProperties(
 
   let superName: string;
   switch (name) {
-    case '*':
+    case ELEMENT_IF:
+      // ELEMENT_IF is the top most interface (Element | Node)
       superName = '';
       break;
-    case HTMLELEMENT_NAME:
-      superName = '*';
+    case HTMLELEMENT_IF:
+      superName = ELEMENT_IF;
       break;
     default:
       superName =
           extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
   }
 
-  // If the ancestor is an HTMLElement, use one of the multiple implememtation
-  superName = superName.split(',')[0];
-
   let instance: HTMLElement = null;
   name.split(',').forEach(tagName => {
-    instance = isSVG(type) ?
+    instance = type['name'].startsWith('SVG') ?
         document.createElementNS('http://www.w3.org/2000/svg', tagName.replace(SVG_PREFIX, '')) :
         document.createElement(tagName);
 
@@ -105,6 +151,7 @@ function extractRecursiveProperties(
 
     switch (tagName) {
       case 'cite':
+        // <cite> interface is `HTMLQuoteElement`
         htmlType = HTMLElement;
         break;
       default:
@@ -160,9 +207,9 @@ function extractName(type: Function): string {
     // see https://www.w3.org/TR/html5/index.html
     // TODO(vicb): generate this map from all the element types
     case 'Element':
-      return '*';
+      return ELEMENT_IF;
     case 'HTMLElement':
-      return HTMLELEMENT_NAME;
+      return HTMLELEMENT_IF;
     case 'HTMLImageElement':
       return 'img';
     case 'HTMLAnchorElement':
@@ -215,10 +262,6 @@ function extractName(type: Function): string {
   }
 
   return null;
-}
-
-function isSVG(type: Function): boolean {
-  return type['name'].startsWith('SVG');
 }
 
 const _TYPE_MNEMONICS: {[type: string]: string} = {
