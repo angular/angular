@@ -6,18 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {Component, Directive, QueryList, ViewChild, ViewChildren} from '@angular/core';
 
 @Component({selector: 'comp-for-child-query', template: 'child'})
 export class CompForChildQuery {
 }
 
-@Component({
-  selector: 'comp-with-child-query',
-  template: '<comp-for-child-query></comp-for-child-query>',
-  directives: [CompForChildQuery]
-})
+@Component(
+    {selector: 'comp-with-child-query', template: '<comp-for-child-query></comp-for-child-query>'})
 export class CompWithChildQuery {
   @ViewChild(CompForChildQuery) child: CompForChildQuery;
   @ViewChildren(CompForChildQuery) children: QueryList<CompForChildQuery>;
+}
+
+@Directive({selector: '[directive-for-query]'})
+export class DirectiveForQuery {
+}
+
+@Component({
+  selector: 'comp-with-directive-child',
+  template: `<div>
+     <div *ngFor="let data of divData" directive-for-query>{{data}}</div>
+  </div>`
+})
+export class CompWithDirectiveChild {
+  @ViewChildren(DirectiveForQuery) children: QueryList<DirectiveForQuery>;
+
+  divData: string[];
 }

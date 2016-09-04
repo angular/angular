@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector, provide} from '@angular/core';
+import {ReflectiveInjector} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/testing_internal';
 

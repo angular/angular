@@ -8,10 +8,12 @@
 
 import {ViewEncapsulation, isDevMode} from '@angular/core';
 
-import {unimplemented} from '../src/facade/exceptions';
-
 import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers} from './identifiers';
+import {Identifiers, resolveIdentifier} from './identifiers';
+
+function unimplemented(): any {
+  throw new Error('unimplemented');
+}
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
@@ -19,28 +21,21 @@ export class CompilerConfig {
   private _genDebugInfo: boolean;
   private _logBindingUpdate: boolean;
   public useJit: boolean;
-  public platformDirectives: any[];
-  public platformPipes: any[];
 
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, platformDirectives = [],
-       platformPipes = []}: {
+       genDebugInfo, logBindingUpdate, useJit = true}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
-        useJit?: boolean,
-        platformDirectives?: any[],
-        platformPipes?: any[]
+        useJit?: boolean
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
     this._genDebugInfo = genDebugInfo;
     this._logBindingUpdate = logBindingUpdate;
     this.useJit = useJit;
-    this.platformDirectives = platformDirectives;
-    this.platformPipes = platformPipes;
   }
 
   get genDebugInfo(): boolean {
@@ -66,7 +61,7 @@ export abstract class RenderTypes {
 }
 
 export class DefaultRenderTypes implements RenderTypes {
-  renderer = Identifiers.Renderer;
+  get renderer() { return resolveIdentifier(Identifiers.Renderer); };
   renderText: any = null;
   renderElement: any = null;
   renderComment: any = null;

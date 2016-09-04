@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileQueryMetadata, CompileTokenMap} from '../compile_metadata';
+import {CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers} from '../identifiers';
+import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
 import {CompileElement} from './compile_element';
@@ -105,31 +105,33 @@ function mapNestedViews(
     return o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr);
   });
   return declarationAppElement.callMethod('mapNestedViews', [
-    o.variable(view.className), o.fn(
-                                    [new o.FnParam('nestedView', view.classType)],
-                                    [new o.ReturnStatement(o.literalArr(adjustedExpressions))])
+    o.variable(view.className),
+    o.fn(
+        [new o.FnParam('nestedView', view.classType)],
+        [new o.ReturnStatement(o.literalArr(adjustedExpressions))], o.DYNAMIC_TYPE)
   ]);
 }
 
 export function createQueryList(
     query: CompileQueryMetadata, directiveInstance: o.Expression, propertyName: string,
     compileView: CompileView): o.Expression {
-  compileView.fields.push(
-      new o.ClassField(propertyName, o.importType(Identifiers.QueryList, [o.DYNAMIC_TYPE])));
+  compileView.fields.push(new o.ClassField(
+      propertyName, o.importType(resolveIdentifier(Identifiers.QueryList), [o.DYNAMIC_TYPE])));
   var expr = o.THIS_EXPR.prop(propertyName);
   compileView.createMethod.addStmt(
       o.THIS_EXPR.prop(propertyName)
-          .set(o.importExpr(Identifiers.QueryList, [o.DYNAMIC_TYPE]).instantiate([]))
+          .set(o.importExpr(resolveIdentifier(Identifiers.QueryList), [o.DYNAMIC_TYPE])
+                   .instantiate([]))
           .toStmt());
   return expr;
 }
 
-export function addQueryToTokenMap(map: CompileTokenMap<CompileQuery[]>, query: CompileQuery) {
+export function addQueryToTokenMap(map: Map<any, CompileQuery[]>, query: CompileQuery) {
   query.meta.selectors.forEach((selector) => {
-    var entry = map.get(selector);
+    var entry = map.get(selector.reference);
     if (isBlank(entry)) {
       entry = [];
-      map.add(selector, entry);
+      map.set(selector.reference, entry);
     }
     entry.push(query);
   });

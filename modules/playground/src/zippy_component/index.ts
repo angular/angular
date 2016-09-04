@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
 import {Zippy} from './app/zippy';
 
 @Component({
@@ -19,8 +21,7 @@ import {Zippy} from './app/zippy';
     <ul>
       <li *ngFor="let  log of logs">{{log}}</li>
     </ul>
-  `,
-  directives: [Zippy]
+  `
 })
 class ZippyApp {
   logs: string[] = [];
@@ -28,6 +29,10 @@ class ZippyApp {
   pushLog(log: string) { this.logs.push(log); }
 }
 
+@NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(ZippyApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

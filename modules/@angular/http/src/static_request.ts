@@ -8,7 +8,8 @@
 
 import {StringWrapper, isPresent} from '../src/facade/lang';
 
-import {ContentType, RequestMethod} from './enums';
+import {Body} from './body';
+import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
@@ -55,7 +56,7 @@ import {URLSearchParams} from './url_search_params';
  *
  * @experimental
  */
-export class Request {
+export class Request extends Body {
   /**
    * Http method with which to perform the request.
    */
@@ -66,13 +67,14 @@ export class Request {
   headers: Headers;
   /** Url of the remote resource */
   url: string;
-  /** Body of the request **/
-  private _body: any;
   /** Type of the request body **/
   private contentType: ContentType;
   /** Enable use credentials */
   withCredentials: boolean;
+  /** Buffer to store the response */
+  responseType: ResponseContentType;
   constructor(requestOptions: RequestArgs) {
+    super();
     // TODO: assert that url is present
     let url = requestOptions.url;
     this.url = requestOptions.url;
@@ -88,55 +90,41 @@ export class Request {
       }
     }
     this._body = requestOptions.body;
-    this.contentType = this.detectContentType();
     this.method = normalizeMethodName(requestOptions.method);
     // TODO(jeffbcross): implement behavior
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
+    this.contentType = this.detectContentType();
     this.withCredentials = requestOptions.withCredentials;
-  }
-
-
-  /**
-   * Returns the request's body as string, assuming that body exists. If body is undefined, return
-   * empty
-   * string.
-   */
-  text(): string { return isPresent(this._body) ? this._body.toString() : ''; }
-
-  /**
-   * Returns the request's body as JSON string, assuming that body exists. If body is undefined,
-   * return
-   * empty
-   * string.
-   */
-  json(): string { return isPresent(this._body) ? JSON.stringify(this._body) : ''; }
-
-  /**
-   * Returns the request's body as array buffer, assuming that body exists. If body is undefined,
-   * return
-   * null.
-   */
-  arrayBuffer(): ArrayBuffer {
-    if (this._body instanceof ArrayBuffer) return <ArrayBuffer>this._body;
-    throw 'The request body isn\'t an array buffer';
+    this.responseType = requestOptions.responseType;
   }
 
   /**
-   * Returns the request's body as blob, assuming that body exists. If body is undefined, return
-   * null.
+   * Returns the content type enum based on header options.
    */
-  blob(): Blob {
-    if (this._body instanceof Blob) return <Blob>this._body;
-    if (this._body instanceof ArrayBuffer) return new Blob([this._body]);
-    throw 'The request body isn\'t either a blob or an array buffer';
+  detectContentType(): ContentType {
+    switch (this.headers.get('content-type')) {
+      case 'application/json':
+        return ContentType.JSON;
+      case 'application/x-www-form-urlencoded':
+        return ContentType.FORM;
+      case 'multipart/form-data':
+        return ContentType.FORM_DATA;
+      case 'text/plain':
+      case 'text/html':
+        return ContentType.TEXT;
+      case 'application/octet-stream':
+        return ContentType.BLOB;
+      default:
+        return this.detectContentTypeFromBody();
+    }
   }
 
   /**
    * Returns the content type of request's body based on its type.
    */
-  detectContentType() {
+  detectContentTypeFromBody(): ContentType {
     if (this._body == null) {
       return ContentType.NONE;
     } else if (this._body instanceof URLSearchParams) {
@@ -161,7 +149,7 @@ export class Request {
   getBody(): any {
     switch (this.contentType) {
       case ContentType.JSON:
-        return this.json();
+        return this.text();
       case ContentType.FORM:
         return this.text();
       case ContentType.FORM_DATA:

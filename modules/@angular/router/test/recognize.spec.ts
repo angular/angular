@@ -1,4 +1,12 @@
-import {RouterConfig} from '../src/config';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
@@ -9,6 +17,14 @@ describe('recognize', () => {
     checkRecognize([{path: 'a', component: ComponentA}], 'a', (s: RouterStateSnapshot) => {
       checkActivatedRoute(s.root, '', {}, RootComponent);
       checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+    });
+  });
+
+  it('should freeze params object', () => {
+    checkRecognize([{path: 'a/:id', component: ComponentA}], 'a/10', (s: RouterStateSnapshot) => {
+      checkActivatedRoute(s.root, '', {}, RootComponent);
+      const child = s.firstChild(s.root);
+      expect(Object.isFrozen(child.params)).toBeTruthy();
     });
   });
 
@@ -66,6 +82,28 @@ describe('recognize', () => {
           const compA = s.firstChild(s.root);
           expect(compA._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
           expect(compA._lastPathIndex).toBe(1);
+
+          const compC = s.firstChild(<any>compA);
+          expect(compC._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+          expect(compC._lastPathIndex).toBe(2);
+        });
+  });
+
+  it('should set url segment and index properly (wildcard)', () => {
+    const url = tree('a/b/c');
+    recognize(
+        RootComponent,
+        [
+          {path: 'a', component: ComponentA, children: [{path: '**', component: ComponentB}]},
+        ],
+        url, 'a/b/c')
+        .subscribe((s: RouterStateSnapshot) => {
+          expect(s.root._urlSegment).toBe(url.root);
+          expect(s.root._lastPathIndex).toBe(-1);
+
+          const compA = s.firstChild(s.root);
+          expect(compA._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+          expect(compA._lastPathIndex).toBe(0);
 
           const compC = s.firstChild(<any>compA);
           expect(compC._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
@@ -221,19 +259,6 @@ describe('recognize', () => {
             });
       });
 
-      it('should not match when terminal', () => {
-        recognize(
-            RootComponent, [{
-              path: '',
-              pathMatch: 'full',
-              component: ComponentA,
-              children: [{path: 'b', component: ComponentB}]
-            }],
-            tree('b'), '')
-            .subscribe(
-                () => {}, (e) => { expect(e.message).toEqual('Cannot match any routes: \'b\''); });
-      });
-
       it('should work (nested case)', () => {
         checkRecognize(
             [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '',
@@ -262,6 +287,23 @@ describe('recognize', () => {
               expect(c2._lastPathIndex).toBe(-1);
             });
       });
+
+      it('should inherit params', () => {
+        checkRecognize(
+            [{
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            '/a;p=1', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.firstChild(s.root), 'a', {p: '1'}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.firstChild(s.root)), '', {p: '1'}, ComponentB);
+              checkActivatedRoute(
+                  s.firstChild(s.firstChild(s.firstChild(s.root))), '', {p: '1'}, ComponentC);
+            });
+      });
     });
 
     describe('aux split is in the middle', () => {
@@ -283,6 +325,39 @@ describe('recognize', () => {
               checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
             });
       });
+
+      it('should match (non-termianl) when both primary and secondary and primary has a child',
+         () => {
+           const config = [{
+             path: 'parent',
+             children: [
+               {
+                 path: '',
+                 component: ComponentA,
+                 children: [
+                   {path: 'b', component: ComponentB},
+                   {path: 'c', component: ComponentC},
+                 ]
+               },
+               {
+                 path: '',
+                 component: ComponentD,
+                 outlet: 'secondary',
+               }
+             ]
+           }];
+
+           checkRecognize(config, 'parent/b', (s: RouterStateSnapshot) => {
+             checkActivatedRoute(s.root, '', {}, RootComponent);
+             checkActivatedRoute(s.firstChild(s.root), 'parent', {}, undefined);
+
+             const cc = s.children(s.firstChild(s.root));
+             checkActivatedRoute(cc[0], '', {}, ComponentA);
+             checkActivatedRoute(cc[1], '', {}, ComponentD, 'secondary');
+
+             checkActivatedRoute(s.firstChild(cc[0]), 'b', {}, ComponentB);
+           });
+         });
 
       it('should match (terminal)', () => {
         checkRecognize(
@@ -330,6 +405,62 @@ describe('recognize', () => {
               const c = s.children(a)[1];
               expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(c._lastPathIndex).toBe(0);
+            });
+      });
+
+      it('should set url segment and index properly when nested empty-path segments', () => {
+        const url = tree('a');
+        recognize(
+            RootComponent, [{
+              path: 'a',
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            url, 'a')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const a = s.firstChild(s.root);
+              expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(a._lastPathIndex).toBe(0);
+
+              const b = s.firstChild(a);
+              expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(b._lastPathIndex).toBe(0);
+
+              const c = s.firstChild(b);
+              expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+              expect(c._lastPathIndex).toBe(0);
+            });
+      });
+
+      it('should set url segment and index properly when nested empty-path segments (2)', () => {
+        const url = tree('');
+        recognize(
+            RootComponent, [{
+              path: '',
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
+            }],
+            url, '')
+            .forEach((s: RouterStateSnapshot) => {
+              expect(s.root._urlSegment).toBe(url.root);
+              expect(s.root._lastPathIndex).toBe(-1);
+
+              const a = s.firstChild(s.root);
+              expect(a._urlSegment).toBe(url.root);
+              expect(a._lastPathIndex).toBe(-1);
+
+              const b = s.firstChild(a);
+              expect(b._urlSegment).toBe(url.root);
+              expect(b._lastPathIndex).toBe(-1);
+
+              const c = s.firstChild(b);
+              expect(c._urlSegment).toBe(url.root);
+              expect(c._lastPathIndex).toBe(-1);
             });
       });
     });
@@ -389,6 +520,22 @@ describe('recognize', () => {
               const c = s.children(s.firstChild(s.root));
               checkActivatedRoute(c[0], '', {}, ComponentB);
               checkActivatedRoute(c[1], 'c', {}, ComponentC, 'aux');
+            });
+      });
+
+      it('should work when split is at the root level', () => {
+        checkRecognize(
+            [
+              {path: '', component: ComponentA}, {path: 'b', component: ComponentB},
+              {path: 'c', component: ComponentC, outlet: 'aux'}
+            ],
+            '(aux:c)', (s: RouterStateSnapshot) => {
+              checkActivatedRoute(s.root, '', {}, RootComponent);
+
+              const children = s.children(s.root);
+              expect(children.length).toEqual(2);
+              checkActivatedRoute(children[0], '', {}, ComponentA);
+              checkActivatedRoute(children[1], 'c', {}, ComponentC, 'aux');
             });
       });
     });
@@ -484,7 +631,13 @@ describe('recognize', () => {
     it('should support query params', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(config, 'a?q=11', (s: RouterStateSnapshot) => {
-        expect(s.queryParams).toEqual({q: '11'});
+        expect(s.root.queryParams).toEqual({q: '11'});
+      });
+    });
+
+    it('should freeze query params object', () => {
+      checkRecognize([{path: 'a', component: ComponentA}], 'a?q=11', (s: RouterStateSnapshot) => {
+        expect(Object.isFrozen(s.root.queryParams)).toBeTruthy();
       });
     });
   });
@@ -493,7 +646,7 @@ describe('recognize', () => {
     it('should support fragment', () => {
       const config = [{path: 'a', component: ComponentA}];
       checkRecognize(
-          config, 'a#f1', (s: RouterStateSnapshot) => { expect(s.fragment).toEqual('f1'); });
+          config, 'a#f1', (s: RouterStateSnapshot) => { expect(s.root.fragment).toEqual('f1'); });
     });
   });
 
@@ -512,24 +665,10 @@ describe('recognize', () => {
                     'Two segments cannot have the same outlet name: \'aux:b\' and \'aux:c\'.');
           });
     });
-
-    it('should error when no matching routes', () => {
-      recognize(RootComponent, [{path: 'a', component: ComponentA}], tree('invalid'), 'invalid')
-          .subscribe((_) => {}, (s: RouterStateSnapshot) => {
-            expect(s.toString()).toContain('Cannot match any routes');
-          });
-    });
-
-    it('should error when no matching routes (too short)', () => {
-      recognize(RootComponent, [{path: 'a/:id', component: ComponentA}], tree('a'), 'a')
-          .subscribe((_) => {}, (s: RouterStateSnapshot) => {
-            expect(s.toString()).toContain('Cannot match any routes');
-          });
-    });
   });
 });
 
-function checkRecognize(config: RouterConfig, url: string, callback: any): void {
+function checkRecognize(config: Routes, url: string, callback: any): void {
   recognize(RootComponent, config, tree(url), url).subscribe(callback, e => { throw e; });
 }
 

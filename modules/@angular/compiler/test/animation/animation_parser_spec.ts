@@ -7,13 +7,14 @@
  */
 
 import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {FILL_STYLE_FLAG, flattenStyles} from '../../core_private';
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
 import {parseAnimationEntry} from '../../src/animation/animation_parser';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {FILL_STYLE_FLAG, flattenStyles} from '../private_import_core';
 
 export function main() {
   describe('parseAnimationEntry', () => {
@@ -51,7 +52,7 @@ export function main() {
     };
 
     var getAnimationAstFromEntryAst =
-        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; }
+        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; };
 
     var parseAnimationAst = (data: AnimationMetadata[]) => {
       return getAnimationAstFromEntryAst(parseAnimation(data).ast);

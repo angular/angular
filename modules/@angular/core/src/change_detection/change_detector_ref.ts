@@ -45,8 +45,6 @@ export abstract class ChangeDetectorRef {
    * })
    * class App {
    * }
-   *
-   * bootstrap(App);
    * ```
    */
   abstract markForCheck(): void;
@@ -104,8 +102,6 @@ export abstract class ChangeDetectorRef {
    * })
    * class App {
    * }
-   *
-   * bootstrap(App);
    * ```
    */
   abstract detach(): void;
@@ -195,8 +191,6 @@ export abstract class ChangeDetectorRef {
    * class App {
    *   live = true;
    * }
-   *
-   * bootstrap(App);
    * ```
    */
   abstract reattach(): void;

@@ -7,12 +7,8 @@
  */
 
 import {EventEmitter} from '../facade/async';
-import {BaseException} from '../facade/exceptions';
 
-import {NgZoneError, NgZoneImpl} from './ng_zone_impl';
-
-export {NgZoneError} from './ng_zone_impl';
-
+import {NgZoneImpl} from './ng_zone_impl';
 
 
 /**
@@ -91,12 +87,12 @@ export class NgZone {
   static isInAngularZone(): boolean { return NgZoneImpl.isInAngularZone(); }
   static assertInAngularZone(): void {
     if (!NgZoneImpl.isInAngularZone()) {
-      throw new BaseException('Expected to be in Angular Zone, but it is not!');
+      throw new Error('Expected to be in Angular Zone, but it is not!');
     }
   }
   static assertNotInAngularZone(): void {
     if (NgZoneImpl.isInAngularZone()) {
-      throw new BaseException('Expected to not be in Angular Zone, but it is!');
+      throw new Error('Expected to not be in Angular Zone, but it is!');
     }
   }
 
@@ -139,7 +135,7 @@ export class NgZone {
         this._checkStable();
       },
       setMacrotask: (hasMacrotasks: boolean) => { this._hasPendingMacrotasks = hasMacrotasks; },
-      onError: (error: NgZoneError) => this._onErrorEvents.emit(error)
+      onError: (error: any) => this._onErrorEvents.emit(error)
     });
   }
 

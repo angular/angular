@@ -9,14 +9,13 @@
 // ATTENTION: This file will be overwritten with generated code by main()
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 
-import {unimplemented} from '../../src/facade/exceptions';
 import {print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/util';
 
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
 export function getExpressions(): any {
-  return unimplemented();
+  throw new Error('unimplemented');
 }
 
 // Generator

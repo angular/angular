@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion DatePipe
 @Component({
@@ -25,7 +26,6 @@ export class DatePipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [DatePipeExample],
   template: `
     <h1>DatePipe Example</h1>
     <date-example></date-example>
@@ -34,6 +34,10 @@ export class DatePipeExample {
 export class AppCmp {
 }
 
+@NgModule({declarations: [DatePipeExample, AppCmp], imports: [BrowserModule], bootstrap: [AppCmp]})
+class AppModule {
+}
+
 export function main() {
-  bootstrap(AppCmp);
+  platformBrowserDynamic().bootstrapModule(AppModule);
 }

@@ -6,38 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, isString} from '../../src/facade/lang';
-
 const SVG_PREFIX = ':svg:';
+const HTMLELEMENT_NAMES =
+    'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr';
+const HTMLELEMENT_NAME = 'abbr';
 
-var document = typeof(global as any /** TODO #???? */)['document'] == 'object' ?
-    (global as any /** TODO #???? */)['document'] :
-    null;
+const _G: any = global;
+const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
 
 export function extractSchema(): Map<string, string[]> {
-  var SVGGraphicsElement = (global as any /** TODO #???? */)['SVGGraphicsElement'];
-  var SVGAnimationElement = (global as any /** TODO #???? */)['SVGAnimationElement'];
-  var SVGGeometryElement = (global as any /** TODO #???? */)['SVGGeometryElement'];
-  var SVGComponentTransferFunctionElement =
-      (global as any /** TODO #???? */)['SVGComponentTransferFunctionElement'];
-  var SVGGradientElement = (global as any /** TODO #???? */)['SVGGradientElement'];
-  var SVGTextContentElement = (global as any /** TODO #???? */)['SVGTextContentElement'];
-  var SVGTextPositioningElement = (global as any /** TODO #???? */)['SVGTextPositioningElement'];
-  if (!document || !SVGGraphicsElement) return null;
-  var descMap: Map<string, string[]> = new Map();
-  var visited: {[name: string]: boolean} = {};
-  var element = document.createElement('video');
-  var svgAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'set');
-  var svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  var svgFeFuncA = document.createElementNS('http://www.w3.org/2000/svg', 'feFuncA');
-  var svgGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-  var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  if (!document) return null;
+  const SVGGraphicsElement = _G['SVGGraphicsElement'];
+  if (!SVGGraphicsElement) return null;
 
+  const SVGAnimationElement = _G['SVGAnimationElement'];
+  const SVGGeometryElement = _G['SVGGeometryElement'];
+  const SVGComponentTransferFunctionElement = _G['SVGComponentTransferFunctionElement'];
+  const SVGGradientElement = _G['SVGGradientElement'];
+  const SVGTextContentElement = _G['SVGTextContentElement'];
+  const SVGTextPositioningElement = _G['SVGTextPositioningElement'];
+  const element = document.createElement('video');
+  const svgAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'set');
+  const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const svgFeFuncA = document.createElementNS('http://www.w3.org/2000/svg', 'feFuncA');
+  const svgGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+  const descMap: Map<string, string[]> = new Map();
+  let visited: {[name: string]: boolean} = {};
+
+  // HTML top level
   extractProperties(Node, element, visited, descMap, '*', '');
   extractProperties(Element, element, visited, descMap, '*', '');
-  extractProperties(HTMLElement, element, visited, descMap, '', '*');
-  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', '');
-  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, '*');
+  extractProperties(HTMLElement, element, visited, descMap, HTMLELEMENT_NAMES, '*');
+  extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_NAME);
+
+  // SVG top level
+  extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_NAME);
   extractProperties(
       SVGGraphicsElement, svgText, visited, descMap, SVG_PREFIX + 'graphics', SVG_PREFIX);
   extractProperties(
@@ -55,37 +60,64 @@ export function extractSchema(): Map<string, string[]> {
   extractProperties(
       SVGTextPositioningElement, svgText, visited, descMap, SVG_PREFIX + 'textPositioning',
       SVG_PREFIX + 'textContent');
-  var keys = Object.getOwnPropertyNames(window).filter(
-      k => k.endsWith('Element') && (k.startsWith('HTML') || k.startsWith('SVG')));
-  keys.sort();
-  keys.forEach(
-      name =>
-          extractRecursiveProperties(visited, descMap, (window as any /** TODO #???? */)[name]));
+
+  // Get all element types
+  const types = Object.getOwnPropertyNames(window).filter(k => /^(HTML|SVG).*?Element$/.test(k));
+
+  types.sort();
+
+  types.forEach(type => { extractRecursiveProperties(visited, descMap, (window as any)[type]); });
 
   return descMap;
 }
 
 function extractRecursiveProperties(
     visited: {[name: string]: boolean}, descMap: Map<string, string[]>, type: Function): string {
-  var name = extractName(type);
-  if (visited[name]) return name;  // already been here
-  var superName = '';
-  if (name != '*') {
-    superName = extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
+  const name = extractName(type);
+
+  if (visited[name]) {
+    return name;
   }
 
-  var instance: HTMLElement = null;
+  let superName: string;
+  switch (name) {
+    case '*':
+      superName = '';
+      break;
+    case HTMLELEMENT_NAME:
+      superName = '*';
+      break;
+    default:
+      superName =
+          extractRecursiveProperties(visited, descMap, type.prototype.__proto__.constructor);
+  }
+
+  // If the ancestor is an HTMLElement, use one of the multiple implememtation
+  superName = superName.split(',')[0];
+
+  let instance: HTMLElement = null;
   name.split(',').forEach(tagName => {
     instance = isSVG(type) ?
         document.createElementNS('http://www.w3.org/2000/svg', tagName.replace(SVG_PREFIX, '')) :
         document.createElement(tagName);
-    var htmlType = type;
-    if (tagName == 'cite') htmlType = HTMLElement;
+
+    let htmlType: Function;
+
+    switch (tagName) {
+      case 'cite':
+        htmlType = HTMLElement;
+        break;
+      default:
+        htmlType = type;
+    }
+
     if (!(instance instanceof htmlType)) {
       throw new Error(`Tag <${tagName}> is not an instance of ${htmlType['name']}`);
     }
   });
+
   extractProperties(type, instance, visited, descMap, name, superName);
+
   return name;
 }
 
@@ -93,21 +125,26 @@ function extractProperties(
     type: Function, instance: any, visited: {[name: string]: boolean},
     descMap: Map<string, string[]>, name: string, superName: string) {
   if (!type) return;
+
   visited[name] = true;
+
   const fullName = name + (superName ? '^' + superName : '');
-  let props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
-  var prototype = type.prototype;
-  var keys = Object.getOwnPropertyNames(prototype);
+
+  const props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
+
+  const prototype = type.prototype;
+  let keys = Object.getOwnPropertyNames(prototype);
+
   keys.sort();
-  keys.forEach((n) => {
-    if (n.startsWith('on')) {
-      props.push('*' + n.substr(2));
+  keys.forEach((name) => {
+    if (name.startsWith('on')) {
+      props.push('*' + name.substr(2));
     } else {
-      var typeCh = typeMap[typeof instance[n]];
-      var descriptor = Object.getOwnPropertyDescriptor(prototype, n);
-      var isSetter = descriptor && isPresent(descriptor.set);
-      if (isString(typeCh) && !n.startsWith('webkit') && isSetter) {
-        props.push(typeCh + n);
+      const typeCh = _TYPE_MNEMONICS[typeof instance[name]];
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, name);
+      const isSetter = descriptor && descriptor.set;
+      if (typeCh !== void 0 && !name.startsWith('webkit') && isSetter) {
+        props.push(typeCh + name);
       }
     }
   });
@@ -117,44 +154,76 @@ function extractProperties(
 }
 
 function extractName(type: Function): string {
-  var name = type['name'];
-  if (name == 'Element') return '*';
-  if (name == 'HTMLImageElement') return 'img';
-  if (name == 'HTMLAnchorElement') return 'a';
-  if (name == 'HTMLDListElement') return 'dl';
-  if (name == 'HTMLDirectoryElement') return 'dir';
-  if (name == 'HTMLHeadingElement') return 'h1,h2,h3,h4,h5,h6';
-  if (name == 'HTMLModElement') return 'ins,del';
-  if (name == 'HTMLOListElement') return 'ol';
-  if (name == 'HTMLParagraphElement') return 'p';
-  if (name == 'HTMLQuoteElement') return 'q,blockquote,cite';
-  if (name == 'HTMLTableCaptionElement') return 'caption';
-  if (name == 'HTMLTableCellElement') return 'th,td';
-  if (name == 'HTMLTableColElement') return 'col,colgroup';
-  if (name == 'HTMLTableRowElement') return 'tr';
-  if (name == 'HTMLTableSectionElement') return 'tfoot,thead,tbody';
-  if (name == 'HTMLUListElement') return 'ul';
-  if (name == 'SVGGraphicsElement') return SVG_PREFIX + 'graphics';
-  if (name == 'SVGMPathElement') return SVG_PREFIX + 'mpath';
-  if (name == 'SVGSVGElement') return SVG_PREFIX + 'svg';
-  if (name == 'SVGTSpanElement') return SVG_PREFIX + 'tspan';
-  var isSVG = name.startsWith('SVG');
-  if (name.startsWith('HTML') || isSVG) {
-    name = name.replace('HTML', '').replace('SVG', '').replace('Element', '');
-    if (isSVG && name.startsWith('FE')) {
-      name = 'fe' + name.substring(2);
-    } else if (name) {
-      name = name.charAt(0).toLowerCase() + name.substring(1);
-    }
-    return isSVG ? SVG_PREFIX + name : name.toLowerCase();
-  } else {
-    return null;
+  let name = type['name'];
+
+  switch (name) {
+    // see https://www.w3.org/TR/html5/index.html
+    // TODO(vicb): generate this map from all the element types
+    case 'Element':
+      return '*';
+    case 'HTMLElement':
+      return HTMLELEMENT_NAME;
+    case 'HTMLImageElement':
+      return 'img';
+    case 'HTMLAnchorElement':
+      return 'a';
+    case 'HTMLDListElement':
+      return 'dl';
+    case 'HTMLDirectoryElement':
+      return 'dir';
+    case 'HTMLHeadingElement':
+      return 'h1,h2,h3,h4,h5,h6';
+    case 'HTMLModElement':
+      return 'ins,del';
+    case 'HTMLOListElement':
+      return 'ol';
+    case 'HTMLParagraphElement':
+      return 'p';
+    case 'HTMLQuoteElement':
+      return 'q,blockquote,cite';
+    case 'HTMLTableCaptionElement':
+      return 'caption';
+    case 'HTMLTableCellElement':
+      return 'th,td';
+    case 'HTMLTableColElement':
+      return 'col,colgroup';
+    case 'HTMLTableRowElement':
+      return 'tr';
+    case 'HTMLTableSectionElement':
+      return 'tfoot,thead,tbody';
+    case 'HTMLUListElement':
+      return 'ul';
+    case 'SVGGraphicsElement':
+      return SVG_PREFIX + 'graphics';
+    case 'SVGMPathElement':
+      return SVG_PREFIX + 'mpath';
+    case 'SVGSVGElement':
+      return SVG_PREFIX + 'svg';
+    case 'SVGTSpanElement':
+      return SVG_PREFIX + 'tspan';
+    default:
+      const isSVG = name.startsWith('SVG');
+      if (name.startsWith('HTML') || isSVG) {
+        name = name.replace('HTML', '').replace('SVG', '').replace('Element', '');
+        if (isSVG && name.startsWith('FE')) {
+          name = 'fe' + name.substring(2);
+        } else if (name) {
+          name = name.charAt(0).toLowerCase() + name.substring(1);
+        }
+        return isSVG ? SVG_PREFIX + name : name.toLowerCase();
+      }
   }
+
+  return null;
 }
 
 function isSVG(type: Function): boolean {
   return type['name'].startsWith('SVG');
 }
 
-const typeMap =
-    <{[type: string]: string}>{'string': '', 'number': '#', 'boolean': '!', 'object': '%'};
+const _TYPE_MNEMONICS: {[type: string]: string} = {
+  'string': '',
+  'number': '#',
+  'boolean': '!',
+  'object': '%',
+};

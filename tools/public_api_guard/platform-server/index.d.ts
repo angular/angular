@@ -1,8 +1,9 @@
 /** @experimental */
-export declare const SERVER_PLATFORM_PROVIDERS: Array<any>;
+export declare const platformDynamicServer: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
-export declare function serverBootstrap(appComponentType: Type, providers: Array<any>): Promise<ComponentRef<any>>;
+export declare const platformServer: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */
-export declare function serverPlatform(): PlatformRef;
+export declare class ServerModule {
+}

@@ -16,7 +16,7 @@ export class Symbols {
   private get symbols(): Map<string, MetadataValue> {
     let result = this._symbols;
     if (!result) {
-      result = this._symbols = new Map();
+      result = this._symbols = new Map<string, MetadataValue>();
       populateBuiltins(result);
       this.buildImports();
     }

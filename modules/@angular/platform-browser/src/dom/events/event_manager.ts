@@ -9,7 +9,7 @@
 import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
+
 
 
 /**
@@ -50,7 +50,7 @@ export class EventManager {
         return plugin;
       }
     }
-    throw new BaseException(`No event manager plugin found for event ${eventName}`);
+    throw new Error(`No event manager plugin found for event ${eventName}`);
   }
 }
 

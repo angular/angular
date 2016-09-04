@@ -12,12 +12,11 @@ import {isBlank} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
-    /* @ts2dart_Provider */ {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DefaultValueAccessor),
-      multi: true
-    };
+export const DEFAULT_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => DefaultValueAccessor),
+  multi: true
+};
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the
@@ -28,7 +27,7 @@ export const DEFAULT_VALUE_ACCESSOR: any = /*@ts2dart_const*/
  *  <input type="text" name="searchQuery" ngModel>
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector:
@@ -52,4 +51,8 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 }

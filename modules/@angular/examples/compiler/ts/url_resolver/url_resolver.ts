@@ -7,8 +7,9 @@
  */
 
 import {UrlResolver} from '@angular/compiler';
-import {provide} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 var MyApp: any;
 
@@ -23,5 +24,15 @@ class MyUrlResolver extends UrlResolver {
   }
 }
 
-bootstrap(MyApp, [{provide: UrlResolver, useClass: MyUrlResolver}]);
+@NgModule({
+  imports: [BrowserModule],
+  providers: [{provide: UrlResolver, useClass: MyUrlResolver}],
+  bootstrap: [MyApp]
+})
+class AppModule {
+}
+
+export function main() {
+  platformBrowserDynamic().bootstrapModule(AppModule);
+}
 // #enddocregion

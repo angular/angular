@@ -6,20 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
-import {BrowserXhr} from '../../src/backends/browser_xhr';
-import {XSRFStrategy} from '../../src/interfaces';
-import {XHRConnection, XHRBackend, CookieXSRFStrategy} from '../../src/backends/xhr_backend';
-import {provide, Injector, Injectable, ReflectiveInjector} from '@angular/core';
+import {Injectable} from '@angular/core';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
+
+import {BrowserXhr} from '../../src/backends/browser_xhr';
+import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
+import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
+import {ResponseContentType, ResponseType} from '../../src/enums';
+import {Map} from '../../src/facade/collection';
+import {Json} from '../../src/facade/lang';
+import {Headers} from '../../src/headers';
+import {XSRFStrategy} from '../../src/interfaces';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
-import {Headers} from '../../src/headers';
-import {Map} from '../../src/facade/collection';
-import {RequestOptions, BaseRequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {ResponseType} from '../../src/enums';
 import {URLSearchParams} from '../../src/url_search_params';
 
 var abortSpy: any;
@@ -35,6 +36,7 @@ class MockBrowserXHR extends BrowserXhr {
   send: any;
   open: any;
   response: any;
+  responseType: string;
   responseText: string;
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
@@ -51,6 +53,9 @@ class MockBrowserXHR extends BrowserXhr {
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
     this.setRequestHeader = setRequestHeaderSpy = spy.spy('setRequestHeader');
+    // If responseType is supported by the browser, then it should be set to an empty string.
+    // (https://www.w3.org/TR/XMLHttpRequest/#the-responsetype-attribute)
+    this.responseType = '';
   }
 
   setStatusCode(status: number) { this.status = status; }
@@ -141,7 +146,7 @@ export function main() {
             backend.createConnection(sampleRequest);
             expect(sampleRequest.headers.get('X-MY-HEADER')).toBe('XSRF value');
           });
-        })
+        });
       });
     }
 
@@ -232,9 +237,9 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({headers: headers}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/xml');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', '<3');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/xml');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('breaking-bad', '<3');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('x-multi', 'a,b');
       });
 
       it('should skip content type detection if custom content type header is set', () => {
@@ -245,8 +250,8 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
             new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
-        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
+        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('content-type', 'application/json');
       });
 
       it('should use object body and detect content type header to the request', () => {
@@ -255,8 +260,8 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(sendSpy).toHaveBeenCalledWith(JSON.stringify(body));
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'application/json');
+        expect(sendSpy).toHaveBeenCalledWith(Json.stringify(body));
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'application/json');
       });
 
       it('should use number body and detect content type header to the request', () => {
@@ -266,7 +271,7 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith('23');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
       });
 
       it('should use string body and detect content type header to the request', () => {
@@ -276,7 +281,7 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(sendSpy).toHaveBeenCalledWith(body);
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
       });
 
       it('should use URLSearchParams body and detect content type header to the request', () => {
@@ -290,15 +295,31 @@ export function main() {
         expect(sendSpy).toHaveBeenCalledWith('test1=val1&test2=val2');
         expect(setRequestHeaderSpy)
             .toHaveBeenCalledWith(
-                'Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+                'content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
       });
 
       if ((global as any /** TODO #9100 */)['Blob']) {
+        // `new Blob(...)` throws an 'Illegal constructor' exception in Android browser <= 4.3,
+        // but a BlobBuilder can be used instead
+        const createBlob = (data: Array<string>, datatype: string) => {
+          let newBlob: Blob;
+          try {
+            newBlob = new Blob(data || [], datatype ? {type: datatype} : {});
+          } catch (e) {
+            const BlobBuilder = (<any>global).BlobBuilder || (<any>global).WebKitBlobBuilder ||
+                (<any>global).MozBlobBuilder || (<any>global).MSBlobBuilder;
+            const builder = new BlobBuilder();
+            builder.append(data);
+            newBlob = builder.getBlob(datatype);
+          }
+          return newBlob;
+        };
+
         it('should use FormData body and detect content type header to the request', () => {
           var body = new FormData();
           body.append('test1', 'val1');
           body.append('test2', 123456);
-          var blob = new Blob(['body { color: red; }'], {type: 'text/css'});
+          var blob = createBlob(['body { color: red; }'], 'text/css');
           body.append('userfile', blob);
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
@@ -309,17 +330,17 @@ export function main() {
         });
 
         it('should use blob body and detect content type header to the request', () => {
-          var body = new Blob(['body { color: red; }'], {type: 'text/css'});
+          var body = createBlob(['body { color: red; }'], 'text/css');
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
           connection.response.subscribe();
           expect(sendSpy).toHaveBeenCalledWith(body);
-          expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+          expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
         });
 
         it('should use blob body without type to the request', () => {
-          var body = new Blob(['body { color: red; }']);
+          var body = createBlob(['body { color: red; }'], null);
           var base = new BaseRequestOptions();
           var connection = new XHRConnection(
               new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
@@ -331,14 +352,14 @@ export function main() {
         it('should use blob body without type with custom content type header to the request',
            () => {
              var headers = new Headers({'Content-Type': 'text/css'});
-             var body = new Blob(['body { color: red; }']);
+             var body = createBlob(['body { color: red; }'], null);
              var base = new BaseRequestOptions();
              var connection = new XHRConnection(
                  new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
            });
 
         it('should use array buffer body to the request', () => {
@@ -369,7 +390,7 @@ export function main() {
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
            });
       }
 
@@ -551,9 +572,9 @@ export function main() {
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
-               Content-Type: application/json; charset=utf-8
-               Transfer-Encoding: chunked
-               Connection: keep-alive`
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
@@ -590,7 +611,7 @@ export function main() {
            var connection = new XHRConnection(
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
-           Foo: Bar`
+           Foo: Bar`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://somedomain.com');
@@ -638,7 +659,7 @@ export function main() {
            var connection =
                new XHRConnection(sampleRequest, mockXhr, new ResponseOptions({status: statusCode}));
            var responseHeaders = `X-Request-URL: http://somedomain.com
-           Foo: Bar`
+           Foo: Bar`;
 
            connection.response.subscribe((res: Response) => {
              expect(res.url).toEqual('http://somedomain.com');
@@ -647,6 +668,24 @@ export function main() {
            });
 
            existingXHRs[0].setResponseHeaders(responseHeaders);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should set the responseType attribute to blob when the corresponding response content type is present',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var statusCode = 200;
+           var base = new BaseRequestOptions();
+           var connection = new XHRConnection(
+               new Request(
+                   base.merge(new RequestOptions({responseType: ResponseContentType.Blob}))),
+               new MockBrowserXHR());
+
+           connection.response.subscribe((res: Response) => {
+             expect(existingXHRs[0].responseType).toBe('blob');
+             async.done();
+           });
+
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));

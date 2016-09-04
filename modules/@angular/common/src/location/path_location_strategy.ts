@@ -8,12 +8,12 @@
 
 import {Inject, Injectable, Optional} from '@angular/core';
 
-import {BaseException} from '../facade/exceptions';
 import {isBlank} from '../facade/lang';
 
 import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
-import {PlatformLocation, UrlChangeListener} from './platform_location';
+import {LocationChangeListener, PlatformLocation} from './platform_location';
+
 
 
 /**
@@ -25,44 +25,17 @@ import {PlatformLocation, UrlChangeListener} from './platform_location';
  * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
  * provided in {@link ROUTER_PROVIDERS}.
  *
- * If you're using `PathLocationStrategy`, you must provide a provider for
- * {@link APP_BASE_HREF} to a string representing the URL prefix that should
- * be preserved when generating and recognizing URLs.
+ * If you're using `PathLocationStrategy`, you must provide a {@link APP_BASE_HREF}
+ * or add a base element to the document. This URL prefix that will be preserved
+ * when generating and recognizing URLs.
  *
  * For instance, if you provide an `APP_BASE_HREF` of `'/my/app'` and call
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
  *
- * ### Example
- *
- * ```
- * import {Component} from '@angular/core';
- * import {bootstrap} from '@angular/platform-browser/browser';
- * import {
- *   Location,
- *   APP_BASE_HREF
- * } from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   constructor(location: Location) {
- *     location.go('/foo');
- *   }
- * }
- *
- * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
- *   {provide: APP_BASE_HREF, useValue: '/my/app'}
- * ]);
- * ```
+ * Similarly, if you add `<base href='/my/app'/>` to the document and call
+ * `location.go('/foo')`, the browser's URL will become
+ * `example.com/my/app/foo`.
  *
  * @stable
  */
@@ -80,14 +53,14 @@ export class PathLocationStrategy extends LocationStrategy {
     }
 
     if (isBlank(href)) {
-      throw new BaseException(
+      throw new Error(
           `No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`);
     }
 
     this._baseHref = href;
   }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }

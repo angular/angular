@@ -6,64 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgModule} from '@angular/core';
 
-import {COMMON_DIRECTIVES, FORM_DIRECTIVES as OLD_FORM_DIRECTIVES, FORM_PROVIDERS as OLD_FORM_PROVIDERS} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
-import {PLATFORM_DIRECTIVES, PLATFORM_PIPES, Type} from '@angular/core';
-
-import {FORM_DIRECTIVES as NEW_FORM_DIRECTIVES} from './directives';
-import {RadioControlRegistry as NewRadioControlRegistry} from './directives/radio_control_value_accessor';
-import {ListWrapper} from './facade/collection';
-import {FormBuilder as NewFormBuilder} from './form_builder';
-
+import {InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {RadioControlRegistry} from './directives/radio_control_value_accessor';
+import {FormBuilder} from './form_builder';
 
 
 /**
- * Shorthand set of providers used for building Angular forms.
- *
- * ### Example
- *
- * ```typescript
- * bootstrap(MyApp, [FORM_PROVIDERS]);
- * ```
- *
- * @experimental
+ * The ng module for forms.
+ * @stable
  */
-export const FORM_PROVIDERS: Type[] = /*@ts2dart_const*/[NewFormBuilder, NewRadioControlRegistry];
-
-function flatten(platformDirectives: any[]): any[] {
-  let flattenedDirectives: any[] = [];
-  platformDirectives.forEach((directives) => {
-    if (Array.isArray(directives)) {
-      flattenedDirectives = flattenedDirectives.concat(directives);
-    } else {
-      flattenedDirectives.push(directives);
-    }
-  });
-  return flattenedDirectives;
-}
-
-
-/**
- * @experimental
- */
-export function disableDeprecatedForms(): any[] {
-  return [{
-    provide: CompilerConfig,
-    useFactory: (platformDirectives: any[], platformPipes: any[]) => {
-      const flattenedDirectives = flatten(platformDirectives);
-      ListWrapper.remove(flattenedDirectives, OLD_FORM_DIRECTIVES);
-      return new CompilerConfig({platformDirectives: flattenedDirectives, platformPipes});
-    },
-    deps: [PLATFORM_DIRECTIVES, PLATFORM_PIPES]
-  }];
+@NgModule({
+  declarations: TEMPLATE_DRIVEN_DIRECTIVES,
+  providers: [RadioControlRegistry],
+  exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
+})
+export class FormsModule {
 }
 
 /**
- * @experimental
+ * The ng module for reactive forms.
+ * @stable
  */
-export function provideForms(): any[] {
-  return [
-    {provide: PLATFORM_DIRECTIVES, useValue: NEW_FORM_DIRECTIVES, multi: true}, FORM_PROVIDERS
-  ];
+@NgModule({
+  declarations: [REACTIVE_DRIVEN_DIRECTIVES],
+  providers: [FormBuilder, RadioControlRegistry],
+  exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
+})
+export class ReactiveFormsModule {
 }

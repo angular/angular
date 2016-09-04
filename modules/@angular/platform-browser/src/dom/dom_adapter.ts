@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isBlank} from '../facade/lang';
+import {Type} from '@angular/core';
+
+import {isBlank} from '../facade/lang';
 
 var _DOM: DomAdapter = null;
 
@@ -27,9 +29,12 @@ export function setRootDomAdapter(adapter: DomAdapter) {
 /* tslint:disable:requireParameterType */
 /**
  * Provides DOM operations in an environment-agnostic way.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
  */
 export abstract class DomAdapter {
-  public xhrType: Type = null;
+  public resourceLoaderType: Type<any> = null;
   abstract hasProperty(element: any /** TODO #9100 */, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any /** TODO #9100 */;
   abstract getProperty(el: Element, name: string): any;
@@ -39,9 +44,6 @@ export abstract class DomAdapter {
   abstract log(error: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract logGroup(error: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract logGroupEnd(): any /** TODO #9100 */;
-
-  /** @deprecated */
-  getXHR(): Type { return this.xhrType; }
 
   /**
    * Maps attribute names to their corresponding property names for cases
@@ -175,8 +177,6 @@ export abstract class DomAdapter {
   abstract getComputedStyle(element: any /** TODO #9100 */): any;
   abstract getData(element: any /** TODO #9100 */, name: string): string;
   abstract setGlobalVar(name: string, value: any): any /** TODO #9100 */;
-  abstract requestAnimationFrame(callback: any /** TODO #9100 */): number;
-  abstract cancelAnimationFrame(id: any /** TODO #9100 */): any /** TODO #9100 */;
   abstract supportsWebAnimation(): boolean;
   abstract performanceNow(): number;
   abstract getAnimationPrefix(): string;

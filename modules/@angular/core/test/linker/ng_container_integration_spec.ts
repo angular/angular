@@ -6,16 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, xdescribe, describe, expect, iit, inject, beforeEachProviders, it, xit,} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {OpaqueToken, ViewMetadata, Component, Directive, AfterContentInit, AfterViewInit, QueryList, ContentChildren, ViewChildren, Input} from '@angular/core';
 import {NgIf} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
-import {el} from '@angular/platform-browser/testing/browser_util';
-
-const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
+import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren} from '@angular/core';
+import {TestBed, async} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
@@ -25,161 +21,130 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
-    beforeEachProviders(
-        () =>
-            [{
-              provide: CompilerConfig,
-              useValue: new CompilerConfig({genDebugInfo: true, useJit: useJit})
-            },
-             {provide: ANCHOR_ELEMENT, useValue: el('<div></div>')},
-    ]);
+    beforeEach(() => {
+      TestBed.configureCompiler({useJit: useJit});
+      TestBed.configureTestingModule(
+          {declarations: [MyComp, NeedsContentChildren, NeedsViewChildren, TextDirective, Simple]});
+    });
 
-    it('should be rendered as comment with children as siblings',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(MyComp, '<ng-container><p></p></ng-container>')
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+    it('should support the "i18n" attribute', () => {
+      const template = '<ng-container i18n>foo</ng-container>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-                   const el = fixture.debugElement.nativeElement;
-                   const children = getDOM().childNodes(el);
-                   expect(children.length).toBe(2);
-                   expect(getDOM().isCommentNode(children[0])).toBe(true);
-                   expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
+      fixture.detectChanges();
 
-                   async.done();
-                 });
-           }));
+      const el = fixture.debugElement.nativeElement;
+      expect(el).toHaveText('foo');
+    });
 
-    it('should support nesting',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(
-                    MyComp,
-                    '<ng-container>1</ng-container><ng-container><ng-container>2</ng-container></ng-container>')
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+    it('should be rendered as comment with children as siblings', () => {
+      const template = '<ng-container><p></p></ng-container>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-                   const el = fixture.debugElement.nativeElement;
-                   const children = getDOM().childNodes(el);
-                   expect(children.length).toBe(5);
-                   expect(getDOM().isCommentNode(children[0])).toBe(true);
-                   expect(children[1]).toHaveText('1');
-                   expect(getDOM().isCommentNode(children[2])).toBe(true);
-                   expect(getDOM().isCommentNode(children[3])).toBe(true);
-                   expect(children[4]).toHaveText('2');
+      fixture.detectChanges();
 
-                   async.done();
-                 });
-           }));
+      const el = fixture.debugElement.nativeElement;
+      const children = getDOM().childNodes(el);
+      expect(children.length).toBe(2);
+      expect(getDOM().isCommentNode(children[0])).toBe(true);
+      expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
+    });
 
-    it('should group inner nodes',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(
-                    MyComp, '<ng-container *ngIf="ctxBoolProp"><p></p><b></b></ng-container>')
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   fixture.debugElement.componentInstance.ctxBoolProp = true;
-                   fixture.detectChanges();
+    it('should support nesting', () => {
+      const template =
+          '<ng-container>1</ng-container><ng-container><ng-container>2</ng-container></ng-container>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-                   const el = fixture.debugElement.nativeElement;
-                   const children = getDOM().childNodes(el);
+      fixture.detectChanges();
 
-                   expect(children.length).toBe(4);
-                   // ngIf anchor
-                   expect(getDOM().isCommentNode(children[0])).toBe(true);
-                   // ng-container anchor
-                   expect(getDOM().isCommentNode(children[1])).toBe(true);
-                   expect(getDOM().tagName(children[2]).toUpperCase()).toEqual('P');
-                   expect(getDOM().tagName(children[3]).toUpperCase()).toEqual('B');
+      const el = fixture.debugElement.nativeElement;
+      const children = getDOM().childNodes(el);
+      expect(children.length).toBe(5);
+      expect(getDOM().isCommentNode(children[0])).toBe(true);
+      expect(children[1]).toHaveText('1');
+      expect(getDOM().isCommentNode(children[2])).toBe(true);
+      expect(getDOM().isCommentNode(children[3])).toBe(true);
+      expect(children[4]).toHaveText('2');
+    });
 
-                   fixture.debugElement.componentInstance.ctxBoolProp = false;
-                   fixture.detectChanges();
+    it('should group inner nodes', () => {
+      const template = '<ng-container *ngIf="ctxBoolProp"><p></p><b></b></ng-container>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-                   expect(children.length).toBe(1);
-                   expect(getDOM().isCommentNode(children[0])).toBe(true);
+      fixture.debugElement.componentInstance.ctxBoolProp = true;
+      fixture.detectChanges();
 
-                   async.done();
-                 });
-           }));
+      const el = fixture.debugElement.nativeElement;
+      const children = getDOM().childNodes(el);
 
-    it('should work with static content projection',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(
-                    MyComp, `<simple><ng-container><p>1</p><p>2</p></ng-container></simple>`)
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+      expect(children.length).toBe(4);
+      // ngIf anchor
+      expect(getDOM().isCommentNode(children[0])).toBe(true);
+      // ng-container anchor
+      expect(getDOM().isCommentNode(children[1])).toBe(true);
+      expect(getDOM().tagName(children[2]).toUpperCase()).toEqual('P');
+      expect(getDOM().tagName(children[3]).toUpperCase()).toEqual('B');
 
-                   const el = fixture.debugElement.nativeElement;
-                   expect(el).toHaveText('SIMPLE(12)');
+      fixture.debugElement.componentInstance.ctxBoolProp = false;
+      fixture.detectChanges();
 
-                   async.done();
-                 });
-           }));
+      expect(children.length).toBe(1);
+      expect(getDOM().isCommentNode(children[0])).toBe(true);
+    });
 
-    it('should support injecting the container from children',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             tcb.overrideTemplate(
-                    MyComp, `<ng-container [text]="'container'"><p></p></ng-container>`)
-                 .createAsync(MyComp)
-                 .then((fixture) => {
-                   fixture.detectChanges();
+    it('should work with static content projection', () => {
+      const template = `<simple><ng-container><p>1</p><p>2</p></ng-container></simple>`;
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-                   const dir = fixture.debugElement.children[0].injector.get(TextDirective);
-                   expect(dir).toBeAnInstanceOf(TextDirective);
-                   expect(dir.text).toEqual('container');
+      fixture.detectChanges();
 
-                   async.done();
-                 });
-           }));
+      const el = fixture.debugElement.nativeElement;
+      expect(el).toHaveText('SIMPLE(12)');
+    });
 
-    it('should contain all direct child directives in a <ng-container> (content dom)',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template =
-                 '<needs-content-children #q><ng-container><div text="foo"></div></ng-container></needs-content-children>';
+    it('should support injecting the container from children', () => {
+      const template = `<ng-container [text]="'container'"><p></p></ng-container>`;
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-             tcb.overrideTemplate(MyComp, template).createAsync(MyComp).then((view) => {
-               view.detectChanges();
-               var q = view.debugElement.children[0].references['q'];
-               view.detectChanges();
+      fixture.detectChanges();
 
-               expect(q.textDirChildren.length).toEqual(1);
-               expect(q.numberOfChildrenAfterContentInit).toEqual(1);
+      const dir = fixture.debugElement.children[0].injector.get(TextDirective);
+      expect(dir).toBeAnInstanceOf(TextDirective);
+      expect(dir.text).toEqual('container');
+    });
 
-               async.done();
-             });
-           }));
+    it('should contain all direct child directives in a <ng-container> (content dom)', () => {
+      const template =
+          '<needs-content-children #q><ng-container><div text="foo"></div></ng-container></needs-content-children>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-    it('should contain all child directives in a <ng-container> (view dom)',
-       inject(
-           [TestComponentBuilder, AsyncTestCompleter],
-           (tcb: TestComponentBuilder, async: AsyncTestCompleter) => {
-             const template = '<needs-view-children #q></needs-view-children>';
+      fixture.detectChanges();
+      var q = fixture.debugElement.children[0].references['q'];
+      fixture.detectChanges();
 
-             tcb.overrideTemplate(MyComp, template).createAsync(MyComp).then((view) => {
-               view.detectChanges();
-               var q = view.debugElement.children[0].references['q'];
-               view.detectChanges();
+      expect(q.textDirChildren.length).toEqual(1);
+      expect(q.numberOfChildrenAfterContentInit).toEqual(1);
+    });
 
-               expect(q.textDirChildren.length).toEqual(1);
-               expect(q.numberOfChildrenAfterViewInit).toEqual(1);
+    it('should contain all child directives in a <ng-container> (view dom)', () => {
+      const template = '<needs-view-children #q></needs-view-children>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-               async.done();
-             });
-           }));
+      fixture.detectChanges();
+      var q = fixture.debugElement.children[0].references['q'];
+      fixture.detectChanges();
+
+      expect(q.textDirChildren.length).toEqual(1);
+      expect(q.numberOfChildrenAfterViewInit).toEqual(1);
+    });
   });
 }
 
@@ -196,8 +161,7 @@ class NeedsContentChildren implements AfterContentInit {
   ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
 }
 
-@Component(
-    {selector: 'needs-view-children', template: '<div text></div>', directives: [TextDirective]})
+@Component({selector: 'needs-view-children', template: '<div text></div>'})
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number;
@@ -205,15 +169,11 @@ class NeedsViewChildren implements AfterViewInit {
   ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
 }
 
-@Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)', directives: []})
+@Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})
 class Simple {
 }
 
-@Component({
-  selector: 'my-comp',
-  directives: [NeedsContentChildren, NeedsViewChildren, TextDirective, NgIf, Simple],
-  template: ''
-})
+@Component({selector: 'my-comp', template: ''})
 class MyComp {
   ctxBoolProp: boolean = false;
 }

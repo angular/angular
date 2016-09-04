@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core';
 
-import {RegExpWrapper, StringWrapper, evalExpression, isBlank, isPresent, isString} from '../facade/lang';
+import {StringWrapper, evalExpression, isBlank, isPresent, isString} from '../facade/lang';
 
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
@@ -40,7 +39,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     if (isBlank(ast.value.name)) {
-      throw new BaseException(`Internal error: unknown identifier ${ast.value}`);
+      throw new Error(`Internal error: unknown identifier ${ast.value}`);
     }
     if (isPresent(ast.value.moduleUrl) && ast.value.moduleUrl != this._moduleUrl) {
       var prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);

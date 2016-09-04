@@ -7,14 +7,12 @@
  */
 
 import {isListLikeIterable, iterateListLike} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {getMapKey, isArray, isBlank, isPresent, looseIdentical, stringify} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 import {IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_differs';
 
 
-/* @ts2dart_const */
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
   supports(obj: Object): boolean { return isListLikeIterable(obj); }
@@ -63,6 +61,56 @@ export class DefaultIterableDiffer implements IterableDiffer {
     }
   }
 
+  forEachOperation(
+      fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void) {
+    var nextIt = this._itHead;
+    var nextRemove = this._removalsHead;
+    var addRemoveOffset = 0;
+    var moveOffsets: number[] = null;
+    while (nextIt || nextRemove) {
+      // Figure out which is the next record to process
+      // Order: remove, add, move
+      let record = !nextRemove ||
+              nextIt &&
+                  nextIt.currentIndex < getPreviousIndex(nextRemove, addRemoveOffset, moveOffsets) ?
+          nextIt :
+          nextRemove;
+      var adjPreviousIndex = getPreviousIndex(record, addRemoveOffset, moveOffsets);
+      var currentIndex = record.currentIndex;
+
+      // consume the item, and adjust the addRemoveOffset and update moveDistance if necessary
+      if (record === nextRemove) {
+        addRemoveOffset--;
+        nextRemove = nextRemove._nextRemoved;
+      } else {
+        nextIt = nextIt._next;
+        if (record.previousIndex == null) {
+          addRemoveOffset++;
+        } else {
+          // INVARIANT:  currentIndex < previousIndex
+          if (!moveOffsets) moveOffsets = [];
+          let localMovePreviousIndex = adjPreviousIndex - addRemoveOffset;
+          let localCurrentIndex = currentIndex - addRemoveOffset;
+          if (localMovePreviousIndex != localCurrentIndex) {
+            for (var i = 0; i < localMovePreviousIndex; i++) {
+              var offset = i < moveOffsets.length ? moveOffsets[i] : (moveOffsets[i] = 0);
+              var index = offset + i;
+              if (localCurrentIndex <= index && index < localMovePreviousIndex) {
+                moveOffsets[i] = offset + 1;
+              }
+            }
+            var previousIndex = record.previousIndex;
+            moveOffsets[previousIndex] = localCurrentIndex - localMovePreviousIndex;
+          }
+        }
+      }
+
+      if (adjPreviousIndex !== currentIndex) {
+        fn(record, adjPreviousIndex, currentIndex);
+      }
+    }
+  }
+
   forEachPreviousItem(fn: Function) {
     var record: CollectionChangeRecord;
     for (record = this._previousItHead; record !== null; record = record._nextPrevious) {
@@ -101,7 +149,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   diff(collection: any): DefaultIterableDiffer {
     if (isBlank(collection)) collection = [];
     if (!isListLikeIterable(collection)) {
-      throw new BaseException(`Error trying to diff '${collection}'`);
+      throw new Error(`Error trying to diff '${collection}'`);
     }
 
     if (this.check(collection)) {
@@ -699,4 +747,14 @@ class _DuplicateMap {
   clear() { this.map.clear(); }
 
   toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
+}
+
+function getPreviousIndex(item: any, addRemoveOffset: number, moveOffsets: number[]): number {
+  var previousIndex = item.previousIndex;
+  if (previousIndex === null) return previousIndex;
+  var moveOffset = 0;
+  if (moveOffsets && previousIndex < moveOffsets.length) {
+    moveOffset = moveOffsets[previousIndex];
+  }
+  return previousIndex + addRemoveOffset + moveOffset;
 }

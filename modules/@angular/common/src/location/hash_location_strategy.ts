@@ -12,7 +12,7 @@ import {isPresent} from '../facade/lang';
 
 import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
-import {PlatformLocation, UrlChangeListener} from './platform_location';
+import {LocationChangeListener, PlatformLocation} from './platform_location';
 
 
 
@@ -28,32 +28,16 @@ import {PlatformLocation, UrlChangeListener} from './platform_location';
  * ### Example
  *
  * ```
- * import {Component, provide} from '@angular/core';
+ * import {Component, NgModule} from '@angular/core';
  * import {
- *   Location,
  *   LocationStrategy,
  *   HashLocationStrategy
  * } from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   constructor(location: Location) {
- *     location.go('/foo');
- *   }
- * }
- *
- * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
- *   {provide: LocationStrategy, useClass: HashLocationStrategy}
- * ]);
+ * @NgModule({
+ *   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}]
+ * })
+ * class AppModule {}
  * ```
  *
  * @stable
@@ -70,7 +54,7 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }
@@ -83,10 +67,7 @@ export class HashLocationStrategy extends LocationStrategy {
     var path = this._platformLocation.hash;
     if (!isPresent(path)) path = '#';
 
-    // Dart will complain if a call to substring is
-    // executed with a position value that extends the
-    // length of string.
-    return (path.length > 0 ? path.substring(1) : path);
+    return path.length > 0 ? path.substring(1) : path;
   }
 
   prepareExternalUrl(internal: string): string {

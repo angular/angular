@@ -51,33 +51,14 @@ export function scheduleMicroTask(fn: Function) {
   Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
 }
 
-export const IS_DART = false;
-
 // Need to declare a new variable for global here since TypeScript
 // exports the original value of the symbol.
 var _global: BrowserNodeGlobal = globalScope;
 
 export {_global as global};
 
-/**
- * Runtime representation a type that a Component or other object is instances of.
- *
- * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
- * the `MyCustomComponent` constructor function.
- *
- * @stable
- */
-export var Type = Function;
 
-
-export interface Type extends Function {}
-
-/**
- * Runtime representation of a type that is constructable (non-abstract).
- */
-export interface ConcreteType<T> extends Type { new (...args: any[]): T; }
-
-export function getTypeNameForDebugging(type: Type): string {
+export function getTypeNameForDebugging(type: any): string {
   if (type['name']) {
     return type['name'];
   }
@@ -111,7 +92,7 @@ export function isNumber(obj: any): boolean {
   return typeof obj === 'number';
 }
 
-export function isString(obj: any): obj is String {
+export function isString(obj: any): obj is string {
   return typeof obj === 'string';
 }
 
@@ -133,7 +114,9 @@ export function isStrictStringMap(obj: any): boolean {
 }
 
 export function isPromise(obj: any): boolean {
-  return obj instanceof (<any>_global).Promise;
+  // allow any Promise/A+ compliant thenable.
+  // It's up to the caller to ensure that obj.then conforms to the spec
+  return isPresent(obj) && isFunction(obj.then);
 }
 
 export function isArray(obj: any): boolean {
@@ -155,11 +138,11 @@ export function stringify(token: any): string {
     return '' + token;
   }
 
-  if (token.name) {
-    return token.name;
-  }
   if (token.overriddenName) {
     return token.overriddenName;
+  }
+  if (token.name) {
+    return token.name;
   }
 
   var res = token.toString();
@@ -257,14 +240,6 @@ export class StringJoiner {
   toString(): string { return this.parts.join(''); }
 }
 
-export class NumberParseError extends Error {
-  name: string;
-
-  constructor(public message: string) { super(); }
-
-  toString(): string { return this.message; }
-}
-
 
 export class NumberWrapper {
   static toFixed(n: number, fractionDigits: number): string { return n.toFixed(fractionDigits); }
@@ -274,7 +249,7 @@ export class NumberWrapper {
   static parseIntAutoRadix(text: string): number {
     var result: number = parseInt(text);
     if (isNaN(result)) {
-      throw new NumberParseError('Invalid integer literal when parsing ' + text);
+      throw new Error('Invalid integer literal when parsing ' + text);
     }
     return result;
   }
@@ -294,8 +269,7 @@ export class NumberWrapper {
         return result;
       }
     }
-    throw new NumberParseError(
-        'Invalid integer literal when parsing ' + text + ' in base ' + radix);
+    throw new Error('Invalid integer literal when parsing ' + text + ' in base ' + radix);
   }
 
   // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
@@ -311,50 +285,6 @@ export class NumberWrapper {
 }
 
 export var RegExp = _global.RegExp;
-
-export class RegExpWrapper {
-  static create(regExpStr: string, flags: string = ''): RegExp {
-    flags = flags.replace(/g/g, '');
-    return new _global.RegExp(regExpStr, flags + 'g');
-  }
-  static firstMatch(regExp: RegExp, input: string): RegExpExecArray {
-    // Reset multimatch regex state
-    regExp.lastIndex = 0;
-    return regExp.exec(input);
-  }
-  static test(regExp: RegExp, input: string): boolean {
-    regExp.lastIndex = 0;
-    return regExp.test(input);
-  }
-  static matcher(regExp: RegExp, input: string): {re: RegExp; input: string} {
-    // Reset regex state for the case
-    // someone did not loop over all matches
-    // last time.
-    regExp.lastIndex = 0;
-    return {re: regExp, input: input};
-  }
-  static replaceAll(regExp: RegExp, input: string, replace: Function): string {
-    let c = regExp.exec(input);
-    let res = '';
-    regExp.lastIndex = 0;
-    let prev = 0;
-    while (c) {
-      res += input.substring(prev, c.index);
-      res += replace(c);
-      prev = c.index + c[0].length;
-      regExp.lastIndex = prev;
-      c = regExp.exec(input);
-    }
-    res += input.substring(prev);
-    return res;
-  }
-}
-
-export class RegExpMatcherWrapper {
-  static next(matcher: {re: RegExp; input: string}): RegExpExecArray {
-    return matcher.re.exec(matcher.input);
-  }
-}
 
 export class FunctionWrapper {
   static apply(fn: Function, posArgs: any): any { return fn.apply(null, posArgs); }
@@ -470,7 +400,7 @@ export function isPrimitive(obj: any): boolean {
   return !isJsObject(obj);
 }
 
-export function hasConstructor(value: Object, type: Type): boolean {
+export function hasConstructor(value: Object, type: any): boolean {
   return value.constructor === type;
 }
 

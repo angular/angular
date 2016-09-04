@@ -11,7 +11,8 @@ const path = require('path');
 const os = require('os');
 
 const srcsToFmt =
-    ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts'];
+    ['tools/**/*.ts', 'modules/@angular/**/*.ts', '!tools/public_api_guard/**/*.d.ts',
+    'modules/playground/**/*.ts', 'modules/benchmarks/**/*.ts', 'modules/e2e_util/**/*.ts'];
 
 gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');
@@ -29,27 +30,28 @@ gulp.task('format', () => {
 
 const entrypoints = [
   'dist/packages-dist/core/index.d.ts',
-  'dist/packages-dist/core/testing.d.ts',
+  'dist/packages-dist/core/testing/index.d.ts',
   'dist/packages-dist/common/index.d.ts',
-  'dist/packages-dist/common/testing.d.ts',
+  'dist/packages-dist/common/testing/index.d.ts',
   // The API surface of the compiler is currently unstable - all of the important APIs are exposed
   // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/upgrade/index.d.ts',
   'dist/packages-dist/platform-browser/index.d.ts',
-  'dist/packages-dist/platform-browser/testing.d.ts',
-  'dist/packages-dist/platform-browser/testing_e2e.d.ts',
+  'dist/packages-dist/platform-browser/testing/index.d.ts',
   'dist/packages-dist/platform-browser-dynamic/index.d.ts',
-  'dist/packages-dist/platform-browser-dynamic/testing.d.ts',
+  'dist/packages-dist/platform-browser-dynamic/testing/index.d.ts',
+  'dist/packages-dist/platform-webworker/index.d.ts',
+  'dist/packages-dist/platform-webworker-dynamic/index.d.ts',
   'dist/packages-dist/platform-server/index.d.ts',
-  'dist/packages-dist/platform-server/testing.d.ts',
+  'dist/packages-dist/platform-server/testing/index.d.ts',
   'dist/packages-dist/http/index.d.ts',
-  'dist/packages-dist/http/testing.d.ts',
+  'dist/packages-dist/http/testing/index.d.ts',
   'dist/packages-dist/forms/index.d.ts',
   'dist/packages-dist/router/index.d.ts'
 ];
-const publicApiDir = 'tools/public_api_guard';
+const publicApiDir = path.normalize('tools/public_api_guard');
 const publicApiArgs = [
   '--rootDir', 'dist/packages-dist',
   '--stripExportPattern', '^__',
@@ -59,30 +61,38 @@ const publicApiArgs = [
   '--onStabilityMissing', 'error'
 ].concat(entrypoints);
 
-// Note that these two commands work on built d.ts files instead of the source
-gulp.task('public-api:enforce', (done) => {
-  const child_process = require('child_process');
-  child_process
-      .spawn(
-          `${__dirname}/node_modules/.bin/ts-api-guardian`,
-          ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-      .on('close', (errorCode) => {
-        if (errorCode !== 0) {
-          done(new Error(
-              'Public API differs from golden file. Please run `gulp public-api:update`.'));
-        } else {
-          done();
-        }
-      });
+gulp.task('build.sh', (done) => {
+  const childProcess = require('child_process');
+
+  childProcess.exec(path.join(__dirname, 'build.sh'), error => done(error));
 });
 
-gulp.task('public-api:update', (done) => {
-  const child_process = require('child_process');
-  child_process
-      .spawn(
-          `${__dirname}/node_modules/.bin/ts-api-guardian`,
-          ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-      .on('close', (errorCode) => done(errorCode));
+// Note that these two commands work on built d.ts files instead of the source
+gulp.task('public-api:enforce', (done) => {
+  const childProcess = require('child_process');
+
+  childProcess
+    .spawn(
+      path.join(__dirname, `/node_modules/.bin/ts-api-guardian${/^win/.test(os.platform()) ? '.cmd' : ''}`),
+      ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
+    .on('close', (errorCode) => {
+      if (errorCode !== 0) {
+        done(new Error(
+          'Public API differs from golden file. Please run `gulp public-api:update`.'));
+      } else {
+        done();
+      }
+    });
+});
+
+gulp.task('public-api:update', ['build.sh'], (done) => {
+  const childProcess = require('child_process');
+
+  childProcess
+    .spawn(
+      path.join(__dirname, `/node_modules/.bin/ts-api-guardian${/^win/.test(os.platform()) ? '.cmd' : ''}`),
+      ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
+    .on('close', (errorCode) => done(errorCode));
 });
 
 gulp.task('lint', ['format:enforce', 'tools:build'], () => {
@@ -90,19 +100,20 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   const tslintConfig = require('./tslint.json');
-  return gulp.src(['modules/@angular/**/*.ts', '!modules/@angular/*/test/**'])
+  return gulp.src(['modules/@angular/**/*.ts', 'modules/benchpress/**/*.ts'])
     .pipe(tslint({
       tslint: require('tslint').default,
       configuration: tslintConfig,
-      rulesDirectory: 'dist/tools/tslint'
+      rulesDirectory: 'dist/tools/tslint',
+      formatter: 'prose'
     }))
-    .pipe(tslint.report('prose', {emitError: true}));
+    .pipe(tslint.report({emitError: true}));
 });
 
 gulp.task('tools:build', (done) => { tsc('tools/', done); });
 
 gulp.task('check-cycle', (done) => {
-  var madge = require('madge');
+  const madge = require('madge');
 
   var dependencyObject = madge(['dist/all/'], {
     format: 'cjs',
@@ -149,9 +160,9 @@ gulp.task('changelog', () => {
 });
 
 function tsc(projectPath, done) {
-  let child_process = require('child_process');
+  const childProcess = require('child_process');
 
-  child_process
+  childProcess
       .spawn(
           path.normalize(`${__dirname}/node_modules/.bin/tsc`) + (/^win/.test(os.platform()) ? '.cmd' : ''),
           ['-p', path.join(__dirname, projectPath)],

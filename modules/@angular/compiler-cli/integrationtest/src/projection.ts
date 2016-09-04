@@ -14,8 +14,7 @@ export class CompWithNgContent {
 
 @Component({
   selector: 'main',
-  template: '<comp-with-proj><span greeting="Hello world!"></span></comp-with-proj>',
-  directives: [CompWithNgContent]
+  template: '<comp-with-proj><span greeting="Hello world!"></span></comp-with-proj>'
 })
 export class ProjectingComp {
 }

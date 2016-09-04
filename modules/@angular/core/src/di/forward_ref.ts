@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isFunction, stringify} from '../facade/lang';
+import {isFunction, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 
 /**
@@ -14,7 +15,7 @@ import {Type, isFunction, stringify} from '../facade/lang';
  *
  * ### Example
  *
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref_fn'}
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
  * @experimental
  */
 export interface ForwardRefFn { (): any; }
@@ -28,13 +29,13 @@ export interface ForwardRefFn { (): any; }
  * yet defined.
  *
  * ### Example
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
  * @experimental
  */
-export function forwardRef(forwardRefFn: ForwardRefFn): Type {
+export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
   (<any>forwardRefFn).toString = function() { return stringify(this()); };
-  return (<Type><any>forwardRefFn);
+  return (<Type<any>><any>forwardRefFn);
 }
 
 /**
@@ -44,11 +45,7 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
  *
  * ### Example ([live demo](http://plnkr.co/edit/GU72mJrk1fiodChcmiDR?p=preview))
  *
- * ```typescript
- * var ref = forwardRef(() => "refValue");
- * expect(resolveForwardRef(ref)).toEqual("refValue");
- * expect(resolveForwardRef("regularValue")).toEqual("regularValue");
- * ```
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
  *
  * See: {@link forwardRef}
  * @experimental

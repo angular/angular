@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
-import {NgIf} from '@angular/common';
-import {TimerWrapper} from '@angular/core/src/facade/async';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'async-app',
@@ -33,8 +32,7 @@ import {TimerWrapper} from '@angular/core/src/facade/async';
       <button class='action' (click)="periodicIncrement()">Periodic Increment</button>
       <button class='cancel' *ngIf="intervalId != null" (click)="cancelPeriodicIncrement()">Cancel</button>
     </div>
-  `,
-  directives: [NgIf]
+  `
 })
 class AsyncApplication {
   val1: number = 0;
@@ -49,7 +47,7 @@ class AsyncApplication {
 
   delayedIncrement(): void {
     this.cancelDelayedIncrement();
-    this.timeoutId = TimerWrapper.setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.val2++;
       this.timeoutId = null;
     }, 2000);
@@ -65,7 +63,7 @@ class AsyncApplication {
         return;
       }
 
-      self.multiTimeoutId = TimerWrapper.setTimeout(() => {
+      self.multiTimeoutId = setTimeout(() => {
         self.val3++;
         helper(_i - 1);
       }, 500);
@@ -75,31 +73,36 @@ class AsyncApplication {
 
   periodicIncrement(): void {
     this.cancelPeriodicIncrement();
-    this.intervalId = TimerWrapper.setInterval(() => { this.val4++; }, 2000)
+    this.intervalId = setInterval(() => { this.val4++; }, 2000)
   };
 
   cancelDelayedIncrement(): void {
     if (this.timeoutId != null) {
-      TimerWrapper.clearTimeout(this.timeoutId);
+      clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
   };
 
   cancelMultiDelayedIncrements(): void {
     if (this.multiTimeoutId != null) {
-      TimerWrapper.clearTimeout(this.multiTimeoutId);
+      clearTimeout(this.multiTimeoutId);
       this.multiTimeoutId = null;
     }
   };
 
   cancelPeriodicIncrement(): void {
     if (this.intervalId != null) {
-      TimerWrapper.clearInterval(this.intervalId);
+      clearInterval(this.intervalId);
       this.intervalId = null;
     }
   };
 }
 
+@NgModule(
+    {declarations: [AsyncApplication], bootstrap: [AsyncApplication], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(AsyncApplication);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

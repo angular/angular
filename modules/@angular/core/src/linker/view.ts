@@ -6,29 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper} from '../facade/async';
-import {ListWrapper, Map, MapWrapper, StringMapWrapper} from '../facade/collection';
-import {Type, isArray, isBlank, isNumber, isPresent, isPrimitive, isString, stringify} from '../facade/lang';
-import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
+import {AnimationGroupPlayer} from '../animation/animation_group_player';
+import {AnimationOutput} from '../animation/animation_output';
+import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
+import {queueAnimation} from '../animation/animation_queue';
+import {AnimationTransitionEvent} from '../animation/animation_transition_event';
+import {ViewAnimationMap} from '../animation/view_animation_map';
+import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
+import {Injector} from '../di/injector';
+import {ListWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
+import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
+import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 
+import {DebugContext, StaticNodeDebugInfo} from './debug_context';
 import {AppElement} from './element';
+import {ElementInjector} from './element_injector';
+import {ExpressionChangedAfterItHasBeenCheckedError, ViewDestroyedError, ViewWrappedError} from './errors';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
-import {ViewUtils, arrayLooseIdentical, ensureSlotCount, flattenNestedViewRenderNodes, mapLooseIdentical} from './view_utils';
-
-import {ChangeDetectorRef, ChangeDetectionStrategy, ChangeDetectorStatus,} from '../change_detection/change_detection';
-import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
-import {ExpressionChangedAfterItHasBeenCheckedException, ViewDestroyedException, ViewWrappedException} from './exceptions';
-import {StaticNodeDebugInfo, DebugContext} from './debug_context';
-import {ElementInjector} from './element_injector';
-import {Injector} from '../di/injector';
-
-import {AUTO_STYLE} from '../animation/metadata';
-import {AnimationPlayer} from '../animation/animation_player';
-import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationKeyframe} from '../animation/animation_keyframe';
-import {AnimationStyles} from '../animation/animation_styles';
-import {ActiveAnimationPlayersMap} from '../animation/active_animation_players_map';
+import {ViewUtils, ensureSlotCount, flattenNestedViewRenderNodes} from './view_utils';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -54,7 +51,9 @@ export abstract class AppView<T> {
 
   private _hasExternalHostElement: boolean;
 
-  public activeAnimationPlayers = new ActiveAnimationPlayersMap();
+  public animationPlayers = new ViewAnimationMap();
+
+  private _animationListeners = new Map<any, _AnimationOutputWithHandler[]>();
 
   public context: T;
 
@@ -74,26 +73,62 @@ export abstract class AppView<T> {
 
   cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false) {
     if (removeAllAnimations) {
-      this.activeAnimationPlayers.findAllPlayersByElement(element).forEach(
-          player => player.destroy());
+      this.animationPlayers.findAllPlayersByElement(element).forEach(player => player.destroy());
     } else {
-      var player = this.activeAnimationPlayers.find(element, animationName);
+      var player = this.animationPlayers.find(element, animationName);
       if (isPresent(player)) {
         player.destroy();
       }
     }
   }
 
-  registerAndStartAnimation(element: any, animationName: string, player: AnimationPlayer): void {
-    this.activeAnimationPlayers.set(element, animationName, player);
-    player.onDone(() => { this.activeAnimationPlayers.remove(element, animationName); });
-    player.play();
+  queueAnimation(
+      element: any, animationName: string, player: AnimationPlayer, totalTime: number,
+      fromState: string, toState: string): void {
+    queueAnimation(player);
+    var event = new AnimationTransitionEvent(
+        {'fromState': fromState, 'toState': toState, 'totalTime': totalTime});
+    this.animationPlayers.set(element, animationName, player);
+
+    player.onDone(() => {
+      // TODO: make this into a datastructure for done|start
+      this.triggerAnimationOutput(element, animationName, 'done', event);
+      this.animationPlayers.remove(element, animationName);
+    });
+
+    player.onStart(() => { this.triggerAnimationOutput(element, animationName, 'start', event); });
+  }
+
+  triggerAnimationOutput(
+      element: any, animationName: string, phase: string, event: AnimationTransitionEvent) {
+    var listeners = this._animationListeners.get(element);
+    if (isPresent(listeners) && listeners.length) {
+      for (let i = 0; i < listeners.length; i++) {
+        let listener = listeners[i];
+        // we check for both the name in addition to the phase in the event
+        // that there may be more than one @trigger on the same element
+        if (listener.output.name == animationName && listener.output.phase == phase) {
+          listener.handler(event);
+          break;
+        }
+      }
+    }
+  }
+
+  registerAnimationOutput(element: any, outputEvent: AnimationOutput, eventHandler: Function):
+      void {
+    var entry = new _AnimationOutputWithHandler(outputEvent, eventHandler);
+    var animations = this._animationListeners.get(element);
+    if (!isPresent(animations)) {
+      this._animationListeners.set(element, animations = []);
+    }
+    animations.push(entry);
   }
 
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
       AppElement {
     this.context = context;
-    var projectableNodes: any /** TODO #9100 */;
+    var projectableNodes: any[];
     switch (this.type) {
       case ViewType.COMPONENT:
         projectableNodes = ensureSlotCount(givenProjectableNodes, this.componentType.slotCount);
@@ -135,7 +170,7 @@ export abstract class AppView<T> {
 
   selectOrCreateHostElement(
       elementName: string, rootSelectorOrNode: string|any, debugInfo: RenderDebugInfo): any {
-    var hostElement: any /** TODO #9100 */;
+    var hostElement: any;
     if (isPresent(rootSelectorOrNode)) {
       hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugInfo);
     } else {
@@ -196,15 +231,15 @@ export abstract class AppView<T> {
       this.disposables[i]();
     }
     for (var i = 0; i < this.subscriptions.length; i++) {
-      ObservableWrapper.dispose(this.subscriptions[i]);
+      this.subscriptions[i].unsubscribe();
     }
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
-    if (this.activeAnimationPlayers.length == 0) {
+    if (this.animationPlayers.length == 0) {
       this.renderer.destroyView(hostElement, this.allNodes);
     } else {
-      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
       player.onDone(() => { this.renderer.destroyView(hostElement, this.allNodes); });
     }
   }
@@ -221,10 +256,10 @@ export abstract class AppView<T> {
 
   detach(): void {
     this.detachInternal();
-    if (this.activeAnimationPlayers.length == 0) {
+    if (this.animationPlayers.length == 0) {
       this.renderer.detachView(this.flatRootNodes);
     } else {
-      var player = new AnimationGroupPlayer(this.activeAnimationPlayers.getAllPlayers());
+      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
       player.onDone(() => { this.renderer.detachView(this.flatRootNodes); });
     }
   }
@@ -288,6 +323,8 @@ export abstract class AppView<T> {
     }
   }
 
+  markContentChildAsMoved(renderAppElement: AppElement): void { this.dirtyParentQueriesInternal(); }
+
   addToContentChildren(renderAppElement: AppElement): void {
     renderAppElement.parentView.contentChildren.push(this);
     this.viewContainerElement = renderAppElement;
@@ -316,7 +353,7 @@ export abstract class AppView<T> {
 
   eventHandler(cb: Function): Function { return cb; }
 
-  throwDestroyedError(details: string): void { throw new ViewDestroyedException(details); }
+  throwDestroyedError(details: string): void { throw new ViewDestroyedError(details); }
 }
 
 export class DebugAppView<T> extends AppView<T> {
@@ -335,7 +372,7 @@ export class DebugAppView<T> extends AppView<T> {
     try {
       return super.create(context, givenProjectableNodes, rootSelectorOrNode);
     } catch (e) {
-      this._rethrowWithContext(e, e.stack);
+      this._rethrowWithContext(e);
       throw e;
     }
   }
@@ -345,7 +382,7 @@ export class DebugAppView<T> extends AppView<T> {
     try {
       return super.injectorGet(token, nodeIndex, notFoundResult);
     } catch (e) {
-      this._rethrowWithContext(e, e.stack);
+      this._rethrowWithContext(e);
       throw e;
     }
   }
@@ -355,7 +392,7 @@ export class DebugAppView<T> extends AppView<T> {
     try {
       super.detach();
     } catch (e) {
-      this._rethrowWithContext(e, e.stack);
+      this._rethrowWithContext(e);
       throw e;
     }
   }
@@ -365,7 +402,7 @@ export class DebugAppView<T> extends AppView<T> {
     try {
       super.destroyLocal();
     } catch (e) {
-      this._rethrowWithContext(e, e.stack);
+      this._rethrowWithContext(e);
       throw e;
     }
   }
@@ -375,7 +412,7 @@ export class DebugAppView<T> extends AppView<T> {
     try {
       super.detectChanges(throwOnChange);
     } catch (e) {
-      this._rethrowWithContext(e, e.stack);
+      this._rethrowWithContext(e);
       throw e;
     }
   }
@@ -386,25 +423,25 @@ export class DebugAppView<T> extends AppView<T> {
     return this._currentDebugContext = new DebugContext(this, nodeIndex, rowNum, colNum);
   }
 
-  private _rethrowWithContext(e: any, stack: any) {
-    if (!(e instanceof ViewWrappedException)) {
-      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
+  private _rethrowWithContext(e: any) {
+    if (!(e instanceof ViewWrappedError)) {
+      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedError)) {
         this.cdMode = ChangeDetectorStatus.Errored;
       }
       if (isPresent(this._currentDebugContext)) {
-        throw new ViewWrappedException(e, stack, this._currentDebugContext);
+        throw new ViewWrappedError(e, this._currentDebugContext);
       }
     }
   }
 
   eventHandler(cb: Function): Function {
     var superHandler = super.eventHandler(cb);
-    return (event: any /** TODO #9100 */) => {
+    return (event: any) => {
       this._resetDebug();
       try {
         return superHandler(event);
       } catch (e) {
-        this._rethrowWithContext(e, e.stack);
+        this._rethrowWithContext(e);
         throw e;
       }
     };
@@ -412,7 +449,7 @@ export class DebugAppView<T> extends AppView<T> {
 }
 
 function _findLastRenderNode(node: any): any {
-  var lastNode: any /** TODO #9100 */;
+  var lastNode: any;
   if (node instanceof AppElement) {
     var appEl = <AppElement>node;
     lastNode = appEl.nativeElement;
@@ -430,4 +467,8 @@ function _findLastRenderNode(node: any): any {
     lastNode = node;
   }
   return lastNode;
+}
+
+class _AnimationOutputWithHandler {
+  constructor(public output: AnimationOutput, public handler: Function) {}
 }

@@ -8,7 +8,7 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 import {isBlank, isStringMap} from '../facade/lang';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  *
@@ -31,8 +31,8 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *  class MyApp {
  *    gender: string = 'male';
  *    inviteMap: any = {
- *      'male': 'Invite her.',
- *      'female': 'Invite him.',
+ *      'male': 'Invite him.',
+ *      'female': 'Invite her.',
  *      'other': 'Invite them.'
  *    }
  *    ...
@@ -47,7 +47,7 @@ export class I18nSelectPipe implements PipeTransform {
     if (isBlank(value)) return '';
 
     if (!isStringMap(mapping)) {
-      throw new InvalidPipeArgumentException(I18nSelectPipe, mapping);
+      throw new InvalidPipeArgumentError(I18nSelectPipe, mapping);
     }
 
     return mapping.hasOwnProperty(value) ? mapping[value] : '';

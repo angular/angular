@@ -12,27 +12,6 @@ import {getDOM} from '../dom/dom_adapter';
 import {ListWrapper} from '../facade/collection';
 import {global, isPresent} from '../facade/lang';
 
-
-
-class PublicTestability {
-  /** @internal */
-  _testability: Testability;
-
-  constructor(testability: Testability) { this._testability = testability; }
-
-  isStable(): boolean { return this._testability.isStable(); }
-
-  whenStable(callback: Function) { this._testability.whenStable(callback); }
-
-  findBindings(using: any, provider: string, exactMatch: boolean): any[] {
-    return this.findProviders(using, provider, exactMatch);
-  }
-
-  findProviders(using: any, provider: string, exactMatch: boolean): any[] {
-    return this._testability.findBindings(using, provider, exactMatch);
-  }
-}
-
 export class BrowserGetTestability implements GetTestability {
   static init() { setTestabilityGetter(new BrowserGetTestability()); }
 
@@ -42,13 +21,10 @@ export class BrowserGetTestability implements GetTestability {
       if (testability == null) {
         throw new Error('Could not find testability for element.');
       }
-      return new PublicTestability(testability);
+      return testability;
     };
 
-    global.getAllAngularTestabilities = () => {
-      var testabilities = registry.getAllTestabilities();
-      return testabilities.map((testability) => { return new PublicTestability(testability); });
-    };
+    global.getAllAngularTestabilities = () => { return registry.getAllTestabilities(); };
 
     global.getAllAngularRootElements = () => registry.getAllRootElements();
 
@@ -68,10 +44,10 @@ export class BrowserGetTestability implements GetTestability {
       });
     };
 
-    if (!global.frameworkStabilizers) {
-      global.frameworkStabilizers = ListWrapper.createGrowableSize(0);
+    if (!global['frameworkStabilizers']) {
+      global['frameworkStabilizers'] = ListWrapper.createGrowableSize(0);
     }
-    global.frameworkStabilizers.push(whenAllStable);
+    global['frameworkStabilizers'].push(whenAllStable);
   }
 
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):

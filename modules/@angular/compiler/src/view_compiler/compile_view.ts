@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewType} from '../../core_private';
-import {CompiledAnimation} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMap} from '../compile_metadata';
+import {CompiledAnimationTriggerResult} from '../animation/animation_compiler';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {ListWrapper} from '../facade/collection';
+import {ListWrapper, MapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers} from '../identifiers';
+import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ViewType} from '../private_import_core';
 import {createDiTokenExpression} from '../util';
 
 import {CompileBinding} from './compile_binding';
@@ -27,7 +27,7 @@ import {createPureProxy, getPropertyInView, getViewFactoryName, injectFromViewPa
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;
-  public viewQueries: CompileTokenMap<CompileQuery[]>;
+  public viewQueries: Map<any, CompileQuery[]>;
 
   public nodes: CompileNode[] = [];
   // root nodes or AppElements for ViewContainers
@@ -37,6 +37,7 @@ export class CompileView implements NameResolver {
 
   public classStatements: o.Statement[] = [];
   public createMethod: CompileMethod;
+  public animationBindingsMethod: CompileMethod;
   public injectorGetMethod: CompileMethod;
   public updateContentQueriesMethod: CompileMethod;
   public dirtyParentQueriesMethod: CompileMethod;
@@ -65,17 +66,16 @@ export class CompileView implements NameResolver {
   public literalArrayCount = 0;
   public literalMapCount = 0;
   public pipeCount = 0;
-  public animations = new Map<string, CompiledAnimation>();
 
   public componentContext: o.Expression;
 
   constructor(
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
       public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
-      animations: CompiledAnimation[], public viewIndex: number,
+      public animations: CompiledAnimationTriggerResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
-    animations.forEach(entry => this.animations.set(entry.name, entry));
     this.createMethod = new CompileMethod(this);
+    this.animationBindingsMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
     this.updateContentQueriesMethod = new CompileMethod(this);
     this.dirtyParentQueriesMethod = new CompileMethod(this);
@@ -100,7 +100,7 @@ export class CompileView implements NameResolver {
     this.componentContext =
         getPropertyInView(o.THIS_EXPR.prop('context'), this, this.componentView);
 
-    var viewQueries = new CompileTokenMap<CompileQuery[]>();
+    var viewQueries = new Map<any, CompileQuery[]>();
     if (this.viewType === ViewType.COMPONENT) {
       var directiveInstance = o.THIS_EXPR.prop('context');
       ListWrapper.forEachWithIndex(this.component.viewQueries, (queryMeta, queryIndex) => {
@@ -152,7 +152,7 @@ export class CompileView implements NameResolver {
 
   createLiteralArray(values: o.Expression[]): o.Expression {
     if (values.length === 0) {
-      return o.importExpr(Identifiers.EMPTY_ARRAY);
+      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
     }
     var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
     var proxyParams: o.FnParam[] = [];
@@ -172,7 +172,7 @@ export class CompileView implements NameResolver {
 
   createLiteralMap(entries: Array<Array<string|o.Expression>>): o.Expression {
     if (entries.length === 0) {
-      return o.importExpr(Identifiers.EMPTY_MAP);
+      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
     }
     var proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
     var proxyParams: o.FnParam[] = [];
@@ -193,10 +193,10 @@ export class CompileView implements NameResolver {
   }
 
   afterNodes() {
-    this.pipes.forEach((pipe) => pipe.create());
-    this.viewQueries.values().forEach(
-        (queries) => queries.forEach(
-            (query) => query.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
+    MapWrapper.values(this.viewQueries)
+        .forEach(
+            (queries) => queries.forEach(
+                (query) => query.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
   }
 }
 

@@ -8,7 +8,6 @@
 
 import {OptionalMetadata, Provider, SkipSelfMetadata} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {isBlank, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -35,11 +34,9 @@ export interface KeyValueDifferFactory {
 
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
- * @ts2dart_const
  * @stable
  */
 export class KeyValueDiffers {
-  /*@ts2dart_const*/
   constructor(public factories: KeyValueDifferFactory[]) {}
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
@@ -72,19 +69,20 @@ export class KeyValueDiffers {
    * ```
    */
   static extend(factories: KeyValueDifferFactory[]): Provider {
-    return new Provider(KeyValueDiffers, {
+    return {
+      provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.
-          throw new BaseException('Cannot extend KeyValueDiffers without a parent injector');
+          throw new Error('Cannot extend KeyValueDiffers without a parent injector');
         }
         return KeyValueDiffers.create(factories, parent);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[KeyValueDiffers, new SkipSelfMetadata(), new OptionalMetadata()]]
-    });
+    };
   }
 
   find(kv: Object): KeyValueDifferFactory {
@@ -92,7 +90,7 @@ export class KeyValueDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(`Cannot find a differ supporting object '${kv}'`);
+      throw new Error(`Cannot find a differ supporting object '${kv}'`);
     }
   }
 }

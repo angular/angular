@@ -7,16 +7,10 @@
  */
 
 import {Injectable} from '@angular/core';
+import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
-
-import {ReadyState} from '../src/enums';
-import {BaseException} from '../src/facade/exceptions';
-import {isPresent} from '../src/facade/lang';
-import {Connection, ConnectionBackend} from '../src/interfaces';
-import {Request} from '../src/static_request';
-import {Response} from '../src/static_response';
 
 
 /**
@@ -27,7 +21,7 @@ import {Response} from '../src/static_response';
  */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
-  // descriptive than XHR states.
+  // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
    * additional states. For example, state 5 indicates an aborted connection.
@@ -68,7 +62,7 @@ export class MockConnection implements Connection {
    */
   mockRespond(res: Response) {
     if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
-      throw new BaseException('Connection has already been resolved');
+      throw new Error('Connection has already been resolved');
     }
     this.readyState = ReadyState.Done;
     this.response.next(res);
@@ -105,7 +99,7 @@ export class MockConnection implements Connection {
    *
    */
   mockError(err?: Error) {
-    // Matches XHR semantics
+    // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
   }
@@ -214,7 +208,7 @@ export class MockBackend implements ConnectionBackend {
   verifyNoPendingRequests() {
     let pending = 0;
     this.pendingConnections.subscribe((c: MockConnection) => pending++);
-    if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
+    if (pending > 0) throw new Error(`${pending} pending connections to be resolved`);
   }
 
   /**
@@ -232,8 +226,8 @@ export class MockBackend implements ConnectionBackend {
    * against the framework itself, not by end-users.
    */
   createConnection(req: Request): MockConnection {
-    if (!isPresent(req) || !(req instanceof Request)) {
-      throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
+    if (!req || !(req instanceof Request)) {
+      throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);
     this.connections.next(connection);

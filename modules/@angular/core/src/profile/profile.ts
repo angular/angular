@@ -11,12 +11,10 @@ import {WtfScopeFn, createScope, detectWTF, endTimeRange, leave, startTimeRange}
 export {WtfScopeFn} from './wtf_impl';
 
 
-// Change exports to const once https://github.com/angular/ts2dart/issues/150
-
 /**
  * True if WTF is enabled.
  */
-export var wtfEnabled = detectWTF();
+export const wtfEnabled = detectWTF();
 
 function noopScope(arg0?: any, arg1?: any): any {
   return null;

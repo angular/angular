@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Directive, forwardRef} from '@angular/core';
+import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/core';
 
-import {NumberWrapper} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
@@ -31,15 +31,16 @@ import {NG_VALIDATORS, Validators} from '../validators';
  * }
  * ```
  *
- * @experimental
+ * @stable
  */
-export interface Validator { validate(c: AbstractControl): {[key: string]: any}; }
+export interface Validator {
+  validate(c: AbstractControl): {[key: string]: any};
+  registerOnChange?(fn: () => void): void;
+}
 
-const REQUIRED = /*@ts2dart_const*/ Validators.required;
-
-export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const REQUIRED_VALIDATOR: any = {
   provide: NG_VALIDATORS,
-  useValue: REQUIRED,
+  useExisting: forwardRef(() => RequiredValidator),
   multi: true
 };
 
@@ -53,22 +54,39 @@ export const REQUIRED_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ 
  * <input name="fullName" ngModel required>
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[required][formControlName],[required][formControl],[required][ngModel]',
-  providers: [REQUIRED_VALIDATOR]
+  providers: [REQUIRED_VALIDATOR],
+  host: {'[attr.required]': 'required? "" : null'}
 })
-export class RequiredValidator {
+export class RequiredValidator implements Validator {
+  private _required: boolean;
+  private _onChange: () => void;
+
+  @Input()
+  get required(): boolean { return this._required; }
+
+  set required(value: boolean) {
+    this._required = isPresent(value) && `${value}` !== 'false';
+    if (this._onChange) this._onChange();
+  }
+
+  validate(c: AbstractControl): {[key: string]: any} {
+    return this.required ? Validators.required(c) : null;
+  }
+
+  registerOnChange(fn: () => void) { this._onChange = fn; }
 }
 
 /**
- * @experimental
+ * @stable
  */
 export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
 
 /**
- * @experimental
+ * @stable
  */
 export interface AsyncValidatorFn {
   (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
@@ -81,7 +99,7 @@ export interface AsyncValidatorFn {
  *
  * {@example common/forms/ts/validators/validators.ts region='min'}
  */
-export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinLengthValidator),
   multi: true
@@ -91,20 +109,36 @@ export const MIN_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
  * A directive which installs the {@link MinLengthValidator} for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
-  providers: [MIN_LENGTH_VALIDATOR]
+  providers: [MIN_LENGTH_VALIDATOR],
+  host: {'[attr.minlength]': 'minlength? minlength : null'}
 })
-export class MinLengthValidator implements Validator {
+export class MinLengthValidator implements Validator,
+    OnChanges {
   private _validator: ValidatorFn;
+  private _onChange: () => void;
 
-  constructor(@Attribute('minlength') minLength: string) {
-    this._validator = Validators.minLength(NumberWrapper.parseInt(minLength, 10));
+  @Input() minlength: string;
+
+  private _createValidator() {
+    this._validator = Validators.minLength(parseInt(this.minlength, 10));
   }
 
-  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['minlength']) {
+      this._createValidator();
+      if (this._onChange) this._onChange();
+    }
+  }
+
+  validate(c: AbstractControl): {[key: string]: any} {
+    return isPresent(this.minlength) ? this._validator(c) : null;
+  }
+
+  registerOnChange(fn: () => void) { this._onChange = fn; }
 }
 
 /**
@@ -114,7 +148,7 @@ export class MinLengthValidator implements Validator {
  *
  * {@example common/forms/ts/validators/validators.ts region='max'}
  */
-export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxLengthValidator),
   multi: true
@@ -125,24 +159,40 @@ export const MAX_LENGTH_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*
  * `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
-  providers: [MAX_LENGTH_VALIDATOR]
+  providers: [MAX_LENGTH_VALIDATOR],
+  host: {'[attr.maxlength]': 'maxlength? maxlength : null'}
 })
-export class MaxLengthValidator implements Validator {
+export class MaxLengthValidator implements Validator,
+    OnChanges {
   private _validator: ValidatorFn;
+  private _onChange: () => void;
 
-  constructor(@Attribute('maxlength') maxLength: string) {
-    this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
+  @Input() maxlength: string;
+
+  private _createValidator() {
+    this._validator = Validators.maxLength(parseInt(this.maxlength, 10));
   }
 
-  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['maxlength']) {
+      this._createValidator();
+      if (this._onChange) this._onChange();
+    }
+  }
+
+  validate(c: AbstractControl): {[key: string]: any} {
+    return isPresent(this.maxlength) ? this._validator(c) : null;
+  }
+
+  registerOnChange(fn: () => void) { this._onChange = fn; }
 }
 
 
-export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => PatternValidator),
   multi: true
@@ -160,18 +210,32 @@ export const PATTERN_VALIDATOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
  * ```
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
- * @experimental
+ * @stable
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
-  providers: [PATTERN_VALIDATOR]
+  providers: [PATTERN_VALIDATOR],
+  host: {'[attr.pattern]': 'pattern? pattern : null'}
 })
-export class PatternValidator implements Validator {
+export class PatternValidator implements Validator,
+    OnChanges {
   private _validator: ValidatorFn;
+  private _onChange: () => void;
 
-  constructor(@Attribute('pattern') pattern: string) {
-    this._validator = Validators.pattern(pattern);
+  @Input() pattern: string;
+
+  private _createValidator() { this._validator = Validators.pattern(this.pattern); }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['pattern']) {
+      this._createValidator();
+      if (this._onChange) this._onChange();
+    }
   }
 
-  validate(c: AbstractControl): {[key: string]: any} { return this._validator(c); }
+  validate(c: AbstractControl): {[key: string]: any} {
+    return isPresent(this.pattern) ? this._validator(c) : null;
+  }
+
+  registerOnChange(fn: () => void) { this._onChange = fn; }
 }

@@ -7,14 +7,15 @@
  */
 
 // ATTENTION: This file will be overwritten with generated code by main()
-import {DartEmitter} from '@angular/compiler/src/output/dart_emitter';
-import {DartImportGenerator} from '@angular/compiler/src/output/dart_imports';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
-import {unimplemented} from '../../src/facade/exceptions';
-import {IS_DART, print} from '../../src/facade/lang';
+import {print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/util';
+
+function unimplemented(): any {
+  throw new Error('unimplemented');
+}
 
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
@@ -24,16 +25,14 @@ export function getExpressions(): any {
 
 // Generator
 export function emit() {
-  var emitter = IS_DART ? new DartEmitter(new DartImportGenerator()) :
-                          new TypeScriptEmitter(new SimpleJsImportGenerator());
-  var emittedCode = emitter.emitStatements(
+  const emitter = new TypeScriptEmitter(new SimpleJsImportGenerator());
+  const emittedCode = emitter.emitStatements(
       assetUrl('compiler', 'output/output_emitter_codegen_typed', 'test'), codegenStmts,
       codegenExportsVars);
   return emittedCode;
 }
 
 export function main(args: string[]) {
-  var emittedCode = emit();
-  // debug: console.error(emittedCode);
+  const emittedCode = emit();
   print(emittedCode);
 }

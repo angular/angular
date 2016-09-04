@@ -20,11 +20,23 @@ System.config({
     'angular2/src/alt_router/router_testing_providers': 'dist/all/angular2/src/alt_router/router_testing_providers.js'
   },
   packages: {
+    '@angular/core/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     '@angular/core': {
       main: 'index.js',
       defaultExtension: 'js'
     },
+    '@angular/compiler/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     '@angular/compiler': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/common/testing': {
       main: 'index.js',
       defaultExtension: 'js'
     },
@@ -41,7 +53,15 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
-    '@angular/router-deprecated': {
+    '@angular/router/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/router': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/http/testing': {
       main: 'index.js',
       defaultExtension: 'js'
     },
@@ -53,7 +73,15 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
+    '@angular/platform-browser/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     '@angular/platform-browser': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-browser-dynamic/testing': {
       main: 'index.js',
       defaultExtension: 'js'
     },
@@ -61,7 +89,19 @@ System.config({
       main: 'index.js',
       defaultExtension: 'js'
     },
+    '@angular/platform-server/testing': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
     '@angular/platform-server': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-webworker': {
+      main: 'index.js',
+      defaultExtension: 'js'
+    },
+    '@angular/platform-webworker-dynamic': {
       main: 'index.js',
       defaultExtension: 'js'
     }
@@ -74,11 +114,10 @@ System.config({
 System.import('@angular/core/testing')
   .then(function(coreTesting){
     return System.import('@angular/platform-browser-dynamic/testing')
-      .then(function(browserTesting){
-         coreTesting.setBaseTestProviders(
-          browserTesting.TEST_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-          browserTesting.TEST_BROWSER_DYNAMIC_APPLICATION_PROVIDERS
-        );
+      .then(function(browserTesting) {
+         coreTesting.TestBed.initTestEnvironment(
+           browserTesting.BrowserDynamicTestingModule,
+           browserTesting.platformBrowserDynamicTesting());
       });
   })
 .then(function() {

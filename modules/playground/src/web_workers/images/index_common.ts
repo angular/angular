@@ -8,9 +8,9 @@
 
 import {Component} from '@angular/core';
 import {EventListener} from '@angular/core/src/facade/browser';
-import {TimerWrapper} from '@angular/core/src/facade/async';
-import {BitmapService} from './services/bitmap';
+
 import {FileReader, Uint8ArrayWrapper} from './file_api';
+import {BitmapService} from './services/bitmap';
 
 
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
@@ -23,7 +23,7 @@ export class ImageDemo {
   uploadFiles(files: any /** TODO #9100 */) {
     for (var i = 0; i < files.length; i++) {
       var reader = new FileReader();
-      reader.addEventListener("load", this.handleReaderLoad(reader));
+      reader.addEventListener('load', this.handleReaderLoad(reader));
       reader.readAsArrayBuffer(files[i]);
     }
   }
@@ -43,7 +43,7 @@ export class ImageDemo {
     for (var i = 0; i < this.images.length; i++) {
       this.images[i].filtering = true;
 
-      TimerWrapper.setTimeout(this._filter(i), 0);
+      setTimeout(this._filter(i), 0);
     }
   }
 

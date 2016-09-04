@@ -8,12 +8,12 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {unimplemented} from '../facade/exceptions';
-import {Type, isBlank, isPresent} from '../facade/lang';
-
+import {unimplemented} from '../facade/errors';
+import {isBlank} from '../facade/lang';
+import {Type} from '../type';
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
-import {ViewRef, ViewRef_} from './view_ref';
+import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
 
 
@@ -54,7 +54,7 @@ export abstract class ComponentRef<C> {
   /**
    * The component type.
    */
-  get componentType(): Type { return unimplemented(); }
+  get componentType(): Type<any> { return unimplemented(); }
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -68,33 +68,31 @@ export abstract class ComponentRef<C> {
 }
 
 export class ComponentRef_<C> extends ComponentRef<C> {
-  constructor(private _hostElement: AppElement, private _componentType: Type) { super(); }
+  constructor(private _hostElement: AppElement, private _componentType: Type<any>) { super(); }
   get location(): ElementRef { return this._hostElement.elementRef; }
   get injector(): Injector { return this._hostElement.injector; }
   get instance(): C { return this._hostElement.component; };
   get hostView(): ViewRef { return this._hostElement.parentView.ref; };
   get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
-  get componentType(): Type { return this._componentType; }
+  get componentType(): Type<any> { return this._componentType; }
 
   destroy(): void { this._hostElement.parentView.destroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
-
 /**
  * @experimental
- * @ts2dart_const
  */
-const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
+const EMPTY_CONTEXT = new Object();
 
 /**
  * @stable
  */
 export class ComponentFactory<C> {
   constructor(
-      public selector: string, private _viewFactory: Function, private _componentType: Type) {}
+      public selector: string, private _viewFactory: Function, private _componentType: Type<any>) {}
 
-  get componentType(): Type { return this._componentType; }
+  get componentType(): Type<any> { return this._componentType; }
 
   /**
    * Creates a new component.

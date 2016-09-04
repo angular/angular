@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Location, LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
-
-import {Location} from '../index';
-import {ObservableWrapper} from '../src/facade/async';
-import {LocationStrategy} from '../src/location/location_strategy';
 
 
 /**
@@ -46,15 +43,13 @@ export class SpyLocation implements Location {
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
   }
 
-  simulateUrlPop(pathname: string) {
-    ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true});
-  }
+  simulateUrlPop(pathname: string) { this._subject.emit({'url': pathname, 'pop': true}); }
 
   simulateHashChange(pathname: string) {
     // Because we don't prevent the native event, the browser will independently update the path
     this.setInitialPath(pathname);
     this.urlChanges.push('hash: ' + pathname);
-    ObservableWrapper.callEmit(this._subject, {'url': pathname, 'pop': true, 'type': 'hashchange'});
+    this._subject.emit({'url': pathname, 'pop': true, 'type': 'hashchange'});
   }
 
   prepareExternalUrl(url: string): string {
@@ -80,6 +75,7 @@ export class SpyLocation implements Location {
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push(url);
+    this._subject.emit({'url': url, 'pop': false});
   }
 
   replaceState(path: string, query: string = '') {
@@ -100,21 +96,21 @@ export class SpyLocation implements Location {
   forward() {
     if (this._historyIndex < (this._history.length - 1)) {
       this._historyIndex++;
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true});
+      this._subject.emit({'url': this.path(), 'pop': true});
     }
   }
 
   back() {
     if (this._historyIndex > 0) {
       this._historyIndex--;
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true});
+      this._subject.emit({'url': this.path(), 'pop': true});
     }
   }
 
   subscribe(
       onNext: (value: any) => void, onThrow: (error: any) => void = null,
       onReturn: () => void = null): Object {
-    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+    return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
   normalize(url: string): string { return null; }

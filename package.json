@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-rc.4",
+  "version": "2.0.0-rc.6",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
@@ -18,10 +18,10 @@
     "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update"
   },
   "dependencies": {
-    "es6-shim": "^0.35.0",
+    "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.3",
-    "rxjs": "5.0.0-beta.6",
-    "zone.js": "^0.6.12"
+    "rxjs": "5.0.0-beta.11",
+    "zone.js": "^0.6.17"
   },
   "devDependencies": {
     "@types/angularjs": "^1.5.13-alpha",
@@ -47,6 +47,7 @@
     "canonical-path": "0.0.2",
     "chokidar": "^1.1.0",
     "clang-format": "^1.0.32",
+    "cldr": "^3.5.2",
     "conventional-changelog": "^1.1.0",
     "cors": "^2.7.1",
     "firefox-profile": "^0.3.4",
@@ -66,10 +67,11 @@
     "gulp-sass": "^2.0.4",
     "gulp-shell": "^0.5.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tslint": "^5.0.0",
+    "gulp-tslint": "^6.1.1",
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.2.0",
     "hash-files": "^1.0.0",
+    "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
     "jpm": "1.0.0",
     "js-yaml": "^3.2.7",
@@ -108,9 +110,9 @@
     "through2": "^0.6.5",
     "ts-api-guardian": "0.1.4",
     "ts2dart": "^0.9.10",
-    "tsickle": "^0.1.4",
-    "tslint": "^3.10.0-dev.2",
-    "typescript": "^1.9.0-dev.20160409",
+    "tsickle": "^0.1.7",
+    "tslint": "^3.15.0-dev.0",
+    "typescript": "^2.0.2",
     "universal-analytics": "^0.3.9",
     "webpack": "^1.12.6",
     "which": "~1",

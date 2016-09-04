@@ -8,22 +8,26 @@
 
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper, PromiseWrapper} from '../facade/async';
-import {BaseException} from '../facade/exceptions';
+import {EventEmitter} from '../facade/async';
 import {FormControl} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
+import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
+import {NgForm} from './ng_form';
+import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {TemplateDrivenErrors} from './template_driven_errors';
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
-export const formControlBinding: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: NgControl,
-      useExisting: forwardRef(() => NgModel)
-    };
+export const formControlBinding: any = {
+  provide: NgControl,
+  useExisting: forwardRef(() => NgModel)
+};
+
+const resolvedPromise = Promise.resolve(null);
 
 /**
  * Binds a domain model to a form control.
@@ -45,7 +49,7 @@ export const formControlBinding: any =
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
@@ -60,23 +64,31 @@ export class NgModel extends NgControl implements OnChanges,
   _registered = false;
   viewModel: any;
 
-  @Input('ngModel') model: any;
   @Input() name: string;
+  @Input('disabled') isDisabled: boolean;
+  @Input('ngModel') model: any;
   @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
+
   @Output('ngModelChange') update = new EventEmitter();
 
-  constructor(@Optional() @Host() private _parent: ControlContainer,
-              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
+  constructor(@Optional() @Host() parent: ControlContainer,
+              @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
+                this._parent = parent;
+                this._rawValidators = validators || [];
+                this._rawAsyncValidators = asyncValidators || [];
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
               ngOnChanges(changes: SimpleChanges) {
-                this._checkName();
+                this._checkForErrors();
                 if (!this._registered) this._setUpControl();
+                if ('isDisabled' in changes) {
+                  this._updateDisabled(changes);
+                }
 
                 if (isPropertyUpdated(changes, this.viewModel)) {
                   this._updateValue(this.model);
@@ -89,20 +101,20 @@ export class NgModel extends NgControl implements OnChanges,
               get control(): FormControl { return this._control; }
 
               get path(): string[] {
-                return this._parent ? controlPath(this.name, this._parent) : [];
+                return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
 
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
               get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
+                return composeAsyncValidators(this._rawAsyncValidators);
               }
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
+                this.update.emit(newValue);
               }
 
               private _setUpControl(): void {
@@ -120,21 +132,46 @@ export class NgModel extends NgControl implements OnChanges,
                 this._control.updateValueAndValidity({emitEvent: false});
               }
 
+              private _checkForErrors(): void {
+                if (!this._isStandalone()) {
+                  this._checkParentType();
+                }
+                this._checkName();
+              }
+
+              private _checkParentType(): void {
+                if (!(this._parent instanceof NgModelGroup) &&
+                    this._parent instanceof AbstractFormGroupDirective) {
+                  TemplateDrivenErrors.formGroupNameException();
+                } else if (
+                    !(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
+                  TemplateDrivenErrors.modelParentException();
+                }
+              }
+
               private _checkName(): void {
                 if (this.options && this.options.name) this.name = this.options.name;
 
                 if (!this._isStandalone() && !this.name) {
-                  throw new BaseException(
-                      `If ngModel is used within a form tag, either the name attribute must be set
-                      or the form control must be defined as 'standalone' in ngModelOptions.
-
-                      Example 1: <input [(ngModel)]="person.firstName" name="first">
-                      Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">
-                   `);
+                  TemplateDrivenErrors.missingNameException();
                 }
               }
 
               private _updateValue(value: any): void {
-                PromiseWrapper.scheduleMicrotask(() => { this.control.updateValue(value); });
+                resolvedPromise.then(
+                    () => { this.control.setValue(value, {emitViewToModelChange: false}); });
+              }
+
+              private _updateDisabled(changes: SimpleChanges) {
+                const disabledValue = changes['isDisabled'].currentValue;
+                const isDisabled = disabledValue != null && disabledValue != false;
+
+                resolvedPromise.then(() => {
+                  if (isDisabled && !this.control.disabled) {
+                    this.control.disable();
+                  } else if (!isDisabled && this.control.disabled) {
+                    this.control.enable();
+                  }
+                });
               }
 }

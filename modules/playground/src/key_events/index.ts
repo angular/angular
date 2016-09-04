@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 // TODO: remove deep import by reimplementing the event name serialization
-import {KeyEventsPlugin} from "@angular/platform-browser/src/dom/events/key_events";
+import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
 @Component({
   selector: 'key-events-app',
@@ -40,6 +41,10 @@ class KeyEventsApp {
   resetShiftEnter(): void { this.shiftEnter = false; }
 }
 
+@NgModule({declarations: [KeyEventsApp], bootstrap: [KeyEventsApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(KeyEventsApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

@@ -13,7 +13,7 @@ var CIconfiguration = {
   'IE9':          { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11':         { unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge':         { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Edge':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Android4.1':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.2':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.3':   { unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
@@ -38,7 +38,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '50'
+    version: '52'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -53,7 +53,7 @@ var customLaunchers = {
   'SL_FIREFOX': {
     base: 'SauceLabs',
     browserName: 'firefox',
-    version: '45'
+    version: '46'
   },
   'SL_FIREFOXBETA': {
     base: 'SauceLabs',
@@ -69,13 +69,13 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'safari',
     platform: 'OS X 10.9',
-    version: '7'
+    version: '7.0'
   },
   'SL_SAFARI8': {
     base: 'SauceLabs',
     browserName: 'safari',
     platform: 'OS X 10.10',
-    version: '8'
+    version: '8.0'
   },
   'SL_SAFARI9': {
     base: 'SauceLabs',
@@ -99,7 +99,7 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'iphone',
     platform: 'OS X 10.10',
-    version: '9.1'
+    version: '9.3'
   },
   'SL_IE9': {
     base: 'SauceLabs',
@@ -202,7 +202,7 @@ var customLaunchers = {
     base: 'BrowserStack',
     device: 'iPhone 6S',
     os: 'ios',
-    os_version: '9.0'
+    os_version: '9.1'
   },
   'BS_IE9': {
     base: 'BrowserStack',

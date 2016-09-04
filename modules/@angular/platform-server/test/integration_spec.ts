@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, disposePlatform} from '@angular/core';
-import {afterEach, async, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing';
-import {BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
-import {BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser-dynamic';
+import {Component, NgModule, destroyPlatform} from '@angular/core';
+import {async} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {serverBootstrap} from '@angular/platform-server';
+import {ServerModule, platformDynamicServer} from '@angular/platform-server';
 
 function writeBody(html: string): any {
   var dom = getDOM();
@@ -21,22 +19,28 @@ function writeBody(html: string): any {
   return body;
 }
 
+
+@Component({selector: 'app', template: `Works!`})
+class MyServerApp {
+}
+
+@NgModule({declarations: [MyServerApp], imports: [ServerModule], bootstrap: [MyServerApp]})
+class ExampleModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {
 
-    afterEach(() => disposePlatform());
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
 
     it('should bootstrap', async(() => {
          var body = writeBody('<app></app>');
-         serverBootstrap(MyServerApp, [
-           BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS
-         ]).then(() => { expect(getDOM().getText(body)).toEqual('Works!'); });
+         platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
+           expect(getDOM().getText(body)).toEqual('Works!');
+         });
        }));
   });
-}
-
-@Component({selector: 'app', template: `Works!`})
-class MyServerApp {
 }

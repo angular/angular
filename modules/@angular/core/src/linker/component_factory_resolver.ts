@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, OpaqueToken, Optional, SkipSelf} from '../di';
-import {BaseException} from '../facade/exceptions';
-import {ConcreteType, stringify} from '../facade/lang';
+import {BaseError} from '../facade/errors';
+import {stringify} from '../facade/lang';
+import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
+
 
 
 /**
  * @stable
  */
-export class NoComponentFactoryError extends BaseException {
+export class NoComponentFactoryError extends BaseError {
   constructor(public component: Function) {
     super(`No component factory found for ${stringify(component)}`);
   }
@@ -33,7 +34,7 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
-  abstract resolveComponentFactory<T>(component: ConcreteType<T>): ComponentFactory<T>;
+  abstract resolveComponentFactory<T>(component: Type<T>): ComponentFactory<T>;
 }
 
 export class CodegenComponentFactoryResolver implements ComponentFactoryResolver {

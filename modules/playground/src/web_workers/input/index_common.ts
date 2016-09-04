@@ -23,8 +23,8 @@ import {Component} from '@angular/core';
   `
 })
 export class InputCmp {
-  inputVal = "";
-  textareaVal = "";
+  inputVal = '';
+  textareaVal = '';
 
   inputChanged(e: any /** TODO #9100 */) { this.inputVal = e.target.value; }
 

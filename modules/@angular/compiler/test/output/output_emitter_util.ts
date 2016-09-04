@@ -11,9 +11,8 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {assetUrl} from '@angular/compiler/src/util';
 import {EventEmitter} from '@angular/core';
+import {BaseError} from '@angular/core/src/facade/errors';
 import {ViewType} from '@angular/core/src/linker/view_type';
-
-import {BaseException} from '../../src/facade/exceptions';
 
 export class ExternalClass {
   changeable: any;
@@ -24,20 +23,20 @@ export class ExternalClass {
 var testDataIdentifier = new CompileIdentifierMetadata({
   name: 'ExternalClass',
   moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
-  runtime: ExternalClass
+  reference: ExternalClass
 });
 
 var eventEmitterIdentifier = new CompileIdentifierMetadata(
-    {name: 'EventEmitter', moduleUrl: assetUrl('core'), runtime: EventEmitter});
+    {name: 'EventEmitter', moduleUrl: assetUrl('core'), reference: EventEmitter});
 
 var enumIdentifier = new CompileIdentifierMetadata({
   name: 'ViewType.HOST',
   moduleUrl: assetUrl('core', 'linker/view_type'),
-  runtime: ViewType.HOST
+  reference: ViewType.HOST
 });
 
-var baseExceptionIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseException', moduleUrl: assetUrl('core'), runtime: BaseException});
+var baseErrorIdentifier = new CompileIdentifierMetadata(
+    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), reference: BaseError});
 
 export var codegenExportsVars = [
   'getExpressions',
@@ -70,8 +69,8 @@ var _getExpressionsStmts: o.Statement[] = [
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([], [new o.ThrowStmt(o.importExpr(baseExceptionIdentifier).instantiate([o.literal(
-                        'someError')]))]))
+      .set(o.fn([], [new o.ThrowStmt(
+                        o.importExpr(baseErrorIdentifier).instantiate([o.literal('someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')
@@ -115,7 +114,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodExternalInstanceViaBind',
       o.variable('externalInstance')
           .prop('someMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('externalInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('externalInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
@@ -126,7 +125,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodDynamicInstanceViaBind',
       o.variable('dynamicInstance')
           .prop('dynamicMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('dynamicInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('dynamicInstance')])
           .callFn([o.literal('someParam')])
     ],
     [

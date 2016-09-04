@@ -8,7 +8,6 @@
 
 import {OptionalMetadata, Provider, SkipSelfMetadata} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {BaseException} from '../../facade/exceptions';
 import {getTypeNameForDebugging, isBlank, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -45,11 +44,9 @@ export interface IterableDifferFactory {
 
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
- * @ts2dart_const
  * @stable
  */
 export class IterableDiffers {
-  /*@ts2dart_const*/
   constructor(public factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
@@ -82,19 +79,20 @@ export class IterableDiffers {
    * ```
    */
   static extend(factories: IterableDifferFactory[]): Provider {
-    return new Provider(IterableDiffers, {
+    return {
+      provide: IterableDiffers,
       useFactory: (parent: IterableDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.
-          throw new BaseException('Cannot extend IterableDiffers without a parent injector');
+          throw new Error('Cannot extend IterableDiffers without a parent injector');
         }
         return IterableDiffers.create(factories, parent);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[IterableDiffers, new SkipSelfMetadata(), new OptionalMetadata()]]
-    });
+    };
   }
 
   find(iterable: any): IterableDifferFactory {
@@ -102,7 +100,7 @@ export class IterableDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(
+      throw new Error(
           `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }

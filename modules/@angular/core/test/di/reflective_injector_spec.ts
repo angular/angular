@@ -6,22 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing';
-
-import {BaseException} from '../../src/facade/exceptions';
-import {isBlank, isPresent, stringify} from '../../src/facade/lang';
-
-import {ReflectiveKey, ReflectiveInjector, Injector, forwardRef, Injectable, InjectMetadata, SelfMetadata, Optional, Inject,} from '@angular/core';
-import {ReflectiveInjector_, ReflectiveInjectorInlineStrategy, ReflectiveInjectorDynamicStrategy, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
+import {Inject, InjectMetadata, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
 import {DependencyMetadata} from '@angular/core/src/di/metadata';
+import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
+import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 
 class Engine {}
 
 class BrokenEngine {
-  constructor() { throw new BaseException('Broken Engine'); }
+  constructor() { throw new Error('Broken Engine'); }
 }
 
 class DashboardSoftware {}
@@ -94,7 +92,7 @@ export function main() {
     strategyClass: ReflectiveInjectorDynamicStrategy
   }].forEach((context) => {
     function createInjector(
-        providers: any[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
+        providers: Provider[], parent: ReflectiveInjector = null): ReflectiveInjector_ {
       var resolvedProviders = ReflectiveInjector.resolve(providers.concat(context['providers']));
       if (isPresent(parent)) {
         return <ReflectiveInjector_>parent.createChildFromResolved(resolvedProviders);
@@ -333,27 +331,8 @@ export function main() {
         } catch (e) {
           expect(e.message).toContain(
               `Error during instantiation of Engine! (${stringify(Car)} -> Engine)`);
-          expect(e.originalException instanceof BaseException).toBeTruthy();
+          expect(e.originalError instanceof Error).toBeTruthy();
           expect(e.causeKey.token).toEqual(Engine);
-        }
-      });
-
-      it('should provide context when throwing an exception ', () => {
-        var engineProvider =
-            ReflectiveInjector.resolve([{provide: Engine, useClass: BrokenEngine}])[0];
-        var protoParent = new ReflectiveProtoInjector([engineProvider]);
-
-        var carProvider = ReflectiveInjector.resolve([Car])[0];
-        var protoChild = new ReflectiveProtoInjector([carProvider]);
-
-        var parent = new ReflectiveInjector_(protoParent, null, () => 'parentContext');
-        var child = new ReflectiveInjector_(protoChild, parent, () => 'childContext');
-
-        try {
-          child.get(Car);
-          throw 'Must throw';
-        } catch (e) {
-          expect(e.context).toEqual('childContext');
         }
       });
 
@@ -365,7 +344,8 @@ export function main() {
           {provide: Engine, useFactory: (() => isBroken ? new BrokenEngine() : new Engine())}
         ]);
 
-        expect(() => injector.get(Car)).toThrowError(new RegExp('Error'));
+        expect(() => injector.get(Car))
+            .toThrowError('Broken Engine: Error during instantiation of Engine! (Car -> Engine).');
 
         isBroken = false;
 

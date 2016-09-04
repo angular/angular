@@ -5,54 +5,28 @@
     "stripInternal": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "noEmitOnError": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "outDir": "../../../dist/all/@angular/router/",
+    "outDir": "../../../dist/packages-dist/router",
     "paths": {
-      "@angular/*": ["../../../dist/all/@angular/*"]
+      "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/common": ["../../../dist/packages-dist/common"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"]
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es6", "dom"],
-    "target": "es5"
+    "lib": ["es2015", "dom"],
+    "target": "es5",
+    "skipLibCheck": true
   },
   "files": [
-    "index.ts",
-    "src/router.ts",
-    "src/apply_redirects.ts",
-    "src/recognize.ts",
-    "src/resolve.ts",
-    "src/create_router_state.ts",
-    "src/router.ts",
-    "src/config.ts",
-    "src/router_outlet_map.ts",
-    "src/router_state.ts",
-    "src/shared.ts",
-    "src/url_tree.ts",
-    "src/common_router_providers.ts",
-    "src/router_providers.ts",
-    "src/create_url_tree.ts",
-    "src/directives/router_outlet.ts",
-    "src/directives/router_link.ts",
-    "src/interfaces.ts",
-    "src/utils/tree.ts",
-    "src/utils/collection.ts",
-    "test/url_tree.spec.ts",
-    "test/utils/tree.spec.ts",
-    "test/url_serializer.spec.ts",
-    "test/resolve.spec.ts",
-    "test/apply_redirects.spec.ts",
-    "test/recognize.spec.ts",
-    "test/create_router_state.spec.ts",
-    "test/create_url_tree.spec.ts",
-    "test/config.spec.ts",
-    "test/router.spec.ts",
-    "../../../node_modules/@types/jasmine/index.d.ts"
-  ]
+    "index.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true
+  }
 }
-
-

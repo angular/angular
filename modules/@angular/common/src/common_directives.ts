@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Provider} from '@angular/core';
 
-import {CORE_DIRECTIVES} from './directives';
-import {FORM_DIRECTIVES} from './forms-deprecated';
+import {CORE_DIRECTIVES} from './directives/core_directives';
 
 
 /**
@@ -25,14 +24,14 @@ import {FORM_DIRECTIVES} from './forms-deprecated';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm} from
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgModel, NgForm} from
  * '@angular/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm,
+ *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, NgModel, NgForm,
  * OtherDirective]
  * })
  * export class MyComponent {
@@ -57,4 +56,4 @@ import {FORM_DIRECTIVES} from './forms-deprecated';
  *
  * @experimental Contains forms which are experimental.
  */
-export const COMMON_DIRECTIVES: Type[][] = /*@ts2dart_const*/[CORE_DIRECTIVES, FORM_DIRECTIVES];
+export const COMMON_DIRECTIVES: Provider[] = CORE_DIRECTIVES;

@@ -8,7 +8,6 @@
 
 import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
 import {UrlResolver} from '@angular/compiler/src/url_resolver';
-import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing';
 
 export function main() {
   describe('extractStyleUrls', () => {
@@ -110,7 +109,6 @@ export function main() {
   });
 }
 
-/// The real thing behaves differently between Dart and JS for package URIs.
 class FakeUrlResolver extends UrlResolver {
   constructor() { super(); }
 

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Index to be used if Http is ever configured as a standalone npm package.
-// require('reflect-metadata');
-// require('es6-shim');
-// import {HTTP_PROVIDERS, JSONP_PROVIDERS, Http, Jsonp} from './http';
-// import {Injector} from '@angular/core';
-// export * from './http';
-
-// /**
-//  * TODO(jeffbcross): export each as their own top-level file, to require as:
-//  * require('@angular/http'); require('http/jsonp');
-//  */
-// export var http = Injector.resolveAndCreate([HTTP_PROVIDERS]).get(Http);
-// export var jsonp = Injector.resolveAndCreate([JSONP_PROVIDERS]).get(Jsonp);
+export {BrowserXhr} from './backends/browser_xhr';
+export {JSONPBackend, JSONPConnection} from './backends/jsonp_backend';
+export {CookieXSRFStrategy, XHRBackend, XHRConnection} from './backends/xhr_backend';
+export {BaseRequestOptions, RequestOptions} from './base_request_options';
+export {BaseResponseOptions, ResponseOptions} from './base_response_options';
+export {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
+export {Headers} from './headers';
+export {Http, Jsonp} from './http';
+export {HttpModule, JsonpModule} from './http_module';
+export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, XSRFStrategy} from './interfaces';
+export {Request} from './static_request';
+export {Response} from './static_response';
+export {QueryEncoder, URLSearchParams} from './url_search_params';

@@ -6,26 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '@angular/core';
-import {ElementSchemaRegistry} from '../index';
-import {isPresent} from '../src/facade/lang';
+import {ElementSchemaRegistry} from '@angular/compiler';
+import {SchemaMetadata, SecurityContext} from '@angular/core';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
       public existingProperties: {[key: string]: boolean},
-      public attrPropMapping: {[key: string]: string}) {}
+      public attrPropMapping: {[key: string]: string},
+      public existingElements: {[key: string]: boolean}) {}
 
-  hasProperty(tagName: string, property: string): boolean {
-    var result = this.existingProperties[property];
-    return isPresent(result) ? result : true;
+  hasProperty(tagName: string, property: string, schemas: SchemaMetadata[]): boolean {
+    const value = this.existingProperties[property];
+    return value === void 0 ? true : value;
+  }
+
+  hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
+    const value = this.existingElements[tagName.toLowerCase()];
+    return value === void 0 ? true : value;
   }
 
   securityContext(tagName: string, property: string): SecurityContext {
     return SecurityContext.NONE;
   }
 
-  getMappedPropName(attrName: string): string {
-    var result = this.attrPropMapping[attrName];
-    return isPresent(result) ? result : attrName;
-  }
+  getMappedPropName(attrName: string): string { return this.attrPropMapping[attrName] || attrName; }
+
+  getDefaultComponentElementName(): string { return 'ng-component'; }
 }

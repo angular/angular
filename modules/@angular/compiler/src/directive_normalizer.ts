@@ -8,45 +8,43 @@
 
 import {Injectable, ViewEncapsulation} from '@angular/core';
 
-import {PromiseWrapper} from '../src/facade/async';
-import {MapWrapper} from '../src/facade/collection';
-import {BaseException} from '../src/facade/exceptions';
-import {isBlank, isPresent} from '../src/facade/lang';
-
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {HtmlAstVisitor, HtmlAttrAst, HtmlCommentAst, HtmlElementAst, HtmlExpansionAst, HtmlExpansionCaseAst, HtmlTextAst, htmlVisitAll} from './html_ast';
-import {HtmlParser} from './html_parser';
+import {MapWrapper} from './facade/collection';
+import {isBlank, isPresent} from './facade/lang';
+import * as html from './ml_parser/ast';
+import {HtmlParser} from './ml_parser/html_parser';
+import {InterpolationConfig} from './ml_parser/interpolation_config';
+import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
-import {PreparsedElementType, preparseElement} from './template_preparser';
+import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
 import {SyncAsyncResult} from './util';
-import {XHR} from './xhr';
 
 @Injectable()
 export class DirectiveNormalizer {
-  private _xhrCache = new Map<string, Promise<string>>();
+  private _resourceLoaderCache = new Map<string, Promise<string>>();
 
   constructor(
-      private _xhr: XHR, private _urlResolver: UrlResolver, private _htmlParser: HtmlParser,
-      private _config: CompilerConfig) {}
+      private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
+      private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
-  clearCache() { this._xhrCache.clear(); }
+  clearCache() { this._resourceLoaderCache.clear(); }
 
   clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
     if (!normalizedDirective.isComponent) {
       return;
     }
-    this._xhrCache.delete(normalizedDirective.template.templateUrl);
+    this._resourceLoaderCache.delete(normalizedDirective.template.templateUrl);
     normalizedDirective.template.externalStylesheets.forEach(
-        (stylesheet) => { this._xhrCache.delete(stylesheet.moduleUrl); });
+        (stylesheet) => { this._resourceLoaderCache.delete(stylesheet.moduleUrl); });
   }
 
   private _fetch(url: string): Promise<string> {
-    var result = this._xhrCache.get(url);
+    var result = this._resourceLoaderCache.get(url);
     if (!result) {
-      result = this._xhr.get(url);
-      this._xhrCache.set(url, result);
+      result = this._resourceLoader.get(url);
+      this._resourceLoaderCache.set(url, result);
     }
     return result;
   }
@@ -65,7 +63,7 @@ export class DirectiveNormalizer {
     } else if (directive.template.templateUrl) {
       normalizedTemplateAsync = this.normalizeTemplateAsync(directive.type, directive.template);
     } else {
-      throw new BaseException(`No template specified for component ${directive.type.name}`);
+      throw new Error(`No template specified for component ${directive.type.name}`);
     }
     if (normalizedTemplateSync && normalizedTemplateSync.styleUrls.length === 0) {
       // sync case
@@ -99,26 +97,28 @@ export class DirectiveNormalizer {
   normalizeLoadedTemplate(
       directiveType: CompileTypeMetadata, templateMeta: CompileTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
-    var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+    const interpolationConfig = InterpolationConfig.fromArray(templateMeta.interpolation);
+    const rootNodesAndErrors =
+        this._htmlParser.parse(template, directiveType.name, false, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
-      var errorString = rootNodesAndErrors.errors.join('\n');
-      throw new BaseException(`Template parse errors:\n${errorString}`);
+      const errorString = rootNodesAndErrors.errors.join('\n');
+      throw new Error(`Template parse errors:\n${errorString}`);
     }
-    var templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
+    const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
       styles: templateMeta.styles,
       styleUrls: templateMeta.styleUrls,
       moduleUrl: directiveType.moduleUrl
     }));
 
-    var visitor = new TemplatePreparseVisitor();
-    htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
-    var templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
+    const visitor = new TemplatePreparseVisitor();
+    html.visitAll(visitor, rootNodesAndErrors.rootNodes);
+    const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    var allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
-    var allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
+    const allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
+    const allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
 
-    var encapsulation = templateMeta.encapsulation;
+    let encapsulation = templateMeta.encapsulation;
     if (isBlank(encapsulation)) {
       encapsulation = this._config.defaultEncapsulation;
     }
@@ -127,7 +127,7 @@ export class DirectiveNormalizer {
       encapsulation = ViewEncapsulation.None;
     }
     return new CompileTemplateMetadata({
-      encapsulation: encapsulation,
+      encapsulation,
       template: template,
       templateUrl: templateAbsUrl,
       styles: allStyles,
@@ -187,13 +187,13 @@ export class DirectiveNormalizer {
   }
 }
 
-class TemplatePreparseVisitor implements HtmlAstVisitor {
+class TemplatePreparseVisitor implements html.Visitor {
   ngContentSelectors: string[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
   ngNonBindableStackCount: number = 0;
 
-  visitElement(ast: HtmlElementAst, context: any): any {
+  visitElement(ast: html.Element, context: any): any {
     var preparsedElement = preparseElement(ast);
     switch (preparsedElement.type) {
       case PreparsedElementType.NG_CONTENT:
@@ -204,8 +204,8 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
       case PreparsedElementType.STYLE:
         var textContent = '';
         ast.children.forEach(child => {
-          if (child instanceof HtmlTextAst) {
-            textContent += (<HtmlTextAst>child).value;
+          if (child instanceof html.Text) {
+            textContent += child.value;
           }
         });
         this.styles.push(textContent);
@@ -214,25 +214,23 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
         this.styleUrls.push(preparsedElement.hrefAttr);
         break;
       default:
-        // DDC reports this as error. See:
-        // https://github.com/dart-lang/dev_compiler/issues/428
         break;
     }
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount++;
     }
-    htmlVisitAll(this, ast.children);
+    html.visitAll(this, ast.children);
     if (preparsedElement.nonBindable) {
       this.ngNonBindableStackCount--;
     }
     return null;
   }
-  visitComment(ast: HtmlCommentAst, context: any): any { return null; }
-  visitAttr(ast: HtmlAttrAst, context: any): any { return null; }
-  visitText(ast: HtmlTextAst, context: any): any { return null; }
-  visitExpansion(ast: HtmlExpansionAst, context: any): any { return null; }
 
-  visitExpansionCase(ast: HtmlExpansionCaseAst, context: any): any { return null; }
+  visitComment(ast: html.Comment, context: any): any { return null; }
+  visitAttribute(ast: html.Attribute, context: any): any { return null; }
+  visitText(ast: html.Text, context: any): any { return null; }
+  visitExpansion(ast: html.Expansion, context: any): any { return null; }
+  visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
 }
 
 function _cloneDirectiveWithTemplate(
@@ -249,12 +247,11 @@ function _cloneDirectiveWithTemplate(
     hostListeners: directive.hostListeners,
     hostProperties: directive.hostProperties,
     hostAttributes: directive.hostAttributes,
-    lifecycleHooks: directive.lifecycleHooks,
     providers: directive.providers,
     viewProviders: directive.viewProviders,
     queries: directive.queries,
     viewQueries: directive.viewQueries,
-    precompile: directive.precompile,
+    entryComponents: directive.entryComponents,
     template: template
   });
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 
 describe('WebWorkers Todo', function() {
   afterEach(() => {
@@ -22,11 +22,11 @@ describe('WebWorkers Todo', function() {
     browser.get(URL);
 
     waitForBootstrap();
-    expect(element(by.css("#todoapp header")).getText()).toEqual("todos");
+    expect(element(by.css('#todoapp header')).getText()).toEqual('todos');
   });
 
 });
 
 function waitForBootstrap(): void {
-  browser.wait(protractor.until.elementLocated(by.css("todo-app #todoapp")), 15000);
+  browser.wait(protractor.until.elementLocated(by.css('todo-app #todoapp')), 15000);
 }

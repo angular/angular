@@ -1,7 +1,7 @@
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/esm/index.js',
-  dest: '../../../dist/packages-dist/upgrade/esm/upgrade.umd.js',
+  entry: '../../../dist/packages-dist/upgrade/index.js',
+  dest: '../../../dist/packages-dist/upgrade/bundles/upgrade.umd.js',
   format: 'umd',
   moduleName: 'ng.upgrade',
   globals: {
@@ -14,6 +14,5 @@ export default {
     'rxjs/observable/PromiseObservable': 'Rx', // this is wrong, but this stuff has changed in rxjs b.6 so we need to fix it when we update.
     'rxjs/operator/toPromise': 'Rx.Observable.prototype',
     'rxjs/Observable': 'Rx'
-  },
-  plugins: []
+  }
 }

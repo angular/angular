@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, expect, iit, it} from '@angular/core/testing';
-
 import {StringMapWrapper} from '../src/facade/collection';
 import {BrowserDetection} from '../testing/browser_util';
 
@@ -25,7 +23,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: true
+        isChromeDesktop: true,
+        isOldChrome: false
       },
       {
         name: 'Chrome mobile',
@@ -37,7 +36,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Firefox',
@@ -49,7 +49,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE9',
@@ -61,7 +62,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE10',
@@ -73,7 +75,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE11',
@@ -85,7 +88,21 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
+      },
+      {
+        name: 'IEMobile',
+        ua: 'Mozilla/5.0 (Mobile; Windows Phone 8.1; Android 4.0; ARM; Trident/7.0; Touch; rv:11.0; IEMobile/11.0; NOKIA; Lumia 520) like iPhone OS 7_0_3 Mac OS X AppleWebKit/537 (KHTML, like Gecko) Mobile Safari/537',
+        isFirefox: false,
+        isAndroid: false,
+        isEdge: false,
+        isIE: true,
+        isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Edge',
@@ -97,7 +114,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.1',
@@ -109,7 +127,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.2',
@@ -121,7 +140,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.3',
@@ -133,7 +153,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.4',
@@ -145,7 +166,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: true
       },
       {
         name: 'Safari7',
@@ -157,7 +179,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Safari8',
@@ -169,7 +192,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS7',
@@ -181,7 +205,8 @@ export function main() {
         isWebkit: true,
         isIOS7: true,
         isSlow: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS8',
@@ -193,7 +218,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       }
     ];
 
@@ -208,6 +234,7 @@ export function main() {
         expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
         expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
         expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
+        expect(bd.isOldChrome).toBe(StringMapWrapper.get(browser, 'isOldChrome'));
       });
     });
   });

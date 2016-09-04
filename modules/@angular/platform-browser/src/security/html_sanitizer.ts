@@ -12,8 +12,6 @@ import {DomAdapter, getDOM} from '../dom/dom_adapter';
 
 import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
-
-
 /** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
 let inertElement: HTMLElement = null;
 /** Lazily initialized to make sure the DOM adapter gets set before use. */
@@ -43,7 +41,7 @@ function getInertElement() {
 
 function tagSet(tags: string): {[k: string]: boolean} {
   let res: {[k: string]: boolean} = {};
-  for (let t of tags.split(',')) res[t.toLowerCase()] = true;
+  for (let t of tags.split(',')) res[t] = true;
   return res;
 }
 
@@ -119,6 +117,9 @@ const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
  * attributes.
  */
 class SanitizingHtmlSerializer {
+  // Explicitly track if something was stripped, to avoid accidentally warning of sanitization just
+  // because characters were re-encoded.
+  public sanitizedSomething = false;
   private buf: string[] = [];
 
   sanitizeChildren(el: Element): string {
@@ -128,9 +129,12 @@ class SanitizingHtmlSerializer {
     let current: Node = el.firstChild;
     while (current) {
       if (DOM.isElementNode(current)) {
-        this.startElement(current);
+        this.startElement(current as Element);
       } else if (DOM.isTextNode(current)) {
         this.chars(DOM.nodeValue(current));
+      } else {
+        // Strip non-element, non-text nodes.
+        this.sanitizedSomething = true;
       }
       if (DOM.firstChild(current)) {
         current = DOM.firstChild(current);
@@ -139,7 +143,7 @@ class SanitizingHtmlSerializer {
       while (current) {
         // Leaving the element. Walk up and to the right, closing tags as we go.
         if (DOM.isElementNode(current)) {
-          this.endElement(DOM.nodeName(current).toLowerCase());
+          this.endElement(current as Element);
         }
         if (DOM.nextSibling(current)) {
           current = DOM.nextSibling(current);
@@ -151,30 +155,34 @@ class SanitizingHtmlSerializer {
     return this.buf.join('');
   }
 
-  private startElement(element: any) {
-    let tagName = DOM.nodeName(element).toLowerCase();
-    tagName = tagName.toLowerCase();
-    if (VALID_ELEMENTS.hasOwnProperty(tagName)) {
-      this.buf.push('<');
-      this.buf.push(tagName);
-      DOM.attributeMap(element).forEach((value: string, attrName: string) => {
-        let lower = attrName.toLowerCase();
-        if (!VALID_ATTRS.hasOwnProperty(lower)) return;
-        // TODO(martinprobst): Special case image URIs for data:image/...
-        if (URI_ATTRS[lower]) value = sanitizeUrl(value);
-        if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
-        this.buf.push(' ');
-        this.buf.push(attrName);
-        this.buf.push('="');
-        this.buf.push(encodeEntities(value));
-        this.buf.push('"');
-      });
-      this.buf.push('>');
+  private startElement(element: Element) {
+    const tagName = DOM.nodeName(element).toLowerCase();
+    if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
+      this.sanitizedSomething = true;
+      return;
     }
+    this.buf.push('<');
+    this.buf.push(tagName);
+    DOM.attributeMap(element).forEach((value: string, attrName: string) => {
+      let lower = attrName.toLowerCase();
+      if (!VALID_ATTRS.hasOwnProperty(lower)) {
+        this.sanitizedSomething = true;
+        return;
+      }
+      // TODO(martinprobst): Special case image URIs for data:image/...
+      if (URI_ATTRS[lower]) value = sanitizeUrl(value);
+      if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
+      this.buf.push(' ');
+      this.buf.push(attrName);
+      this.buf.push('="');
+      this.buf.push(encodeEntities(value));
+      this.buf.push('"');
+    });
+    this.buf.push('>');
   }
 
-  private endElement(tagName: string) {
-    tagName = tagName.toLowerCase();
+  private endElement(current: Element) {
+    const tagName = DOM.nodeName(current).toLowerCase();
     if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
@@ -197,18 +205,18 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * @param value
  * @returns {string} escaped text
  */
-function encodeEntities(value: any /** TODO #9100 */) {
+function encodeEntities(value: string) {
   return value.replace(/&/g, '&amp;')
       .replace(
           SURROGATE_PAIR_REGEXP,
-          function(match: any /** TODO #9100 */) {
+          function(match: string) {
             let hi = match.charCodeAt(0);
             let low = match.charCodeAt(1);
             return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
           })
       .replace(
           NON_ALPHANUMERIC_REGEXP,
-          function(match: any /** TODO #9100 */) { return '&#' + match.charCodeAt(0) + ';'; })
+          function(match: string) { return '&#' + match.charCodeAt(0) + ';'; })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }
@@ -220,14 +228,14 @@ function encodeEntities(value: any /** TODO #9100 */) {
  * This is undesirable since we don't want to allow any of these custom attributes. This method
  * strips them all.
  */
-function stripCustomNsAttrs(el: any) {
+function stripCustomNsAttrs(el: Element) {
   DOM.attributeMap(el).forEach((_, attrName) => {
     if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
       DOM.removeAttribute(el, attrName);
     }
   });
   for (let n of DOM.childNodesAsList(el)) {
-    if (DOM.isElementNode(n)) stripCustomNsAttrs(n);
+    if (DOM.isElementNode(n)) stripCustomNsAttrs(n as Element);
   }
 }
 
@@ -270,7 +278,7 @@ export function sanitizeHtml(unsafeHtmlInput: string): string {
       DOM.removeChild(parent, child);
     }
 
-    if (isDevMode() && safeHtml !== unsafeHtmlInput) {
+    if (isDevMode() && sanitizer.sanitizedSomething) {
       DOM.log('WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
     }
 

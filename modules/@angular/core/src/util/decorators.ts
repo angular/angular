@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConcreteType, Type, global, isFunction, stringify} from '../facade/lang';
+import {global, isFunction, stringify} from '../facade/lang';
+import {Type} from '../type';
 
 var _nextClassId = 0;
 
@@ -19,7 +20,7 @@ export interface ClassDefinition {
   /**
    * Optional argument for specifying the superclass.
    */
-  extends?: Type;
+  extends?: Type<any>;
 
   /**
    * Required constructor function for a class.
@@ -36,7 +37,7 @@ export interface ClassDefinition {
    * Other methods on the class. Note that values should have type 'Function' but TS requires
    * all properties to have a narrower type than the index signature.
    */
-  [x: string]: Type|Function|any[];
+  [x: string]: Type<any>|Function|any[];
 }
 
 /**
@@ -49,7 +50,6 @@ export interface ClassDefinition {
  * ```
  * var MyClass = ng
  *   .Component({...})
- *   .View({...})
  *   .Class({...});
  * ```
  *
@@ -57,7 +57,6 @@ export interface ClassDefinition {
  *
  * ```
  * @ng.Component({...})
- * @ng.View({...})
  * class MyClass {...}
  * ```
  * @stable
@@ -66,7 +65,7 @@ export interface TypeDecorator {
   /**
    * Invoke as ES7 decorator.
    */
-  <T extends Type>(type: T): T;
+  <T extends Type<any>>(type: T): T;
 
   // Make TypeDecorator assignable to built-in ParameterDecorator type.
   // ParameterDecorator is declared in lib.d.ts as a `declare type`
@@ -84,7 +83,7 @@ export interface TypeDecorator {
   /**
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
-  Class(obj: ClassDefinition): ConcreteType<any>;
+  Class(obj: ClassDefinition): Type<any>;
 }
 
 function extractAnnotation(annotation: any): any {
@@ -103,24 +102,24 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
   if (isFunction(fnOrArray)) {
     return <Function>fnOrArray;
   } else if (fnOrArray instanceof Array) {
-    var annotations: any[] = fnOrArray;
-    var fn: Function = fnOrArray[fnOrArray.length - 1];
+    const annotations: any[] = fnOrArray;
+    const annoLength = annotations.length - 1;
+    const fn: Function = fnOrArray[annoLength];
     if (!isFunction(fn)) {
       throw new Error(
           `Last position of Class method array must be Function in key ${key} was '${stringify(fn)}'`);
     }
-    var annoLength = annotations.length - 1;
     if (annoLength != fn.length) {
       throw new Error(
           `Number of annotations (${annoLength}) does not match number of arguments (${fn.length}) in the function: ${stringify(fn)}`);
     }
-    var paramsAnnotations: any[][] = [];
-    for (var i = 0, ii = annotations.length - 1; i < ii; i++) {
-      var paramAnnotations: any[] = [];
+    const paramsAnnotations: any[][] = [];
+    for (let i = 0, ii = annotations.length - 1; i < ii; i++) {
+      const paramAnnotations: any[] = [];
       paramsAnnotations.push(paramAnnotations);
-      var annotation = annotations[i];
+      const annotation = annotations[i];
       if (annotation instanceof Array) {
-        for (var j = 0; j < annotation.length; j++) {
+        for (let j = 0; j < annotation.length; j++) {
           paramAnnotations.push(extractAnnotation(annotation[j]));
         }
       } else if (isFunction(annotation)) {
@@ -219,10 +218,10 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * ```
  * @stable
  */
-export function Class(clsDef: ClassDefinition): ConcreteType<any> {
-  var constructor = applyParams(
+export function Class(clsDef: ClassDefinition): Type<any> {
+  const constructor = applyParams(
       clsDef.hasOwnProperty('constructor') ? clsDef.constructor : undefined, 'constructor');
-  var proto = constructor.prototype;
+  let proto = constructor.prototype;
   if (clsDef.hasOwnProperty('extends')) {
     if (isFunction(clsDef.extends)) {
       (<Function>constructor).prototype = proto =
@@ -232,7 +231,7 @@ export function Class(clsDef: ClassDefinition): ConcreteType<any> {
           `Class definition 'extends' property must be a constructor function was: ${stringify(clsDef.extends)}`);
     }
   }
-  for (var key in clsDef) {
+  for (let key in clsDef) {
     if (key != 'extends' && key != 'prototype' && clsDef.hasOwnProperty(key)) {
       proto[key] = applyParams(<any>clsDef[key], key);
     }
@@ -242,41 +241,36 @@ export function Class(clsDef: ClassDefinition): ConcreteType<any> {
     Reflect.defineMetadata('annotations', this.annotations, constructor);
   }
 
-  if (!constructor['name']) {
-    (constructor as any /** TODO #9100 */)['overriddenName'] = `class${_nextClassId++}`;
+  const constructorName = constructor['name'];
+  if (!constructorName || constructorName === 'constructor') {
+    (constructor as any)['overriddenName'] = `class${_nextClassId++}`;
   }
 
-  return <ConcreteType<any>>constructor;
+  return <Type<any>>constructor;
 }
 
 var Reflect = global.Reflect;
-// Throw statement at top-level is disallowed by closure compiler in ES6 input.
-// Wrap in an IIFE as a work-around.
-(function checkReflect() {
-  if (!(Reflect && Reflect.getMetadata)) {
-    throw 'reflect-metadata shim is required when using class decorators';
-  }
-})();
 
-export function makeDecorator(
-    annotationCls: any /* TODO #9100 */,
-    chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
-  function DecoratorFactory(objOrType: any /** TODO #9100 */): (cls: any) => any {
-    var annotationInstance = new (<any>annotationCls)(objOrType);
+export function makeDecorator(annotationCls: any, chainFn: (fn: Function) => void = null):
+    (...args: any[]) => (cls: any) => any {
+  function DecoratorFactory(objOrType: any): (cls: any) => any {
+    if (!(Reflect && Reflect.getMetadata)) {
+      throw 'reflect-metadata shim is required when using class decorators';
+    }
+
+    const annotationInstance = new (<any>annotationCls)(objOrType);
     if (this instanceof annotationCls) {
       return annotationInstance;
     } else {
-      var chainAnnotation =
+      const chainAnnotation =
           isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
-      var TypeDecorator: TypeDecorator =
-          <TypeDecorator>function TypeDecorator(cls: any /** TODO #9100 */) {
-            var annotations = Reflect.getOwnMetadata('annotations', cls);
-            annotations = annotations || [];
-            annotations.push(annotationInstance);
-            Reflect.defineMetadata('annotations', annotations, cls);
-            return cls;
-          };
+      const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type<any>) {
+        const annotations = Reflect.getOwnMetadata('annotations', cls) || [];
+        annotations.push(annotationInstance);
+        Reflect.defineMetadata('annotations', annotations, cls);
+        return cls;
+      };
       TypeDecorator.annotations = chainAnnotation;
       TypeDecorator.Class = Class;
       if (chainFn) chainFn(TypeDecorator);
@@ -288,8 +282,8 @@ export function makeDecorator(
   return DecoratorFactory;
 }
 
-export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
-  function ParamDecoratorFactory(...args: any[] /** TODO #9100 */): any {
+export function makeParamDecorator(annotationCls: any): any {
+  function ParamDecoratorFactory(...args: any[]): any {
     var annotationInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(annotationInstance, args);
     if (this instanceof annotationCls) {
@@ -300,11 +294,8 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
     }
 
 
-    function ParamDecorator(
-        cls: any /** TODO #9100 */, unusedKey: any /** TODO #9100 */,
-        index: any /** TODO #9100 */): any {
-      var parameters: any[][] = Reflect.getMetadata('parameters', cls);
-      parameters = parameters || [];
+    function ParamDecorator(cls: any, unusedKey: any, index: number): any {
+      const parameters: any[][] = Reflect.getMetadata('parameters', cls) || [];
 
       // there might be gaps if some in between parameters do not have annotations.
       // we pad with nulls.
@@ -325,8 +316,8 @@ export function makeParamDecorator(annotationCls: any /** TODO #9100 */): any {
   return ParamDecoratorFactory;
 }
 
-export function makePropDecorator(annotationCls: any /** TODO #9100 */): any {
-  function PropDecoratorFactory(...args: any[] /** TODO #9100 */): any {
+export function makePropDecorator(annotationCls: any): any {
+  function PropDecoratorFactory(...args: any[]): any {
     var decoratorInstance = Object.create(annotationCls.prototype);
     annotationCls.apply(decoratorInstance, args);
 
@@ -334,8 +325,7 @@ export function makePropDecorator(annotationCls: any /** TODO #9100 */): any {
       return decoratorInstance;
     } else {
       return function PropDecorator(target: any, name: string) {
-        var meta = Reflect.getOwnMetadata('propMetadata', target.constructor);
-        meta = meta || {};
+        const meta = Reflect.getOwnMetadata('propMetadata', target.constructor) || {};
         meta[name] = meta[name] || [];
         meta[name].unshift(decoratorInstance);
         Reflect.defineMetadata('propMetadata', meta, target.constructor);

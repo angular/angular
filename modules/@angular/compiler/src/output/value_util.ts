@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {CompileIdentifierMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
@@ -21,6 +21,7 @@ class _ValueOutputAstTransformer implements ValueTransformer {
   visitArray(arr: any[], type: o.Type): o.Expression {
     return o.literalArr(arr.map(value => visitValue(value, this, null)), type);
   }
+
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
     var entries: Array<string|o.Expression>[] = [];
     StringMapWrapper.forEach(map, (value: any, key: string) => {
@@ -28,14 +29,16 @@ class _ValueOutputAstTransformer implements ValueTransformer {
     });
     return o.literalMap(entries, type);
   }
+
   visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
+
   visitOther(value: any, type: o.Type): o.Expression {
     if (value instanceof CompileIdentifierMetadata) {
       return o.importExpr(value);
     } else if (value instanceof o.Expression) {
       return value;
     } else {
-      throw new BaseException(`Illegal state: Don't now how to compile value ${value}`);
+      throw new Error(`Illegal state: Don't now how to compile value ${value}`);
     }
   }
 }

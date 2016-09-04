@@ -9,7 +9,6 @@
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 import {MapWrapper} from '../../platform-browser/src/facade/collection';
-import {beforeEach, ddescribe, describe, expect, iit, it, tick} from '../testing';
 
 class TestObj {
   prop: any;
@@ -75,8 +74,7 @@ export function main() {
          () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
 
       it('should record function calls', () => {
-        spyObj.spy('someFunc')
-            .andCallFake((a: any /** TODO #9100 */, b: any /** TODO #9100 */) => {return a + b});
+        spyObj.spy('someFunc').andCallFake((a: any, b: any) => a + b);
 
         expect(spyObj.someFunc(1, 2)).toEqual(3);
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);

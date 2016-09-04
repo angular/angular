@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, OpaqueToken, Optional, Renderer, Type, forwardRef} from '@angular/core';
 
 import {MapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent, isPrimitive, isString, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-const SELECT_MULTIPLE_VALUE_ACCESSOR = {
+export const SELECT_MULTIPLE_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
   multi: true
@@ -45,7 +45,7 @@ abstract class HTMLCollection {
 /**
  * The accessor for writing a value and listening to changes on a select element.
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector:
@@ -63,7 +63,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   onChange = (_: any) => {};
   onTouched = () => {};
 
-  constructor() {}
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     this.value = value;
@@ -100,6 +100,10 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 
   /** @internal */
   _registerOption(value: NgSelectMultipleOption): string {

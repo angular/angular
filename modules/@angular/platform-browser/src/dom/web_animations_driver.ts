@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, BaseException} from '@angular/core';
+import {AUTO_STYLE} from '@angular/core';
 
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../../core_private';
 import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
-import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
 import {dashCaseToCamelCase} from './util';
 import {WebAnimationsPlayer} from './web_animations_player';
@@ -21,19 +20,17 @@ import {WebAnimationsPlayer} from './web_animations_player';
 export class WebAnimationsDriver implements AnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
-    var anyElm = <any>element;
-
+      duration: number, delay: number, easing: string): WebAnimationsPlayer {
     var formattedSteps: {[key: string]: string | number}[] = [];
     var startingStyleLookup: {[key: string]: string | number} = {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
-      startingStyleLookup = _populateStyles(anyElm, startingStyles, {});
+      startingStyleLookup = _populateStyles(element, startingStyles, {});
       startingStyleLookup['offset'] = 0;
       formattedSteps.push(startingStyleLookup);
     }
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
-      let data = _populateStyles(anyElm, keyframe.styles, startingStyleLookup);
+      let data = _populateStyles(element, keyframe.styles, startingStyleLookup);
       data['offset'] = keyframe.offset;
       formattedSteps.push(data);
     });
@@ -48,21 +45,19 @@ export class WebAnimationsDriver implements AnimationDriver {
       formattedSteps = [start, start];
     }
 
-    var playerOptions = {
+    var playerOptions: {[key: string]: string | number} = {
       'duration': duration,
       'delay': delay,
-      'easing': easing,
       'fill': 'both'  // we use `both` because it allows for styling at 0% to work with `delay`
     };
 
-    var player = this._triggerWebAnimation(anyElm, formattedSteps, playerOptions);
+    // we check for this to avoid having a null|undefined value be present
+    // for the easing (which results in an error for certain browsers #9752)
+    if (easing) {
+      playerOptions['easing'] = easing;
+    }
 
-    return new WebAnimationsPlayer(player, duration);
-  }
-
-  /** @internal */
-  _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return elm.animate(keyframes, options);
+    return new WebAnimationsPlayer(element, formattedSteps, playerOptions);
   }
 }
 
@@ -73,9 +68,8 @@ function _populateStyles(
   styles.styles.forEach((entry) => {
     StringMapWrapper.forEach(entry, (val: any, prop: string) => {
       var formattedProp = dashCaseToCamelCase(prop);
-      data[formattedProp] = val == AUTO_STYLE ?
-          _computeStyle(element, formattedProp) :
-          val.toString() + _resolveStyleUnit(val, prop, formattedProp);
+      data[formattedProp] =
+          val == AUTO_STYLE ? val : val.toString() + _resolveStyleUnit(val, prop, formattedProp);
     });
   });
   StringMapWrapper.forEach(defaultStyles, (value: string, prop: string) => {
@@ -93,8 +87,7 @@ function _resolveStyleUnit(
     if (isNumber(val)) {
       unit = 'px';
     } else if (_findDimensionalSuffix(val.toString()).length == 0) {
-      throw new BaseException(
-          'Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
+      throw new Error('Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
     }
   }
   return unit;
@@ -148,8 +141,4 @@ function _isPixelDimensionStyle(prop: string): boolean {
     default:
       return false;
   }
-}
-
-function _computeStyle(element: any, prop: string): string {
-  return getDOM().getComputedStyle(element)[prop];
 }

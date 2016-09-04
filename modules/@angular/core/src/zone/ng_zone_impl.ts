@@ -6,14 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * Stores error information; delivered via [NgZone.onError] stream.
- * @deprecated
- */
-export class NgZoneError {
-  constructor(public error: any, public stackTrace: any) {}
-}
-
 
 export class NgZoneImpl {
   static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
@@ -27,7 +19,7 @@ export class NgZoneImpl {
   private onLeave: () => void;
   private setMicrotask: (hasMicrotasks: boolean) => void;
   private setMacrotask: (hasMacrotasks: boolean) => void;
-  private onError: (error: NgZoneError) => void;
+  private onError: (error: any) => void;
 
   constructor({trace, onEnter, onLeave, setMicrotask, setMacrotask, onError}: {
     trace: boolean,
@@ -35,7 +27,7 @@ export class NgZoneImpl {
     onLeave: () => void,
     setMicrotask: (hasMicrotasks: boolean) => void,
     setMacrotask: (hasMacrotasks: boolean) => void,
-    onError: (error: NgZoneError) => void
+    onError: (error: any) => void
   }) {
     this.onEnter = onEnter;
     this.onLeave = onLeave;
@@ -92,7 +84,7 @@ export class NgZoneImpl {
         onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
                            boolean => {
                              delegate.handleError(target, error);
-                             this.onError(new NgZoneError(error, error.stack));
+                             this.onError(error);
                              return false;
                            }
       });

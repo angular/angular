@@ -15,25 +15,25 @@ body {
   display:block;
 }
 
-inbox, drafts, inbox-side-menu {
+inbox, drafts, .inbox-side-menu {
   display:block;
 }
 
-inbox-side-menu .link {
+.inbox-side-menu .link {
   display:block;
   text-align:center;
   padding:1em;
 }
 
-inbox-side-menu .link.active {
+.inbox-side-menu .link.active {
   background:white;
 }
 
-inbox-side-menu .link:hover {
+.inbox-side-menu .link:hover {
   background:#eee;
 }
 
-inbox-side-menu {
+.inbox-side-menu {
   position:fixed;
   left:0;
   top:0;
@@ -42,7 +42,7 @@ inbox-side-menu {
   background:#ddd;
 }
 
-inbox-side-menu a {
+.inbox-side-menu a {
   display: block;
 }
 

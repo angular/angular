@@ -6,30 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {BaseException} from '../facade/exceptions';
+import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
+
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
-import {NumberWrapper, RegExpWrapper, Type, isBlank, isNumber, isPresent} from '../facade/lang';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {NumberWrapper, isBlank, isNumber, isPresent, isString} from '../facade/lang';
 
-var defaultLocale: string = 'en-US';
-const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/g;
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-/**
- * Internal function to format numbers used by Decimal, Percent and Date pipes.
- */
+const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(\-(\d+))?)?$/;
+
 function formatNumber(
-    pipe: Type, value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-    currencyAsSymbol: boolean = false): string {
+    pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
+    digits: string, currency: string = null, currencyAsSymbol: boolean = false): string {
   if (isBlank(value)) return null;
+  // Convert strings to numbers
+  value = isString(value) && NumberWrapper.isNumeric(value) ? +value : value;
   if (!isNumber(value)) {
-    throw new InvalidPipeArgumentException(pipe, value);
+    throw new InvalidPipeArgumentError(pipe, value);
   }
-  var minInt = 1, minFraction = 0, maxFraction = 3;
+  let minInt: number;
+  let minFraction: number;
+  let maxFraction: number;
+  if (style !== NumberFormatStyle.Currency) {
+    // rely on Intl default for currency
+    minInt = 1;
+    minFraction = 0;
+    maxFraction = 3;
+  }
+
   if (isPresent(digits)) {
-    var parts = RegExpWrapper.firstMatch(_NUMBER_FORMAT_REGEXP, digits);
-    if (isBlank(parts)) {
-      throw new BaseException(`${digits} is not a valid digit info for number pipes`);
+    var parts = digits.match(_NUMBER_FORMAT_REGEXP);
+    if (parts === null) {
+      throw new Error(`${digits} is not a valid digit info for number pipes`);
     }
     if (isPresent(parts[1])) {  // min integer digits
       minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
@@ -41,7 +49,7 @@ function formatNumber(
       maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
     }
   }
-  return NumberFormatter.format(value, defaultLocale, style, {
+  return NumberFormatter.format(value as number, locale, style, {
     minimumIntegerDigits: minInt,
     minimumFractionDigits: minFraction,
     maximumFractionDigits: maxFraction,
@@ -77,12 +85,14 @@ function formatNumber(
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(value: any, digits: string = null): string {
-    return formatNumber(DecimalPipe, value, NumberFormatStyle.Decimal, digits);
+    return formatNumber(DecimalPipe, this._locale, value, NumberFormatStyle.Decimal, digits);
   }
 }
 
@@ -103,12 +113,14 @@ export class DecimalPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(value: any, digits: string = null): string {
-    return formatNumber(PercentPipe, value, NumberFormatStyle.Percent, digits);
+    return formatNumber(PercentPipe, this._locale, value, NumberFormatStyle.Percent, digits);
   }
 }
 
@@ -134,14 +146,17 @@ export class PercentPipe implements PipeTransform {
  *
  * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(
       value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
       digits: string = null): string {
     return formatNumber(
-        CurrencyPipe, value, NumberFormatStyle.Currency, digits, currencyCode, symbolDisplay);
+        CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
+        symbolDisplay);
   }
 }

@@ -9,8 +9,6 @@
 import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {IS_DART} from '../src/facade/lang';
-
 export function main() {
   describe('UrlResolver', () => {
     var resolver = new UrlResolver();
@@ -96,18 +94,9 @@ export function main() {
         expect(resolver.resolve(null, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
       });
 
-      it('should contain a default value of "/packages" when nothing is provided for DART',
+      it('should contain a default value of "/" when nothing is provided',
          inject([UrlResolver], (resolver: UrlResolver) => {
-           if (IS_DART) {
-             expect(resolver.resolve(null, 'package:file')).toEqual('/packages/file');
-           }
-         }));
-
-      it('should contain a default value of "/" when nothing is provided for TS/ESM',
-         inject([UrlResolver], (resolver: UrlResolver) => {
-           if (!IS_DART) {
-             expect(resolver.resolve(null, 'package:file')).toEqual('/file');
-           }
+           expect(resolver.resolve(null, 'package:file')).toEqual('/file');
          }));
 
       it('should resolve a package value when present within the baseurl', () => {

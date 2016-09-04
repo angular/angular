@@ -9,7 +9,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
-import {makeTypeError} from '../src/facade/exceptions';
 import {isPresent, isString} from '../src/facade/lang';
 
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
@@ -35,7 +34,8 @@ function mergeOptions(
       search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials
+      withCredentials: providedOpts.withCredentials,
+      responseType: providedOpts.responseType
     }));
   }
   if (isPresent(method)) {
@@ -124,7 +124,7 @@ export class Http {
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new Error('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }
@@ -185,6 +185,15 @@ export class Http {
         this._backend,
         new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
   }
+
+  /**
+   * Performs a request with `options` http method.
+   */
+  options(url: string, options?: RequestOptionsArgs): Observable<Response> {
+    return httpRequest(
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
+  }
 }
 
 
@@ -219,11 +228,11 @@ export class Jsonp extends Http {
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {
-        makeTypeError('JSONP requests must use GET request method.');
+        throw new Error('JSONP requests must use GET request method.');
       }
       responseObservable = httpRequest(this._backend, url);
     } else {
-      throw makeTypeError('First argument must be a url string or Request instance.');
+      throw new Error('First argument must be a url string or Request instance.');
     }
     return responseObservable;
   }

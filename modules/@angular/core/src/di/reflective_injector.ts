@@ -7,21 +7,21 @@
  */
 
 import {ListWrapper} from '../facade/collection';
-import {BaseException, unimplemented} from '../facade/exceptions';
-import {Type} from '../facade/lang';
+import {unimplemented} from '../facade/errors';
+import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 import {SelfMetadata, SkipSelfMetadata} from './metadata';
 import {Provider} from './provider';
-import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_exceptions';
+import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
-var __unused: Type;  // avoid unused import when Type union types are erased
+var __unused: Type<any>;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
-const UNDEFINED = /*@ts2dart_const*/ new Object();
+const UNDEFINED = new Object();
 
 export interface ReflectiveProtoInjectorStrategy {
   getProviderAtIndex(index: number): ResolvedReflectiveProvider;
@@ -392,8 +392,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * See {@link ReflectiveInjector#fromResolvedProviders} for more info.
    */
-  static resolve(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
-      ResolvedReflectiveProvider[] {
+  static resolve(providers: Provider[]): ResolvedReflectiveProvider[] {
     return resolveReflectiveProviders(providers);
   }
 
@@ -423,9 +422,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
-  static resolveAndCreate(
-      providers: Array<Type|Provider|{[k: string]: any}|any[]>,
-      parent: Injector = null): ReflectiveInjector {
+  static resolveAndCreate(providers: Provider[], parent: Injector = null): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
   }
@@ -459,13 +456,6 @@ export abstract class ReflectiveInjector implements Injector {
         ReflectiveProtoInjector.fromResolvedProviders(providers), parent);
   }
 
-  /**
-   * @deprecated
-   */
-  static fromResolvedBindings(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
-    return ReflectiveInjector.fromResolvedProviders(providers);
-  }
-
 
   /**
    * Parent of this injector.
@@ -482,12 +472,6 @@ export abstract class ReflectiveInjector implements Injector {
    * ```
    */
   get parent(): Injector { return unimplemented(); }
-
-
-  /**
-   * @internal
-   */
-  debugContext(): any { return null; }
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.
@@ -516,10 +500,7 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Array<Type|Provider|{[k: string]: any}|any[]>):
-      ReflectiveInjector {
-    return unimplemented();
-  }
+  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector { return unimplemented(); }
 
   /**
    * Creates a child injector from previously resolved providers.
@@ -574,7 +555,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Type|Provider): any { return unimplemented(); }
+  resolveAndInstantiate(provider: Provider): any { return unimplemented(); }
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -616,20 +597,13 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   /**
    * Private
    */
-  constructor(
-      _proto: any /* ProtoInjector */, _parent: Injector = null,
-      private _debugContext: Function = null) {
+  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null) {
     this._proto = _proto;
     this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
 
-  /**
-   * @internal
-   */
-  debugContext(): any { return this._debugContext(); }
-
-  get(token: any, notFoundValue: any = /*@ts2dart_const*/ THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
   }
 
@@ -644,7 +618,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   get internalStrategy(): any { return this._strategy; }
 
-  resolveAndCreateChild(providers: Array<Type|Provider|any[]>): ReflectiveInjector {
+  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
   }
@@ -656,7 +630,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return inj;
   }
 
-  resolveAndInstantiate(provider: Type|Provider): any {
+  resolveAndInstantiate(provider: Provider): any {
     return this.instantiateResolved(ReflectiveInjector.resolve([provider])[0]);
   }
 
@@ -810,7 +784,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
               d19);
           break;
         default:
-          throw new BaseException(
+          throw new Error(
               `Cannot instantiate '${provider.key.displayName}' because it has more than 20 dependencies`);
       }
     } catch (e) {

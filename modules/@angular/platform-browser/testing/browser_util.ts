@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDOM} from '../src/dom/dom_adapter';
-import {ListWrapper} from '../src/facade/collection';
-import {RegExp, RegExpWrapper, StringWrapper, global, isPresent, isString} from '../src/facade/lang';
+import {NgZone} from '@angular/core';
+
+import {ListWrapper} from './facade/collection';
+import {RegExp, StringWrapper, global, isPresent, isString} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {
   private _overrideUa: string;
@@ -28,7 +30,8 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -36,22 +39,34 @@ export class BrowserDetection {
   get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isIOS7(): boolean {
-    return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+    return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
 
-  // The Intl API is only properly supported in recent Chrome and Opera.
-  // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
-  // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-  get supportsIntlApi(): boolean { return !!(<any>global).Intl; }
+  // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
+  // This detector is needed in tests to make the difference between:
+  // 1) IE11/Edge: they have a native Intl API, but with some discrepancies
+  // 2) IE9/IE10: they use the polyfill, and so no discrepancies
+  get supportsNativeIntlApi(): boolean {
+    return !!(<any>global).Intl && (<any>global).Intl !== (<any>global).IntlPolyfill;
+  }
 
   get isChromeDesktop(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
+        this._ua.indexOf('Edge') == -1;
+  }
+
+  // "Old Chrome" means Chrome 3X, where there are some discrepancies in the Intl API.
+  // Android 4.4 and 5.X have such browsers by default (respectively 30 and 39).
+  get isOldChrome(): boolean {
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
         this._ua.indexOf('Edge') == -1;
   }
 }
@@ -126,3 +141,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 }
 
 export var browserDetection: BrowserDetection = new BrowserDetection(null);
+
+export function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}

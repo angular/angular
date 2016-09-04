@@ -7,7 +7,10 @@
  */
 
 import {Observable} from 'rxjs/Observable';
+
+import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+
 
 /**
  * An interface a class can implement to be a guard deciding if a route can be activated.
@@ -15,44 +18,149 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * ### Example
  *
  * ```
- * class CanActivateTeam implements CanActivate {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
- *
- *   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
- *     return this.permissions.canActivate(this.currentUser, this.route.params.id);
+ * class UserToken {}
+ * class Permissions {
+ *   canActivate(user: UserToken, id: string): boolean {
+ *     return true;
  *   }
  * }
  *
- * bootstrap(AppComponent, [
- *   CanActivateTeam,
+ * @Injectable()
+ * class CanActivateTeam implements CanActivate {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   provideRouter([{
- *     path: 'team/:id',
- *     component: Team,
- *     canActivate: [CanActivateTeam]
- *   }])
- * );
+ *   canActivate(
+ *     route: ActivatedRouteSnapshot,
+ *     state: RouterStateSnapshot
+ *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canActivate(this.currentUser, route.params.id);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         canActivate: [CanActivateTeam]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanActivateTeam, UserToken, Permissions]
+ * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
  *
  * ```
- * bootstrap(AppComponent, [
- *   {provide: 'canActivateTeam', useValue: (route: ActivatedRouteSnapshot, state:
- * RouterStateSnapshot) => true},
- *   provideRouter([{
- *     path: 'team/:id',
- *     component: Team,
- *     canActivate: ['canActivateTeam']
- *   }])
- * );
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         canActivate: ['canActivateTeam']
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canActivateTeam',
+ *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
  * ```
  *
  * @stable
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|boolean;
+      Observable<boolean>|Promise<boolean>|boolean;
+}
+
+/**
+ * An interface a class can implement to be a guard deciding if a child route can be activated.
+ *
+ * ### Example
+ *
+ * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canActivate(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
+ * @Injectable()
+ * class CanActivateTeam implements CanActivate {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canActivateChild(
+ *     route: ActivatedRouteSnapshot,
+ *     state: RouterStateSnapshot
+ *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canActivate(this.currentUser, route.params.id);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'root',
+ *         canActivateChild: [CanActivateTeam],
+ *         children: [
+ *           {
+ *              path: 'team/:id',
+ *              component: Team
+ *           }
+ *         ]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanActivateTeam, UserToken, Permissions]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * You can also provide a function with the same signature instead of the class:
+ *
+ * ```
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'root',
+ *         canActivateChild: ['canActivateTeam'],
+ *         children: [
+ *           {
+ *             path: 'team/:id',
+ *             component: Team
+ *           }
+ *         ]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canActivateTeam',
+ *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @stable
+ */
+
+export interface CanActivateChild {
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+      Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -61,44 +169,69 @@ export interface CanActivate {
  * ### Example
  *
  * ```
- * class CanDeactivateTeam implements CanDeactivate {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
- *
- *   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {
- *     return this.permissions.canDeactivate(this.currentUser, this.route.params.id);
+ * class UserToken {}
+ * class Permissions {
+ *   canDeactivate(user: UserToken, id: string): boolean {
+ *     return true;
  *   }
  * }
  *
- * bootstrap(AppComponent, [
- *   CanDeactivateTeam,
+ * @Injectable()
+ * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   provideRouter([{
- *     path: 'team/:id',
- *     component: Team,
- *     canDeactivate: [CanDeactivateTeam]
- *   }])
- * );
+ *   canDeactivate(
+ *     component: TeamComponent,
+ *     route: ActivatedRouteSnapshot,
+ *     state: RouterStateSnapshot
+ *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         canDeactivate: [CanDeactivateTeam]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanDeactivateTeam, UserToken, Permissions]
+ * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class:
  *
  * ```
- * bootstrap(AppComponent, [
- *   {provide: 'canDeactivateTeam', useValue: (route: ActivatedRouteSnapshot, state:
- * RouterStateSnapshot) => true},
- *   provideRouter([{
- *     path: 'team/:id',
- *     component: Team,
- *     canActivate: ['canDeactivateTeam']
- *   }])
- * );
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         canActivate: ['canDeactivateTeam']
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canDeactivateTeam',
+ *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
  * ```
  *
  * @stable
  */
 export interface CanDeactivate<T> {
   canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|boolean;
+      Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -107,31 +240,137 @@ export interface CanDeactivate<T> {
  * ### Example
  *
  * ```
- * class TeamResolver implements Resolve {
- *   constructor(private backend: Backend) {}
- *
- *   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<any> {
- *     return this.backend.fetchTeam(this.route.params.id);
+ * class Backend {
+ *   fetchTeam(id: string) {
+ *     return 'someTeam';
  *   }
  * }
  *
- * bootstrap(AppComponent, [
- *   TeamResolver,
+ * @Injectable()
+ * class TeamResolver implements Resolve<Team> {
+ *   constructor(private backend: Backend) {}
  *
- *   provideRouter([{
- *     path: 'team/:id',
- *     component: TeamCmp,
- *     resolve: {
- *       team: TeamResolver
- *     }
- *   }])
- * );
+ *   resolve(
+ *     route: ActivatedRouteSnapshot,
+ *     state: RouterStateSnapshot
+ *   ): Observable<any>|Promise<any>|any {
+ *     return this.backend.fetchTeam(route.params.id);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         resolve: {
+ *           team: TeamResolver
+ *         }
+ *       }
+ *     ])
+ *   ],
+ *   providers: [TeamResolver]
+ * })
+ * class AppModule {}
  * ```
  *
  * You can also provide a function with the same signature instead of the class.
  *
- * @experimental
+ * ```
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         resolve: {
+ *           team: 'teamResolver'
+ *         }
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'teamResolver',
+ *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => 'team'
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ * @stable
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any>|any;
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+      Observable<any>|Promise<any>|any;
 }
+
+
+/**
+ * An interface a class can implement to be a guard deciding if a children can be loaded.
+ *
+ * ### Example
+ *
+ * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canLoadChildren(user: UserToken, id: string): boolean {
+ *     return true;
+ *   }
+ * }
+ *
+ * @Injectable()
+ * class CanLoadTeamSection implements CanLoad {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canLoad(route: Route(
+ *     route: Route
+ *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canLoadChildren(this.currentUser, route);
+ *   }
+ * }
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         loadChildren: 'team.js',
+ *         canLoad: [CanLoadTeamSection]
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanLoadTeamSection, UserToken, Permissions]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * You can also provide a function with the same signature instead of the class:
+ *
+ * ```
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamCmp,
+ *         loadChildren: 'team.js',
+ *         canLoad: ['canLoadTeamSection']
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: 'canLoadTeamSection',
+ *       useValue: (route: Route) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @stable
+ */
+export interface CanLoad { canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean; }

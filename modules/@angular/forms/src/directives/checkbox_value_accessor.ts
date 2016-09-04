@@ -10,7 +10,7 @@ import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const CHECKBOX_VALUE_ACCESSOR: any = /*@ts2dart_const*/ {
+export const CHECKBOX_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => CheckboxControlValueAccessor),
   multi: true
@@ -24,7 +24,7 @@ export const CHECKBOX_VALUE_ACCESSOR: any = /*@ts2dart_const*/ {
  *  <input type="checkbox" name="rememberLogin" ngModel>
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({
   selector:
@@ -43,4 +43,8 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   }
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
 }

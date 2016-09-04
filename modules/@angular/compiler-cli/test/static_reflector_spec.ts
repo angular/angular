@@ -7,12 +7,12 @@
  */
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
-import {animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
+import {HostListenerMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {isBlank} from '@angular/facade/src/lang';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
+
 
 
 // This matches .ts files but not .d.ts files.
@@ -64,8 +64,6 @@ describe('StaticReflector', () => {
     expect(annotations.length).toEqual(1);
     let annotation = annotations[0];
     expect(annotation.selector).toEqual('my-hero-detail');
-    expect(annotation.directives).toEqual([[host.findDeclaration(
-        'angular2/src/common/directives/ng_for', 'NgFor')]]);
     expect(annotation.animations).toEqual([trigger('myAnimation', [
       state('state1', style({'background': 'white'})),
       transition(
@@ -94,6 +92,7 @@ describe('StaticReflector', () => {
         host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     let props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
+    expect(props['onMouseOver']).toEqual([new HostListenerMetadata('mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
@@ -112,7 +111,7 @@ describe('StaticReflector', () => {
     let SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
     expect(() => reflector.annotations(SomeClass))
         .toThrow(new Error(
-            'Error encountered resolving symbol values statically. A reasonable error message (position 12:33 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
+            'Error encountered resolving symbol values statically. A reasonable error message (position 13:34 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
   });
 
   it('should simplify primitive into itself', () => {
@@ -177,28 +176,28 @@ describe('StaticReflector', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0x22})))
         .toBe(0x22 == 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0})))
-        .toBe(0x22 == 0xF0);
+        .toBe(0x22 as any == 0xF0);
   });
 
   it('should simplify !=', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22})))
         .toBe(0x22 != 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0})))
-        .toBe(0x22 != 0xF0);
+        .toBe(0x22 as any != 0xF0);
   });
 
   it('should simplify ===', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '===', left: 0x22, right: 0x22})))
         .toBe(0x22 === 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0})))
-        .toBe(0x22 === 0xF0);
+        .toBe(0x22 as any === 0xF0);
   });
 
   it('should simplify !==', () => {
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22})))
         .toBe(0x22 !== 0x22);
     expect(simplify(noContext, ({__symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0})))
-        .toBe(0x22 !== 0xF0);
+        .toBe(0x22 as any !== 0xF0);
   });
 
   it('should simplify >', () => {
@@ -322,8 +321,8 @@ describe('StaticReflector', () => {
     })).toEqual(['some-value']);
     expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
       __symbolic: 'reference',
-      name: 'two'
-    })).toEqual(2);
+      name: 'three'
+    })).toEqual(3);
   });
 
   it('should error on direct recursive calls', () => {
@@ -332,7 +331,7 @@ describe('StaticReflector', () => {
             new StaticSymbol('/tmp/src/function-reference.ts', ''),
             {__symbolic: 'reference', name: 'recursion'}))
         .toThrow(new Error(
-            'Recursion not supported, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+            'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
   it('should error on indirect recursive calls', () => {
@@ -341,7 +340,7 @@ describe('StaticReflector', () => {
             new StaticSymbol('/tmp/src/function-reference.ts', ''),
             {__symbolic: 'reference', name: 'indirectRecursion'}))
         .toThrow(new Error(
-            'Recursion not supported, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+            'Recursion not supported, resolving symbol indirectRecursion2 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion1 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
   it('should simplify a spread expression', () => {
@@ -395,6 +394,45 @@ describe('StaticReflector', () => {
         .toThrow(new Error(
             `Error encountered resolving symbol values statically. Calling function 'someFunction', function calls are not supported. Consider replacing the function or lambda with a reference to an exported function, resolving symbol MyComponent in /tmp/src/invalid-calls.ts, resolving symbol MyComponent in /tmp/src/invalid-calls.ts`));
   });
+
+  it('should be able to get metadata for a class containing a static method call', () => {
+    const annotations = reflector.annotations(
+        host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual({provider: 'a', useValue: 100});
+  });
+
+  it('should be able to get metadata for a class containing a static field reference', () => {
+    const annotations =
+        reflector.annotations(host.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual([{provider: 'a', useValue: 'Some string'}]);
+  });
+
+  it('should be able to get the metadata for a class calling a method with a conditional expression',
+     () => {
+       const annotations = reflector.annotations(
+           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent'));
+       expect(annotations.length).toBe(1);
+       expect(annotations[0].providers).toEqual([
+         [{provider: 'a', useValue: '1'}], [{provider: 'a', useValue: '2'}]
+       ]);
+     });
+
+  it('should be able to get the metadata for a class calling a method with default parameters',
+     () => {
+       const annotations = reflector.annotations(
+           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent'));
+       expect(annotations.length).toBe(1);
+       expect(annotations[0].providers).toEqual([['a', true, false]]);
+     });
+
+  it('should be able to get metadata with a reference to a static method', () => {
+    const annotations = reflector.annotations(
+        host.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0]._providers[0].useValue.members[0]).toEqual('staticMethod');
+  });
 });
 
 class MockReflectorHost implements StaticReflectorHost {
@@ -413,11 +451,11 @@ class MockReflectorHost implements StaticReflectorHost {
       provider: 'angular2/src/core/di/provider'
     };
   }
-  getStaticSymbol(declarationFile: string, name: string): StaticSymbol {
-    var cacheKey = `${declarationFile}:${name}`;
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
+    var cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
     var result = this.staticTypeCache.get(cacheKey);
     if (isBlank(result)) {
-      result = new StaticSymbol(declarationFile, name);
+      result = new StaticSymbol(declarationFile, name, members);
       this.staticTypeCache.set(cacheKey, result);
     }
     return result;
@@ -456,7 +494,12 @@ class MockReflectorHost implements StaticReflectorHost {
     }
 
     if (modulePath.indexOf('.') === 0) {
-      return this.getStaticSymbol(pathTo(containingFile, modulePath) + '.d.ts', symbolName);
+      const baseName = pathTo(containingFile, modulePath);
+      const tsName = baseName + '.ts';
+      if (this.getMetadataFor(tsName)) {
+        return this.getStaticSymbol(tsName, symbolName);
+      }
+      return this.getStaticSymbol(baseName + '.d.ts', symbolName);
     }
     return this.getStaticSymbol('/tmp/' + modulePath + '.d.ts', symbolName);
   }
@@ -557,13 +600,6 @@ class MockReflectorHost implements StaticReflectorHost {
                     'selector': 'my-hero-detail',
                     'template':
                         '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
-                    'directives': [
-                      {
-                        '__symbolic': 'reference',
-                        'name': 'FORM_DIRECTIVES',
-                        'module': 'angular2/src/common/forms-deprecated/directives'
-                      }
-                    ],
                     'animations': [{
                       '__symbolic': 'call',
                       'expression': {
@@ -672,7 +708,28 @@ class MockReflectorHost implements StaticReflectorHost {
                     }
                   ]
                 }
-              ]
+              ],
+              'onMouseOver': [
+                    {
+                        '__symbolic': 'method',
+                        'decorators': [
+                            {
+                                '__symbolic': 'call',
+                                'expression': {
+                                    '__symbolic': 'reference',
+                                    'module': 'angular2/src/core/metadata',
+                                    'name': 'HostListener'
+                                },
+                                'arguments': [
+                                    'mouseover',
+                                    [
+                                        '$event'
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
           }
         }
@@ -695,7 +752,7 @@ class MockReflectorHost implements StaticReflectorHost {
                 },
                 arguments: [
                   {
-                    directives: [
+                    entryComponents: [
                       {
                         __symbolic: 'reference',
                         module: 'src/error-references',
@@ -749,9 +806,15 @@ class MockReflectorHost implements StaticReflectorHost {
               __symbolic: 'binop',
               operator: '+',
               left: {__symbolic: 'reference', name: 'a'},
-              right: {__symbolic: 'reference', name: 'b'}
+              right: {
+                __symbolic: 'binop',
+                operator: '+',
+                left: {__symbolic: 'reference', name: 'b'},
+                right: {__symbolic: 'reference', name: 'oneLiteral'}
+              }
             }
-          }
+          },
+          oneLiteral: 1
         }
       },
       '/tmp/src/function-reference.ts': {
@@ -767,7 +830,7 @@ class MockReflectorHost implements StaticReflectorHost {
             },
             arguments: ['some-value']
           },
-          two: {
+          three: {
             __symbolic: 'call',
             expression: {
               __symbolic: 'reference',
@@ -891,16 +954,86 @@ class MockReflectorHost implements StaticReflectorHost {
 
         @Component({
           selector: 'my-component',
-          directives: [someFunction([NgIf])]
+          entryComponents: [someFunction([NgIf])]
         })
         export class MyComponent {}
 
         @someFunction()
         @Component({
           selector: 'my-component',
-          directives: [NgIf]
+          entryComponents: [NgIf]
         })
         export class MyOtherComponent { }
+      `,
+      '/tmp/src/static-method.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+
+        @Component({
+          selector: 'stub'
+        })
+        export class MyModule {
+          static with(data: any) {
+            return { provider: 'a', useValue: data }
+          }
+          static condMethod(cond: boolean) {
+            return [{ provider: 'a', useValue: cond ? '1' : '2'}];
+          }
+          static defaultsMethod(a, b = true, c = false) {
+            return [a, b, c];
+          }
+        }
+      `,
+      '/tmp/src/static-method-call.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {MyModule} from './static-method';
+
+        @Component({
+          providers: MyModule.with(100)
+        })
+        export class MyComponent { }
+
+        @Component({
+          providers: [MyModule.condMethod(true), MyModule.condMethod(false)]
+        })
+        export class MyCondComponent { }
+
+        @Component({
+          providers: [MyModule.defaultsMethod('a')]
+        })
+        export class MyDefaultsComponent { }
+      `,
+      '/tmp/src/static-field.ts': `
+        import {Injectable} from 'angular2/core';
+
+        @Injectable()
+        export class MyModule {
+          static VALUE = 'Some string';
+        }
+      `,
+      '/tmp/src/static-field-reference.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {MyModule} from './static-field';
+
+        @Component({
+          providers: [ { provider: 'a', useValue: MyModule.VALUE } ]
+        })
+        export class Foo { }
+      `,
+      '/tmp/src/static-method-def.ts': `
+        export class ClassWithStatics {
+          static staticMethod() {}
+        }
+      `,
+      '/tmp/src/static-method-ref.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+        import {ClassWithStatics} from './static-method-def';
+
+        @Component({
+          providers: [ { provider: 'a', useValue: ClassWithStatics.staticMethod}]
+        })
+        export class MethodReference {
+
+        }
       `
     };
 

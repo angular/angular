@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../facade/exceptions';
-import {isBlank, isPresent} from '../facade/lang';
-import * as o from '../output/output_ast';
 
-import {CompileTokenMetadata, CompileDirectiveMetadata,} from '../compile_metadata';
-import {CompileView} from './compile_view';
-import {Identifiers} from '../identifiers';
+import {CompileDirectiveMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {isBlank, isPresent} from '../facade/lang';
+import {Identifiers, resolveIdentifier} from '../identifiers';
+import * as o from '../output/output_ast';
 import {createDiTokenExpression} from '../util';
+
+import {CompileView} from './compile_view';
 
 export function getPropertyInView(
     property: o.Expression, callingView: CompileView, definedView: CompileView): o.Expression {
@@ -27,7 +27,7 @@ export function getPropertyInView(
       viewProp = viewProp.prop('parent');
     }
     if (currView !== definedView) {
-      throw new BaseException(
+      throw new Error(
           `Internal error: Could not calculate a property in a parent view: ${property}`);
     }
     if (property instanceof o.ReadPropExpr) {
@@ -85,8 +85,9 @@ export function createPureProxy(
   var pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
   if (isBlank(pureProxyId)) {
-    throw new BaseException(`Unsupported number of argument for pure functions: ${argCount}`);
+    throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);
   }
-  view.createMethod.addStmt(
-      o.THIS_EXPR.prop(pureProxyProp.name).set(o.importExpr(pureProxyId).callFn([fn])).toStmt());
+  view.createMethod.addStmt(o.THIS_EXPR.prop(pureProxyProp.name)
+                                .set(o.importExpr(resolveIdentifier(pureProxyId)).callFn([fn]))
+                                .toStmt());
 }

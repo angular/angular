@@ -7,25 +7,26 @@
  */
 
 import {Observable} from '../facade/async';
-import {unimplemented} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
-
-
 
 /**
  * Base class for control directives.
  *
  * Only used internally in the forms module.
  *
- * @experimental
+ * @stable
  */
 export abstract class AbstractControlDirective {
-  get control(): AbstractControl { return unimplemented(); }
+  get control(): AbstractControl { throw new Error('unimplemented'); }
 
   get value(): any { return isPresent(this.control) ? this.control.value : null; }
 
   get valid(): boolean { return isPresent(this.control) ? this.control.valid : null; }
+
+  get invalid(): boolean { return isPresent(this.control) ? this.control.invalid : null; }
+
+  get pending(): boolean { return isPresent(this.control) ? this.control.pending : null; }
 
   get errors(): {[key: string]: any} {
     return isPresent(this.control) ? this.control.errors : null;
@@ -39,6 +40,10 @@ export abstract class AbstractControlDirective {
 
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
 
+  get disabled(): boolean { return isPresent(this.control) ? this.control.disabled : null; }
+
+  get enabled(): boolean { return isPresent(this.control) ? this.control.enabled : null; }
+
   get statusChanges(): Observable<any> {
     return isPresent(this.control) ? this.control.statusChanges : null;
   }
@@ -48,4 +53,8 @@ export abstract class AbstractControlDirective {
   }
 
   get path(): string[] { return null; }
+
+  reset(value: any = undefined): void {
+    if (isPresent(this.control)) this.control.reset(value);
+  }
 }

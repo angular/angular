@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-
-import {isBlank} from '../../src/facade/lang';
-import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+
+import {isBlank} from '../../src/facade/lang';
+
 import {SimpleJsImportGenerator} from './output_emitter_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
@@ -24,7 +25,7 @@ var externalModuleIdentifier =
     new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
 
 export function main() {
-  // Note supported features of our OutputAstin TS:
+  // Note supported features of our OutputAsti n TS:
   // - real `const` like in Dart
   // - final fields
 
@@ -96,7 +97,7 @@ export function main() {
 
       expect(
           emitStmt(
-              o.variable('fn').callMethod(o.BuiltinMethod.bind, [o.variable('someObj')]).toStmt()))
+              o.variable('fn').callMethod(o.BuiltinMethod.Bind, [o.variable('someObj')]).toStmt()))
           .toEqual('fn.bind(someObj);');
     });
 
@@ -105,8 +106,7 @@ export function main() {
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt()))
-          .toEqual(`{'someKey': 1};`);
+      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
     });
 
     it('should support external identifiers', () => {
@@ -239,7 +239,7 @@ export function main() {
                    'SomeClass', null,
                    [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null,
                    [])))
-            .toEqual(['class SomeClass {', '  private someField:number;', '}'].join('\n'));
+            .toEqual(['class SomeClass {', '  /*private*/ someField:number;', '}'].join('\n'));
       });
 
       it('should support declaring getters', () => {
@@ -289,35 +289,41 @@ export function main() {
 
     it('should support builtin types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.DYNAMIC_TYPE))).toEqual('var a:any = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.BOOL_TYPE))).toEqual('var a:boolean = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.INT_TYPE))).toEqual('var a:number = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.NUMBER_TYPE))).toEqual('var a:number = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.STRING_TYPE))).toEqual('var a:string = null;');
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.FUNCTION_TYPE))).toEqual('var a:Function = null;');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.DYNAMIC_TYPE)))
+          .toEqual('var a:any = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.BOOL_TYPE)))
+          .toEqual('var a:boolean = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.INT_TYPE)))
+          .toEqual('var a:number = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.NUMBER_TYPE)))
+          .toEqual('var a:number = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.STRING_TYPE)))
+          .toEqual('var a:string = (null as any);');
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.FUNCTION_TYPE)))
+          .toEqual('var a:Function = (null as any);');
     });
 
     it('should support external types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(sameModuleIdentifier))))
-          .toEqual('var a:someLocalId = null;');
+          .toEqual('var a:someLocalId = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
         `import * as import0 from 'somePackage/someOtherPath';`,
-        `var a:import0.someExternalId = null;`
+        `var a:import0.someExternalId = (null as any);`
       ].join('\n'));
     });
 
     it('should support combined types', () => {
       var writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null))))
-          .toEqual('var a:any[] = null;');
+          .toEqual('var a:any[] = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(o.INT_TYPE))))
-          .toEqual('var a:number[] = null;');
+          .toEqual('var a:number[] = (null as any);');
 
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(null))))
-          .toEqual('var a:{[key: string]:any} = null;');
+          .toEqual('var a:{[key: string]:any} = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(o.INT_TYPE))))
-          .toEqual('var a:{[key: string]:number} = null;');
+          .toEqual('var a:{[key: string]:number} = (null as any);');
     });
   });
 }

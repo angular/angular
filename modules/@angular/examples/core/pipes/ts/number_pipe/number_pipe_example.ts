@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser-dynamic';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion NumberPipe
 @Component({
@@ -55,7 +56,6 @@ export class CurrencyPipeExample {
 
 @Component({
   selector: 'example-app',
-  directives: [NumberPipeExample, PercentPipeExample, CurrencyPipeExample],
   template: `
     <h1>Numeric Pipe Examples</h1>
     <h2>NumberPipe Example</h2>
@@ -69,6 +69,10 @@ export class CurrencyPipeExample {
 export class AppCmp {
 }
 
+@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
+class AppModule {
+}
+
 export function main() {
-  bootstrap(AppCmp);
+  platformBrowserDynamic().bootstrapModule(AppModule);
 }

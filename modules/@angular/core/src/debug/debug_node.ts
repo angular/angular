@@ -48,13 +48,6 @@ export class DebugNode {
   }
 
   get source(): string { return isPresent(this._debugInfo) ? this._debugInfo.source : null; }
-
-  /**
-   * Use injector.get(token) instead.
-   *
-   * @deprecated
-   */
-  inject(token: any): any { return this.injector.get(token); }
 }
 
 /**

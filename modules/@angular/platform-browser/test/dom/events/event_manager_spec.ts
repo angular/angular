@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach,} from '@angular/core/testing/testing_internal';
-import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {ListWrapper, Map} from '../../../src/facade/collection';
+import {beforeEach, ddescribe, describe, expect, iit, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
+
+import {ListWrapper, Map} from '../../../src/facade/collection';
 import {el} from '../../../testing/browser_util';
 
 export function main() {
@@ -91,6 +92,7 @@ export function main() {
 }
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
+  /** @internal */
   _eventHandler = new Map<string, Function>();
   constructor(public _supports: string[]) { super(); }
 

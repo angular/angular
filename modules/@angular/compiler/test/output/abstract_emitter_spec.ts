@@ -6,28 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
-
-import {escapeSingleQuoteString} from '@angular/compiler/src/output/abstract_emitter';
+import {escapeIdentifier} from '@angular/compiler/src/output/abstract_emitter';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('AbstractEmitter', () => {
-    describe('escapeSingleQuoteString', () => {
+    describe('escapeIdentifier', () => {
       it('should escape single quotes',
-         () => { expect(escapeSingleQuoteString(`'`, false)).toEqual(`'\\''`); });
+         () => { expect(escapeIdentifier(`'`, false)).toEqual(`'\\''`); });
 
       it('should escape backslash',
-         () => { expect(escapeSingleQuoteString('\\', false)).toEqual(`'\\\\'`); });
+         () => { expect(escapeIdentifier('\\', false)).toEqual(`'\\\\'`); });
 
       it('should escape newlines',
-         () => { expect(escapeSingleQuoteString('\n', false)).toEqual(`'\\n'`); });
+         () => { expect(escapeIdentifier('\n', false)).toEqual(`'\\n'`); });
 
       it('should escape carriage returns',
-         () => { expect(escapeSingleQuoteString('\r', false)).toEqual(`'\\r'`); });
+         () => { expect(escapeIdentifier('\r', false)).toEqual(`'\\r'`); });
 
-      it('should escape $', () => { expect(escapeSingleQuoteString('$', true)).toEqual(`'\\$'`); });
-      it('should not escape $',
-         () => { expect(escapeSingleQuoteString('$', false)).toEqual(`'$'`); });
+      it('should escape $', () => { expect(escapeIdentifier('$', true)).toEqual(`'\\$'`); });
+      it('should not escape $', () => { expect(escapeIdentifier('$', false)).toEqual(`'$'`); });
+      it('should add quotes for non-identifiers',
+         () => { expect(escapeIdentifier('==', false, false)).toEqual(`'=='`); });
+      it('does not escape class (but it probably should)',
+         () => { expect(escapeIdentifier('class', false, false)).toEqual('class'); });
     });
 
   });

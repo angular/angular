@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isBlank, isPresent, isArray,} from '../facade/lang';
-import {MapWrapper, ListWrapper} from '../facade/collection';
+import {ListWrapper, MapWrapper} from '../facade/collection';
+import {isArray, isBlank, isPresent} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
-import {ReflectiveKey} from './reflective_key';
-import {InjectMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata} from './metadata';
-import {NoAnnotationError, MixingMultiProvidersWithRegularProvidersError, InvalidProviderError} from './reflective_exceptions';
+import {Type} from '../type';
+
 import {resolveForwardRef} from './forward_ref';
-import {Provider, ProviderBuilder, provide} from './provider';
-import {isProviderLiteral, createProvider} from './provider_util';
+import {DependencyMetadata, HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
+import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_errors';
+import {ReflectiveKey} from './reflective_key';
+
+
+interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider, ExistingProvider,
+    FactoryProvider {}
 
 /**
  * `Dependency` is used by the framework to extend DI.
@@ -30,7 +35,7 @@ export class ReflectiveDependency {
   }
 }
 
-const _EMPTY_LIST: any[] = /*@ts2dart_const*/[];
+const _EMPTY_LIST: any[] = [];
 
 /**
  * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
@@ -42,7 +47,7 @@ const _EMPTY_LIST: any[] = /*@ts2dart_const*/[];
  * ### Example ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
  *
  * ```typescript
- * var resolvedProviders = Injector.resolve([new Provider('message', {useValue: 'Hello'})]);
+ * var resolvedProviders = Injector.resolve([{ provide: 'message', useValue: 'Hello' }]);
  * var injector = Injector.fromResolvedProviders(resolvedProviders);
  *
  * expect(injector.get('message')).toEqual('Hello');
@@ -52,7 +57,7 @@ const _EMPTY_LIST: any[] = /*@ts2dart_const*/[];
  */
 export interface ResolvedReflectiveProvider {
   /**
-   * A key, usually a `Type`.
+   * A key, usually a `Type<any>`.
    */
   key: ReflectiveKey;
 
@@ -67,14 +72,7 @@ export interface ResolvedReflectiveProvider {
   multiProvider: boolean;
 }
 
-/**
- * See {@link ResolvedProvider} instead.
- *
- * @deprecated
- */
-export interface ResolvedReflectiveBinding extends ResolvedReflectiveProvider {}
-
-export class ResolvedReflectiveProvider_ implements ResolvedReflectiveBinding {
+export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
   constructor(
       public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
       public multiProvider: boolean) {}
@@ -83,7 +81,8 @@ export class ResolvedReflectiveProvider_ implements ResolvedReflectiveBinding {
 }
 
 /**
- * An internal resolved representation of a factory function created by resolving {@link Provider}.
+ * An internal resolved representation of a factory function created by resolving {@link
+ * Provider}.
  * @experimental
  */
 export class ResolvedReflectiveFactory {
@@ -103,7 +102,7 @@ export class ResolvedReflectiveFactory {
 /**
  * Resolve a single provider.
  */
-export function resolveReflectiveFactory(provider: Provider): ResolvedReflectiveFactory {
+function resolveReflectiveFactory(provider: NormalizedProvider): ResolvedReflectiveFactory {
   var factoryFn: Function;
   var resolvedDeps: ReflectiveDependency[];
   if (isPresent(provider.useClass)) {
@@ -115,7 +114,7 @@ export function resolveReflectiveFactory(provider: Provider): ResolvedReflective
     resolvedDeps = [ReflectiveDependency.fromKey(ReflectiveKey.get(provider.useExisting))];
   } else if (isPresent(provider.useFactory)) {
     factoryFn = provider.useFactory;
-    resolvedDeps = constructDependencies(provider.useFactory, provider.dependencies);
+    resolvedDeps = constructDependencies(provider.useFactory, provider.deps);
   } else {
     factoryFn = () => provider.useValue;
     resolvedDeps = _EMPTY_LIST;
@@ -129,16 +128,15 @@ export function resolveReflectiveFactory(provider: Provider): ResolvedReflective
  * {@link Injector} internally only uses {@link ResolvedProvider}, {@link Provider} contains
  * convenience provider syntax.
  */
-export function resolveReflectiveProvider(provider: Provider): ResolvedReflectiveProvider {
+function resolveReflectiveProvider(provider: NormalizedProvider): ResolvedReflectiveProvider {
   return new ResolvedReflectiveProvider_(
-      ReflectiveKey.get(provider.token), [resolveReflectiveFactory(provider)], provider.multi);
+      ReflectiveKey.get(provider.provide), [resolveReflectiveFactory(provider)], provider.multi);
 }
 
 /**
  * Resolve a list of Providers.
  */
-export function resolveReflectiveProviders(
-    providers: Array<Type|Provider|{[k: string]: any}|any[]>): ResolvedReflectiveProvider[] {
+export function resolveReflectiveProviders(providers: Provider[]): ResolvedReflectiveProvider[] {
   var normalized = _normalizeProviders(providers, []);
   var resolved = normalized.map(resolveReflectiveProvider);
   return MapWrapper.values(
@@ -182,24 +180,16 @@ export function mergeResolvedReflectiveProviders(
   return normalizedProvidersMap;
 }
 
-function _normalizeProviders(
-    providers: Array<Type|Provider|{[k: string]: any}|ProviderBuilder|any[]>,
-    res: Provider[]): Provider[] {
+function _normalizeProviders(providers: Provider[], res: Provider[]): Provider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
-      res.push(provide(b, {useClass: b}));
+      res.push({provide: b, useClass: b});
 
-    } else if (b instanceof Provider) {
-      res.push(b);
-
-    } else if (isProviderLiteral(b)) {
-      res.push(createProvider(b));
+    } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
+      res.push(b as NormalizedProvider);
 
     } else if (b instanceof Array) {
       _normalizeProviders(b, res);
-
-    } else if (b instanceof ProviderBuilder) {
-      throw new InvalidProviderError(b.token);
 
     } else {
       throw new InvalidProviderError(b);

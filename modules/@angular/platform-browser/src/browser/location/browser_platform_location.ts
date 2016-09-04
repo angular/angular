@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformLocation, UrlChangeListener} from '@angular/common';
+import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Injectable} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
@@ -20,8 +20,6 @@ import {supportsState} from './history';
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
  * This class should not be used directly by an application developer. Instead, use
  * {@link Location}.
- *
- * @stable
  */
 @Injectable()
 export class BrowserPlatformLocation extends PlatformLocation {
@@ -40,16 +38,15 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history = getDOM().getHistory();
   }
 
-  /** @internal */
   get location(): Location { return this._location; }
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
-  onHashChange(fn: UrlChangeListener): void {
+  onHashChange(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 

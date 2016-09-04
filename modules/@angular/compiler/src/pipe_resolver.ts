@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, PipeMetadata, resolveForwardRef} from '@angular/core';
+import {Injectable, PipeMetadata, Type, resolveForwardRef} from '@angular/core';
 
-import {ReflectorReader, reflector} from '../core_private';
-import {BaseException} from '../src/facade/exceptions';
-import {Type, isPresent, stringify} from '../src/facade/lang';
+import {isPresent, stringify} from './facade/lang';
+import {ReflectorReader, reflector} from './private_import_core';
 
 function _isPipeMetadata(type: any): boolean {
   return type instanceof PipeMetadata;
@@ -30,7 +29,7 @@ export class PipeResolver {
   /**
    * Return {@link PipeMetadata} for a given `Type`.
    */
-  resolve(type: Type): PipeMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): PipeMetadata {
     var metas = this._reflector.annotations(resolveForwardRef(type));
     if (isPresent(metas)) {
       var annotation = metas.find(_isPipeMetadata);
@@ -38,6 +37,9 @@ export class PipeResolver {
         return annotation;
       }
     }
-    throw new BaseException(`No Pipe decorator found on ${stringify(type)}`);
+    if (throwIfNotFound) {
+      throw new Error(`No Pipe decorator found on ${stringify(type)}`);
+    }
+    return null;
   }
 }

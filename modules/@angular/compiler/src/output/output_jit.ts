@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent, evalExpression,} from '../facade/lang';
-import * as o from './output_ast';
+import {evalExpression, isPresent} from '../facade/lang';
+import {sanitizeIdentifier} from '../util';
+
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
-import {sanitizeIdentifier} from '../util';
+import * as o from './output_ast';
 
 export function jitStatements(
     sourceUrl: string, statements: o.Statement[], resultVar: string): any {
@@ -33,7 +34,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    var value = ast.value.runtime;
+    var value = ast.value.reference;
     var id = this._evalArgValues.indexOf(value);
     if (id === -1) {
       id = this._evalArgValues.length;

@@ -12,7 +12,7 @@ import {IterableDifferFactory, IterableDiffers} from './differs/iterable_differs
 import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 
 export {SimpleChanges} from '../metadata/lifecycle_hooks';
-export {SimpleChange, ValueUnwrapper, WrappedValue, devModeEqual, looseIdentical, uninitialized} from './change_detection_util';
+export {SimpleChange, UNINITIALIZED, ValueUnwrapper, WrappedValue, devModeEqual, looseIdentical} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {CHANGE_DETECTION_STRATEGY_VALUES, ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
 export {CollectionChangeRecord, DefaultIterableDifferFactory} from './differs/default_iterable_differ';
@@ -27,15 +27,13 @@ export {PipeTransform} from './pipe_transform';
 /**
  * Structural diffing for `Object`s and `Map`s.
  */
-export const keyValDiff: KeyValueDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultKeyValueDifferFactory()];
+export const keyValDiff: KeyValueDifferFactory[] = [new DefaultKeyValueDifferFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  */
-export const iterableDiff: IterableDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultIterableDifferFactory()];
+export const iterableDiff: IterableDifferFactory[] = [new DefaultIterableDifferFactory()];
 
-export const defaultIterableDiffers = /*@ts2dart_const*/ new IterableDiffers(iterableDiff);
+export const defaultIterableDiffers = new IterableDiffers(iterableDiff);
 
-export const defaultKeyValueDiffers = /*@ts2dart_const*/ new KeyValueDiffers(keyValDiff);
+export const defaultKeyValueDiffers = new KeyValueDiffers(keyValDiff);

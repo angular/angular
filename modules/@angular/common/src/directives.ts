@@ -11,8 +11,8 @@
  * @description
  * Common directives shipped with Angular.
  */
-export {CORE_DIRECTIVES} from './directives/core_directives';
 export {NgClass} from './directives/ng_class';
+export {NgFocus} from './directives/ng_focus';
 export {NgFor} from './directives/ng_for';
 export {NgIf} from './directives/ng_if';
 export {NgPlural, NgPluralCase} from './directives/ng_plural';

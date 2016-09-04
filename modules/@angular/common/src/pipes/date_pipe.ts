@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
 import {StringMapWrapper} from '../facade/collection';
 import {DateFormatter} from '../facade/intl';
 import {DateWrapper, NumberWrapper, isBlank, isDate, isString} from '../facade/lang';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-// TODO: move to a global configurable location along with other i18n components.
-var defaultLocale: string = 'en-US';
 
 /**
  * Formats a date value to a string based on the requested format.
@@ -48,12 +47,10 @@ var defaultLocale: string = 'en-US';
  *  | second    |   s    | -            | -                 | s (9)     | ss (09)   |
  *  | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
  *  | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
+ *  | timezone  |   a    | a (PM)       | -                 | -         | -         |
  *
  * In javascript, only the components specified will be respected (not the ordering,
  * punctuations, ...) and details of the formatting will be dependent on the locale.
- * On the other hand in Dart version, you can also include quoted text as well as some extra
- * date/time components such as quarter. For more information see:
- * https://www.dartdocs.org/documentation/intl/0.13.0/intl/DateFormat-class.html
  *
  * `format` can also be one of the following predefined formats:
  *
@@ -82,7 +79,7 @@ var defaultLocale: string = 'en-US';
  *
  * {@example core/pipes/ts/date_pipe/date_pipe_example.ts region='DatePipe'}
  *
- * @experimental
+ * @stable
  */
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
@@ -98,23 +95,24 @@ export class DatePipe implements PipeTransform {
     'shortTime': 'jm'
   };
 
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: any, pattern: string = 'mediumDate'): string {
     if (isBlank(value)) return null;
 
     if (!this.supports(value)) {
-      throw new InvalidPipeArgumentException(DatePipe, value);
+      throw new InvalidPipeArgumentError(DatePipe, value);
     }
 
     if (NumberWrapper.isNumeric(value)) {
-      value = DateWrapper.fromMillis(NumberWrapper.parseInt(value, 10));
+      value = DateWrapper.fromMillis(parseFloat(value));
     } else if (isString(value)) {
       value = DateWrapper.fromISOString(value);
     }
     if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
       pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
     }
-    return DateFormatter.format(value, defaultLocale, pattern);
+    return DateFormatter.format(value, this._locale, pattern);
   }
 
   private supports(obj: any): boolean {

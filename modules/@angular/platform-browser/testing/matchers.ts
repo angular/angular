@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDOM} from '../src/dom/dom_adapter';
-import {StringMapWrapper} from '../src/facade/collection';
-import {global, isString} from '../src/facade/lang';
+import {StringMapWrapper} from './facade/collection';
+import {global, isString} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
 
 
 /**
@@ -40,7 +40,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveText'}
    */
-  toHaveText(expected: any): boolean;
+  toHaveText(expected: string): boolean;
 
   /**
    * Expect the element to have the given CSS class.
@@ -49,7 +49,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveCssClass'}
    */
-  toHaveCssClass(expected: any): boolean;
+  toHaveCssClass(expected: string): boolean;
 
   /**
    * Expect the element to have the given CSS styles.
@@ -58,7 +58,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveCssStyle'}
    */
-  toHaveCssStyle(expected: any): boolean;
+  toHaveCssStyle(expected: {[k: string]: string}|string): boolean;
 
   /**
    * Expect a class to implement the interface of the given class.
@@ -84,7 +84,7 @@ export interface NgMatchers extends jasmine.Matchers {
   not: NgMatchers;
 }
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 /**
  * Jasmine matching function with Angular matchers mixed in.
@@ -93,40 +93,38 @@ var _global = <any>(typeof window === 'undefined' ? global : window);
  *
  * {@example testing/ts/matchers.ts region='toHaveText'}
  */
-export var expect: (actual: any) => NgMatchers = <any>_global.expect;
+export const expect: (actual: any) => NgMatchers = <any>_global.expect;
 
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-(Map as any /** TODO #???? */).prototype['jasmineToString'] = function() {
-  var m = this;
+(Map as any).prototype['jasmineToString'] = function() {
+  const m = this;
   if (!m) {
     return '' + m;
   }
-  var res: any[] /** TODO #???? */ = [];
-  m.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => { res.push(`${k}:${v}`); });
+  const res: any[] = [];
+  m.forEach((v: any, k: any) => { res.push(`${k}:${v}`); });
   return `{ ${res.join(',')} }`;
 };
 
 _global.beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
-    toEqual: function(util, customEqualityTesters) {
+    toEqual: function(util) {
       return {
-        compare: function(actual: any /** TODO #???? */, expected: any /** TODO #???? */) {
+        compare: function(actual: any, expected: any) {
           return {pass: util.equals(actual, expected, [compareMap])};
         }
       };
 
-      function compareMap(actual: any /** TODO #???? */, expected: any /** TODO #???? */) {
+      function compareMap(actual: any, expected: any) {
         if (actual instanceof Map) {
-          var pass = actual.size === expected.size;
+          let pass = actual.size === expected.size;
           if (pass) {
-            actual.forEach((v: any /** TODO #???? */, k: any /** TODO #???? */) => {
-              pass = pass && util.equals(v, expected.get(k));
-            });
+            actual.forEach((v: any, k: any) => { pass = pass && util.equals(v, expected.get(k)); });
           }
           return pass;
         } else {
@@ -137,8 +135,8 @@ _global.beforeEach(function() {
 
     toBePromise: function() {
       return {
-        compare: function(actual: any /** TODO #???? */, expectedClass: any /** TODO #???? */) {
-          var pass = typeof actual === 'object' && typeof actual.then === 'function';
+        compare: function(actual: any) {
+          const pass = typeof actual === 'object' && typeof actual.then === 'function';
           return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
         }
       };
@@ -146,8 +144,8 @@ _global.beforeEach(function() {
 
     toBeAnInstanceOf: function() {
       return {
-        compare: function(actual: any /** TODO #???? */, expectedClass: any /** TODO #???? */) {
-          var pass = typeof actual === 'object' && actual instanceof expectedClass;
+        compare: function(actual: any, expectedClass: any) {
+          const pass = typeof actual === 'object' && actual instanceof expectedClass;
           return {
             pass: pass,
             get message() {
@@ -160,8 +158,8 @@ _global.beforeEach(function() {
 
     toHaveText: function() {
       return {
-        compare: function(actual: any /** TODO #???? */, expectedText: any /** TODO #???? */) {
-          var actualText = elementText(actual);
+        compare: function(actual: any, expectedText: string) {
+          const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
             get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
@@ -173,8 +171,8 @@ _global.beforeEach(function() {
     toHaveCssClass: function() {
       return {compare: buildError(false), negativeCompare: buildError(true)};
 
-      function buildError(isNot: any /** TODO #???? */) {
-        return function(actual: any /** TODO #???? */, className: any /** TODO #???? */) {
+      function buildError(isNot: boolean) {
+        return function(actual: any, className: string) {
           return {
             pass: getDOM().hasClass(actual, className) == !isNot,
             get message() {
@@ -187,22 +185,21 @@ _global.beforeEach(function() {
 
     toHaveCssStyle: function() {
       return {
-        compare: function(actual: any /** TODO #???? */, styles: any /** TODO #???? */) {
-          var allPassed: any /** TODO #???? */;
+        compare: function(actual: any, styles: {[k: string]: string}|string) {
+          let allPassed: boolean;
           if (isString(styles)) {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
             allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(
-                styles, (style: any /** TODO #???? */, prop: any /** TODO #???? */) => {
-                  allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
-                });
+            StringMapWrapper.forEach(styles, (style: string, prop: string) => {
+              allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
+            });
           }
 
           return {
             pass: allPassed,
             get message() {
-              var expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
+              const expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
                       CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
             }
@@ -213,8 +210,8 @@ _global.beforeEach(function() {
 
     toContainError: function() {
       return {
-        compare: function(actual: any /** TODO #???? */, expectedText: any /** TODO #???? */) {
-          var errorMessage = actual.toString();
+        compare: function(actual: any, expectedText: any) {
+          const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
             get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
@@ -225,12 +222,10 @@ _global.beforeEach(function() {
 
     toImplement: function() {
       return {
-        compare: function(
-            actualObject: any /** TODO #???? */, expectedInterface: any /** TODO #???? */) {
-          var objProps = Object.keys(actualObject.constructor.prototype);
-          var intProps = Object.keys(expectedInterface.prototype);
+        compare: function(actualObject: any, expectedInterface: any) {
+          const intProps = Object.keys(expectedInterface.prototype);
 
-          var missedMethods: any[] /** TODO #???? */ = [];
+          const missedMethods: any[] = [];
           intProps.forEach((k) => {
             if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
           });
@@ -248,9 +243,9 @@ _global.beforeEach(function() {
   });
 });
 
-function elementText(n: any /** TODO #???? */): any /** TODO #???? */ {
-  var hasNodes = (n: any /** TODO #???? */) => {
-    var children = getDOM().childNodes(n);
+function elementText(n: any): string {
+  var hasNodes = (n: any) => {
+    const children = getDOM().childNodes(n);
     return children && children.length > 0;
   };
 

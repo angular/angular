@@ -13,7 +13,7 @@ import {StringWrapper, isBlank, isPresent, isPrimitive, looseIdentical} from '..
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_VALUE_ACCESSOR: any = /*@ts2dart_const*/ /*@ts2dart_Provider*/ {
+export const SELECT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectControlValueAccessor),
   multi: true
@@ -37,7 +37,7 @@ function _extractId(valueString: string): string {
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
- * @experimental
+ * @stable
  */
 @Directive({
   selector:
@@ -71,6 +71,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
+  setDisabledState(isDisabled: boolean): void {
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
+
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 
@@ -100,7 +104,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  * </select>
  * ```
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {

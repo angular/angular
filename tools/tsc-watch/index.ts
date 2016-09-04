@@ -58,40 +58,85 @@ function md(dir: string, folders: string[]) {
 var tscWatch: TscWatch = null;
 var platform = process.argv.length >= 3 ? process.argv[2] : null;
 var runMode: string = process.argv.length >= 4 ? process.argv[3] : null;
+const BaseConfig = {
+  start: 'File change detected. Starting incremental compilation...',
+  error: 'error',
+  complete: 'Compilation complete. Watching for file changes.'
+};
 
 if (platform == 'node') {
-  tscWatch = new TscWatch({
-    tsconfig: 'modules/tsconfig.json',
-    start: 'File change detected. Starting incremental compilation...',
-    error: 'error',
-    complete: 'Compilation complete. Watching for file changes.',
-    onChangeCmds: [
-      processOutputEmitterCodeGen,
-      [
-        'node', 'dist/tools/cjs-jasmine', '--', '{@angular,benchpress}/**/*_spec.js',
-        '@angular/compiler-cli/test/**/*_spec.js'
-      ]
-    ]
-  });
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onChangeCmds: [
+          processOutputEmitterCodeGen,
+          [
+            'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
+            '@angular/compiler-cli/test/**/*_spec.js', '@angular/benchpress/test/**/*_spec.js'
+          ]
+        ]
+      },
+      BaseConfig));
 } else if (platform == 'browser') {
-  tscWatch = new TscWatch({
-    tsconfig: 'modules/tsconfig.json',
-    start: 'File change detected. Starting incremental compilation...',
-    error: 'error',
-    complete: 'Compilation complete. Watching for file changes.',
-    onStartCmds:
-        [['node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', 'karma-js.conf.js']],
-    onChangeCmds: [['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js']]
-  });
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onStartCmds: [
+          [
+            'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9876',
+            'karma-js.conf.js'
+          ],
+          [
+            'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
+            'modules/@angular/router/karma.conf.js'
+          ],
+        ],
+        onChangeCmds: [
+          ['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js', '--port=9876'],
+          ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
+        ]
+      },
+      BaseConfig));
+} else if (platform == 'router') {
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onStartCmds: [
+          [
+            'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9877',
+            'modules/@angular/router/karma.conf.js'
+          ],
+        ],
+        onChangeCmds: [
+          ['node', 'node_modules/karma/bin/karma', 'run', '--port=9877'],
+        ]
+      },
+      BaseConfig));
+} else if (platform == 'browserNoRouter') {
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'modules/tsconfig.json',
+        onStartCmds: [[
+          'node', 'node_modules/karma/bin/karma', 'start', '--no-auto-watch', '--port=9876',
+          'karma-js.conf.js'
+        ]],
+        onChangeCmds: [
+          ['node', 'node_modules/karma/bin/karma', 'run', 'karma-js.conf.js', '--port=9876'],
+        ]
+      },
+      BaseConfig));
 } else if (platform == 'tools') {
-  tscWatch = new TscWatch({
-    tsconfig: 'tools/tsconfig.json',
-    start: 'File change detected. Starting incremental compilation...',
-    error: 'error',
-    complete: 'Compilation complete. Watching for file changes.',
-    onChangeCmds:
-        [['node', 'dist/tools/cjs-jasmine/index-tools', '--', 'tsc-wrapped/**/*{_,.}spec.js']]
-  });
+  tscWatch = new TscWatch(Object.assign(
+      {
+        tsconfig: 'tools/tsconfig.json',
+        onChangeCmds: [[
+          'node', 'dist/tools/cjs-jasmine/index-tools', '--',
+          '@angular/tsc-wrapped/**/*{_,.}spec.js'
+        ]]
+      },
+      BaseConfig));
+} else {
+  throw new Error(`unknown platform: ${platform}`);
 }
 
 if (runMode === 'watch') {

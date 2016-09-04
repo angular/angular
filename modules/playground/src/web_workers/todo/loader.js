@@ -1,4 +1,4 @@
-importScripts("../../../vendor/es6-shim.js",
+importScripts("../../../vendor/core.js",
   "../../../vendor/zone.js",
   "../../../vendor/long-stack-trace-zone.js",
   "../../../vendor/system.src.js",
@@ -14,9 +14,12 @@ System.config({
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
     '@angular/common': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/forms': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
-    '@angular/router-deprecated': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/router': {main: 'index.js', defaultExtension: 'js'},
     'rxjs': {
       defaultExtension: 'js'
     }

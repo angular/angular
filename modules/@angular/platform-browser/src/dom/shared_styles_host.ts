@@ -7,7 +7,6 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {SetWrapper} from '../facade/collection';
 
 import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
@@ -24,7 +23,7 @@ export class SharedStylesHost {
   addStyles(styles: string[]) {
     var additions: any[] /** TODO #9100 */ = [];
     styles.forEach(style => {
-      if (!SetWrapper.has(this._stylesSet, style)) {
+      if (!this._stylesSet.has(style)) {
         this._stylesSet.add(style);
         this._styles.push(style);
         additions.push(style);
@@ -56,7 +55,7 @@ export class DomSharedStylesHost extends SharedStylesHost {
     this._addStylesToHost(this._styles, hostNode);
     this._hostNodes.add(hostNode);
   }
-  removeHost(hostNode: Node) { SetWrapper.delete(this._hostNodes, hostNode); }
+  removeHost(hostNode: Node) { this._hostNodes.delete(hostNode); }
 
   onStylesAdded(additions: string[]) {
     this._hostNodes.forEach((hostNode) => { this._addStylesToHost(additions, hostNode); });

@@ -16,7 +16,7 @@ import {OpaqueToken} from '@angular/core';
  *
  * Please see {@link DefaultValueAccessor} for more information.
  *
- * @experimental
+ * @stable
  */
 export interface ControlValueAccessor {
   /**
@@ -33,13 +33,20 @@ export interface ControlValueAccessor {
    * Set the function to be called when the control receives a touch event.
    */
   registerOnTouched(fn: any): void;
+
+  /**
+   * This function is called when the control status changes to or from "DISABLED".
+   * Depending on the value, it will enable or disable the appropriate DOM element.
+   *
+   * @param isDisabled
+   */
+  setDisabledState?(isDisabled: boolean): void;
 }
 
 /**
  * Used to provide a {@link ControlValueAccessor} for form controls.
  *
  * See {@link DefaultValueAccessor} for how to implement one.
- * @experimental
+ * @stable
  */
-export const NG_VALUE_ACCESSOR: OpaqueToken =
-    /*@ts2dart_const*/ new OpaqueToken('NgValueAccessor');
+export const NG_VALUE_ACCESSOR: OpaqueToken = new OpaqueToken('NgValueAccessor');

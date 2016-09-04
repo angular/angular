@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANY_STATE, FILL_STYLE_FLAG} from '../../core_private';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {NumberWrapper, RegExpWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
+import {NumberWrapper, isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
 import {Math} from '../facade/math';
 import {ParseError} from '../parse_util';
 
+import {ANY_STATE, AnimationOutput, FILL_STYLE_FLAG} from '../private_import_core';
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
 import {StylesCollection} from './styles_collection';
 
@@ -51,6 +51,32 @@ export function parseAnimationEntry(entry: CompileAnimationEntryMetadata): Parse
 
   var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
   return new ParsedAnimationResult(ast, errors);
+}
+
+export function parseAnimationOutputName(
+    outputName: string, errors: AnimationParseError[]): AnimationOutput {
+  var values = outputName.split('.');
+  var name: string;
+  var phase: string = '';
+  if (values.length > 1) {
+    name = values[0];
+    let parsedPhase = values[1];
+    switch (parsedPhase) {
+      case 'start':
+      case 'done':
+        phase = parsedPhase;
+        break;
+
+      default:
+        errors.push(new AnimationParseError(
+            `The provided animation output phase value "${parsedPhase}" for "@${name}" is not supported (use start or done)`));
+    }
+  } else {
+    name = outputName;
+    errors.push(new AnimationParseError(
+        `The animation trigger output event (@${name}) is missing its phase value name (start or done are currently supported)`));
+  }
+  return new AnimationOutput(name, phase, outputName);
 }
 
 function _parseAnimationDeclarationStates(
@@ -317,7 +343,7 @@ function _parseAnimationKeyframes(
   }
 
   var firstKeyframeStyles = firstKeyframe[1];
-  var limit = rawKeyframes.length - 1;
+  limit = rawKeyframes.length - 1;
   var lastKeyframe = rawKeyframes[limit];
   if (lastKeyframe[0] != _TERMINAL_KEYFRAME) {
     rawKeyframes.push(lastKeyframe = [_TERMINAL_KEYFRAME, {}]);
@@ -465,13 +491,13 @@ function _fillAnimationAstStartingKeyframes(
 
 function _parseTimeExpression(
     exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
-  var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/gi;
+  var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
   var duration: number;
   var delay: number = 0;
   var easing: string = null;
   if (isString(exp)) {
-    var matches = RegExpWrapper.firstMatch(regex, <string>exp);
-    if (!isPresent(matches)) {
+    const matches = exp.match(regex);
+    if (matches === null) {
       errors.push(new AnimationParseError(`The provided timing value "${exp}" is invalid.`));
       return new _AnimationTimings(0, 0, null);
     }

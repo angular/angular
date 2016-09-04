@@ -12,12 +12,13 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
+import {NgForm} from './ng_form';
+import {TemplateDrivenErrors} from './template_driven_errors';
 
-export const modelGroupProvider: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: ControlContainer,
-      useExisting: forwardRef(() => NgModelGroup)
-    };
+export const modelGroupProvider: any = {
+  provide: ControlContainer,
+  useExisting: forwardRef(() => NgModelGroup)
+};
 
 /**
  * Creates and binds a model group to a DOM element.
@@ -38,12 +39,12 @@ export const modelGroupProvider: any =
  *           <p>Last: <input name="last" ngModel required></p>
  *         </div>
  *         <h3>Name value:</h3>
- *         <pre>{{ mgName | json }}</pre>
+ *         <pre>{{ mgName.value | json }}</pre>
  *         <p>Name is {{mgName?.valid ? "valid" : "invalid"}}</p>
  *         <h3>What's your favorite food?</h3>
  *         <p><input name="food" ngModel></p>
  *         <h3>Form value</h3>
- *         <pre>{{ f | json }}</pre>
+ *         <pre>{{ f.value | json }}</pre>
  *       </form>
  *     </div>
  *   `
@@ -54,7 +55,7 @@ export const modelGroupProvider: any =
  * This example declares a model group for a user's name. The value and validation state of
  * this group can be accessed separately from the overall form.
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngModelGroup]', providers: [modelGroupProvider], exportAs: 'ngModelGroup'})
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -68,5 +69,12 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
     this._parent = parent;
     this._validators = validators;
     this._asyncValidators = asyncValidators;
+  }
+
+  /** @internal */
+  _checkParentType(): void {
+    if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
+      TemplateDrivenErrors.modelGroupParentException();
+    }
   }
 }

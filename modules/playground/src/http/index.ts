@@ -6,10 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {HTTP_PROVIDERS} from '@angular/http';
+import {NgModule} from '@angular/core';
+import {HttpModule} from '@angular/http';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
 import {HttpCmp} from './app/http_comp';
 
+@NgModule({declarations: [HttpCmp], bootstrap: [HttpCmp], imports: [BrowserModule, HttpModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(HttpCmp, [HTTP_PROVIDERS]);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

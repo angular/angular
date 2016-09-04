@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '../src/facade/exceptions';
 import {Json, isString} from '../src/facade/lang';
 
 import {ResponseOptions} from './base_response_options';
+import {Body} from './body';
 import {ResponseType} from './enums';
 import {Headers} from './headers';
 import {isJsObject} from './http_utils';
@@ -35,7 +35,7 @@ import {isJsObject} from './http_utils';
  *
  * @experimental
  */
-export class Response {
+export class Response extends Body {
   /**
    * One of "basic", "cors", "default", "error, or "opaque".
    *
@@ -83,9 +83,9 @@ export class Response {
    * Spec](https://fetch.spec.whatwg.org/#headers-class).
    */
   headers: Headers;
-  // TODO: Support ArrayBuffer, JSON, FormData, Blob
-  private _body: string|Object;
+
   constructor(responseOptions: ResponseOptions) {
+    super();
     this._body = responseOptions.body;
     this.status = responseOptions.status;
     this.ok = (this.status >= 200 && this.status <= 299);
@@ -93,38 +93,6 @@ export class Response {
     this.headers = responseOptions.headers;
     this.type = responseOptions.type;
     this.url = responseOptions.url;
-  }
-
-  /**
-   * Not yet implemented
-   */
-  // TODO: Blob return type
-  blob(): any { throw new BaseException('"blob()" method not implemented on Response superclass'); }
-
-  /**
-   * Attempts to return body as parsed `JSON` object, or raises an exception.
-   */
-  json(): any {
-    var jsonResponse: string|Object;
-    if (isJsObject(this._body)) {
-      jsonResponse = this._body;
-    } else if (isString(this._body)) {
-      jsonResponse = Json.parse(<string>this._body);
-    }
-    return jsonResponse;
-  }
-
-  /**
-   * Returns the body as a string, presuming `toString()` can be called on the response body.
-   */
-  text(): string { return this._body.toString(); }
-
-  /**
-   * Not yet implemented
-   */
-  // TODO: ArrayBuffer return type
-  arrayBuffer(): any {
-    throw new BaseException('"arrayBuffer()" method not implemented on Response superclass');
   }
 
   toString(): string {

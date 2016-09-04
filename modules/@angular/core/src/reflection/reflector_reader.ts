@@ -15,4 +15,6 @@ export abstract class ReflectorReader {
   abstract annotations(typeOrFunc: /*Type*/ any): any[];
   abstract propMetadata(typeOrFunc: /*Type*/ any): {[key: string]: any[]};
   abstract importUri(typeOrFunc: /*Type*/ any): string;
+  abstract resolveIdentifier(name: string, moduleUrl: string, runtime: any): any;
+  abstract resolveEnum(identifier: any, name: string): any;
 }

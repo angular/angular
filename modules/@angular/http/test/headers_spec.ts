@@ -20,6 +20,10 @@ export function main() {
       var firstHeaders = new Headers();  // Currently empty
       firstHeaders.append('Content-Type', 'image/jpeg');
       expect(firstHeaders.get('Content-Type')).toBe('image/jpeg');
+      // "HTTP character sets are identified by case-insensitive tokens"
+      // Spec at https://tools.ietf.org/html/rfc2616
+      expect(firstHeaders.get('content-type')).toBe('image/jpeg');
+      expect(firstHeaders.get('content-Type')).toBe('image/jpeg');
       var httpHeaders = StringMapWrapper.create();
       StringMapWrapper.set(httpHeaders, 'Content-Type', 'image/jpeg');
       StringMapWrapper.set(httpHeaders, 'Accept-Charset', 'utf-8');
@@ -37,6 +41,14 @@ export function main() {
         var headers = new Headers(map);
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
+      });
+      it('should not alter the values of a provided header template', () => {
+        // Spec at https://fetch.spec.whatwg.org/#concept-headers-fill
+        // test for https://github.com/angular/angular/issues/6845
+        const firstHeaders = new Headers();
+        const secondHeaders = new Headers(firstHeaders);
+        secondHeaders.append('Content-Type', 'image/jpeg');
+        expect(firstHeaders.has('Content-Type')).toBeFalsy();
       });
     });
 
@@ -72,7 +84,7 @@ export function main() {
       beforeEach(() => {
         headers = new Headers();
         inputArr = ['application/jeisen', 'application/jason', 'application/patrickjs'];
-        obj = {'Accept': inputArr};
+        obj = {'accept': inputArr};
         headers.set('Accept', inputArr);
       });
 
@@ -105,9 +117,9 @@ export function main() {
     it('should parse a response header string', () => {
 
       let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
-        Content-Type: application/json; charset=utf-8
-        Transfer-Encoding: chunked
-        Connection: keep-alive`;
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive`;
 
       let responseHeaders = Headers.fromResponseHeaderString(responseHeaderString);
 

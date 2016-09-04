@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObservableWrapper} from '../facade/async';
-import {ListWrapper} from '../facade/collection';
-import {BaseException, unimplemented} from '../facade/exceptions';
-import {IS_DART, isPresent} from '../facade/lang';
 
-import {debugOutputAstAsDart} from './dart_emitter';
+import {ListWrapper} from '../facade/collection';
+import {isPresent} from '../facade/lang';
+
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
@@ -63,7 +61,7 @@ function createDynamicClass(
     };
   });
   _classStmt.methods.forEach(function(method: o.ClassMethod) {
-    var paramNames = method.params.map(param => param.name);
+    const paramNames = method.params.map(param => param.name);
     // Note: use `function` instead of arrow function to capture `this`
     propertyDescriptors[method.name] = {
       writable: false,
@@ -89,9 +87,7 @@ function createDynamicClass(
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression|o.Statement|o.Type): string {
-    return IS_DART ? debugOutputAstAsDart(ast) : debugOutputAstAsTypeScript(ast);
-  }
+  debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
@@ -107,7 +103,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       }
       currCtx = currCtx.parent;
     }
-    throw new BaseException(`Not declared variable ${expr.name}`);
+    throw new Error(`Not declared variable ${expr.name}`);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: _ExecutionContext): any {
     var varName = ast.name;
@@ -124,7 +120,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           varName = CATCH_STACK_VAR;
           break;
         default:
-          throw new BaseException(`Unknown builtin variable ${ast.builtin}`);
+          throw new Error(`Unknown builtin variable ${ast.builtin}`);
       }
     }
     var currCtx = ctx;
@@ -134,7 +130,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       }
       currCtx = currCtx.parent;
     }
-    throw new BaseException(`Not declared variable ${varName}`);
+    throw new Error(`Not declared variable ${varName}`);
   }
   visitWriteKeyExpr(expr: o.WriteKeyExpr, ctx: _ExecutionContext): any {
     var receiver = expr.receiver.visitExpression(this, ctx);
@@ -160,17 +156,13 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           result = ListWrapper.concat(receiver, args[0]);
           break;
         case o.BuiltinMethod.SubscribeObservable:
-          result = ObservableWrapper.subscribe(receiver, args[0]);
+          result = receiver.subscribe({next: args[0]});
           break;
-        case o.BuiltinMethod.bind:
-          if (IS_DART) {
-            result = receiver;
-          } else {
-            result = receiver.bind(args[0]);
-          }
+        case o.BuiltinMethod.Bind:
+          result = receiver.bind(args[0]);
           break;
         default:
-          throw new BaseException(`Unknown builtin method ${expr.builtin}`);
+          throw new Error(`Unknown builtin method ${expr.builtin}`);
       }
     } else {
       result = receiver[expr.name].apply(receiver, args);
@@ -228,7 +220,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
-  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any { return ast.value.runtime; }
+  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
+    return ast.value.reference;
+  }
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);
@@ -288,7 +282,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       case o.BinaryOperator.BiggerEquals:
         return lhs() >= rhs();
       default:
-        throw new BaseException(`Unknown operator ${ast.operator}`);
+        throw new Error(`Unknown operator ${ast.operator}`);
     }
   }
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: _ExecutionContext): any {

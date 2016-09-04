@@ -12,7 +12,6 @@ import {Observer} from 'rxjs/Observer';
 
 import {BaseResponseOptions, ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';
-import {makeTypeError} from '../facade/exceptions';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {Request} from '../static_request';
@@ -61,7 +60,7 @@ export class JSONPConnection_ extends JSONPConnection {
       req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
     super();
     if (req.method !== RequestMethod.Get) {
-      throw makeTypeError(JSONP_ERR_WRONG_METHOD);
+      throw new TypeError(JSONP_ERR_WRONG_METHOD);
     }
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {

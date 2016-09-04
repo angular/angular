@@ -9,7 +9,7 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {RegExpWrapper, StringWrapper, isBlank, isPresent} from '../src/facade/lang';
+import {StringWrapper, isBlank, isPresent} from './facade/lang';
 
 import {UrlResolver} from './url_resolver';
 
@@ -19,8 +19,8 @@ export class StyleWithImports {
 
 export function isStyleUrlResolvable(url: string): boolean {
   if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
-  var schemeMatch = RegExpWrapper.firstMatch(_urlWithSchemaRe, url);
-  return isBlank(schemeMatch) || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
+  const schemeMatch = url.match(_urlWithSchemaRe);
+  return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }
 
 /**
@@ -43,6 +43,4 @@ export function extractStyleUrls(
 }
 
 var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
-// TODO: can't use /^[^:/?#.]+:/g due to clang-format bug:
-//       https://github.com/angular/angular/issues/4596
-var _urlWithSchemaRe = /^([a-zA-Z\-\+\.]+):/g;
+var _urlWithSchemaRe = /^([^:/?#]+):/;

@@ -2,17 +2,17 @@
 Bootstrapping
 @cheatsheetIndex 0
 @description
-{@target ts}`import { bootstrap } from '@angular/platform-browser-dynamic';`{@endtarget}
-{@target js}Available from the `ng.platform.browser` namespace{@endtarget}
-{@target dart}`import 'package:angular2/platform/browser.dart';`{@endtarget}
+{@target ts}`import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';`{@endtarget}
+{@target js}Available from the `ng.platformBrowserDynamic` namespace{@endtarget}
 
 @cheatsheetItem
-syntax(ts dart):
-`bootstrap​(MyAppComponent, [MyService, { provide: ... }]);`|`provide`
+syntax(ts):
+`platformBrowserDynamic().bootstrapModule(AppModule);`|`platformBrowserDynamic().bootstrapModule`
 syntax(js):
-`document.addEventListener('DOMContentLoaded', function () {
-  ng.platform.browser.bootstrap(MyAppComponent,
-    [MyService, { provide: ... }]);
-});`|`provide`
+`document.addEventListener('DOMContentLoaded', function() {
+  ng.platformBrowserDynamic
+    .platformBrowserDynamic()
+    .bootstrapModule(app.AppModule);
+});`|`platformBrowserDynamic().bootstrapModule`
 description:
-Bootstraps an application with MyAppComponent as the root component and configures the DI providers. {@target js}Must be wrapped in the event listener to fire when the page loads.{@endtarget}
+Bootstraps the app, using the root component from the specified `NgModule`. {@target js}Must be wrapped in the event listener to fire when the page loads.{@endtarget}

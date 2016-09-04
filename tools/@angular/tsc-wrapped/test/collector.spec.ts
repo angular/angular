@@ -14,8 +14,27 @@ describe('Collector', () => {
 
   beforeEach(() => {
     host = new Host(FILES, [
-      '/app/app.component.ts', '/app/cases-data.ts', '/app/error-cases.ts', '/promise.ts',
-      '/unsupported-1.ts', '/unsupported-2.ts', 'import-star.ts', 'exported-functions.ts'
+      '/app/app.component.ts',
+      '/app/cases-data.ts',
+      '/app/error-cases.ts',
+      '/promise.ts',
+      '/unsupported-1.ts',
+      '/unsupported-2.ts',
+      'import-star.ts',
+      'exported-functions.ts',
+      'exported-enum.ts',
+      'exported-consts.ts',
+      'local-symbol-ref.ts',
+      'local-function-ref.ts',
+      'local-symbol-ref-func.ts',
+      'local-symbol-ref-func-dynamic.ts',
+      'private-enum.ts',
+      're-exports.ts',
+      'static-field-reference.ts',
+      'static-method.ts',
+      'static-method-call.ts',
+      'static-method-with-if.ts',
+      'static-method-with-default.ts',
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -214,10 +233,10 @@ describe('Collector', () => {
       version: 1,
       metadata: {
         a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
-        b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 18},
+        b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
         c: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 16},
-        d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 18},
-        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 14}
+        d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 19},
+        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 15}
       }
     });
   });
@@ -231,8 +250,8 @@ describe('Collector', () => {
     expect(parameter).toEqual({
       __symbolic: 'error',
       message: 'Reference to non-exported class',
-      line: 1,
-      character: 45,
+      line: 3,
+      character: 4,
       context: {className: 'Foo'}
     });
   });
@@ -316,6 +335,252 @@ describe('Collector', () => {
       {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
     ]);
   });
+
+  it('should be able to collect the value of an enum', () => {
+    let enumSource = program.getSourceFile('/exported-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let someEnum: any = metadata.metadata['SomeEnum'];
+    expect(someEnum).toEqual({A: 0, B: 1, C: 100, D: 101});
+  });
+
+  it('should ignore a non-export enum', () => {
+    let enumSource = program.getSourceFile('/private-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let publicEnum: any = metadata.metadata['PublicEnum'];
+    let privateEnum: any = metadata.metadata['PrivateEnum'];
+    expect(publicEnum).toEqual({a: 0, b: 1, c: 2});
+    expect(privateEnum).toBeUndefined();
+  });
+
+  it('should be able to collect enums initialized from consts', () => {
+    let enumSource = program.getSourceFile('/exported-enum.ts');
+    let metadata = collector.getMetadata(enumSource);
+    let complexEnum: any = metadata.metadata['ComplexEnum'];
+    expect(complexEnum).toEqual({
+      A: 0,
+      B: 1,
+      C: 30,
+      D: 40,
+      E: {__symbolic: 'reference', module: './exported-consts', name: 'constValue'}
+    });
+  });
+
+  it('should be able to collect a simple static method', () => {
+    let staticSource = program.getSourceFile('/static-method.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({
+      with: {
+        __symbolic: 'function',
+        parameters: ['comp'],
+        value: [
+          {__symbolic: 'reference', name: 'MyModule'},
+          {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}}
+        ]
+      }
+    });
+  });
+
+  it('should be able to collect a call to a static method', () => {
+    let staticSource = program.getSourceFile('/static-method-call.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['Foo'];
+    expect(classData).toBeDefined();
+    expect(classData.decorators).toEqual([{
+      __symbolic: 'call',
+      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      arguments: [{
+        providers: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'select',
+            expression: {__symbolic: 'reference', module: './static-method', name: 'MyModule'},
+            member: 'with'
+          },
+          arguments: ['a']
+        }
+      }]
+    }]);
+  });
+
+  it('should be able to collect a static field', () => {
+    let staticSource = program.getSourceFile('/static-field.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({VALUE: 'Some string'});
+  });
+
+  it('should be able to collect a reference to a static field', () => {
+    let staticSource = program.getSourceFile('/static-field-reference.ts');
+    let metadata = collector.getMetadata(staticSource);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['Foo'];
+    expect(classData).toBeDefined();
+    expect(classData.decorators).toEqual([{
+      __symbolic: 'call',
+      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      arguments: [{
+        providers: [{
+          provide: 'a',
+          useValue: {
+            __symbolic: 'select',
+            expression: {__symbolic: 'reference', module: './static-field', name: 'MyModule'},
+            member: 'VALUE'
+          }
+        }]
+      }]
+    }]);
+  });
+
+  it('should be able to collect a method with a conditional expression', () => {
+    let source = program.getSourceFile('/static-method-with-if.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({
+      with: {
+        __symbolic: 'function',
+        parameters: ['cond'],
+        value: [
+          {__symbolic: 'reference', name: 'MyModule'}, {
+            provider: 'a',
+            useValue: {
+              __symbolic: 'if',
+              condition: {__symbolic: 'reference', name: 'cond'},
+              thenExpression: '1',
+              elseExpression: '2'
+            }
+          }
+        ]
+      }
+    });
+  });
+
+  it('should be able to collect a method with a default parameter', () => {
+    let source = program.getSourceFile('/static-method-with-default.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata).toBeDefined();
+    let classData = <ClassMetadata>metadata.metadata['MyModule'];
+    expect(classData).toBeDefined();
+    expect(classData.statics).toEqual({
+      with: {
+        __symbolic: 'function',
+        parameters: ['comp', 'foo', 'bar'],
+        defaults: [undefined, true, false],
+        value: [
+          {__symbolic: 'reference', name: 'MyModule'}, {
+            __symbolic: 'if',
+            condition: {__symbolic: 'reference', name: 'foo'},
+            thenExpression: {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}},
+            elseExpression: {provider: 'b', useValue: {__symbolic: 'reference', name: 'comp'}}
+          },
+          {
+            __symbolic: 'if',
+            condition: {__symbolic: 'reference', name: 'bar'},
+            thenExpression: {provider: 'c', useValue: {__symbolic: 'reference', name: 'comp'}},
+            elseExpression: {provider: 'd', useValue: {__symbolic: 'reference', name: 'comp'}}
+          }
+        ]
+      }
+    });
+  });
+
+  it('should be able to collect re-exported symbols', () => {
+    let source = program.getSourceFile('/re-exports.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.exports).toEqual([
+      {from: './static-field', export: ['MyModule']},
+      {from: './static-field-reference', export: [{name: 'Foo', as: 'OtherModule'}]},
+      {from: 'angular2/core'}
+    ]);
+  });
+
+  it('should collect an error symbol if collecting a reference to a non-exported symbol', () => {
+    let source = program.getSourceFile('/local-symbol-ref.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      REQUIRED_VALIDATOR: {
+        __symbolic: 'error',
+        message: 'Reference to a local symbol',
+        line: 3,
+        character: 8,
+        context: {name: 'REQUIRED'}
+      },
+      SomeComponent: {
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
+        }]
+      }
+    });
+  });
+
+  it('should collect an error symbol if collecting a reference to a non-exported function', () => {
+    let source = program.getSourceFile('/local-function-ref.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      REQUIRED_VALIDATOR: {
+        __symbolic: 'error',
+        message: 'Reference to a non-exported function',
+        line: 3,
+        character: 13,
+        context: {name: 'required'}
+      },
+      SomeComponent: {
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
+        }]
+      }
+    })
+  });
+
+  it('should collect an error for a simple function that references a local variable', () => {
+    let source = program.getSourceFile('/local-symbol-ref-func.ts');
+    let metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      foo: {
+        __symbolic: 'function',
+        parameters: ['index'],
+        value: {
+          __symbolic: 'error',
+          message: 'Reference to a local symbol',
+          line: 1,
+          character: 8,
+          context: {name: 'localSymbol'}
+        }
+      }
+    })
+  });
+
+  describe('in strict mode', () => {
+    it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
+      let source = program.getSourceFile('/local-symbol-ref.ts');
+      expect(() => collector.getMetadata(source, true)).toThrowError(/Reference to a local symbol/);
+    });
+
+    it('should throw if an error if collecting a reference to a non-exported function', () => {
+      let source = program.getSourceFile('/local-function-ref.ts');
+      expect(() => collector.getMetadata(source, true))
+          .toThrowError(/Reference to a non-exported function/);
+    });
+
+    it('should throw for references to unexpected types', () => {
+      let unsupported1 = program.getSourceFile('/unsupported-2.ts');
+      expect(() => collector.getMetadata(unsupported1, true))
+          .toThrowError(/Reference to non-exported class/);
+    });
+  })
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format
@@ -548,6 +813,130 @@ const FILES: Directory = {
      return !!window.history.pushState;
     }
   `,
+  'exported-enum.ts': `
+    import {constValue} from './exported-consts';
+
+    export const someValue = 30;
+    export enum SomeEnum { A, B, C = 100, D };
+    export enum ComplexEnum { A, B, C = someValue, D = someValue + 10, E = constValue };
+  `,
+  'exported-consts.ts': `
+    export const constValue = 100;
+  `,
+  'static-method.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static with(comp: any): any[] {
+        return [
+          MyModule,
+          { provider: 'a', useValue: comp }
+        ];
+      }
+    }
+  `,
+  'static-method-with-default.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static with(comp: any, foo: boolean = true, bar: boolean = false): any[] {
+        return [
+          MyModule,
+          foo ? { provider: 'a', useValue: comp } : {provider: 'b', useValue: comp},
+          bar ? { provider: 'c', useValue: comp } : {provider: 'd', useValue: comp}
+        ];
+      }
+    }
+  `,
+  'static-method-call.ts': `
+    import {Component} from 'angular2/core';
+    import {MyModule} from './static-method';
+
+    @Component({
+      providers: MyModule.with('a')
+    })
+    export class Foo { }
+  `,
+  'static-field.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static VALUE = 'Some string';
+    }
+  `,
+  'static-field-reference.ts': `
+    import {Component} from 'angular2/core';
+    import {MyModule} from './static-field';
+
+    @Component({
+      providers: [ { provide: 'a', useValue: MyModule.VALUE } ]
+    })
+    export class Foo { }
+  `,
+  'static-method-with-if.ts': `
+    import {Injectable} from 'angular2/core';
+
+    @Injectable()
+    export class MyModule {
+      static with(cond: boolean): any[] {
+        return [
+          MyModule,
+          { provider: 'a', useValue: cond ? '1' : '2' }
+        ];
+      }
+    }
+  `,
+  're-exports.ts': `
+    export {MyModule} from './static-field';
+    export {Foo as OtherModule} from './static-field-reference';
+    export * from 'angular2/core';
+  `,
+  'local-symbol-ref.ts': `
+    import {Component, Validators} from 'angular2/core';
+
+    var REQUIRED;
+
+    export const REQUIRED_VALIDATOR: any = {
+      provide: 'SomeToken',
+      useValue: REQUIRED,
+      multi: true
+    };
+
+    @Component({
+      providers: [REQUIRED_VALIDATOR]
+    })
+    export class SomeComponent {}
+  `,
+  'private-enum.ts': `
+    export enum PublicEnum { a, b, c }
+    enum PrivateEnum { e, f, g }
+  `,
+  'local-function-ref.ts': `
+    import {Component, Validators} from 'angular2/core';
+
+    function required() {}
+
+    export const REQUIRED_VALIDATOR: any = {
+      provide: 'SomeToken',
+      useValue: required,
+      multi: true
+    };
+
+    @Component({
+      providers: [REQUIRED_VALIDATOR]
+    })
+    export class SomeComponent {}
+  `,
+  'local-symbol-ref-func.ts': `
+    var localSymbol: any[];
+
+    export function foo(index: number): string {
+      return localSymbol[index];
+    }
+  `,
   'node_modules': {
     'angular2': {
       'core.d.ts': `
@@ -597,6 +986,9 @@ const FILES: Directory = {
           export declare var Injectable: InjectableFactory;
           export interface OnInit {
               ngOnInit(): any;
+          }
+          export class Validators {
+            static required(): void;
           }
       `,
       'common.d.ts': `

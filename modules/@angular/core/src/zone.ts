@@ -7,4 +7,4 @@
  */
 
 // Public API for Zone
-export {NgZone, NgZoneError} from './zone/ng_zone';
+export {NgZone} from './zone/ng_zone';

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit,} from '@angular/core/testing/testing_internal';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
+import * as o from '@angular/compiler/src/output/output_ast';
+import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
 import {isBlank} from '../../src/facade/lang';
-import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
-import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
-import * as o from '@angular/compiler/src/output/output_ast';
+
 import {SimpleJsImportGenerator} from './output_emitter_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
@@ -94,7 +95,7 @@ export function main() {
 
       expect(
           emitStmt(
-              o.variable('fn').callMethod(o.BuiltinMethod.bind, [o.variable('someObj')]).toStmt()))
+              o.variable('fn').callMethod(o.BuiltinMethod.Bind, [o.variable('someObj')]).toStmt()))
           .toEqual('fn.bind(someObj);');
     });
 
@@ -103,8 +104,7 @@ export function main() {
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt()))
-          .toEqual(`{'someKey': 1};`);
+      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
     });
 
     it('should support external identifiers', () => {

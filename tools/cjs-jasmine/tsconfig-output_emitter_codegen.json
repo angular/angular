@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "outDir": "../../dist/all/@angular",
     "paths": {
-      "@angular/core": ["../../dist/all/@angular/core/index.d.ts"],
+      "@angular/core": ["../../dist/all/@angular/core/index"],
       "@angular/core/*": ["../../dist/all/@angular/core/*"],
       "@angular/compiler/*": ["../../dist/all/@angular/compiler/*"]
     },

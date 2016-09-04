@@ -8,7 +8,6 @@
 
 import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {isPresent} from '../facade/lang';
 
 import {ElementRef} from './element_ref';
@@ -60,10 +59,34 @@ export class AppElement {
     return result;
   }
 
+  moveView(view: AppView<any>, currentIndex: number) {
+    var previousIndex = this.nestedViews.indexOf(view);
+    if (view.type === ViewType.COMPONENT) {
+      throw new Error(`Component views can't be moved!`);
+    }
+    var nestedViews = this.nestedViews;
+    if (nestedViews == null) {
+      nestedViews = [];
+      this.nestedViews = nestedViews;
+    }
+    ListWrapper.removeAt(nestedViews, previousIndex);
+    ListWrapper.insert(nestedViews, currentIndex, view);
+    var refRenderNode: any /** TODO #9100 */;
+    if (currentIndex > 0) {
+      var prevView = nestedViews[currentIndex - 1];
+      refRenderNode = prevView.lastRootNode;
+    } else {
+      refRenderNode = this.nativeElement;
+    }
+    if (isPresent(refRenderNode)) {
+      view.renderer.attachViewAfter(refRenderNode, view.flatRootNodes);
+    }
+    view.markContentChildAsMoved(this);
+  }
 
   attachView(view: AppView<any>, viewIndex: number) {
     if (view.type === ViewType.COMPONENT) {
-      throw new BaseException(`Component views can't be moved!`);
+      throw new Error(`Component views can't be moved!`);
     }
     var nestedViews = this.nestedViews;
     if (nestedViews == null) {
@@ -87,7 +110,7 @@ export class AppElement {
   detachView(viewIndex: number): AppView<any> {
     var view = ListWrapper.removeAt(this.nestedViews, viewIndex);
     if (view.type === ViewType.COMPONENT) {
-      throw new BaseException(`Component views can't be moved!`);
+      throw new Error(`Component views can't be moved!`);
     }
     view.detach();
 

@@ -13,8 +13,10 @@ import {AnimationPlayer, NoOpAnimationPlayer} from './animation_player';
 export class AnimationSequencePlayer implements AnimationPlayer {
   private _currentIndex: number = 0;
   private _activePlayer: AnimationPlayer;
-  private _subscriptions: Function[] = [];
+  private _onDoneFns: Function[] = [];
+  private _onStartFns: Function[] = [];
   private _finished = false;
+  private _started: boolean = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -49,14 +51,30 @@ export class AnimationSequencePlayer implements AnimationPlayer {
       if (!isPresent(this.parentPlayer)) {
         this.destroy();
       }
-      this._subscriptions.forEach(subscription => subscription());
-      this._subscriptions = [];
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
     }
   }
 
-  onDone(fn: Function): void { this._subscriptions.push(fn); }
+  init(): void { this._players.forEach(player => player.init()); }
 
-  play(): void { this._activePlayer.play(); }
+  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+
+  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+
+  hasStarted() { return this._started; }
+
+  play(): void {
+    if (!isPresent(this.parentPlayer)) {
+      this.init();
+    }
+    if (!this.hasStarted()) {
+      this._onStartFns.forEach(fn => fn());
+      this._onStartFns = [];
+      this._started = true;
+    }
+    this._activePlayer.play();
+  }
 
   pause(): void { this._activePlayer.pause(); }
 

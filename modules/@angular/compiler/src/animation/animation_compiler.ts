@@ -6,49 +6,75 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE} from '@angular/core';
-
-import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../../core_private';
 import {CompileDirectiveMetadata} from '../compile_metadata';
-import {ListWrapper, Map, StringMapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
-import {isArray, isBlank, isPresent} from '../facade/lang';
-import {Identifiers} from '../identifiers';
+import {StringMapWrapper} from '../facade/collection';
+import {isBlank, isPresent} from '../facade/lang';
+import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ANY_STATE, AnimationOutput, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
+import * as t from '../template_parser/template_ast';
 
 import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
-import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry} from './animation_parser';
+import {AnimationParseError, ParsedAnimationResult, parseAnimationEntry, parseAnimationOutputName} from './animation_parser';
 
-export class CompiledAnimation {
+const animationCompilationCache =
+    new Map<CompileDirectiveMetadata, CompiledAnimationTriggerResult[]>();
+
+export class CompiledAnimationTriggerResult {
   constructor(
       public name: string, public statesMapStatement: o.Statement,
       public statesVariableName: string, public fnStatement: o.Statement,
       public fnVariable: o.Expression) {}
 }
 
+export class CompiledComponentAnimationResult {
+  constructor(
+      public outputs: AnimationOutput[], public triggers: CompiledAnimationTriggerResult[]) {}
+}
+
 export class AnimationCompiler {
-  compileComponent(component: CompileDirectiveMetadata): CompiledAnimation[] {
-    var compiledAnimations: CompiledAnimation[] = [];
-    var index = 0;
+  compileComponent(component: CompileDirectiveMetadata, template: t.TemplateAst[]):
+      CompiledComponentAnimationResult {
+    var compiledAnimations: CompiledAnimationTriggerResult[] = [];
+    var groupedErrors: string[] = [];
+    var triggerLookup: {[key: string]: CompiledAnimationTriggerResult} = {};
+    var componentName = component.type.name;
+
     component.template.animations.forEach(entry => {
       var result = parseAnimationEntry(entry);
+      var triggerName = entry.name;
       if (result.errors.length > 0) {
-        var errorMessage = '';
+        var errorMessage =
+            `Unable to parse the animation sequence for "${triggerName}" due to the following errors:`;
         result.errors.forEach(
-            (error: AnimationParseError) => { errorMessage += '\n- ' + error.msg; });
-        // todo (matsko): include the component name when throwing
-        throw new BaseException(
-            `Unable to parse the animation sequence for "${entry.name}" due to the following errors: ` +
-            errorMessage);
+            (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
+        groupedErrors.push(errorMessage);
       }
 
-      var factoryName = `${component.type.name}_${entry.name}_${index}`;
-      index++;
-
-      var visitor = new _AnimationBuilder(entry.name, factoryName);
-      compiledAnimations.push(visitor.build(result.ast));
+      if (triggerLookup[triggerName]) {
+        groupedErrors.push(
+            `The animation trigger "${triggerName}" has already been registered on "${componentName}"`);
+      } else {
+        var factoryName = `${componentName}_${entry.name}`;
+        var visitor = new _AnimationBuilder(triggerName, factoryName);
+        var compileResult = visitor.build(result.ast);
+        compiledAnimations.push(compileResult);
+        triggerLookup[entry.name] = compileResult;
+      }
     });
-    return compiledAnimations;
+
+    var validatedProperties = _validateAnimationProperties(compiledAnimations, template);
+    validatedProperties.errors.forEach(error => { groupedErrors.push(error.msg); });
+
+    if (groupedErrors.length > 0) {
+      var errorMessageStr =
+          `Animation parsing for ${component.type.name} has failed due to the following errors:`;
+      groupedErrors.forEach(error => errorMessageStr += `\n- ${error}`);
+      throw new Error(errorMessageStr);
+    }
+
+    animationCompilationCache.set(component, compiledAnimations);
+    return new CompiledComponentAnimationResult(validatedProperties.outputs, compiledAnimations);
   }
 }
 
@@ -59,6 +85,7 @@ var _ANIMATION_FACTORY_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer
 var _ANIMATION_CURRENT_STATE_VAR = o.variable('currentState');
 var _ANIMATION_NEXT_STATE_VAR = o.variable('nextState');
 var _ANIMATION_PLAYER_VAR = o.variable('player');
+var _ANIMATION_TIME_VAR = o.variable('totalTime');
 var _ANIMATION_START_STATE_STYLES_VAR = o.variable('startStateStyles');
 var _ANIMATION_END_STATE_STYLES_VAR = o.variable('endStateStyles');
 var _ANIMATION_COLLECTED_STYLES = o.variable('collectedStyles');
@@ -87,8 +114,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
           o.literalMap(StringMapWrapper.keys(entry).map(key => [key, o.literal(entry[key])])));
     });
 
-    return o.importExpr(Identifiers.AnimationStyles).instantiate([
-      o.importExpr(Identifiers.collectAndResolveStyles).callFn([
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationStyles)).instantiate([
+      o.importExpr(resolveIdentifier(Identifiers.collectAndResolveStyles)).callFn([
         _ANIMATION_COLLECTED_STYLES, o.literalArr(stylesArr)
       ])
     ]);
@@ -96,7 +123,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   visitAnimationKeyframe(ast: AnimationKeyframeAst, context: _AnimationBuilderContext):
       o.Expression {
-    return o.importExpr(Identifiers.AnimationKeyframe).instantiate([
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationKeyframe)).instantiate([
       o.literal(ast.offset), ast.styles.visit(this, context)
     ]);
   }
@@ -109,23 +136,28 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var startingStylesExpr = ast.startingStyles.visit(this, context);
     var keyframeExpressions =
         ast.keyframes.map(keyframeEntry => keyframeEntry.visit(this, context));
-    return this._callAnimateMethod(ast, startingStylesExpr, o.literalArr(keyframeExpressions));
+    return this._callAnimateMethod(
+        ast, startingStylesExpr, o.literalArr(keyframeExpressions), context);
   }
 
   /** @internal */
   _visitEndStateAnimation(ast: AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
     var startingStylesExpr = ast.startingStyles.visit(this, context);
     var keyframeExpressions = ast.keyframes.map(keyframe => keyframe.visit(this, context));
-    var keyframesExpr = o.importExpr(Identifiers.balanceAnimationKeyframes).callFn([
-      _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
-      o.literalArr(keyframeExpressions)
-    ]);
+    var keyframesExpr =
+        o.importExpr(resolveIdentifier(Identifiers.balanceAnimationKeyframes)).callFn([
+          _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
+          o.literalArr(keyframeExpressions)
+        ]);
 
-    return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr);
+    return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr, context);
   }
 
   /** @internal */
-  _callAnimateMethod(ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any) {
+  _callAnimateMethod(
+      ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
+      context: _AnimationBuilderContext) {
+    context.totalTransitionTime += ast.duration + ast.delay;
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
       o.literal(ast.delay), o.literal(ast.easing)
@@ -135,13 +167,16 @@ class _AnimationBuilder implements AnimationAstVisitor {
   visitAnimationSequence(ast: AnimationSequenceAst, context: _AnimationBuilderContext):
       o.Expression {
     var playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(Identifiers.AnimationSequencePlayer).instantiate([o.literalArr(
-        playerExprs)]);
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
+      o.literalArr(playerExprs)
+    ]);
   }
 
   visitAnimationGroup(ast: AnimationGroupAst, context: _AnimationBuilderContext): o.Expression {
     var playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(Identifiers.AnimationGroupPlayer).instantiate([o.literalArr(playerExprs)]);
+    return o.importExpr(resolveIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
+      o.literalArr(playerExprs)
+    ]);
   }
 
   visitAnimationStateDeclaration(
@@ -161,6 +196,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
       context.endStateAnimateStep = <AnimationStepAst>lastStep;
     }
 
+    context.totalTransitionTime = 0;
     context.isExpectingFirstStyleStep = true;
 
     var stateChangePreconditions: o.Expression[] = [];
@@ -185,7 +221,10 @@ class _AnimationBuilder implements AnimationAstVisitor {
     var precondition =
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR).and(reducedStateChangesPrecondition);
 
-    return new o.IfStmt(precondition, [_ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt()]);
+    var animationStmt = _ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt();
+    var totalTimeStmt = _ANIMATION_TIME_VAR.set(o.literal(context.totalTransitionTime)).toStmt();
+
+    return new o.IfStmt(precondition, [animationStmt, totalTimeStmt]);
   }
 
   visitAnimationEntry(ast: AnimationEntryAst, context: _AnimationBuilderContext): any {
@@ -208,6 +247,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(_ANIMATION_COLLECTED_STYLES.set(EMPTY_MAP).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
+    statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
 
     statements.push(
         _ANIMATION_DEFAULT_STATE_VAR.set(this._statesMapVar.key(o.literal(DEFAULT_STATE)))
@@ -229,18 +269,18 @@ class _AnimationBuilder implements AnimationAstVisitor {
         _ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
 
-    var RENDER_STYLES_FN = o.importExpr(Identifiers.renderStyles);
+    var RENDER_STYLES_FN = o.importExpr(resolveIdentifier(Identifiers.renderStyles));
 
     // before we start any animation we want to clear out the starting
     // styles from the element's style property (since they were placed
     // there at the end of the last animation
-    statements.push(
-        RENDER_STYLES_FN
-            .callFn([
-              _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-              o.importExpr(Identifiers.clearStyles).callFn([_ANIMATION_START_STATE_STYLES_VAR])
-            ])
-            .toStmt());
+    statements.push(RENDER_STYLES_FN
+                        .callFn([
+                          _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                          o.importExpr(resolveIdentifier(Identifiers.clearStyles))
+                              .callFn([_ANIMATION_START_STATE_STYLES_VAR])
+                        ])
+                        .toStmt());
 
     ast.stateTransitions.forEach(transAst => statements.push(transAst.visit(this, context)));
 
@@ -248,7 +288,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
     // so that the onDone callback can be used for tracking
     statements.push(new o.IfStmt(
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR),
-        [_ANIMATION_PLAYER_VAR.set(o.importExpr(Identifiers.NoOpAnimationPlayer).instantiate([]))
+        [_ANIMATION_PLAYER_VAR
+             .set(o.importExpr(resolveIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
              .toStmt()]));
 
     // once complete we want to apply the styles on the element
@@ -259,22 +300,25 @@ class _AnimationBuilder implements AnimationAstVisitor {
             .callMethod(
                 'onDone',
                 [o.fn(
-                    [], [RENDER_STYLES_FN
-                             .callFn([
-                               _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                               o.importExpr(Identifiers.prepareFinalAnimationStyles).callFn([
+                    [],
+                    [RENDER_STYLES_FN
+                         .callFn([
+                           _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                           o.importExpr(resolveIdentifier(Identifiers.prepareFinalAnimationStyles))
+                               .callFn([
                                  _ANIMATION_START_STATE_STYLES_VAR, _ANIMATION_END_STATE_STYLES_VAR
                                ])
-                             ])
-                             .toStmt()])])
+                         ])
+                         .toStmt()])])
             .toStmt());
 
     statements.push(_ANIMATION_FACTORY_VIEW_VAR
                         .callMethod(
-                            'registerAndStartAnimation',
+                            'queueAnimation',
                             [
                               _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
-                              _ANIMATION_PLAYER_VAR
+                              _ANIMATION_PLAYER_VAR, _ANIMATION_TIME_VAR,
+                              _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
                             ])
                         .toStmt());
 
@@ -282,7 +326,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         [
           new o.FnParam(
               _ANIMATION_FACTORY_VIEW_VAR.name,
-              o.importType(Identifiers.AppView, [o.DYNAMIC_TYPE])),
+              o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
           new o.FnParam(_ANIMATION_FACTORY_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_CURRENT_STATE_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_NEXT_STATE_VAR.name, o.DYNAMIC_TYPE)
@@ -290,7 +334,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         statements);
   }
 
-  build(ast: AnimationAst): CompiledAnimation {
+  build(ast: AnimationAst): CompiledAnimationTriggerResult {
     var context = new _AnimationBuilderContext();
     var fnStatement = ast.visit(this, context).toDeclStmt(this._fnVarName);
     var fnVariable = o.variable(this._fnVarName);
@@ -310,7 +354,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         });
 
     var compiledStatesMapExpr = this._statesMapVar.set(o.literalMap(lookupMap)).toDeclStmt();
-    return new CompiledAnimation(
+    return new CompiledAnimationTriggerResult(
         this.animationName, compiledStatesMapExpr, this._statesMapVarName, fnStatement, fnVariable);
   }
 }
@@ -319,6 +363,7 @@ class _AnimationBuilderContext {
   stateMap = new _AnimationBuilderStateMap();
   endStateAnimateStep: AnimationStepAst = null;
   isExpectingFirstStyleStep = false;
+  totalTransitionTime = 0;
 }
 
 class _AnimationBuilderStateMap {
@@ -359,4 +404,100 @@ function _isEndStateAnimateStep(step: AnimationAst): boolean {
 
 function _getStylesArray(obj: any): {[key: string]: any}[] {
   return obj.styles.styles;
+}
+
+function _validateAnimationProperties(
+    compiledAnimations: CompiledAnimationTriggerResult[],
+    template: t.TemplateAst[]): AnimationPropertyValidationOutput {
+  var visitor = new _AnimationTemplatePropertyVisitor(compiledAnimations);
+  t.templateVisitAll(visitor, template);
+  return new AnimationPropertyValidationOutput(visitor.outputs, visitor.errors);
+}
+
+export class AnimationPropertyValidationOutput {
+  constructor(public outputs: AnimationOutput[], public errors: AnimationParseError[]) {}
+}
+
+class _AnimationTemplatePropertyVisitor implements t.TemplateAstVisitor {
+  private _animationRegistry: {[key: string]: boolean};
+  public errors: AnimationParseError[] = [];
+  public outputs: AnimationOutput[] = [];
+
+  constructor(animations: CompiledAnimationTriggerResult[]) {
+    this._animationRegistry = this._buildCompileAnimationLookup(animations);
+  }
+
+  private _buildCompileAnimationLookup(animations: CompiledAnimationTriggerResult[]):
+      {[key: string]: boolean} {
+    var map: {[key: string]: boolean} = {};
+    animations.forEach(entry => { map[entry.name] = true; });
+    return map;
+  }
+
+  private _validateAnimationInputOutputPairs(
+      inputAsts: t.BoundElementPropertyAst[], outputAsts: t.BoundEventAst[],
+      animationRegistry: {[key: string]: any}, isHostLevel: boolean): void {
+    var detectedAnimationInputs: {[key: string]: boolean} = {};
+    inputAsts.forEach(input => {
+      if (input.type == t.PropertyBindingType.Animation) {
+        var triggerName = input.name;
+        if (isPresent(animationRegistry[triggerName])) {
+          detectedAnimationInputs[triggerName] = true;
+        } else {
+          this.errors.push(
+              new AnimationParseError(`Couldn't find an animation entry for ${triggerName}`));
+        }
+      }
+    });
+
+    outputAsts.forEach(output => {
+      if (output.name[0] == '@') {
+        var normalizedOutputData = parseAnimationOutputName(output.name.substr(1), this.errors);
+        let triggerName = normalizedOutputData.name;
+        let triggerEventPhase = normalizedOutputData.phase;
+        if (!animationRegistry[triggerName]) {
+          this.errors.push(new AnimationParseError(
+              `Couldn't find the corresponding ${isHostLevel ? 'host-level ' : '' }animation trigger definition for (@${triggerName})`));
+        } else if (!detectedAnimationInputs[triggerName]) {
+          this.errors.push(new AnimationParseError(
+              `Unable to listen on (@${triggerName}.${triggerEventPhase}) because the animation trigger [@${triggerName}] isn't being used on the same element`));
+        } else {
+          this.outputs.push(normalizedOutputData);
+        }
+      }
+    });
+  }
+
+  visitElement(ast: t.ElementAst, ctx: any): any {
+    this._validateAnimationInputOutputPairs(
+        ast.inputs, ast.outputs, this._animationRegistry, false);
+
+    var componentOnElement: t.DirectiveAst =
+        ast.directives.find(directive => directive.directive.isComponent);
+    if (componentOnElement) {
+      let cachedComponentAnimations = animationCompilationCache.get(componentOnElement.directive);
+      if (cachedComponentAnimations) {
+        this._validateAnimationInputOutputPairs(
+            componentOnElement.hostProperties, componentOnElement.hostEvents,
+            this._buildCompileAnimationLookup(cachedComponentAnimations), true);
+      }
+    }
+
+    t.templateVisitAll(this, ast.children);
+  }
+
+  visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst, ctx: any): any {
+    t.templateVisitAll(this, ast.children);
+  }
+
+  visitEvent(ast: t.BoundEventAst, ctx: any): any {}
+  visitBoundText(ast: t.BoundTextAst, ctx: any): any {}
+  visitText(ast: t.TextAst, ctx: any): any {}
+  visitNgContent(ast: t.NgContentAst, ctx: any): any {}
+  visitAttr(ast: t.AttrAst, ctx: any): any {}
+  visitDirective(ast: t.DirectiveAst, ctx: any): any {}
+  visitReference(ast: t.ReferenceAst, ctx: any): any {}
+  visitVariable(ast: t.VariableAst, ctx: any): any {}
+  visitDirectiveProperty(ast: t.BoundDirectivePropertyAst, ctx: any): any {}
+  visitElementProperty(ast: t.BoundElementPropertyAst, ctx: any): any {}
 }

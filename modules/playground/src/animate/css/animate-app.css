@@ -7,10 +7,9 @@ button {
 }
 
 .box {
-  font-size:50px;
+  font-size:40px;
   border:10px solid black;
   width:200px;
-  font-size:80px;
   line-height:100px;
   height:100px;
   display:inline-block;

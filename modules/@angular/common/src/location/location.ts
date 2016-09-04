@@ -8,8 +8,6 @@
 
 import {EventEmitter, Injectable} from '@angular/core';
 
-import {ObservableWrapper} from '../facade/async';
-
 import {LocationStrategy} from './location_strategy';
 
 
@@ -34,23 +32,13 @@ import {LocationStrategy} from './location_strategy';
  * ```
  * import {Component} from '@angular/core';
  * import {Location} from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
+ * @Component({selector: 'app-component'})
  * class AppCmp {
  *   constructor(location: Location) {
  *     location.go('/foo');
  *   }
  * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  *
  * @stable
@@ -69,10 +57,8 @@ export class Location {
     this._platformStrategy = platformStrategy;
     var browserBaseHref = this._platformStrategy.getBaseHref();
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
-    this._platformStrategy.onPopState((ev) => {
-      ObservableWrapper.callEmit(
-          this._subject, {'url': this.path(true), 'pop': true, 'type': ev.type});
-    });
+    this._platformStrategy.onPopState(
+        (ev) => { this._subject.emit({'url': this.path(true), 'pop': true, 'type': ev.type}); });
   }
 
   /**
@@ -145,7 +131,7 @@ export class Location {
   subscribe(
       onNext: (value: any) => void, onThrow: (exception: any) => void = null,
       onReturn: () => void = null): Object {
-    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+    return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
   /**

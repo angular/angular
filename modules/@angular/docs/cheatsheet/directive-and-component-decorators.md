@@ -1,80 +1,86 @@
 @cheatsheetSection
 Class field decorators for directives and components
-@cheatsheetIndex 7
+@cheatsheetIndex 8
 @description
-{@target ts}`import {Input, ...} from '@angular/core';`{@endtarget}
+{@target ts}`import { Input, ... } from '@angular/core';`{@endtarget}
 {@target js}Available from the `ng.core` namespace{@endtarget}
-{@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@Input() myProperty;`|`@Input()`
 syntax(js):
 `ng.core.Input(myProperty, myComponent);`|`ng.core.Input(`|`);`
 description:
-Declares an input property that we can update via property binding (e.g.
+Declares an input property that you can update via property binding (example:
 `<my-cmp [myProperty]="someExpression">`).
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@Output() myEvent = new EventEmitter();`|`@Output()`
 syntax(js):
-`myEvent = new ng.core.EventEmitter(); ng.core.Output(myEvent, myComponent);`|`ng.core.Output(`|`);`
+`myEvent = new ng.core.EventEmitter();
+ng.core.Output(myEvent, myComponent);`|`ng.core.Output(`|`);`
 description:
-Declares an output property that fires events to which we can subscribe with an event binding (e.g. `<my-cmp (myEvent)="doSomething()">`).
+Declares an output property that fires events that you can subscribe to with an event binding (example: `<my-cmp (myEvent)="doSomething()">`).
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@HostBinding('[class.valid]') isValid;`|`@HostBinding('[class.valid]')`
 syntax(js):
-`ng.core.HostBinding('[class.valid]', 'isValid', myComponent);`|`ng.core.HostBinding('[class.valid]', 'isValid'`|`);`
+`ng.core.HostBinding('[class.valid]',
+    'isValid', myComponent);`|`ng.core.HostBinding('[class.valid]', 'isValid'`|`);`
 description:
-Binds a host element property (e.g. CSS class valid) to directive/component property (e.g. isValid).
+Binds a host element property (here, the CSS class `valid`) to a directive/component property (`isValid`).
 
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@HostListener('click', ['$event']) onClick(e) {...}`|`@HostListener('click', ['$event'])`
 syntax(js):
-`ng.core.HostListener('click', ['$event'], onClick(e) {...}, myComponent);`|`ng.core.HostListener('click', ['$event'], onClick(e)`|`);`
+`ng.core.HostListener('click',
+    ['$event'], onClick(e) {...}, myComponent);`|`ng.core.HostListener('click', ['$event'], onClick(e)`|`);`
 description:
-Subscribes to a host element event (e.g. click) with a directive/component method (e.g. onClick), optionally passing an argument ($event).
+Subscribes to a host element event (`click`) with a directive/component method (`onClick`), optionally passing an argument (`$event`).
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@ContentChild(myPredicate) myChildComponent;`|`@ContentChild(myPredicate)`
 syntax(js):
-`ng.core.ContentChild(myPredicate, 'myChildComponent', myComponent);`|`ng.core.ContentChild(myPredicate,`|`);`
+`ng.core.ContentChild(myPredicate,
+    'myChildComponent', myComponent);`|`ng.core.ContentChild(myPredicate,`|`);`
 description:
-Binds the first result of the component content query (myPredicate) to the myChildComponent property of the class.
+Binds the first result of the component content query (`myPredicate`) to a property (`myChildComponent`) of the class.
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@ContentChildren(myPredicate) myChildComponents;`|`@ContentChildren(myPredicate)`
 syntax(js):
-`ng.core.ContentChildren(myPredicate, 'myChildComponents', myComponent);`|`ng.core.ContentChildren(myPredicate,`|`);`
+`ng.core.ContentChildren(myPredicate,
+    'myChildComponents', myComponent);`|`ng.core.ContentChildren(myPredicate,`|`);`
 description:
-Binds the results of the component content query (myPredicate) to the myChildComponents property of the class.
+Binds the results of the component content query (`myPredicate`) to a property (`myChildComponents`) of the class.
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@ViewChild(myPredicate) myChildComponent;`|`@ViewChild(myPredicate)`
 syntax(js):
-`ng.core.ViewChild(myPredicate, 'myChildComponent', myComponent);`|`ng.core.ViewChild(myPredicate,`|`);`
+`ng.core.ViewChild(myPredicate,
+    'myChildComponent', myComponent);`|`ng.core.ViewChild(myPredicate,`|`);`
 description:
-Binds the first result of the component view query (myPredicate) to the myChildComponent property of the class. Not available for directives.
+Binds the first result of the component view query (`myPredicate`) to a property (`myChildComponent`) of the class. Not available for directives.
 
 
 @cheatsheetItem
-syntax(ts dart):
+syntax(ts):
 `@ViewChildren(myPredicate) myChildComponents;`|`@ViewChildren(myPredicate)`
 syntax(js):
-`ng.core.ViewChildren(myPredicate, 'myChildComponents', myComponent);`|`ng.core.ViewChildren(myPredicate,`|`);`
+`ng.core.ViewChildren(myPredicate,
+    'myChildComponents', myComponent);`|`ng.core.ViewChildren(myPredicate,`|`);`
 description:
-Binds the results of the component view query (myPredicate) to the myChildComponents property of the class. Not available for directives.
+Binds the results of the component view query (`myPredicate`) to a property (`myChildComponents`) of the class. Not available for directives.

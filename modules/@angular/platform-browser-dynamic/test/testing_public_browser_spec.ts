@@ -6,24 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {it, iit, xit, describe, ddescribe, xdescribe, expect, beforeEach, beforeEachProviders, inject,} from '@angular/core/testing';
-import {async, fakeAsync, flushMicrotasks, tick,} from '@angular/core/testing';
+import {ResourceLoader} from '@angular/compiler';
+import {Component} from '@angular/core';
+import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
-import {ROUTER_DIRECTIVES, Route} from '@angular/router-deprecated';
+import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 
 
-import {Component, bind} from '@angular/core';
-import {PromiseWrapper} from '../src/facade/promise';
-import {XHR} from '@angular/compiler';
-import {XHRImpl} from '../src/xhr/xhr_impl';
-import {TestComponentBuilder} from '@angular/compiler/testing';
 
 // Components for the tests.
 class FancyService {
   value: string = 'real value';
   getAsyncValue() { return Promise.resolve('async value'); }
   getTimeoutValue() {
-    return new Promise((resolve, reject) => { setTimeout(() => {resolve('timeout value')}, 10); })
+    return new Promise(
+        (resolve, reject) => { setTimeout(() => { resolve('timeout value'); }, 10); });
   }
 }
 
@@ -38,58 +35,10 @@ class ExternalTemplateComp {
 class BadTemplateUrl {
 }
 
-@Component({
-  selector: 'test-router-cmp',
-  template:
-      `<a [routerLink]="['One']">one</a> <a [routerLink]="['Two']">two</a><router-outlet></router-outlet>`,
-  directives: [ROUTER_DIRECTIVES]
-})
-class TestRouterComponent {
-}
-
 // Tests for angular2/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
 export function main() {
   describe('test APIs for the browser', () => {
-    describe('angular2 jasmine matchers', () => {
-      describe('toHaveCssClass', () => {
-        it('should assert that the CSS class is present', () => {
-          var el = document.createElement('div');
-          el.classList.add('matias');
-          expect(el).toHaveCssClass('matias');
-        });
-
-        it('should assert that the CSS class is not present', () => {
-          var el = document.createElement('div');
-          el.classList.add('matias');
-          expect(el).not.toHaveCssClass('fatias');
-        });
-      });
-
-      describe('toHaveCssStyle', () => {
-        it('should assert that the CSS style is present', () => {
-          var el = document.createElement('div');
-          expect(el).not.toHaveCssStyle('width');
-
-          el.style.setProperty('width', '100px');
-          expect(el).toHaveCssStyle('width');
-        });
-
-        it('should assert that the styles are matched against the element', () => {
-          var el = document.createElement('div');
-          expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
-
-          el.style.setProperty('width', '100px');
-          expect(el).toHaveCssStyle({width: '100px'});
-          expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
-
-          el.style.setProperty('height', '555px');
-          expect(el).toHaveCssStyle({height: '555px'});
-          expect(el).toHaveCssStyle({width: '100px', height: '555px'});
-        });
-      });
-    });
-
     describe('using the async helper', () => {
       var actuallyDone: boolean;
 
@@ -97,20 +46,26 @@ export function main() {
 
       afterEach(() => { expect(actuallyDone).toEqual(true); });
 
-      it('should run async tests with XHRs', async(() => {
-           var xhr = new XHRImpl();
-           xhr.get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
+      it('should run async tests with ResourceLoaders', async(() => {
+           var resourceLoader = new ResourceLoaderImpl();
+           resourceLoader
+               .get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
-         10000);  // Long timeout here because this test makes an actual XHR.
+         10000);  // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
-        beforeEachProviders(() => [{provide: FancyService, useValue: new FancyService()}]);
+        beforeEach(() => {
+          TestBed.configureTestingModule(
+              {providers: [{provide: FancyService, useValue: new FancyService()}]});
+        });
 
-        it('provides a real XHR instance',
-           inject([XHR], (xhr: XHR) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
+        it('provides a real ResourceLoader instance',
+           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+           }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -126,30 +81,35 @@ export function main() {
       var originalJasmineIt: any;
 
       var patchJasmineIt = () => {
-        var deferred = PromiseWrapper.completer();
+        var resolve: (result: any) => void;
+        var reject: (error: any) => void;
+        const promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
         originalJasmineIt = jasmine.getEnv().it;
         jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-          var done = () => { deferred.resolve() };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { deferred.reject(err) };
+          var done = () => { resolve(null); };
+          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
           fn(done);
           return null;
         };
-        return deferred.promise;
+        return promise;
       };
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an XHR fails', (done: any /** TODO #9100 */) => {
+      it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
         var itPromise = patchJasmineIt();
 
-        it('should fail with an error from a promise',
-           async(inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
-             return tcb.createAsync(BadTemplateUrl);
-           })));
+        it('should fail with an error from a promise', async(() => {
+             TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+             TestBed.compileComponents();
+           }));
 
         itPromise.then(
             () => { done.fail('Expected test to fail, but it did not'); },
-            (err) => {
+            (err: any) => {
               expect(err.message)
                   .toEqual('Uncaught (in promise): Failed to load non-existant.html');
               done();
@@ -158,19 +118,19 @@ export function main() {
       }, 10000);
     });
 
-    describe('test component builder', function() {
-      it('should allow an external templateUrl',
-         async(inject(
-             [TestComponentBuilder],
-             (tcb: TestComponentBuilder) => {
-
-               tcb.createAsync(ExternalTemplateComp).then((componentFixture) => {
-                 componentFixture.detectChanges();
-                 expect(componentFixture.debugElement.nativeElement)
-                     .toHaveText('from external template\n');
-               });
-             })),
-         10000);  // Long timeout here because this test makes an actual XHR, and is slow on Edge.
+    describe('TestBed createComponent', function() {
+      it('should allow an external templateUrl', async(() => {
+           TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
+           TestBed.compileComponents().then(() => {
+             let componentFixture = TestBed.createComponent(ExternalTemplateComp);
+             componentFixture.detectChanges();
+             expect(componentFixture.debugElement.nativeElement.textContent)
+                 .toEqual('from external template\n');
+           });
+         }),
+         10000);  // Long timeout here because this test makes an actual ResourceLoader request, and
+                  // is slow
+                  // on Edge.
     });
   });
 }

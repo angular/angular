@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, NgZone} from '../index';
-import {EventEmitter, ObservableWrapper} from '../src/facade/async';
+import {Injectable, NgZone} from '@angular/core';
+import {EventEmitter} from './facade/async';
 
 /**
  * A mock implementation of {@link NgZone}.
@@ -24,5 +24,5 @@ export class MockNgZone extends NgZone {
 
   runOutsideAngular(fn: Function): any { return fn(); }
 
-  simulateZoneExit(): void { ObservableWrapper.callNext(this.onStable, null); }
+  simulateZoneExit(): void { this.onStable.emit(null); }
 }

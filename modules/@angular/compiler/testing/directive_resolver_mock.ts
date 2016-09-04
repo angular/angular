@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DirectiveResolver} from '@angular/compiler';
+import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
 
-import {Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector} from '@angular/core';
-
-import {DirectiveResolver} from '../src/directive_resolver';
-import {Map} from '../src/facade/collection';
-import {Type, isPresent} from '../src/facade/lang';
+import {Map} from './facade/collection';
+import {isArray, isPresent} from './facade/lang';
+import {ViewMetadata} from './private_import_core';
 
 
 
@@ -20,65 +20,146 @@ import {Type, isPresent} from '../src/facade/lang';
  */
 @Injectable()
 export class MockDirectiveResolver extends DirectiveResolver {
-  private _providerOverrides = new Map<Type, any[]>();
-  private viewProviderOverrides = new Map<Type, any[]>();
+  private _directives = new Map<Type<any>, DirectiveMetadata>();
+  private _providerOverrides = new Map<Type<any>, any[]>();
+  private _viewProviderOverrides = new Map<Type<any>, any[]>();
+  private _views = new Map<Type<any>, ViewMetadata>();
+  private _inlineTemplates = new Map<Type<any>, string>();
+  private _animations = new Map<Type<any>, AnimationEntryMetadata[]>();
 
   constructor(private _injector: Injector) { super(); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
-  resolve(type: Type): DirectiveMetadata {
-    var dm = super.resolve(type);
+  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 
-    var providerOverrides = this._providerOverrides.get(type);
-    var viewProviderOverrides = this.viewProviderOverrides.get(type);
+  resolve(type: Type<any>, throwIfNotFound = true): DirectiveMetadata {
+    let metadata = this._directives.get(type);
+    if (!metadata) {
+      metadata = super.resolve(type, throwIfNotFound);
+    }
+    if (!metadata) {
+      return null;
+    }
 
-    var providers = dm.providers;
+    const providerOverrides = this._providerOverrides.get(type);
+    const viewProviderOverrides = this._viewProviderOverrides.get(type);
+
+    let providers = metadata.providers;
     if (isPresent(providerOverrides)) {
-      var originalViewProviders: any[] = isPresent(dm.providers) ? dm.providers : [];
+      const originalViewProviders: Provider[] =
+          isPresent(metadata.providers) ? metadata.providers : [];
       providers = originalViewProviders.concat(providerOverrides);
     }
 
-    if (dm instanceof ComponentMetadata) {
-      var viewProviders = dm.viewProviders;
+    if (metadata instanceof ComponentMetadata) {
+      let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
-        var originalViewProviders: any[] = isPresent(dm.viewProviders) ? dm.viewProviders : [];
+        const originalViewProviders: Provider[] =
+            isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 
+      let view = this._views.get(type);
+      if (!view) {
+        view = metadata;
+      }
+
+      let animations = view.animations;
+      let templateUrl = view.templateUrl;
+
+      const inlineAnimations = this._animations.get(type);
+      if (isPresent(inlineAnimations)) {
+        animations = inlineAnimations;
+      }
+
+      let inlineTemplate = this._inlineTemplates.get(type);
+      if (isPresent(inlineTemplate)) {
+        templateUrl = null;
+      } else {
+        inlineTemplate = view.template;
+      }
+
       return new ComponentMetadata({
-        selector: dm.selector,
-        inputs: dm.inputs,
-        outputs: dm.outputs,
-        host: dm.host,
-        exportAs: dm.exportAs,
-        moduleId: dm.moduleId,
-        queries: dm.queries,
-        changeDetection: dm.changeDetection,
+        selector: metadata.selector,
+        inputs: metadata.inputs,
+        outputs: metadata.outputs,
+        host: metadata.host,
+        exportAs: metadata.exportAs,
+        moduleId: metadata.moduleId,
+        queries: metadata.queries,
+        changeDetection: metadata.changeDetection,
         providers: providers,
         viewProviders: viewProviders,
-        precompile: dm.precompile
+        entryComponents: metadata.entryComponents,
+        template: inlineTemplate,
+        templateUrl: templateUrl,
+        animations: animations,
+        styles: view.styles,
+        styleUrls: view.styleUrls,
+        encapsulation: view.encapsulation,
+        interpolation: view.interpolation
       });
     }
 
     return new DirectiveMetadata({
-      selector: dm.selector,
-      inputs: dm.inputs,
-      outputs: dm.outputs,
-      host: dm.host,
+      selector: metadata.selector,
+      inputs: metadata.inputs,
+      outputs: metadata.outputs,
+      host: metadata.host,
       providers: providers,
-      exportAs: dm.exportAs,
-      queries: dm.queries
+      exportAs: metadata.exportAs,
+      queries: metadata.queries
     });
   }
 
-  setProvidersOverride(type: Type, providers: any[]): void {
-    this._providerOverrides.set(type, providers);
-    this._compiler.clearCacheFor(type);
+  /**
+   * Overrides the {@link DirectiveMetadata} for a directive.
+   */
+  setDirective(type: Type<any>, metadata: DirectiveMetadata): void {
+    this._directives.set(type, metadata);
+    this._clearCacheFor(type);
   }
 
-  setViewProvidersOverride(type: Type, viewProviders: any[]): void {
-    this.viewProviderOverrides.set(type, viewProviders);
-    this._compiler.clearCacheFor(type);
+  setProvidersOverride(type: Type<any>, providers: Provider[]): void {
+    this._providerOverrides.set(type, providers);
+    this._clearCacheFor(type);
+  }
+
+  setViewProvidersOverride(type: Type<any>, viewProviders: Provider[]): void {
+    this._viewProviderOverrides.set(type, viewProviders);
+    this._clearCacheFor(type);
+  }
+
+  /**
+   * Overrides the {@link ViewMetadata} for a component.
+   */
+  setView(component: Type<any>, view: ViewMetadata): void {
+    this._views.set(component, view);
+    this._clearCacheFor(component);
+  }
+  /**
+   * Overrides the inline template for a component - other configuration remains unchanged.
+   */
+  setInlineTemplate(component: Type<any>, template: string): void {
+    this._inlineTemplates.set(component, template);
+    this._clearCacheFor(component);
+  }
+
+  setAnimations(component: Type<any>, animations: AnimationEntryMetadata[]): void {
+    this._animations.set(component, animations);
+    this._clearCacheFor(component);
+  }
+}
+
+function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
+  if (!isPresent(tree)) return;
+  for (var i = 0; i < tree.length; i++) {
+    var item = resolveForwardRef(tree[i]);
+    if (isArray(item)) {
+      flattenArray(item, out);
+    } else {
+      out.push(item);
+    }
   }
 }

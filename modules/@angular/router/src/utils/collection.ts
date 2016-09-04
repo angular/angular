@@ -6,6 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable} from 'rxjs/Observable';
+import {fromPromise} from 'rxjs/observable/fromPromise';
+import {of } from 'rxjs/observable/of';
+import {concatAll} from 'rxjs/operator/concatAll';
+import {every} from 'rxjs/operator/every';
+import * as l from 'rxjs/operator/last';
+import {map} from 'rxjs/operator/map';
+import {mergeAll} from 'rxjs/operator/mergeAll';
+
+import {PRIMARY_OUTLET} from '../shared';
+
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {
@@ -76,5 +87,52 @@ export function forEach<K, V>(
     if (map.hasOwnProperty(prop)) {
       callback(map[prop], prop);
     }
+  }
+}
+
+export function waitForMap<A, B>(
+    obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
+  const waitFor: Observable<B>[] = [];
+  const res: {[k: string]: B} = {};
+
+  forEach(obj, (a: A, k: string) => {
+    if (k === PRIMARY_OUTLET) {
+      waitFor.push(map.call(fn(k, a), (_: B) => {
+        res[k] = _;
+        return _;
+      }));
+    }
+  });
+
+  forEach(obj, (a: A, k: string) => {
+    if (k !== PRIMARY_OUTLET) {
+      waitFor.push(map.call(fn(k, a), (_: B) => {
+        res[k] = _;
+        return _;
+      }));
+    }
+  });
+
+  if (waitFor.length > 0) {
+    const concatted$ = concatAll.call(of (...waitFor));
+    const last$ = l.last.call(concatted$);
+    return map.call(last$, () => res);
+  } else {
+    return of (res);
+  }
+}
+
+export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
+  const merged$ = mergeAll.call(observables);
+  return every.call(merged$, (result: any) => result === true);
+}
+
+export function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
+  if (value instanceof Observable) {
+    return value;
+  } else if (value instanceof Promise) {
+    return fromPromise(value);
+  } else {
+    return of (value);
   }
 }

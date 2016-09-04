@@ -7,13 +7,21 @@
  */
 
 import {Injectable} from '../di/decorators';
-import {ObservableWrapper} from '../facade/async';
 import {Map, MapWrapper} from '../facade/collection';
-import {BaseException} from '../facade/exceptions';
 import {scheduleMicroTask} from '../facade/lang';
 import {NgZone} from '../zone/ng_zone';
 
-
+/**
+ * Testability API.
+ * `declare` keyword causes tsickle to generate externs, so these methods are
+ * not renamed by Closure Compiler.
+ * @experimental
+ */
+export declare interface PublicTestability {
+  isStable(): boolean;
+  whenStable(callback: Function): void;
+  findProviders(using: any, provider: string, exactMatch: boolean): any[];
+}
 
 /**
  * The Testability service provides testing hooks that can be accessed from
@@ -22,7 +30,7 @@ import {NgZone} from '../zone/ng_zone';
  * @experimental
  */
 @Injectable()
-export class Testability {
+export class Testability implements PublicTestability {
   /** @internal */
   _pendingCount: number = 0;
   /** @internal */
@@ -40,18 +48,22 @@ export class Testability {
 
   /** @internal */
   _watchAngularEvents(): void {
-    ObservableWrapper.subscribe(this._ngZone.onUnstable, (_) => {
-      this._didWork = true;
-      this._isZoneStable = false;
+    this._ngZone.onUnstable.subscribe({
+      next: () => {
+        this._didWork = true;
+        this._isZoneStable = false;
+      }
     });
 
     this._ngZone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._ngZone.onStable, (_) => {
-        NgZone.assertNotInAngularZone();
-        scheduleMicroTask(() => {
-          this._isZoneStable = true;
-          this._runCallbacksIfReady();
-        });
+      this._ngZone.onStable.subscribe({
+        next: () => {
+          NgZone.assertNotInAngularZone();
+          scheduleMicroTask(() => {
+            this._isZoneStable = true;
+            this._runCallbacksIfReady();
+          });
+        }
       });
     });
   }
@@ -65,7 +77,7 @@ export class Testability {
   decreasePendingRequestCount(): number {
     this._pendingCount -= 1;
     if (this._pendingCount < 0) {
-      throw new BaseException('pending async requests below zero');
+      throw new Error('pending async requests below zero');
     }
     this._runCallbacksIfReady();
     return this._pendingCount;
@@ -148,7 +160,6 @@ export interface GetTestability {
       Testability;
 }
 
-/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
@@ -165,4 +176,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();
+var _testabilityGetter: GetTestability = new _NoopGetTestability();

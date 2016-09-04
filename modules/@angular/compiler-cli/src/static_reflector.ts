@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppModuleMetadata, AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, Provider, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, NgModuleMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
-import {ReflectorReader} from './core_private';
+import {ReflectorReader} from './private_import_core';
 
 const SUPPORTED_SCHEMA_VERSION = 1;
 
@@ -34,7 +34,7 @@ export interface StaticReflectorHost {
    */
   findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol;
 
-  getStaticSymbol(declarationFile: string, name: string): StaticSymbol;
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol;
 
   angularImportLocations(): {
     coreDecorators: string,
@@ -52,7 +52,7 @@ export interface StaticReflectorHost {
  * This token is unique for a filePath and name and can be used as a hash table key.
  */
 export class StaticSymbol {
-  constructor(public filePath: string, public name: string) {}
+  constructor(public filePath: string, public name: string, public members?: string[]) {}
 }
 
 /**
@@ -72,6 +72,16 @@ export class StaticReflector implements ReflectorReader {
   importUri(typeOrFunc: StaticSymbol): string {
     var staticSymbol = this.host.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
     return staticSymbol ? staticSymbol.filePath : null;
+  }
+
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
+    const result = this.host.findDeclaration(moduleUrl, name, '');
+    return result;
+  }
+
+  resolveEnum(enumIdentifier: any, name: string): any {
+    const staticSymbol: StaticSymbol = enumIdentifier;
+    return this.host.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
   }
 
   public annotations(type: StaticSymbol): any[] {
@@ -94,7 +104,8 @@ export class StaticReflector implements ReflectorReader {
       let classMetadata = this.getTypeMetadata(type);
       let members = classMetadata ? classMetadata['members'] : {};
       propMetadata = mapStringMap(members, (propData, propName) => {
-        let prop = (<any[]>propData).find(a => a['__symbolic'] == 'property');
+        let prop = (<any[]>propData)
+                       .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         if (prop && prop['decorators']) {
           return this.simplify(type, prop['decorators']);
         } else {
@@ -174,7 +185,6 @@ export class StaticReflector implements ReflectorReader {
     const {coreDecorators, diDecorators, diMetadata, diOpaqueToken, animationMetadata, provider} =
         this.host.angularImportLocations();
     this.opaqueToken = this.host.findDeclaration(diOpaqueToken, 'OpaqueToken');
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(provider, 'Provider'), Provider);
 
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(diDecorators, 'Host'), HostMetadata);
@@ -190,10 +200,6 @@ export class StaticReflector implements ReflectorReader {
         this.host.findDeclaration(diDecorators, 'Optional'), OptionalMetadata);
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'Attribute'), AttributeMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Query'), QueryMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewQuery'), ViewQueryMetadata);
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'ContentChild'), ContentChildMetadata);
     this.registerDecoratorOrConstructor(
@@ -217,7 +223,7 @@ export class StaticReflector implements ReflectorReader {
     this.registerDecoratorOrConstructor(
         this.host.findDeclaration(coreDecorators, 'Component'), ComponentMetadata);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'AppModule'), AppModuleMetadata);
+        this.host.findDeclaration(coreDecorators, 'NgModule'), NgModuleMetadata);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
     this.registerDecoratorOrConstructor(
@@ -279,36 +285,61 @@ export class StaticReflector implements ReflectorReader {
         let callContext: {[name: string]: string}|undefined = undefined;
         if (expression['__symbolic'] == 'call') {
           let target = expression['expression'];
+          let functionSymbol: StaticSymbol;
           let targetFunction: any;
-          if (target && target.__symbolic === 'reference') {
-            callContext = {name: target.name};
-            targetFunction = resolveReferenceValue(resolveReference(context, target));
+          if (target) {
+            switch (target.__symbolic) {
+              case 'reference':
+                // Find the function to call.
+                callContext = {name: target.name};
+                functionSymbol = resolveReference(context, target);
+                targetFunction = resolveReferenceValue(functionSymbol);
+                break;
+              case 'select':
+                // Find the static method to call
+                if (target.expression.__symbolic == 'reference') {
+                  functionSymbol = resolveReference(context, target.expression);
+                  const classData = resolveReferenceValue(functionSymbol);
+                  if (classData && classData.statics) {
+                    targetFunction = classData.statics[target.member];
+                  }
+                }
+                break;
+            }
           }
           if (targetFunction && targetFunction['__symbolic'] == 'function') {
-            if (calling.get(targetFunction)) {
+            if (calling.get(functionSymbol)) {
               throw new Error('Recursion not supported');
             }
-            calling.set(targetFunction, true);
-            let value = targetFunction['value'];
-            if (value) {
-              // Determine the arguments
-              let args = (expression['arguments'] || []).map((arg: any) => simplify(arg));
-              let parameters: string[] = targetFunction['parameters'];
-              let functionScope = BindingScope.build();
-              for (let i = 0; i < parameters.length; i++) {
-                functionScope.define(parameters[i], args[i]);
+            calling.set(functionSymbol, true);
+            try {
+              const value = targetFunction['value'];
+              if (value && (depth != 0 || value.__symbolic != 'error')) {
+                // Determine the arguments
+                const args: any[] =
+                    (expression['arguments'] || []).map((arg: any) => simplify(arg));
+                const parameters: string[] = targetFunction['parameters'];
+                const defaults: any[] = targetFunction.defaults;
+                if (defaults && defaults.length > args.length) {
+                  args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
+                }
+                const functionScope = BindingScope.build();
+                for (let i = 0; i < parameters.length; i++) {
+                  functionScope.define(parameters[i], args[i]);
+                }
+                let oldScope = scope;
+                let result: any;
+                try {
+                  scope = functionScope.done();
+                  result = simplifyInContext(functionSymbol, value, depth + 1);
+                } finally {
+                  scope = oldScope;
+                }
+                return result;
               }
-              let oldScope = scope;
-              let result: any;
-              try {
-                scope = functionScope.done();
-                result = simplify(value);
-              } finally {
-                scope = oldScope;
-              }
-              return result;
+            } finally {
+              calling.delete(functionSymbol);
             }
-            calling.delete(targetFunction);
           }
         }
 
@@ -399,6 +430,10 @@ export class StaticReflector implements ReflectorReader {
                     return left % right;
                 }
                 return null;
+              case 'if':
+                let condition = simplify(expression['condition']);
+                return condition ? simplify(expression['thenExpression']) :
+                                   simplify(expression['elseExpression']);
               case 'pre':
                 let operand = simplify(expression['operand']);
                 if (shouldIgnore(operand)) return operand;
@@ -420,8 +455,22 @@ export class StaticReflector implements ReflectorReader {
                 return null;
               case 'select':
                 let selectTarget = simplify(expression['expression']);
-                let member = simplify(expression['member']);
-                if (selectTarget && isPrimitive(member)) return selectTarget[member];
+                if (selectTarget instanceof StaticSymbol) {
+                  // Access to a static instance variable
+                  const declarationValue = resolveReferenceValue(selectTarget);
+                  if (declarationValue && declarationValue.statics) {
+                    selectTarget = declarationValue.statics;
+                  } else {
+                    const member: string = expression['member'];
+                    const members = selectTarget.members ?
+                        (selectTarget.members as string[]).concat(member) :
+                        [member];
+                    return _this.host.getStaticSymbol(
+                        selectTarget.filePath, selectTarget.name, members);
+                  }
+                }
+                const member = simplify(expression['member']);
+                if (selectTarget && isPrimitive(member)) return simplify(selectTarget[member]);
                 return null;
               case 'reference':
                 if (!expression.module) {
@@ -474,7 +523,7 @@ export class StaticReflector implements ReflectorReader {
                 let message = produceErrorMessage(expression);
                 if (expression['line']) {
                   message =
-                      `${message} (position ${expression['line']}:${expression['character']} in the original .ts file)`;
+                      `${message} (position ${expression['line']+1}:${expression['character']+1} in the original .ts file)`;
                 }
                 throw new Error(message);
             }
@@ -538,13 +587,13 @@ function expandedMessage(error: any): string {
   switch (error.message) {
     case 'Reference to non-exported class':
       if (error.context && error.context.className) {
-        return `Reference to a non-exported class ${error.context.className}`;
+        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
       }
       break;
     case 'Variable not initialized':
-      return 'Only initialized variables and constants can be referenced';
+      return 'Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler';
     case 'Destructuring not supported':
-      return 'Referencing an exported destructured variable or constant is not supported';
+      return 'Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring';
     case 'Could not resolve type':
       if (error.context && error.context.typeName) {
         return `Could not resolve type ${error.context.typeName}`;
@@ -555,6 +604,10 @@ function expandedMessage(error: any): string {
           error.context && error.context.name ? `Calling function '${error.context.name}', f` : 'F';
       return prefix +
           'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+    case 'Reference to a local symbol':
+      if (error.context && error.context.name) {
+        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
+      }
   }
   return error.message;
 }

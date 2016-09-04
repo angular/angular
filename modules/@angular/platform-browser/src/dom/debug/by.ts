@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement} from '@angular/core';
+import {DebugElement, Type} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
 import {Predicate} from '../../facade/collection';
-import {Type, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 
 
 
@@ -25,7 +25,7 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_all'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
   static all(): Predicate<DebugElement> { return (debugElement) => true; }
 
@@ -34,7 +34,7 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_css'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_css'}
    */
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
@@ -49,9 +49,9 @@ export class By {
    *
    * ## Example
    *
-   * {@example platform/dom/debug/ts/by/by.ts region='by_directive'}
+   * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
-  static directive(type: Type): Predicate<DebugElement> {
+  static directive(type: Type<any>): Predicate<DebugElement> {
     return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };
   }
 }

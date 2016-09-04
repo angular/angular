@@ -8,27 +8,30 @@
 
 import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
 
-import {EventEmitter, ObservableWrapper} from '../../facade/async';
+import {EventEmitter} from '../../facade/async';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
-
+import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
+import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
-import {AsyncValidatorFn, ValidatorFn} from '../validators';
+import {AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
+import {FormGroupDirective} from './form_group_directive';
+import {FormArrayName, FormGroupName} from './form_group_name';
 
-export const controlNameBinding: any =
-    /*@ts2dart_const*/ /* @ts2dart_Provider */ {
-      provide: NgControl,
-      useExisting: forwardRef(() => FormControlName)
-    };
+export const controlNameBinding: any = {
+  provide: NgControl,
+  useExisting: forwardRef(() => FormControlName)
+};
 
 /**
  * Syncs an existing form control with the specified name to a DOM element.
  *
- * This directive can only be used as a child of {@link FormGroupDirective}.
+ * This directive can only be used as a child of {@link FormGroupDirective}.  It also requires
+ * importing the {@link ReactiveFormsModule}.
 
  * ### Example
  *
@@ -39,7 +42,6 @@ export const controlNameBinding: any =
  *  ```
  * @Component({
  *      selector: "login-comp",
- *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
  *        <form [formGroup]="myForm" (submit)="onLogIn()">
  *          Login <input type="text" formControlName="login">
@@ -49,8 +51,8 @@ export const controlNameBinding: any =
  *        </form>
  *      `})
  * class LoginComp {
- *  loginCtrl = new Control();
- *  passwordCtrl = new Control();
+ *  loginCtrl = new FormControl();
+ *  passwordCtrl = new FormControl();
  *  myForm = new FormGroup({
  *     login: loginCtrl,
  *     password: passwordCtrl
@@ -61,28 +63,27 @@ export const controlNameBinding: any =
  * }
  *  ```
  *
- * TODO(kara): Remove ngModel example with reactive paradigm
- * We can also use ngModel to bind a domain model to the form, if you don't want to provide
- * individual init values to each control.
+ * We can also set the value of the form programmatically using setValue().
  *
  *  ```
  * @Component({
  *      selector: "login-comp",
- *      directives: [REACTIVE_FORM_DIRECTIVES],
  *      template: `
  *        <form [formGroup]="myForm" (submit)='onLogIn()'>
- *          Login <input type='text' formControlName='login' [(ngModel)]="credentials.login">
- *          Password <input type='password' formControlName='password'
- *                          [(ngModel)]="credentials.password">
+ *          Login <input type='text' formControlName='login'>
+ *          Password <input type='password' formControlName='password'>
  *          <button type='submit'>Log in!</button>
  *        </form>
  *      `})
  * class LoginComp {
- *  credentials: {login:string, password:string};
  *  myForm = new FormGroup({
- *    login: new Control(this.credentials.login),
- *    password: new Control(this.credentials.password)
+ *    login: new FormControl(),
+ *    password: new FormControl()
  *  });
+ *
+ *  populate() {
+ *     this.myForm.setValue({login: 'some login', password: 'some password'});
+ *  }
  *
  *  onLogIn(): void {
  *    // this.credentials.login === "some login"
@@ -91,7 +92,7 @@ export const controlNameBinding: any =
  * }
  *  ```
  *
- *  @experimental
+ *  @stable
  */
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
@@ -104,45 +105,66 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   // TODO(kara):  Replace ngModel with reactive API
   @Input('ngModel') model: any;
   @Output('ngModelChange') update = new EventEmitter();
+  @Input('disabled')
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
-  constructor(@Host() @SkipSelf() private _parent: ControlContainer,
-              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
-                  /* Array<Validator|Function> */ any[],
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
-                  /* Array<Validator|Function> */ any[],
-              @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
-              valueAccessors: ControlValueAccessor[]) {
-                super();
-                this.valueAccessor = selectValueAccessor(this, valueAccessors);
-              }
+  constructor(
+      @Optional() @Host() @SkipSelf() parent: ControlContainer,
+      @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
+          Array<Validator|AsyncValidatorFn>,
+      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+    super();
+    this._parent = parent;
+    this._rawValidators = validators || [];
+    this._rawAsyncValidators = asyncValidators || [];
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
 
-              ngOnChanges(changes: SimpleChanges) {
-                if (!this._added) {
-                  this.formDirective.addControl(this);
-                  this._added = true;
-                }
-                if (isPropertyUpdated(changes, this.viewModel)) {
-                  this.viewModel = this.model;
-                  this.formDirective.updateModel(this, this.model);
-                }
-              }
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this._added) {
+      this._checkParentType();
+      this.formDirective.addControl(this);
+      if (this.control.disabled) this.valueAccessor.setDisabledState(true);
+      this._added = true;
+    }
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      this.viewModel = this.model;
+      this.formDirective.updateModel(this, this.model);
+    }
+  }
 
-              ngOnDestroy(): void { this.formDirective.removeControl(this); }
+  ngOnDestroy(): void {
+    if (this.formDirective) {
+      this.formDirective.removeControl(this);
+    }
+  }
 
-              viewToModelUpdate(newValue: any): void {
-                this.viewModel = newValue;
-                ObservableWrapper.callEmit(this.update, newValue);
-              }
+  viewToModelUpdate(newValue: any): void {
+    this.viewModel = newValue;
+    this.update.emit(newValue);
+  }
 
-              get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] { return controlPath(this.name, this._parent); }
 
-              get formDirective(): any { return this._parent.formDirective; }
+  get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-              get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
 
-              get asyncValidator(): AsyncValidatorFn {
-                return composeAsyncValidators(this._asyncValidators);
-              }
+  get asyncValidator(): AsyncValidatorFn {
+    return composeAsyncValidators(this._rawAsyncValidators);
+  }
 
-              get control(): FormControl { return this.formDirective.getControl(this); }
+  get control(): FormControl { return this.formDirective.getControl(this); }
+
+  private _checkParentType(): void {
+    if (!(this._parent instanceof FormGroupName) &&
+        this._parent instanceof AbstractFormGroupDirective) {
+      ReactiveErrors.ngModelGroupException();
+    } else if (
+        !(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) &&
+        !(this._parent instanceof FormArrayName)) {
+      ReactiveErrors.controlParentException();
+    }
+  }
 }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseException} from '@angular/core/src/facade/exceptions';
-import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'error-app',
@@ -16,9 +16,13 @@ import {Component} from '@angular/core';
            <button class="errorButton" (click)="createError()">create error</button>`
 })
 export class ErrorComponent {
-  createError(): void { throw new BaseException('Sourcemap test'); }
+  createError(): void { throw new Error('Sourcemap test'); }
+}
+
+@NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})
+class ExampleModule {
 }
 
 export function main() {
-  bootstrap(ErrorComponent);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

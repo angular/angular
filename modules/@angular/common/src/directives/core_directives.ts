@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../facade/lang';
+import {Type} from '@angular/core';
 
 import {NgClass} from './ng_class';
+import {NgFocus} from './ng_focus';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
-
-
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular
@@ -30,13 +29,13 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
  *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
- *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
+ *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, OtherDirective]
  * })
  * export class MyComponent {
  *   ...
@@ -60,8 +59,9 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  *
  * @stable
  */
-export const CORE_DIRECTIVES: Type[] = /*@ts2dart_const*/[
+export const CORE_DIRECTIVES: Type<any>[] = [
   NgClass,
+  NgFocus,
   NgFor,
   NgIf,
   NgTemplateOutlet,

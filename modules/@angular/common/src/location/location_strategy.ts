@@ -7,7 +7,7 @@
  */
 
 import {OpaqueToken} from '@angular/core';
-import {UrlChangeListener} from './platform_location';
+import {LocationChangeListener} from './platform_location';
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
@@ -34,7 +34,7 @@ export abstract class LocationStrategy {
   abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
   abstract back(): void;
-  abstract onPopState(fn: UrlChangeListener): void;
+  abstract onPopState(fn: LocationChangeListener): void;
   abstract getBaseHref(): string;
 }
 
@@ -49,24 +49,15 @@ export abstract class LocationStrategy {
  *
  * ### Example
  *
- * ```
- * import {Component} from '@angular/core';
- * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from '@angular/router';
+ * import {Component, NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
- *   {provide: APP_BASE_HREF, useValue: '/my/app'}
- * ]);
+ * @NgModule({
+ *   providers: [{provide: APP_BASE_HREF, useValue: '/my/app'}]
+ * })
+ * class AppModule {}
  * ```
+ *
  * @stable
  */
-export const APP_BASE_HREF: OpaqueToken = /*@ts2dart_const*/ new OpaqueToken('appBaseHref');
+export const APP_BASE_HREF: OpaqueToken = new OpaqueToken('appBaseHref');
