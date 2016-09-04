@@ -17,13 +17,13 @@ export function main() {
     it('Should set focus when the directive get truthy boolean', async(() => {
 
          let fixture = TestBed.createComponent(TestComponent);
-         expect(1).toBe(1);
          // fixture.autoDetectChanges();
          // let el = fixture.nativeElement.querySelector('[ngFocus]');
          // let spy = spyOn(el, 'focus').and.callThrough();
          // fixture.componentInstance.inFocus = true;
          // fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
-
+         //
+         expect(1).toBe(1);
 
        }));
 
