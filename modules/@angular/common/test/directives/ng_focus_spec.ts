@@ -22,7 +22,7 @@ export function main() {
          // let spy = spyOn(el, 'focus').and.callThrough();
          // fixture.componentInstance.inFocus = true;
          // fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
-         //
+
          expect(1).toBe(1);
 
        }));
