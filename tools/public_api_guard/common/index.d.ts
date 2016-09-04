@@ -127,6 +127,13 @@ export declare class NgFor implements DoCheck, OnChanges {
   ngOnChanges(changes: SimpleChanges): void;
 }
 
+export declare class NgFocus {
+    elementRef: ElementRef;
+    focus: boolean;
+    renderer: Renderer;
+    constructor(renderer: Renderer, elementRef: ElementRef);
+}
+
 /** @stable */
 export declare class NgIf {
   ngIf: any;
