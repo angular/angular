@@ -9,6 +9,7 @@
 import {Type} from '@angular/core';
 
 import {NgClass} from './ng_class';
+import {NgFocus} from './ng_focus';
 import {NgFor} from './ng_for';
 import {NgIf} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
@@ -60,6 +61,7 @@ import {NgTemplateOutlet} from './ng_template_outlet';
  */
 export const CORE_DIRECTIVES: Type<any>[] = [
   NgClass,
+  NgFocus,
   NgFor,
   NgIf,
   NgTemplateOutlet,
