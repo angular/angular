@@ -18,11 +18,10 @@ export function main() {
 
          let fixture = TestBed.createComponent(TestComponent);
          fixture.autoDetectChanges();
-         // let el = fixture.nativeElement.querySelector('[ngFocus]');
-         // let spy = spyOn(el, 'focus').and.callThrough();
-         // fixture.componentInstance.inFocus = true;
-         // fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
-      expect(1).toBe(1);
+         let el = fixture.nativeElement.querySelector('[ngFocus]');
+         let spy = spyOn(el, 'focus').and.callThrough();
+         fixture.componentInstance.inFocus = true;
+         fixture.whenStable().then(() => { expect(spy).toHaveBeenCalled(); });
 
 
        }));
@@ -32,7 +31,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'test-cmp', template: '<div [ngClass]="inFocus" ></div>'})
+@Component({selector: 'test-cmp', template: '<div [ngFocus]="inFocus" ></div>'})
 class TestComponent {
   inFocus: boolean;
 }
