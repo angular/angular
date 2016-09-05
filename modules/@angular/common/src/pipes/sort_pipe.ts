@@ -21,7 +21,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  */
 @Pipe({name: 'sort'})
 export class SortPipe implements PipeTransform {
-  public transform(list: any[], path: string): any[] {
+  public transform(list: any[], path?: string): any[] {
     if (!list) return undefined;
 
     if (path) {
