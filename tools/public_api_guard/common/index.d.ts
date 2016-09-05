@@ -5,11 +5,12 @@ export declare const APP_BASE_HREF: OpaqueToken;
 export declare class AsyncPipe implements OnDestroy {
   constructor(_ref: ChangeDetectorRef);
   ngOnDestroy(): void;
-  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any;
+  transform(obj: Observable<any> | Promise<any> | EventEmitter<any>): any;
 }
 
 /** @stable */
-export declare class CommonModule {}
+export declare class CommonModule {
+}
 
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
@@ -45,16 +46,22 @@ export declare class HashLocationStrategy extends LocationStrategy {
 /** @experimental */
 export declare class I18nPluralPipe implements PipeTransform {
   constructor(_localization: NgLocalization);
-  transform(value: number, pluralMap: {[count: string]: string;}): string;
+  transform(value: number, pluralMap: {
+    [count: string]: string;
+  }): string;
 }
 
 /** @experimental */
 export declare class I18nSelectPipe implements PipeTransform {
-  transform(value: string, mapping: {[key: string]: string;}): string;
+  transform(value: string, mapping: {
+    [key: string]: string;
+  }): string;
 }
 
 /** @stable */
-export declare class JsonPipe implements PipeTransform { transform(value: any): string; }
+export declare class JsonPipe implements PipeTransform {
+  transform(value: any): string;
+}
 
 /** @stable */
 export declare class Location {
@@ -67,19 +74,21 @@ export declare class Location {
   path(includeHash?: boolean): string;
   prepareExternalUrl(url: string): string;
   replaceState(path: string, query?: string): void;
-  subscribe(
-      onNext: (value: any) => void, onThrow?: (exception: any) => void,
-      onReturn?: () => void): Object;
+  subscribe(onNext: (value: any) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
   static joinWithSlash(start: string, end: string): string;
   static normalizeQueryParams(params: string): string;
   static stripTrailingSlash(url: string): string;
 }
 
 /** @experimental */
-export interface LocationChangeEvent { type: string; }
+export interface LocationChangeEvent {
+  type: string;
+}
 
 /** @experimental */
-export interface LocationChangeListener { (e: LocationChangeEvent): any; }
+export interface LocationChangeListener {
+  (e: LocationChangeEvent): any;
+}
 
 /** @stable */
 export declare abstract class LocationStrategy {
@@ -94,17 +103,20 @@ export declare abstract class LocationStrategy {
 }
 
 /** @stable */
-export declare class LowerCasePipe implements PipeTransform { transform(value: string): string; }
+export declare class LowerCasePipe implements PipeTransform {
+  transform(value: string): string;
+}
 
 /** @stable */
 export declare class NgClass implements DoCheck {
   initialClasses: string;
-  ngClass: string|string[]|Set<string>|{ [key: string]: any; };
-  constructor(
-      _iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef,
-      _renderer: Renderer);
+  ngClass: string | string[] | Set<string> | {
+    [key: string]: any;
+  };
+  constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
   ngDoCheck(): void;
 }
+
 
 export declare class NgFocus {
   elementRef: ElementRef;
@@ -118,9 +130,7 @@ export declare class NgFor implements DoCheck, OnChanges {
   ngForOf: any;
   ngForTemplate: TemplateRef<NgForRow>;
   ngForTrackBy: TrackByFn;
-  constructor(
-      _viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>,
-      _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
+  constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
   ngDoCheck(): void;
   ngOnChanges(changes: SimpleChanges): void;
 }
@@ -132,7 +142,9 @@ export declare class NgIf {
 }
 
 /** @experimental */
-export declare abstract class NgLocalization { abstract getPluralCategory(value: any): string; }
+export declare abstract class NgLocalization {
+  abstract getPluralCategory(value: any): string;
+}
 
 /** @experimental */
 export declare class NgPlural {
@@ -144,26 +156,27 @@ export declare class NgPlural {
 /** @experimental */
 export declare class NgPluralCase {
   value: string;
-  constructor(
-      value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef,
-      ngPlural: NgPlural);
+  constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
 }
 
 /** @stable */
 export declare class NgStyle implements DoCheck {
-  ngStyle: {[key: string]: string;};
+  ngStyle: {
+    [key: string]: string;
+  };
   constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
   ngDoCheck(): void;
 }
 
 /** @stable */
-export declare class NgSwitch { ngSwitch: any; }
+export declare class NgSwitch {
+  ngSwitch: any;
+}
 
 /** @stable */
 export declare class NgSwitchCase {
   ngSwitchCase: any;
-  constructor(
-      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 
 /** @stable */
@@ -218,4 +231,6 @@ export declare class SlicePipe implements PipeTransform {
 }
 
 /** @stable */
-export declare class UpperCasePipe implements PipeTransform { transform(value: string): string; }
+export declare class UpperCasePipe implements PipeTransform {
+  transform(value: string): string;
+}
