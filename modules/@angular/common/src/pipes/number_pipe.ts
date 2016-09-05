@@ -140,7 +140,7 @@ export class PercentPipe implements PipeTransform {
  * "EUR" for the euro. `symbolDisplay` is a boolean indicating whether to use the currency
  * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
  * is `false`.
- * For more information about `digitInfo` see {@link DecimalPipe}
+ * For more information about `digitInfo` see {@link DecimalPipe}.
  *
  * ### Example
  *
