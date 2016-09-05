@@ -83,7 +83,7 @@ export class Compiler {
   }
 
   /**
-   * Clears all caches
+   * Clears all caches.
    */
   clearCache(): void {}
 
