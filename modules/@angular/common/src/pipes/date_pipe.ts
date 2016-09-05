@@ -57,7 +57,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  - `'medium'`: equivalent to `'yMMMdjms'` (e.g. Sep 3, 2010, 12:05:08 PM for en-US)
  *  - `'short'`: equivalent to `'yMdjm'` (e.g. 9/3/2010, 12:05 PM for en-US)
  *  - `'fullDate'`: equivalent to `'yMMMMEEEEd'` (e.g. Friday, September 3, 2010 for en-US)
- *  - `'longDate'`: equivalent to `'yMMMMd'` (e.g. September 3, 2010)
+ *  - `'longDate'`: equivalent to `'yMMMMd'` (e.g. September 3, 2010 for en-US)
  *  - `'mediumDate'`: equivalent to `'yMMMd'` (e.g. Sep 3, 2010 for en-US)
  *  - `'shortDate'`: equivalent to `'yMd'` (e.g. 9/3/2010 for en-US)
  *  - `'mediumTime'`: equivalent to `'jms'` (e.g. 12:05:08 PM for en-US)
