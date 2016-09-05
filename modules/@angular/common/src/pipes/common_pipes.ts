@@ -19,7 +19,9 @@ import {JsonPipe} from './json_pipe';
 import {LowerCasePipe} from './lowercase_pipe';
 import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
 import {SlicePipe} from './slice_pipe';
+import {SortPipe} from './sort_pipe';
 import {UpperCasePipe} from './uppercase_pipe';
+
 
 
 /**
@@ -35,6 +37,7 @@ export const COMMON_PIPES = [
   AsyncPipe,
   UpperCasePipe,
   LowerCasePipe,
+  SortPipe,
   JsonPipe,
   SlicePipe,
   DecimalPipe,

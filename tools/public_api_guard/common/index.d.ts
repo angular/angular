@@ -117,6 +117,13 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
+
+/** @experimental */
+export declare class SortPipe implements PipeTransform {
+    transform(list:any[] , path:string ): any[];
+}
+
+
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;

@@ -20,4 +20,5 @@ export {JsonPipe} from './pipes/json_pipe';
 export {LowerCasePipe} from './pipes/lowercase_pipe';
 export {CurrencyPipe, DecimalPipe, PercentPipe} from './pipes/number_pipe';
 export {SlicePipe} from './pipes/slice_pipe';
+export {SortPipe} from './pipes/sort_pipe';
 export {UpperCasePipe} from './pipes/uppercase_pipe';
