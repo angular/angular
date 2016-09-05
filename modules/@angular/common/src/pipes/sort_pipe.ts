@@ -29,9 +29,9 @@ export class SortPipe implements PipeTransform {
 
       return list.sort((a, b) => {
 
-        path.split('.').forEach(s => {a = a[s];});
+        path.split('.').forEach(s => { a = a[s]; });
 
-        path.split('.').forEach(s => {b = b[s];});
+        path.split('.').forEach(s => { b = b[s]; });
 
         if (a > b) {
           return 1;
