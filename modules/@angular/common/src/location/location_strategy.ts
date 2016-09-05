@@ -49,6 +49,7 @@ export abstract class LocationStrategy {
  *
  * ### Example
  *
+ * ```typescript
  * import {Component, NgModule} from '@angular/core';
  * import {APP_BASE_HREF} from '@angular/common';
  *

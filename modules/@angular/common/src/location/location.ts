@@ -79,7 +79,7 @@ export class Location {
 
   /**
    * Given a string representing a URL, returns the normalized URL path without leading or
-   * trailing slashes
+   * trailing slashes.
    */
   normalize(url: string): string {
     return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
