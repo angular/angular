@@ -23,9 +23,6 @@ export function main() {
         expect(sorted.toString()).toEqual('a,b,c');
       });
 
-      it('should throw error if value is undefined',
-         () => { expect(() => pipe.transform(undefined)).toBeUndefined(); });
-
     });
 
   });
