@@ -24,10 +24,8 @@ export function main() {
       });
 
       it('should throw error if value is undefined',
-         () => { expect(() => pipe.transform(undefined)).toThrowError(); });
+         () => { expect(() => pipe.transform(undefined)).toBeUndefined(); });
 
-      it('should throw error if value is null',
-         () => { expect(() => pipe.transform(null)).toThrowError(); });
     });
 
   });
