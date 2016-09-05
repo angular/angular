@@ -117,6 +117,13 @@ export declare class NgClass implements DoCheck {
   ngDoCheck(): void;
 }
 
+export declare class NgFocus {
+  elementRef: ElementRef;
+  focus: boolean;
+  renderer: Renderer;
+  constructor(renderer: Renderer, elementRef: ElementRef);
+}
+
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
   ngForOf: any;
@@ -125,13 +132,6 @@ export declare class NgFor implements DoCheck, OnChanges {
   constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
   ngDoCheck(): void;
   ngOnChanges(changes: SimpleChanges): void;
-}
-
-export declare class NgFocus {
-    elementRef: ElementRef;
-    focus: boolean;
-    renderer: Renderer;
-    constructor(renderer: Renderer, elementRef: ElementRef);
 }
 
 /** @stable */
