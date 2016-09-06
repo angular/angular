@@ -7,6 +7,9 @@ import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MdInput, MdInputModule} from './input';
 
+function isInternetExplorer11() {
+    return 'ActiveXObject' in window;
+}
 
 describe('MdInput', function () {
   beforeEach(async(() => {
@@ -50,6 +53,10 @@ describe('MdInput', function () {
         MdInputWithMin,
         MdInputWithStep,
         MdInputWithTabindex,
+        MdInputDateTestController,
+        MdInputTextTestController,
+        MdInputPasswordTestController,
+        MdInputNumberTestController,
       ],
     });
 
@@ -62,6 +69,58 @@ describe('MdInput', function () {
 
     expect(fixture.debugElement.query(By.css('input'))).toBeTruthy();
   });
+
+  it('should not be treated as empty if type is date', async(() => {
+    if (isInternetExplorer11()) {
+      return;
+    }
+    let fixture = TestBed.createComponent(MdInputDateTestController);
+    fixture.componentInstance.placeholder = 'Placeholder';
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    expect(el).not.toBeNull();
+    expect(el.className.includes('md-empty')).toBe(false);
+  }));
+
+  it('should treat text input type as empty at init', async(() => {
+    if (isInternetExplorer11()) {
+      return;
+    }
+    let fixture = TestBed.createComponent(MdInputTextTestController);
+    fixture.componentInstance.placeholder = 'Placeholder';
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    expect(el).not.toBeNull();
+    expect(el.className.includes('md-empty')).toBe(true);
+  }));
+
+  it('should treat password input type as empty at init', async(() => {
+    if (isInternetExplorer11()) {
+      return;
+    }
+    let fixture = TestBed.createComponent(MdInputPasswordTestController);
+    fixture.componentInstance.placeholder = 'Placeholder';
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    expect(el).not.toBeNull();
+    expect(el.className.includes('md-empty')).toBe(true);
+  }));
+
+  it('should treat number input type as empty at init', async(() => {
+    if (isInternetExplorer11()) {
+      return;
+    }
+    let fixture = TestBed.createComponent(MdInputNumberTestController);
+    fixture.componentInstance.placeholder = 'Placeholder';
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('label')).nativeElement;
+    expect(el).not.toBeNull();
+    expect(el.className.includes('md-empty')).toBe(true);
+  }));
 
   // TODO(kara): update when core/testing adds fix
   it('support ngModel', async(() => {
@@ -701,3 +760,23 @@ class MdInputWithStep { }
 
 @Component({template: `<md-input [tabindex]="tabIndex"></md-input>`})
 class MdInputWithTabindex { }
+
+@Component({template: `<md-input type="date" [placeholder]="placeholder"></md-input>`})
+class MdInputDateTestController {
+  placeholder: string = '';
+}
+
+@Component({template: `<md-input type="text" [placeholder]="placeholder"></md-input>`})
+class MdInputTextTestController {
+  placeholder: string = '';
+}
+
+@Component({template: `<md-input type="password" [placeholder]="placeholder"></md-input>`})
+class MdInputPasswordTestController {
+  placeholder: string = '';
+}
+
+@Component({template: `<md-input type="number" [placeholder]="placeholder"></md-input>`})
+class MdInputNumberTestController {
+  placeholder: string = '';
+}

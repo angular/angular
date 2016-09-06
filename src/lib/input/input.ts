@@ -128,7 +128,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
   /** Readonly properties. */
   get focused() { return this._focused; }
-  get empty() { return this._value == null || this._value === ''; }
+  get empty() { return (this._value == null || this._value === '') && this.type !== 'date'; }
   get characterCount(): number {
     return this.empty ? 0 : ('' + this._value).length;
   }
