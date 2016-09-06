@@ -194,7 +194,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 
   We now only accept:
   ```
-  {provider: MyClass, toFactory: ...}
+  {provide: MyClass, useFactory: ...}
   ```
   
 * core: previously deprecated NgZoneError has been removed
