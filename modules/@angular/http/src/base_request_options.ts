@@ -70,7 +70,7 @@ export class RequestOptions {
    */
   withCredentials: boolean;
   /*
-   * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
+   * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document) {@link Request}.
    */
   responseType: ResponseContentType;
 
