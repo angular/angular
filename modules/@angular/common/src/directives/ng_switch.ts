@@ -214,7 +214,7 @@ export class NgSwitchCase {
 export class NgSwitchDefault {
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() sswitch: NgSwitch) {
-    sswitch._registerView(_CASE_DEFAULT, new SwitchView(viewContainer, templateRef));
+      @Host() switch: NgSwitch) {
+    switch._registerView(_CASE_DEFAULT, new SwitchView(viewContainer, templateRef));
   }
 }
