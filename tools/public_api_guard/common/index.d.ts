@@ -117,13 +117,6 @@ export declare class NgClass implements DoCheck {
     ngDoCheck(): void;
 }
 
-
-/** @experimental */
-export declare class SortPipe implements PipeTransform {
-    transform(list:any[] , path:string ): any[];
-}
-
-
 /** @stable */
 export declare class NgFor implements DoCheck, OnChanges {
     ngForOf: any;
@@ -132,6 +125,11 @@ export declare class NgFor implements DoCheck, OnChanges {
     constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgForRow>, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
+}
+
+/** @experimental */
+export declare class SortPipe implements PipeTransform {
+    transform(list: any[], path?: string): any[];
 }
 
 /** @stable */
