@@ -370,9 +370,14 @@ function serializeParams(params: {[key: string]: string}): string {
   return pairs(params).map(p => `;${encode(p.first)}=${encode(p.second)}`).join('');
 }
 
-function serializeQueryParams(params: {[key: string]: string}): string {
-  const strs = pairs(params).map(p => `${encode(p.first)}=${encode(p.second)}`);
-  return strs.length > 0 ? `?${strs.join("&")}` : '';
+function serializeQueryParams(params: {[key: string]: any}): string {
+  const strParams: string[] = Object.keys(params).map((name) => {
+    const value = params[name];
+    return Array.isArray(value) ? value.map(v => `${encode(name)}=${encode(v)}`).join('&') :
+                                  `${encode(name)}=${encode(value)}`;
+  });
+
+  return strParams.length ? `?${strParams.join("&")}` : '';
 }
 
 class Pair<A, B> {
@@ -534,6 +539,7 @@ class UrlParser {
     params[decode(key)] = decode(value);
   }
 
+  // Parse a single query parameter `name[=value]`
   parseQueryParam(params: {[key: string]: any}): void {
     const key = matchQueryParams(this.remaining);
     if (!key) {
@@ -549,7 +555,22 @@ class UrlParser {
         this.capture(value);
       }
     }
-    params[decode(key)] = decode(value);
+
+    const decodedKey = decode(key);
+    const decodedVal = decode(value);
+
+    if (params.hasOwnProperty(decodedKey)) {
+      // Append to existing values
+      let currentVal = params[decodedKey];
+      if (!Array.isArray(currentVal)) {
+        currentVal = [currentVal];
+        params[decodedKey] = currentVal;
+      }
+      currentVal.push(decodedVal);
+    } else {
+      // Create a new value
+      params[decodedKey] = decodedVal;
+    }
   }
 
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegmentGroup} {
