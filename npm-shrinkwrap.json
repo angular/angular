@@ -4411,9 +4411,9 @@
       "resolved": "https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz"
     },
     "jasmine": {
-      "version": "2.4.1",
-      "from": "jasmine@2.4.1",
-      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.4.1.tgz",
+      "version": "2.5.0",
+      "from": "jasmine@2.5.0",
+      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.5.0.tgz",
       "dependencies": {
         "glob": {
           "version": "3.2.11",
@@ -4421,9 +4421,9 @@
           "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz"
         },
         "jasmine-core": {
-          "version": "2.4.1",
-          "from": "jasmine-core@>=2.4.0 <2.5.0",
-          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.4.1.tgz"
+          "version": "2.5.0",
+          "from": "jasmine-core@>=2.5.0 <2.6.0",
+          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.5.0.tgz"
         },
         "minimatch": {
           "version": "0.3.0",
@@ -5350,7 +5350,7 @@
     },
     "on-headers": {
       "version": "1.0.1",
-      "from": "on-headers@>=1.0.0 <1.1.0",
+      "from": "on-headers@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/on-headers/-/on-headers-1.0.1.tgz"
     },
     "once": {
@@ -5722,7 +5722,7 @@
     },
     "q": {
       "version": "1.4.1",
-      "from": "q@>=1.4.1 <1.5.0",
+      "from": "q@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/q/-/q-1.4.1.tgz"
     },
     "qs": {
@@ -6450,13 +6450,13 @@
     },
     "through2": {
       "version": "0.6.5",
-      "from": "through2@>=0.6.3 <0.7.0",
+      "from": "through2@>=0.6.5 <0.7.0",
       "resolved": "https://registry.npmjs.org/through2/-/through2-0.6.5.tgz",
       "dependencies": {
         "readable-stream": {
-          "version": "1.0.34",
+          "version": "1.0.33",
           "from": "readable-stream@>=1.0.33-1 <1.1.0-0",
-          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.34.tgz"
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.33.tgz"
         }
       }
     },
@@ -7241,8 +7241,7 @@
     },
     "zone.js": {
       "version": "0.6.17",
-      "from": "zone.js@0.6.17",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.17.tgz"
+      "from": "zone.js@0.6.17"
     }
   }
 }
