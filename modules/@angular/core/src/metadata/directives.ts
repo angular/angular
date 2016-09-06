@@ -883,7 +883,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
   styleUrls: string[];
 
   /**
-   * Specifies an inline stylesheet for an Angular component.
+   * Specifies inline stylesheets for an Angular component.
    */
   styles: string[];
 
