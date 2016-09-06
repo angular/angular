@@ -224,7 +224,7 @@ export declare class SlicePipe implements PipeTransform {
 
 /** @experimental */
 export declare class SortPipe implements PipeTransform {
-  transform(list: any[], path?: string): any[];
+    transform(list: any[], path?: string): any[];
 }
 
 /** @stable */
