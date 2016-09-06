@@ -63,7 +63,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  - `'mediumTime'`: equivalent to `'jms'` (e.g. 12:05:08 PM for en-US)
  *  - `'shortTime'`: equivalent to `'jm'` (e.g. 12:05 PM for en-US)
  *
- * Timezone of the formatted text will be the local system timezone of the end-users machine.
+ * Timezone of the formatted text will be the local system timezone of the end-user's machine.
  *
  * ### Examples
  *
