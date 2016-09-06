@@ -31,8 +31,8 @@ export function main() {
       it('should uppercase when there is a new value', () => {
         var val = pipe.transform(lower);
         expect(val).toEqual(proper);
-        var val2 = pipe.transform('homosapiens');
-        expect(val2).toEqual('Homosapiens');
+        var val2 = pipe.transform('homospaiens');
+        expect(val2).toEqual('Homosapines');
       });
 
       it('should not support other objects',
