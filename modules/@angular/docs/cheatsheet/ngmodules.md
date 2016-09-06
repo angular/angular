@@ -16,7 +16,7 @@ Defines a module that contains components, directives, pipes, and providers.
 syntax(js):
 `ng.core.NgModule({declarations: ..., imports: ...,
      exports: ..., providers: ..., bootstrap: ...}).
-class({ constructor: function() {}})`
+Class({ constructor: function() {}})`
 description:
 Defines a module that contains components, directives, pipes, and providers.
 
