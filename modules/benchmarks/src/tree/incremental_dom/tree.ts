@@ -1,26 +1,29 @@
 import {TreeNode} from '../util';
-const {elementOpen, elementClose, text} = require('incremental-dom');
+const {patch, elementOpen, elementClose, elementOpenStart, elementOpenEnd, text, attr} =
+    require('incremental-dom');
 
-// template:
-// <span> {{data.value}} <span template='ngIf data.right != null'><tree
-// [data]='data.right'></tree></span><span template='ngIf data.left != null'><tree
-// [data]='data.left'></tree></span></span>
-export function render(data: TreeNode) {
-  elementOpen('span', '', null);
-  text(` ${data.value} `);
-  if (data.left) {
-    elementOpen('span', '', null);
-    elementOpen('tree', '', null);
-    render(data.left);
-    elementClose('tree');
+export class TreeComponent {
+  constructor(private _rootEl: any) {}
+
+  set data(data: TreeNode) { patch(this._rootEl, () => this._render(data)); }
+
+  private _render(data: TreeNode) {
+    elementOpenStart('span', '', null);
+    if (data.depth % 2 === 0) {
+      attr('style', 'background-color: grey');
+    }
+    elementOpenEnd();
+    text(` ${data.value} `);
     elementClose('span');
+    if (data.left) {
+      elementOpen('tree', '', null);
+      this._render(data.left);
+      elementClose('tree');
+    }
+    if (data.right) {
+      elementOpen('tree', '', null);
+      this._render(data.right);
+      elementClose('tree');
+    }
   }
-  if (data.right) {
-    elementOpen('span', '', null);
-    elementOpen('tree', '', null);
-    render(data.right);
-    elementClose('tree');
-    elementClose('span');
-  }
-  elementClose('span');
 }

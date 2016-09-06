@@ -1,18 +1,18 @@
 import {bindAction, profile} from '../../util';
-import {TreeNode, buildTree, emptyTree} from '../util';
-import {createTreeTemplate, destroyTreeTemplate} from './tree';
+import {buildTable, emptyTable} from '../util';
+import {TableComponent} from './table';
 
 export function main() {
-  var app: any;
+  var table: TableComponent;
 
-  function destroyDom() { destroyTreeTemplate(app); }
+  function destroyDom() { table.data = emptyTable; }
 
-  function createDom() { createTreeTemplate(app, buildTree()); }
+  function createDom() { table.data = buildTable(); }
 
   function noop() {}
 
   function init() {
-    app = document.querySelector('tree');
+    table = new TableComponent(document.querySelector('largetable'));
 
     bindAction('#destroyDom', destroyDom);
     bindAction('#createDom', createDom);

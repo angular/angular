@@ -10,6 +10,8 @@ if [ $# -eq 0 ]
     echo
 else
   cd `dirname $0`
+  rm -rf dist/tools
+  rm -rf dist/all
   if [ -z ${NODE_PATH+x} ]; then
     export NODE_PATH=$(pwd)/dist/all:$(pwd)/dist/tools
   else

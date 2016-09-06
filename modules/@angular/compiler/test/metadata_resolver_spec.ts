@@ -140,6 +140,23 @@ export function main() {
                    `Invalid viewProviders for "MyBrokenComp4" - only instances of Provider and Type are allowed, got: [?null?, ...]`);
          }));
 
+      it('should throw with descriptive error message when null or undefined is passed to module bootstrap',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           @NgModule({bootstrap: [null]})
+           class ModuleWithNullBootstrap {
+           }
+           @NgModule({bootstrap: [undefined]})
+           class ModuleWithUndefinedBootstrap {
+           }
+
+           expect(() => resolver.getNgModuleMetadata(ModuleWithNullBootstrap))
+               .toThrowError(
+                   `Unexpected value 'null' used in the bootstrap property of module 'ModuleWithNullBootstrap'`);
+           expect(() => resolver.getNgModuleMetadata(ModuleWithUndefinedBootstrap))
+               .toThrowError(
+                   `Unexpected value 'undefined' used in the bootstrap property of module 'ModuleWithUndefinedBootstrap'`);
+         }));
+
       it('should throw an error when the interpolation config has invalid symbols',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidInterpolation1))

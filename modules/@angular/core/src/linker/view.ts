@@ -351,7 +351,7 @@ export abstract class AppView<T> {
     }
   }
 
-  eventHandler(cb: Function): Function { return cb; }
+  eventHandler<E, R>(cb: (event?: E) => R): (event?: E) => R { return cb; }
 
   throwDestroyedError(details: string): void { throw new ViewDestroyedError(details); }
 }
@@ -434,9 +434,9 @@ export class DebugAppView<T> extends AppView<T> {
     }
   }
 
-  eventHandler(cb: Function): Function {
+  eventHandler<E, R>(cb: (event?: E) => R): (event?: E) => R {
     var superHandler = super.eventHandler(cb);
-    return (event: any) => {
+    return (event?: any) => {
       this._resetDebug();
       try {
         return superHandler(event);

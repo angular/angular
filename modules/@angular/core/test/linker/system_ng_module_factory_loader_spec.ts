@@ -6,32 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {global} from '@angular/common/src/facade/lang';
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
 import {async, tick} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
-function mockSystem(module: string, contents: any) {
+function mockSystem(modules: {[module: string]: any}) {
   return {
     'import': (target: string) => {
-      expect(target).toBe(module);
-      return Promise.resolve(contents);
+      expect(modules[target]).not.toBe(undefined);
+      return Promise.resolve(modules[target]);
     }
   };
 }
 
 export function main() {
   describe('SystemJsNgModuleLoader', () => {
+    let oldSystem: any = null;
+    beforeEach(() => {
+      oldSystem = (global as any).System;
+      (global as any).System = mockSystem({
+        'test.ngfactory':
+            {'default': 'test module factory', 'NamedNgFactory': 'test NamedNgFactory'},
+        'prefixed/test/suffixed': {'NamedNgFactory': 'test module factory'}
+      });
+    });
+    afterEach(() => { (global as any).System = oldSystem; });
+
     it('loads a default factory by appending the factory suffix', async(() => {
          let loader = new SystemJsNgModuleLoader(new Compiler());
-         loader._system = () => mockSystem('test.ngfactory', {'default': 'test module factory'});
          loader.load('test').then(contents => { expect(contents).toBe('test module factory'); });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
          let loader = new SystemJsNgModuleLoader(new Compiler());
-         loader._system = () =>
-             mockSystem('test.ngfactory', {'NamedNgFactory': 'test module factory'});
          loader.load('test#Named').then(contents => {
-           expect(contents).toBe('test module factory');
+           expect(contents).toBe('test NamedNgFactory');
          });
        }));
     it('loads a named factory with a configured prefix and suffix', async(() => {
@@ -39,8 +48,6 @@ export function main() {
            factoryPathPrefix: 'prefixed/',
            factoryPathSuffix: '/suffixed',
          });
-         loader._system = () =>
-             mockSystem('prefixed/test/suffixed', {'NamedNgFactory': 'test module factory'});
          loader.load('test#Named').then(contents => {
            expect(contents).toBe('test module factory');
          });

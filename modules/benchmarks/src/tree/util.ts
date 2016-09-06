@@ -1,36 +1,62 @@
 import {getIntParameter} from '../util';
 
 export class TreeNode {
-  constructor(public value: string, public left: TreeNode, public right: TreeNode) {}
+  transitiveChildCount: number;
+  children: TreeNode[];
+
+  constructor(
+      public value: string, public depth: number, public maxDepth: number, public left: TreeNode,
+      public right: TreeNode) {
+    this.transitiveChildCount = Math.pow(2, (this.maxDepth - this.depth + 1)) - 1;
+    this.children = this.left ? [this.left, this.right] : [];
+  }
+
+  // Needed for Polymer as it does not support ternary nor modulo operator
+  // in expressions
+  get style(): string { return this.depth % 2 === 0 ? 'background-color: grey' : ''; }
 }
 
 let treeCreateCount: number;
 export let maxDepth: number;
-let numberData: string[];
-let charData: string[];
+let numberData: TreeNode;
+let charData: TreeNode;
 
 init();
 
 function init() {
   maxDepth = getIntParameter('depth');
   treeCreateCount = 0;
-  numberData = [];
-  charData = [];
-  for (let i = 0; i < maxDepth; i++) {
-    numberData.push(i.toString());
-    charData.push(String.fromCharCode('A'.charCodeAt(0) + i));
-  }
+  numberData = _buildTree(0, numberValues);
+  charData = _buildTree(0, charValues);
 }
 
-function _buildTree(values: string[], curDepth: number = 0): TreeNode {
-  if (maxDepth === curDepth) return new TreeNode('', null, null);
-  return new TreeNode(
-      values[curDepth], _buildTree(values, curDepth + 1), _buildTree(values, curDepth + 1));
+function _buildTree(currDepth: number, valueFn: (depth: number) => string): TreeNode {
+  const children = currDepth < maxDepth ? _buildTree(currDepth + 1, valueFn) : null;
+  return new TreeNode(valueFn(currDepth), currDepth, maxDepth, children, children);
 }
 
-export const emptyTree = new TreeNode('', null, null);
+export const emptyTree = new TreeNode('', 0, 0, null, null);
 
 export function buildTree(): TreeNode {
   treeCreateCount++;
-  return _buildTree(treeCreateCount % 2 ? numberData : charData);
+  return treeCreateCount % 2 ? numberData : charData;
+}
+
+function numberValues(depth: number): string {
+  return depth.toString();
+}
+
+function charValues(depth: number): string {
+  return String.fromCharCode('A'.charCodeAt(0) + (depth % 26));
+}
+
+export function flattenTree(node: TreeNode, target: TreeNode[] = []): TreeNode[] {
+  target.push(node);
+  if (node.left) {
+    flattenTree(node.left, target);
+  }
+  if (node.right) {
+    flattenTree(node.right, target);
+  }
+  return target;
 }
