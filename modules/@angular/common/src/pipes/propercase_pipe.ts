@@ -26,6 +26,7 @@ export class ProperCasePipe implements PipeTransform {
     if (!isString(value)) {
       throw new InvalidPipeArgumentError(ProperCasePipe, value);
     }
+    value = value.toLowerCase();
     return value[0].toUpperCase() + value.substr(1);
   }
 }
