@@ -204,11 +204,6 @@ export declare class PercentPipe implements PipeTransform {
 }
 
 /** @stable */
-export declare class ProperCasePipe implements PipeTransform {
-    transform(value: string): string;
-}
-
-/** @stable */
 export declare abstract class PlatformLocation {
     hash: string;
     pathname: string;
@@ -220,6 +215,11 @@ export declare abstract class PlatformLocation {
     abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
     abstract replaceState(state: any, title: string, url: string): void;
+}
+
+/** @stable */
+export declare class ProperCasePipe implements PipeTransform {
+    transform(value: string): string;
 }
 
 /** @stable */
