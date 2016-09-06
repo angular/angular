@@ -304,9 +304,14 @@ export class CompileMetadataResolver {
                 .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
       }
       if (meta.bootstrap) {
-        bootstrapComponents.push(
-            ...flattenArray(meta.bootstrap)
-                .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
+        const typeMetadata = flattenArray(meta.bootstrap).map(type => {
+          if (!isValidType(type)) {
+            throw new Error(
+                `Unexpected value '${stringify(type)}' used in the bootstrap property of module '${stringify(moduleType)}'`);
+          }
+          return this.getTypeMetadata(type, staticTypeModuleUrl(type));
+        });
+        bootstrapComponents.push(...typeMetadata);
       }
       entryComponents.push(...bootstrapComponents);
       if (meta.schemas) {
