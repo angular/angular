@@ -8,9 +8,6 @@
 
 import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
 
-import {ListWrapper} from '../../facade/collection';
-
-
 
 /**
  * @stable
@@ -26,7 +23,7 @@ export class EventManager {
 
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
     plugins.forEach(p => p.manager = this);
-    this._plugins = ListWrapper.reversed(plugins);
+    this._plugins = plugins.slice().reverse();
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
