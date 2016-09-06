@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
+import {BaseRequestOptions, ConnectionBackend, Headers, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
 import {Json} from '../src/facade/lang';
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
@@ -233,6 +233,23 @@ export function main() {
                async.done();
              });
              http.post(url, body).subscribe((res: Response) => {});
+           }));
+
+        it('should merge the request options default body with the body provided to the request',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             var body = {customParam: 'customParam', anotherCustomParam: 'anotherCustomParam'};
+             var requestOptions = new RequestOptions({
+               headers: new Headers({'Content-Type': 'application/json'}),
+               body: {defaultParam: 'defaultParam'}
+             });
+             backend.connections.subscribe((c: MockConnection) => {
+               var requestBody = JSON.parse(c.request.getBody());
+               expect(requestBody['customParam']).toBe('customParam');
+               expect(requestBody['anotherCustomParam']).toBe('anotherCustomParam');
+               expect(requestBody['defaultParam']).toBe('defaultParam');
+               async.done();
+             });
+             http.post(url, body, requestOptions).subscribe((res: Response) => {});
            }));
       });
 
