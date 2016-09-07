@@ -484,11 +484,11 @@ function stripComments(input: string): string {
 }
 
 // all comments except inline source mapping ("/* #sourceMappingURL= ... */")
-const _sourceMappingUrlRe = /[\s\S]*(\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\/)\s*$/;
+const _sourceMappingUrlRe = /\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\//;
 
 function extractSourceMappingUrl(input: string): string {
   const matcher = input.match(_sourceMappingUrlRe);
-  return matcher ? matcher[1] : '';
+  return matcher ? matcher[0] : '';
 }
 
 const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
