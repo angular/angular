@@ -374,5 +374,11 @@ export function main() {
 
       expect(template).toEqual('<grape></grape>');
     });
+
+    it('should support void tags', () => {
+      const selector = CssSelector.parse('input[fancy]')[0];
+      const template = selector.getMatchingElementTemplate();
+      expect(template).toEqual('<input fancy/>');
+    });
   });
 }
