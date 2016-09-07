@@ -12,20 +12,18 @@ import {el} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('SelectorMatcher', () => {
-    var matcher: any /** TODO #9100 */, selectableCollector: any /** TODO #9100 */,
-        s1: any /** TODO #9100 */, s2: any /** TODO #9100 */, s3: any /** TODO #9100 */,
-        s4: any /** TODO #9100 */;
-    var matched: any[];
+    let matcher: SelectorMatcher;
+    let selectableCollector: (selector: CssSelector, context: any) => void;
+    let s1: any[], s2: any[], s3: any[], s4: any[];
+    let matched: any[];
 
     function reset() { matched = []; }
 
     beforeEach(() => {
       reset();
       s1 = s2 = s3 = s4 = null;
-      selectableCollector = (selector: any /** TODO #9100 */, context: any /** TODO #9100 */) => {
-        matched.push(selector);
-        matched.push(context);
-      };
+      selectableCollector =
+          (selector: CssSelector, context: any) => { matched.push(selector, context); };
       matcher = new SelectorMatcher();
     });
 
@@ -101,9 +99,9 @@ export function main() {
     it('should select by attr name only once if the value is from the DOM', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[some-decor]'), 1);
 
-      var elementSelector = new CssSelector();
-      var element = el('<div attr></div>');
-      var empty = getDOM().getAttribute(element, 'attr');
+      let elementSelector = new CssSelector();
+      const element = el('<div attr></div>');
+      const empty = getDOM().getAttribute(element, 'attr');
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);
@@ -160,7 +158,7 @@ export function main() {
     it('should select by many attributes and independent of the value', () => {
       matcher.addSelectables(s1 = CssSelector.parse('input[type=text][control]'), 1);
 
-      var cssSelector = new CssSelector();
+      let cssSelector = new CssSelector();
       cssSelector.setElement('input');
       cssSelector.addAttribute('type', 'text');
       cssSelector.addAttribute('control', 'one');
@@ -250,33 +248,33 @@ export function main() {
 
   describe('CssSelector.parse', () => {
     it('should detect element names', () => {
-      var cssSelector = CssSelector.parse('sometag')[0];
+      const cssSelector = CssSelector.parse('sometag')[0];
       expect(cssSelector.element).toEqual('sometag');
       expect(cssSelector.toString()).toEqual('sometag');
     });
 
     it('should detect class names', () => {
-      var cssSelector = CssSelector.parse('.someClass')[0];
+      const cssSelector = CssSelector.parse('.someClass')[0];
       expect(cssSelector.classNames).toEqual(['someclass']);
 
       expect(cssSelector.toString()).toEqual('.someclass');
     });
 
     it('should detect attr names', () => {
-      var cssSelector = CssSelector.parse('[attrname]')[0];
+      const cssSelector = CssSelector.parse('[attrname]')[0];
       expect(cssSelector.attrs).toEqual(['attrname', '']);
 
       expect(cssSelector.toString()).toEqual('[attrname]');
     });
 
     it('should detect attr values', () => {
-      var cssSelector = CssSelector.parse('[attrname=attrvalue]')[0];
+      const cssSelector = CssSelector.parse('[attrname=attrvalue]')[0];
       expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(cssSelector.toString()).toEqual('[attrname=attrvalue]');
     });
 
     it('should detect multiple parts', () => {
-      var cssSelector = CssSelector.parse('sometag[attrname=attrvalue].someclass')[0];
+      const cssSelector = CssSelector.parse('sometag[attrname=attrvalue].someclass')[0];
       expect(cssSelector.element).toEqual('sometag');
       expect(cssSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(cssSelector.classNames).toEqual(['someclass']);
@@ -285,7 +283,7 @@ export function main() {
     });
 
     it('should detect multiple attributes', () => {
-      var cssSelector = CssSelector.parse('input[type=text][control]')[0];
+      const cssSelector = CssSelector.parse('input[type=text][control]')[0];
       expect(cssSelector.element).toEqual('input');
       expect(cssSelector.attrs).toEqual(['type', 'text', 'control', '']);
 
@@ -293,12 +291,12 @@ export function main() {
     });
 
     it('should detect :not', () => {
-      var cssSelector = CssSelector.parse('sometag:not([attrname=attrvalue].someclass)')[0];
+      const cssSelector = CssSelector.parse('sometag:not([attrname=attrvalue].someclass)')[0];
       expect(cssSelector.element).toEqual('sometag');
       expect(cssSelector.attrs.length).toEqual(0);
       expect(cssSelector.classNames.length).toEqual(0);
 
-      var notSelector = cssSelector.notSelectors[0];
+      const notSelector = cssSelector.notSelectors[0];
       expect(notSelector.element).toEqual(null);
       expect(notSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(notSelector.classNames).toEqual(['someclass']);
@@ -307,10 +305,10 @@ export function main() {
     });
 
     it('should detect :not without truthy', () => {
-      var cssSelector = CssSelector.parse(':not([attrname=attrvalue].someclass)')[0];
+      const cssSelector = CssSelector.parse(':not([attrname=attrvalue].someclass)')[0];
       expect(cssSelector.element).toEqual('*');
 
-      var notSelector = cssSelector.notSelectors[0];
+      const notSelector = cssSelector.notSelectors[0];
       expect(notSelector.attrs).toEqual(['attrname', 'attrvalue']);
       expect(notSelector.classNames).toEqual(['someclass']);
 
@@ -330,7 +328,7 @@ export function main() {
     });
 
     it('should detect lists of selectors', () => {
-      var cssSelectors = CssSelector.parse('.someclass,[attrname=attrvalue], sometag');
+      const cssSelectors = CssSelector.parse('.someclass,[attrname=attrvalue], sometag');
       expect(cssSelectors.length).toEqual(3);
 
       expect(cssSelectors[0].classNames).toEqual(['someclass']);
@@ -339,7 +337,7 @@ export function main() {
     });
 
     it('should detect lists of selectors with :not', () => {
-      var cssSelectors =
+      const cssSelectors =
           CssSelector.parse('input[type=text], :not(textarea), textbox:not(.special)');
       expect(cssSelectors.length).toEqual(3);
 
@@ -357,22 +355,22 @@ export function main() {
   describe('CssSelector.getMatchingElementTemplate', () => {
     it('should create an element with a tagName, classes, and attributes with the correct casing',
        () => {
-         let selector = CssSelector.parse('Blink.neon.hotpink[Sweet][Dismissable=false]')[0];
-         let template = selector.getMatchingElementTemplate();
+         const selector = CssSelector.parse('Blink.neon.hotpink[Sweet][Dismissable=false]')[0];
+         const template = selector.getMatchingElementTemplate();
 
          expect(template).toEqual('<Blink class="neon hotpink" Sweet Dismissable="false"></Blink>');
        });
 
     it('should create an element without a tag name', () => {
-      let selector = CssSelector.parse('[fancy]')[0];
-      let template = selector.getMatchingElementTemplate();
+      const selector = CssSelector.parse('[fancy]')[0];
+      const template = selector.getMatchingElementTemplate();
 
       expect(template).toEqual('<div fancy></div>');
     });
 
     it('should ignore :not selectors', () => {
-      let selector = CssSelector.parse('grape:not(.red)')[0];
-      let template = selector.getMatchingElementTemplate();
+      const selector = CssSelector.parse('grape:not(.red)')[0];
+      const template = selector.getMatchingElementTemplate();
 
       expect(template).toEqual('<grape></grape>');
     });
