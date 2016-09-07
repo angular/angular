@@ -1,4 +1,4 @@
-import {applyCssTransform} from '@angular2-material/core';
+import {applyCssTransform} from '../../style/apply-transform';
 import {PositionStrategy} from './position-strategy';
 
 
