@@ -117,11 +117,11 @@ function _parseAnimationStateTransition(
     _fillAnimationAstStartingKeyframes(animationAst, styles, errors);
   }
 
-  var sequenceAst = (animationAst instanceof AnimationSequenceAst) ?
-      <AnimationSequenceAst>animationAst :
+  var stepsAst: AnimationWithStepsAst = (animationAst instanceof AnimationWithStepsAst) ?
+      animationAst :
       new AnimationSequenceAst([animationAst]);
 
-  return new AnimationStateTransitionAst(transitionExprs, sequenceAst);
+  return new AnimationStateTransitionAst(transitionExprs, stepsAst);
 }
 
 function _parseAnimationTransitionExpr(
@@ -180,7 +180,9 @@ function _normalizeStyleSteps(
     entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]): CompileAnimationMetadata {
   var steps = _normalizeStyleStepEntry(entry, stateStyles, errors);
-  return new CompileAnimationSequenceMetadata(steps);
+  return (entry instanceof CompileAnimationGroupMetadata) ?
+      new CompileAnimationGroupMetadata(steps) :
+      new CompileAnimationSequenceMetadata(steps);
 }
 
 function _mergeAnimationStyles(

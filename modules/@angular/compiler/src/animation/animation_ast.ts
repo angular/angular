@@ -52,7 +52,7 @@ export class AnimationStateTransitionExpression {
 export class AnimationStateTransitionAst extends AnimationStateAst {
   constructor(
       public stateChanges: AnimationStateTransitionExpression[],
-      public animation: AnimationSequenceAst) {
+      public animation: AnimationWithStepsAst) {
     super();
   }
   visit(visitor: AnimationAstVisitor, context: any): any {
