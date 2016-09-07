@@ -9,6 +9,7 @@
 
 import {ListWrapper} from './facade/collection';
 import {StringWrapper, isBlank, isPresent} from './facade/lang';
+import {getHtmlTagDefinition} from './ml_parser/html_tags';
 
 const _EMPTY_ATTR_VALUE = '';
 
@@ -101,7 +102,8 @@ export class CssSelector {
       attrs += ` ${attrName}${attrValue}`;
     }
 
-    return `<${tagName}${classAttr}${attrs}></${tagName}>`;
+    return getHtmlTagDefinition(tagName).isVoid ? `<${tagName}${classAttr}${attrs}/>` :
+                                                  `<${tagName}${classAttr}${attrs}></${tagName}>`;
   }
 
   addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
