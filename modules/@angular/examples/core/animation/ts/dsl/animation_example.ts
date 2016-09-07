@@ -7,10 +7,11 @@
  */
 
 // #docregion Component
-import {Component, animate, state, style, transition, trigger} from '@angular/core';
+import {Component, NgModule, animate, state, style, transition, trigger} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
-  selector: 'my-expando',
+  selector: 'example-app',
   styles: [`
     .toggle-container {
       background-color:white;
@@ -46,4 +47,9 @@ export class MyExpandoCmp {
   expand() { this.stateExpression = 'expanded'; }
   collapse() { this.stateExpression = 'collapsed'; }
 }
+
+@NgModule({imports: [BrowserModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
+export class AppModule {
+}
+
 // #enddocregion

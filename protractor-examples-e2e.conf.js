@@ -23,16 +23,11 @@ exports.config = {
   },
   allScriptsTimeout: 11000,
   specs: [
-    'dist/all/**/e2e_test/**/*_spec.js'
-  ],
-  exclude: [
-    'dist/all/@angular/examples/**',
-    '**/key_events/**',  // can't tell why this is failing
-    '**/sourcemap/**'     // fails only on travis
+    'dist/examples/**/e2e_test/*_spec.js'
   ],
   capabilities: process.env.TRAVIS ? BROWSER_OPTIONS.ChromeOnTravis : BROWSER_OPTIONS.LocalChrome,
   directConnect: true,
-  baseUrl: 'http://localhost:8000/',
+  baseUrl: 'http://localhost:8001/',
   framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
@@ -41,5 +36,3 @@ exports.config = {
   },
   useAllAngular2AppRoots: true
 };
-
-

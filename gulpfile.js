@@ -142,6 +142,19 @@ gulp.task('serve', () => {
   });
 });
 
+gulp.task('serve-examples', () => {
+  let connect = require('gulp-connect');
+  let cors = require('cors');
+
+  connect.server({
+      root: `${__dirname}/dist/examples`,
+      port: 8001,
+      livereload: false,
+      open: false,
+      middleware: (connect, opt) => [cors()]
+  });
+});
+
 
 gulp.task('changelog', () => {
   const conventionalChangelog = require('gulp-conventional-changelog');
