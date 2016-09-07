@@ -121,7 +121,7 @@ export class MdSidenav {
 
     if (isOpen) {
       if (this._openPromise == null) {
-        this._openPromise = new Promise((resolve, reject) => {
+        this._openPromise = new Promise<void>((resolve, reject) => {
           this._openPromiseResolve = resolve;
           this._openPromiseReject = reject;
         });
@@ -129,7 +129,7 @@ export class MdSidenav {
       return this._openPromise;
     } else {
       if (this._closePromise == null) {
-        this._closePromise = new Promise((resolve, reject) => {
+        this._closePromise = new Promise<void>((resolve, reject) => {
           this._closePromiseResolve = resolve;
           this._closePromiseReject = reject;
         });
