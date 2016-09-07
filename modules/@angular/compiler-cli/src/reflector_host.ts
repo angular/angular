@@ -39,7 +39,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
-    this.context = context || new NodeReflectorHostContext();
+    this.context = context || new NodeReflectorHostContext(compilerHost);
     var genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
@@ -326,10 +326,12 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 }
 
 export class NodeReflectorHostContext implements ReflectorHostContext {
+  constructor(private host: ts.CompilerHost) {}
+
   private assumedExists: {[fileName: string]: boolean} = {};
 
   fileExists(fileName: string): boolean {
-    return this.assumedExists[fileName] || fs.existsSync(fileName);
+    return this.assumedExists[fileName] || this.host.fileExists(fileName);
   }
 
   directoryExists(directoryName: string): boolean {
