@@ -411,10 +411,10 @@ export class Router {
    * ### Usage
    *
    * ```
-   * router.navigate(['team', 33, 'team', '11], {relativeTo: route});
+   * router.navigate(['team', 33, 'user', 11], {relativeTo: route});
    *
    * // Navigate without updating the URL
-   * router.navigate(['team', 33, 'team', '11], {relativeTo: route, skipLocationChange: true });
+   * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true });
    * ```
    *
    * In opposite to `navigateByUrl`, `navigate` always takes a delta
