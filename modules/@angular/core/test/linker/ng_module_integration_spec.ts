@@ -168,7 +168,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => createModule(Module2))
             .toThrowError(
-                `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}!`);
+                `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
       });
 
       it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
@@ -183,7 +185,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(() => createModule(Module2))
                .toThrowError(
-                   `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}!`);
+                   `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                   `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                   `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
          });
 
       it('should error if a pipe is declared in more than 1 module', () => {
@@ -199,7 +203,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => createModule(Module2))
             .toThrowError(
-                `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}!`);
+                `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
       });
 
       it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
@@ -214,7 +220,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(() => createModule(Module2))
                .toThrowError(
-                   `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}!`);
+                   `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                   `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                   `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
          });
 
     });
