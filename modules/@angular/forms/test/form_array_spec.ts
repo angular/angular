@@ -773,6 +773,32 @@ export function main() {
         expect(g.touched).toEqual(true);
       });
 
+      it('should keep empty, disabled arrays disabled when updating validity', () => {
+        const arr = new FormArray([]);
+        expect(arr.status).toEqual('VALID');
+
+        arr.disable();
+        expect(arr.status).toEqual('DISABLED');
+
+        arr.updateValueAndValidity();
+        expect(arr.status).toEqual('DISABLED');
+
+        arr.push(new FormControl({value: '', disabled: true}));
+        expect(arr.status).toEqual('DISABLED');
+
+        arr.push(new FormControl());
+        expect(arr.status).toEqual('VALID');
+      });
+
+      it('should re-enable empty, disabled arrays', () => {
+        const arr = new FormArray([]);
+        arr.disable();
+        expect(arr.status).toEqual('DISABLED');
+
+        arr.enable();
+        expect(arr.status).toEqual('VALID');
+      });
+
       describe('disabled events', () => {
         let logger: string[];
         let c: FormControl;

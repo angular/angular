@@ -732,7 +732,7 @@ export class FormGroup extends AbstractControl {
         return false;
       }
     }
-    return !StringMapWrapper.isEmpty(this.controls);
+    return Object.keys(this.controls).length > 0 || this.disabled;
   }
 
   /** @internal */
@@ -911,7 +911,7 @@ export class FormArray extends AbstractControl {
     for (let control of this.controls) {
       if (control.enabled) return false;
     }
-    return !!this.controls.length;
+    return this.controls.length > 0 || this.disabled;
   }
 
   private _registerControl(control: AbstractControl) {
