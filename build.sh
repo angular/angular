@@ -82,7 +82,7 @@ do
   LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
 
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig.json        ====="
-  $TSC -p ${SRCDIR}/tsconfig.json
+  $TSC -p ${SRCDIR}/tsconfig-build.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
 
