@@ -14,13 +14,13 @@ import {Subscriber} from 'rxjs/Subscriber';
 
 // #docregion AsyncPipePromise
 @Component({
-  selector: 'async-example',
+  selector: 'async-promise',
   template: `<div>
     <p>Wait for it... {{ greeting | async }}</p>
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
   </div>`
 })
-export class AsyncPipeExample {
+export class AsyncPromiseComponent {
   greeting: Promise<string> = null;
   arrived: boolean = false;
 
@@ -45,29 +45,10 @@ export class AsyncPipeExample {
 // #enddocregion
 
 // #docregion AsyncPipeObservable
-@Component({selector: 'task-cmp', template: 'Time: {{ time | async }}'})
-class Task {
+@Component({selector: 'async-observable', template: '<div>Time: {{ time | async }}</div>'})
+export class AsyncObservableComponent {
   time = new Observable<number>((observer: Subscriber<number>) => {
     setInterval(() => observer.next(new Date().getTime()), 500);
   });
 }
 // #enddocregion
-
-@Component({
-  selector: 'example-app',
-  template: `
-    <h1>AsyncPipe Example</h1>
-    <async-example></async-example>
-  `
-})
-export class AppCmp {
-}
-
-@NgModule(
-    {declarations: [AsyncPipeExample, AppCmp, Task], imports: [BrowserModule], bootstrap: [AppCmp]})
-class AppModule {
-}
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(AppModule);
-}
