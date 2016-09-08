@@ -13,6 +13,7 @@ import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animat
 
 import {Component} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
+import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
@@ -377,6 +378,30 @@ function declareTests({useJit}: {useJit: boolean}) {
              assertPlaying(player3, false);
              assertPlaying(player4, true);
              assertPlaying(player5, true);
+           }));
+
+        it('should allow a group animation to be set as the entry point for an animation trigger',
+           fakeAsync(() => {
+             TestBed.overrideComponent(DummyIfCmp, {
+               set: {
+                 template: `<div *ngIf="exp" [@myAnimation]="exp"></div>`,
+                 animations: [trigger(
+                     'myAnimation', [transition('void => *', group([
+                                                  animate(1000, style({color: 'red'})),
+                                                  animate('1s 0.5s', style({fontSize: 10})),
+                                                ]))])]
+               }
+             });
+
+             const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.debugElement.componentInstance;
+
+             cmp.exp = true;
+             fixture.detectChanges();
+
+             const player = driver.log[0]['player'];
+             expect(player.parentPlayer instanceof AnimationGroupPlayer).toBe(true);
            }));
       });
 
