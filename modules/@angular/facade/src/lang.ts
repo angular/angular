@@ -272,9 +272,6 @@ export class NumberWrapper {
     throw new Error('Invalid integer literal when parsing ' + text + ' in base ' + radix);
   }
 
-  // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
-  static parseFloat(text: string): number { return parseFloat(text); }
-
   static get NaN(): number { return NaN; }
 
   static isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
