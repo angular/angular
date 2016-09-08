@@ -775,6 +775,32 @@ export function main() {
         expect(g.touched).toEqual(true);
       });
 
+      it('should keep empty, disabled groups disabled when updating validity', () => {
+        const group = new FormGroup({});
+        expect(group.status).toEqual('VALID');
+
+        group.disable();
+        expect(group.status).toEqual('DISABLED');
+
+        group.updateValueAndValidity();
+        expect(group.status).toEqual('DISABLED');
+
+        group.addControl('one', new FormControl({value: '', disabled: true}));
+        expect(group.status).toEqual('DISABLED');
+
+        group.addControl('two', new FormControl());
+        expect(group.status).toEqual('VALID');
+      });
+
+      it('should re-enable empty, disabled groups', () => {
+        const group = new FormGroup({});
+        group.disable();
+        expect(group.status).toEqual('DISABLED');
+
+        group.enable();
+        expect(group.status).toEqual('VALID');
+      });
+
       describe('disabled events', () => {
         let logger: string[];
         let c: FormControl;
