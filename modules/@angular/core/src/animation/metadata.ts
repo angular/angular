@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, isArray, isPresent, isString} from '../facade/lang';
+import {isArray, isPresent, isString} from '../facade/lang';
 
 /**
  * @experimental Animation support is experimental.
@@ -339,7 +339,7 @@ export function style(
     input.forEach(entry => {
       var entryOffset = (entry as any /** TODO #9100 */)['offset'];
       if (isPresent(entryOffset)) {
-        offset = offset == null ? NumberWrapper.parseFloat(entryOffset) : offset;
+        offset = offset == null ? parseFloat(entryOffset) : offset;
       }
     });
   }

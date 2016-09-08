@@ -276,8 +276,7 @@ class _Scanner {
       this.advance();
     }
     var str: string = this.input.substring(start, this.index);
-    var value: number =
-        simple ? NumberWrapper.parseIntAutoRadix(str) : NumberWrapper.parseFloat(str);
+    var value: number = simple ? NumberWrapper.parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, value);
   }
 

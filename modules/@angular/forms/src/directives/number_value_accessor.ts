@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
 
-import {NumberWrapper, isBlank} from '../facade/lang';
+import {isBlank} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -50,7 +50,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (_: number) => void): void {
-    this.onChange = (value) => { fn(value == '' ? null : NumberWrapper.parseFloat(value)); };
+    this.onChange = (value) => { fn(value == '' ? null : parseFloat(value)); };
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
