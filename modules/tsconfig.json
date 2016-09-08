@@ -30,7 +30,8 @@
     "benchmarks_external",
     "payload_tests",
     "rollup-test",
-    "@angular/examples/**/*.ts",
+    "@angular/examples/**/e2e_test",
+    "@angular/examples/**/*e2e*.ts",
     "@angular/compiler-cli/integrationtest"
   ]
 }
