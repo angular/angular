@@ -12,14 +12,13 @@
  * This module provides a set of common Pipes.
  */
 import {AsyncPipe} from './async_pipe';
+import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
 import {DatePipe} from './date_pipe';
 import {I18nPluralPipe} from './i18n_plural_pipe';
 import {I18nSelectPipe} from './i18n_select_pipe';
 import {JsonPipe} from './json_pipe';
-import {LowerCasePipe} from './lowercase_pipe';
 import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
 import {SlicePipe} from './slice_pipe';
-import {UpperCasePipe} from './uppercase_pipe';
 
 export {
   AsyncPipe,
@@ -32,8 +31,10 @@ export {
   LowerCasePipe,
   PercentPipe,
   SlicePipe,
+  TitleCasePipe,
   UpperCasePipe
 };
+
 
 /**
  * A collection of Angular pipes that are likely to be used in each and every application.
@@ -46,6 +47,7 @@ export const COMMON_PIPES = [
   SlicePipe,
   DecimalPipe,
   PercentPipe,
+  TitleCasePipe,
   CurrencyPipe,
   DatePipe,
   I18nPluralPipe,
