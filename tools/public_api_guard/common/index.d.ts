@@ -127,6 +127,11 @@ export declare class NgFor implements DoCheck, OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
 }
 
+/** @experimental */
+export declare class SortPipe implements PipeTransform {
+    transform(list: any[], path?: string): any[];
+}
+
 /** @stable */
 export declare class NgIf {
     ngIf: any;
@@ -220,6 +225,11 @@ export declare abstract class PlatformLocation {
 /** @stable */
 export declare class SlicePipe implements PipeTransform {
     transform(value: any, start: number, end?: number): any;
+}
+
+/** @experimental */
+export declare class SortPipe implements PipeTransform {
+    transform(list: any[], path?: string): any[];
 }
 
 /** @stable */
