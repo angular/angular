@@ -259,7 +259,7 @@ export interface ExistingProvider {
  *
  * // Assume location is: http://angular.io/#someLocation
  * expect(injector.get(HASH)).toEqual('someLocation');
- * ``
+ * ```
  * @stable
  */
 export interface FactoryProvider {
