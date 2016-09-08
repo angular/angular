@@ -63,7 +63,7 @@ export class Runner {
     }
 
     var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
-    var adapter = inj.get(WebDriverAdapter);
+    var adapter: WebDriverAdapter = inj.get(WebDriverAdapter);
 
     return Promise
         .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])

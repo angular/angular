@@ -36,7 +36,7 @@ export abstract class WebDriverExtension {
       },
       {
         provide: WebDriverExtension,
-        useFactory: (children: WebDriverExtension[], capabilities: any) => {
+        useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
           var delegate: WebDriverExtension;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {

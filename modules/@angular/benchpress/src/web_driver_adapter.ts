@@ -17,6 +17,6 @@ export abstract class WebDriverAdapter {
   waitFor(callback: Function): Promise<any> { throw new Error('NYI'); }
   executeScript(script: string): Promise<any> { throw new Error('NYI'); }
   executeAsyncScript(script: string): Promise<any> { throw new Error('NYI'); }
-  capabilities(): Promise<Map<string, any>> { throw new Error('NYI'); }
+  capabilities(): Promise<{[key: string]: any}> { throw new Error('NYI'); }
   logs(type: string): Promise<any[]> { throw new Error('NYI'); }
 }

@@ -12,7 +12,7 @@
   "optionalDependencies": {
     "jpm": "1.1.4",
     "firefox-profile": "0.4.0",
-    "selenium-webdriver": "3.0.0-beta-2"
+    "selenium-webdriver": "^2.53.3"
   },
   "repository": {
     "type": "git",
