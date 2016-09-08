@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
+    "noImplicitAny": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../../../dist/examples",
