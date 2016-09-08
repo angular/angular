@@ -12,7 +12,7 @@
 * **compiler:** make ShadowCSS shim work on Android browser ([#11139](https://github.com/angular/angular/issues/11139)) ([38069ab](https://github.com/angular/angular/commit/38069ab)), closes [#11123](https://github.com/angular/angular/issues/11123)
 * **compiler:** no longer use assetCacheKey and Function#name for token identity. ([51877ef](https://github.com/angular/angular/commit/51877ef)), closes [#10545](https://github.com/angular/angular/issues/10545) [#10538](https://github.com/angular/angular/issues/10538)
 * **compiler:** only emit metadata for exported enums ([#10957](https://github.com/angular/angular/issues/10957)) ([a7b7682](https://github.com/angular/angular/commit/a7b7682))
-* **compiler:** throw descriptive error message for invalid NgModule providers ([#10947](https://github.com/angular/angular/issues/10947)) ([aa5c8ca](https://github.com/angular/angular/commit/aa5c8ca)), closes [#10714](https://github.com/angular/angular/issues/10714)
+* **compiler:** throw descriptive error meesage for invalid NgModule providers ([#10947](https://github.com/angular/angular/issues/10947)) ([aa5c8ca](https://github.com/angular/angular/commit/aa5c8ca)), closes [#10714](https://github.com/angular/angular/issues/10714)
 * **compiler:** detect invalid elements in templates via DomSchemaRegistry ([1df69cb](https://github.com/angular/angular/commit/1df69cb))
 * **compiler:** ExtractorMerger returns return errors together with nodes (as a ParseTreeResult)  ([39c0f9e](https://github.com/angular/angular/commit/39c0f9e))
 * **compiler:** throw better errors when components are passed to imports or modules are passed to declarations. ([#10888](https://github.com/angular/angular/issues/10888)) ([c4fd862](https://github.com/angular/angular/commit/c4fd862)), closes [#10823](https://github.com/angular/angular/issues/10823)
@@ -194,7 +194,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 
   We now only accept:
   ```
-  {provide: MyClass, useFactory: ...}
+  {provider: MyClass, toFactory: ...}
   ```
   
 * core: previously deprecated NgZoneError has been removed

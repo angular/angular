@@ -7,7 +7,7 @@ import {TreeNode, emptyTree} from '../util';
   selector: 'tree',
   inputs: ['data'],
   template:
-      `<span [style.backgroundColor]="data.depth % 2 ? '' : 'grey'"> {{data.value}} </span><tree *ngIf='data.right != null' [data]='data.right'></tree><tree *ngIf='data.left != null' [data]='data.left'></tree>`
+      `<span> {{data.value}} <span template='ngIf data.right != null'><tree [data]='data.right'></tree></span><span template='ngIf data.left != null'><tree [data]='data.left'></tree></span></span>`
 })
 export class TreeComponent {
   data: TreeNode = emptyTree;

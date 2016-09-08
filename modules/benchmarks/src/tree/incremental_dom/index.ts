@@ -1,19 +1,19 @@
 import {bindAction, profile} from '../../util';
 import {TreeNode, buildTree, emptyTree} from '../util';
-import {TreeComponent} from './tree';
+import {render} from './tree';
 const {patch} = require('incremental-dom');
 
 export function main() {
-  var tree: TreeComponent;
+  var app: any;
 
-  function destroyDom() { tree.data = emptyTree; }
+  function destroyDom() { patch(app, () => render(emptyTree)); }
 
-  function createDom() { tree.data = buildTree(); }
+  function createDom() { patch(app, () => render(buildTree())); }
 
   function noop() {}
 
   function init() {
-    tree = new TreeComponent(document.querySelector('tree'));
+    app = document.querySelector('tree');
 
     bindAction('#destroyDom', destroyDom);
     bindAction('#createDom', createDom);

@@ -24,12 +24,6 @@ describe('tree benchmark spec', () => {
     });
   });
 
-  it('should work for ng2 switch', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_switch/index.html',
-    });
-  });
-
   it('should work for the baseline', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/baseline/index.html',
@@ -37,7 +31,14 @@ describe('tree benchmark spec', () => {
     });
   });
 
-  it('should work for incremental dom', () => {
+  it('should work for the baseline dom', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/baseline_dom/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
+
+  it('should work for the incremental dom', () => {
     testTreeBenchmark({
       url: 'all/benchmarks/src/tree/incremental_dom/index.html',
       ignoreBrowserSynchronization: true,
@@ -59,15 +60,9 @@ describe('tree benchmark spec', () => {
   });
 
   function testTreeBenchmark(openConfig: {url: string, ignoreBrowserSynchronization?: boolean}) {
-    openBrowser({
-      url: openConfig.url,
-      ignoreBrowserSynchronization: openConfig.ignoreBrowserSynchronization,
-      params: [{name: 'depth', value: 4}],
-    });
+    openBrowser(openConfig);
     $('#createDom').click();
     expect($('#root').getText()).toContain('0');
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A');
     $('#destroyDom').click();
     expect($('#root').getText()).toEqual('');
   }

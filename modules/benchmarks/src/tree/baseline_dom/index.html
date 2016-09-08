@@ -4,16 +4,13 @@
 
   <h2>Params</h2>
   <form>
-    Cols:
-    <input type="number" name="cols" placeholder="cols" value="40">
-    <br>
-    Rows:
-    <input type="number" name="rows" placeholder="rows" value="200">
+    Depth:
+    <input type="number" name="depth" placeholder="depth" value="9">
     <br>
     <button>Apply</button>
   </form>
 
-  <h2>Ng2 Largetable Benchmark</h2>
+  <h2>Baseline tree benchmark</h2>
   <p>
     <button id="destroyDom">destroyDom</button>
     <button id="createDom">createDom</button>
@@ -22,7 +19,7 @@
   </p>
 
   <div>
-    <largetable id="root"></largetable>
+    <tree id="root"></tree>
   </div>
 
   <script src="../../bootstrap_ng2.js"></script>

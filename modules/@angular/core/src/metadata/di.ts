@@ -35,7 +35,7 @@ import {Type} from '../type';
  * // user code
  * let routes = [
  *   {path: '/root', component: RootComp},
- *   {path: '/teams', component: TeamsComp}
+ *   {path: /teams', component: TeamsComp}
  * ];
  *
  * @NgModule({

@@ -15,33 +15,18 @@ import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
-import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
+import {CompUsingPipes, CompWithProviders, CompWithReferences, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
 @NgModule({
   declarations: [
-    SomeDirectiveInRootModule,
-    SomePipeInRootModule,
-    AnimateCmp,
-    BasicComp,
-    CompForChildQuery,
-    CompWithEntryComponents,
-    CompWithAnalyzeEntryComponentsProvider,
-    ProjectingComp,
-    CompWithChildQuery,
-    CompWithDirectiveChild,
-    CompWithNgContent,
-    CompUsingRootModuleDirectiveAndPipe,
-    CompWithProviders,
-    CompWithReferences,
-    CompUsingPipes,
-    CompConsumingEvents,
-    DirPublishingEvents,
-    MultipleComponentsMyComp,
-    DirectiveForQuery,
-    NextComp,
+    SomeDirectiveInRootModule, SomePipeInRootModule, AnimateCmp, BasicComp, CompForChildQuery,
+    CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider, ProjectingComp,
+    CompWithChildQuery, CompWithDirectiveChild, CompWithNgContent,
+    CompUsingRootModuleDirectiveAndPipe, CompWithProviders, CompWithReferences, CompUsingPipes,
+    MultipleComponentsMyComp, DirectiveForQuery, NextComp
   ],
   imports: [
     BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements,

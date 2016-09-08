@@ -25,7 +25,7 @@ const NAMESPACE_URIS = {
   'xhtml': 'http://www.w3.org/1999/xhtml'
 };
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
+var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
 
 export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();

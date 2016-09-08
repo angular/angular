@@ -1,18 +1,19 @@
 import {bindAction, profile} from '../../util';
 import {TreeNode, buildTree, emptyTree} from '../util';
-import {TreeComponent} from './tree';
+import {BaseLineTreeComponent} from './tree';
 
 export function main() {
-  var tree: TreeComponent;
+  var app: BaseLineTreeComponent;
 
-  function destroyDom() { tree.data = emptyTree; }
+  function destroyDom() { app.update(emptyTree); }
 
-  function createDom() { tree.data = buildTree(); }
+  function createDom() { app.update(buildTree()); }
 
   function noop() {}
 
   function init() {
-    tree = new TreeComponent(document.querySelector('tree'));
+    const tree: any = document.querySelector('tree');
+    app = new BaseLineTreeComponent(tree);
 
     bindAction('#destroyDom', destroyDom);
     bindAction('#createDom', createDom);

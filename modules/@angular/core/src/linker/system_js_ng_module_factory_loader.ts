@@ -48,7 +48,13 @@ const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
   private _config: SystemJsNgModuleLoaderConfig;
 
+  /**
+   * @internal
+   */
+  _system: any;
+
   constructor(private _compiler: Compiler, @Optional() config?: SystemJsNgModuleLoaderConfig) {
+    this._system = () => System;
     this._config = config || DEFAULT_CONFIG;
   }
 
@@ -61,7 +67,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     let [module, exportName] = path.split(_SEPARATOR);
     if (exportName === undefined) exportName = 'default';
 
-    return System.import(module)
+    return this._system()
+        .import(module)
         .then((module: any) => module[exportName])
         .then((type: any) => checkNotEmpty(type, module, exportName))
         .then((type: any) => this._compiler.compileModuleAsync(type));
@@ -75,7 +82,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
       factoryClassSuffix = '';
     }
 
-    return System.import(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
+    return this._system()
+        .import(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
         .then((module: any) => module[exportName + factoryClassSuffix])
         .then((factory: any) => checkNotEmpty(factory, module, exportName));
   }

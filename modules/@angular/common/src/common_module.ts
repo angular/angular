@@ -15,7 +15,7 @@ import {COMMON_PIPES} from './pipes/common_pipes';
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
 /**
- * The module that includes all the basic Angular directives like {@link NgIf}, {@link NgFor}, ...
+ * The module that includes all the basic Angular directives like {@link NgIf}, ${link NgFor}, ...
  *
  * @stable
  */
