@@ -545,25 +545,25 @@ export function main() {
            var fixture = TestBed.createComponent(ChildComp);
            fixture.detectChanges();
 
-           expect(fixture.debugElement.nativeElement).toHaveText('Original Child');
+           expect(fixture.nativeElement).toHaveText('Original Child');
          }));
 
       it('should allow changing members of the component', async(() => {
 
            var componentFixture = TestBed.createComponent(MyIfComp);
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement).toHaveText('MyIf()');
+           expect(componentFixture.nativeElement).toHaveText('MyIf()');
 
-           componentFixture.debugElement.componentInstance.showMore = true;
+           componentFixture.componentInstance.showMore = true;
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement).toHaveText('MyIf(More)');
+           expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
          }));
 
       it('should override a template', async(() => {
            TestBed.overrideComponent(ChildComp, {set: {template: '<span>Mock</span>'}});
            let componentFixture = TestBed.createComponent(ChildComp);
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement).toHaveText('Mock');
+           expect(componentFixture.nativeElement).toHaveText('Mock');
 
          }));
 
@@ -573,8 +573,7 @@ export function main() {
                {set: {providers: [{provide: FancyService, useClass: MockFancyService}]}});
            var componentFixture = TestBed.createComponent(TestProvidersComp);
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement)
-               .toHaveText('injected value: mocked out value');
+           expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
          }));
 
 
@@ -585,8 +584,7 @@ export function main() {
 
            var componentFixture = TestBed.createComponent(TestViewProvidersComp);
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement)
-               .toHaveText('injected value: mocked out value');
+           expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
          }));
     });
     describe('using alternate components', () => {
@@ -603,7 +601,7 @@ export function main() {
 
            let componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
-           expect(componentFixture.debugElement.nativeElement).toHaveText('Parent(Mock)');
+           expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
          }));
     });
   });

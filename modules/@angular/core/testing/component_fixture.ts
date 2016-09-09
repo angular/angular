@@ -37,21 +37,9 @@ export class ComponentFixture<T> {
   elementRef: ElementRef;
 
   /**
-   * The ComponentRef for the component
-   */
-  componentRef: ComponentRef<T>;
-
-  /**
    * The ChangeDetectorRef for the component
    */
   changeDetectorRef: ChangeDetectorRef;
-
-  /**
-   * The NgZone in which this component was instantiated.
-   */
-  ngZone: NgZone;
-
-  private _autoDetect: boolean;
 
   private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
@@ -62,7 +50,8 @@ export class ComponentFixture<T> {
   private _onMicrotaskEmptySubscription: any /** TODO #9100 */ = null;
   private _onErrorSubscription: any /** TODO #9100 */ = null;
 
-  constructor(componentRef: ComponentRef<T>, ngZone: NgZone, autoDetect: boolean) {
+  constructor(
+      public componentRef: ComponentRef<T>, public ngZone: NgZone, private _autoDetect: boolean) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
@@ -70,7 +59,6 @@ export class ComponentFixture<T> {
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
     this.ngZone = ngZone;
-    this._autoDetect = autoDetect;
 
     if (ngZone != null) {
       this._onUnstableSubscription =

@@ -131,14 +131,14 @@ describe('Integration', () => {
        advance(fixture);
        expect(location.path()).toEqual('/team/22');
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ , right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
        router.navigateByUrl('/team/33', {skipLocationChange: true});
        advance(fixture);
 
        expect(location.path()).toEqual('/team/22');
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ , right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
   it('should skip location update when using NavigationExtras.skipLocationChange with navigate',
@@ -152,14 +152,14 @@ describe('Integration', () => {
        advance(fixture);
        expect(location.path()).toEqual('/team/22');
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ , right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
        router.navigate(['/team/33'], {skipLocationChange: true});
        advance(fixture);
 
        expect(location.path()).toEqual('/team/22');
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ , right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
   it('should navigate back and forward',
@@ -212,7 +212,7 @@ describe('Integration', () => {
        (<any>location).simulateUrlPop('/team/22/user/fedor');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
 
        expectEvents(recordedEvents, [
          [NavigationStart, '/team/22/user/victor'], [RoutesRecognized, '/team/22/user/victor'],
@@ -233,14 +233,14 @@ describe('Integration', () => {
        advance(fixture);
        const cmp = fixture.debugElement.children[1].componentInstance;
        expect(location.path()).toEqual('/one/two');
-       expect(fixture.debugElement.nativeElement).toHaveText('collect-params');
+       expect(fixture.nativeElement).toHaveText('collect-params');
 
        expect(cmp.recordedUrls()).toEqual(['one/two']);
 
        router.navigateByUrl('/three/four');
        advance(fixture);
        expect(location.path()).toEqual('/three/four');
-       expect(fixture.debugElement.nativeElement).toHaveText('collect-params');
+       expect(fixture.nativeElement).toHaveText('collect-params');
        expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
      })));
 
@@ -259,8 +259,7 @@ describe('Integration', () => {
        router.navigateByUrl('/team/22/(user/victor//right:simple)');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement)
-           .toHaveText('team 22 [ user victor, right: simple ]');
+       expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right: simple ]');
      })));
 
   it('should deactivate outlets', fakeAsync(inject([Router], (router: Router) => {
@@ -281,7 +280,7 @@ describe('Integration', () => {
        router.navigateByUrl('/team/22/user/victor');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ user victor, right:  ]');
+       expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right:  ]');
      })));
 
   it('should deactivate nested outlets', fakeAsync(inject([Router], (router: Router) => {
@@ -305,7 +304,7 @@ describe('Integration', () => {
        router.navigateByUrl('/');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('');
+       expect(fixture.nativeElement).toHaveText('');
      })));
 
   it('should set query params and fragment', fakeAsync(inject([Router], (router: Router) => {
@@ -315,11 +314,11 @@ describe('Integration', () => {
 
        router.navigateByUrl('/query?name=1#fragment1');
        advance(fixture);
-       expect(fixture.debugElement.nativeElement).toHaveText('query: 1 fragment: fragment1');
+       expect(fixture.nativeElement).toHaveText('query: 1 fragment: fragment1');
 
        router.navigateByUrl('/query?name=2#fragment2');
        advance(fixture);
-       expect(fixture.debugElement.nativeElement).toHaveText('query: 2 fragment: fragment2');
+       expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
      })));
 
   it('should push params only when they change', fakeAsync(inject([Router], (router: Router) => {
@@ -357,12 +356,12 @@ describe('Integration', () => {
        router.navigateByUrl('/user/victor');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('user victor');
+       expect(fixture.nativeElement).toHaveText('user victor');
 
        router.navigateByUrl('/');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('simple');
+       expect(fixture.nativeElement).toHaveText('simple');
      })));
 
   it('should cancel in-flight navigations', fakeAsync(inject([Router], (router: Router) => {
@@ -386,7 +385,7 @@ describe('Integration', () => {
        expect(r1).toEqual(false);  // returns false because it was canceled
        expect(r2).toEqual(true);   // returns true because it was successful
 
-       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
+       expect(fixture.nativeElement).toHaveText('user fedor');
        expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
 
        expectEvents(recordedEvents, [
@@ -416,7 +415,7 @@ describe('Integration', () => {
        router.navigateByUrl('/user/fedor');
        advance(fixture);
 
-       expect(fixture.debugElement.nativeElement).toHaveText('user fedor');
+       expect(fixture.nativeElement).toHaveText('user fedor');
 
        expectEvents(recordedEvents, [
          [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
@@ -488,27 +487,25 @@ describe('Integration', () => {
        router.navigateByUrl('/parent/11/(simple//right:user/victor)');
        advance(fixture);
        expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
-       expect(fixture.debugElement.nativeElement)
-           .toHaveText('primary [simple] right [user victor]');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
 
        // navigate to the same route with different params (reuse)
        router.navigateByUrl('/parent/22/(simple//right:user/fedor)');
        advance(fixture);
        expect(location.path()).toEqual('/parent/22/(simple//right:user/fedor)');
-       expect(fixture.debugElement.nativeElement).toHaveText('primary [simple] right [user fedor]');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user fedor]');
 
        // navigate to a normal route (check deactivation)
        router.navigateByUrl('/user/victor');
        advance(fixture);
        expect(location.path()).toEqual('/user/victor');
-       expect(fixture.debugElement.nativeElement).toHaveText('primary [user victor] right []');
+       expect(fixture.nativeElement).toHaveText('primary [user victor] right []');
 
        // navigate back to a componentless route
        router.navigateByUrl('/parent/11/(simple//right:user/victor)');
        advance(fixture);
        expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
-       expect(fixture.debugElement.nativeElement)
-           .toHaveText('primary [simple] right [user victor]');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
      })));
 
   it('should emit an event when an outlet gets activated', fakeAsync(() => {
@@ -531,7 +528,7 @@ describe('Integration', () => {
        const router: Router = TestBed.get(Router);
 
        const fixture = createRoot(router, Container);
-       const cmp = fixture.debugElement.componentInstance;
+       const cmp = fixture.componentInstance;
 
        router.resetConfig(
            [{path: 'blank', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]);
@@ -645,14 +642,14 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link');
          advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/33/simple');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');
        })));
 
     it('should not preserve query params and fragment by default', fakeAsync(() => {
@@ -670,7 +667,7 @@ describe('Integration', () => {
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
 
          router.navigateByUrl('/home?q=123#fragment');
          advance(fixture);
@@ -692,7 +689,7 @@ describe('Integration', () => {
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
 
          router.navigateByUrl('/home?q=123');
          advance(fixture);
@@ -721,13 +718,13 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link');
          advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
-         const native = fixture.debugElement.nativeElement.querySelector('button');
+         const native = fixture.nativeElement.querySelector('button');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');
        })));
 
     it('should support absolute router links', fakeAsync(inject([Router], (router: Router) => {
@@ -743,14 +740,14 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link');
          advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/33/simple');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 33 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');
        })));
 
     it('should support relative router links', fakeAsync(inject([Router], (router: Router) => {
@@ -766,14 +763,14 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link');
          advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ link, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/22/simple');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
        })));
 
     it('should support top-level link', fakeAsync(inject([Router], (router: Router) => {
@@ -785,20 +782,20 @@ describe('Integration', () => {
 
          router.navigateByUrl('/');
          advance(fixture);
-         expect(fixture.debugElement.nativeElement).toHaveText(' ');
-         const cmp = fixture.debugElement.componentInstance;
+         expect(fixture.nativeElement).toHaveText(' ');
+         const cmp = fixture.componentInstance;
 
          cmp.show = true;
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('link ');
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         expect(fixture.nativeElement).toHaveText('link ');
+         const native = fixture.nativeElement.querySelector('a');
 
          expect(native.getAttribute('href')).toEqual('/simple');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('link simple');
+         expect(fixture.nativeElement).toHaveText('link simple');
        })));
 
     it('should support query params and fragments',
@@ -817,12 +814,12 @@ describe('Integration', () => {
          router.navigateByUrl('/team/22/link');
          advance(fixture);
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/22/simple?q=1#f');
          native.click();
          advance(fixture);
 
-         expect(fixture.debugElement.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
 
          expect(location.path()).toEqual('/team/22/simple?q=1#f');
        })));
@@ -1401,8 +1398,8 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
-         const nativeLink = fixture.debugElement.nativeElement.querySelector('a');
-         const nativeButton = fixture.debugElement.nativeElement.querySelector('button');
+         const nativeLink = fixture.nativeElement.querySelector('a');
+         const nativeButton = fixture.nativeElement.querySelector('button');
          expect(nativeLink.className).toEqual('active');
          expect(nativeButton.className).toEqual('active');
 
@@ -1427,7 +1424,7 @@ describe('Integration', () => {
          const f = TestBed.createComponent(RootCmpWithLink);
          advance(f);
 
-         const link = f.debugElement.nativeElement.querySelector('a');
+         const link = f.nativeElement.querySelector('a');
          expect(link.className).toEqual('');
 
          router.initialNavigation();
@@ -1456,7 +1453,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
-         const native = fixture.debugElement.nativeElement.querySelector('#link-parent');
+         const native = fixture.nativeElement.querySelector('#link-parent');
          expect(native.className).toEqual('active');
 
          router.navigateByUrl('/team/22/link/simple');
@@ -1484,7 +1481,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link');
 
-         const native = fixture.debugElement.nativeElement.querySelector('a');
+         const native = fixture.nativeElement.querySelector('a');
          expect(native.className).toEqual('active');
 
          router.navigateByUrl('/team/22/link/simple');
@@ -1496,45 +1493,45 @@ describe('Integration', () => {
   });
 
   describe('lazy loading', () => {
-    it('works', fakeAsync(inject(
-                    [Router, Location, NgModuleFactoryLoader],
-                    (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                      @Component({
-                        selector: 'lazy',
-                        template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
-                      })
-                      class ParentLazyLoadedComponent {
-                      }
+    it('works',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({
+               selector: 'lazy',
+               template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
+             })
+             class ParentLazyLoadedComponent {
+             }
 
-                      @Component({selector: 'lazy', template: 'lazy-loaded-child'})
-                      class ChildLazyLoadedComponent {
-                      }
+             @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+             class ChildLazyLoadedComponent {
+             }
 
-                      @NgModule({
-                        declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
-                        imports: [RouterModule.forChild([{
-                          path: 'loaded',
-                          component: ParentLazyLoadedComponent,
-                          children: [{path: 'child', component: ChildLazyLoadedComponent}]
-                        }])]
-                      })
-                      class LoadedModule {
-                      }
+             @NgModule({
+               declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
+               imports: [RouterModule.forChild([{
+                 path: 'loaded',
+                 component: ParentLazyLoadedComponent,
+                 children: [{path: 'child', component: ChildLazyLoadedComponent}]
+               }])]
+             })
+             class LoadedModule {
+             }
 
 
-                      loader.stubbedModules = {expected: LoadedModule};
+             loader.stubbedModules = {expected: LoadedModule};
 
-                      const fixture = createRoot(router, RootCmp);
+             const fixture = createRoot(router, RootCmp);
 
-                      router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-                      router.navigateByUrl('/lazy/loaded/child');
-                      advance(fixture);
+             router.navigateByUrl('/lazy/loaded/child');
+             advance(fixture);
 
-                      expect(location.path()).toEqual('/lazy/loaded/child');
-                      expect(fixture.debugElement.nativeElement)
-                          .toHaveText('lazy-loaded-parent [lazy-loaded-child]');
-                    })));
+             expect(location.path()).toEqual('/lazy/loaded/child');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
+           })));
     it('throws an error when forRoot() is used in a lazy context',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
@@ -1656,7 +1653,7 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/lazy/loaded/child');
-             expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded');
            })));
 
     it('works when given a callback',
@@ -1681,7 +1678,7 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/lazy/loaded');
-             expect(fixture.debugElement.nativeElement).toHaveText('lazy-loaded');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded');
            })));
 
     it('error emit an error when cannot load a config',

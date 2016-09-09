@@ -23,7 +23,7 @@ export function main() {
       TestBed.overrideComponent(MainComp, {set: {template}});
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
+      expect(main.nativeElement).toHaveText('SIMPLE(A)');
     });
 
     it('should support simple components with text interpolation as direct children', () => {
@@ -33,9 +33,9 @@ export function main() {
       TestBed.overrideComponent(MainComp, {set: {template}});
       const main = TestBed.createComponent(MainComp);
 
-      main.debugElement.componentInstance.text = 'A';
+      main.componentInstance.text = 'A';
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('START(SIMPLE(A))END');
+      expect(main.nativeElement).toHaveText('START(SIMPLE(A))END');
     });
 
     it('should support projecting text interpolation to a non bound element', () => {
@@ -44,9 +44,9 @@ export function main() {
       TestBed.overrideComponent(MainComp, {set: {template: '<simple>{{text}}</simple>'}});
       const main = TestBed.createComponent(MainComp);
 
-      main.debugElement.componentInstance.text = 'A';
+      main.componentInstance.text = 'A';
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
+      expect(main.nativeElement).toHaveText('SIMPLE(A)');
     });
 
     it('should support projecting text interpolation to a non bound element with other bound elements after it',
@@ -59,9 +59,9 @@ export function main() {
          TestBed.overrideComponent(MainComp, {set: {template: '<simple>{{text}}</simple>'}});
          const main = TestBed.createComponent(MainComp);
 
-         main.debugElement.componentInstance.text = 'A';
+         main.componentInstance.text = 'A';
          main.detectChanges();
-         expect(main.debugElement.nativeElement).toHaveText('SIMPLE(AEL)');
+         expect(main.nativeElement).toHaveText('SIMPLE(AEL)');
        });
 
     it('should project content components', () => {
@@ -72,7 +72,7 @@ export function main() {
       const main = TestBed.createComponent(MainComp);
 
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('SIMPLE(0|1|2)');
+      expect(main.nativeElement).toHaveText('SIMPLE(0|1|2)');
     });
 
     it('should not show the light dom even if there is no content tag', () => {
@@ -80,7 +80,7 @@ export function main() {
       TestBed.overrideComponent(MainComp, {set: {template: '<empty>A</empty>'}});
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('');
+      expect(main.nativeElement).toHaveText('');
     });
 
     it('should support multiple content tags', () => {
@@ -96,7 +96,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('(A, BC)');
+      expect(main.nativeElement).toHaveText('(A, BC)');
     });
 
     it('should redistribute only direct children', () => {
@@ -111,7 +111,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('(, BAC)');
+      expect(main.nativeElement).toHaveText('(, BAC)');
     });
 
     it('should redistribute direct child viewcontainers when the light dom changes', () => {
@@ -131,13 +131,13 @@ export function main() {
                                    .childNodes.filter(By.directive(ManualViewportDirective))
                                    .map(de => de.injector.get(ManualViewportDirective));
 
-      expect(main.debugElement.nativeElement).toHaveText('(, B)');
+      expect(main.nativeElement).toHaveText('(, B)');
       viewportDirectives.forEach(d => d.show());
-      expect(main.debugElement.nativeElement).toHaveText('(A1, B)');
+      expect(main.nativeElement).toHaveText('(A1, B)');
 
       viewportDirectives.forEach(d => d.hide());
 
-      expect(main.debugElement.nativeElement).toHaveText('(, B)');
+      expect(main.nativeElement).toHaveText('(, B)');
     });
 
     it('should support nested components', () => {
@@ -152,7 +152,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
+      expect(main.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
     });
 
     it('should support nesting with content being direct child of a nested component', () => {
@@ -175,10 +175,10 @@ export function main() {
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
-      expect(main.debugElement.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
+      expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
       viewportDirective.show();
 
-      expect(main.debugElement.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
+      expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
     });
 
     it('should redistribute when the shadow dom changes', () => {
@@ -199,14 +199,14 @@ export function main() {
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
-      expect(main.debugElement.nativeElement).toHaveText('(, BC)');
+      expect(main.nativeElement).toHaveText('(, BC)');
 
       viewportDirective.show();
-      expect(main.debugElement.nativeElement).toHaveText('(A, BC)');
+      expect(main.nativeElement).toHaveText('(A, BC)');
 
       viewportDirective.hide();
 
-      expect(main.debugElement.nativeElement).toHaveText('(, BC)');
+      expect(main.nativeElement).toHaveText('(, BC)');
     });
 
     // GH-2095 - https://github.com/angular/angular/issues/2095
@@ -220,7 +220,7 @@ export function main() {
 
       main.detectChanges();
 
-      expect(main.debugElement.nativeElement).toHaveText('P,text');
+      expect(main.nativeElement).toHaveText('P,text');
     });
 
     // important as we are moving style tags around during compilation,
@@ -232,7 +232,7 @@ export function main() {
       const main = TestBed.createComponent(MainComp);
 
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('P,text');
+      expect(main.nativeElement).toHaveText('P,text');
     });
 
     it('should support moving non projected light dom around', () => {
@@ -263,10 +263,10 @@ export function main() {
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
 
-      expect(main.debugElement.nativeElement).toHaveText('START()END');
+      expect(main.nativeElement).toHaveText('START()END');
 
       projectDirective.show(sourceDirective.templateRef);
-      expect(main.debugElement.nativeElement).toHaveText('START(A)END');
+      expect(main.nativeElement).toHaveText('START(A)END');
     });
 
     it('should support moving projected light dom around', () => {
@@ -286,10 +286,10 @@ export function main() {
       var projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
-      expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START()END');
+      expect(main.nativeElement).toHaveText('SIMPLE()START()END');
 
       projectDirective.show(sourceDirective.templateRef);
-      expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START(A)END');
+      expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
     });
 
     it('should support moving ng-content around', () => {
@@ -312,15 +312,15 @@ export function main() {
       var projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
-      expect(main.debugElement.nativeElement).toHaveText('(, B)START()END');
+      expect(main.nativeElement).toHaveText('(, B)START()END');
 
       projectDirective.show(sourceDirective.templateRef);
-      expect(main.debugElement.nativeElement).toHaveText('(, B)START(A)END');
+      expect(main.nativeElement).toHaveText('(, B)START(A)END');
 
       // Stamping ng-content multiple times should not produce the content multiple
       // times...
       projectDirective.show(sourceDirective.templateRef);
-      expect(main.debugElement.nativeElement).toHaveText('(, B)START(A)END');
+      expect(main.nativeElement).toHaveText('(, B)START(A)END');
     });
 
     // Note: This does not use a ng-content element, but
@@ -335,10 +335,10 @@ export function main() {
       var manualDirective: ManualViewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
-      expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
+      expect(main.nativeElement).toHaveText('TREE(0:)');
       manualDirective.show();
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE(1:))');
+      expect(main.nativeElement).toHaveText('TREE(0:TREE(1:))');
     });
 
     // Note: This does not use a ng-content element, but
@@ -353,21 +353,21 @@ export function main() {
 
       main.detectChanges();
 
-      expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
+      expect(main.nativeElement).toHaveText('TREE(0:)');
 
       var tree = main.debugElement.query(By.directive(Tree));
       var manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
           ManualViewportDirective))[0].injector.get(ManualViewportDirective);
       manualDirective.show();
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE2(1:))');
+      expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
 
       var tree2 = main.debugElement.query(By.directive(Tree2));
       manualDirective = tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
           ManualViewportDirective);
       manualDirective.show();
       main.detectChanges();
-      expect(main.debugElement.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
+      expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
     });
 
     if (getDOM().supportsNativeShadowDOM()) {
@@ -381,7 +381,7 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var childNodes = getDOM().childNodes(main.debugElement.nativeElement);
+        var childNodes = getDOM().childNodes(main.nativeElement);
         expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
         expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
         main.destroy();
@@ -400,7 +400,7 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var mainEl = main.debugElement.nativeElement;
+        var mainEl = main.nativeElement;
         var div1 = getDOM().firstChild(mainEl);
         var div2 = getDOM().createElement('div');
         getDOM().setAttribute(div2, 'class', 'redStyle');
@@ -420,7 +420,7 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var mainEl = main.debugElement.nativeElement;
+        var mainEl = main.nativeElement;
         var div1 = getDOM().firstChild(mainEl);
         var div2 = getDOM().createElement('div');
         getDOM().appendChild(mainEl, div2);
@@ -436,16 +436,16 @@ export function main() {
           MainComp, {set: {template: `<conditional-text>a</conditional-text>`}});
       const main = TestBed.createComponent(MainComp);
 
-      expect(main.debugElement.nativeElement).toHaveText('MAIN()');
+      expect(main.nativeElement).toHaveText('MAIN()');
 
       var viewportElement =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
       viewportElement.injector.get(ManualViewportDirective).show();
-      expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST())');
+      expect(main.nativeElement).toHaveText('MAIN(FIRST())');
 
       viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
       viewportElement.injector.get(ManualViewportDirective).show();
-      expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+      expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
     });
 
     it('should allow to switch the order of nested components via ng-content', () => {
@@ -454,7 +454,7 @@ export function main() {
       const main = TestBed.createComponent(MainComp);
 
       main.detectChanges();
-      expect(getDOM().getInnerHTML(main.debugElement.nativeElement))
+      expect(getDOM().getInnerHTML(main.nativeElement))
           .toEqual(
               '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
               '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
@@ -467,7 +467,7 @@ export function main() {
       const main = TestBed.createComponent(MainComp);
 
       main.detectChanges();
-      expect(getDOM().getInnerHTML(main.debugElement.nativeElement))
+      expect(getDOM().getInnerHTML(main.nativeElement))
           .toEqual(
               '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
               '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
@@ -494,12 +494,12 @@ export function main() {
           conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
-      expect(main.debugElement.nativeElement).toHaveText('(, D)');
-      expect(main.debugElement.nativeElement).toHaveText('(, D)');
+      expect(main.nativeElement).toHaveText('(, D)');
+      expect(main.nativeElement).toHaveText('(, D)');
 
       viewViewportDir.show();
 
-      expect(main.debugElement.nativeElement).toHaveText('(AC, D)');
+      expect(main.nativeElement).toHaveText('(AC, D)');
 
       var contentViewportDir =
           conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
@@ -507,12 +507,12 @@ export function main() {
 
       contentViewportDir.show();
 
-      expect(main.debugElement.nativeElement).toHaveText('(ABC, D)');
+      expect(main.nativeElement).toHaveText('(ABC, D)');
 
       // hide view viewport, and test that it also hides
       // the content viewport's views
       viewViewportDir.hide();
-      expect(main.debugElement.nativeElement).toHaveText('(, D)');
+      expect(main.nativeElement).toHaveText('(, D)');
     });
   });
 }

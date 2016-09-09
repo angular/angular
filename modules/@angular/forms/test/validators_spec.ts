@@ -17,8 +17,8 @@ import {EventEmitter} from '../src/facade/async';
 export function main() {
   function validator(key: string, error: any) {
     return function(c: AbstractControl) {
-      var r = {};
-      (r as any)[key] = error;
+      var r: {[k: string]: string} = {};
+      r[key] = error;
       return r;
     };
   }

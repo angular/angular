@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
-
-import {ListWrapper} from '../src/facade/collection';
 
 export function main() {
   describe('template-driven forms integration tests', () => {
@@ -34,7 +31,7 @@ export function main() {
     describe('basic functionality', () => {
       it('should support ngModel for standalone fields', fakeAsync(() => {
            const fixture = TestBed.createComponent(StandaloneNgModel);
-           fixture.debugElement.componentInstance.name = 'oldValue';
+           fixture.componentInstance.name = 'oldValue';
 
            fixture.detectChanges();
            tick();
@@ -48,12 +45,12 @@ export function main() {
            tick();
 
            // view -> model
-           expect(fixture.debugElement.componentInstance.name).toEqual('updatedValue');
+           expect(fixture.componentInstance.name).toEqual('updatedValue');
          }));
 
       it('should support ngModel registration with a parent form', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.debugElement.componentInstance.name = 'Nancy';
+           fixture.componentInstance.name = 'Nancy';
 
            fixture.detectChanges();
            tick();
@@ -65,9 +62,9 @@ export function main() {
 
       it('should support ngModelGroup', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
-           fixture.debugElement.componentInstance.first = 'Nancy';
-           fixture.debugElement.componentInstance.last = 'Drew';
-           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.componentInstance.first = 'Nancy';
+           fixture.componentInstance.last = 'Drew';
+           fixture.componentInstance.email = 'some email';
 
            fixture.detectChanges();
            tick();
@@ -88,9 +85,9 @@ export function main() {
 
       it('should add controls and control groups to form control model', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
-           fixture.debugElement.componentInstance.first = 'Nancy';
-           fixture.debugElement.componentInstance.last = 'Drew';
-           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.componentInstance.first = 'Nancy';
+           fixture.componentInstance.last = 'Drew';
+           fixture.componentInstance.email = 'some email';
 
            fixture.detectChanges();
            tick();
@@ -103,9 +100,9 @@ export function main() {
 
       it('should remove controls and control groups from form control model', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelNgIfForm);
-           fixture.debugElement.componentInstance.emailShowing = true;
-           fixture.debugElement.componentInstance.first = 'Nancy';
-           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.componentInstance.emailShowing = true;
+           fixture.componentInstance.first = 'Nancy';
+           fixture.componentInstance.email = 'some email';
            fixture.detectChanges();
            tick();
 
@@ -114,7 +111,7 @@ export function main() {
            expect(form.value).toEqual({name: {first: 'Nancy'}, email: 'some email'});
 
            // should remove individual control successfully
-           fixture.debugElement.componentInstance.emailShowing = false;
+           fixture.componentInstance.emailShowing = false;
            fixture.detectChanges();
            tick();
 
@@ -125,7 +122,7 @@ export function main() {
            expect(form.control.get('name.first').value).toEqual('Nancy');
 
            // should remove form group successfully
-           fixture.debugElement.componentInstance.groupShowing = false;
+           fixture.componentInstance.groupShowing = false;
            fixture.detectChanges();
            tick();
 
@@ -136,7 +133,7 @@ export function main() {
 
       it('should set status classes with ngModel', async(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.debugElement.componentInstance.name = 'aa';
+           fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
            fixture.whenStable().then(() => {
              fixture.detectChanges();
@@ -159,7 +156,7 @@ export function main() {
 
       it('should set status classes with ngModelGroup and ngForm', async(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
-           fixture.debugElement.componentInstance.first = '';
+           fixture.componentInstance.first = '';
            fixture.detectChanges();
 
            const form = fixture.debugElement.query(By.css('form')).nativeElement;
@@ -214,8 +211,8 @@ export function main() {
 
       it('should not register standalone ngModels with parent form', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelOptionsStandalone);
-           fixture.debugElement.componentInstance.one = 'some data';
-           fixture.debugElement.componentInstance.two = 'should not show';
+           fixture.componentInstance.one = 'some data';
+           fixture.componentInstance.two = 'should not show';
            fixture.detectChanges();
            tick();
 
@@ -229,8 +226,8 @@ export function main() {
 
       it('should override name attribute with ngModelOptions name if provided', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.debugElement.componentInstance.options = {name: 'override'};
-           fixture.debugElement.componentInstance.name = 'some data';
+           fixture.componentInstance.options = {name: 'override'};
+           fixture.componentInstance.name = 'some data';
            fixture.detectChanges();
            tick();
 
@@ -242,13 +239,13 @@ export function main() {
     describe('submit and reset events', () => {
       it('should emit ngSubmit event on submit', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.debugElement.componentInstance.name = 'old';
+           fixture.componentInstance.name = 'old';
 
            const form = fixture.debugElement.query(By.css('form'));
            dispatchEvent(form.nativeElement, 'submit');
            tick();
 
-           expect(fixture.debugElement.componentInstance.name).toEqual('submitted');
+           expect(fixture.componentInstance.name).toEqual('submitted');
          }));
 
       it('should mark NgForm as submitted on submit event', fakeAsync(() => {
@@ -267,7 +264,7 @@ export function main() {
 
       it('should reset the form to empty when reset event is fired', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.debugElement.componentInstance.name = 'should be cleared';
+           fixture.componentInstance.name = 'should be cleared';
            fixture.detectChanges();
            tick();
 
@@ -275,18 +272,17 @@ export function main() {
            const formEl = fixture.debugElement.query(By.css('form'));
            const input = fixture.debugElement.query(By.css('input'));
 
-           expect(input.nativeElement.value).toBe('should be cleared');  // view value
-           expect(fixture.debugElement.componentInstance.name)
-               .toBe('should be cleared');                        // ngModel value
-           expect(form.value.name).toEqual('should be cleared');  // control value
+           expect(input.nativeElement.value).toBe('should be cleared');       // view value
+           expect(fixture.componentInstance.name).toBe('should be cleared');  // ngModel value
+           expect(form.value.name).toEqual('should be cleared');              // control value
 
            dispatchEvent(formEl.nativeElement, 'reset');
            fixture.detectChanges();
            tick();
 
-           expect(input.nativeElement.value).toBe('');                      // view value
-           expect(fixture.debugElement.componentInstance.name).toBe(null);  // ngModel value
-           expect(form.value.name).toEqual(null);                           // control value
+           expect(input.nativeElement.value).toBe('');         // view value
+           expect(fixture.componentInstance.name).toBe(null);  // ngModel value
+           expect(form.value.name).toEqual(null);              // control value
          }));
 
       it('should reset the form submit state when reset button is clicked', fakeAsync(() => {
@@ -310,7 +306,7 @@ export function main() {
       it('should emit valueChanges and statusChanges on init', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           fixture.debugElement.componentInstance.name = 'aa';
+           fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
 
            expect(form.valid).toEqual(true);
@@ -369,10 +365,10 @@ export function main() {
     describe('disabled controls', () => {
       it('should not consider disabled controls in value or validation', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
-           fixture.debugElement.componentInstance.isDisabled = false;
-           fixture.debugElement.componentInstance.first = '';
-           fixture.debugElement.componentInstance.last = 'Drew';
-           fixture.debugElement.componentInstance.email = 'some email';
+           fixture.componentInstance.isDisabled = false;
+           fixture.componentInstance.first = '';
+           fixture.componentInstance.last = 'Drew';
+           fixture.componentInstance.email = 'some email';
            fixture.detectChanges();
            tick();
 
@@ -393,8 +389,8 @@ export function main() {
       it('should add disabled attribute in the UI if disable() is called programmatically',
          fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
-           fixture.debugElement.componentInstance.isDisabled = false;
-           fixture.debugElement.componentInstance.first = 'Nancy';
+           fixture.componentInstance.isDisabled = false;
+           fixture.componentInstance.first = 'Nancy';
            fixture.detectChanges();
            tick();
 
@@ -409,8 +405,8 @@ export function main() {
 
       it('should disable a custom control if disabled attr is added', async(() => {
            const fixture = TestBed.createComponent(NgModelCustomWrapper);
-           fixture.debugElement.componentInstance.name = 'Nancy';
-           fixture.debugElement.componentInstance.isDisabled = true;
+           fixture.componentInstance.name = 'Nancy';
+           fixture.componentInstance.isDisabled = true;
            fixture.detectChanges();
            fixture.whenStable().then(() => {
              fixture.detectChanges();
@@ -429,7 +425,7 @@ export function main() {
     describe('radio controls', () => {
       it('should support <type=radio>', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelRadioForm);
-           fixture.debugElement.componentInstance.food = 'fish';
+           fixture.componentInstance.food = 'fish';
            fixture.detectChanges();
            tick();
 
@@ -442,14 +438,14 @@ export function main() {
            tick();
 
            // view -> model
-           expect(fixture.debugElement.componentInstance.food).toEqual('chicken');
+           expect(fixture.componentInstance.food).toEqual('chicken');
            expect(inputs[1].nativeElement.checked).toEqual(false);
          }));
 
       it('should support multiple named <type=radio> groups', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelRadioForm);
-           fixture.debugElement.componentInstance.food = 'fish';
-           fixture.debugElement.componentInstance.drink = 'sprite';
+           fixture.componentInstance.food = 'fish';
+           fixture.componentInstance.drink = 'sprite';
            fixture.detectChanges();
            tick();
 
@@ -462,8 +458,8 @@ export function main() {
            dispatchEvent(inputs[0].nativeElement, 'change');
            tick();
 
-           expect(fixture.debugElement.componentInstance.food).toEqual('chicken');
-           expect(fixture.debugElement.componentInstance.drink).toEqual('sprite');
+           expect(fixture.componentInstance.food).toEqual('chicken');
+           expect(fixture.componentInstance.drink).toEqual('sprite');
            expect(inputs[1].nativeElement.checked).toEqual(false);
            expect(inputs[2].nativeElement.checked).toEqual(false);
            expect(inputs[3].nativeElement.checked).toEqual(true);
@@ -473,7 +469,7 @@ export function main() {
     describe('select controls', () => {
       it('with option values that are objects', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelSelectForm);
-           const comp = fixture.debugElement.componentInstance;
+           const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
            comp.selectedCity = comp.cities[1];
            fixture.detectChanges();
@@ -492,12 +488,12 @@ export function main() {
            tick();
 
            // view -> model
-           expect(comp.selectedCity.name).toEqual('Buffalo');
+           expect(comp.selectedCity['name']).toEqual('Buffalo');
          }));
 
       it('when new options are added', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelSelectForm);
-           const comp = fixture.debugElement.componentInstance;
+           const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[1];
            fixture.detectChanges();
@@ -516,7 +512,7 @@ export function main() {
 
       it('when options are removed', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelSelectForm);
-           const comp = fixture.debugElement.componentInstance;
+           const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[1];
            fixture.detectChanges();
@@ -534,7 +530,7 @@ export function main() {
 
       it('when option values have same content, but different identities', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelSelectForm);
-           const comp = fixture.debugElement.componentInstance;
+           const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[0];
            fixture.detectChanges();
@@ -553,7 +549,7 @@ export function main() {
     describe('custom value accessors', () => {
       it('should support standard writing to view and model', async(() => {
            const fixture = TestBed.createComponent(NgModelCustomWrapper);
-           fixture.debugElement.componentInstance.name = 'Nancy';
+           fixture.componentInstance.name = 'Nancy';
            fixture.detectChanges();
            fixture.whenStable().then(() => {
              fixture.detectChanges();
@@ -567,7 +563,7 @@ export function main() {
                fixture.detectChanges();
 
                // view -> model
-               expect(fixture.debugElement.componentInstance.name).toEqual('Carson');
+               expect(fixture.componentInstance.name).toEqual('Carson');
              });
            });
          }));
@@ -578,10 +574,10 @@ export function main() {
 
       it('should support dir validators using bindings', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelValidationBindings);
-           fixture.debugElement.componentInstance.required = true;
-           fixture.debugElement.componentInstance.minLen = 3;
-           fixture.debugElement.componentInstance.maxLen = 3;
-           fixture.debugElement.componentInstance.pattern = '.{3,}';
+           fixture.componentInstance.required = true;
+           fixture.componentInstance.minLen = 3;
+           fixture.componentInstance.maxLen = 3;
+           fixture.componentInstance.pattern = '.{3,}';
            fixture.detectChanges();
            tick();
 
@@ -648,10 +644,10 @@ export function main() {
            expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
            expect(form.valid).toEqual(true);
 
-           fixture.debugElement.componentInstance.required = true;
-           fixture.debugElement.componentInstance.minLen = 3;
-           fixture.debugElement.componentInstance.maxLen = 3;
-           fixture.debugElement.componentInstance.pattern = '.{3,}';
+           fixture.componentInstance.required = true;
+           fixture.componentInstance.minLen = 3;
+           fixture.componentInstance.maxLen = 3;
+           fixture.componentInstance.pattern = '.{3,}';
            fixture.detectChanges();
 
            dispatchEvent(required.nativeElement, 'input');
@@ -666,17 +662,17 @@ export function main() {
            expect(form.valid).toEqual(false);
 
            expect(required.nativeElement.getAttribute('required')).toEqual('');
-           expect(fixture.debugElement.componentInstance.minLen.toString())
+           expect(fixture.componentInstance.minLen.toString())
                .toEqual(minLength.nativeElement.getAttribute('minlength'));
-           expect(fixture.debugElement.componentInstance.maxLen.toString())
+           expect(fixture.componentInstance.maxLen.toString())
                .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
-           expect(fixture.debugElement.componentInstance.pattern.toString())
+           expect(fixture.componentInstance.pattern.toString())
                .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
-           fixture.debugElement.componentInstance.required = false;
-           fixture.debugElement.componentInstance.minLen = null;
-           fixture.debugElement.componentInstance.maxLen = null;
-           fixture.debugElement.componentInstance.pattern = null;
+           fixture.componentInstance.required = false;
+           fixture.componentInstance.minLen = null;
+           fixture.componentInstance.maxLen = null;
+           fixture.componentInstance.pattern = null;
            fixture.detectChanges();
 
            expect(form.control.hasError('required', ['required'])).toEqual(false);
@@ -697,7 +693,7 @@ export function main() {
       it('should update the view when the model is set back to what used to be in the view',
          fakeAsync(() => {
            const fixture = TestBed.createComponent(StandaloneNgModel);
-           fixture.debugElement.componentInstance.name = '';
+           fixture.componentInstance.name = '';
            fixture.detectChanges();
            tick();
 
@@ -708,16 +704,16 @@ export function main() {
 
            fixture.detectChanges();
            tick();
-           expect(fixture.debugElement.componentInstance.name).toEqual('aa');
+           expect(fixture.componentInstance.name).toEqual('aa');
 
            // Programmatically update the input value to be "bb".
-           fixture.debugElement.componentInstance.name = 'bb';
+           fixture.componentInstance.name = 'bb';
            fixture.detectChanges();
            tick();
            expect(input.value).toEqual('bb');
 
            // Programatically set it back to "aa".
-           fixture.debugElement.componentInstance.name = 'aa';
+           fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
            tick();
            expect(input.value).toEqual('aa');
@@ -808,6 +804,7 @@ class NgModelNgIfForm {
   first: string;
   groupShowing = true;
   emailShowing = true;
+  email: string;
 }
 
 @Component({
@@ -872,7 +869,7 @@ class NgModelRadioForm {
   `
 })
 class NgModelSelectForm {
-  selectedCity: Object = {};
+  selectedCity: {[k: string]: string} = {};
   cities: any[] = [];
 }
 
@@ -929,7 +926,7 @@ class NgModelValidationBindings {
 }
 
 function sortedClassList(el: HTMLElement) {
-  var l = getDOM().classList(el);
-  ListWrapper.sort(l);
+  const l = getDOM().classList(el);
+  l.sort();
   return l;
 }

@@ -21,8 +21,7 @@ export function main() {
 
 @Component({selector: 'my-comp', template: ''})
 class SecuredComponent {
-  ctxProp: string;
-  constructor() { this.ctxProp = 'some value'; }
+  ctxProp: any = 'some value';
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -81,7 +80,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
         let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         let trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
         ci.ctxProp = trusted;
         fixture.detectChanges();
@@ -95,7 +94,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
         let trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         expect(() => fixture.detectChanges()).toThrowError(/Required a safe URL, got a Script/);
       });
@@ -108,7 +107,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         let e = fixture.debugElement.children[0].nativeElement;
         let trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         fixture.detectChanges();
         expect(getDOM().getProperty(e, 'href')).toMatch(/SafeValue(%20| )must(%20| )use/);
@@ -122,7 +121,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
 
         let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         ci.ctxProp = 'hello';
         fixture.detectChanges();
         // In the browser, reading href returns an absolute URL. On the server side,
@@ -140,7 +139,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
 
         let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         // Make sure binding harmless values works.
         ci.ctxProp = 'red';
         fixture.detectChanges();
@@ -172,7 +171,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
 
         let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.debugElement.componentInstance;
+        let ci = fixture.componentInstance;
         // Make sure binding harmless values works.
         ci.ctxProp = 'some <p>text</p>';
         fixture.detectChanges();

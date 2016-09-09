@@ -7,7 +7,7 @@
  */
 
 import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
-import {FormBuilder, FormControl} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 
 export function main() {
   function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }

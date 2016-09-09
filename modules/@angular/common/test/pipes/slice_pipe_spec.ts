@@ -96,13 +96,13 @@ export function main() {
       it('should work with mutable arrays', async(() => {
            let fixture = TestBed.createComponent(TestComp);
            let mutable: number[] = [1, 2];
-           fixture.debugElement.componentInstance.data = mutable;
+           fixture.componentInstance.data = mutable;
            fixture.detectChanges();
-           expect(fixture.debugElement.nativeElement).toHaveText('2');
+           expect(fixture.nativeElement).toHaveText('2');
 
            mutable.push(3);
            fixture.detectChanges();
-           expect(fixture.debugElement.nativeElement).toHaveText('2,3');
+           expect(fixture.nativeElement).toHaveText('2,3');
          }));
     });
   });

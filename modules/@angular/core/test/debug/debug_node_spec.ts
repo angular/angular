@@ -345,14 +345,14 @@ export function main() {
       fixture = TestBed.createComponent(EventsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.componentInstance.clicked).toBe(false);
-      expect(fixture.debugElement.componentInstance.customed).toBe(false);
+      expect(fixture.componentInstance.clicked).toBe(false);
+      expect(fixture.componentInstance.customed).toBe(false);
 
       fixture.debugElement.children[0].triggerEventHandler('click', <Event>{});
-      expect(fixture.debugElement.componentInstance.clicked).toBe(true);
+      expect(fixture.componentInstance.clicked).toBe(true);
 
       fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
-      expect(fixture.debugElement.componentInstance.customed).toBe(true);
+      expect(fixture.componentInstance.customed).toBe(true);
 
     });
   });
