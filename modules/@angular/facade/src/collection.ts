@@ -149,18 +149,20 @@ export class StringMapWrapper {
   }
 
   static equals<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): boolean {
-    var k1 = Object.keys(m1);
-    var k2 = Object.keys(m2);
+    const k1 = Object.keys(m1);
+    const k2 = Object.keys(m2);
+
     if (k1.length != k2.length) {
       return false;
     }
-    var key: any /** TODO #???? */;
-    for (var i = 0; i < k1.length; i++) {
-      key = k1[i];
+
+    for (let i = 0; i < k1.length; i++) {
+      const key = k1[i];
       if (m1[key] !== m2[key]) {
         return false;
       }
     }
+
     return true;
   }
 }
