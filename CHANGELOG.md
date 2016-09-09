@@ -13,7 +13,17 @@ switch to using our UMD bundles.  Example config:
   }
 ```
 
-You can see a more detailed example in our demo app's system config [here](https://github.com/angular/material2/blob/master/src/demo-app/system-config.ts).
+You can see a more detailed example in our [demo app's system config](https://github.com/angular/material2/blob/master/src/demo-app/system-config.ts).
+
+In addition to this, each component now has an `index.js` file, so you should now have imports like
+```ts
+import {MdButtonModule} from '@angular2-material/button'
+```
+
+Instead of 
+```ts
+import {MdButtonModule} from '@angular2-material/button/button'
+```
 
 * all: material modules must be included with `forRoot()` when bootstrapping. See the [ngModules guide](https://angular.io/docs/ts/latest/cookbook/ngmodule-faq.html#!#q-for-root) for 
 more information.
@@ -28,6 +38,8 @@ more information.
 ...
 });
 ```
+
+* all: material now depends on TypeScript 2.0
 
 * input: `md-input` attributes now match the casing of native attributes. Previously they were camel-cased; now they are all lowercase. 
 Example: `autoComplete` is now `autocomplete`.   See [#1066](https://github.com/angular/material2/pull/1066) for a full list.
