@@ -8,10 +8,6 @@
 
 import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
-import {isBlank, isPresent} from '../facade/lang';
-
-
-
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
  *
@@ -79,34 +75,34 @@ export class NgStyle implements DoCheck {
   @Input()
   set ngStyle(v: {[key: string]: string}) {
     this._ngStyle = v;
-    if (isBlank(this._differ) && isPresent(v)) {
-      this._differ = this._differs.find(this._ngStyle).create(null);
+    if (!this._differ && v) {
+      this._differ = this._differs.find(v).create(null);
     }
   }
 
   ngDoCheck() {
-    if (isPresent(this._differ)) {
-      var changes = this._differ.diff(this._ngStyle);
-      if (isPresent(changes)) {
+    if (this._differ) {
+      const changes = this._differ.diff(this._ngStyle);
+      if (changes) {
         this._applyChanges(changes);
       }
     }
   }
 
   private _applyChanges(changes: any): void {
-    changes.forEachRemovedItem(
-        (record: KeyValueChangeRecord) => { this._setStyle(record.key, null); });
+    changes.forEachRemovedItem((record: KeyValueChangeRecord) => this._setStyle(record.key, null));
+
     changes.forEachAddedItem(
-        (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+        (record: KeyValueChangeRecord) => this._setStyle(record.key, record.currentValue));
+
     changes.forEachChangedItem(
-        (record: KeyValueChangeRecord) => { this._setStyle(record.key, record.currentValue); });
+        (record: KeyValueChangeRecord) => this._setStyle(record.key, record.currentValue));
   }
 
-  private _setStyle(name: string, val: string): void {
-    const nameParts = name.split('.');
-    const nameToSet = nameParts[0];
-    const valToSet = isPresent(val) && nameParts.length === 2 ? `${val}${nameParts[1]}` : val;
+  private _setStyle(nameAndUnit: string, value: string): void {
+    const [name, unit] = nameAndUnit.split('.');
+    value = value !== null && value !== void(0) && unit ? `${value}${unit}` : value;
 
-    this._renderer.setElementStyle(this._ngEl.nativeElement, nameToSet, valToSet);
+    this._renderer.setElementStyle(this._ngEl.nativeElement, name, value);
   }
 }

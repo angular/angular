@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Directive, Host, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Attribute, Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
 import {NgLocalization, getPluralCategory} from '../localization';
 
 import {SwitchView} from './ng_switch';
@@ -79,21 +78,22 @@ export class NgPlural {
   _updateView(): void {
     this._clearViews();
 
-    var key =
-        getPluralCategory(this._switchValue, Object.keys(this._caseViews), this._localization);
+    const cases = Object.keys(this._caseViews);
+    const key = getPluralCategory(this._switchValue, cases, this._localization);
     this._activateView(this._caseViews[key]);
   }
 
   /** @internal */
   _clearViews() {
-    if (isPresent(this._activeView)) this._activeView.destroy();
+    if (this._activeView) this._activeView.destroy();
   }
 
   /** @internal */
   _activateView(view: SwitchView) {
-    if (!isPresent(view)) return;
-    this._activeView = view;
-    this._activeView.create();
+    if (view) {
+      this._activeView = view;
+      this._activeView.create();
+    }
   }
 }
 

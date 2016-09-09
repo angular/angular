@@ -9,7 +9,6 @@
 import {Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {ListWrapper} from '../facade/collection';
-import {isBlank, isPresent, normalizeBlank} from '../facade/lang';
 
 const _CASE_DEFAULT = new Object();
 
@@ -92,10 +91,10 @@ export class NgSwitch {
 
     // Add the ViewContainers matching the value (with a fallback to default)
     this._useDefault = false;
-    var views = this._valueViews.get(value);
-    if (isBlank(views)) {
+    let views = this._valueViews.get(value);
+    if (!views) {
       this._useDefault = true;
-      views = normalizeBlank(this._valueViews.get(_CASE_DEFAULT));
+      views = this._valueViews.get(_CASE_DEFAULT) || null;
     }
     this._activateViews(views);
 
@@ -128,7 +127,7 @@ export class NgSwitch {
 
   /** @internal */
   _emptyAllActiveViews(): void {
-    var activeContainers = this._activeViews;
+    const activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
       activeContainers[i].destroy();
     }
@@ -138,7 +137,7 @@ export class NgSwitch {
   /** @internal */
   _activateViews(views: SwitchView[]): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
-    if (isPresent(views)) {
+    if (views) {
       for (var i = 0; i < views.length; i++) {
         views[i].create();
       }
@@ -148,8 +147,8 @@ export class NgSwitch {
 
   /** @internal */
   _registerView(value: any, view: SwitchView): void {
-    var views = this._valueViews.get(value);
-    if (isBlank(views)) {
+    let views = this._valueViews.get(value);
+    if (!views) {
       views = [];
       this._valueViews.set(value, views);
     }
@@ -160,7 +159,7 @@ export class NgSwitch {
   _deregisterView(value: any, view: SwitchView): void {
     // `_CASE_DEFAULT` is used a marker for non-registered cases
     if (value === _CASE_DEFAULT) return;
-    var views = this._valueViews.get(value);
+    const views = this._valueViews.get(value);
     if (views.length == 1) {
       this._valueViews.delete(value);
     } else {

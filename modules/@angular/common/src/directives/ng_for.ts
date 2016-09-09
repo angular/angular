@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
 
-import {getTypeNameForDebugging, isBlank, isPresent} from '../facade/lang';
+import {getTypeNameForDebugging} from '../facade/lang';
 
 export class NgForRow {
   constructor(public $implicit: any, public index: number, public count: number) {}
@@ -91,16 +91,16 @@ export class NgFor implements DoCheck, OnChanges {
   @Input() ngForOf: any;
   @Input() ngForTrackBy: TrackByFn;
 
-  private _differ: IterableDiffer;
+  private _differ: IterableDiffer = null;
 
   constructor(
-      private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<NgForRow>,
-      private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow>,
+      private _differs: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
   @Input()
   set ngForTemplate(value: TemplateRef<NgForRow>) {
-    if (isPresent(value)) {
-      this._templateRef = value;
+    if (value) {
+      this._template = value;
     }
   }
 
@@ -108,9 +108,9 @@ export class NgFor implements DoCheck, OnChanges {
     if ('ngForOf' in changes) {
       // React on ngForOf changes only once all inputs have been initialized
       const value = changes['ngForOf'].currentValue;
-      if (isBlank(this._differ) && isPresent(value)) {
+      if (!this._differ && value) {
         try {
-          this._differ = this._iterableDiffers.find(value).create(this._cdr, this.ngForTrackBy);
+          this._differ = this._differs.find(value).create(this._cdr, this.ngForTrackBy);
         } catch (e) {
           throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
@@ -120,9 +120,9 @@ export class NgFor implements DoCheck, OnChanges {
   }
 
   ngDoCheck() {
-    if (isPresent(this._differ)) {
+    if (this._differ) {
       const changes = this._differ.diff(this.ngForOf);
-      if (isPresent(changes)) this._applyChanges(changes);
+      if (changes) this._applyChanges(changes);
     }
   }
 
@@ -131,16 +131,16 @@ export class NgFor implements DoCheck, OnChanges {
     changes.forEachOperation(
         (item: CollectionChangeRecord, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
-            let view = this._viewContainer.createEmbeddedView(
-                this._templateRef, new NgForRow(null, null, null), currentIndex);
-            let tuple = new RecordViewTuple(item, view);
+            const view = this._viewContainer.createEmbeddedView(
+                this._template, new NgForRow(null, null, null), currentIndex);
+            const tuple = new RecordViewTuple(item, view);
             insertTuples.push(tuple);
           } else if (currentIndex == null) {
             this._viewContainer.remove(adjustedPreviousIndex);
           } else {
-            let view = this._viewContainer.get(adjustedPreviousIndex);
+            const view = this._viewContainer.get(adjustedPreviousIndex);
             this._viewContainer.move(view, currentIndex);
-            let tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow>>view);
+            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForRow>>view);
             insertTuples.push(tuple);
           }
         });
@@ -150,13 +150,13 @@ export class NgFor implements DoCheck, OnChanges {
     }
 
     for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
+      let viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
     changes.forEachIdentityChange((record: any) => {
-      var viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
+      let viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
   }

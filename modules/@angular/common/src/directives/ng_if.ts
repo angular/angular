@@ -8,10 +8,6 @@
 
 import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {isBlank} from '../facade/lang';
-
-
-
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
  *
@@ -38,18 +34,17 @@ import {isBlank} from '../facade/lang';
  */
 @Directive({selector: '[ngIf]'})
 export class NgIf {
-  private _prevCondition: boolean = null;
+  private _hasView: boolean = false;
 
-  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
-  }
+  constructor(private _viewContainer: ViewContainerRef, private _template: TemplateRef<Object>) {}
 
   @Input()
-  set ngIf(newCondition: any) {
-    if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {
-      this._prevCondition = true;
-      this._viewContainer.createEmbeddedView(this._templateRef);
-    } else if (!newCondition && (isBlank(this._prevCondition) || this._prevCondition)) {
-      this._prevCondition = false;
+  set ngIf(condition: any) {
+    if (condition && !this._hasView) {
+      this._hasView = true;
+      this._viewContainer.createEmbeddedView(this._template);
+    } else if (!condition && this._hasView) {
+      this._hasView = false;
       this._viewContainer.clear();
     }
   }
