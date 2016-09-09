@@ -36,7 +36,7 @@ describe('MessageBroker', function() {
     input.sendKeys(VALUE);
     element(by.css('#send_echo')).click();
     var area = element(by.css('#echo_result'));
-    browser.wait(protractor.until.elementTextIs(area, VALUE), 5000);
+    browser.wait(protractor.ExpectedConditions.textToBePresentInElement(area, VALUE), 5000);
     expect(area.getText()).toEqual(VALUE);
   });
 });

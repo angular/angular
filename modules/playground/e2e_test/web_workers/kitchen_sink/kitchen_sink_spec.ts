@@ -23,7 +23,8 @@ describe('WebWorkers Kitchen Sink', function() {
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
     var elem = element(by.css(selector));
-    browser.wait(protractor.until.elementTextIs(elem, 'hello world!'), 5000);
+    browser.wait(
+        protractor.ExpectedConditions.textToBePresentInElement(elem, 'hello world!'), 5000);
     expect(elem.getText()).toEqual('hello world!');
 
   });
@@ -37,7 +38,8 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.wait(protractor.until.elementLocated(by.css(changeButtonSelector)), 15000);
     element(by.css(changeButtonSelector)).click();
     var elem = element(by.css(selector));
-    browser.wait(protractor.until.elementTextIs(elem, 'howdy world!'), 5000);
+    browser.wait(
+        protractor.ExpectedConditions.textToBePresentInElement(elem, 'howdy world!'), 5000);
     expect(elem.getText()).toEqual('howdy world!');
   });
 
@@ -51,7 +53,7 @@ describe('WebWorkers Kitchen Sink', function() {
     expect(area.getText()).toEqual('(none)');
 
     area.sendKeys('u');
-    browser.wait(protractor.until.elementTextIs(area, 'U'), 5000);
+    browser.wait(protractor.ExpectedConditions.textToBePresentInElement(area, 'U'), 5000);
     expect(area.getText()).toEqual('U');
   });
 });
