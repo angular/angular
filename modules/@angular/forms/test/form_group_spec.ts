@@ -8,19 +8,17 @@
 
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {EventEmitter} from '../src/facade/async';
 import {isPresent} from '../src/facade/lang';
 
 export function main() {
-  function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
-    return (c: any /** TODO #9100 */) => {
+  function asyncValidator(expected: string, timeouts = {}) {
+    return (c: AbstractControl) => {
       var resolve: (result: any) => void;
       var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any /** TODO #9100 */)[c.value]) ?
-          (timeouts as any /** TODO #9100 */)[c.value] :
-          0;
+      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
       var res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
@@ -799,6 +797,69 @@ export function main() {
 
         group.enable();
         expect(group.status).toEqual('VALID');
+      });
+
+      it('should not run validators on disabled controls', () => {
+        const validator = jasmine.createSpy('validator');
+        const g = new FormGroup({'one': new FormControl()}, validator);
+        expect(validator.calls.count()).toEqual(1);
+
+        g.disable();
+        expect(validator.calls.count()).toEqual(1);
+
+        g.setValue({one: 'value'});
+        expect(validator.calls.count()).toEqual(1);
+
+        g.enable();
+        expect(validator.calls.count()).toEqual(2);
+      });
+
+      describe('disabled errors', () => {
+        it('should clear out group errors when disabled', () => {
+          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          expect(g.errors).toEqual({'expected': true});
+
+          g.disable();
+          expect(g.errors).toEqual(null);
+
+          g.enable();
+          expect(g.errors).toEqual({'expected': true});
+        });
+
+        it('should re-populate group errors when enabled from a child', () => {
+          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          g.disable();
+          expect(g.errors).toEqual(null);
+
+          g.addControl('two', new FormControl());
+          expect(g.errors).toEqual({'expected': true});
+        });
+
+        it('should clear out async group errors when disabled', fakeAsync(() => {
+             const g = new FormGroup({'one': new FormControl()}, null, asyncValidator('expected'));
+             tick();
+             expect(g.errors).toEqual({'async': true});
+
+             g.disable();
+             expect(g.errors).toEqual(null);
+
+             g.enable();
+             tick();
+             expect(g.errors).toEqual({'async': true});
+           }));
+
+        it('should re-populate async group errors when enabled from a child', fakeAsync(() => {
+             const g = new FormGroup({'one': new FormControl()}, null, asyncValidator('expected'));
+             tick();
+             expect(g.errors).toEqual({'async': true});
+
+             g.disable();
+             expect(g.errors).toEqual(null);
+
+             g.addControl('two', new FormControl());
+             tick();
+             expect(g.errors).toEqual({'async': true});
+           }));
       });
 
       describe('disabled events', () => {
