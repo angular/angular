@@ -8,7 +8,8 @@
 
 import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
 import {EventEmitter, Observable} from '../facade/async';
-import {isBlank, isPresent, isPromise} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
+import {isPromise} from '../private_import_core';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {

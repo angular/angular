@@ -11,8 +11,10 @@ import {toPromise} from 'rxjs/operator/toPromise';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isPromise, isString} from './facade/lang';
+import {isBlank, isPresent, isString} from './facade/lang';
 import {AbstractControl} from './model';
+import {isPromise} from './private_import_core';
+
 
 
 /**

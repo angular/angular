@@ -39,6 +39,7 @@ import * as reflector_reader from './reflection/reflector_reader';
 import * as reflection_types from './reflection/types';
 import * as api from './render/api';
 import * as decorators from './util/decorators';
+import {isPromise} from './util/lang';
 
 export var __core_private__: {
   isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
@@ -118,9 +119,11 @@ export var __core_private__: {
   ANY_STATE: typeof ANY_STATE_,
   DEFAULT_STATE: typeof DEFAULT_STATE_,
   EMPTY_STATE: typeof EMPTY_STATE_,
-  FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_, _ComponentStillLoadingError?: ComponentStillLoadingError
-  ComponentStillLoadingError: typeof ComponentStillLoadingError
-  } = {
+  FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_,
+  _ComponentStillLoadingError?: ComponentStillLoadingError,
+  ComponentStillLoadingError: typeof ComponentStillLoadingError,
+  isPromise: typeof isPromise
+} = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
   CHANGE_DETECTION_STRATEGY_VALUES: constants.CHANGE_DETECTION_STRATEGY_VALUES,
@@ -185,5 +188,6 @@ export var __core_private__: {
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
-  ComponentStillLoadingError: ComponentStillLoadingError
+  ComponentStillLoadingError: ComponentStillLoadingError,
+  isPromise: isPromise
 };
