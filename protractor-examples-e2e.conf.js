@@ -9,6 +9,9 @@
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
 require('./dist/all/e2e_util/e2e_util').readCommandLine();
+require('reflect-metadata');
+
+Error.stackTraceLimit = 9999;
 
 var BROWSER_OPTIONS = {
   LocalChrome: {'browserName': 'chrome'},
@@ -24,7 +27,9 @@ var BROWSER_OPTIONS = {
 exports.config = {
   onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   allScriptsTimeout: 11000,
-  specs: ['dist/examples/**/e2e_test/*_spec.js'],
+  specs: [
+    'dist/examples/**/e2e_test/*_spec.js'
+  ],
   capabilities: process.env.TRAVIS ? BROWSER_OPTIONS.ChromeOnTravis : BROWSER_OPTIONS.LocalChrome,
   directConnect: true,
   baseUrl: 'http://localhost:8001/',
