@@ -68,7 +68,7 @@ The divider (line under the `<md-input>` content) color can be changed by using 
 
 #### Example
 
-^((please not that this example has been doctored to show the colors; they would normally show only on focus)^)
+^((please note that this example has been doctored to show the colors; they would normally show only on focus)^)
 
 <img src="https://material.angularjs.org/material2_assets/input/divider-colors.png">
 
