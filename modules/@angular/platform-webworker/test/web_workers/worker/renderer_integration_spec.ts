@@ -106,10 +106,10 @@ export function main() {
       TestBed.overrideComponent(MyComp2, {set: {template: '<div>{{ctxProp}}</div>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      var renderEl = getRenderElement(fixture.debugElement.nativeElement);
+      var renderEl = getRenderElement(fixture.nativeElement);
       expect(renderEl).toHaveText('');
 
-      fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
+      fixture.componentInstance.ctxProp = 'Hello World!';
       fixture.detectChanges();
       expect(renderEl).toHaveText('Hello World!');
     });
@@ -142,7 +142,7 @@ export function main() {
              };
 
          // root element
-         checkSetters(fixture.componentRef, fixture.debugElement.nativeElement);
+         checkSetters(fixture.componentRef, fixture.nativeElement);
          // nested elements
          checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
        });
@@ -153,9 +153,9 @@ export function main() {
           MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp"></template>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      (<MyComp2>fixture.debugElement.componentInstance).ctxBoolProp = true;
+      (<MyComp2>fixture.componentInstance).ctxBoolProp = true;
       fixture.detectChanges();
-      var el = getRenderElement(fixture.debugElement.nativeElement);
+      var el = getRenderElement(fixture.nativeElement);
       expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
     });
 
@@ -164,14 +164,14 @@ export function main() {
           MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp">hello</template>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
-      var rootEl = getRenderElement(fixture.debugElement.nativeElement);
+      var rootEl = getRenderElement(fixture.nativeElement);
       expect(rootEl).toHaveText('');
 
-      fixture.debugElement.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
       expect(rootEl).toHaveText('hello');
 
-      fixture.debugElement.componentInstance.ctxBoolProp = false;
+      fixture.componentInstance.ctxBoolProp = false;
       fixture.detectChanges();
       expect(rootEl).toHaveText('');
     });

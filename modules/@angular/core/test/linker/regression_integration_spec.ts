@@ -165,8 +165,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.configureTestingModule(
           {declarations: [HeroComponent, VillianComponent, MainComponent]});
       const fixture = TestBed.createComponent(MainComponent);
-      expect(fixture.debugElement.nativeElement)
-          .toHaveText('I was saved by my hero from a villian.');
+      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villian.');
     });
   });
 }

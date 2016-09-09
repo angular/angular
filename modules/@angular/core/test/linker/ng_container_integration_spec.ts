@@ -34,7 +34,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       fixture.detectChanges();
 
-      const el = fixture.debugElement.nativeElement;
+      const el = fixture.nativeElement;
       expect(el).toHaveText('foo');
     });
 
@@ -45,7 +45,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       fixture.detectChanges();
 
-      const el = fixture.debugElement.nativeElement;
+      const el = fixture.nativeElement;
       const children = getDOM().childNodes(el);
       expect(children.length).toBe(2);
       expect(getDOM().isCommentNode(children[0])).toBe(true);
@@ -60,7 +60,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       fixture.detectChanges();
 
-      const el = fixture.debugElement.nativeElement;
+      const el = fixture.nativeElement;
       const children = getDOM().childNodes(el);
       expect(children.length).toBe(5);
       expect(getDOM().isCommentNode(children[0])).toBe(true);
@@ -75,10 +75,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.debugElement.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
 
-      const el = fixture.debugElement.nativeElement;
+      const el = fixture.nativeElement;
       const children = getDOM().childNodes(el);
 
       expect(children.length).toBe(4);
@@ -89,7 +89,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(getDOM().tagName(children[2]).toUpperCase()).toEqual('P');
       expect(getDOM().tagName(children[3]).toUpperCase()).toEqual('B');
 
-      fixture.debugElement.componentInstance.ctxBoolProp = false;
+      fixture.componentInstance.ctxBoolProp = false;
       fixture.detectChanges();
 
       expect(children.length).toBe(1);
@@ -103,7 +103,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       fixture.detectChanges();
 
-      const el = fixture.debugElement.nativeElement;
+      const el = fixture.nativeElement;
       expect(el).toHaveText('SIMPLE(12)');
     });
 

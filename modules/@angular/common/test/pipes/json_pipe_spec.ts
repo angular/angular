@@ -67,13 +67,13 @@ export function main() {
       it('should work with mutable objects', async(() => {
            let fixture = TestBed.createComponent(TestComp);
            let mutable: number[] = [1];
-           fixture.debugElement.componentInstance.data = mutable;
+           fixture.componentInstance.data = mutable;
            fixture.detectChanges();
-           expect(fixture.debugElement.nativeElement).toHaveText('[\n  1\n]');
+           expect(fixture.nativeElement).toHaveText('[\n  1\n]');
 
            mutable.push(2);
            fixture.detectChanges();
-           expect(fixture.debugElement.nativeElement).toHaveText('[\n  1,\n  2\n]');
+           expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
 
          }));
     });

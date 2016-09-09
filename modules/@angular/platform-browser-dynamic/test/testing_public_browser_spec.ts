@@ -124,8 +124,7 @@ export function main() {
            TestBed.compileComponents().then(() => {
              let componentFixture = TestBed.createComponent(ExternalTemplateComp);
              componentFixture.detectChanges();
-             expect(componentFixture.debugElement.nativeElement.textContent)
-                 .toEqual('from external template\n');
+             expect(componentFixture.nativeElement.textContent).toEqual('from external template\n');
            });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader request, and

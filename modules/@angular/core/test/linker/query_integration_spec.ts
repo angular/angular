@@ -84,14 +84,14 @@ export function main() {
         TestBed.overrideComponent(MyComp0, {set: {template}});
         const view = TestBed.createComponent(MyComp0);
 
-        view.debugElement.componentInstance.shouldShow = true;
+        view.componentInstance.shouldShow = true;
         view.detectChanges();
 
         var q: NeedsContentChild = view.debugElement.children[0].references['q'];
 
         expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
-        view.debugElement.componentInstance.shouldShow = false;
+        view.componentInstance.shouldShow = false;
         view.detectChanges();
 
         expect(q.logs).toEqual([
@@ -199,7 +199,7 @@ export function main() {
         view.detectChanges();
         expect(asNativeElements(view.debugElement.children)).toHaveText('2|');
 
-        view.debugElement.componentInstance.shouldShow = true;
+        view.componentInstance.shouldShow = true;
         view.detectChanges();
         expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
       });
@@ -212,7 +212,7 @@ export function main() {
         TestBed.overrideComponent(MyComp0, {set: {template}});
         const fixture = TestBed.createComponent(MyComp0);
 
-        fixture.debugElement.componentInstance.shouldShow = true;
+        fixture.componentInstance.shouldShow = true;
         fixture.detectChanges();
         fixture.destroy();
       });
@@ -228,7 +228,7 @@ export function main() {
 
         expect(asNativeElements(view.debugElement.children)).toHaveText('2|1d|2d|3d|');
 
-        view.debugElement.componentInstance.list = ['3d', '2d'];
+        view.componentInstance.list = ['3d', '2d'];
         view.detectChanges();
         expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
       });
@@ -357,7 +357,7 @@ export function main() {
              }
            });
 
-           view.debugElement.componentInstance.shouldShow = true;
+           view.componentInstance.shouldShow = true;
            view.detectChanges();
          }));
 
@@ -368,17 +368,17 @@ export function main() {
            TestBed.overrideComponent(MyComp0, {set: {template}});
            const view = TestBed.createComponent(MyComp0);
 
-           view.debugElement.componentInstance.shouldShow = true;
+           view.componentInstance.shouldShow = true;
            view.detectChanges();
 
            var q: NeedsQuery = view.debugElement.children[0].references['q'];
 
            expect(q.query.length).toEqual(1);
 
-           view.debugElement.componentInstance.shouldShow = false;
+           view.componentInstance.shouldShow = false;
            view.detectChanges();
 
-           view.debugElement.componentInstance.shouldShow = true;
+           view.componentInstance.shouldShow = true;
            view.detectChanges();
 
            var q2: NeedsQuery = view.debugElement.children[0].references['q'];
@@ -398,7 +398,7 @@ export function main() {
 
            var q = view.debugElement.children[0].references['q'];
 
-           view.debugElement.componentInstance.list = ['1d', '2d'];
+           view.componentInstance.list = ['1d', '2d'];
 
            view.detectChanges();
 
@@ -430,11 +430,11 @@ export function main() {
 
         var q = view.debugElement.children[0].references['q'];
 
-        view.debugElement.componentInstance.list = ['1d', '2d'];
+        view.componentInstance.list = ['1d', '2d'];
 
         view.detectChanges();
 
-        view.debugElement.componentInstance.list = ['2d', '1d'];
+        view.componentInstance.list = ['2d', '1d'];
 
         view.detectChanges();
 
@@ -452,7 +452,7 @@ export function main() {
 
         var q = view.debugElement.children[0].references['q'];
 
-        view.debugElement.componentInstance.list = ['1d', '2d'];
+        view.componentInstance.list = ['1d', '2d'];
 
         view.detectChanges();
 
