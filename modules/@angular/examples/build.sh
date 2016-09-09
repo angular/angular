@@ -27,10 +27,21 @@ do
 done
 
 for MODULE in `find . -name module.ts`; do
-  FINAL_DIR_PATH=$DIST/`dirname $MODULE`
+  SOURCE_DIR_PATH=`dirname $MODULE`
+  FINAL_DIR_PATH=$DIST/$SOURCE_DIR_PATH
 
   echo "==== $MODULE"
   cp _common/*.html $FINAL_DIR_PATH
+  cp _common/shared.css $FINAL_DIR_PATH
+
   cp $DIST/_common/*.js $FINAL_DIR_PATH
   cp $DIST/_common/*.js.map $FINAL_DIR_PATH
+
+  SOURCE_EXAMPLE_STYLES="$SOURCE_DIR_PATH/styles.css"
+  FINAL_EXAMPLE_STYLES="$FINAL_DIR_PATH/styles.css"
+  if [ -f $SOURCE_EXAMPLE_STYLES ]; then
+    cp $SOURCE_EXAMPLE_STYLES $FINAL_EXAMPLE_STYLES
+  else
+    touch $FINAL_EXAMPLE_STYLES
+  fi
 done
