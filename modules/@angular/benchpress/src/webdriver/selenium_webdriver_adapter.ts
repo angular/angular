@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as webdriver from 'selenium-webdriver';
-
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 /**
@@ -21,51 +19,52 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   constructor(private _driver: any) { super(); }
 
-  /** @internal */
-  private _convertPromise(thenable: PromiseLike<any>) {
-    var resolve: (result: any) => void;
-    var reject: (error: any) => void;
-    var promise = new Promise((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    thenable.then(
-        // selenium-webdriver uses an own Node.js context,
-        // so we need to convert data into objects of this context.
-        (data: any) => resolve(convertToLocalProcess(data)), reject);
-    return promise;
-  }
+  waitFor(callback: () => any): Promise<any> { return this._driver.call(callback); }
 
-  waitFor(callback: () => any): Promise<any> {
-    return this._convertPromise(this._driver.controlFlow().execute(callback));
-  }
-
-  executeScript(script: string): Promise<any> {
-    return this._convertPromise(this._driver.executeScript(script));
-  }
+  executeScript(script: string): Promise<any> { return this._driver.executeScript(script); }
 
   executeAsyncScript(script: string): Promise<any> {
-    return this._convertPromise(this._driver.executeAsyncScript(script));
+    return this._driver.executeAsyncScript(script);
   }
 
-  capabilities(): Promise<any> {
-    return this._convertPromise(
-        this._driver.getCapabilities().then((capsObject: any) => capsObject.serialize()));
+  capabilities(): Promise<{[key: string]: any}> {
+    return this._driver.getCapabilities().then((capsObject: any) => {
+      const localData: {[key: string]: any} = {};
+      capsObject.forEach((value: any, key: string) => { localData[key] = value; });
+      return localData;
+    });
   }
 
   logs(type: string): Promise<any> {
     // Needed as selenium-webdriver does not forward
     // performance logs in the correct way via manage().logs
-    return this._convertPromise(this._driver.schedule(
-        new webdriver.Command(webdriver.CommandName.GET_LOG).setParameter('type', type),
-        'WebDriver.manage().logs().get(' + type + ')'));
+    return this._driver.schedule(
+        new Command('getLog').setParameter('type', type),
+        'WebDriver.manage().logs().get(' + type + ')');
   }
 }
 
-function convertToLocalProcess(data: any): Object {
-  var serialized = JSON.stringify(data);
-  if ('' + serialized === 'undefined') {
-    return undefined;
+/**
+ * Copy of the `Command` class of webdriver as
+ * it is not exposed via index.js in selenium-webdriver.
+ */
+class Command {
+  private parameters_: {[key: string]: any} = {};
+  constructor(private name_: string) {}
+
+  getName() { return this.name_; }
+
+  setParameter(name: string, value: any) {
+    this.parameters_[name] = value;
+    return this;
   }
-  return JSON.parse(serialized);
+
+  setParameters(parameters: {[key: string]: any}) {
+    this.parameters_ = parameters;
+    return this;
+  }
+
+  getParameter(key: string) { return this.parameters_[key]; }
+
+  getParameters() { return this.parameters_; }
 }

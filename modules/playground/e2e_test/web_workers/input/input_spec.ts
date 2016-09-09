@@ -37,7 +37,8 @@ describe('WebWorkers Input', function() {
     input.sendKeys(VALUE);
     let displayElem = element(by.css(selector + ' .input-val'));
     const expectedVal = `Input val is ${VALUE}.`;
-    browser.wait(protractor.until.elementTextIs(displayElem, expectedVal), 5000);
+    browser.wait(
+        protractor.ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
     expect(displayElem.getText()).toEqual(expectedVal);
   });
 
@@ -51,7 +52,8 @@ describe('WebWorkers Input', function() {
     input.sendKeys(VALUE);
     let displayElem = element(by.css(selector + ' .textarea-val'));
     const expectedVal = `Textarea val is ${VALUE}.`;
-    browser.wait(protractor.until.elementTextIs(displayElem, expectedVal), 5000);
+    browser.wait(
+        protractor.ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
     expect(displayElem.getText()).toEqual(expectedVal);
   });
 
@@ -60,7 +62,8 @@ describe('WebWorkers Input', function() {
         .then(
             _ => {
               let elem = element(by.css(selector + ' h2'));
-              browser.wait(protractor.until.elementTextIs(elem, 'Input App'), 5000);
+              browser.wait(
+                  protractor.ExpectedConditions.textToBePresentInElement(elem, 'Input App'), 5000);
             },
             _ => {
               // jasmine will timeout if this gets called too many times
