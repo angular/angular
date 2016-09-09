@@ -1,4 +1,4 @@
-import {inject, TestBed, async} from '@angular/core/testing';
+import {inject, TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {TemplatePortalDirective, PortalModule} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
@@ -14,6 +14,7 @@ describe('Overlay', () => {
   let componentPortal: ComponentPortal<PizzaMsg>;
   let templatePortal: TemplatePortal;
   let overlayContainerElement: HTMLElement;
+  let viewContainerFixture: ComponentFixture<TestComponentWithTemplatePortals>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -36,6 +37,7 @@ describe('Overlay', () => {
     fixture.detectChanges();
     templatePortal = fixture.componentInstance.templatePortal;
     componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
+    viewContainerFixture = fixture;
   }));
 
   it('should load a component into an overlay', () => {
@@ -80,7 +82,7 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
-  describe('applyState', () => {
+  describe('positioning', () => {
     let state: OverlayState;
 
     beforeEach(() => {
@@ -93,6 +95,27 @@ describe('Overlay', () => {
       overlay.create(state).attach(componentPortal);
 
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
+    });
+  });
+
+  describe('backdrop', () => {
+    it('should create and destroy an overlay backdrop', () => {
+      let config = new OverlayState();
+      config.hasBackdrop = true;
+
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+
+      viewContainerFixture.detectChanges();
+      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      expect(backdrop).toBeTruthy();
+      expect(backdrop.classList).not.toContain('.md-overlay-backdrop-showing');
+
+      let backdropClickHandler = jasmine.createSpy('backdropClickHander');
+      overlayRef.backdropClick().subscribe(backdropClickHandler);
+
+      backdrop.click();
+      expect(backdropClickHandler).toHaveBeenCalled();
     });
   });
 });

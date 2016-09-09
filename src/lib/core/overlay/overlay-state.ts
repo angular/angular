@@ -9,6 +9,9 @@ export class OverlayState {
   /** Strategy with which to position the overlay. */
   positionStrategy: PositionStrategy;
 
+  /** Whether the overlay has a backdrop. */
+  hasBackdrop: boolean = false;
+
   // TODO(jelbourn): configuration still to add
   // - overlay size
   // - focus trap

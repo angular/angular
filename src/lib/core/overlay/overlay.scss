@@ -1,3 +1,8 @@
+@import 'variables';
+@import 'palette';
+
+$md-backdrop-color: md-color($md-grey, 900);
+
 // TODO(jelbourn): change from the `md` prefix to something else for everything in the toolkit.
 
 @import 'variables';
@@ -14,6 +19,7 @@
   left: 0;
   height: 100%;
   width: 100%;
+  z-index: $md-z-index-overlay-container;
 }
 
 /** A single overlay pane. */
@@ -21,5 +27,27 @@
   position: absolute;
   pointer-events: auto;
   box-sizing: border-box;
-  z-index: $z-index-overlay;
+  z-index: $md-z-index-overlay;
+}
+
+.md-overlay-backdrop {
+  // TODO(jelbourn): reuse sidenav fullscreen mixin.
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  z-index: $md-z-index-overlay-backdrop;
+  pointer-events: auto;
+
+  // TODO(jelbourn): figure out if there are actually spec'ed colors for both light and dark
+  // themes here. Currently using the values from Angular Material 1.
+  transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+  background: $md-backdrop-color;
+  opacity: 0;
+}
+
+.md-overlay-backdrop.md-overlay-backdrop-showing {
+  opacity: 0.48;
 }

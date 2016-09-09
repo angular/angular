@@ -76,8 +76,6 @@ describe('MdDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    viewContainerFixture.detectChanges();
-
     let afterCloseResult: string;
     dialogRef.afterClosed().subscribe(result => {
       afterCloseResult = result;
@@ -87,6 +85,20 @@ describe('MdDialog', () => {
 
     expect(afterCloseResult).toBe('Charmander');
     expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
+  });
+
+  it('should close when clicking on the overlay backdrop', () => {
+    let config = new MdDialogConfig();
+    config.viewContainerRef = testViewContainerRef;
+
+    dialog.open(PizzaMsg, config);
+
+    viewContainerFixture.detectChanges();
+
+    let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+    backdrop.click();
+
+    expect(overlayContainerElement.querySelector('md-dialog-container')).toBeFalsy();
   });
 });
 
