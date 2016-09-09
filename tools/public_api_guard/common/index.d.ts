@@ -109,9 +109,9 @@ export declare class LowerCasePipe implements PipeTransform {
 
 /** @stable */
 export declare class NgClass implements DoCheck {
-    initialClasses: string;
+    klass: string;
     ngClass: string | string[] | Set<string> | {
-        [key: string]: any;
+        [klass: string]: any;
     };
     constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
     ngDoCheck(): void;

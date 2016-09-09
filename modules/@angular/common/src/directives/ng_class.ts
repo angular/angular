@@ -8,10 +8,8 @@
 
 import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
-import {StringMapWrapper, isListLikeIterable} from '../facade/collection';
-import {isArray, isPresent, isString} from '../facade/lang';
-
-
+import {isListLikeIterable} from '../facade/collection';
+import {isPresent} from '../facade/lang';
 
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
@@ -79,7 +77,7 @@ export class NgClass implements DoCheck {
   private _iterableDiffer: IterableDiffer;
   private _keyValueDiffer: KeyValueDiffer;
   private _initialClasses: string[] = [];
-  private _rawClass: string[]|Set<string>;
+  private _rawClass: string[]|Set<string>|{[klass: string]: any};
 
   constructor(
       private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
@@ -87,58 +85,57 @@ export class NgClass implements DoCheck {
 
 
   @Input('class')
-  set initialClasses(v: string) {
+  set klass(v: string) {
     this._applyInitialClasses(true);
-    this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
+    this._initialClasses = typeof v === 'string' ? v.split(/\s+/) : [];
     this._applyInitialClasses(false);
     this._applyClasses(this._rawClass, false);
   }
 
   @Input()
-  set ngClass(v: string|string[]|Set<string>|{[key: string]: any}) {
+  set ngClass(v: string|string[]|Set<string>|{[klass: string]: any}) {
     this._cleanupClasses(this._rawClass);
 
-    if (isString(v)) {
-      v = (<string>v).split(' ');
-    }
-
-    this._rawClass = <string[]|Set<string>>v;
     this._iterableDiffer = null;
     this._keyValueDiffer = null;
-    if (isPresent(v)) {
-      if (isListLikeIterable(v)) {
-        this._iterableDiffer = this._iterableDiffers.find(v).create(null);
+
+    this._rawClass = typeof v === 'string' ? v.split(/\s+/) : v;
+
+    if (this._rawClass) {
+      if (isListLikeIterable(this._rawClass)) {
+        this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create(null);
       } else {
-        this._keyValueDiffer = this._keyValueDiffers.find(v).create(null);
+        this._keyValueDiffer = this._keyValueDiffers.find(this._rawClass).create(null);
       }
     }
   }
 
   ngDoCheck(): void {
-    if (isPresent(this._iterableDiffer)) {
-      var changes = this._iterableDiffer.diff(this._rawClass);
-      if (isPresent(changes)) {
+    if (this._iterableDiffer) {
+      const changes = this._iterableDiffer.diff(this._rawClass);
+      if (changes) {
         this._applyIterableChanges(changes);
       }
-    }
-    if (isPresent(this._keyValueDiffer)) {
-      var changes = this._keyValueDiffer.diff(this._rawClass);
-      if (isPresent(changes)) {
+    } else if (this._keyValueDiffer) {
+      const changes = this._keyValueDiffer.diff(this._rawClass);
+      if (changes) {
         this._applyKeyValueChanges(changes);
       }
     }
   }
 
-  private _cleanupClasses(rawClassVal: string[]|Set<string>|{[key: string]: any}): void {
+  private _cleanupClasses(rawClassVal: string[]|Set<string>|{[klass: string]: any}): void {
     this._applyClasses(rawClassVal, true);
     this._applyInitialClasses(false);
   }
 
   private _applyKeyValueChanges(changes: any): void {
     changes.forEachAddedItem(
-        (record: KeyValueChangeRecord) => { this._toggleClass(record.key, record.currentValue); });
+        (record: KeyValueChangeRecord) => this._toggleClass(record.key, record.currentValue));
+
     changes.forEachChangedItem(
-        (record: KeyValueChangeRecord) => { this._toggleClass(record.key, record.currentValue); });
+        (record: KeyValueChangeRecord) => this._toggleClass(record.key, record.currentValue));
+
     changes.forEachRemovedItem((record: KeyValueChangeRecord) => {
       if (record.previousValue) {
         this._toggleClass(record.key, false);
@@ -148,42 +145,34 @@ export class NgClass implements DoCheck {
 
   private _applyIterableChanges(changes: any): void {
     changes.forEachAddedItem(
-        (record: CollectionChangeRecord) => { this._toggleClass(record.item, true); });
+        (record: CollectionChangeRecord) => this._toggleClass(record.item, true));
+
     changes.forEachRemovedItem(
-        (record: CollectionChangeRecord) => { this._toggleClass(record.item, false); });
+        (record: CollectionChangeRecord) => this._toggleClass(record.item, false));
   }
 
   private _applyInitialClasses(isCleanup: boolean) {
-    this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
+    this._initialClasses.forEach(klass => this._toggleClass(klass, !isCleanup));
   }
 
   private _applyClasses(
       rawClassVal: string[]|Set<string>|{[key: string]: any}, isCleanup: boolean) {
-    if (isPresent(rawClassVal)) {
-      if (isArray(rawClassVal)) {
-        (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
-      } else if (rawClassVal instanceof Set) {
-        (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
+    if (rawClassVal) {
+      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
+        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, !isCleanup));
       } else {
-        StringMapWrapper.forEach(
-            <{[k: string]: any}>rawClassVal, (expVal: any, className: string) => {
-              if (isPresent(expVal)) this._toggleClass(className, !isCleanup);
-            });
+        Object.keys(rawClassVal).forEach(klass => {
+          if (isPresent(rawClassVal[klass])) this._toggleClass(klass, !isCleanup);
+        });
       }
     }
   }
 
-  private _toggleClass(className: string, enabled: boolean): void {
-    className = className.trim();
-    if (className.length > 0) {
-      if (className.indexOf(' ') > -1) {
-        var classes = className.split(/\s+/g);
-        for (var i = 0, len = classes.length; i < len; i++) {
-          this._renderer.setElementClass(this._ngEl.nativeElement, classes[i], enabled);
-        }
-      } else {
-        this._renderer.setElementClass(this._ngEl.nativeElement, className, enabled);
-      }
+  private _toggleClass(klass: string, enabled: boolean): void {
+    klass = klass.trim();
+    if (klass) {
+      klass.split(/\s+/g).forEach(
+          klass => { this._renderer.setElementClass(this._ngEl.nativeElement, klass, enabled); });
     }
   }
 }
