@@ -90,7 +90,7 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
    * How often to show ticks. Relative to the step so that a tick always appears on a step.
    * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
    */
-  @Input('tick-interval') private _tickInterval: 'auto' | number;
+  @Input('tick-interval') _tickInterval: 'auto' | number;
 
   /**
    * Whether or not the thumb is sliding.

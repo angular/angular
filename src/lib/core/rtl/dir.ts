@@ -22,7 +22,7 @@ export type LayoutDirection = 'ltr' | 'rtl';
   exportAs: '$implicit'
 })
 export class Dir {
-  @Input('dir') private _dir: LayoutDirection = 'ltr';
+  @Input('dir') _dir: LayoutDirection = 'ltr';
 
   @Output() dirChange = new EventEmitter<void>();
 

@@ -38,7 +38,10 @@ export class MdMenuItem {
     return String(this.disabled);
   }
 
-  private _checkDisabled(event: Event) {
+  /**
+   * TODO: internal
+   */
+  _checkDisabled(event: Event) {
     if (this.disabled) {
       event.preventDefault();
       event.stopPropagation();

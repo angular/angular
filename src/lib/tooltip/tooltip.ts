@@ -60,9 +60,9 @@ export class MdTooltip {
       private _viewContainerRef: ViewContainerRef,
       private _changeDetectionRef: ChangeDetectorRef) {}
 
-  /** 
+  /**
    * Create overlay on init
-   * TODO: @internal
+   * TODO: internal
    */
   ngOnInit() {
     this._createOverlay();

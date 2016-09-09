@@ -7,4 +7,6 @@ import {Component} from '@angular/core';
   templateUrl: 'slide-toggle-demo.html',
   styleUrls: ['slide-toggle-demo.css'],
 })
-export class SlideToggleDemo {}
+export class SlideToggleDemo {
+  firstToggle: boolean;
+}

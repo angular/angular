@@ -26,11 +26,12 @@ export class GridListDemo {
     { name: 'Husi', human: 'Matias' },
   ];
 
-  fixedCols: number = 4;
-  fixedRowHeight: number = 100;
-  ratioGutter: number = 1;
-  fitListHeight: string = '400px';
-  ratio: string = '4:1';
+  basicRowHeight = 80;
+  fixedCols = 4;
+  fixedRowHeight = 100;
+  ratioGutter = 1;
+  fitListHeight = '400px';
+  ratio = '4:1';
 
   addTileCols() { this.tiles[2].cols++; }
 }
