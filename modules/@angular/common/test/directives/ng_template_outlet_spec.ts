@@ -8,155 +8,140 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('insert', () => {
+  describe('NgTemplateOutlet', () => {
+    let fixture: ComponentFixture<any>;
+
+    function setTplRef(value: any): void { fixture.componentInstance.currentTplRef = value; }
+
+    function detectChangesAndExpectText(text: string): void {
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement).toHaveText(text);
+    }
+
+    afterEach(() => { fixture = null; });
 
     beforeEach(() => {
-      TestBed.configureTestingModule(
-          {declarations: [TestComponent, CaptureTplRefs], imports: [CommonModule]});
+      TestBed.configureTestingModule({
+        declarations: [
+          TestComponent,
+          CaptureTplRefs,
+        ],
+        imports: [CommonModule],
+      });
     });
 
     it('should do nothing if templateRef is null', async(() => {
          const template = `<template [ngTemplateOutlet]="null"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
 
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('');
+         detectChangesAndExpectText('');
        }));
 
     it('should insert content specified by TemplateRef', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
+         fixture = createTestComponent(template);
 
-         let fixture = TestBed.createComponent(TestComponent);
+         detectChangesAndExpectText('');
 
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('');
+         const refs = fixture.debugElement.children[0].references['refs'];
 
-         var refs = fixture.debugElement.children[0].references['refs'];
-
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('foo');
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
        }));
 
     it('should clear content if TemplateRef becomes null', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
-         let fixture = TestBed.createComponent(TestComponent);
-
+         fixture = createTestComponent(template);
          fixture.detectChanges();
-         var refs = fixture.debugElement.children[0].references['refs'];
+         const refs = fixture.debugElement.children[0].references['refs'];
 
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('foo');
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
 
-         fixture.componentInstance.currentTplRef = null;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('');
+         setTplRef(null);
+         detectChangesAndExpectText('');
        }));
 
     it('should swap content if TemplateRef changes', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template>foo</template><template>bar</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
 
          fixture.detectChanges();
-         var refs = fixture.debugElement.children[0].references['refs'];
+         const refs = fixture.debugElement.children[0].references['refs'];
 
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('foo');
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
 
-         fixture.componentInstance.currentTplRef = refs.tplRefs.last;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('bar');
+         setTplRef(refs.tplRefs.last);
+         detectChangesAndExpectText('bar');
        }));
 
     it('should display template if context is null', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="null"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
+         detectChangesAndExpectText('');
 
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('');
+         const refs = fixture.debugElement.children[0].references['refs'];
 
-         var refs = fixture.debugElement.children[0].references['refs'];
-
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('foo');
+         setTplRef(refs.tplRefs.first);
+         detectChangesAndExpectText('foo');
        }));
 
     it('should reflect initial context and changes', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template let-foo="foo"><span>{{foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
-         let fixture = TestBed.createComponent(TestComponent);
-         fixture.detectChanges();
-
-         var refs = fixture.debugElement.children[0].references['refs'];
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
+         fixture = createTestComponent(template);
 
          fixture.detectChanges();
-         expect(fixture.debugElement.nativeElement).toHaveText('bar');
+
+         const refs = fixture.debugElement.children[0].references['refs'];
+         setTplRef(refs.tplRefs.first);
+
+         detectChangesAndExpectText('bar');
 
          fixture.componentInstance.context.foo = 'alter-bar';
 
-         fixture.detectChanges();
-         expect(fixture.debugElement.nativeElement).toHaveText('alter-bar');
+         detectChangesAndExpectText('alter-bar');
        }));
 
     it('should reflect user defined $implicit property in the context', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template let-ctx><span>{{ctx.foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
+
          fixture.detectChanges();
 
-         var refs = fixture.debugElement.children[0].references['refs'];
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
+         const refs = fixture.debugElement.children[0].references['refs'];
+         setTplRef(refs.tplRefs.first);
 
          fixture.componentInstance.context = {$implicit: fixture.componentInstance.context};
-         fixture.detectChanges();
-         expect(fixture.debugElement.nativeElement).toHaveText('bar');
+         detectChangesAndExpectText('bar');
        }));
 
     it('should reflect context re-binding', async(() => {
          const template =
              `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
-         TestBed.overrideComponent(TestComponent, {set: {template: template}})
-             .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
+         fixture = createTestComponent(template);
 
-         let fixture = TestBed.createComponent(TestComponent);
          fixture.detectChanges();
 
-         var refs = fixture.debugElement.children[0].references['refs'];
-         fixture.componentInstance.currentTplRef = refs.tplRefs.first;
+         const refs = fixture.debugElement.children[0].references['refs'];
+         setTplRef(refs.tplRefs.first);
          fixture.componentInstance.context = {shawshank: 'brooks'};
 
-         fixture.detectChanges();
-         expect(fixture.debugElement.nativeElement).toHaveText('brooks');
+         detectChangesAndExpectText('brooks');
 
          fixture.componentInstance.context = {shawshank: 'was here'};
 
-         fixture.detectChanges();
-         expect(fixture.debugElement.nativeElement).toHaveText('was here');
+         detectChangesAndExpectText('was here');
        }));
   });
 }
@@ -171,4 +156,10 @@ class CaptureTplRefs {
 class TestComponent {
   currentTplRef: TemplateRef<any>;
   context: any = {foo: 'bar'};
+}
+
+function createTestComponent(template: string): ComponentFixture<TestComponent> {
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+      .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+      .createComponent(TestComponent);
 }

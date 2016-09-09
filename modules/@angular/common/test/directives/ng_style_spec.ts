@@ -10,69 +10,70 @@ import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
-function expectNativeEl(fixture: ComponentFixture<any>) {
-  return <any>expect(fixture.debugElement.children[0].nativeElement);
-}
-
 export function main() {
-  describe('binding to CSS styles', () => {
+  describe('NgStyle', () => {
+    let fixture: ComponentFixture<any>;
+
+    function getComponent(): TestComponent { return fixture.componentInstance; }
+
+    function expectNativeEl(fixture: ComponentFixture<any>): any {
+      return expect(fixture.debugElement.children[0].nativeElement);
+    }
+
+    afterEach(() => { fixture = null; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
     });
 
     it('should add styles specified in an object literal', async(() => {
-         var template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
+         const template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
+         fixture = createTestComponent(template);
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
        }));
 
     it('should add and change styles specified in an object expression', async(() => {
-         var template = `<div [ngStyle]="expr"></div>`;
+         const template = `<div [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-         var expr: Map<string, any>;
+         fixture = createTestComponent(template);
+         let expr: {[k: string]: string};
 
-         fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+         getComponent().expr = {'max-width': '40px'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
-         expr = fixture.debugElement.componentInstance.expr;
-         (expr as any)['max-width'] = '30%';
+         expr = getComponent().expr;
+         expr['max-width'] = '30%';
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
        }));
 
     it('should add and remove styles specified using style.unit notation', async(() => {
-         var template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
+         const template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
 
-         fixture.debugElement.componentInstance.expr = '40';
+         getComponent().expr = '40';
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
-         fixture.debugElement.componentInstance.expr = null;
+         getComponent().expr = null;
          fixture.detectChanges();
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
        }));
 
     it('should update styles using style.unit notation when unit changes', async(() => {
-         var template = `<div [ngStyle]="expr"></div>`;
+         const template = `<div [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
+         fixture = createTestComponent(template);
 
-         fixture.debugElement.componentInstance.expr = {'max-width.px': '40'};
+         getComponent().expr = {'max-width.px': '40'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
-         fixture.debugElement.componentInstance.expr = {'max-width.em': '40'};
+         getComponent().expr = {'max-width.em': '40'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40em'});
        }));
@@ -81,9 +82,9 @@ export function main() {
     it('should change styles specified in an object expression', async(() => {
          const template = `<div [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-         fixture.debugElement.componentInstance.expr = {
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {
            // height, width order is important here
            height: '10px',
            width: '10px'
@@ -92,7 +93,7 @@ export function main() {
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'height': '10px', 'width': '10px'});
 
-         fixture.debugElement.componentInstance.expr = {
+         getComponent().expr = {
            // width, height order is important here
            width: '5px',
            height: '5px',
@@ -103,29 +104,29 @@ export function main() {
        }));
 
     it('should remove styles when deleting a key in an object expression', async(() => {
-         var template = `<div [ngStyle]="expr"></div>`;
+         const template = `<div [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-         fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {'max-width': '40px'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
-         delete fixture.debugElement.componentInstance.expr['max-width'];
+         delete getComponent().expr['max-width'];
          fixture.detectChanges();
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
        }));
 
     it('should co-operate with the style attribute', async(() => {
-         var template = `<div style="font-size: 12px" [ngStyle]="expr"></div>`;
+         const template = `<div style="font-size: 12px" [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-         fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {'max-width': '40px'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px', 'font-size': '12px'});
 
-         delete fixture.debugElement.componentInstance.expr['max-width'];
+         delete getComponent().expr['max-width'];
          fixture.detectChanges();
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
@@ -133,15 +134,15 @@ export function main() {
 
     it('should co-operate with the style.[styleName]="expr" special-case in the compiler',
        async(() => {
-         var template = `<div [style.font-size.px]="12" [ngStyle]="expr"></div>`;
+         const template = `<div [style.font-size.px]="12" [ngStyle]="expr"></div>`;
 
-         TestBed.overrideComponent(TestComponent, {set: {template: template}});
-         let fixture = TestBed.createComponent(TestComponent);
-         fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {'max-width': '40px'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px', 'font-size': '12px'});
 
-         delete fixture.debugElement.componentInstance.expr['max-width'];
+         delete getComponent().expr['max-width'];
          fixture.detectChanges();
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
          expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
@@ -152,4 +153,9 @@ export function main() {
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   expr: any;
+}
+
+function createTestComponent(template: string): ComponentFixture<TestComponent> {
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+      .createComponent(TestComponent);
 }
