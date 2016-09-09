@@ -86,6 +86,25 @@ export interface TypeDecorator {
   Class(obj: ClassDefinition): Type<any>;
 }
 
+// We define an interface to store extra docs
+export interface ClassMetadataCtor<T> {
+  /**
+   * See the corresponding decorator
+   */
+  new (obj?: T): T;
+}
+
+// We define an interface to store extra docs
+export interface EmptyParamMetadataCtor<T> {
+  /**
+   * See the corresponding decorator.
+   */
+  new (): T;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface EmptyParamMetadata {}
+
 function extractAnnotation(annotation: any): any {
   if (isFunction(annotation) && annotation.hasOwnProperty('annotation')) {
     // it is a decorator, extract annotation
