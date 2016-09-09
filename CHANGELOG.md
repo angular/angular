@@ -21,7 +21,7 @@ more information.
 ```ts
 @NgModule({
     imports: [
-        MdCoreModule.forRoot()
+        MdCoreModule.forRoot(),
         MdRadioModule.forRoot(),
         MdIconModule.forRoot()
     ]
