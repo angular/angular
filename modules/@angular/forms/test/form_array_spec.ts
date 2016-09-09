@@ -14,13 +14,11 @@ import {isPresent} from '../src/facade/lang';
 import {Validators} from '../src/validators';
 
 export function main() {
-  function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
-    return (c: any /** TODO #9100 */) => {
+  function asyncValidator(expected: string, timeouts = {}) {
+    return (c: AbstractControl) => {
       var resolve: (result: any) => void;
       var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any /** TODO #9100 */)[c.value]) ?
-          (timeouts as any /** TODO #9100 */)[c.value] :
-          0;
+      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
       var res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
@@ -797,6 +795,69 @@ export function main() {
 
         arr.enable();
         expect(arr.status).toEqual('VALID');
+      });
+
+      it('should not run validators on disabled controls', () => {
+        const validator = jasmine.createSpy('validator');
+        const arr = new FormArray([new FormControl()], validator);
+        expect(validator.calls.count()).toEqual(1);
+
+        arr.disable();
+        expect(validator.calls.count()).toEqual(1);
+
+        arr.setValue(['value']);
+        expect(validator.calls.count()).toEqual(1);
+
+        arr.enable();
+        expect(validator.calls.count()).toEqual(2);
+      });
+
+      describe('disabled errors', () => {
+        it('should clear out array errors when disabled', () => {
+          const arr = new FormArray([new FormControl()], () => { return {'expected': true}; });
+          expect(arr.errors).toEqual({'expected': true});
+
+          arr.disable();
+          expect(arr.errors).toEqual(null);
+
+          arr.enable();
+          expect(arr.errors).toEqual({'expected': true});
+        });
+
+        it('should re-populate array errors when enabled from a child', () => {
+          const arr = new FormArray([new FormControl()], () => { return {'expected': true}; });
+          arr.disable();
+          expect(arr.errors).toEqual(null);
+
+          arr.push(new FormControl());
+          expect(arr.errors).toEqual({'expected': true});
+        });
+
+        it('should clear out async array errors when disabled', fakeAsync(() => {
+             const arr = new FormArray([new FormControl()], null, asyncValidator('expected'));
+             tick();
+             expect(arr.errors).toEqual({'async': true});
+
+             arr.disable();
+             expect(arr.errors).toEqual(null);
+
+             arr.enable();
+             tick();
+             expect(arr.errors).toEqual({'async': true});
+           }));
+
+        it('should re-populate async array errors when enabled from a child', fakeAsync(() => {
+             const arr = new FormArray([new FormControl()], null, asyncValidator('expected'));
+             tick();
+             expect(arr.errors).toEqual({'async': true});
+
+             arr.disable();
+             expect(arr.errors).toEqual(null);
+
+             arr.push(new FormControl());
+             tick();
+             expect(arr.errors).toEqual({'async': true});
+           }));
       });
 
       describe('disabled events', () => {

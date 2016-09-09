@@ -15,13 +15,11 @@ import {isPresent} from '../src/facade/lang';
 import {FormArray} from '../src/model';
 
 export function main() {
-  function asyncValidator(expected: any /** TODO #9100 */, timeouts = {}) {
-    return (c: any /** TODO #9100 */) => {
+  function asyncValidator(expected: string, timeouts = {}) {
+    return (c: FormControl) => {
       var resolve: (result: any) => void;
       var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any /** TODO #9100 */)[c.value]) ?
-          (timeouts as any /** TODO #9100 */)[c.value] :
-          0;
+      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
       var res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
@@ -573,7 +571,7 @@ export function main() {
     });
 
     describe('valueChanges & statusChanges', () => {
-      var c: any /** TODO #9100 */;
+      let c: FormControl;
 
       beforeEach(() => { c = new FormControl('old', Validators.required); });
 
@@ -890,6 +888,47 @@ export function main() {
 
         c.enable();
         expect(g.touched).toBe(true);
+      });
+
+      it('should not run validators on disabled controls', () => {
+        const validator = jasmine.createSpy('validator');
+        const c = new FormControl('', validator);
+        expect(validator.calls.count()).toEqual(1);
+
+        c.disable();
+        expect(validator.calls.count()).toEqual(1);
+
+        c.setValue('value');
+        expect(validator.calls.count()).toEqual(1);
+
+        c.enable();
+        expect(validator.calls.count()).toEqual(2);
+      });
+
+      describe('disabled errors', () => {
+        it('should clear out the errors when disabled', () => {
+          const c = new FormControl('', Validators.required);
+          expect(c.errors).toEqual({required: true});
+
+          c.disable();
+          expect(c.errors).toEqual(null);
+
+          c.enable();
+          expect(c.errors).toEqual({required: true});
+        });
+
+        it('should clear out async errors when disabled', fakeAsync(() => {
+             const c = new FormControl('', null, asyncValidator('expected'));
+             tick();
+             expect(c.errors).toEqual({'async': true});
+
+             c.disable();
+             expect(c.errors).toEqual(null);
+
+             c.enable();
+             tick();
+             expect(c.errors).toEqual({'async': true});
+           }));
       });
 
       describe('disabled events', () => {
