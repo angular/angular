@@ -14,39 +14,19 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
 /**
- *  Maps a value to a string that pluralizes the value properly.
+ * @ngModule CommonModule
+ * @whatItDoes Maps a value to a string that pluralizes the value according to locale rules.
+ * @howToUse `expression | i18nPlural:mapping`
+ * @description
  *
- *  ## Usage
- *
- *      expression | i18nPlural:mapping
- *
- *  where `expression` is a number and `mapping` is an object that mimics the ICU format,
- *  see http://userguide.icu-project.org/formatparse/messages
+ *  Where:
+ *  - `expression` is a number.
+ *  - `mapping` is an object that mimics the ICU format, see
+ *    http://userguide.icu-project.org/formatparse/messages
  *
  *  ## Example
  *
- *  ```
- *  @Component({
- *    selector: 'app',
- *    template: `
- *      <div>
- *        {{ messages.length | i18nPlural: messageMapping }}
- *      </div>
- *    `,
- *    // best practice is to define the locale at the application level
- *    providers: [{provide: LOCALE_ID, useValue: 'en_US'}]
- *  })
- *
- *  class MyApp {
- *    messages: any[];
- *    messageMapping: {[k:string]: string} = {
- *      '=0': 'No messages.',
- *      '=1': 'One message.',
- *      'other': '# messages.'
- *    }
- *    ...
- *  }
- *  ```
+ * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
  *
  * @experimental
  */
