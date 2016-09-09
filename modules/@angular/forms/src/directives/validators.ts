@@ -35,7 +35,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  */
 export interface Validator {
   validate(c: AbstractControl): {[key: string]: any};
-  registerOnChange?(fn: () => void): void;
+  registerOnValidatorChange?(fn: () => void): void;
 }
 
 export const REQUIRED_VALIDATOR: any = {
@@ -77,7 +77,7 @@ export class RequiredValidator implements Validator {
     return this.required ? Validators.required(c) : null;
   }
 
-  registerOnChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
 }
 
 /**
@@ -138,7 +138,7 @@ export class MinLengthValidator implements Validator,
     return isPresent(this.minlength) ? this._validator(c) : null;
   }
 
-  registerOnChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
 }
 
 /**
@@ -188,7 +188,7 @@ export class MaxLengthValidator implements Validator,
     return isPresent(this.maxlength) ? this._validator(c) : null;
   }
 
-  registerOnChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
 }
 
 
@@ -237,5 +237,5 @@ export class PatternValidator implements Validator,
     return isPresent(this.pattern) ? this._validator(c) : null;
   }
 
-  registerOnChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
 }
