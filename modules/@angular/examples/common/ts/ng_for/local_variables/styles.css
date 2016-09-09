@@ -1,0 +1,56 @@
+.actions {
+  margin-bottom:20px;
+}
+
+.cell {
+  width:20%;
+  min-width:200px;
+  border:10px solid black;
+  padding:40px 0;
+  box-shadow:0 0 5px #aaa;
+  text-align:center;
+  margin:1% 2%;
+  display:inline-block;
+  vertical-align:top;
+  position:relative;
+}
+.cell h1 {
+  font-size:8rem;
+  margin:10px 0 0;
+  padding:0;
+  font-weight:bold;
+}
+.cell p {
+  font-size:2rem;
+  margin:0 0 1em;
+}
+.cell sup {
+  position:absolute;
+  box-shadow:0 0 5px #aaa;
+  top:-30px;
+  right:-30px;
+  background:#A8C545;
+  color:white;
+  padding:10px;
+  font-size:1.15rem;
+  border:6px solid #6a7f25;
+}
+.cell sup:before {
+  content:"";
+  position:absolute;
+  left:18px;
+  bottom:-30px;
+  border:12px solid transparent;
+  border-top-color:#6a7f25;
+}
+.cell sup:after {
+  content:"";
+  position:absolute;
+  left:20px;
+  bottom:-20px;
+  border:10px solid transparent;
+  border-top-color:#A8C545;
+}
+.first-record, .last-record { background: #0092B2; color: white; }
+.even-record { background: white; color: black; }
+.odd-record { background: #DFD3B6; color: black; }

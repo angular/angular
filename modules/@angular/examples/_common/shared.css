@@ -1,6 +1,76 @@
-html, body {
-  margin:0;
-  padding:0;
+*, *:before, *:after {
+  box-sizing:border-box;
 }
 
-body { padding:20px; }
+html, body, select, option, input, textarea {
+  font-family:Verdana;
+  font-size:1rem;
+}
+
+html, body {
+  font-size:18px;
+  margin:0;
+  padding:0;
+  position:relative;
+  height:100%;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  padding:40px;
+  background:#eee;
+}
+
+.actions {
+  box-shadow:0 0 5px #aaa;
+  margin-bottom:1em;
+  padding:1em;
+  background:white;
+}
+
+.button {
+  color:maroon;
+  padding:8px 15px;
+  background:white;
+  border:5px solid #ccc;
+  font-size:1.1em;
+  cursor:pointer;
+}
+
+.button:active,
+.button:focus,
+.button:hover {
+  outline:0;
+  border-color:black;
+}
+
+.record {
+  position:relative;
+  padding:1em;
+  margin-bottom:5px;
+  background:white;
+  box-shadow:0 0 5px #aaa;
+}
+
+.definitions {
+  padding:20px;
+  background:white;
+  box-shadow:0 0 5px #aaa;
+}
+
+.definitions dt {
+  background:#eee;
+  padding:5px;
+  margin:0;
+  font-weight:bold;
+  font-size:1.2em;
+}
+
+.definitions dd {
+  padding:5px;
+  margin:0;
+}

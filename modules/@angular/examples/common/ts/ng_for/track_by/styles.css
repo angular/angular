@@ -1,0 +1,57 @@
+.record-actions {
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+.message-record {
+  width:45%;
+  margin:2.5%;
+  display:inline-block;
+  vertical-align:top;
+  padding:0;
+}
+
+.message-record .inner {
+  padding:20px;
+}
+
+.message-record p {
+  white-space:pre-wrap;
+}
+
+.message-record message-form {
+  display:block;
+  background:#F5E8C8;
+  border-top:5px solid #DFD3B6;
+}
+
+.form-field label, .form-field input, .form-field textarea {
+  display:block;
+}
+
+.form-field input, .form-field textarea {
+  width:100%;
+  border:5px solid grey;
+  padding:8px;
+}
+
+.form-field textarea {
+  height:150px;
+}
+
+.form-field input:hover, .form-field textarea:hover,
+.form-field input:focus, .form-field textarea:focus {
+  border-color:black;
+  outline:0;
+}
+
+.form-field {
+  padding:1em 0;
+}
+
+.form-field label {
+  margin-bottom:5px;
+  font-size:1.1em;
+  font-weight:bold;
+}
