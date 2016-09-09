@@ -18,7 +18,7 @@ describe('animation example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = '/core/animation/ts/dsl/index.html';
+    var URL = '/core/animation/ts/dsl/';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);

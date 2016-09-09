@@ -12,7 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion NumberPipe
 @Component({
-  selector: 'number-example',
+  selector: 'number-pipe',
   template: `<div>
     <p>e (no formatting): {{e}}</p>
     <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
@@ -20,21 +20,21 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
   </div>`
 })
-export class NumberPipeExample {
-  pi: number = 3.141;
+export class NumberPipeComponent {
+  pi: number = 3.141592;
   e: number = 2.718281828459045;
 }
 // #enddocregion
 
 // #docregion PercentPipe
 @Component({
-  selector: 'percent-example',
+  selector: 'percent-pipe',
   template: `<div>
     <p>A: {{a | percent}}</p>
     <p>B: {{b | percent:'4.3-5'}}</p>
   </div>`
 })
-export class PercentPipeExample {
+export class PercentPipeComponent {
   a: number = 0.259;
   b: number = 1.3495;
 }
@@ -42,37 +42,14 @@ export class PercentPipeExample {
 
 // #docregion CurrencyPipe
 @Component({
-  selector: 'currency-example',
+  selector: 'currency-pipe',
   template: `<div>
     <p>A: {{a | currency:'USD':false}}</p>
     <p>B: {{b | currency:'USD':true:'4.2-2'}}</p>
   </div>`
 })
-export class CurrencyPipeExample {
+export class CurrencyPipeComponent {
   a: number = 0.259;
   b: number = 1.3495;
 }
 // #enddocregion
-
-@Component({
-  selector: 'example-app',
-  template: `
-    <h1>Numeric Pipe Examples</h1>
-    <h2>NumberPipe Example</h2>
-    <number-example></number-example>
-    <h2>PercentPipe Example</h2>
-    <percent-example></percent-example>
-    <h2>CurrencyPipeExample</h2>
-    <currency-example></currency-example>
-  `
-})
-export class AppCmp {
-}
-
-@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
-class AppModule {
-}
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(AppModule);
-}

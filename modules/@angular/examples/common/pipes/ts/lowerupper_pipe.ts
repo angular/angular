@@ -12,33 +12,15 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion LowerUpperPipe
 @Component({
-  selector: 'lowerupper-example',
+  selector: 'lowerupper-pipe',
   template: `<div>
     <label>Name: </label><input #name (keyup)="change(name.value)" type="text">
-    <p>In lowercase: <pre>'{{value | lowercase}}'</pre></p>
-    <p>In uppercase: <pre>'{{value | uppercase}}'</pre></p>
+    <p>In lowercase: <pre>'{{value | lowercase}}'</pre>
+    <p>In uppercase: <pre>'{{value | uppercase}}'</pre>
   </div>`
 })
-export class LowerUpperPipeExample {
+export class LowerUpperPipeComponent {
   value: string;
   change(value: string) { this.value = value; }
 }
 // #enddocregion
-
-@Component({
-  selector: 'example-app',
-  template: `
-    <h1>LowercasePipe &amp; UppercasePipe Example</h1>
-    <lowerupper-example></lowerupper-example>
-  `
-})
-export class AppCmp {
-}
-
-@NgModule({imports: [BrowserModule], bootstrap: [AppCmp]})
-class AppModule {
-}
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(AppModule);
-}

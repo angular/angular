@@ -14,13 +14,14 @@ import {Subscriber} from 'rxjs/Subscriber';
 
 // #docregion AsyncPipePromise
 @Component({
-  selector: 'async-promise',
+  selector: 'async-promise-pipe',
   template: `<div>
-    <p>Wait for it... {{ greeting | async }}</p>
+    <code>promise|async</code>: 
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
+    <span>Wait for it... {{ greeting | async }}</span>
   </div>`
 })
-export class AsyncPromiseComponent {
+export class AsyncPromisePipeComponent {
   greeting: Promise<string> = null;
   arrived: boolean = false;
 
@@ -45,10 +46,26 @@ export class AsyncPromiseComponent {
 // #enddocregion
 
 // #docregion AsyncPipeObservable
-@Component({selector: 'async-observable', template: '<div>Time: {{ time | async }}</div>'})
-export class AsyncObservableComponent {
-  time = new Observable<number>((observer: Subscriber<number>) => {
-    setInterval(() => observer.next(new Date().getTime()), 500);
+@Component({
+  selector: 'async-observable-pipe',
+  template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>'
+})
+export class AsyncObservablePipeComponent {
+  time = new Observable<string>((observer: Subscriber<string>) => {
+    setInterval(() => observer.next(new Date().toString()), 1000);
   });
 }
 // #enddocregion
+
+// For some reason protractor hangs on setInterval. So we will run outside of angular zone so that
+// protractor will not see us. Also we want to have this outside the docregion so as not to confuse
+// the reader.
+function setInterval(fn, delay) {
+  var zone = Zone.current;
+  var rootZone = zone;
+  while (rootZone.parent) {
+    rootZone = rootZone.parent;
+  }
+  rootZone.run(
+      () => { window.setInterval(function() { zone.run(fn, this, arguments as any); }, delay); });
+}

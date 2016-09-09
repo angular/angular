@@ -12,32 +12,14 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion DatePipe
 @Component({
-  selector: 'date-example',
+  selector: 'date-pipe',
   template: `<div>
     <p>Today is {{today | date}}</p>
     <p>Or if you prefer, {{today | date:'fullDate'}}</p>
     <p>The time is {{today | date:'jmZ'}}</p>
   </div>`
 })
-export class DatePipeExample {
+export class DatePipeComponent {
   today: number = Date.now();
 }
 // #enddocregion
-
-@Component({
-  selector: 'example-app',
-  template: `
-    <h1>DatePipe Example</h1>
-    <date-example></date-example>
-  `
-})
-export class AppCmp {
-}
-
-@NgModule({declarations: [DatePipeExample, AppCmp], imports: [BrowserModule], bootstrap: [AppCmp]})
-class AppModule {
-}
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(AppModule);
-}
