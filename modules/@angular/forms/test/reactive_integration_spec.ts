@@ -8,13 +8,12 @@
 
 import {Component, Directive, EventEmitter, Input, Output, forwardRef} from '@angular/core';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
 import {ListWrapper} from '../src/facade/collection';
-import {AbstractControl} from '../src/model';
 
 export function main() {
   describe('reactive forms integration tests', () => {
@@ -981,7 +980,8 @@ export function main() {
       describe('custom value accessors', () => {
         it('should support custom value accessors', () => {
           const fixture = TestBed.createComponent(WrappedValueForm);
-          fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
+          const form = new FormGroup({'login': new FormControl('aa')});
+          fixture.componentInstance.form = form;
           fixture.detectChanges();
 
           // model -> view
@@ -992,7 +992,12 @@ export function main() {
           dispatchEvent(input.nativeElement, 'input');
 
           // view -> model
-          expect(fixture.componentInstance.form.value).toEqual({'login': 'bb'});
+          expect(form.value).toEqual({'login': 'bb'});
+
+          // custom validator
+          expect(form.get('login').errors).toEqual({'err': true});
+          form.setValue({login: 'expected'});
+          expect(form.get('login').errors).toEqual(null);
         });
 
         it('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
@@ -1549,13 +1554,15 @@ export function main() {
 
 @Directive({
   selector: '[wrapped-value]',
-  host: {'(input)': 'handleOnInput($event.target.value)', '[value]': 'value'}
+  host: {'(input)': 'handleOnInput($event.target.value)', '[value]': 'value'},
+  providers: [
+    {provide: NG_VALUE_ACCESSOR, multi: true, useExisting: WrappedValue},
+    {provide: NG_VALIDATORS, multi: true, useExisting: WrappedValue}
+  ]
 })
 class WrappedValue implements ControlValueAccessor {
   value: any;
   onChange: Function;
-
-  constructor(cd: NgControl) { cd.valueAccessor = this; }
 
   writeValue(value: any) { this.value = `!${value}!`; }
 
@@ -1563,6 +1570,8 @@ class WrappedValue implements ControlValueAccessor {
   registerOnTouched(fn: any) {}
 
   handleOnInput(value: any) { this.onChange(value.substring(1, value.length - 1)); }
+
+  validate(c: AbstractControl) { return c.value === 'expected' ? null : {'err': true}; }
 }
 
 @Component({selector: 'my-input', template: ''})
