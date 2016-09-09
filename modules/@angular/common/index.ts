@@ -11,6 +11,9 @@
  * @description
  * Entry point for all public APIs of the common package.
  */
-export * from './src/common';
+export * from './src/location';
+export {NgLocalization} from './src/localization';
+export {CommonModule} from './src/common_module';
 
-// This file only reexports content of the `src` folder. Keep it that way.
+export {NgClass, NgFor, NgIf, NgPlural, NgPluralCase, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet} from './src/directives/index';
+export {AsyncPipe, DatePipe, I18nPluralPipe, I18nSelectPipe, JsonPipe, LowerCasePipe, CurrencyPipe, DecimalPipe, PercentPipe, SlicePipe, UpperCasePipe} from './src/pipes/index';
