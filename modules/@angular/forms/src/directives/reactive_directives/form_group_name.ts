@@ -24,49 +24,46 @@ export const formGroupNameProvider: any = {
 };
 
 /**
- * Syncs an existing form group to a DOM element.
+ * @whatItDoes Syncs a nested {@link FormGroup} to a DOM element.
  *
- * This directive can only be used as a child of {@link FormGroupDirective}.  It also requires
- * importing the {@link ReactiveFormsModule}.
+ * @howToUse
  *
- * ```typescript
- * @Component({
- *   selector: 'my-app',
- *   template: `
- *     <div>
- *       <h2>Angular FormGroup Example</h2>
- *       <form [formGroup]="myForm">
- *         <div formGroupName="name">
- *           <h3>Enter your name:</h3>
- *           <p>First: <input formControlName="first"></p>
- *           <p>Middle: <input formControlName="middle"></p>
- *           <p>Last: <input formControlName="last"></p>
- *         </div>
- *         <h3>Name value:</h3>
- *         <pre>{{ myForm.get('name') | json }}</pre>
- *         <p>Name is {{myForm.get('name')?.valid ? "valid" : "invalid"}}</p>
- *         <h3>What's your favorite food?</h3>
- *         <p><input formControlName="food"></p>
- *         <h3>Form value</h3>
- *         <pre> {{ myForm | json }} </pre>
- *       </form>
- *     </div>
- *   `
- * })
- * export class App {
- *   myForm = new FormGroup({
- *     name: new FormGroup({
- *       first: new FormControl('', Validators.required),
- *       middle: new FormControl(''),
- *       last: new FormControl('', Validators.required)
- *     }),
- *     food: new FormControl()
- *   });
- * }
- * ```
+ * This directive can only be used with a parent {@link FormGroupDirective} (selector:
+ * `[formGroup]`).
  *
- * This example syncs the form group for the user's name. The value and validation state of
- * this group can be accessed separately from the overall form.
+ * It accepts the string name of the nested {@link FormGroup} you want to link, and
+ * will look for a {@link FormGroup} registered with that name in the parent
+ * {@link FormGroup} instance you passed into {@link FormGroupDirective}.
+ *
+ * Nested form groups can come in handy when you want to validate a sub-group of a
+ * form separately from the rest or when you'd like to group the values of certain
+ * controls into their own nested object.
+ *
+ * **Access the group**: You can access the associated {@link FormGroup} using the
+ * {@link AbstractControl.get} method. Ex: `this.form.get('name')`.
+ *
+ * You can also access individual controls within the group using dot syntax.
+ * Ex: `this.form.get('name.first')`
+ *
+ * **Get the value**: the `value` property is always synced and available on the
+ * {@link FormGroup}. See a full list of available properties in {@link AbstractControl}.
+ *
+ * **Set the value**: You can set an initial value for each child control when instantiating
+ * the {@link FormGroup}, or you can set it programmatically later using
+ * {@link AbstractControl.setValue} or {@link AbstractControl.patchValue}.
+ *
+ * **Listen to value**: If you want to listen to changes in the value of the group, you can
+ * subscribe to the {@link AbstractControl.valueChanges} event.  You can also listen to
+ * {@link AbstractControl.statusChanges} to be notified when the validation status is
+ * re-calculated.
+ *
+ * ### Example
+ *
+ * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
+ *
+ * * **npm package**: `@angular/forms`
+ *
+ * * **NgModule**: `ReactiveFormsModule`
  *
  * @stable
  */
