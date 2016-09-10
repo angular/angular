@@ -7,8 +7,7 @@
  */
 
 /**
- * Name of the primary outlet.
- * @type {string}
+ * @whatItDoes Name of the primary outlet.
  *
  * @stable
  */
