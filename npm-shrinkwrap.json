@@ -7421,9 +7421,8 @@
       }
     },
     "zone.js": {
-      "version": "0.6.17",
-      "from": "zone.js@0.6.17",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.17.tgz"
+      "version": "0.6.21",
+      "from": "zone.js@0.6.21"
     }
   }
 }
