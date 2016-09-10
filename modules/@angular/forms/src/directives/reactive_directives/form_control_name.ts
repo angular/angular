@@ -28,69 +28,37 @@ export const controlNameBinding: any = {
 };
 
 /**
- * Syncs an existing form control with the specified name to a DOM element.
+ * @whatItDoes  Syncs a form control element to an existing {@link FormControl} instance by name.
  *
- * This directive can only be used as a child of {@link FormGroupDirective}.  It also requires
- * importing the {@link ReactiveFormsModule}.
-
+ * In other words, this directive ensures that any values written to the {@link FormControl}
+ * instance programmatically will be written to the DOM element (model -> view). Conversely,
+ * any values written to the DOM element through user input will be reflected in the
+ * {@link FormControl} instance (view -> model).
+ *
+ * @howToUse
+ *
+ * This directive must be used with a parent {@link FormGroupDirective} (selector: `[formGroup]`).
+ *
+ * Pass in the string name of the {@link FormControl} instance you want to link. It will look for a
+ * control registered with that name in the {@link FormGroup} passed to the parent
+ * {@link FormGroupDirective}.
+ *
+ *  You can initialize the value of the form when instantiating the {@link FormGroup}, or you can
+ * set it programmatically later using {@link AbstractControl.setValue} or
+ * {@link AbstractControl.patchValue}.
+ *
+ * If you want to listen to changes in the value of the form, you can subscribe to the
+ * {@link AbstractControl.valueChanges} event.
+ *
  * ### Example
  *
- * In this example, we create the login and password controls.
- * We can work with each control separately: check its validity, get its value, listen to its
- * changes.
+ * In this example, we create form controls for first name and last name.
  *
- *  ```
- * @Component({
- *      selector: "login-comp",
- *      template: `
- *        <form [formGroup]="myForm" (submit)="onLogIn()">
- *          Login <input type="text" formControlName="login">
- *          <div *ngIf="!loginCtrl.valid">Login is invalid</div>
- *          Password <input type="password" formControlName="password">
- *          <button type="submit">Log in!</button>
- *        </form>
- *      `})
- * class LoginComp {
- *  loginCtrl = new FormControl();
- *  passwordCtrl = new FormControl();
- *  myForm = new FormGroup({
- *     login: loginCtrl,
- *     password: passwordCtrl
- *  });
- *  onLogIn(): void {
- *    // value === {login: 'some login', password: 'some password'}
- *  }
- * }
- *  ```
+ * {@example forms/ts/formControlName/form_control_name_example.ts region='Component'}
  *
- * We can also set the value of the form programmatically using setValue().
+ *  * **npm package**: `@angular/forms`
  *
- *  ```
- * @Component({
- *      selector: "login-comp",
- *      template: `
- *        <form [formGroup]="myForm" (submit)='onLogIn()'>
- *          Login <input type='text' formControlName='login'>
- *          Password <input type='password' formControlName='password'>
- *          <button type='submit'>Log in!</button>
- *        </form>
- *      `})
- * class LoginComp {
- *  myForm = new FormGroup({
- *    login: new FormControl(),
- *    password: new FormControl()
- *  });
- *
- *  populate() {
- *     this.myForm.setValue({login: 'some login', password: 'some password'});
- *  }
- *
- *  onLogIn(): void {
- *    // this.credentials.login === "some login"
- *    // this.credentials.password === "some password"
- *  }
- * }
- *  ```
+ *  * **NgModule**: {@link ReactiveFormsModule}
  *
  *  @stable
  */
