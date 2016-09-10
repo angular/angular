@@ -61,6 +61,15 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('');
       });
 
+      it('should allow both null and undefined in expressions', () => {
+        const template = '<div>{{null == undefined}}|{{null === undefined}}</div>';
+        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+                            .overrideComponent(MyComp, {set: {template}})
+                            .createComponent(MyComp);
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('true|false');
+      });
+
       it('should consume element binding changes', () => {
         TestBed.configureTestingModule({declarations: [MyComp]});
         const template = '<div [id]="ctxProp"></div>';
