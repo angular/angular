@@ -15,25 +15,27 @@ import {PRIMARY_OUTLET} from '../shared';
 
 
 /**
- * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+ * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
+ * state.
  *
- * ## Example
+ * @howToUse
  *
  * ```
  * <router-outlet></router-outlet>
- * <router-outlet name="left"></router-outlet>
- * <router-outlet name="right"></router-outlet>
+ * <router-outlet name='left'></router-outlet>
+ * <router-outlet name='right'></router-outlet>
  * ```
  *
  * A router outlet will emit an activate event any time a new component is being instantiated,
  * and a deactivate event when it is being destroyed.
  *
- * ## Example
- *
  * ```
- * <router-outlet (activate)="onActivate($event)"
- * (deactivate)="onDeactivate($event)"></router-outlet>
+ * <router-outlet
+ *   (activate)='onActivate($event)'
+ *   (deactivate)='onDeactivate($event)'></router-outlet>
  * ```
+ * @selector 'a[routerLink]'
+ * @ngModule RouterModule
  *
  * @stable
  */

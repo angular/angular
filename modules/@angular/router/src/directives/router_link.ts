@@ -16,7 +16,9 @@ import {UrlTree} from '../url_tree';
 
 
 /**
- * The RouterLink directive lets you link to specific parts of your app.
+ * @whatItDoes Lets you link to specific parts of your app.
+ *
+ * @howToUse
  *
  * Consider the following route configuration:
 
@@ -24,10 +26,20 @@ import {UrlTree} from '../url_tree';
  * [{ path: 'user/:name', component: UserCmp }]
  * ```
  *
- * When linking to this `User` route, you can write:
+ * When linking to this `user/:name` route, you can write:
  *
  * ```
- * <a [routerLink]="/user/bob">link to user component</a>
+ * <a routerLink='/user/bob'>link to user component</a>
+ * ```
+ *
+ * @description
+ *
+ * The RouterLink directives lets you link to specific parts of your app.
+ *
+ * Whe the link is static, you can use the directive as follows:
+ *
+ * ```
+ * <a routerLink="/user/bob">link to user component</a>
  * ```
  *
  * If you use dynamic values to generate the link, you can pass an array of path
@@ -35,6 +47,7 @@ import {UrlTree} from '../url_tree';
  *
  * For instance `['/team', teamId, 'user', userName, {details: true}]`
  * means that we want to generate a link to `/team/11/user/bob;details=true`.
+ *
  * Multiple static segments can be merged into one (e.g., `['/team/11/user', userName, {details:
  true}]`).
  *
@@ -65,7 +78,12 @@ import {UrlTree} from '../url_tree';
  * For instance, if the current url is `/user/(box//aux:team)`.
  *
  * Then the following link `<a [routerLink]="['/user/jim']">Jim</a>` will generate the link
- * `/user/(jim//aux:team)`. See {@link Router.createUrlTree} for more information.
+ * `/user/(jim//aux:team)`.
+ *
+ * @selector ':not(a)[routerLink]'
+ * @ngModule RouterModule
+ *
+ * See {@link Router.createUrlTree} for more information.
  *
  * @stable
  */
@@ -111,7 +129,13 @@ export class RouterLink {
 }
 
 /**
+ * @whatItDoes Lets you link to specific parts of your app.
+ *
  * See {@link RouterLink} for more information.
+ *
+ * @selector 'a[routerLink]'
+ * @ngModule RouterModule
+ *
  * @stable
  */
 @Directive({selector: 'a[routerLink]'})

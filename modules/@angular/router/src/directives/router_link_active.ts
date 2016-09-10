@@ -16,6 +16,16 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 
 
 /**
+ * @whatItDoes Lets you add a CSS class to an element when the link's route.
+ *
+ * @howToUse
+ *
+ * ```
+ * <a [routerLink]='/user/bob' routerLinkActive='active-link'>Bob</a>
+ * ```
+ *
+ * @description
+ *
  * The RouterLinkActive directive lets you add a CSS class to an element when the link's route
  * becomes active.
  *
@@ -32,7 +42,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * ```
  * <a [routerLink]="/user/bob" routerLinkActive="class1 class2">Bob</a>
- * <a [routerLink]="/user/bob" routerLinkActive="['class1', 'class2']">Bob</a>
+ * <a [routerLink]="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
  * ```
  *
  * You can configure RouterLinkActive by passing `exact: true`. This will add the classes
@@ -54,6 +64,9 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * This will set the active-link class on the div tag if the url is either '/user/jim' or
  * '/user/bob'.
+ *
+ * @selector ':not(a)[routerLink]'
+ * @ngModule RouterModule
  *
  * @stable
  */
