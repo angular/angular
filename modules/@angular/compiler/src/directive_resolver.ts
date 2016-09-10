@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
+import {Component, ComponentMetadata, Directive, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, Injectable, InputMetadata, OutputMetadata, QueryMetadata, Type, resolveForwardRef} from '@angular/core';
 
 import {StringMapWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
@@ -130,29 +130,30 @@ export class DirectiveResolver {
         isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
 
     if (dm instanceof ComponentMetadata) {
-      return new ComponentMetadata({
-        selector: dm.selector,
+      const cm = <ComponentMetadata>dm;
+      return new Component({
+        selector: cm.selector,
         inputs: mergedInputs,
         outputs: mergedOutputs,
         host: mergedHost,
-        exportAs: dm.exportAs,
-        moduleId: dm.moduleId,
+        exportAs: cm.exportAs,
+        moduleId: cm.moduleId,
         queries: mergedQueries,
-        changeDetection: dm.changeDetection,
-        providers: dm.providers,
-        viewProviders: dm.viewProviders,
-        entryComponents: dm.entryComponents,
-        template: dm.template,
-        templateUrl: dm.templateUrl,
-        styles: dm.styles,
-        styleUrls: dm.styleUrls,
-        encapsulation: dm.encapsulation,
-        animations: dm.animations,
-        interpolation: dm.interpolation
+        changeDetection: cm.changeDetection,
+        providers: cm.providers,
+        viewProviders: cm.viewProviders,
+        entryComponents: cm.entryComponents,
+        template: cm.template,
+        templateUrl: cm.templateUrl,
+        styles: cm.styles,
+        styleUrls: cm.styleUrls,
+        encapsulation: cm.encapsulation,
+        animations: cm.animations,
+        interpolation: cm.interpolation
       });
 
     } else {
-      return new DirectiveMetadata({
+      return new Directive({
         selector: dm.selector,
         inputs: mergedInputs,
         outputs: mergedOutputs,

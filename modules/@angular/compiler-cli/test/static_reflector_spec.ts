@@ -7,7 +7,7 @@
  */
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
-import {HostListenerMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {HostListener, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {ListWrapper} from '@angular/facade/src/collection';
 import {isBlank} from '@angular/facade/src/lang';
 import {MetadataCollector} from '@angular/tsc-wrapped';
@@ -92,7 +92,7 @@ describe('StaticReflector', () => {
         host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     let props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
-    expect(props['onMouseOver']).toEqual([new HostListenerMetadata('mouseover', ['$event'])]);
+    expect(props['onMouseOver']).toEqual([new HostListener('mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
@@ -431,7 +431,7 @@ describe('StaticReflector', () => {
     const annotations = reflector.annotations(
         host.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
     expect(annotations.length).toBe(1);
-    expect(annotations[0]._providers[0].useValue.members[0]).toEqual('staticMethod');
+    expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 });
 

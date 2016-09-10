@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgModuleMetadata} from '@angular/core';
+import {Injector, NgModule} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
 import {isBlank, stringify} from '../src/facade/lang';
@@ -29,7 +29,7 @@ export function main() {
 
       it('should allow overriding the @NgModule', () => {
         ngModuleResolver.setNgModule(
-            SomeNgModule, new NgModuleMetadata({declarations: [SomeOtherDirective]}));
+            SomeNgModule, new NgModule({declarations: [SomeOtherDirective]}));
         var ngModule = ngModuleResolver.resolve(SomeNgModule);
         expect(ngModule.declarations).toEqual([SomeOtherDirective]);
       });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DirectiveResolver} from '@angular/compiler';
-import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, Component, ComponentMetadata, Directive, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
 
 import {Map} from './facade/collection';
 import {isArray, isPresent} from './facade/lang';
@@ -53,16 +53,17 @@ export class MockDirectiveResolver extends DirectiveResolver {
     }
 
     if (metadata instanceof ComponentMetadata) {
-      let viewProviders = metadata.viewProviders;
+      const cm = <ComponentMetadata>metadata;
+      let viewProviders = cm.viewProviders;
       if (isPresent(viewProviderOverrides)) {
         const originalViewProviders: Provider[] =
-            isPresent(metadata.viewProviders) ? metadata.viewProviders : [];
+            isPresent(cm.viewProviders) ? cm.viewProviders : [];
         viewProviders = originalViewProviders.concat(viewProviderOverrides);
       }
 
       let view = this._views.get(type);
       if (!view) {
-        view = metadata;
+        view = <any>cm;
       }
 
       let animations = view.animations;
@@ -80,18 +81,18 @@ export class MockDirectiveResolver extends DirectiveResolver {
         inlineTemplate = view.template;
       }
 
-      return new ComponentMetadata({
-        selector: metadata.selector,
-        inputs: metadata.inputs,
-        outputs: metadata.outputs,
-        host: metadata.host,
-        exportAs: metadata.exportAs,
-        moduleId: metadata.moduleId,
-        queries: metadata.queries,
-        changeDetection: metadata.changeDetection,
+      return new Component({
+        selector: cm.selector,
+        inputs: cm.inputs,
+        outputs: cm.outputs,
+        host: cm.host,
+        exportAs: cm.exportAs,
+        moduleId: cm.moduleId,
+        queries: cm.queries,
+        changeDetection: cm.changeDetection,
         providers: providers,
         viewProviders: viewProviders,
-        entryComponents: metadata.entryComponents,
+        entryComponents: cm.entryComponents,
         template: inlineTemplate,
         templateUrl: templateUrl,
         animations: animations,
@@ -102,7 +103,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       });
     }
 
-    return new DirectiveMetadata({
+    return new Directive({
       selector: metadata.selector,
       inputs: metadata.inputs,
       outputs: metadata.outputs,
