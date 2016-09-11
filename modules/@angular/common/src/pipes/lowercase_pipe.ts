@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {isBlank, isString} from '../facade/lang';
+import {isBlank} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
@@ -29,7 +29,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class LowerCasePipe implements PipeTransform {
   transform(value: string): string {
     if (isBlank(value)) return value;
-    if (!isString(value)) {
+    if (typeof value !== 'string') {
       throw new InvalidPipeArgumentError(LowerCasePipe, value);
     }
     return value.toLowerCase();
