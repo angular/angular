@@ -16,7 +16,7 @@ describe('formControlName example', () => {
     let lastInput: ElementFinder;
 
     beforeEach(() => {
-      browser.get('/forms/ts/formControlName/index.html');
+      browser.get('/forms/ts/simpleFormGroup/index.html');
       firstInput = element(by.css('[formControlName="first"]'));
       lastInput = element(by.css('[formControlName="last"]'));
     });
@@ -32,6 +32,12 @@ describe('formControlName example', () => {
       firstInput.sendKeys('a');
 
       expect(element(by.css('div')).getText()).toEqual('Name is too short.');
+    });
+
+    it('should set the value programmatically', () => {
+      element(by.css('button:not([type="submit"])')).click();
+      expect(firstInput.getAttribute('value')).toEqual('Carson');
+      expect(lastInput.getAttribute('value')).toEqual('Drew');
     });
 
   });
