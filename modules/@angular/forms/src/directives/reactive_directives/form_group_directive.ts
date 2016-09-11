@@ -27,72 +27,33 @@ export const formDirectiveProvider: any = {
 };
 
 /**
- * Binds an existing form group to a DOM element.  It requires importing the {@link
- * ReactiveFormsModule}.
+ * @whatItDoes Binds an existing {@link FormGroup} to a DOM element.
  *
- * In this example, we bind the form group to the form element, and we bind the login and
- * password controls to the login and password elements.
+ * @howToUse
  *
- *  ```typescript
- * @Component({
- *   selector: 'my-app',
- *   template: `
- *     <div>
- *       <h2>Binding an existing form group</h2>
- *       <form [formGroup]="loginForm">
- *         <p>Login: <input type="text" formControlName="login"></p>
- *         <p>Password: <input type="password" formControlName="password"></p>
- *       </form>
- *       <p>Value:</p>
- *       <pre>{{ loginForm.value | json}}</pre>
- *     </div>
- *   `
- * })
- * export class App {
- *   loginForm: FormGroup;
+ * This directive accepts an existing {@link FormGroup} instance. It will then use this
+ * {@link FormGroup} instance to match any child {@link FormControl}, {@link FormGroup},
+ * and {@link FormArray} instances to child {@link FormControlName}, {@link FormGroupName},
+ * and {@link FormArrayName} directives.
  *
- *   constructor() {
- *     this.loginForm = new FormGroup({
- *       login: new FormControl(""),
- *       password: new FormControl("")
- *     });
- *   }
+ * **Set value**: You can set the form's initial value when instantiating the
+ * {@link FormGroup}, or you can set it programmatically later using the {@link FormGroup}'s
+ * {@link AbstractControl.setValue} or {@link AbstractControl.patchValue} methods.
  *
- * }
- *  ```
+ * **Listen to value**: If you want to listen to changes in the value of the form, you can subscribe
+ * to the {@link FormGroup}'s {@link AbstractControl.valueChanges} event.  You can also listen to
+ * its {@link AbstractControl.statusChanges} event to be notified when the validation status is
+ * re-calculated.
  *
- * We can also use setValue() to populate the form programmatically.
+ * ### Example
  *
- *  ```typescript
- * @Component({
- *      selector: "login-comp",
- *      template: `
- *        <form [formGroup]='loginForm'>
- *          Login <input type='text' formControlName='login'>
- *          Password <input type='password' formControlName='password'>
- *          <button (click)="onLogin()">Login</button>
- *        </form>`
- *      })
- * class LoginComp {
- *  loginForm: FormGroup;
+ * In this example, we create form controls for first name and last name.
  *
- *  constructor() {
- *    this.loginForm = new FormGroup({
- *      login: new FormControl(''),
- *      password: new FormControl('')
- *    });
- *  }
+ * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
  *
- *  populate() {
- *    this.loginForm.setValue({ login: 'some login', password: 'some password'});
- *  }
+ * **npm package**: `@angular/forms`
  *
- *  onLogin(): void {
- *    // this.credentials.login === 'some login'
- *    // this.credentials.password === 'some password'
- *  }
- * }
- *  ```
+ * **NgModule**: {@link ReactiveFormsModule}
  *
  *  @stable
  */

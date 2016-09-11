@@ -28,7 +28,8 @@ export const controlNameBinding: any = {
 };
 
 /**
- * @whatItDoes  Syncs a form control element to an existing {@link FormControl} instance by name.
+ * @whatItDoes  Syncs a {@link FormControl} in an existing {@link FormGroup} to a form control
+ * element by name.
  *
  * In other words, this directive ensures that any values written to the {@link FormControl}
  * instance programmatically will be written to the DOM element (model -> view). Conversely,
@@ -37,24 +38,34 @@ export const controlNameBinding: any = {
  *
  * @howToUse
  *
- * This directive must be used with a parent {@link FormGroupDirective} (selector: `[formGroup]`).
+ * This directive is designed to be used with a parent {@link FormGroupDirective} (selector:
+ * `[formGroup]`).
  *
- * Pass in the string name of the {@link FormControl} instance you want to link. It will look for a
- * control registered with that name in the {@link FormGroup} passed to the parent
- * {@link FormGroupDirective}.
+ * It accepts the string name of the {@link FormControl} instance you want to
+ * link, and will look for a {@link FormControl} registered with that name in the
+ * closest {@link FormGroup} or {@link FormArray} above it.
  *
- *  You can initialize the value of the form when instantiating the {@link FormGroup}, or you can
- * set it programmatically later using {@link AbstractControl.setValue} or
- * {@link AbstractControl.patchValue}.
+ * **Access the control**: You can access the {@link FormControl} associated with
+ * this directive by using the {@link AbstractControl.get} method.
+ * Ex: `this.form.get('first');`
  *
- * If you want to listen to changes in the value of the form, you can subscribe to the
- * {@link AbstractControl.valueChanges} event.
+ * **Get value**: the `value` property is always synced and available on the {@link FormControl}.
+ * See a full list of available properties in {@link AbstractControl}.
+ *
+ *  **Set value**: You can set an initial value for the control when instantiating the
+ *  {@link FormControl}, or you can set it programmatically later using
+ *  {@link AbstractControl.setValue} or {@link AbstractControl.patchValue}.
+ *
+ * **Listen to value**: If you want to listen to changes in the value of the control, you can
+ * subscribe to the {@link AbstractControl.valueChanges} event.  You can also listen to
+ * {@link AbstractControl.statusChanges} to be notified when the validation status is
+ * re-calculated.
  *
  * ### Example
  *
  * In this example, we create form controls for first name and last name.
  *
- * {@example forms/ts/formControlName/form_control_name_example.ts region='Component'}
+ * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
  *
  *  * **npm package**: `@angular/forms`
  *

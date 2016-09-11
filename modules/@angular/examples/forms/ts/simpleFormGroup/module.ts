@@ -9,12 +9,12 @@
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {FormControlNameComp} from './form_control_name_example';
+import {SimpleFormGroup} from './simple_form_group_example';
 
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
-  declarations: [FormControlNameComp],
-  bootstrap: [FormControlNameComp]
+  declarations: [SimpleFormGroup],
+  bootstrap: [SimpleFormGroup]
 })
 export class AppModule {
 }

@@ -21,18 +21,22 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
       
       <button type="submit">Submit</button>
    </form>
-  
-  `
+   <button (click)="setValue()">Set preset value</button>
+  `,
 })
-export class FormControlNameComp {
-  form = new FormGroup(
-      {first: new FormControl('Nancy', Validators.minLength(2)), last: new FormControl('Drew')});
+export class SimpleFormGroup {
+  form = new FormGroup({
+    first: new FormControl('Nancy', Validators.minLength(2)),
+    last: new FormControl('Drew'),
+  });
 
   get first() { return this.form.get('first'); }
 
   onSubmit(): void {
     console.log(this.form.value);  // {first: 'Nancy', last: 'Drew'}
   }
+
+  setValue() { this.form.setValue({first: 'Carson', last: 'Drew'}); }
 }
 
 
