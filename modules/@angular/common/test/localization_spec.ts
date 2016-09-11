@@ -57,7 +57,7 @@ export function main() {
 
     describe('NgLocaleLocalization', () => {
       it('should return the correct values for the "en" locale', () => {
-        const l10n = new NgLocaleLocalization('en_US');
+        const l10n = new NgLocaleLocalization('en-US');
 
         expect(l10n.getPluralCategory(0)).toEqual('other');
         expect(l10n.getPluralCategory(1)).toEqual('one');
@@ -126,7 +126,7 @@ export function main() {
 
     describe('getPluralCategory', () => {
       it('should return plural category', () => {
-        const l10n = new FrLocalization();
+        const l10n = new NgLocaleLocalization('fr');
 
         expect(getPluralCategory(0, ['one', 'other'], l10n)).toEqual('one');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -134,7 +134,7 @@ export function main() {
       });
 
       it('should return discrete cases', () => {
-        const l10n = new FrLocalization();
+        const l10n = new NgLocaleLocalization('fr');
 
         expect(getPluralCategory(0, ['one', 'other', '=0'], l10n)).toEqual('=0');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -143,16 +143,4 @@ export function main() {
       });
     });
   });
-}
-
-class FrLocalization extends NgLocalization {
-  getPluralCategory(value: number): string {
-    switch (value) {
-      case 0:
-      case 1:
-        return 'one';
-      default:
-        return 'other';
-    }
-  }
 }

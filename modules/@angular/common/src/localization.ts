@@ -87,7 +87,7 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
   const f = parseInt(nDecimal, 10);
   const t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
 
-  const lang = locale.split('_')[0].toLowerCase();
+  const lang = locale.split('-')[0].toLowerCase();
 
   switch (lang) {
     case 'af':
