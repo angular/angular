@@ -853,7 +853,7 @@ export function main() {
 
       describe('should support <type=radio>', () => {
 
-        it('should support <type=radio>', () => {
+        it('should support basic functionality', () => {
           const fixture = TestBed.createComponent(FormControlRadioButtons);
           const form =
               new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
@@ -878,6 +878,53 @@ export function main() {
           // programmatic change -> view
           expect(inputs[0].nativeElement.checked).toEqual(false);
           expect(inputs[1].nativeElement.checked).toEqual(true);
+        });
+
+        it('should support an initial undefined value', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form = new FormGroup({'food': new FormControl(), 'drink': new FormControl()});
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.checked).toEqual(false);
+          expect(inputs[1].nativeElement.checked).toEqual(false);
+        });
+
+        it('should reset properly', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form =
+              new FormGroup({'food': new FormControl('fish'), 'drink': new FormControl('sprite')});
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          form.reset();
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.checked).toEqual(false);
+          expect(inputs[1].nativeElement.checked).toEqual(false);
+        });
+
+        it('should set value to null and undefined properly', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form = new FormGroup(
+              {'food': new FormControl('chicken'), 'drink': new FormControl('sprite')});
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          form.get('food').setValue(null);
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.checked).toEqual(false);
+
+          form.get('food').setValue('chicken');
+          fixture.detectChanges();
+
+          form.get('food').setValue(undefined);
+          fixture.detectChanges();
+          expect(inputs[0].nativeElement.checked).toEqual(false);
         });
 
         it('should use formControlName to group radio buttons when name is absent', () => {
