@@ -92,7 +92,8 @@ export function setupTestingRouter(
  * @description
  *
  * The modules sets up the router to be used for testing.
- * It provides spy implementations of Location, LocationStrategy, and NgModuleFactoryLoader.
+ * It provides spy implementations of {@link Location}, {@link LocationStrategy}, and {@link
+ * NgModuleFactoryLoader}.
  *
  * @stable
  */

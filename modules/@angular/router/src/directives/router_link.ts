@@ -34,7 +34,7 @@ import {UrlTree} from '../url_tree';
  *
  * @description
  *
- * The RouterLink directives lets you link to specific parts of your app.
+ * The RouterLink directives let you link to specific parts of your app.
  *
  * Whe the link is static, you can use the directive as follows:
  *

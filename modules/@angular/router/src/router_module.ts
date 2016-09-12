@@ -29,7 +29,7 @@ import {flatten} from './utils/collection';
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
 /**
- * @whatItDoes Is used in DI to configure router.
+ * @whatItDoes Is used in DI to configure the router.
  * @stable
  */
 export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');

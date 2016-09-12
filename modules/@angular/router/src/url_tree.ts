@@ -278,7 +278,7 @@ export abstract class UrlSerializer {
  * /inbox/33;open=true/messages/44
  * ```
  *
- * DefaultUrlSerializer uses parenthesis to serialize secondary segments (e.g., popup:compose), the
+ * DefaultUrlSerializer uses parentheses to serialize secondary segments (e.g., popup:compose), the
  * colon syntax to specify the outlet, and the ';parameter=value' syntax (e.g., open=true) to
  * specify route specific parameters.
  *
