@@ -88,7 +88,10 @@ export declare class NavigationCancel {
     id: number;
     reason: string;
     url: string;
-    constructor(id: number, url: string, reason: string);
+    constructor(
+        id: number,
+        url: string,
+        reason: string);
     toString(): string;
 }
 
@@ -97,7 +100,10 @@ export declare class NavigationEnd {
     id: number;
     url: string;
     urlAfterRedirects: string;
-    constructor(id: number, url: string, urlAfterRedirects: string);
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string);
     toString(): string;
 }
 
@@ -106,7 +112,10 @@ export declare class NavigationError {
     error: any;
     id: number;
     url: string;
-    constructor(id: number, url: string, error: any);
+    constructor(
+        id: number,
+        url: string,
+        error: any);
     toString(): string;
 }
 
@@ -125,7 +134,9 @@ export interface NavigationExtras {
 export declare class NavigationStart {
     id: number;
     url: string;
-    constructor(id: number, url: string);
+    constructor(
+        id: number,
+        url: string);
     toString(): string;
 }
 
@@ -172,7 +183,7 @@ export declare class Router {
     config: Routes;
     errorHandler: ErrorHandler;
     events: Observable<Event>;
-    /** @stable */ navigated: boolean;
+    navigated: boolean;
     routerState: RouterState;
     url: string;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
@@ -287,7 +298,11 @@ export declare class RoutesRecognized {
     state: RouterStateSnapshot;
     url: string;
     urlAfterRedirects: string;
-    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
     toString(): string;
 }
 
@@ -297,7 +312,9 @@ export declare class UrlSegment {
         [key: string]: string;
     };
     path: string;
-    constructor(path: string, parameters: {
+    constructor(
+        path: string,
+        parameters: {
         [key: string]: string;
     });
     toString(): string;
