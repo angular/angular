@@ -11,64 +11,31 @@ import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableD
 import {isListLikeIterable} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 
+
+
 /**
- * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
- * an expression's evaluation result.
+ * @ngModule CommonModule
  *
- * The result of an expression evaluation is interpreted differently depending on type of
- * the expression evaluation result:
- * - `string` - all the CSS classes listed in a string (space delimited) are added
- * - `Array` - all the CSS classes (Array elements) are added
- * - `Object` - each key corresponds to a CSS class name while values are interpreted as expressions
- * evaluating to `Boolean`. If a given expression evaluates to `true` a corresponding CSS class
- * is added - otherwise it is removed.
+ * @whatItDoes Adds and removes CSS classes on an HTML element.
  *
- * While the `NgClass` directive can interpret expressions evaluating to `string`, `Array`
- * or `Object`, the `Object`-based version is the most often used and has an advantage of keeping
- * all the CSS class names in a template.
- *
- * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
- *
+ * @howToUse
  * ```
- * import {Component} from '@angular/core';
- * import {NgClass} from '@angular/common';
+ *     <some-element [ngClass]="'first second'">...</some-element>
  *
- * @Component({
- *   selector: 'toggle-button',
- *   inputs: ['isDisabled'],
- *   template: `
- *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
- *          (click)="toggle(!isOn)">
- *          Click me!
- *      </div>`,
- *   styles: [`
- *     .button {
- *       width: 120px;
- *       border: medium solid black;
- *     }
+ *     <some-element [ngClass]="['first', 'second']">...</some-element>
  *
- *     .active {
- *       background-color: red;
- *    }
+ *     <some-element [ngClass]="{'first': true, 'second': true, 'third': false}">...</some-element>
  *
- *     .disabled {
- *       color: gray;
- *       border: medium solid gray;
- *     }
- *   `],
- *   directives: [NgClass]
- * })
- * class ToggleButton {
- *   isOn = false;
- *   isDisabled = false;
- *
- *   toggle(newState) {
- *     if (!this.isDisabled) {
- *       this.isOn = newState;
- *     }
- *   }
- * }
+ *     <some-element [ngClass]="stringExp|arrayExp|objExp">...</some-element>
  * ```
+ *
+ * @description
+ *
+ * The CSS classes are updated as follow depending on the type of the expression evaluation:
+ * - `string` - the CSS classes listed in a string (space delimited) are added,
+ * - `Array` - the CSS classes (Array elements) are added,
+ * - `Object` - keys are CSS class names that get added when the expression given in the value
+ *              evaluates to a truthy value, otherwise class are removed.
  *
  * @stable
  */

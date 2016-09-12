@@ -9,56 +9,24 @@
 import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 /**
- * The `NgStyle` directive changes styles based on a result of expression evaluation.
+ * @ngModule CommonModule
  *
- * An expression assigned to the `ngStyle` property must evaluate to an object and the
- * corresponding element styles are updated based on changes to this object. Style names to update
- * are taken from the object's keys, and values - from the corresponding object's values.
+ * @whatItDoes Update an HTML element styles.
  *
- * ### Syntax
- *
- * - `<div [ngStyle]="{'font-style': styleExp}"></div>`
- * - `<div [ngStyle]="{'max-width.px': widthExp}"></div>`
- * - `<div [ngStyle]="styleExp"></div>` - here the `styleExp` must evaluate to an object
- *
- * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
- *
+ * @howToUse
  * ```
- * import {Component} from '@angular/core';
- * import {NgStyle} from '@angular/common';
+ * <some-element [ngStyle]="{'font-style': styleExp}">...</some-element>
  *
- * @Component({
- *  selector: 'ngStyle-example',
- *  template: `
- *    <h1 [ngStyle]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
- *      Change style of this text!
- *    </h1>
+ * <some-element [ngStyle]="{'max-width.px': widthExp}">...</some-element>
  *
- *    <hr>
- *
- *    <label>Italic: <input type="checkbox" (change)="changeStyle($event)"></label>
- *    <label>Bold: <input type="checkbox" (change)="changeWeight($event)"></label>
- *    <label>Size: <input type="text" [value]="size" (change)="size = $event.target.value"></label>
- *  `,
- *  directives: [NgStyle]
- * })
- * export class NgStyleExample {
- *    style = 'normal';
- *    weight = 'normal';
- *    size = '20px';
- *
- *    changeStyle($event: any) {
- *      this.style = $event.target.checked ? 'italic' : 'normal';
- *    }
- *
- *    changeWeight($event: any) {
- *      this.weight = $event.target.checked ? 'bold' : 'normal';
- *    }
- * }
+ * <some-element [ngStyle]="objExp">...</some-element>
  * ```
  *
- * In this example the `font-style`, `font-size` and `font-weight` styles will be updated
- * based on the `style` property's value changes.
+ * @description
+ *
+ * The styles are updated according to the value of the expression evaluation:
+ * - keys are style names with an option `.<unit>` suffix (ie 'top.px', 'font-style.em'),
+ * - values are the values assigned to those properties (expressed in the given unit).
  *
  * @stable
  */
