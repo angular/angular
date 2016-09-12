@@ -626,8 +626,7 @@ export class FormGroup extends AbstractControl {
    * Check whether there is a control with the given name in the group.
    */
   contains(controlName: string): boolean {
-    const c = StringMapWrapper.contains(this.controls, controlName);
-    return c && this.get(controlName).enabled;
+    return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
   }
 
   setValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
