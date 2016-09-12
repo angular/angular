@@ -569,6 +569,13 @@ export function main() {
 
         expect(group.contains('optional')).toEqual(true);
       });
+
+      it('should support controls with dots in their name', () => {
+        expect(group.contains('some.name')).toBe(false);
+        group.addControl('some.name', new FormControl());
+
+        expect(group.contains('some.name')).toBe(true);
+      });
     });
 
 
