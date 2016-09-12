@@ -51,7 +51,7 @@
     "gulp-conventional-changelog": "^1.1.0",
     "gulp-tslint": "^6.1.1",
     "incremental-dom": "^0.4.1",
-    "jasmine": "^2.4.1",
+    "jasmine": "^2.5.1",
     "jasmine-core": "^2.3.4",
     "jpm": "1.0.0",
     "karma": "^0.13.20",
