@@ -7,7 +7,7 @@
   "dependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "reflect-metadata": "^0.1.2",
-    "rxjs": "5.0.0-beta.11"
+    "rxjs": "5.0.0-beta.12"
   },
   "optionalDependencies": {
     "jpm": "1.1.4",

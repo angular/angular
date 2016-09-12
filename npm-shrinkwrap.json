@@ -6209,9 +6209,9 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-beta.11",
-      "from": "rxjs@5.0.0-beta.11",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.11.tgz"
+      "version": "5.0.0-beta.12",
+      "from": "rxjs@5.0.0-beta.12",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.12.tgz"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
@@ -7422,7 +7422,8 @@
     },
     "zone.js": {
       "version": "0.6.21",
-      "from": "zone.js@0.6.21"
+      "from": "zone.js@0.6.21",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.6.21.tgz"
     }
   }
 }
