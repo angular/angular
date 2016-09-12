@@ -20,7 +20,7 @@ class AType {
   constructor(value: any /** TODO #9100 */) { this.value = value; }
 }
 
-@ClassDecorator('class')
+@ClassDecorator({value: 'class'})
 class ClassWithDecorators {
   @PropDecorator('p1') @PropDecorator('p2') a: any /** TODO #9100 */;
   b: any /** TODO #9100 */;

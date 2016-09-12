@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di/decorators';
+import {Injectable} from '../di';
 import {Map, MapWrapper} from '../facade/collection';
 import {scheduleMicroTask} from '../facade/lang';
 import {NgZone} from '../zone/ng_zone';

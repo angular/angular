@@ -9,7 +9,7 @@
 import {APP_ID} from '../application_tokens';
 import {devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
-import {Inject, Injectable} from '../di/decorators';
+import {Inject, Injectable} from '../di';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
