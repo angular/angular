@@ -464,6 +464,60 @@ export function main() {
            expect(inputs[2].nativeElement.checked).toEqual(false);
            expect(inputs[3].nativeElement.checked).toEqual(true);
          }));
+
+      it('should support initial undefined value', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.detectChanges();
+           tick();
+
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+           expect(inputs[2].nativeElement.checked).toEqual(false);
+           expect(inputs[3].nativeElement.checked).toEqual(false);
+         }));
+
+      it('should support resetting properly', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.componentInstance.food = 'chicken';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.query(By.css('form'));
+           dispatchEvent(form.nativeElement, 'reset');
+           fixture.detectChanges();
+           tick();
+
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+         }));
+
+      it('should support setting value to null and undefined', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.componentInstance.food = 'chicken';
+           fixture.detectChanges();
+           tick();
+
+           fixture.componentInstance.food = null;
+           fixture.detectChanges();
+           tick();
+
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+
+           fixture.componentInstance.food = 'chicken';
+           fixture.detectChanges();
+           tick();
+
+           fixture.componentInstance.food = undefined;
+           fixture.detectChanges();
+           tick();
+           expect(inputs[0].nativeElement.checked).toEqual(false);
+           expect(inputs[1].nativeElement.checked).toEqual(false);
+         }));
+
     });
 
     describe('select controls', () => {
