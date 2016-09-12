@@ -11,6 +11,7 @@
  * to be used by the decorator versions of these annotations.
  */
 
+import {PipeTransform} from './change_detection';
 import {AttributeMetadata, ContentChildMetadata, ContentChildrenMetadata, QueryMetadata, ViewChildMetadata, ViewChildrenMetadata, ViewQueryMetadata} from './metadata/di';
 import {ComponentMetadata, ComponentMetadataType, DirectiveMetadata, DirectiveMetadataType, HostBindingMetadata, HostListenerMetadata, InputMetadata, OutputMetadata, PipeMetadata, PipeMetadataType} from './metadata/directives';
 import {ModuleWithProviders, NgModuleMetadata, NgModuleMetadataType, SchemaMetadata} from './metadata/ng_module';
@@ -220,8 +221,8 @@ export interface ViewChildMetadataFactory {
  * @stable
  */
 export interface PipeMetadataFactory {
-  (obj: PipeMetadataType): any;
-  new (obj: PipeMetadataType): any;
+  <T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
+  new<T extends new (...args: any[]) => PipeTransform>(obj: PipeMetadataType): (target: T) => any;
 }
 
 /**
