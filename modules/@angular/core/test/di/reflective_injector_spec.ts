@@ -7,14 +7,11 @@
  */
 
 import {Inject, InjectMetadata, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
-import {DependencyMetadata} from '@angular/core/src/di/metadata';
 import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';
-
-class CustomDependencyMetadata extends DependencyMetadata {}
 
 class Engine {}
 
@@ -539,15 +536,12 @@ export function main() {
         var providers = ReflectiveInjector.resolve([{
           provide: 'token',
           useFactory: (e: any /** TODO #9100 */) => 'result',
-          deps: [[new InjectMetadata('dep'), new CustomDependencyMetadata()]]
+          deps: [[new InjectMetadata('dep')]]
         }]);
 
         var provider = providers[0];
 
         expect(provider.resolvedFactories[0].dependencies[0].key.token).toEqual('dep');
-        expect(provider.resolvedFactories[0].dependencies[0].properties).toEqual([
-          new CustomDependencyMetadata()
-        ]);
       });
 
       it('should allow declaring dependencies with flat arrays', () => {

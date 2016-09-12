@@ -8,33 +8,33 @@
 
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
-export class ClassDecoratorMeta {
-  constructor(public value: any /** TODO #9100 */) {}
+export interface ClassDecoratorFactory {
+  (data: ClassDecorator): any;
+  new (data: ClassDecorator): ClassDecorator;
 }
 
-export class ParamDecoratorMeta {
-  constructor(public value: any /** TODO #9100 */) {}
-}
+export interface ClassDecorator { value: any; }
 
-export class PropDecoratorMeta {
-  constructor(public value: any /** TODO #9100 */) {}
-}
+export interface ParamDecorator { value: any; }
+
+export interface PropDecorator { value: any; }
 
 export function classDecorator(value: any /** TODO #9100 */) {
-  return new ClassDecoratorMeta(value);
+  return new ClassDecorator({value: value});
 }
 
 export function paramDecorator(value: any /** TODO #9100 */) {
-  return new ParamDecoratorMeta(value);
+  return new ParamDecorator(value);
 }
 
 export function propDecorator(value: any /** TODO #9100 */) {
-  return new PropDecoratorMeta(value);
+  return new PropDecorator(value);
 }
 
-/** @Annotation */ export var ClassDecorator = makeDecorator(ClassDecoratorMeta);
-/** @Annotation */ export var ParamDecorator = makeParamDecorator(ParamDecoratorMeta);
-/** @Annotation */ export var PropDecorator = makePropDecorator(PropDecoratorMeta);
+/** @Annotation */ export const ClassDecorator =
+    <ClassDecoratorFactory>makeDecorator({value: undefined});
+/** @Annotation */ export const ParamDecorator = makeParamDecorator([['value', undefined]]);
+/** @Annotation */ export const PropDecorator = makePropDecorator([['value', undefined]]);
 
 // used only in Dart
 export class HasGetterAndSetterDecorators {}

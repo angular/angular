@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from './di/decorators';
+import {Injectable} from './di';
 import {print, warn} from './facade/lang';
 
 @Injectable()

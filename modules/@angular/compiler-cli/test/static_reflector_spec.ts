@@ -431,7 +431,7 @@ describe('StaticReflector', () => {
     const annotations = reflector.annotations(
         host.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
     expect(annotations.length).toBe(1);
-    expect(annotations[0]._providers[0].useValue.members[0]).toEqual('staticMethod');
+    expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 });
 

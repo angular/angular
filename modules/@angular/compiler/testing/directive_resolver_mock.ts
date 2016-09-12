@@ -62,7 +62,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
       let view = this._views.get(type);
       if (!view) {
-        view = metadata;
+        view = <any>metadata;
       }
 
       let animations = view.animations;

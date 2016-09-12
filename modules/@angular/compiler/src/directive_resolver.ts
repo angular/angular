@@ -63,20 +63,23 @@ export class DirectiveResolver {
             inputs.push(propName);
           }
         } else if (a instanceof OutputMetadata) {
-          if (isPresent(a.bindingPropertyName)) {
-            outputs.push(`${propName}: ${a.bindingPropertyName}`);
+          const output: OutputMetadata = a;
+          if (isPresent(output.bindingPropertyName)) {
+            outputs.push(`${propName}: ${output.bindingPropertyName}`);
           } else {
             outputs.push(propName);
           }
         } else if (a instanceof HostBindingMetadata) {
-          if (isPresent(a.hostPropertyName)) {
-            host[`[${a.hostPropertyName}]`] = propName;
+          const hostBinding: HostBindingMetadata = a;
+          if (isPresent(hostBinding.hostPropertyName)) {
+            host[`[${hostBinding.hostPropertyName}]`] = propName;
           } else {
             host[`[${propName}]`] = propName;
           }
         } else if (a instanceof HostListenerMetadata) {
-          var args = isPresent(a.args) ? (<any[]>a.args).join(', ') : '';
-          host[`(${a.eventName})`] = `${propName}(${args})`;
+          const hostListener: HostListenerMetadata = a;
+          var args = isPresent(hostListener.args) ? (<any[]>hostListener.args).join(', ') : '';
+          host[`(${hostListener.eventName})`] = `${propName}(${args})`;
         } else if (a instanceof QueryMetadata) {
           queries[propName] = a;
         }
