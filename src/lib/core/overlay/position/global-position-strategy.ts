@@ -19,13 +19,13 @@ export class GlobalPositionStrategy implements PositionStrategy {
   /** Array of individual applications of translateY(). Currently only for centering. */
   private _translateY: string[] = [];
 
-  /** Sets the element to usee CSS position: fixed */
+  /** Sets the element to use CSS position: fixed */
   fixed() {
     this._cssPosition = 'fixed';
     return this;
   }
 
-  /** Sets the element to usee CSS position: absolute. This is the default. */
+  /** Sets the element to use CSS position: absolute. This is the default. */
   absolute() {
     this._cssPosition = 'absolute';
     return this;
