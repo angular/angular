@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementArrayFinder} from 'protractor';
+import {browser, element, by} from 'protractor/globals';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('ngModelGroup example', () => {
   afterEach(verifyNoBrowserErrors);
-  let inputs: ElementFinder;
-  let buttons: ElementFinder;
+  let inputs: ElementArrayFinder;
+  let buttons: ElementArrayFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/ngModelGroup/index.html');

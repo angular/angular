@@ -5,18 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as webdriver from 'selenium-webdriver';
-declare var browser: any;
-declare var expect: any;
+import {protractor, browser} from 'protractor/globals';
+
 
 // TODO (juliemr): remove this method once this becomes a protractor plugin
 export function verifyNoBrowserErrors() {
-  browser.manage().logs().get('browser').then(function(browserLog) {
-    var errors: any[] = [];
+  // TODO(i): protractor@4.0.7 is missing typings for browser.manage()
+  browser['manage']().logs().get('browser').then(function(browserLog) {
+    const errors: any[] = [];
     browserLog.filter(logEntry => {
-      var msg = logEntry.message;
+      const msg = logEntry.message;
       console.log('>> ' + msg);
-      if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
+      if (logEntry.level.value >= protractor.logging.Level.INFO.value) {
         errors.push(msg);
       }
     });
