@@ -2902,16 +2902,16 @@
       "version": "0.1.2"
     },
     "jasmine": {
-      "version": "2.5.1",
+      "version": "2.4.1",
       "dependencies": {
         "glob": {
-          "version": "7.0.6"
+          "version": "3.2.11"
         },
         "jasmine-core": {
-          "version": "2.5.1"
+          "version": "2.4.1"
         },
         "minimatch": {
-          "version": "3.0.3"
+          "version": "0.3.0"
         }
       }
     },
@@ -4671,5 +4671,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-rc.6"
+  "version": "2.0.0-rc.7"
 }
