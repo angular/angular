@@ -608,20 +608,43 @@ export abstract class AbstractControl {
 }
 
 /**
- * Defines a part of a form that cannot be divided into other controls. `FormControl`s have values
- * and
- * validation state, which is determined by an optional validation function.
+ * @whatItDoes Tracks the value and validation status of an individual form control.
  *
- * `FormControl` is one of the three fundamental building blocks used to define forms in Angular,
- * along
- * with {@link FormGroup} and {@link FormArray}.
+ * It is one of the three fundamental building blocks of Angular forms, along with
+ * {@link FormGroup} and {@link FormArray}.
  *
- * ## Usage
+ * @howToUse
  *
- * By default, a `FormControl` is created for every `<input>` or other form component.
- * With {@link FormControlDirective} or {@link FormGroupDirective} an existing {@link FormControl}
- * can be bound to a DOM element instead. This `FormControl` can be configured with a custom
- * validation function.
+ * When instantiating a {@link FormControl}, you can pass in an initial value as the
+ * first argument. Example:
+ *
+ * ```ts
+ * const ctrl = new FormControl('some value');
+ * console.log(ctrl.value);     // 'some value'
+ *```
+ *
+ * You can also initialize the control with a form state object on instantiation,
+ * which includes both the value and whether or not the control is disabled.
+ *
+ * ```ts
+ * const ctrl = new FormControl({value: 'n/a', disabled: true});
+ * console.log(ctrl.value);     // 'n/a'
+ * console.log(ctrl.status);   // 'DISABLED'
+ * ```
+ *
+ * To include a sync validator (or an array of sync validators) with the control,
+ * pass it in as the second argument. Async validators are also supported, but
+ * have to be passed in separately as the third arg.
+ *
+ * ```ts
+ * const ctrl = new FormControl('', Validators.required);
+ * console.log(ctrl.value);     // ''
+ * console.log(ctrl.status);   // 'INVALID'
+ * ```
+ *
+ * See its superclass, {@link AbstractControl}, for more properties and methods.
+ *
+ * * **npm package**: `@angular/forms`
  *
  * @stable
  */
@@ -642,9 +665,9 @@ export class FormControl extends AbstractControl {
    * Set the value of the form control to `value`.
    *
    * If `onlySelf` is `true`, this change will only affect the validation of this `FormControl`
-   * and not its parent component. If `emitEvent` is `true`, this change will cause a
-   * `valueChanges` event on the `FormControl` to be emitted. Both of these options default to
-   * `false`.
+   * and not its parent component. This defaults to false. If `emitEvent` is `true`, this
+   * change will cause a `valueChanges` event on the `FormControl` to be emitted. This defaults
+   * to true (as it falls through to `updateValueAndValidity`).
    *
    * If `emitModelToViewChange` is `true`, the view will be notified about the new value
    * via an `onChange` event. This is the default behavior if `emitModelToViewChange` is not
@@ -670,8 +693,11 @@ export class FormControl extends AbstractControl {
   }
 
   /**
-   * This function is functionally the same as updateValue() at this level.  It exists for
-   * symmetry with patchValue() on FormGroups and FormArrays, where it does behave differently.
+   * Patches the value of a control.
+   *
+   * This function is functionally the same as {@link FormControl.setValue} at this level.
+   * It exists for symmetry with {@link FormGroup.patchValue} on `FormGroups` and `FormArrays`,
+   * where it does behave differently.
    */
   patchValue(value: any, options: {
     onlySelf?: boolean,
@@ -682,6 +708,34 @@ export class FormControl extends AbstractControl {
     this.setValue(value, options);
   }
 
+  /**
+   * Resets the form control. This means by default:
+   *
+   * * it is marked as `pristine`
+   * * it is marked as `untouched`
+   * * value is set to null
+   *
+   * You can also reset to a specific form state by passing through a standalone
+   * value or a form state object that contains both a value and a disabled state
+   * (these are the only two properties that cannot be calculated).
+   *
+   * Ex:
+   *
+   * ```ts
+   * this.control.reset('Nancy');
+   *
+   * console.log(this.control.value);  // 'Nancy'
+   * ```
+   *
+   * OR
+   *
+   * ```
+   * this.control.reset({value: 'Nancy', disabled: true});
+   * 
+   * console.log(this.control.value);  // 'Nancy'
+   * console.log(this.control.status);  // 'DISABLED'
+   * ```
+   */
   reset(formState: any = null, {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine({onlySelf});
