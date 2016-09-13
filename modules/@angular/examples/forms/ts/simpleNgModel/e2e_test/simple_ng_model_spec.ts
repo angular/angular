@@ -10,9 +10,9 @@ import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('simpleNgModel example', () => {
   afterEach(verifyNoBrowserErrors);
-  let input: ElementFinder;
-  let paragraphs: ElementFinder;
-  let button: ElementFinder;
+  let input: protractor.ElementFinder;
+  let paragraphs: protractor.ElementArrayFinder;
+  let button: protractor.ElementFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/simpleNgModel/index.html');

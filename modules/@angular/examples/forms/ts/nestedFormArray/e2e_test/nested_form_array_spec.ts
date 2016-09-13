@@ -10,8 +10,8 @@ import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('nestedFormArray example', () => {
   afterEach(verifyNoBrowserErrors);
-  let inputs: ElementFinder;
-  let buttons: ElementFinder;
+  let inputs: protractor.ElementArrayFinder;
+  let buttons: protractor.ElementArrayFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/nestedFormArray/index.html');
@@ -25,12 +25,12 @@ describe('nestedFormArray example', () => {
   });
 
   it('should add inputs programmatically', () => {
-    expect(browser.isElementPresent(inputs.get(2))).toBe(false);
+    expect(inputs.count()).toBe(2);
 
     buttons.get(1).click();
     inputs = element.all(by.css('input'));
 
-    expect(browser.isElementPresent(inputs.get(2))).toBe(true);
+    expect(inputs.count()).toBe(3);
   });
 
   it('should set the value programmatically', () => {

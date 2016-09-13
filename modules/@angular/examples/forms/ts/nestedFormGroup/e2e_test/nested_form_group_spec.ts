@@ -10,9 +10,9 @@ import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('nestedFormGroup example', () => {
   afterEach(verifyNoBrowserErrors);
-  let firstInput: ElementFinder;
-  let lastInput: ElementFinder;
-  let button: ElementFinder;
+  let firstInput: protractor.ElementFinder;
+  let lastInput: protractor.ElementFinder;
+  let button: protractor.ElementFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/nestedFormGroup/index.html');

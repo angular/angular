@@ -37,8 +37,7 @@ if [[ ${TRAVIS} ]]; then
   sh -e /etc/init.d/xvfb start
 fi
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-e2e.conf.js --bundles=true
-# TODO(i): uncomment once the protractor typings issue is resolved
-#NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-examples-e2e.conf.js --bundles=true
+NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-examples-e2e.conf.js --bundles=true
 NODE_PATH=$NODE_PATH:./dist/all $(npm bin)/protractor ./protractor-perf.conf.js --bundles=true --dryrun
 echo 'travis_fold:end:test.e2e.localChrome'
 

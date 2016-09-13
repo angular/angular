@@ -12,8 +12,8 @@ describe('formControlName example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    let firstInput: ElementFinder;
-    let lastInput: ElementFinder;
+    let firstInput: protractor.ElementFinder;
+    let lastInput: protractor.ElementFinder;
 
     beforeEach(() => {
       browser.get('/forms/ts/simpleFormGroup/index.html');

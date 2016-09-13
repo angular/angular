@@ -10,8 +10,8 @@ import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('formBuilder example', () => {
   afterEach(verifyNoBrowserErrors);
-  let inputs: ElementFinder;
-  let paragraphs: ElementFinder;
+  let inputs: protractor.ElementArrayFinder;
+  let paragraphs: protractor.ElementArrayFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/formBuilder/index.html');

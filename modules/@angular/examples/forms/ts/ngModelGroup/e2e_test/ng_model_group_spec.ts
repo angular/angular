@@ -10,8 +10,8 @@ import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('ngModelGroup example', () => {
   afterEach(verifyNoBrowserErrors);
-  let inputs: ElementFinder;
-  let buttons: ElementFinder;
+  let inputs: protractor.ElementArrayFinder;
+  let buttons: protractor.ElementArrayFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/ngModelGroup/index.html');

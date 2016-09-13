@@ -12,9 +12,9 @@ describe('simpleFormControl example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    let input: ElementFinder;
-    let valueP: ElementFinder;
-    let statusP: ElementFinder;
+    let input: protractor.ElementFinder;
+    let valueP: protractor.ElementFinder;
+    let statusP: protractor.ElementFinder;
 
     beforeEach(() => {
       browser.get('/forms/ts/simpleFormControl/index.html');

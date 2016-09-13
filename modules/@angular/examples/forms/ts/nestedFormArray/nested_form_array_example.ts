@@ -34,7 +34,7 @@ export class NestedFormArray {
     ]),
   });
 
-  get cities(): FormArray { return this.form.get('cities'); }
+  get cities(): FormArray { return this.form.get('cities') as FormArray; }
 
   addCity() { this.cities.push(new FormControl()); }
 

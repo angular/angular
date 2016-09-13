@@ -10,8 +10,8 @@ import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
 describe('contentChildren example', () => {
   afterEach(verifyNoBrowserErrors);
-  let button: ElementFinder;
-  let result: ElementFinder;
+  let button: protractor.ElementFinder;
+  let result: protractor.ElementFinder;
 
   beforeEach(() => {
     browser.get('/core/di/ts/contentChildren/index.html');
