@@ -26,7 +26,7 @@ export * from './directive_resolver_mock';
 export * from './ng_module_resolver_mock';
 export * from './pipe_resolver_mock';
 
-import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, NgModuleFactory, Injector, NgModuleMetadata, NgModule, ComponentMetadata, Component, DirectiveMetadata, Directive, Pipe, Type, PlatformRef} from '@angular/core';
+import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, NgModuleFactory, Injector, NgModule, Component, Directive, Pipe, Type, PlatformRef} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './private_import_core';
 import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '@angular/compiler';
@@ -73,17 +73,17 @@ export class TestingCompilerImpl implements TestingCompiler {
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
     const oldMetadata = this._moduleResolver.resolve(ngModule, false);
     this._moduleResolver.setNgModule(
-        ngModule, this._overrider.overrideMetadata(NgModuleMetadata, oldMetadata, override));
+        ngModule, this._overrider.overrideMetadata(NgModule, oldMetadata, override));
   }
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
     const oldMetadata = this._directiveResolver.resolve(directive, false);
     this._directiveResolver.setDirective(
-        directive, this._overrider.overrideMetadata(DirectiveMetadata, oldMetadata, override));
+        directive, this._overrider.overrideMetadata(Directive, oldMetadata, override));
   }
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
     const oldMetadata = this._directiveResolver.resolve(component, false);
     this._directiveResolver.setDirective(
-        component, this._overrider.overrideMetadata(ComponentMetadata, oldMetadata, override));
+        component, this._overrider.overrideMetadata(Component, oldMetadata, override));
   }
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
     const oldMetadata = this._pipeResolver.resolve(pipe, false);

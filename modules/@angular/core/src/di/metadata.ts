@@ -14,7 +14,7 @@ import {makeParamDecorator} from '../util/decorators';
  *
  * @stable
  */
-export interface InjectMetadataFactory {
+export interface InjectDecorator {
   /**
    * A parameter metadata that specifies a dependency.
    *
@@ -74,7 +74,7 @@ export interface Inject { token: any; }
  * @stable
  * @Annotation
  */
-export const Inject: InjectMetadataFactory = makeParamDecorator([['token', undefined]]);
+export const Inject: InjectDecorator = makeParamDecorator([['token', undefined]]);
 
 
 /**
@@ -82,7 +82,7 @@ export const Inject: InjectMetadataFactory = makeParamDecorator([['token', undef
  *
  * @stable
  */
-export interface OptionalMetadataFactory {
+export interface OptionalDecorator {
   /**
    * A parameter metadata that marks a dependency as optional. {@link Injector} provides `null` if
    * the dependency is not found.
@@ -122,14 +122,14 @@ export interface Optional {}
  * @stable
  * @Annotation
  */
-export const Optional: OptionalMetadataFactory = makeParamDecorator([]);
+export const Optional: OptionalDecorator = makeParamDecorator([]);
 
 /**
  * Type of the Injectable decorator / constructor function.
  *
  * @stable
  */
-export interface InjectableMetadataFactory {
+export interface InjectableDecorator {
   /**
    * A marker metadata that marks a class as available to {@link Injector} for creation.
    *
@@ -179,14 +179,14 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableMetadataFactory = makeParamDecorator([]);
+export const Injectable: InjectableDecorator = makeParamDecorator([]);
 
 /**
  * Type of the Self decorator / constructor function.
  *
  * @stable
  */
-export interface SelfMetadataFactory {
+export interface SelfDecorator {
   /**
    * Specifies that an {@link Injector} should retrieve a dependency only from itself.
    *
@@ -232,7 +232,7 @@ export interface Self {}
  * @stable
  * @Annotation
  */
-export const Self: SelfMetadataFactory = makeParamDecorator([]);
+export const Self: SelfDecorator = makeParamDecorator([]);
 
 
 /**
@@ -240,7 +240,7 @@ export const Self: SelfMetadataFactory = makeParamDecorator([]);
  *
  * @stable
  */
-export interface SkipSelfMetadataFactory {
+export interface SkipSelfDecorator {
   /**
    * Specifies that the dependency resolution should start from the parent injector.
    *
@@ -284,14 +284,14 @@ export interface SkipSelf {}
  * @stable
  * @Annotation
  */
-export const SkipSelf: SkipSelfMetadataFactory = makeParamDecorator([]);
+export const SkipSelf: SkipSelfDecorator = makeParamDecorator([]);
 
 /**
  * Type of the Host decorator / constructor function.
  *
  * @stable
  */
-export interface HostMetadataFactory {
+export interface HostDecorator {
   /**
    * Specifies that an injector should retrieve a dependency from any injector until reaching the
    * closest host.
@@ -362,14 +362,4 @@ export interface Host {}
  * @stable
  * @Annotation
  */
-export const Host: HostMetadataFactory = makeParamDecorator([]);
-
-// TODO(tbosch): remove this
-export {
-  Host as HostMetadata,
-  Inject as InjectMetadata,
-  Injectable as InjectableMetadata,
-  Optional as OptionalMetadata,
-  Self as SelfMetadata,
-  SkipSelf as SkipSelfMetadata
-};
+export const Host: HostDecorator = makeParamDecorator([]);

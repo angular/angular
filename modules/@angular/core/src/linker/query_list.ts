@@ -14,7 +14,7 @@ import {getSymbolIterator} from '../facade/lang';
  * An unmodifiable list of items that Angular keeps up to date when the state
  * of the application changes.
  *
- * The type of object that {@link QueryMetadata} and {@link ViewQueryMetadata} provide.
+ * The type of object that {@link Query} and {@link ViewQueryMetadata} provide.
  *
  * Implements an iterable interface, therefore it can be used in both ES6
  * javascript `for (var i of items)` loops as well as in Angular templates with

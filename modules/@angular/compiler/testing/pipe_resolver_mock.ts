@@ -7,13 +7,13 @@
  */
 
 import {PipeResolver} from '@angular/compiler';
-import {Compiler, Injectable, Injector, PipeMetadata, Type} from '@angular/core';
+import {Compiler, Injectable, Injector, Pipe, Type} from '@angular/core';
 
 import {Map} from './facade/collection';
 
 @Injectable()
 export class MockPipeResolver extends PipeResolver {
-  private _pipes = new Map<Type<any>, PipeMetadata>();
+  private _pipes = new Map<Type<any>, Pipe>();
 
   constructor(private _injector: Injector) { super(); }
 
@@ -22,20 +22,20 @@ export class MockPipeResolver extends PipeResolver {
   private _clearCacheFor(pipe: Type<any>) { this._compiler.clearCacheFor(pipe); }
 
   /**
-   * Overrides the {@link PipeMetadata} for a pipe.
+   * Overrides the {@link Pipe} for a pipe.
    */
-  setPipe(type: Type<any>, metadata: PipeMetadata): void {
+  setPipe(type: Type<any>, metadata: Pipe): void {
     this._pipes.set(type, metadata);
     this._clearCacheFor(type);
   }
 
   /**
-   * Returns the {@link PipeMetadata} for a pipe:
-   * - Set the {@link PipeMetadata} to the overridden view when it exists or fallback to the
+   * Returns the {@link Pipe} for a pipe:
+   * - Set the {@link Pipe} to the overridden view when it exists or fallback to the
    * default
    * `PipeResolver`, see `setPipe`.
    */
-  resolve(type: Type<any>, throwIfNotFound = true): PipeMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): Pipe {
     var metadata = this._pipes.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);

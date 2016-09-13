@@ -54,7 +54,7 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
  *
  * @stable
  */
-export interface NgModuleMetadataFactory {
+export interface NgModuleDecorator {
   /**
    * Defines an NgModule.
    */
@@ -191,7 +191,7 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleMetadataFactory = <NgModuleMetadataFactory>makeDecorator({
+export const NgModule: NgModuleDecorator = <NgModuleDecorator>makeDecorator({
   providers: undefined,
   declarations: undefined,
   imports: undefined,

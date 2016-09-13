@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DirectiveResolver} from '@angular/compiler';
-import {AnimationEntryMetadata, Compiler, ComponentMetadata, DirectiveMetadata, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
 
 import {Map} from './facade/collection';
 import {isArray, isPresent} from './facade/lang';
@@ -20,7 +20,7 @@ import {ViewMetadata} from './private_import_core';
  */
 @Injectable()
 export class MockDirectiveResolver extends DirectiveResolver {
-  private _directives = new Map<Type<any>, DirectiveMetadata>();
+  private _directives = new Map<Type<any>, Directive>();
   private _providerOverrides = new Map<Type<any>, any[]>();
   private _viewProviderOverrides = new Map<Type<any>, any[]>();
   private _views = new Map<Type<any>, ViewMetadata>();
@@ -33,7 +33,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 
-  resolve(type: Type<any>, throwIfNotFound = true): DirectiveMetadata {
+  resolve(type: Type<any>, throwIfNotFound = true): Directive {
     let metadata = this._directives.get(type);
     if (!metadata) {
       metadata = super.resolve(type, throwIfNotFound);
@@ -52,7 +52,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       providers = originalViewProviders.concat(providerOverrides);
     }
 
-    if (metadata instanceof ComponentMetadata) {
+    if (metadata instanceof Component) {
       let viewProviders = metadata.viewProviders;
       if (isPresent(viewProviderOverrides)) {
         const originalViewProviders: Provider[] =
@@ -80,7 +80,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
         inlineTemplate = view.template;
       }
 
-      return new ComponentMetadata({
+      return new Component({
         selector: metadata.selector,
         inputs: metadata.inputs,
         outputs: metadata.outputs,
@@ -102,7 +102,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       });
     }
 
-    return new DirectiveMetadata({
+    return new Directive({
       selector: metadata.selector,
       inputs: metadata.inputs,
       outputs: metadata.outputs,
@@ -114,9 +114,9 @@ export class MockDirectiveResolver extends DirectiveResolver {
   }
 
   /**
-   * Overrides the {@link DirectiveMetadata} for a directive.
+   * Overrides the {@link Directive} for a directive.
    */
-  setDirective(type: Type<any>, metadata: DirectiveMetadata): void {
+  setDirective(type: Type<any>, metadata: Directive): void {
     this._directives.set(type, metadata);
     this._clearCacheFor(type);
   }

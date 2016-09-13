@@ -7,7 +7,7 @@
  */
 
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
-import {Component, ComponentMetadata, ContentChild, ContentChildren, Directive, DirectiveMetadata, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -119,7 +119,7 @@ export function main() {
     it('should read out the Directive metadata', () => {
       var directiveMetadata = resolver.resolve(SomeDirective);
       expect(directiveMetadata)
-          .toEqual(new DirectiveMetadata(
+          .toEqual(new Directive(
               {selector: 'someDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
@@ -132,7 +132,7 @@ export function main() {
     it('should not read parent class Directive metadata', function() {
       var directiveMetadata = resolver.resolve(SomeChildDirective);
       expect(directiveMetadata)
-          .toEqual(new DirectiveMetadata(
+          .toEqual(new Directive(
               {selector: 'someChildDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
@@ -225,7 +225,7 @@ export function main() {
 
     describe('view', () => {
       it('should read out the template related metadata from the Component metadata', () => {
-        var compMetadata = <ComponentMetadata>resolver.resolve(ComponentWithTemplate);
+        var compMetadata = <Component>resolver.resolve(ComponentWithTemplate);
         expect(compMetadata.template).toEqual('some template');
         expect(compMetadata.styles).toEqual(['some styles']);
       });

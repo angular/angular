@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, SelfMetadata, Type, forwardRef, getModuleFactory} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -833,11 +833,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         describe('@Self()', () => {
           it('should return a dependency from self', () => {
             var inj = createInjector([
-              Engine, {
-                provide: Car,
-                useFactory: (e: Engine) => new Car(e),
-                deps: [[Engine, new SelfMetadata()]]
-              }
+              Engine,
+              {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}
             ]);
 
             expect(inj.get(Car)).toBeAnInstanceOf(Car);
@@ -847,7 +844,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             expect(() => createInjector([{
                      provide: Car,
                      useFactory: (e: Engine) => new Car(e),
-                     deps: [[Engine, new SelfMetadata()]]
+                     deps: [[Engine, new Self()]]
                    }]))
                 .toThrowError(/No provider for Engine/g);
           });
