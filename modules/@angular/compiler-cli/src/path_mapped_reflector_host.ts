@@ -31,20 +31,6 @@ export class PathMappedReflectorHost extends ReflectorHost {
     super(program, compilerHost, options, context);
   }
 
-  protected resolve(m: string, containingFile: string) {
-    for (const root of this.options.rootDirs || ['']) {
-      const rootedContainingFile = path.join(root, containingFile);
-      const resolved =
-          ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
-      if (resolved) {
-        if (this.options.trace) {
-          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
-        }
-        return resolved.resolvedFileName;
-      }
-    }
-  }
-
   /**
    * We want a moduleId that will appear in import statements in the generated code.
    * These need to be in a form that system.js can load, so absolute file paths don't work.

@@ -57,11 +57,20 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   protected resolve(m: string, containingFile: string) {
     m = m.replace(EXT, '');
-    const resolved =
-        ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
-            .resolvedModule;
-    return resolved ? resolved.resolvedFileName : null;
-  };
+    containingFile = containingFile.replace(/\\/g, '/');
+    // FIXME: add test coverage
+    for (const root of this.options.rootDirs || ['', this.options.rootDir || '.']) {
+      const rootedContainingFile = path.join(root, containingFile);
+      const resolved =
+        ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
+      if (resolved) {
+        if (this.options.trace) {
+          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
+        }
+        return resolved.resolvedFileName;
+      }
+    }
+  }
 
   protected normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);

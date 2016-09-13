@@ -197,16 +197,14 @@ describe('reflector_host', () => {
     });
   });
 
-  it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
-  });
-
   it('should be able to read empty metadata ', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/empty.d.ts')).toBeUndefined();
+    createProgram({'tmp': {'src': {'empty.d.ts': 'export declare var a: string;',
+      'empty.metadata.json': '[]'}}});
+    expect(reflectorHost.getMetadataFor('empty.d.ts')).toBeUndefined();
   });
 
   it('should return undefined for missing modules', () => {
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
+    expect(reflectorHost.getMetadataFor('missing.d.ts')).toBeUndefined();
   });
 
   describe('exports', () => {
@@ -217,55 +215,55 @@ describe('reflector_host', () => {
         'src': {
           'main.ts': `
         import * as c from '@angular/core';
-        import * as r from '@angular/router-deprecated';
+        import * as r from '@angular/router';
         import * as u from './lib/utils';
         import * as cs from './lib/collections';
         import * as u2 from './lib2/utils2';
       `,
-          'lib': {
-            'utils.ts': dummyModule,
-            'collections.ts': dummyModule,
-          },
-          'lib2': {'utils2.ts': dummyModule},
-          'reexport': {
-            'reexport.d.ts': `
+      'lib': {
+        'utils.ts': dummyModule,
+        'collections.ts': dummyModule,
+      },
+      'lib2': {'utils2.ts': dummyModule},
+      'reexport': {
+        'reexport.d.ts': `
           import * as c from '@angular/core';
         `,
-            'reexport.metadata.json': JSON.stringify({
-              __symbolic: 'module',
-              version: 1,
-              metadata: {},
-              exports: [
-                {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
-                {from: './src/origin5'}, {from: './src/reexport2'}
-              ]
-            }),
-            'src': {
-              'origin1.d.ts': `
+        'reexport.metadata.json': JSON.stringify({
+          __symbolic: 'module',
+          version: 1,
+          metadata: {},
+          exports: [
+            {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
+            {from: './src/origin5'}, {from: './src/reexport2'}
+          ]
+        }),
+        'src': {
+          'origin1.d.ts': `
             export class One {}
             export class Two {}
             export class Three {}
           `,
-              'origin1.metadata.json': JSON.stringify({
-                __symbolic: 'module',
-                version: 1,
-                metadata: {
-                  One: {__symbolic: 'class'},
-                  Two: {__symbolic: 'class'},
-                  Three: {__symbolic: 'class'},
-                },
-              }),
-              'origin5.d.ts': `
+          'origin1.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {
+              One: {__symbolic: 'class'},
+              Two: {__symbolic: 'class'},
+              Three: {__symbolic: 'class'},
+            },
+          }),
+          'origin5.d.ts': `
             export class Five {}
           `,
-              'origin5.metadata.json': JSON.stringify({
-                __symbolic: 'module',
-                version: 1,
-                metadata: {
-                  Five: {__symbolic: 'class'},
-                },
-              }),
-              'origin30.d.ts': `
+          'origin5.metadata.json': JSON.stringify({
+            __symbolic: 'module',
+            version: 1,
+            metadata: {
+              Five: {__symbolic: 'class'},
+            },
+          }),
+          'origin30.d.ts': `
             export class Thirty {}
           `,
               'origin30.metadata.json': JSON.stringify({
@@ -293,8 +291,7 @@ describe('reflector_host', () => {
           'node_modules': {
             '@angular': {
               'core.d.ts': dummyModule,
-              'router-deprecated':
-                  {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
+              'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
               'unused.d.ts': dummyModule
             }
           }
@@ -303,6 +300,10 @@ describe('reflector_host', () => {
     };
 
     beforeEach(() => { createProgram(clone(FILES)); });
+
+    it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
+      expect(reflectorHost.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+    });
 
     it('should be able to trace a named export', () => {
       const symbol =
