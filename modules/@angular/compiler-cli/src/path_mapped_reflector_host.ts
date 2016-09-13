@@ -31,17 +31,6 @@ export class PathMappedReflectorHost extends ReflectorHost {
     super(program, compilerHost, options, context);
   }
 
-  getCanonicalFileName(fileName: string): string {
-    if (!fileName) return fileName;
-    // NB: the rootDirs should have been sorted longest-first
-    for (let dir of this.options.rootDirs || []) {
-      if (fileName.indexOf(dir) === 0) {
-        fileName = fileName.substring(dir.length);
-      }
-    }
-    return fileName;
-  }
-
   protected resolve(m: string, containingFile: string) {
     for (const root of this.options.rootDirs || ['']) {
       const rootedContainingFile = path.join(root, containingFile);
@@ -82,7 +71,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.getCanonicalFileName(this.resolve(candidate, importedFile));
+      const resolved = this.compilerHost.getCanonicalFileName(this.resolve(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 
@@ -132,7 +121,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
         if (!sf) {
           throw new Error(`Source file ${rootedPath} not present in program.`);
         }
-        sf.fileName = this.getCanonicalFileName(sf.fileName);
+        sf.fileName = this.compilerHost.getCanonicalFileName(sf.fileName);
         return this.metadataCollector.getMetadata(sf);
       }
     }

@@ -101,7 +101,7 @@ export class CodeGenerator {
         GENERATED_FILES;
     let filePaths = this.program.getSourceFiles()
                         .filter(sf => !skipFileNames.test(sf.fileName))
-                        .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName));
+                        .map(sf => this.host.getCanonicalFileName(sf.fileName));
     const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
     const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
       ngModules.push(...fileMeta.ngModules);

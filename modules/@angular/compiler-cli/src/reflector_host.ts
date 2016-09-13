@@ -55,9 +55,6 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     };
   }
 
-  // We use absolute paths on disk as canonical.
-  getCanonicalFileName(fileName: string): string { return fileName; }
-
   protected resolve(m: string, containingFile: string) {
     m = m.replace(EXT, '');
     const resolved =
@@ -69,13 +66,13 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   protected normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);
     const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
-    return this.getCanonicalFileName(path);
+    return this.compilerHost.getCanonicalFileName(path);
   }
 
   protected resolveAssetUrl(url: string, containingFile: string): string {
     let assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
-      return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
+      return this.compilerHost.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
     return url;
   }
@@ -204,7 +201,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];
-      const declarationFile = this.getCanonicalFileName(declaration.getSourceFile().fileName);
+      const declarationFile = this.compilerHost.getCanonicalFileName(declaration.getSourceFile().fileName);
 
       return this.getStaticSymbol(declarationFile, symbol.getName());
     } catch (e) {
@@ -276,7 +273,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   protected resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.getCanonicalFileName(this.resolve(moduleName, filePath));
+      const resolvedModulePath = this.compilerHost.getCanonicalFileName(this.resolve(moduleName, filePath));
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }
