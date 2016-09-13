@@ -8,15 +8,26 @@
 
 import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
-import * as angular from './angular_js';
+import {IScope, IAngularStatic, ICloneAttachFunction, IAugmentedJQuery, IDirective, IControllerService, IDirectiveLinkFn, ITranscludeFunction, IAttributes, IDirectivePrePost, IRootScopeService, auto, ICompileService, ITemplateCacheService, IHttpBackendService} from '@types/angular';
 import {NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
 import {controllerKey} from './util';
+
+declare var angular: IAngularStatic;
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
 };
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
+
+// TODO(misko): fix @types/angualrjs
+
+export interface ITranscludeFunctionWithOptions {
+  (scope: IScope, cloneAttachFn: ICloneAttachFunction,
+   options?: {parentBoundTranscludeFn: (scope: IScope, cloneAttach: ICloneAttachFunction) => void}):
+      IAugmentedJQuery;
+}
+
 
 
 export class UpgradeNg1ComponentAdapterBuilder {
@@ -28,9 +39,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
   propertyOutputs: string[] = [];
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
-  linkFn: angular.ILinkFn = null;
-  directive: angular.IDirective = null;
-  $controller: angular.IControllerService = null;
+  linkFn: ITranscludeFunctionWithOptions = null;
+  directive: IDirective = null;
+  $controller: IControllerService = null;
 
   constructor(public name: string) {
     var selector = name.replace(
@@ -41,7 +52,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
             .Class({
               constructor: [
                 new Inject(NG1_SCOPE), ElementRef,
-                function(scope: angular.IScope, elementRef: ElementRef) {
+                function(scope: IRootScopeService, elementRef: ElementRef) {
                   return new UpgradeNg1ComponentAdapter(
                       self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs,
                       self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
@@ -53,8 +64,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
             });
   }
 
-  extractDirective(injector: angular.IInjectorService): angular.IDirective {
-    var directives: angular.IDirective[] = injector.get(this.name + 'Directive');
+  extractDirective(injector: auto.IInjectorService): IDirective {
+    var directives: IDirective[] = injector.get<IDirective[]>(this.name + 'Directive');
     if (directives.length > 1) {
       throw new Error('Only support single directive definition for: ' + this.name);
     }
@@ -63,7 +74,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
     if (directive.terminal) this.notSupported('terminal');
     var link = directive.link;
     if (typeof link == 'object') {
-      if ((<angular.IDirectivePrePost>link).post) this.notSupported('link.post');
+      if ((<IDirectivePrePost>link).post) this.notSupported('link.post');
     }
     return directive;
   }
@@ -79,7 +90,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
           `Binding definitions on scope and controller at the same time are not supported.`);
     }
 
-    var context = (btcIsObject) ? this.directive.bindToController : this.directive.scope;
+    var context: any = (btcIsObject) ? this.directive.bindToController : this.directive.scope;
 
     if (typeof context == 'object') {
       for (var name in context) {
@@ -129,8 +140,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   compileTemplate(
-      compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
-      httpBackend: angular.IHttpBackendService): Promise<angular.ILinkFn> {
+      compile: ICompileService, templateCache: ITemplateCacheService,
+      httpBackend: IHttpBackendService): Promise<IDirectiveLinkFn> {
     if (this.directive.template !== undefined) {
       this.linkFn = compileHtml(
           typeof this.directive.template === 'function' ? this.directive.template() :
@@ -138,7 +149,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
     } else if (this.directive.templateUrl) {
       var url = typeof this.directive.templateUrl === 'function' ? this.directive.templateUrl() :
                                                                    this.directive.templateUrl;
-      var html = templateCache.get(url);
+      var html = templateCache.get<string>(url);
       if (html !== undefined) {
         this.linkFn = compileHtml(html);
       } else {
@@ -158,10 +169,10 @@ export class UpgradeNg1ComponentAdapterBuilder {
       throw new Error(`Directive '${this.name}' is not a component, it is missing template.`);
     }
     return null;
-    function compileHtml(html: any /** TODO #9100 */): angular.ILinkFn {
+    function compileHtml(html: string): ITranscludeFunctionWithOptions {
       var div = document.createElement('div');
       div.innerHTML = html;
-      return compile(div.childNodes);
+      return compile(div.childNodes as any as JQuery);
     }
   }
 
@@ -170,19 +181,20 @@ export class UpgradeNg1ComponentAdapterBuilder {
    */
   static resolve(
       exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
-      injector: angular.IInjectorService): Promise<angular.ILinkFn[]> {
-    var promises: Promise<angular.ILinkFn>[] = [];
-    var compile: angular.ICompileService = injector.get(NG1_COMPILE);
-    var templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
-    var httpBackend: angular.IHttpBackendService = injector.get(NG1_HTTP_BACKEND);
-    var $controller: angular.IControllerService = injector.get(NG1_CONTROLLER);
+      injector: auto.IInjectorService): Promise<IDirectiveLinkFn[]> {
+    var promises: Promise<IDirectiveLinkFn>[] = [];
+    var compile: ICompileService = injector.get<ICompileService>(NG1_COMPILE);
+    var templateCache: ITemplateCacheService =
+        injector.get<ITemplateCacheService>(NG1_TEMPLATE_CACHE);
+    var httpBackend: IHttpBackendService = injector.get<IHttpBackendService>(NG1_HTTP_BACKEND);
+    var $controller: IControllerService = injector.get<IControllerService>(NG1_CONTROLLER);
     for (var name in exportedComponents) {
       if ((<any>exportedComponents).hasOwnProperty(name)) {
         var exportedComponent = exportedComponents[name];
         exportedComponent.directive = exportedComponent.extractDirective(injector);
         exportedComponent.$controller = $controller;
         exportedComponent.extractBindings();
-        var promise: Promise<angular.ILinkFn> =
+        var promise: Promise<IDirectiveLinkFn> =
             exportedComponent.compileTemplate(compile, templateCache, httpBackend);
         if (promise) promises.push(promise);
       }
@@ -194,15 +206,16 @@ export class UpgradeNg1ComponentAdapterBuilder {
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   destinationObj: any = null;
   checkLastValues: any[] = [];
-  componentScope: angular.IScope;
+  componentScope: IScope;
   element: Element;
   $element: any = null;
 
   constructor(
-      private linkFn: angular.ILinkFn, scope: angular.IScope, private directive: angular.IDirective,
-      elementRef: ElementRef, private $controller: angular.IControllerService,
-      private inputs: string[], private outputs: string[], private propOuts: string[],
-      private checkProperties: string[], private propertyMap: {[key: string]: string}) {
+      private linkFn: ITranscludeFunctionWithOptions, scope: IRootScopeService,
+      private directive: IDirective, elementRef: ElementRef,
+      private $controller: IControllerService, private inputs: string[], private outputs: string[],
+      private propOuts: string[], private checkProperties: string[],
+      private propertyMap: {[key: string]: string}) {
     this.element = elementRef.nativeElement;
     this.componentScope = scope.$new(!!directive.scope);
     this.$element = angular.element(this.element);
@@ -233,12 +246,12 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this.buildController(this.directive.controller);
     }
     var link = this.directive.link;
-    if (typeof link == 'object') link = (<angular.IDirectivePrePost>link).pre;
+    if (typeof link == 'object') link = (<IDirectivePrePost>link).pre;
     if (link) {
-      var attrs: angular.IAttributes = NOT_SUPPORTED;
-      var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
+      var attrs: IAttributes = NOT_SUPPORTED;
+      var transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
       var linkController = this.resolveRequired(this.$element, this.directive.require);
-      (<angular.IDirectiveLinkFn>this.directive.link)(
+      (<IDirectiveLinkFn>this.directive.link)(
           this.componentScope, this.$element, attrs, linkController, transcludeFn);
     }
 
@@ -248,13 +261,14 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this.element.removeChild(childNode);
       childNodes.push(childNode);
     }
-    this.linkFn(this.componentScope, (clonedElement: Node[], scope: angular.IScope) => {
+    this.linkFn(this.componentScope, (clonedElement: JQuery, scope: IScope): any => {
       for (var i = 0, ii = clonedElement.length; i < ii; i++) {
         this.element.appendChild(clonedElement[i]);
       }
     }, {
-      parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
-                                cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }
+      parentBoundTranscludeFn: (scope: IScope, cloneAttach: ICloneAttachFunction) => {
+        cloneAttach(childNodes as any as JQuery);
+      }
     });
     if (this.destinationObj.$onInit) {
       this.destinationObj.$onInit();
@@ -298,11 +312,12 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     var locals = {$scope: this.componentScope, $element: this.$element};
     var controller: any =
         this.$controller(controllerType, locals, null, this.directive.controllerAs);
-    this.$element.data(controllerKey(this.directive.name), controller);
+    this.$element.data(controllerKey((this.directive as any)['name']), controller);
     return controller;
   }
 
-  private resolveRequired($element: angular.IAugmentedJQuery, require: string|string[]): any {
+  private resolveRequired(
+      $element: IAugmentedJQuery, require: string|string[]|{[controller: string]: string}): any {
     if (!require) {
       return undefined;
     } else if (typeof require == 'string') {
@@ -325,10 +340,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       }
 
       var key = controllerKey(name);
-      if (startParent) $element = $element.parent();
+      if (startParent) $element = $element.parent() as IAugmentedJQuery;
       var dep = searchParents ? $element.inheritedData(key) : $element.data(key);
       if (!dep && !isOptional) {
-        throw new Error(`Can not locate '${require}' in '${this.directive.name}'.`);
+        throw new Error(`Can not locate '${require}' in '${(this.directive as any)['name']}'.`);
       }
       return dep;
     } else if (require instanceof Array) {
@@ -339,6 +354,6 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       return deps;
     }
     throw new Error(
-        `Directive '${this.directive.name}' require syntax unrecognized: ${this.directive.require}`);
+        `Directive '${(this.directive as any)['name']}' require syntax unrecognized: ${this.directive.require}`);
   }
 }

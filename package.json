@@ -24,7 +24,7 @@
     "zone.js": "^0.6.25"
   },
   "devDependencies": {
-    "@types/angularjs": "^1.5.13-alpha",
+    "@types/angular": "^1.5.14",
     "@types/fs-extra": "0.0.22-alpha",
     "@types/hammerjs": "^2.0.22-alpha",
     "@types/jasmine": "^2.2.22-alpha",

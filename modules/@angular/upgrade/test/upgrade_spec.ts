@@ -11,7 +11,8 @@ import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeAdapter} from '@angular/upgrade';
-import * as angular from '@angular/upgrade/src/angular_js';
+import {IAngularStatic} from '@types/angular';
+declare var angular: IAngularStatic;
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -1029,7 +1030,7 @@ export function main() {
              ng2Testability.increasePendingRequestCount();
              let ng2Stable = false;
 
-             angular.getTestability(element).whenStable(() => {
+             (angular as any).getTestability(element).whenStable(() => {
                expect(ng2Stable).toEqual(true);
                ref.dispose();
              });

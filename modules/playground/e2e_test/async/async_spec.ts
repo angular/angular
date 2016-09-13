@@ -14,14 +14,14 @@ describe('async', () => {
   beforeEach(() => browser.get(URL));
 
   it('should work with synchronous actions', () => {
-    var increment = $('#increment');
+    var increment = element(by.css('#increment'));
     increment.$('.action').click();
 
     expect(increment.$('.val').getText()).toEqual('1');
   });
 
   it('should wait for asynchronous actions', () => {
-    var timeout = $('#delayedIncrement');
+    var timeout = element(by.css('#delayedIncrement'));
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -35,7 +35,7 @@ describe('async', () => {
   });
 
   it('should notice when asynchronous actions are cancelled', () => {
-    var timeout = $('#delayedIncrement');
+    var timeout = element(by.css('#delayedIncrement'));
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -53,7 +53,7 @@ describe('async', () => {
   });
 
   it('should wait for a series of asynchronous actions', () => {
-    var timeout = $('#multiDelayedIncrements');
+    var timeout = element(by.css('#multiDelayedIncrements'));
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
@@ -74,7 +74,7 @@ describe('async', () => {
     // This disables protractor's wait mechanism
     browser.ignoreSynchronization = true;
 
-    var timeout = $('#multiDelayedIncrements');
+    var timeout = element(by.css('#multiDelayedIncrements'));
 
     // At this point, the async action is still pending, so the count should
     // still be 0.
