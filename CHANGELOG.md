@@ -1,3 +1,52 @@
+<a name="2.0.0-rc.7"></a>
+# [2.0.0-rc.7](https://github.com/angular/angular/compare/2.0.0-rc.6...2.0.0-rc.7) (2016-09-13)
+
+
+### Bug Fixes
+
+* **core:** allow `group()` to be used as entry point for an animation trigger ([#11419](https://github.com/angular/angular/issues/11419)) ([6a2bbff](https://github.com/angular/angular/commit/6a2bbff)), closes [#11312](https://github.com/angular/angular/issues/11312)
+* **core:** ensure parent animations are triggered before children ([#11201](https://github.com/angular/angular/issues/11201)) ([c9e5b59](https://github.com/angular/angular/commit/c9e5b59))
+* **core:** correctly type event handler proxy functions ([aa9b617](https://github.com/angular/angular/commit/aa9b617))
+* **core:** fix error when `NgModule.bootstrap` contains `undefined` or `null` ([ea95c39](https://github.com/angular/angular/commit/ea95c39))
+* **core:** fix an issue with webpack and lazy loader. ([#11387](https://github.com/angular/angular/issues/11387)) ([d26a827](https://github.com/angular/angular/commit/d26a827))
+* **core:** BCP47 uses hyphens as separator ([#11514](https://github.com/angular/angular/issues/11514)) ([7b82877](https://github.com/angular/angular/commit/7b82877))
+* **compiler:** fix `CssSelector#getMatchingElementTemplate()` for void tags ([077e0be](https://github.com/angular/angular/commit/077e0be)), closes [#11407](https://github.com/angular/angular/issues/11407)
+* **compiler:** add missing elements to DOMSchema ([d309f77](https://github.com/angular/angular/commit/d309f77)), closes [#11219](https://github.com/angular/angular/issues/11219)
+* **compiler:** fix perf regression in ShadowCss ([#11420](https://github.com/angular/angular/issues/11420)) ([78ad9ad](https://github.com/angular/angular/commit/78ad9ad)), closes [#11371](https://github.com/angular/angular/issues/11371)
+* **compiler-cli:** prepend a rootDir when assuming a file exists ([#11291](https://github.com/angular/angular/issues/11291)) ([c315359](https://github.com/angular/angular/commit/c315359))
+* **compiler-cli:** propagate errors to main ([#11214](https://github.com/angular/angular/issues/11214)) ([5e5ae3c](https://github.com/angular/angular/commit/5e5ae3c))
+* **compiler-cli:** use the compilerHost to detect file existence ([#11418](https://github.com/angular/angular/issues/11418)) ([9e2ec7a](https://github.com/angular/angular/commit/9e2ec7a))
+* **forms:** clear errors on disable ([#11463](https://github.com/angular/angular/issues/11463)) ([673de00](https://github.com/angular/angular/commit/673de00)), closes [#11287](https://github.com/angular/angular/issues/11287)
+* **forms:** disabled controls should never be invalid ([#11257](https://github.com/angular/angular/issues/11257)) ([043493c](https://github.com/angular/angular/commit/043493c)), closes [#11253](https://github.com/angular/angular/issues/11253)
+* **forms:** fix disabled support for empty form containers ([#11427](https://github.com/angular/angular/issues/11427)) ([7b24028](https://github.com/angular/angular/commit/7b24028)), closes [#11386](https://github.com/angular/angular/issues/11386)
+* **forms:** fix resetting radios ([#11546](https://github.com/angular/angular/issues/11546)) ([61aad79](https://github.com/angular/angular/commit/61aad79)), closes [#11516](https://github.com/angular/angular/issues/11516)
+* **forms:** rename validator change fn due to conflict ([#11492](https://github.com/angular/angular/issues/11492)) ([53f0c22](https://github.com/angular/angular/commit/53f0c22)), closes [#11479](https://github.com/angular/angular/issues/11479)
+* **forms:** support dots in control names in contains ([#11542](https://github.com/angular/angular/issues/11542)) ([79055f7](https://github.com/angular/angular/commit/79055f7)), closes [#11535](https://github.com/angular/angular/issues/11535)
+* **forms:** support rebinding nested controls ([#11210](https://github.com/angular/angular/issues/11210)) ([8c09933](https://github.com/angular/angular/commit/8c09933))
+
+
+### Code Refactoring
+
+* **core:** remove `…Metadata` for all decorators and use the decorator directly. ([63e15ff](https://github.com/angular/angular/commit/63e15ff))
+
+
+### PEER-DEPENDENCY UPDATES ###
+
+* **core**: zone.js@0.6.21
+* **core**: rxjs@5.0.0-beta.12
+
+
+### BREAKING CHANGES
+
+* core: - all `…Metadata` classes have been removed. Use the corresponding decorator
+  as constructor or for `instanceof` checks instead.
+- Example:
+  * Before: `new ComponentMetadata(…)`
+  * After: `new Component(…)`
+- Note: `new Component(…)` worked before as well.
+
+
+
 <a name="2.0.0-rc.6"></a>
 # [2.0.0-rc.6](https://github.com/angular/angular/compare/2.0.0-rc.5...2.0.0-rc.6) (2016-08-31)
 
