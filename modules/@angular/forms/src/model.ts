@@ -665,7 +665,9 @@ export class FormControl extends AbstractControl {
    * Set the value of the form control to `value`.
    *
    * If `onlySelf` is `true`, this change will only affect the validation of this `FormControl`
-   * and not its parent component. This defaults to false. If `emitEvent` is `true`, this
+   * and not its parent component. This defaults to false.
+   *
+   * If `emitEvent` is `true`, this
    * change will cause a `valueChanges` event on the `FormControl` to be emitted. This defaults
    * to true (as it falls through to `updateValueAndValidity`).
    *
@@ -731,7 +733,7 @@ export class FormControl extends AbstractControl {
    *
    * ```
    * this.control.reset({value: 'Nancy', disabled: true});
-   * 
+   *
    * console.log(this.control.value);  // 'Nancy'
    * console.log(this.control.status);  // 'DISABLED'
    * ```
@@ -794,17 +796,54 @@ export class FormControl extends AbstractControl {
 }
 
 /**
- * Defines a part of a form, of fixed length, that can contain other controls.
+ * @whatItDoes Tracks the value and validity state of a group of {@link FormControl}
+ * instances.
  *
- * A `FormGroup` aggregates the values of each {@link FormControl} in the group.
- * The status of a `FormGroup` depends on the status of its children.
- * If one of the controls in a group is invalid, the entire group is invalid.
- * Similarly, if a control changes its value, the entire group changes as well.
+ * A `FormGroup` aggregates the values of each child {@link FormControl} into one object,
+ * with each control name as the key.  It calculates its status by reducing the statuses
+ * of its children. For example, if one of the controls in a group is invalid, the entire
+ * group becomes invalid.
  *
  * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
- * along with {@link FormControl} and {@link FormArray}. {@link FormArray} can also contain other
- * controls, but is of variable length.
+ * along with {@link FormControl} and {@link FormArray}.
  *
+ * @howToUse
+ *
+ * When instantiating a {@link FormGroup}, pass in a collection of child controls as the first
+ * argument. The key for each child will be the name under which it is registered.
+ *
+ * ### Example
+ *
+ * ```
+ * const form = new FormGroup({
+ *   first: new FormControl('Nancy', Validators.minLength(2)),
+ *   last: new FormControl('Drew'),
+ * });
+ *
+ * console.log(form.value);   // {first: 'Nancy', last; 'Drew'}
+ * console.log(form.status);  // 'VALID'
+ * ```
+ *
+ * You can also include group-level validators as the second arg, or group-level async
+ * validators as the third arg. These come in handy when you want to perform validation
+ * that considers the value of more than one child control.
+ *
+ * ### Example
+ *
+ * ```
+ * const form = new FormGroup({
+ *   password: new FormControl('', Validators.minLength(2)),
+ *   passwordConfirm: new FormControl('', Validators.minLength(2)),
+ * }, passwordMatchValidator);
+ *
+ *
+ * function passwordMatchValidator(g: FormGroup) {
+ *    return g.get('password').value === g.get('passwordConfirm').value
+ *       ? null : {'mismatch': true};
+ * }
+ * ```
+ *
+ * * **npm package**: `@angular/forms`
  *
  * @stable
  */
@@ -819,7 +858,10 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
-   * Register a control with the group's list of controls.
+   * Registers a control with the group's list of controls.
+   *
+   * This method does not update value or validity of the control, so for
+   * most cases you'll want to use {@link FormGroup.addControl} instead.
    */
   registerControl(name: string, control: AbstractControl): AbstractControl {
     if (this.controls[name]) return this.controls[name];
@@ -860,12 +902,37 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
-   * Check whether there is a control with the given name in the group.
+   * Check whether there is an enabled control with the given name in the group.
+   *
+   * It will return false for disabled controls. If you'd like to check for
+   * existence in the group only, use {@link AbstractControl.get} instead.
    */
   contains(controlName: string): boolean {
     return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
   }
 
+  /**
+   *  Sets the value of the {@link FormGroup}. It accepts an object that matches
+   *  the structure of the group, with control names as keys.
+   *
+   * This method performs strict checks, so it will throw an error if you try
+   * to set the value of a control that doesn't exist or if you exclude the
+   * value of a control.
+   *
+   *  ### Example
+   *
+   *  ```
+   *  const form = new FormGroup({
+   *     first: new FormControl(),
+   *     last: new FormControl()
+   *  });
+   *  console.log(form.value);   // {first: null, last: null}
+   *
+   *  form.setValue({first: 'Nancy', last: 'Drew'});
+   *  console.log(form.value);   // {first: 'Nancy', last: 'Drew'}
+   *
+   *  ```
+   */
   setValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
     StringMapWrapper.forEach(value, (newValue: any, name: string) => {
@@ -875,6 +942,27 @@ export class FormGroup extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  /**
+   *  Patches the value of the {@link FormGroup}. It accepts an object with control
+   *  names as keys, and will do its best to match the values to the correct controls
+   *  in the group.
+   *
+   *  It accepts both super-sets and sub-sets of the group without throwing an error.
+   *
+   *  ### Example
+   *
+   *  ```
+   *  const form = new FormGroup({
+   *     first: new FormControl(),
+   *     last: new FormControl()
+   *  });
+   *  console.log(form.value);   // {first: null, last: null}
+   *
+   *  form.patchValue({first: 'Nancy'});
+   *  console.log(form.value);   // {first: 'Nancy', last: null}
+   *
+   *  ```
+   */
   patchValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
     StringMapWrapper.forEach(value, (newValue: any, name: string) => {
       if (this.controls[name]) {
@@ -884,6 +972,40 @@ export class FormGroup extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  /**
+   * Resets the {@link FormGroup}. This means by default:
+   *
+   * * The group and all descendants are marked `pristine`
+   * * The group and all descendants are marked `untouched`
+   * * The value of all descendants will be null or null maps
+   *
+   * You can also reset to a specific form state by passing in a map of states
+   * that matches the structure of your form, with control names as keys. The state
+   * can be a standalone value or a form state object with both a value and a disabled
+   * status.
+   *
+   * ### Example
+   *
+   * ```ts
+   * this.form.reset({first: 'name', last; 'last name'});
+   *
+   * console.log(this.form.value);  // {first: 'name', last: 'last name'}
+   * ```
+   *
+   * - OR -
+   *
+   * ```
+   * this.form.reset({
+   *   first: {value: 'name', disabled: true},
+   *   last: 'last'
+   * });
+   *
+   * console.log(this.form.value);  // {first: 'name', last: 'last name'}
+   * console.log(this.form.get('first').status);  // 'DISABLED'
+   * ```
+
+   *
+   */
   reset(value: any = {}, {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, name: string) => {
       control.reset(value[name], {onlySelf: true});
@@ -893,6 +1015,12 @@ export class FormGroup extends AbstractControl {
     this._updateTouched({onlySelf: onlySelf});
   }
 
+  /**
+   * The aggregate value of the form, including any disabled controls.
+   *
+   * If you'd like to include all values regardless of disabled status, use this method.
+   * Otherwise, the `value` property is the best way to get the value of the form.
+   */
   getRawValue(): Object {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
