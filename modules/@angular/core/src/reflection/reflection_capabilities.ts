@@ -182,11 +182,9 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[]
     return [];
   }
   return decoratorInvocations.map(decoratorInvocation => {
-    var decoratorType = decoratorInvocation.type;
-    var annotationCls = decoratorType.annotationCls;
-    var annotationArgs = decoratorInvocation.args ? decoratorInvocation.args : [];
-    var annotation = Object.create(annotationCls.prototype);
-    annotationCls.apply(annotation, annotationArgs);
-    return annotation;
+    const decoratorType = decoratorInvocation.type;
+    const annotationCls = decoratorType.annotationCls;
+    const annotationArgs = decoratorInvocation.args ? decoratorInvocation.args : [];
+    return new annotationCls(...annotationArgs);
   });
 }

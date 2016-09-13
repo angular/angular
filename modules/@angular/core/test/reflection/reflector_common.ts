@@ -32,9 +32,11 @@ export function propDecorator(value: any /** TODO #9100 */) {
 }
 
 /** @Annotation */ export const ClassDecorator =
-    <ClassDecoratorFactory>makeDecorator({value: undefined});
-/** @Annotation */ export const ParamDecorator = makeParamDecorator([['value', undefined]]);
-/** @Annotation */ export const PropDecorator = makePropDecorator([['value', undefined]]);
+    <ClassDecoratorFactory>makeDecorator('ClassDecorator', {value: undefined});
+/** @Annotation */ export const ParamDecorator =
+    makeParamDecorator('ParamDecorator', [['value', undefined]]);
+/** @Annotation */ export const PropDecorator =
+    makePropDecorator('PropDecorator', [['value', undefined]]);
 
 // used only in Dart
 export class HasGetterAndSetterDecorators {}

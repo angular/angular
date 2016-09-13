@@ -125,7 +125,7 @@ describe('reflector_host', () => {
     let {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} =
         reflectorNestedGenDir.angularImportLocations();
     expect(coreDecorators).toEqual('@angular/core/src/metadata');
-    expect(diDecorators).toEqual('@angular/core/src/di/decorators');
+    expect(diDecorators).toEqual('@angular/core/src/di/metadata');
     expect(diMetadata).toEqual('@angular/core/src/di/metadata');
     expect(animationMetadata).toEqual('@angular/core/src/animation/metadata');
     expect(provider).toEqual('@angular/core/src/di/provider');
