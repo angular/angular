@@ -8,7 +8,7 @@
 
 // #docregion Component
 import {Component} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
@@ -34,7 +34,7 @@ export class NestedFormArray {
     ]),
   });
 
-  get cities(): FormArray { return this.form.get('cities'); }
+  get cities(): FormArray { return this.form.get('cities') as FormArray; }
 
   addCity() { this.cities.push(new FormControl()); }
 
