@@ -1003,8 +1003,6 @@ export class FormGroup extends AbstractControl {
    * console.log(this.form.value);  // {first: 'name', last: 'last name'}
    * console.log(this.form.get('first').status);  // 'DISABLED'
    * ```
-
-   *
    */
   reset(value: any = {}, {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, name: string) => {
@@ -1016,10 +1014,10 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
-   * The aggregate value of the form, including any disabled controls.
+   * The aggregate value of the {@link FormGroup}, including any disabled controls.
    *
    * If you'd like to include all values regardless of disabled status, use this method.
-   * Otherwise, the `value` property is the best way to get the value of the form.
+   * Otherwise, the `value` property is the best way to get the value of the group.
    */
   getRawValue(): Object {
     return this._reduceChildren(
@@ -1107,18 +1105,38 @@ export class FormGroup extends AbstractControl {
 }
 
 /**
- * Defines a part of a form, of variable length, that can contain other controls.
+ * @whatItDoes Tracks the value and validity state of an array of {@link FormControl}
+ * instances.
  *
- * A `FormArray` aggregates the values of each {@link FormControl} in the group.
- * The status of a `FormArray` depends on the status of its children.
- * If one of the controls in a group is invalid, the entire array is invalid.
- * Similarly, if a control changes its value, the entire array changes as well.
+ * A `FormArray` aggregates the values of each child {@link FormControl} into an array.
+ * It calculates its status by reducing the statuses of its children. For example, if one of
+ * the controls in a `FormArray` is invalid, the entire array becomes invalid.
  *
  * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
- * along with {@link FormControl} and {@link FormGroup}. {@link FormGroup} can also contain
- * other controls, but is of fixed length.
+ * along with {@link FormControl} and {@link FormGroup}.
  *
- * ## Adding or removing controls
+ * @howToUse
+ *
+ * When instantiating a {@link FormArray}, pass in an array of child controls as the first
+ * argument.
+ *
+ * ### Example
+ *
+ * ```
+ * const arr = new FormArray([
+ *   new FormControl('Nancy', Validators.minLength(2)),
+ *   new FormControl('Drew'),
+ * ]);
+ *
+ * console.log(arr.value);   // ['Nancy', 'Drew']
+ * console.log(arr.status);  // 'VALID'
+ * ```
+ *
+ * You can also include array-level validators as the second arg, or array-level async
+ * validators as the third arg. These come in handy when you want to perform validation
+ * that considers the value of more than one child control.
+ *
+ * ### Adding or removing controls
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
  * in `FormArray` itself. These methods ensure the controls are properly tracked in the
@@ -1126,6 +1144,7 @@ export class FormGroup extends AbstractControl {
  * the `FormArray` directly, as that will result in strange and unexpected behavior such
  * as broken change detection.
  *
+ * * **npm package**: `@angular/forms`
  *
  * @stable
  */
@@ -1195,6 +1214,27 @@ export class FormArray extends AbstractControl {
    */
   get length(): number { return this.controls.length; }
 
+  /**
+   *  Sets the value of the {@link FormArray}. It accepts an array that matches
+   *  the structure of the control.
+   *
+   * This method performs strict checks, so it will throw an error if you try
+   * to set the value of a control that doesn't exist or if you exclude the
+   * value of a control.
+   *
+   *  ### Example
+   *
+   *  ```
+   *  const arr = new FormArray([
+   *     new FormControl(),
+   *     new FormControl()
+   *  ]);
+   *  console.log(arr.value);   // [null, null]
+   *
+   *  arr.setValue(['Nancy', 'Drew']);
+   *  console.log(arr.value);   // ['Nancy', 'Drew']
+   *  ```
+   */
   setValue(value: any[], {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
     value.forEach((newValue: any, index: number) => {
@@ -1204,6 +1244,26 @@ export class FormArray extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  /**
+   *  Patches the value of the {@link FormArray}. It accepts an array that matches the
+   *  structure of the control, and will do its best to match the values to the correct
+   *  controls in the group.
+   *
+   *  It accepts both super-sets and sub-sets of the array without throwing an error.
+   *
+   *  ### Example
+   *
+   *  ```
+   *  const arr = new FormArray([
+   *     new FormControl(),
+   *     new FormControl()
+   *  ]);
+   *  console.log(arr.value);   // [null, null]
+   *
+   *  arr.patchValue(['Nancy']);
+   *  console.log(arr.value);   // ['Nancy', null]
+   *  ```
+   */
   patchValue(value: any[], {onlySelf}: {onlySelf?: boolean} = {}): void {
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
@@ -1213,6 +1273,37 @@ export class FormArray extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
 
+  /**
+   * Resets the {@link FormArray}. This means by default:
+   *
+   * * The array and all descendants are marked `pristine`
+   * * The array and all descendants are marked `untouched`
+   * * The value of all descendants will be null or null maps
+   *
+   * You can also reset to a specific form state by passing in an array of states
+   * that matches the structure of the control. The state can be a standalone value
+   * or a form state object with both a value and a disabled status.
+   *
+   * ### Example
+   *
+   * ```ts
+   * this.arr.reset(['name', 'last name']);
+   *
+   * console.log(this.arr.value);  // ['name', 'last name']
+   * ```
+   *
+   * - OR -
+   *
+   * ```
+   * this.arr.reset([
+   *   {value: 'name', disabled: true},
+   *   'last'
+   * ]);
+   *
+   * console.log(this.arr.value);  // ['name', 'last name']
+   * console.log(this.arr.get(0).status);  // 'DISABLED'
+   * ```
+   */
   reset(value: any = [], {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true});
@@ -1222,6 +1313,12 @@ export class FormArray extends AbstractControl {
     this._updateTouched({onlySelf: onlySelf});
   }
 
+  /**
+   * The aggregate value of the array, including any disabled controls.
+   *
+   * If you'd like to include all values regardless of disabled status, use this method.
+   * Otherwise, the `value` property is the best way to get the value of the array.
+   */
   getRawValue(): any[] { return this.controls.map((control) => control.value); }
 
   /** @internal */
