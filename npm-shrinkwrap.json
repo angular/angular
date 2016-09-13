@@ -32,11 +32,6 @@
       "from": "@types/node@latest",
       "resolved": "https://registry.npmjs.org/@types/node/-/node-4.0.22-alpha.tgz"
     },
-    "@types/protractor": {
-      "version": "1.5.11-alpha",
-      "from": "@types/protractor@latest",
-      "resolved": "https://registry.npmjs.org/@types/protractor/-/protractor-1.5.11-alpha.tgz"
-    },
     "@types/selenium-webdriver": {
       "version": "2.44.20-alpha",
       "from": "@types/selenium-webdriver@latest",
@@ -4730,9 +4725,9 @@
       "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
     },
     "json-schema": {
-      "version": "0.2.2",
-      "from": "json-schema@0.2.2",
-      "resolved": "https://registry.npmjs.org/json-schema/-/json-schema-0.2.2.tgz"
+      "version": "0.2.3",
+      "from": "json-schema@0.2.3",
+      "resolved": "https://registry.npmjs.org/json-schema/-/json-schema-0.2.3.tgz"
     },
     "json-stringify-safe": {
       "version": "5.0.1",
@@ -4775,9 +4770,9 @@
       "resolved": "https://registry.npmjs.org/jsontoxml/-/jsontoxml-0.0.11.tgz"
     },
     "jsprim": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "from": "jsprim@>=1.2.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.3.1.tgz"
     },
     "jstransform": {
       "version": "10.1.0",
@@ -5689,9 +5684,9 @@
       "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.0.tgz"
     },
     "path-is-inside": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "path-is-inside@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/path-is-inside/-/path-is-inside-1.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/path-is-inside/-/path-is-inside-1.0.2.tgz"
     },
     "path-type": {
       "version": "1.1.0",
@@ -5776,9 +5771,9 @@
       "resolved": "https://registry.npmjs.org/promzard/-/promzard-0.3.0.tgz"
     },
     "protractor": {
-      "version": "4.0.5",
-      "from": "protractor@4.0.5",
-      "resolved": "https://registry.npmjs.org/protractor/-/protractor-4.0.5.tgz",
+      "version": "4.0.7",
+      "from": "protractor@4.0.7",
+      "resolved": "https://registry.npmjs.org/protractor/-/protractor-4.0.7.tgz",
       "dependencies": {
         "@types/jasmine": {
           "version": "2.2.33",
