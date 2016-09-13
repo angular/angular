@@ -14,8 +14,8 @@ import {NgForm} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
-      <input name="first" ngModel placeholder="First name" required #first="ngModel">
-      <input name="last" ngModel placeholder="Last name">
+      <input name="first" ngModel required #first="ngModel">
+      <input name="last" ngModel>
       <button>Submit</button>
     </form>
     
