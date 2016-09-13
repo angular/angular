@@ -48,7 +48,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
       const resolved =
           ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
       if (resolved) {
-        if (this.options.traceResolution) {
+        if (this.options.trace) {
           console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
         }
         return resolved.resolvedFileName;
@@ -66,7 +66,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
     importedFile = this.resolveAssetUrl(importedFile, containingFile);
     containingFile = this.resolveAssetUrl(containingFile, '');
 
-    if (this.options.traceResolution) {
+    if (this.options.trace) {
       console.log(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
     }

@@ -37,20 +37,12 @@ describe('reflector_host', () => {
         program, host, {
           genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
-          skipMetadataEmit: false,
-          strictMetadataEmit: false,
-          skipTemplateCodegen: false,
-          trace: false
         },
         context);
     reflectorSiblingGenDir = new ReflectorHost(
         program, host, {
           genDir: '/tmp/project/gen',
           basePath: '/tmp/project/src/',
-          skipMetadataEmit: false,
-          strictMetadataEmit: false,
-          skipTemplateCodegen: false,
-          trace: false
         },
         context);
   });

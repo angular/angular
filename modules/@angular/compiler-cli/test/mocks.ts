@@ -127,4 +127,6 @@ export class MockCompilerHost implements ts.CompilerHost {
   getNewLine(): string { return '\n'; }
 
   getDirectories(path: string): string[] { return this.context.getDirectories(path); }
+
+  trace(s: string) { console.error(s); };
 }

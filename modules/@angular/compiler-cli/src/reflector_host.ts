@@ -342,7 +342,7 @@ export class NodeReflectorHostContext implements ReflectorHostContext {
     }
   }
 
-  readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+  readFile(fileName: string): string { return this.host.readFile(fileName); }
 
   assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }
