@@ -23,21 +23,3 @@ export {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} fr
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
 export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NO_ERRORS_SCHEMA, NgModule, SchemaMetadata} from './metadata/ng_module';
 export {ViewEncapsulation} from './metadata/view';
-
-
-
-// TODO(vicb): delete ?
-export {Directive as DirectiveMetadata};
-export {Component as ComponentMetadata};
-export {NgModule as NgModuleMetadata};
-export {Pipe as PipeMetadata};
-export {Output as OutputMetadata};
-export {Input as InputMetadata};
-export {HostBinding as HostBindingMetadata};
-export {HostListener as HostListenerMetadata};
-export {Attribute as AttributeMetadata};
-export {ContentChildren as ContentChildrenMetadata};
-export {ContentChild as ContentChildMetadata};
-export {ViewChildren as ViewChildrenMetadata};
-export {ViewChild as ViewChildMetadata};
-export {Query as QueryMetadata};

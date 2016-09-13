@@ -54,7 +54,7 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new OpaqueToken('AnalyzeForEntryComp
  *
  * @stable
  */
-export interface AttributeMetadataFactory {
+export interface AttributeDecorator {
   /**
  * Specifies that a constant attribute value should be injected.
  *
@@ -122,8 +122,7 @@ export interface Attribute { attributeName?: string; }
  * @stable
  * @Annotation
  */
-export const Attribute: AttributeMetadataFactory =
-    makeParamDecorator([['attributeName', undefined]]);
+export const Attribute: AttributeDecorator = makeParamDecorator([['attributeName', undefined]]);
 
 /**
  * Type of the Query metadata.
@@ -145,7 +144,7 @@ export abstract class Query {}
  *
  * @stable
  */
-export interface ContentChildrenMetadataFactory {
+export interface ContentChildrenDecorator {
   /**
    * Configures a content query.
    *
@@ -187,7 +186,7 @@ export type ContentChildren = Query;
  * @stable
  * @Annotation
  */
-export const ContentChildren: ContentChildrenMetadataFactory = makePropDecorator(
+export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
     [
       ['selector', undefined],
       {first: false, isViewQuery: false, descendants: false, read: undefined}
@@ -199,7 +198,7 @@ export const ContentChildren: ContentChildrenMetadataFactory = makePropDecorator
  *
  * @stable
  */
-export interface ContentChildMetadataFactory {
+export interface ContentChildDecorator {
   /**
    * Configures a content query.
    *
@@ -246,7 +245,7 @@ export type ContentChild = Query;
  * @stable
  * @Annotation
  */
-export const ContentChild: ContentChildMetadataFactory = makePropDecorator(
+export const ContentChild: ContentChildDecorator = makePropDecorator(
     [
       ['selector', undefined], {
         first: true,
@@ -258,11 +257,11 @@ export const ContentChild: ContentChildMetadataFactory = makePropDecorator(
     Query);
 
 /**
- * Type of the ViewChildrenMetadataFactory decorator / constructor function.
+ * Type of the ViewChildren decorator / constructor function.
  *
  * @stable
  */
-export interface ViewChildrenMetadataFactory {
+export interface ViewChildrenDecorator {
   /**
  * Declares a list of child element references.
  *
@@ -357,7 +356,7 @@ export type ViewChildren = Query;
  * @stable
  * @Annotation
  */
-export const ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(
+export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
     [
       ['selector', undefined], {
         first: false,
@@ -370,11 +369,11 @@ export const ViewChildren: ViewChildrenMetadataFactory = makePropDecorator(
 
 
 /**
- * Type of the ViewChildMetadataFactory decorator / constructor function.
+ * Type of the ViewChild decorator / constructor function.
  *
  * @stable
  */
-export interface ViewChildMetadataFactory {
+export interface ViewChildDecorator {
   /**
  *
  * Declares a reference of child element.
@@ -462,7 +461,7 @@ export type ViewChild = Query;
  * @stable
  * @Annotation
  */
-export const ViewChild: ViewChildMetadataFactory = makePropDecorator(
+export const ViewChild: ViewChildDecorator = makePropDecorator(
     [
       ['selector', undefined], {
         first: true,

@@ -12,7 +12,7 @@ import {reflector} from '../reflection/reflection';
 import {Type} from '../type';
 
 import {resolveForwardRef} from './forward_ref';
-import {HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
+import {Host, Inject, Optional, Self, SkipSelf} from './metadata';
 import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
 import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
@@ -226,7 +226,7 @@ function _extractToken(
   var optional = false;
 
   if (!isArray(metadata)) {
-    if (metadata instanceof InjectMetadata) {
+    if (metadata instanceof Inject) {
       return _createDependency(metadata.token, optional, null, null, depProps);
     } else {
       return _createDependency(metadata, optional, null, null, depProps);
@@ -242,19 +242,19 @@ function _extractToken(
     if (paramMetadata instanceof Type) {
       token = paramMetadata;
 
-    } else if (paramMetadata instanceof InjectMetadata) {
+    } else if (paramMetadata instanceof Inject) {
       token = paramMetadata.token;
 
-    } else if (paramMetadata instanceof OptionalMetadata) {
+    } else if (paramMetadata instanceof Optional) {
       optional = true;
 
-    } else if (paramMetadata instanceof SelfMetadata) {
+    } else if (paramMetadata instanceof Self) {
       upperBoundVisibility = paramMetadata;
 
-    } else if (paramMetadata instanceof HostMetadata) {
+    } else if (paramMetadata instanceof Host) {
       upperBoundVisibility = paramMetadata;
 
-    } else if (paramMetadata instanceof SkipSelfMetadata) {
+    } else if (paramMetadata instanceof SkipSelf) {
       lowerBoundVisibility = paramMetadata;
     }
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, Host, Inject, Injectable, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
 
 import {StringMapWrapper} from '../src/facade/collection';
 
@@ -55,7 +55,7 @@ export class CompileMetadataResolver {
     this._directiveCache.delete(type);
     this._pipeCache.delete(type);
     this._ngModuleOfTypes.delete(type);
-    // Clear all of the NgModuleMetadata as they contain transitive information!
+    // Clear all of the NgModule as they contain transitive information!
     this._ngModuleCache.clear();
   }
 
@@ -123,8 +123,8 @@ export class CompileMetadataResolver {
       var moduleUrl = staticTypeModuleUrl(directiveType);
       var entryComponentMetadata: cpl.CompileTypeMetadata[] = [];
       let selector = dirMeta.selector;
-      if (dirMeta instanceof ComponentMetadata) {
-        var cmpMeta = <ComponentMetadata>dirMeta;
+      if (dirMeta instanceof Component) {
+        var cmpMeta = <Component>dirMeta;
         assertArrayOfStrings('styles', cmpMeta.styles);
         assertInterpolationSymbols('interpolation', cmpMeta.interpolation);
         var animations = isPresent(cmpMeta.animations) ?
@@ -483,29 +483,29 @@ export class CompileMetadataResolver {
       let isSelf = false;
       let isSkipSelf = false;
       let isOptional = false;
-      let query: QueryMetadata = null;
-      let viewQuery: QueryMetadata = null;
+      let query: Query = null;
+      let viewQuery: Query = null;
       var token: any = null;
       if (isArray(param)) {
         (<any[]>param).forEach((paramEntry) => {
-          if (paramEntry instanceof HostMetadata) {
+          if (paramEntry instanceof Host) {
             isHost = true;
-          } else if (paramEntry instanceof SelfMetadata) {
+          } else if (paramEntry instanceof Self) {
             isSelf = true;
-          } else if (paramEntry instanceof SkipSelfMetadata) {
+          } else if (paramEntry instanceof SkipSelf) {
             isSkipSelf = true;
-          } else if (paramEntry instanceof OptionalMetadata) {
+          } else if (paramEntry instanceof Optional) {
             isOptional = true;
-          } else if (paramEntry instanceof AttributeMetadata) {
+          } else if (paramEntry instanceof Attribute) {
             isAttribute = true;
             token = paramEntry.attributeName;
-          } else if (paramEntry instanceof QueryMetadata) {
+          } else if (paramEntry instanceof Query) {
             if (paramEntry.isViewQuery) {
               viewQuery = paramEntry;
             } else {
               query = paramEntry;
             }
-          } else if (paramEntry instanceof InjectMetadata) {
+          } else if (paramEntry instanceof Inject) {
             token = paramEntry.token;
           } else if (isValidType(paramEntry) && isBlank(token)) {
             token = paramEntry;
@@ -653,10 +653,10 @@ export class CompileMetadataResolver {
   }
 
   getQueriesMetadata(
-      queries: {[key: string]: QueryMetadata}, isViewQuery: boolean,
+      queries: {[key: string]: Query}, isViewQuery: boolean,
       directiveType: Type<any>): cpl.CompileQueryMetadata[] {
     var res: cpl.CompileQueryMetadata[] = [];
-    StringMapWrapper.forEach(queries, (query: QueryMetadata, propertyName: string) => {
+    StringMapWrapper.forEach(queries, (query: Query, propertyName: string) => {
       if (query.isViewQuery === isViewQuery) {
         res.push(this.getQueryMetadata(query, propertyName, directiveType));
       }
@@ -669,7 +669,7 @@ export class CompileMetadataResolver {
   }
 
 
-  getQueryMetadata(q: QueryMetadata, propertyName: string, typeOrFunc: Type<any>|Function):
+  getQueryMetadata(q: Query, propertyName: string, typeOrFunc: Type<any>|Function):
       cpl.CompileQueryMetadata {
     var selectors: cpl.CompileTokenMetadata[];
     if (isString(q.selector)) {
@@ -733,8 +733,7 @@ function staticTypeModuleUrl(value: any): string {
   return cpl.isStaticSymbol(value) ? value.filePath : null;
 }
 
-function componentModuleUrl(
-    reflector: ReflectorReader, type: any, cmpMetadata: ComponentMetadata): string {
+function componentModuleUrl(reflector: ReflectorReader, type: any, cmpMetadata: Component): string {
   if (cpl.isStaticSymbol(type)) {
     return staticTypeModuleUrl(type);
   }

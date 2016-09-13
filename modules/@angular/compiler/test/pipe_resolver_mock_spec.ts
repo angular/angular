@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Pipe, PipeMetadata} from '@angular/core';
+import {Injector, Pipe} from '@angular/core';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 
 import {isBlank, stringify} from '../src/facade/lang';
@@ -26,7 +26,7 @@ export function main() {
       });
 
       it('should allow overriding the @Pipe', () => {
-        pipeResolver.setPipe(SomePipe, new PipeMetadata({name: 'someOtherName'}));
+        pipeResolver.setPipe(SomePipe, new Pipe({name: 'someOtherName'}));
         var pipe = pipeResolver.resolve(SomePipe);
         expect(pipe.name).toEqual('someOtherName');
       });

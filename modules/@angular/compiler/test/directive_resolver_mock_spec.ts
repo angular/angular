@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentMetadata, Directive, Injector} from '@angular/core';
+import {Component, Directive, Injector} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {MockDirectiveResolver} from '../testing/index';
@@ -34,8 +34,7 @@ export function main() {
          });
 
       it('should allow overriding the @Directive', () => {
-        dirResolver.setDirective(
-            SomeComponent, new ComponentMetadata({selector: 'someOtherSelector'}));
+        dirResolver.setDirective(SomeComponent, new Component({selector: 'someOtherSelector'}));
         var metadata = dirResolver.resolve(SomeComponent);
         expect(metadata.selector).toEqual('someOtherSelector');
       });
@@ -43,20 +42,20 @@ export function main() {
 
     describe('View overriding', () => {
       it('should fallback to the default ViewResolver when templates are not overridden', () => {
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('template');
       });
 
       it('should allow overriding the @View', () => {
         dirResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
       });
 
       it('should allow overriding a view after it has been resolved', () => {
         dirResolver.resolve(SomeComponent);
         dirResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
       });
     });
@@ -64,21 +63,21 @@ export function main() {
     describe('inline template definition overriding', () => {
       it('should allow overriding the default template', () => {
         dirResolver.setInlineTemplate(SomeComponent, 'overridden template');
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
       });
 
       it('should allow overriding an overridden @View', () => {
         dirResolver.setView(SomeComponent, new ViewMetadata({template: 'overridden template'}));
         dirResolver.setInlineTemplate(SomeComponent, 'overridden template x 2');
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template x 2');
       });
 
       it('should allow overriding a view after it has been resolved', () => {
         dirResolver.resolve(SomeComponent);
         dirResolver.setInlineTemplate(SomeComponent, 'overridden template');
-        var view = <ComponentMetadata>dirResolver.resolve(SomeComponent);
+        var view = <Component>dirResolver.resolve(SomeComponent);
         expect(view.template).toEqual('overridden template');
       });
     });

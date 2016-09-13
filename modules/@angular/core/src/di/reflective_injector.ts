@@ -11,7 +11,7 @@ import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
-import {SelfMetadata, SkipSelfMetadata} from './metadata';
+import {Self, SkipSelf} from './metadata';
 import {Provider} from './provider';
 import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
@@ -807,7 +807,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       return this;
     }
 
-    if (upperBoundVisibility instanceof SelfMetadata) {
+    if (upperBoundVisibility instanceof Self) {
       return this._getByKeySelf(key, notFoundValue);
 
     } else {
@@ -834,7 +834,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, lowerBoundVisibility: Object): any {
     var inj: Injector;
 
-    if (lowerBoundVisibility instanceof SkipSelfMetadata) {
+    if (lowerBoundVisibility instanceof SkipSelf) {
       inj = this._parent;
     } else {
       inj = this;

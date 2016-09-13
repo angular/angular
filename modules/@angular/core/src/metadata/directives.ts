@@ -8,7 +8,7 @@
 
 import {AnimationEntryMetadata} from '../animation/metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {InjectableMetadata, Provider} from '../di';
+import {Injectable, Provider} from '../di';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
@@ -21,11 +21,11 @@ import {ViewEncapsulation} from './view';
  *
  * @stable
  */
-export interface DirectiveMetadataFactory {
+export interface DirectiveDecorator {
   /**
    * Directives allow you to attach behavior to elements in the DOM.
    *
-   * {@link DirectiveMetadata}s with an embedded view are called {@link ComponentMetadata}s.
+   * {@link Directive}s with an embedded view are called {@link Component}s.
    *
    * A directive consists of a single directive annotation and a controller class. When the
    * directive's `selector` matches
@@ -59,7 +59,7 @@ export interface DirectiveMetadataFactory {
    *
    * Angular then resolves dependencies as follows, according to the order in which they appear in
    * the
-   * {@link ComponentMetadata}:
+   * {@link Component}:
    *
    * 1. Dependencies on the current element
    * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM
@@ -85,7 +85,7 @@ export interface DirectiveMetadataFactory {
    * To inject element-specific special objects, declare the constructor parameter as:
    * - `element: ElementRef` to obtain a reference to logical element in the view.
    * - `viewContainer: ViewContainerRef` to control child template instantiation, for
-   * {@link DirectiveMetadata} directives only
+   * {@link Directive} directives only
    * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
    *
    * ### Example
@@ -311,7 +311,7 @@ export interface DirectiveMetadataFactory {
    * location in the current view
    * where these actions are performed.
    *
-   * Views are always created as children of the current {@link ComponentMetadata}, and as siblings
+   * Views are always created as children of the current {@link Component}, and as siblings
    * of
    * the
    * `<template>` element. Thus a
@@ -770,7 +770,7 @@ export interface Directive {
  * @stable
  * @Annotation
  */
-export const Directive: DirectiveMetadataFactory = <DirectiveMetadataFactory>makeDecorator({
+export const Directive: DirectiveDecorator = <DirectiveDecorator>makeDecorator({
   selector: undefined,
   inputs: undefined,
   outputs: undefined,
@@ -785,7 +785,7 @@ export const Directive: DirectiveMetadataFactory = <DirectiveMetadataFactory>mak
  *
  * @stable
  */
-export interface ComponentMetadataFactory {
+export interface ComponentDecorator {
   /**
    * Declare reusable UI building blocks for an application.
    *
@@ -1050,7 +1050,7 @@ export interface Component extends Directive {
  * @stable
  * @Annotation
  */
-export const Component: ComponentMetadataFactory = <ComponentMetadataFactory>makeDecorator(
+export const Component: ComponentDecorator = <ComponentDecorator>makeDecorator(
     {
       selector: undefined,
       inputs: undefined,
@@ -1078,7 +1078,7 @@ export const Component: ComponentMetadataFactory = <ComponentMetadataFactory>mak
  *
  * @stable
  */
-export interface PipeMetadataFactory {
+export interface PipeDecorator {
   /**
    * Declare reusable pipe function.
    *
@@ -1110,7 +1110,7 @@ export interface Pipe {
  * @stable
  * @Annotation
  */
-export const Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator({
+export const Pipe: PipeDecorator = <PipeDecorator>makeDecorator({
   name: undefined,
   pure: true,
 });
@@ -1121,13 +1121,13 @@ export const Pipe: PipeMetadataFactory = <PipeMetadataFactory>makeDecorator({
  *
  * @stable
  */
-export interface InputMetadataFactory {
+export interface InputDecorator {
   /**
    * Declares a data-bound input property.
    *
    * Angular automatically updates data-bound properties during change detection.
    *
-   * `InputMetadata` takes an optional parameter that specifies the name
+   * `Input` takes an optional parameter that specifies the name
    * used when instantiating a component in the template. When not provided,
    * the name of the decorated property is used.
    *
@@ -1184,21 +1184,21 @@ export interface Input {
  * @stable
  * @Annotation
  */
-export const Input: InputMetadataFactory = makePropDecorator([['bindingPropertyName', undefined]]);
+export const Input: InputDecorator = makePropDecorator([['bindingPropertyName', undefined]]);
 
 /**
  * Type of the Output decorator / constructor function.
  *
  * @stable
  */
-export interface OutputMetadataFactory {
+export interface OutputDecorator {
   /**
    * Declares an event-bound output property.
    *
    * When an output property emits an event, an event handler attached to that event
    * the template is invoked.
    *
-   * `OutputMetadata` takes an optional parameter that specifies the name
+   * `Output` takes an optional parameter that specifies the name
    * used when instantiating a component in the template. When not provided,
    * the name of the decorated property is used.
    *
@@ -1249,8 +1249,7 @@ export interface Output { bindingPropertyName?: string; }
  * @stable
  * @Annotation
  */
-export const Output: OutputMetadataFactory =
-    makePropDecorator([['bindingPropertyName', undefined]]);
+export const Output: OutputDecorator = makePropDecorator([['bindingPropertyName', undefined]]);
 
 
 /**
@@ -1258,14 +1257,14 @@ export const Output: OutputMetadataFactory =
  *
  * @stable
  */
-export interface HostBindingMetadataFactory {
+export interface HostBindingDecorator {
   /**
    * Declares a host property binding.
    *
    * Angular automatically checks host property bindings during change detection.
    * If a binding changes, it will update the host element of the directive.
    *
-   * `HostBindingMetadata` takes an optional parameter that specifies the property
+   * `HostBinding` takes an optional parameter that specifies the property
    * name of the host element that will be updated. When not provided,
    * the class property name is used.
    *
@@ -1310,7 +1309,7 @@ export interface HostBinding { hostPropertyName?: string; }
  * @stable
  * @Annotation
  */
-export const HostBinding: HostBindingMetadataFactory =
+export const HostBinding: HostBindingDecorator =
     makePropDecorator([['hostPropertyName', undefined]]);
 
 
@@ -1319,7 +1318,7 @@ export const HostBinding: HostBindingMetadataFactory =
  *
  * @stable
  */
-export interface HostListenerMetadataFactory {
+export interface HostListenerDecorator {
   /**
    * Declares a host listener.
    *
@@ -1374,5 +1373,5 @@ export interface HostListener {
  * @stable
  * @Annotation
  */
-export const HostListener: HostListenerMetadataFactory =
+export const HostListener: HostListenerDecorator =
     makePropDecorator([['eventName', undefined], ['args', []]]);

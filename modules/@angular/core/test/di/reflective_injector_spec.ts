@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectMetadata, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, SelfMetadata, forwardRef} from '@angular/core';
+import {Inject, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self, forwardRef} from '@angular/core';
 import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -423,11 +423,8 @@ export function main() {
       describe('@Self()', () => {
         it('should return a dependency from self', () => {
           var inj = ReflectiveInjector.resolveAndCreate([
-            Engine, {
-              provide: Car,
-              useFactory: (e: Engine) => new Car(e),
-              deps: [[Engine, new SelfMetadata()]]
-            }
+            Engine,
+            {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}
           ]);
 
           expect(inj.get(Car)).toBeAnInstanceOf(Car);
@@ -435,11 +432,9 @@ export function main() {
 
         it('should throw when not requested provider on self', () => {
           var parent = ReflectiveInjector.resolveAndCreate([Engine]);
-          var child = parent.resolveAndCreateChild([{
-            provide: Car,
-            useFactory: (e: Engine) => new Car(e),
-            deps: [[Engine, new SelfMetadata()]]
-          }]);
+          var child = parent.resolveAndCreateChild([
+            {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}
+          ]);
 
           expect(() => child.get(Car))
               .toThrowError(`No provider for Engine! (${stringify(Car)} -> ${stringify(Engine)})`);
@@ -536,7 +531,7 @@ export function main() {
         var providers = ReflectiveInjector.resolve([{
           provide: 'token',
           useFactory: (e: any /** TODO #9100 */) => 'result',
-          deps: [[new InjectMetadata('dep')]]
+          deps: [[new Inject('dep')]]
         }]);
 
         var provider = providers[0];
@@ -546,9 +541,9 @@ export function main() {
 
       it('should allow declaring dependencies with flat arrays', () => {
         var resolved = ReflectiveInjector.resolve(
-            [{provide: 'token', useFactory: (e: any) => e, deps: [new InjectMetadata('dep')]}]);
+            [{provide: 'token', useFactory: (e: any) => e, deps: [new Inject('dep')]}]);
         var nestedResolved = ReflectiveInjector.resolve(
-            [{provide: 'token', useFactory: (e: any) => e, deps: [[new InjectMetadata('dep')]]}]);
+            [{provide: 'token', useFactory: (e: any) => e, deps: [[new Inject('dep')]]}]);
         expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
             .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
       });

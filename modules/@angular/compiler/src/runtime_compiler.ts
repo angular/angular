@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, OptionalMetadata, Provider, SchemaMetadata, SkipSelfMetadata, Type} from '@angular/core';
+import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, Optional, Provider, SchemaMetadata, SkipSelf, Type} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';

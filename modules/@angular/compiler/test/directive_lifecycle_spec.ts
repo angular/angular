@@ -11,7 +11,7 @@ import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe} from '@angular/core/testing/testing_internal';
 
 export function main() {
-  describe('Create DirectiveMetadata', () => {
+  describe('Create Directive', () => {
     describe('lifecycle', () => {
 
       describe('ngOnChanges', () => {

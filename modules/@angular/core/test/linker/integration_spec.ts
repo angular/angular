@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ComponentFactory, Host, Inject, Injectable, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf, SkipSelfMetadata} from '@angular/core';
+import {ComponentFactory, Host, Inject, Injectable, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -2045,9 +2045,7 @@ function createParentBus(peb: EventBus) {
 
 @Component({
   selector: 'parent-providing-event-bus',
-  providers: [
-    {provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]}
-  ],
+  providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`
 })
 class ParentProvidingEventBus {

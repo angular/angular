@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMetadata, ComponentMetadata, ContentChildMetadata, ContentChildrenMetadata, DirectiveMetadata, HostBindingMetadata, HostListenerMetadata, HostMetadata, InjectMetadata, InjectableMetadata, InputMetadata, NgModuleMetadata, OptionalMetadata, OutputMetadata, PipeMetadata, QueryMetadata, SelfMetadata, SkipSelfMetadata, ViewChildMetadata, ViewChildrenMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Query, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {ReflectorReader} from './private_import_core';
 
@@ -181,54 +181,47 @@ export class StaticReflector implements ReflectorReader {
         this.host.angularImportLocations();
     this.opaqueToken = this.host.findDeclaration(diOpaqueToken, 'OpaqueToken');
 
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'), Host);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Host'), HostMetadata);
+        this.host.findDeclaration(diDecorators, 'Injectable'), Injectable);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Self'), Self);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Injectable'), InjectableMetadata);
+        this.host.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Inject'), Inject);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Self'), SelfMetadata);
+        this.host.findDeclaration(diDecorators, 'Optional'), Optional);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'SkipSelf'), SkipSelfMetadata);
+        this.host.findDeclaration(coreDecorators, 'Attribute'), Attribute);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Inject'), InjectMetadata);
+        this.host.findDeclaration(coreDecorators, 'ContentChild'), ContentChild);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Optional'), OptionalMetadata);
+        this.host.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildren);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Attribute'), AttributeMetadata);
+        this.host.findDeclaration(coreDecorators, 'ViewChild'), ViewChild);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ContentChild'), ContentChildMetadata);
+        this.host.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildren);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Input'), Input);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildrenMetadata);
+        this.host.findDeclaration(coreDecorators, 'Output'), Output);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Pipe'), Pipe);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewChild'), ViewChildMetadata);
+        this.host.findDeclaration(coreDecorators, 'HostBinding'), HostBinding);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildrenMetadata);
+        this.host.findDeclaration(coreDecorators, 'HostListener'), HostListener);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Input'), InputMetadata);
+        this.host.findDeclaration(coreDecorators, 'Directive'), Directive);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Output'), OutputMetadata);
+        this.host.findDeclaration(coreDecorators, 'Component'), Component);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Pipe'), PipeMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'HostBinding'), HostBindingMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'HostListener'), HostListenerMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Directive'), DirectiveMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Component'), ComponentMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'NgModule'), NgModuleMetadata);
+        this.host.findDeclaration(coreDecorators, 'NgModule'), NgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'Host'), Host);
+    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'Self'), Self);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'HostMetadata'), HostMetadata);
+        this.host.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'SelfMetadata'), SelfMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'SkipSelfMetadata'), SkipSelfMetadata);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'OptionalMetadata'), OptionalMetadata);
+        this.host.findDeclaration(diMetadata, 'Optional'), Optional);
 
     this.registerFunction(this.host.findDeclaration(animationMetadata, 'trigger'), trigger);
     this.registerFunction(this.host.findDeclaration(animationMetadata, 'state'), state);
