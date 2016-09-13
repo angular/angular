@@ -122,7 +122,8 @@ export interface Attribute { attributeName?: string; }
  * @stable
  * @Annotation
  */
-export const Attribute: AttributeDecorator = makeParamDecorator([['attributeName', undefined]]);
+export const Attribute: AttributeDecorator =
+    makeParamDecorator('Attribute', [['attributeName', undefined]]);
 
 /**
  * Type of the Query metadata.
@@ -192,6 +193,7 @@ export type ContentChildren = Query;
  * @Annotation
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
+    'ContentChildren',
     [
       ['selector', undefined],
       {first: false, isViewQuery: false, descendants: false, read: undefined}
@@ -251,6 +253,7 @@ export type ContentChild = Query;
  * @Annotation
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
+    'ContentChild',
     [
       ['selector', undefined], {
         first: true,
@@ -362,6 +365,7 @@ export type ViewChildren = Query;
  * @Annotation
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
+    'ViewChildren',
     [
       ['selector', undefined], {
         first: false,
@@ -467,6 +471,7 @@ export type ViewChild = Query;
  * @Annotation
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
+    'ViewChild',
     [
       ['selector', undefined], {
         first: true,

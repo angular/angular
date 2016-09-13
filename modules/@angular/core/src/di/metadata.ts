@@ -74,7 +74,7 @@ export interface Inject { token: any; }
  * @stable
  * @Annotation
  */
-export const Inject: InjectDecorator = makeParamDecorator([['token', undefined]]);
+export const Inject: InjectDecorator = makeParamDecorator('Inject', [['token', undefined]]);
 
 
 /**
@@ -122,7 +122,7 @@ export interface Optional {}
  * @stable
  * @Annotation
  */
-export const Optional: OptionalDecorator = makeParamDecorator([]);
+export const Optional: OptionalDecorator = makeParamDecorator('Optional', []);
 
 /**
  * Type of the Injectable decorator / constructor function.
@@ -179,7 +179,7 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = makeParamDecorator([]);
+export const Injectable: InjectableDecorator = makeParamDecorator('Injectable', []);
 
 /**
  * Type of the Self decorator / constructor function.
@@ -232,7 +232,7 @@ export interface Self {}
  * @stable
  * @Annotation
  */
-export const Self: SelfDecorator = makeParamDecorator([]);
+export const Self: SelfDecorator = makeParamDecorator('Self', []);
 
 
 /**
@@ -284,7 +284,7 @@ export interface SkipSelf {}
  * @stable
  * @Annotation
  */
-export const SkipSelf: SkipSelfDecorator = makeParamDecorator([]);
+export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf', []);
 
 /**
  * Type of the Host decorator / constructor function.
@@ -362,4 +362,4 @@ export interface Host {}
  * @stable
  * @Annotation
  */
-export const Host: HostDecorator = makeParamDecorator([]);
+export const Host: HostDecorator = makeParamDecorator('Host', []);

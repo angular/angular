@@ -444,7 +444,7 @@ class MockReflectorHost implements StaticReflectorHost {
   angularImportLocations() {
     return {
       coreDecorators: 'angular2/src/core/metadata',
-      diDecorators: 'angular2/src/core/di/decorators',
+      diDecorators: 'angular2/src/core/di/metadata',
       diMetadata: 'angular2/src/core/di/metadata',
       diOpaqueToken: 'angular2/src/core/di/opaque_token',
       animationMetadata: 'angular2/src/core/animation/metadata',

@@ -11,7 +11,5 @@ export function getTypeOf(instance: any /** TODO #9100 */) {
 }
 
 export function instantiateType(type: Function, params: any[] = []) {
-  var instance = Object.create(type.prototype);
-  instance.constructor.apply(instance, params);
-  return instance;
+  return new (<any>type)(...params);
 }

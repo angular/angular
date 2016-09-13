@@ -19,9 +19,9 @@ class DecoratedChild extends DecoratedParent {}
 export function main() {
   var Reflect = global.Reflect;
 
-  var TerminalDecorator = makeDecorator({terminal: true});
-  var TestDecorator =
-      makeDecorator({marker: undefined}, Object, (fn: any) => fn.Terminal = TerminalDecorator);
+  var TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
+  var TestDecorator = makeDecorator(
+      'TestDecorator', {marker: undefined}, Object, (fn: any) => fn.Terminal = TerminalDecorator);
 
   describe('decorators', () => {
     it('should invoke as decorator', () => {

@@ -191,7 +191,7 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator = <NgModuleDecorator>makeDecorator({
+export const NgModule: NgModuleDecorator = <NgModuleDecorator>makeDecorator('NgModule', {
   providers: undefined,
   declarations: undefined,
   imports: undefined,

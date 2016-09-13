@@ -770,7 +770,7 @@ export interface Directive {
  * @stable
  * @Annotation
  */
-export const Directive: DirectiveDecorator = <DirectiveDecorator>makeDecorator({
+export const Directive: DirectiveDecorator = <DirectiveDecorator>makeDecorator('Directive', {
   selector: undefined,
   inputs: undefined,
   outputs: undefined,
@@ -1051,7 +1051,7 @@ export interface Component extends Directive {
  * @Annotation
  */
 export const Component: ComponentDecorator = <ComponentDecorator>makeDecorator(
-    {
+    'Component', {
       selector: undefined,
       inputs: undefined,
       outputs: undefined,
@@ -1110,7 +1110,7 @@ export interface Pipe {
  * @stable
  * @Annotation
  */
-export const Pipe: PipeDecorator = <PipeDecorator>makeDecorator({
+export const Pipe: PipeDecorator = <PipeDecorator>makeDecorator('Pipe', {
   name: undefined,
   pure: true,
 });
@@ -1184,7 +1184,8 @@ export interface Input {
  * @stable
  * @Annotation
  */
-export const Input: InputDecorator = makePropDecorator([['bindingPropertyName', undefined]]);
+export const Input: InputDecorator =
+    makePropDecorator('Input', [['bindingPropertyName', undefined]]);
 
 /**
  * Type of the Output decorator / constructor function.
@@ -1249,7 +1250,8 @@ export interface Output { bindingPropertyName?: string; }
  * @stable
  * @Annotation
  */
-export const Output: OutputDecorator = makePropDecorator([['bindingPropertyName', undefined]]);
+export const Output: OutputDecorator =
+    makePropDecorator('Output', [['bindingPropertyName', undefined]]);
 
 
 /**
@@ -1310,7 +1312,7 @@ export interface HostBinding { hostPropertyName?: string; }
  * @Annotation
  */
 export const HostBinding: HostBindingDecorator =
-    makePropDecorator([['hostPropertyName', undefined]]);
+    makePropDecorator('HostBinding', [['hostPropertyName', undefined]]);
 
 
 /**
@@ -1374,4 +1376,4 @@ export interface HostListener {
  * @Annotation
  */
 export const HostListener: HostListenerDecorator =
-    makePropDecorator([['eventName', undefined], ['args', []]]);
+    makePropDecorator('HostListener', [['eventName', undefined], ['args', []]]);

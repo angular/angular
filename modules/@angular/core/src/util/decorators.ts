@@ -252,19 +252,20 @@ export function Class(clsDef: ClassDefinition): Type<any> {
 var Reflect = global.Reflect;
 
 export function makeDecorator(
-    props: {[key: string]: any}, parentClass?: any,
+    name: string, props: {[key: string]: any}, parentClass?: any,
     chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
-  const annotationCls = makeMetadataClass([props], parentClass);
+  const metaCtor = makeMetadataCtor([props]);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
     if (!(Reflect && Reflect.getMetadata)) {
       throw 'reflect-metadata shim is required when using class decorators';
     }
 
-    const annotationInstance = new (<any>annotationCls)(objOrType);
-    if (this instanceof annotationCls) {
-      return annotationInstance;
+    if (this instanceof DecoratorFactory) {
+      metaCtor.call(this, objOrType);
+      return this;
     } else {
+      const annotationInstance = new (<any>DecoratorFactory)(objOrType);
       const chainAnnotation =
           isFunction(this) && this.annotations instanceof Array ? this.annotations : [];
       chainAnnotation.push(annotationInstance);
@@ -280,13 +281,15 @@ export function makeDecorator(
       return TypeDecorator;
     }
   }
-  DecoratorFactory.prototype = annotationCls.prototype;
-  (<any>DecoratorFactory).annotationCls = annotationCls;
+  if (parentClass) {
+    DecoratorFactory.prototype = Object.create(parentClass.prototype);
+  }
+  DecoratorFactory.prototype.toString = () => `@${name}`;
+  (<any>DecoratorFactory).annotationCls = DecoratorFactory;
   return DecoratorFactory;
 }
 
-function makeMetadataClass(
-    props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
+function makeMetadataCtor(props: ([string, any] | {[key: string]: any})[]): any {
   function ctor(...args: any[]) {
     props.forEach((prop, i) => {
       const argVal = args[i];
@@ -302,24 +305,18 @@ function makeMetadataClass(
       }
     });
   }
-
-  if (parentClass) {
-    ctor.prototype = Object.create(parentClass.prototype);
-  }
-
   return ctor;
 }
 
 export function makeParamDecorator(
-    props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
-  const annotationCls = makeMetadataClass(props, parentClass);
+    name: string, props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
+  const metaCtor = makeMetadataCtor(props);
   function ParamDecoratorFactory(...args: any[]): any {
-    let annotationInstance = Object.create(annotationCls.prototype);
-    annotationCls.apply(annotationInstance, args);
-
-    if (this instanceof annotationCls) {
-      return annotationInstance;
+    if (this instanceof ParamDecoratorFactory) {
+      metaCtor.apply(this, args);
+      return this;
     }
+    const annotationInstance = new (<any>ParamDecoratorFactory)(...args);
 
     (<any>ParamDecorator).annotation = annotationInstance;
     return ParamDecorator;
@@ -341,21 +338,23 @@ export function makeParamDecorator(
       return cls;
     }
   }
-  ParamDecoratorFactory.prototype = annotationCls.prototype;
-  (<any>ParamDecoratorFactory).annotationCls = annotationCls;
+  if (parentClass) {
+    ParamDecoratorFactory.prototype = Object.create(parentClass.prototype);
+  }
+  ParamDecoratorFactory.prototype.toString = () => `@${name}`;
+  (<any>ParamDecoratorFactory).annotationCls = ParamDecoratorFactory;
   return ParamDecoratorFactory;
 }
 
 export function makePropDecorator(
-    props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
-  const annotationCls = makeMetadataClass(props, parentClass);
+    name: string, props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
+  const metaCtor = makeMetadataCtor(props);
   function PropDecoratorFactory(...args: any[]): any {
-    var decoratorInstance = Object.create(annotationCls.prototype);
-    annotationCls.apply(decoratorInstance, args);
-
-    if (this instanceof annotationCls) {
-      return decoratorInstance;
+    if (this instanceof PropDecoratorFactory) {
+      metaCtor.apply(this, args);
+      return this;
     } else {
+      var decoratorInstance = new (<any>PropDecoratorFactory)(...args);
       return function PropDecorator(target: any, name: string) {
         const meta = Reflect.getOwnMetadata('propMetadata', target.constructor) || {};
         meta[name] = meta[name] || [];
@@ -364,7 +363,10 @@ export function makePropDecorator(
       };
     }
   }
-  PropDecoratorFactory.prototype = annotationCls.prototype;
-  (<any>PropDecoratorFactory).annotationCls = annotationCls;
+  if (parentClass) {
+    PropDecoratorFactory.prototype = Object.create(parentClass.prototype);
+  }
+  PropDecoratorFactory.prototype.toString = () => `@${name}`;
+  (<any>PropDecoratorFactory).annotationCls = PropDecoratorFactory;
   return PropDecoratorFactory;
 }
