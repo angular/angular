@@ -100,30 +100,4 @@ export class PathMappedReflectorHost extends ReflectorHost {
     throw new Error(
         `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
   }
-
-  getMetadataFor(filePath: string): ModuleMetadata {
-    for (const root of this.options.rootDirs || []) {
-      const rootedPath = path.join(root, filePath);
-      if (!this.compilerHost.fileExists(rootedPath)) {
-        // If the file doesn't exists then we cannot return metadata for the file.
-        // This will occur if the user refernced a declared module for which no file
-        // exists for the module (i.e. jQuery or angularjs).
-        continue;
-      }
-      if (DTS.test(rootedPath)) {
-        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
-        if (this.context.fileExists(metadataPath)) {
-          const metadata = this.readMetadata(metadataPath);
-          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
-        }
-      } else {
-        const sf = this.program.getSourceFile(rootedPath);
-        if (!sf) {
-          throw new Error(`Source file ${rootedPath} not present in program.`);
-        }
-        sf.fileName = this.compilerHost.getCanonicalFileName(sf.fileName);
-        return this.metadataCollector.getMetadata(sf);
-      }
-    }
-  }
 }

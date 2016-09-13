@@ -10,6 +10,7 @@ import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/te
 import * as ts from 'typescript';
 
 import {ReflectorHost} from '../src/reflector_host';
+import {AngularCompilerOptions} from '@angular/tsc-wrapped';
 
 import {Directory, Entry, MockCompilerHost, MockContext} from './mocks';
 
@@ -20,8 +21,10 @@ describe('reflector_host', () => {
   var reflectorHost: ReflectorHost;
 
   function createProgram(
-      files: Entry = {}, options: ts.CompilerOptions = {
+      files: Entry = {}, options: AngularCompilerOptions = {
         module: ts.ModuleKind.CommonJS,
+        genDir: '/tmp/project/src/gen/',
+        basePath: '/tmp/project/src',
       },
       roots: string[] = ['main.ts']) {
     context = new MockContext('/tmp/src', files);
@@ -32,12 +35,7 @@ describe('reflector_host', () => {
     if (errors && errors.length) {
       throw new Error('Expected no errors');
     }
-    reflectorHost = new ReflectorHost(
-        program, host, {
-          genDir: '/tmp/project/src/gen/',
-          basePath: '/tmp/project/src',
-        },
-        context);
+    reflectorHost = new ReflectorHost(program, host, options, context);
   }
 
   beforeEach(() => { createProgram(); });
@@ -166,23 +164,37 @@ describe('reflector_host', () => {
     expect(reflectorHost.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
   });
 
-  it('should be able to read a metadata file', () => {
-    createProgram({
+  describe('read a metadata file', () => {
+    const FILES = {
       'tmp': {
         'src': {
-          'node_modules': {
-            '@angular': {
-              'core.d.ts': `export declare class foo {}`,
-              'core.metadata.json':
-                  `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`
+          'path': {
+            'to': {
+              'some.d.ts': `export declare class foo {}`,
+              'some.metadata.json':
+                `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`
 
             }
           }
         }
       }
-    });
-    expect(reflectorHost.getMetadataFor('node_modules/@angular/core.d.ts'))
+    };
+
+    it('should read from basePath', () => {
+      createProgram(FILES);
+      expect(reflectorHost.getMetadataFor('path/to/some.d.ts'))
         .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}});
+    });
+
+    it('should read from a rootDir', () => {
+      createProgram(FILES, {rootDir: 'path', genDir: '', basePath: '/tmp/src'});
+      expect(reflectorHost.getMetadataFor('to/some.d.ts')).toBeDefined();
+    });
+
+    it('should read from rootDirs', () => {
+      createProgram(FILES, {rootDirs: ['path/to'], genDir: '', basePath: '/tmp/src'});
+      expect(reflectorHost.getMetadataFor('some.d.ts')).toBeDefined();
+    });
   });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
