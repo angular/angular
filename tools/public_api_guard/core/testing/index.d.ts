@@ -70,10 +70,10 @@ export declare class TestBed implements Injector {
     execute(tokens: any[], fn: Function): any;
     get(token: any, notFoundValue?: any): any;
     /** @experimental */ initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): void;
-    overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): void;
-    overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): void;
-    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): void;
-    overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): void;
+    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
     static compileComponents(): Promise<any>;
@@ -85,10 +85,10 @@ export declare class TestBed implements Injector {
     static createComponent<T>(component: Type<T>): ComponentFixture<T>;
     static get(token: any, notFoundValue?: any): any;
     /** @experimental */ static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed;
-    static overrideComponent(component: Type<any>, override: MetadataOverride<ComponentMetadataType>): typeof TestBed;
-    static overrideDirective(directive: Type<any>, override: MetadataOverride<DirectiveMetadataType>): typeof TestBed;
-    static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModuleMetadataType>): typeof TestBed;
-    static overridePipe(pipe: Type<any>, override: MetadataOverride<PipeMetadataType>): typeof TestBed;
+    static overrideComponent(component: Type<any>, override: MetadataOverride<Component>): typeof TestBed;
+    static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): typeof TestBed;
+    static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed;
+    static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;
 }

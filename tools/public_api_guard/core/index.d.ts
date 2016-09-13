@@ -159,21 +159,7 @@ export declare function asNativeElements(debugEls: DebugElement[]): any;
 export declare function assertPlatform(requiredToken: any): PlatformRef;
 
 /** @stable */
-export declare var Attribute: AttributeMetadataFactory;
-
-/** @stable */
-export declare class AttributeMetadata extends DependencyMetadata {
-    attributeName: string;
-    token: AttributeMetadata;
-    constructor(attributeName: string);
-    toString(): string;
-}
-
-/** @stable */
-export interface AttributeMetadataFactory {
-    (name: string): TypeDecorator;
-    new (name: string): AttributeMetadata;
-}
+export declare const Attribute: AttributeDecorator;
 
 /** @experimental */
 export declare const AUTO_STYLE: string;
@@ -247,11 +233,7 @@ export declare type CompilerOptions = {
 };
 
 /** @stable */
-export declare var Component: ComponentMetadataFactory;
-
-/** @stable */
-export interface ComponentDecorator extends TypeDecorator {
-}
+export declare const Component: ComponentDecorator;
 
 /** @stable */
 export declare class ComponentFactory<C> {
@@ -268,43 +250,6 @@ export declare abstract class ComponentFactoryResolver {
 }
 
 /** @stable */
-export declare class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
-    animations: AnimationEntryMetadata[];
-    changeDetection: ChangeDetectionStrategy;
-    encapsulation: ViewEncapsulation;
-    entryComponents: Array<Type<any> | any[]>;
-    interpolation: [string, string];
-    moduleId: string;
-    styleUrls: string[];
-    styles: string[];
-    template: string;
-    templateUrl: string;
-    viewProviders: Provider[];
-    constructor({selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders, changeDetection, queries, templateUrl, template, styleUrls, styles, animations, encapsulation, interpolation, entryComponents}?: ComponentMetadataType);
-}
-
-/** @stable */
-export interface ComponentMetadataFactory {
-    (obj: ComponentMetadataType): ComponentDecorator;
-    new (obj: ComponentMetadataType): ComponentMetadata;
-}
-
-/** @stable */
-export interface ComponentMetadataType extends DirectiveMetadataType {
-    animations?: AnimationEntryMetadata[];
-    changeDetection?: ChangeDetectionStrategy;
-    encapsulation?: ViewEncapsulation;
-    entryComponents?: Array<Type<any> | any[]>;
-    interpolation?: [string, string];
-    moduleId?: string;
-    styleUrls?: string[];
-    styles?: string[];
-    template?: string;
-    templateUrl?: string;
-    viewProviders?: any[];
-}
-
-/** @stable */
 export declare abstract class ComponentRef<C> {
     changeDetectorRef: ChangeDetectorRef;
     componentType: Type<any>;
@@ -317,47 +262,10 @@ export declare abstract class ComponentRef<C> {
 }
 
 /** @stable */
-export declare var ContentChild: ContentChildMetadataFactory;
+export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
-export declare class ContentChildMetadata extends QueryMetadata {
-    constructor(_selector: Type<any> | string, {read}?: {
-        read?: any;
-    });
-}
-
-/** @stable */
-export interface ContentChildMetadataFactory {
-    (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ContentChildMetadataFactory;
-}
-
-/** @stable */
-export declare var ContentChildren: ContentChildrenMetadataFactory;
-
-/** @stable */
-export declare class ContentChildrenMetadata extends QueryMetadata {
-    constructor(_selector: Type<any> | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    });
-}
-
-/** @stable */
-export interface ContentChildrenMetadataFactory {
-    (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): ContentChildrenMetadata;
-}
+export declare const ContentChildren: ContentChildrenDecorator;
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -435,48 +343,7 @@ export declare class DefaultIterableDiffer implements IterableDiffer {
 export declare function destroyPlatform(): void;
 
 /** @stable */
-export declare var Directive: DirectiveMetadataFactory;
-
-/** @stable */
-export interface DirectiveDecorator extends TypeDecorator {
-}
-
-/** @stable */
-export declare class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
-    exportAs: string;
-    host: {
-        [key: string]: string;
-    };
-    inputs: string[];
-    outputs: string[];
-    providers: Provider[];
-    queries: {
-        [key: string]: any;
-    };
-    selector: string;
-    constructor({selector, inputs, outputs, host, providers, exportAs, queries}?: DirectiveMetadataType);
-}
-
-/** @stable */
-export interface DirectiveMetadataFactory {
-    (obj: DirectiveMetadataType): DirectiveDecorator;
-    new (obj: DirectiveMetadataType): DirectiveMetadata;
-}
-
-/** @stable */
-export interface DirectiveMetadataType {
-    exportAs?: string;
-    host?: {
-        [key: string]: string;
-    };
-    inputs?: string[];
-    outputs?: string[];
-    providers?: any[];
-    queries?: {
-        [key: string]: any;
-    };
-    selector?: string;
-}
+export declare const Directive: DirectiveDecorator;
 
 /** @stable */
 export declare abstract class DoCheck {
@@ -555,78 +422,36 @@ export interface GetTestability {
 export declare function group(steps: AnimationMetadata[]): AnimationGroupMetadata;
 
 /** @stable */
-export declare var Host: HostMetadataFactory;
+export declare const Host: HostDecorator;
 
 /** @stable */
-export declare var HostBinding: HostBindingMetadataFactory;
+export declare const HostBinding: HostBindingDecorator;
 
 /** @stable */
-export declare class HostBindingMetadata {
-    hostPropertyName: string;
-    constructor(hostPropertyName?: string);
+export interface HostDecorator {
+    /** @stable */ (): any;
+    new (): Host;
 }
 
 /** @stable */
-export interface HostBindingMetadataFactory {
-    (hostPropertyName?: string): any;
-    new (hostPropertyName?: string): any;
+export declare const HostListener: HostListenerDecorator;
+
+/** @stable */
+export declare const Inject: InjectDecorator;
+
+/** @stable */
+export declare const Injectable: InjectableDecorator;
+
+/** @stable */
+export interface InjectableDecorator {
+    /** @stable */ (): any;
+    new (): Injectable;
 }
 
 /** @stable */
-export declare var HostListener: HostListenerMetadataFactory;
-
-/** @stable */
-export declare class HostListenerMetadata {
-    args: string[];
-    eventName: string;
-    constructor(eventName: string, args?: string[]);
-}
-
-/** @stable */
-export interface HostListenerMetadataFactory {
-    (eventName: string, args?: string[]): any;
-    new (eventName: string, args?: string[]): any;
-}
-
-/** @stable */
-export declare class HostMetadata {
-    toString(): string;
-}
-
-/** @stable */
-export interface HostMetadataFactory {
-    (): any;
-    new (): HostMetadata;
-}
-
-/** @stable */
-export declare var Inject: InjectMetadataFactory;
-
-/** @stable */
-export declare var Injectable: InjectableMetadataFactory;
-
-/** @stable */
-export declare class InjectableMetadata {
-    constructor();
-}
-
-/** @stable */
-export interface InjectableMetadataFactory {
-    (): any;
-    new (): InjectableMetadata;
-}
-
-/** @stable */
-export declare class InjectMetadata {
-    token: any;
-    constructor(token: any);
-    toString(): string;
-}
-
-/** @stable */
-export interface InjectMetadataFactory {
-    (token: any): any;
-    new (token: any): InjectMetadata;
+export interface InjectDecorator {
+    /** @stable */ (token: any): any;
+    new (token: any): Inject;
 }
 
 /** @stable */
@@ -637,20 +462,7 @@ export declare abstract class Injector {
 }
 
 /** @stable */
-export declare var Input: InputMetadataFactory;
-
-/** @stable */
-export declare class InputMetadata {
-    bindingPropertyName: string;
-    constructor(
-        bindingPropertyName?: string);
-}
-
-/** @stable */
-export interface InputMetadataFactory {
-    (bindingPropertyName?: string): any;
-    new (bindingPropertyName?: string): any;
-}
+export declare const Input: InputDecorator;
 
 /** @experimental */
 export declare function isDevMode(): boolean;
@@ -726,11 +538,7 @@ export interface ModuleWithProviders {
 }
 
 /** @stable */
-export declare var NgModule: NgModuleMetadataFactory;
-
-/** @stable */
-export interface NgModuleDecorator extends TypeDecorator {
-}
+export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
 export declare class NgModuleFactory<T> {
@@ -744,37 +552,6 @@ export declare class NgModuleFactory<T> {
 /** @stable */
 export declare abstract class NgModuleFactoryLoader {
     abstract load(path: string): Promise<NgModuleFactory<any>>;
-}
-
-/** @stable */
-export declare class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
-    bootstrap: Array<Type<any> | any[]>;
-    declarations: Array<Type<any> | any[]>;
-    entryComponents: Array<Type<any> | any[]>;
-    exports: Array<Type<any> | any[]>;
-    id: string;
-    imports: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers: Provider[];
-    schemas: Array<SchemaMetadata | any[]>;
-    constructor(options?: NgModuleMetadataType);
-}
-
-/** @stable */
-export interface NgModuleMetadataFactory {
-    (obj?: NgModuleMetadataType): NgModuleDecorator;
-    new (obj?: NgModuleMetadataType): NgModuleMetadata;
-}
-
-/** @stable */
-export interface NgModuleMetadataType {
-    bootstrap?: Array<Type<any> | any[]>;
-    declarations?: Array<Type<any> | any[]>;
-    entryComponents?: Array<Type<any> | any[]>;
-    exports?: Array<Type<any> | any[]>;
-    id?: string;
-    imports?: Array<Type<any> | ModuleWithProviders | any[]>;
-    providers?: Provider[];
-    schemas?: Array<SchemaMetadata | any[]>;
 }
 
 /** @stable */
@@ -831,58 +608,22 @@ export declare class OpaqueToken {
 }
 
 /** @stable */
-export declare var Optional: OptionalMetadataFactory;
+export declare const Optional: OptionalDecorator;
 
 /** @stable */
-export declare class OptionalMetadata {
-    toString(): string;
+export interface OptionalDecorator {
+    /** @stable */ (): any;
+    new (): Optional;
 }
 
 /** @stable */
-export interface OptionalMetadataFactory {
-    (): any;
-    new (): OptionalMetadata;
-}
-
-/** @stable */
-export declare var Output: OutputMetadataFactory;
-
-/** @stable */
-export declare class OutputMetadata {
-    bindingPropertyName: string;
-    constructor(bindingPropertyName?: string);
-}
-
-/** @stable */
-export interface OutputMetadataFactory {
-    (bindingPropertyName?: string): any;
-    new (bindingPropertyName?: string): any;
-}
+export declare const Output: OutputDecorator;
 
 /** @experimental */
 export declare const PACKAGE_ROOT_URL: any;
 
 /** @stable */
-export declare var Pipe: PipeMetadataFactory;
-
-/** @stable */
-export declare class PipeMetadata extends InjectableMetadata implements PipeMetadataType {
-    name: string;
-    pure: boolean;
-    constructor({name, pure}: PipeMetadataType);
-}
-
-/** @stable */
-export interface PipeMetadataFactory {
-    (obj: PipeMetadataType): any;
-    new (obj: PipeMetadataType): any;
-}
-
-/** @stable */
-export interface PipeMetadataType {
-    name: string;
-    pure?: boolean;
-}
+export declare const Pipe: PipeDecorator;
 
 /** @stable */
 export interface PipeTransform {
@@ -909,6 +650,10 @@ export declare abstract class PlatformRef {
 export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
 
 /** @stable */
+export declare abstract class Query {
+}
+
+/** @stable */
 export declare class QueryList<T> {
     changes: Observable<any>;
     dirty: boolean;
@@ -924,23 +669,6 @@ export declare class QueryList<T> {
     setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];
-    toString(): string;
-}
-
-/** @stable */
-export declare class QueryMetadata extends DependencyMetadata {
-    descendants: boolean;
-    first: boolean;
-    isVarBindingQuery: boolean;
-    isViewQuery: boolean;
-    read: any;
-    selector: any;
-    varBindings: string[];
-    constructor(_selector: Type<any> | string, {descendants, first, read}?: {
-        descendants?: boolean;
-        first?: boolean;
-        read?: any;
-    });
     toString(): string;
 }
 
@@ -1050,17 +778,12 @@ export declare enum SecurityContext {
 }
 
 /** @stable */
-export declare var Self: SelfMetadataFactory;
+export declare const Self: SelfDecorator;
 
 /** @stable */
-export declare class SelfMetadata {
-    toString(): string;
-}
-
-/** @stable */
-export interface SelfMetadataFactory {
-    (): any;
-    new (): SelfMetadata;
+export interface SelfDecorator {
+    /** @stable */ (): any;
+    new (): Self;
 }
 
 /** @experimental */
@@ -1083,17 +806,12 @@ export interface SimpleChanges {
 }
 
 /** @stable */
-export declare var SkipSelf: SkipSelfMetadataFactory;
+export declare const SkipSelf: SkipSelfDecorator;
 
 /** @stable */
-export declare class SkipSelfMetadata {
-    toString(): string;
-}
-
-/** @stable */
-export interface SkipSelfMetadataFactory {
-    (): any;
-    new (): SkipSelfMetadata;
+export interface SkipSelfDecorator {
+    /** @stable */ (): any;
+    new (): SkipSelf;
 }
 
 /** @experimental */
@@ -1186,45 +904,10 @@ export interface ValueProvider {
 }
 
 /** @stable */
-export declare var ViewChild: ViewChildMetadataFactory;
+export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
-export declare class ViewChildMetadata extends ViewQueryMetadata {
-    constructor(_selector: Type<any> | string, {read}?: {
-        read?: any;
-    });
-}
-
-/** @stable */
-export interface ViewChildMetadataFactory {
-    (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ViewChildMetadataFactory;
-}
-
-/** @stable */
-export declare var ViewChildren: ViewChildrenMetadataFactory;
-
-/** @stable */
-export declare class ViewChildrenMetadata extends ViewQueryMetadata {
-    constructor(_selector: Type<any> | string, {read}?: {
-        read?: any;
-    });
-    toString(): string;
-}
-
-/** @stable */
-export interface ViewChildrenMetadataFactory {
-    (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ViewChildrenMetadata;
-}
+export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
 export declare abstract class ViewContainerRef {
@@ -1248,16 +931,6 @@ export declare enum ViewEncapsulation {
     Emulated = 0,
     Native = 1,
     None = 2,
-}
-
-/** @stable */
-export declare class ViewQueryMetadata extends QueryMetadata {
-    isViewQuery: boolean;
-    constructor(_selector: Type<any> | string, {descendants, first, read}?: {
-        descendants?: boolean;
-        first?: boolean;
-        read?: any;
-    });
 }
 
 /** @stable */

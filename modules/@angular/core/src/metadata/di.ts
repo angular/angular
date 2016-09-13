@@ -137,6 +137,11 @@ export interface Query {
   selector: any;
 }
 
+/**
+ * Base class for query metadata
+ *
+ * @stable
+ */
 export abstract class Query {}
 
 /**
