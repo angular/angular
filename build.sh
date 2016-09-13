@@ -29,6 +29,7 @@ ln -s ../../../../node_modules/base64-js/lib/b64.js .
 ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
 ln -s ../../../../node_modules/rxjs .
 ln -s ../../../../node_modules/angular/angular.js .
+ln -s ../../../../node_modules/typescript/lib/typescript.js .
 cd -
 
 echo "====== Copying files needed for benchmarks ====="
