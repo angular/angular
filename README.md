@@ -7,7 +7,7 @@
 [![Downloads](http://img.shields.io/npm/dm/angular2.svg)](https://npmjs.org/package/angular2)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)  
-*Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][https://www.browserstack.com/].*
+*Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][browserstack].*
 
 Angular
 =========
@@ -29,7 +29,7 @@ Angular 2 is currently in **Release Candidate**.
 Want to file a bug, contribute some code, or improve documentation? Excellent! Read up on our
 guidelines for [contributing][contributing] and then check out one of our issues in the [hotlist: community-help](https://github.com/angular/angular/labels/hotlist%3A%20community-help).
 
-
+[browserstack]: https://www.browserstack.com/
 [contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [dart]: http://www.dartlang.org
 [dartium]: http://www.dartlang.org/tools/dartium
