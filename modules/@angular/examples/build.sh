@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e -o pipefail
 
 #
 # This script is used to compile and copy the contents for each of
