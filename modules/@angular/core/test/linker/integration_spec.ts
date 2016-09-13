@@ -2045,9 +2045,7 @@ function createParentBus(peb: EventBus) {
 
 @Component({
   selector: 'parent-providing-event-bus',
-  providers: [
-    {provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelfMetadata()]]}
-  ],
+  providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`
 })
 class ParentProvidingEventBus {
@@ -2147,3 +2145,5 @@ class DirectiveWithPropDecorators {
 class SomeCmp {
   value: any;
 }
+
+(<any>SomeCmp)['annotations'] = [new Component({selector: 'test'})];

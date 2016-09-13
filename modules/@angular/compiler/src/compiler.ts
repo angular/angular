@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, ClassProvider, Compiler, CompilerFactory, CompilerOptions, Component, ExistingProvider, FactoryProvider, Inject, Injectable, OptionalMetadata, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, TypeProvider, ValueProvider, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, ClassProvider, Compiler, CompilerFactory, CompilerOptions, Component, ExistingProvider, FactoryProvider, Inject, Injectable, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, TypeProvider, ValueProvider, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
@@ -66,8 +66,8 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
                     new i18n.I18NHtmlParser(parser, translations, format),
     deps: [
       HtmlParser,
-      [new OptionalMetadata(), new Inject(TRANSLATIONS)],
-      [new OptionalMetadata(), new Inject(TRANSLATIONS_FORMAT)],
+      [new Optional(), new Inject(TRANSLATIONS)],
+      [new Optional(), new Inject(TRANSLATIONS_FORMAT)],
     ]
   },
   TemplateParser,

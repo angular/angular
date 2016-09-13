@@ -8,6 +8,7 @@
 
 import {InjectableMetadata, Provider} from '../di';
 import {Type} from '../type';
+import {TypeDecorator} from '../util/decorators';
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -48,25 +49,30 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 };
 
 /**
- * Interface for creating {@link NgModuleMetadata}
- * @stable
- */
-export interface NgModuleMetadataType {
-  providers?: Provider[];
-  declarations?: Array<Type<any>|any[]>;
-  imports?: Array<Type<any>|ModuleWithProviders|any[]>;
-  exports?: Array<Type<any>|any[]>;
-  entryComponents?: Array<Type<any>|any[]>;
-  bootstrap?: Array<Type<any>|any[]>;
-  schemas?: Array<SchemaMetadata|any[]>;
-  id?: string;
-}
-
-/**
  * Declares an Angular Module.
  * @stable
  */
-export class NgModuleMetadata extends InjectableMetadata implements NgModuleMetadataType {
+// Note: we keep the constructor separate and make it return `TypeDecorator` to trick typescript
+// into
+// looking up the docs for the decorator from this function.
+export function NgModuleMetadata(options: NgModuleMetadata = {}): TypeDecorator {
+  // We cannot use destructuring of the constructor argument because `exports` is a
+  // protected symbol in CommonJS and closure tries to aggressively optimize it away.
+  InjectableMetadata.call(this);
+  this.providers = options.providers;
+  this.declarations = options.declarations;
+  this.imports = options.imports;
+  this.exports = options.exports;
+  this.entryComponents = options.entryComponents;
+  this.bootstrap = options.bootstrap;
+  this.schemas = options.schemas;
+  this.id = options.id;
+  return null;
+}
+NgModuleMetadata.prototype = Object.create(InjectableMetadata);
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface NgModuleMetadata extends InjectableMetadata {
   /**
    * Defines the set of injectable objects that are available in the injector
    * of this module.
@@ -96,9 +102,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  get providers(): Provider[] { return this._providers; }
-  private _providers: Provider[];
-
+  providers?: Provider[];
 
   /**
    * Specifies a list of directives/pipes that belong to this module.
@@ -113,7 +117,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  declarations: Array<Type<any>|any[]>;
+  declarations?: Array<Type<any>|any[]>;
 
   /**
    * Specifies a list of modules whose exported directives/pipes
@@ -130,7 +134,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  imports: Array<Type<any>|ModuleWithProviders|any[]>;
+  imports?: Array<Type<any>|ModuleWithProviders|any[]>;
 
   /**
    * Specifies a list of directives/pipes/module that can be used within the template
@@ -147,7 +151,7 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * }
    * ```
    */
-  exports: Array<Type<any>|any[]>;
+  exports?: Array<Type<any>|any[]>;
 
   /**
    * Defines the components that should be compiled as well when
@@ -155,14 +159,14 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
    * {@link ComponentFactoryResolver ComponentFactoryResolver}.
    */
-  entryComponents: Array<Type<any>|any[]>;
+  entryComponents?: Array<Type<any>|any[]>;
 
   /**
    * Defines the components that should be bootstrapped when
    * this module is bootstrapped. The components listed here
    * will automatically be added to `entryComponents`.
    */
-  bootstrap: Array<Type<any>|any[]>;
+  bootstrap?: Array<Type<any>|any[]>;
 
   /**
    * Elements and properties that are not angular Components nor Directives have to be declared in
@@ -176,26 +180,12 @@ export class NgModuleMetadata extends InjectableMetadata implements NgModuleMeta
    * @security When using one of `NO_ERRORS_SCHEMA` or `CUSTOM_ELEMENTS_SCHEMA` we're trusting that
    * allowed elements (and its properties) securely escape inputs.
    */
-  schemas: Array<SchemaMetadata|any[]>;
+  schemas?: Array<SchemaMetadata|any[]>;
 
   /**
    * An opaque ID for this module, e.g. a name or a path. Used to identify modules in
    * `getModuleFactory`. If left `undefined`, the `NgModule` will not be registered with
    * `getModuleFactory`.
    */
-  id: string;
-
-  constructor(options: NgModuleMetadataType = {}) {
-    // We cannot use destructuring of the constructor argument because `exports` is a
-    // protected symbol in CommonJS and closure tries to aggressively optimize it away.
-    super();
-    this._providers = options.providers;
-    this.declarations = options.declarations;
-    this.imports = options.imports;
-    this.exports = options.exports;
-    this.entryComponents = options.entryComponents;
-    this.bootstrap = options.bootstrap;
-    this.schemas = options.schemas;
-    this.id = options.id;
-  }
+  id?: string;
 }

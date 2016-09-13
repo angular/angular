@@ -7,7 +7,6 @@
  */
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {DependencyMetadata} from '../di/metadata';
 import {OpaqueToken} from '../di/opaque_token';
 import {StringWrapper, isString, stringify} from '../facade/lang';
 import {Type} from '../type';
@@ -64,158 +63,76 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new OpaqueToken('AnalyzeForEntryComp
  * A decorator can inject string literal `text` like so:
  *
  * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+ *
+ * ### Example as TypeScript Decorator
+ *
+ * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
+ *
+ * ### Example as ES5 DSL
+ *
+ * ```
+ * var MyComponent = ng
+ *   .Component({...})
+ *   .Class({
+ *     constructor: [new ng.Attribute('title'), function(title) {
+ *       ...
+ *     }]
+ *   })
+ * ```
+ *
+ * ### Example as ES5 annotation
+ *
+ * ```
+ * var MyComponent = function(title) {
+ *   ...
+ * };
+ *
+ * MyComponent.annotations = [
+ *   new ng.Component({...})
+ * ]
+ * MyComponent.parameters = [
+ *   [new ng.Attribute('title')]
+ * ]
+ * ```
+ *
  * @stable
  */
-export class AttributeMetadata extends DependencyMetadata {
-  constructor(public attributeName: string) { super(); }
-
-  get token(): AttributeMetadata {
-    // Normally one would default a token to a type of an injected value but here
-    // the type of a variable is "string" and we can't use primitive type as a return value
-    // so we use instance of Attribute instead. This doesn't matter much in practice as arguments
-    // with @Attribute annotation are injected by ElementInjector that doesn't take tokens into
-    // account.
-    return this;
-  }
-  toString(): string { return `@Attribute(${stringify(this.attributeName)})`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function AttributeMetadata(attributeName: string): any {
+  this.attributeName = attributeName;
+  return null;
 }
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface AttributeMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (attributeName: string): AttributeMetadata;
+}
+// Note: No documentation needed as the constructor is a separate function.
+export interface AttributeMetadata { attributeName: string; }
 
 /**
- * Declares an injectable parameter to be a live list of directives or variable
- * bindings from the content children of a directive.
+ * Internal class used for storing the data for the
+ * query annotations.
  *
- * ### Example ([live demo](http://plnkr.co/edit/lY9m8HLy7z06vDoUaSN2?p=preview))
- *
- * Assume that `<tabs>` component would like to get a list its children `<pane>`
- * components as shown in this example:
- *
- * ```html
- * <tabs>
- *   <pane title="Overview">...</pane>
- *   <pane *ngFor="let o of objects" [title]="o.title">{{o.text}}</pane>
- * </tabs>
- * ```
- *
- * The preferred solution is to query for `Pane` directives using this decorator.
- *
- * ```javascript
- * @Component({
- *   selector: 'pane',
- *   inputs: ['title']
- * })
- * class Pane {
- *   title:string;
- * }
- *
- * @Component({
- *  selector: 'tabs',
- *  template: `
- *    <ul>
- *      <li *ngFor="let pane of panes">{{pane.title}}</li>
- *    </ul>
- *    <ng-content></ng-content>
- *  `
- * })
- * class Tabs {
- *   @ContentChildren(Pane) panes: QueryList<Pane>;
- * }
- * ```
- *
- * A query can look for variable bindings by passing in a string with desired binding symbol.
- *
- * ### Example ([live demo](http://plnkr.co/edit/sT2j25cH1dURAyBRCKx1?p=preview))
- * ```html
- * <seeker>
- *   <div #findme>...</div>
- * </seeker>
- *
- * @Component({ selector: 'seeker' })
- * class Seeker {
- *   @ContentChildren('findme') elList;
- * }
- * ```
- *
- * In this case the object that is injected depend on the type of the variable
- * binding. It can be an ElementRef, a directive or a component.
- *
- * Passing in a comma separated list of variable bindings will query for all of them.
- *
- * ```html
- * <seeker>
- *   <div #find-me>...</div>
- *   <div #find-me-too>...</div>
- * </seeker>
- *
- *  @Component({
- *   selector: 'seeker'
- * })
- * class Seeker {
- *   @ContentChildren('findMe, findMeToo') elList: QueryList<ElementRef>;
- * }
- * ```
- *
- * Configure whether query looks for direct children or all descendants
- * of the querying element, by using the `descendants` parameter.
- * It is set to `false` by default.
- *
- * ### Example ([live demo](http://plnkr.co/edit/wtGeB977bv7qvA5FTYl9?p=preview))
- * ```html
- * <container #first>
- *   <item>a</item>
- *   <item>b</item>
- *   <container #second>
- *     <item>c</item>
- *   </container>
- * </container>
- * ```
- *
- * When querying for items, the first container will see only `a` and `b` by default,
- * but with `ContentChildren(TextDirective, {descendants: true})` it will see `c` too.
- *
- * The queried directives are kept in a depth-first pre-order with respect to their
- * positions in the DOM.
- *
- * ContentChildren does not look deep into any subcomponent views.
- *
- * ContentChildren is updated as part of the change-detection cycle. Since change detection
- * happens after construction of a directive, QueryList will always be empty when observed in the
- * constructor.
- *
- * The injected object is an unmodifiable live list.
- * See {@link QueryList} for more details.
  * @stable
  */
-export class QueryMetadata extends DependencyMetadata {
-  /**
-   * whether we want to query only direct children (false) or all
-   * children (true).
-   */
+export class QueryMetadata {
+  private _selector: Type<any>|string;
   descendants: boolean;
-  first: boolean;
-  /**
-   * The DI token to read from an element that matches the selector.
-   */
   read: any;
 
   constructor(
-      private _selector: Type<any>|string,
-      {descendants = false, first = false,
-       read = null}: {descendants?: boolean, first?: boolean, read?: any} = {}) {
-    super();
+      selector: Type<any>|string, public isViewQuery: boolean, public first: boolean,
+      {descendants = false, read = null}: {descendants?: boolean, read?: any} = {}) {
+    this._selector = selector;
     this.descendants = descendants;
-    this.first = first;
     this.read = read;
   }
 
-  /**
-   * always `false` to differentiate it with {@link ViewQueryMetadata}.
-   */
-  get isViewQuery(): boolean { return false; }
-
-  /**
-   * what this is querying for.
-   */
-  get selector() { return resolveForwardRef(this._selector); }
+  get selector(): Type<any>|any { return resolveForwardRef(this._selector); }
 
   /**
    * whether this is querying for a variable binding or a directive.
@@ -226,9 +143,37 @@ export class QueryMetadata extends DependencyMetadata {
    * returns a list of variable bindings this is querying for.
    * Only applicable if this is a variable bindings query.
    */
-  get varBindings(): string[] { return StringWrapper.split(this.selector, /\s*,\s*/g); }
+  get varBindings(): string[] { return StringWrapper.split(<string>this.selector, /\s*,\s*/g); }
+}
 
-  toString(): string { return `@Query(${stringify(this.selector)})`; }
+export interface QueryOptions {
+  /**
+   * The DI token to read from an element that matches the selector.
+   */
+  read?: any;
+}
+
+export interface ContentQueryOptions extends QueryOptions {
+  /**
+   * whether we want to query only direct children (false) or all
+   * children (true).
+   */
+  descendants?: boolean;
+}
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface QueryMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (token: any, options?: QueryOptions): QueryMetadata;
+}
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface ContentQueryMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (token: any, options?: ContentQueryOptions): QueryMetadata;
 }
 
 // TODO: add an example after ContentChildren and ViewChildren are in master
@@ -253,13 +198,15 @@ export class QueryMetadata extends DependencyMetadata {
  * ```
  * @stable
  */
-export class ContentChildrenMetadata extends QueryMetadata {
-  constructor(
-      _selector: Type<any>|string,
-      {descendants = false, read = null}: {descendants?: boolean, read?: any} = {}) {
-    super(_selector, {descendants: descendants, read: read});
-  }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function ContentChildrenMetadata(token: any, options: ContentQueryOptions = {}): any {
+  QueryMetadata.call(this, token, false, false, options);
 }
+ContentChildrenMetadata.prototype = Object.create(QueryMetadata.prototype);
+
+// Note: No documentation needed as the constructor is a separate function.
+export type ContentChildrenMetadata = QueryMetadata;
 
 // TODO: add an example after ContentChild and ViewChild are in master
 /**
@@ -283,57 +230,15 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * ```
  * @stable
  */
-export class ContentChildMetadata extends QueryMetadata {
-  constructor(_selector: Type<any>|string, {read = null}: {read?: any} = {}) {
-    super(_selector, {descendants: true, first: true, read: read});
-  }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function ContentChildMetadata(token: any, options: ContentQueryOptions = {}): any {
+  QueryMetadata.call(this, token, false, true, options);
 }
+ContentChildMetadata.prototype = Object.create(QueryMetadata.prototype);
 
-/**
- * Similar to {@link ContentChildMetadata}, but querying the component view, instead
- * of the content children.
- *
- * ### Example ([live demo](http://plnkr.co/edit/eNsFHDf7YjyM6IzKxM1j?p=preview))
- *
- * ```javascript
- * @Component({
- *   ...,
- *   template: `
- *     <item> a </item>
- *     <item> b </item>
- *     <item> c </item>
- *   `
- * })
- * class MyComponent {
- *   shown: boolean;
- *
- *   constructor(private @ViewChildren(Item) items:QueryList<Item>) {
- *     items.changes.subscribe(() => console.log(items.length));
- *   }
- * }
- * ```
- *
- * As `shown` is flipped between true and false, items will contain zero of one
- * items.
- *
- * Specifies that a {@link QueryList} should be injected.
- *
- * The injected object is an iterable and observable live list.
- * See {@link QueryList} for more details.
- * @stable
- */
-export class ViewQueryMetadata extends QueryMetadata {
-  constructor(
-      _selector: Type<any>|string, {descendants = false, first = false, read = null}:
-                                       {descendants?: boolean, first?: boolean, read?: any} = {}) {
-    super(_selector, {descendants: descendants, first: first, read: read});
-  }
-
-  /**
-   * always `true` to differentiate it with {@link QueryMetadata}.
-   */
-  get isViewQuery() { return true; }
-}
+// Note: No documentation needed as the constructor is a separate function.
+export type ContentChildMetadata = QueryMetadata;
 
 /**
  * Declares a list of child element references.
@@ -413,12 +318,15 @@ export class ViewQueryMetadata extends QueryMetadata {
  * ```
  * @stable
  */
-export class ViewChildrenMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type<any>|string, {read = null}: {read?: any} = {}) {
-    super(_selector, {descendants: true, read: read});
-  }
-  toString(): string { return `@ViewChildren(${stringify(this.selector)})`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function ViewChildrenMetadata(token: any, options: QueryOptions = {}): any {
+  QueryMetadata.call(this, token, true, false, {descendants: true, read: options.read});
 }
+ViewChildrenMetadata.prototype = Object.create(QueryMetadata.prototype);
+
+// Note: No documentation needed as the constructor is a separate function.
+export type ViewChildrenMetadata = QueryMetadata;
 
 /**
  *
@@ -491,8 +399,12 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * ```
  * @stable
  */
-export class ViewChildMetadata extends ViewQueryMetadata {
-  constructor(_selector: Type<any>|string, {read = null}: {read?: any} = {}) {
-    super(_selector, {descendants: true, first: true, read: read});
-  }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function ViewChildMetadata(token: any, options: QueryOptions = {}): any {
+  QueryMetadata.call(this, token, true, true, {descendants: true, read: options.read});
 }
+ViewChildMetadata.prototype = Object.create(QueryMetadata.prototype);
+
+// Note: No documentation needed as the constructor is a separate function.
+export type ViewChildMetadata = QueryMetadata;

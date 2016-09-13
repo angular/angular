@@ -6,104 +6,61 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {makeDecorator, makeParamDecorator} from '../util/decorators';
+import {ClassMetadataCtor, EmptyParamMetadataCtor, makeDecorator, makeParamDecorator} from '../util/decorators';
 
-import {HostMetadata, InjectMetadata, InjectableMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
+import {HostMetadata, InjectMetadata, InjectMetadataCtor, InjectableMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
 
 
-/**
- * Factory for creating {@link InjectMetadata}.
- * @stable
- */
-export interface InjectMetadataFactory {
-  (token: any): any;
-  new (token: any): InjectMetadata;
-}
 
 /**
- * Factory for creating {@link OptionalMetadata}.
- * @stable
- */
-export interface OptionalMetadataFactory {
-  (): any;
-  new (): OptionalMetadata;
-}
-
-/**
- * Factory for creating {@link InjectableMetadata}.
- * @stable
- */
-export interface InjectableMetadataFactory {
-  (): any;
-  new (): InjectableMetadata;
-}
-
-/**
- * Factory for creating {@link SelfMetadata}.
- * @stable
- */
-export interface SelfMetadataFactory {
-  (): any;
-  new (): SelfMetadata;
-}
-
-/**
- * Factory for creating {@link HostMetadata}.
- * @stable
- */
-export interface HostMetadataFactory {
-  (): any;
-  new (): HostMetadata;
-}
-
-/**
- * Factory for creating {@link SkipSelfMetadata}.
- * @stable
- */
-export interface SkipSelfMetadataFactory {
-  (): any;
-  new (): SkipSelfMetadata;
-}
-
-/**
- * Factory for creating {@link InjectMetadata}.
+ * A decorator and constructor for {@link InjectMetadata}.
+ *
  * @stable
  * @Annotation
  */
-export var Inject: InjectMetadataFactory = makeParamDecorator(InjectMetadata);
+export const Inject: typeof InjectMetadata&InjectMetadataCtor =
+    <any>makeParamDecorator(InjectMetadata);
 
 /**
- * Factory for creating {@link OptionalMetadata}.
+ * A decorator and constructor for {@link OptionalMetadata}.
+ *
  * @stable
  * @Annotation
  */
-export var Optional: OptionalMetadataFactory = makeParamDecorator(OptionalMetadata);
+export const Optional: typeof OptionalMetadata&EmptyParamMetadataCtor<OptionalMetadata> =
+    <any>makeParamDecorator(OptionalMetadata);
 
 /**
- * Factory for creating {@link InjectableMetadata}.
+ * A decorator and constructor for {@link InjectableMetadata}.
  * @stable
  * @Annotation
  */
-export var Injectable: InjectableMetadataFactory =
-    <InjectableMetadataFactory>makeDecorator(InjectableMetadata);
+export const Injectable: typeof InjectableMetadata&ClassMetadataCtor<InjectableMetadata> =
+    <any>makeDecorator(InjectableMetadata);
 
 /**
- * Factory for creating {@link SelfMetadata}.
+ * A decorator and constructor for {@link SelfMetadata}.
+ *
  * @stable
  * @Annotation
  */
-export var Self: SelfMetadataFactory = makeParamDecorator(SelfMetadata);
+export const Self: typeof SelfMetadata&EmptyParamMetadataCtor<SelfMetadata> =
+    <any>makeParamDecorator(SelfMetadata);
 
 /**
- * Factory for creating {@link HostMetadata}.
+ * A decorator and constructor for {@link HostMetadata}.
+ *
  * @stable
  * @Annotation
  */
-export var Host: HostMetadataFactory = makeParamDecorator(HostMetadata);
+export const Host: typeof HostMetadata&EmptyParamMetadataCtor<HostMetadata> =
+    <any>makeParamDecorator(HostMetadata);
 
 /**
- * Factory for creating {@link SkipSelfMetadata}.
+ * A decorator and constructor for {@link SkipSelfMetadata}.
+ *
  * @stable
  * @Annotation
  */
-export var SkipSelf: SkipSelfMetadataFactory = makeParamDecorator(SkipSelfMetadata);
+export const SkipSelf: typeof SkipSelfMetadata&EmptyParamMetadataCtor<SkipSelfMetadata> =
+    <any>makeParamDecorator(SkipSelfMetadata);

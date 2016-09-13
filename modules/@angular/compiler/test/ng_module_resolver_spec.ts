@@ -7,7 +7,7 @@
  */
 
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
-import {NgModule, NgModuleMetadata} from '@angular/core/src/metadata';
+import {NgModule} from '@angular/core/src/metadata';
 import {stringify} from '../src/facade/lang';
 
 class SomeClass1 {}
@@ -36,7 +36,7 @@ export function main() {
 
     it('should read out the metadata from the class', () => {
       var moduleMetadata = resolver.resolve(SomeModule);
-      expect(moduleMetadata).toEqual(new NgModuleMetadata({
+      expect(moduleMetadata).toEqual(new NgModule({
         declarations: [SomeClass1],
         imports: [SomeClass2],
         exports: [SomeClass3],

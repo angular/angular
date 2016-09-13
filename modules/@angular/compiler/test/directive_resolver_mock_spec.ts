@@ -34,8 +34,7 @@ export function main() {
          });
 
       it('should allow overriding the @Directive', () => {
-        dirResolver.setDirective(
-            SomeComponent, new ComponentMetadata({selector: 'someOtherSelector'}));
+        dirResolver.setDirective(SomeComponent, new Component({selector: 'someOtherSelector'}));
         var metadata = dirResolver.resolve(SomeComponent);
         expect(metadata.selector).toEqual('someOtherSelector');
       });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, ViewQueryMetadata, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, AttributeMetadata, ChangeDetectionStrategy, ComponentMetadata, HostMetadata, InjectMetadata, Injectable, ModuleWithProviders, OptionalMetadata, Provider, QueryMetadata, SchemaMetadata, SelfMetadata, SkipSelfMetadata, Type, resolveForwardRef} from '@angular/core';
 
 import {StringMapWrapper} from '../src/facade/collection';
 
@@ -143,9 +143,9 @@ export class CompileMetadataResolver {
           interpolation: cmpMeta.interpolation
         });
         changeDetectionStrategy = cmpMeta.changeDetection;
-        if (isPresent(dirMeta.viewProviders)) {
+        if (isPresent(cmpMeta.viewProviders)) {
           viewProviders = this.getProvidersMetadata(
-              dirMeta.viewProviders, entryComponentMetadata,
+              cmpMeta.viewProviders, entryComponentMetadata,
               `viewProviders for "${stringify(directiveType)}"`);
         }
         moduleUrl = componentModuleUrl(this._reflector, directiveType, cmpMeta);
@@ -484,7 +484,7 @@ export class CompileMetadataResolver {
       let isSkipSelf = false;
       let isOptional = false;
       let query: QueryMetadata = null;
-      let viewQuery: ViewQueryMetadata = null;
+      let viewQuery: QueryMetadata = null;
       var token: any = null;
       if (isArray(param)) {
         (<any[]>param).forEach((paramEntry) => {

@@ -7,6 +7,8 @@
  */
 
 import {stringify} from '../facade/lang';
+import {EmptyParamMetadata, TypeDecorator} from '../util/decorators';
+
 
 /**
  * A parameter metadata that specifies a dependency.
@@ -49,10 +51,23 @@ import {stringify} from '../facade/lang';
  * ```
  * @stable
  */
-export class InjectMetadata {
-  constructor(public token: any) {}
-  toString(): string { return `@Inject(${stringify(this.token)})`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function InjectMetadata(token: any): any {
+  this.token = token;
+  return null;
 }
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface InjectMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (token: any): InjectMetadata;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface InjectMetadata { token: any; }
 
 /**
  * A parameter metadata that marks a dependency as optional. {@link Injector} provides `null` if
@@ -76,18 +91,13 @@ export class InjectMetadata {
  * ```
  * @stable
  */
-export class OptionalMetadata {
-  toString(): string { return `@Optional()`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function OptionalMetadata(): any {
+  return null;
 }
-
-/**
- * `DependencyMetadata` is used by the framework to extend DI.
- * This is internal to Angular and should not be used directly.
- * @stable
- */
-export class DependencyMetadata {
-  get token(): any { return null; }
-}
+// Note: No documentation needed as the constructor is a separate function.
+export type OptionalMetadata = EmptyParamMetadata;
 
 /**
  * A marker metadata that marks a class as available to {@link Injector} for creation.
@@ -121,9 +131,15 @@ export class DependencyMetadata {
  * ```
  * @stable
  */
-export class InjectableMetadata {
-  constructor() {}
+// Note: we keep the constructor separate and make it return `TypeDecorator` to trick typescript
+// into
+// looking up the docs for the decorator from this function.
+export function InjectableMetadata(): TypeDecorator {
+  return null;
 }
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface InjectableMetadata {}
 
 /**
  * Specifies that an {@link Injector} should retrieve a dependency only from itself.
@@ -153,9 +169,13 @@ export class InjectableMetadata {
  * ```
  * @stable
  */
-export class SelfMetadata {
-  toString(): string { return `@Self()`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function SelfMetadata(): any {
+  return null;
 }
+// Note: No documentation needed as the constructor is a separate function.
+export type SelfMetadata = EmptyParamMetadata;
 
 /**
  * Specifies that the dependency resolution should start from the parent injector.
@@ -183,9 +203,13 @@ export class SelfMetadata {
  * ```
  * @stable
  */
-export class SkipSelfMetadata {
-  toString(): string { return `@SkipSelf()`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function SkipSelfMetadata(): any {
+  return null;
 }
+// Note: No documentation needed as the constructor is a separate function.
+export type SkipSelfMetadata = EmptyParamMetadata;
 
 /**
  * Specifies that an injector should retrieve a dependency from any injector until reaching the
@@ -240,6 +264,10 @@ export class SkipSelfMetadata {
  *```
  * @stable
  */
-export class HostMetadata {
-  toString(): string { return `@Host()`; }
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function HostMetadata(): any {
+  return null;
 }
+// Note: No documentation needed as the constructor is a separate function.
+export type HostMetadata = EmptyParamMetadata;

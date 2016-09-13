@@ -11,21 +11,10 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {InjectableMetadata, Provider} from '../di';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
+import {TypeDecorator} from '../util/decorators';
+
 import {ViewEncapsulation} from './view';
 
-/**
- * Interface for creating {@link DirectiveMetadata}
- * @stable
- */
-export interface DirectiveMetadataType {
-  selector?: string;
-  inputs?: string[];
-  outputs?: string[];
-  host?: {[key: string]: string};
-  providers?: any[];
-  exportAs?: string;
-  queries?: {[key: string]: any};
-}
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -406,9 +395,56 @@ export interface DirectiveMetadataType {
  * Note also that although the `<li></li>` template still exists inside the `<template></template>`,
  * the instantiated
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
+ *
+ * ### Example as TypeScript Decorator
+ *
+ * {@example core/ts/metadata/metadata.ts region='directive'}
+ *
+ * ### Example as ES5 DSL
+ *
+ * ```
+ * var MyDirective = ng
+ *   .Directive({...})
+ *   .Class({
+ *     constructor: function() {
+ *       ...
+ *     }
+ *   })
+ * ```
+ *
+ * ### Example as ES5 annotation
+ *
+ * ```
+ * var MyDirective = function() {
+ *   ...
+ * };
+ *
+ * MyDirective.annotations = [
+ *   new ng.Directive({...})
+ * ]
+ * ```
+ *
  * @stable
  */
-export class DirectiveMetadata extends InjectableMetadata implements DirectiveMetadataType {
+// Note: we keep the constructor separate and make it return `TypeDecorator` to trick typescript
+// into
+// looking up the docs for the decorator from this function.
+export function DirectiveMetadata({selector, inputs, outputs, host, providers, exportAs,
+                                   queries}: DirectiveMetadata): TypeDecorator {
+  InjectableMetadata.call(this);
+  this.selector = selector;
+  this.inputs = inputs;
+  this.outputs = outputs;
+  this.host = host;
+  this.exportAs = exportAs;
+  this.queries = queries;
+  this.providers = providers;
+  return null;
+}
+DirectiveMetadata.prototype = Object.create(InjectableMetadata.prototype);
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface DirectiveMetadata extends InjectableMetadata {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
@@ -441,7 +477,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * The directive would only be instantiated on the `<input type="text">` element.
    *
    */
-  selector: string;
+  selector?: string;
 
   /**
    * Enumerates the set of data-bound input properties for a directive
@@ -487,8 +523,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * ```
    *
    */
-  get inputs(): string[] { return this._inputs; }
-  private _inputs: string[];
+  inputs?: string[];
 
   /**
    * Enumerates the set of event-bound output properties.
@@ -533,8 +568,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * ```
    *
    */
-  get outputs(): string[] { return this._outputs; }
-  private _outputs: string[];
+  outputs?: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
@@ -636,7 +670,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * }
    * ```
    */
-  host: {[key: string]: string};
+  host?: {[key: string]: string};
 
   /**
    * Defines the set of injectable objects that are visible to a Directive and its light DOM
@@ -668,8 +702,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * }
    * ```
    */
-  get providers(): Provider[] { return this._providers; }
-  private _providers: Provider[];
+  providers?: Provider[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -693,7 +726,7 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    *
    * ```
    */
-  exportAs: string;
+  exportAs?: string;
 
   // TODO: add an example after ContentChildren and ViewChildren are in master
   /**
@@ -727,38 +760,9 @@ export class DirectiveMetadata extends InjectableMetadata implements DirectiveMe
    * }
    * ```
    */
-  queries: {[key: string]: any};
-
-  constructor(
-      {selector, inputs, outputs, host, providers, exportAs, queries}: DirectiveMetadataType = {}) {
-    super();
-    this.selector = selector;
-    this._inputs = inputs;
-    this._outputs = outputs;
-    this.host = host;
-    this.exportAs = exportAs;
-    this.queries = queries;
-    this._providers = providers;
-  }
+  queries?: {[key: string]: any};
 }
 
-/**
- * Interface for creating {@link ComponentMetadataType}
- * @stable
- */
-export interface ComponentMetadataType extends DirectiveMetadataType {
-  changeDetection?: ChangeDetectionStrategy;
-  viewProviders?: any[];
-  moduleId?: string;
-  templateUrl?: string;
-  template?: string;
-  styleUrls?: string[];
-  styles?: string[];
-  animations?: AnimationEntryMetadata[];
-  encapsulation?: ViewEncapsulation;
-  interpolation?: [string, string];
-  entryComponents?: Array<Type<any>|any[]>;
-}
 
 /**
  * Declare reusable UI building blocks for an application.
@@ -784,9 +788,73 @@ export interface ComponentMetadataType extends DirectiveMetadataType {
  * ### Example
  *
  * {@example core/ts/metadata/metadata.ts region='component'}
+ *
+ * ### Example as TypeScript Decorator
+ *
+ * {@example core/ts/metadata/metadata.ts region='component'}
+ *
+ * ### Example as ES5 DSL
+ *
+ * ```
+ * var MyComponent = ng
+ *   .Component({...})
+ *   .Class({
+ *     constructor: function() {
+ *       ...
+ *     }
+ *   })
+ * ```
+ *
+ * ### Example as ES5 annotation
+ *
+ * ```
+ * var MyComponent = function() {
+ *   ...
+ * };
+ *
+ * MyComponent.annotations = [
+ *   new ng.Component({...})
+ * ]
+ * ```
+ *
  * @stable
  */
-export class ComponentMetadata extends DirectiveMetadata implements ComponentMetadataType {
+// Note: we keep the constructor separate and make it return `TypeDecorator` to trick typescript
+// into
+// looking up the docs for the decorator from this function.
+export function ComponentMetadata(
+    {selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders,
+     changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template, styleUrls,
+     styles, animations, encapsulation, interpolation,
+     entryComponents}: ComponentMetadata = {}): TypeDecorator {
+  DirectiveMetadata.call(this, {
+    selector: selector,
+    inputs: inputs,
+    outputs: outputs,
+    host: host,
+    exportAs: exportAs,
+    providers: providers,
+    queries: queries
+  });
+
+  this.changeDetection = changeDetection;
+  this.viewProviders = viewProviders;
+  this.templateUrl = templateUrl;
+  this.template = template;
+  this.styleUrls = styleUrls;
+  this.styles = styles;
+  this.encapsulation = encapsulation;
+  this.moduleId = moduleId;
+  this.animations = animations;
+  this.interpolation = interpolation;
+  this.entryComponents = entryComponents;
+  return null;
+}
+ComponentMetadata.prototype = Object.create(DirectiveMetadata.prototype);
+
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface ComponentMetadata extends DirectiveMetadata {
   /**
    * Defines the used change detection strategy.
    *
@@ -796,7 +864,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * The `changeDetection` property defines, whether the change detection will be checked every time
    * or only when the component tells it to do so.
    */
-  changeDetection: ChangeDetectionStrategy;
+  changeDetection?: ChangeDetectionStrategy;
 
   /**
    * Defines the set of injectable objects that are visible to its view DOM children.
@@ -835,8 +903,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    *
    * ```
    */
-  get viewProviders(): Provider[] { return this._viewProviders; }
-  private _viewProviders: Provider[];
+  viewProviders?: Provider[];
 
   /**
    * The module id of the module that contains the component.
@@ -857,7 +924,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    *
    * ```
    */
-  moduleId: string;
+  moduleId?: string;
 
   /**
    * Specifies a template URL for an Angular component.
@@ -866,26 +933,26 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    *
    * <!-- TODO: what's the url relative to? -->
    */
-  templateUrl: string;
+  templateUrl?: string;
 
   /**
    * Specifies an inline template for an Angular component.
    *
    * NOTE: Only one of `templateUrl` or `template` can be defined per View.
    */
-  template: string;
+  template?: string;
 
   /**
    * Specifies stylesheet URLs for an Angular component.
    *
    * <!-- TODO: what's the url relative to? -->
    */
-  styleUrls: string[];
+  styleUrls?: string[];
 
   /**
    * Specifies inline stylesheets for an Angular component.
    */
-  styles: string[];
+  styles?: string[];
 
   /**
    * Animations are defined on components via an animation-like DSL. This DSL approach to describing
@@ -958,7 +1025,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * - {@link animate animate()}
    * - {@link keyframes keyframes()}
    */
-  animations: AnimationEntryMetadata[];
+  animations?: AnimationEntryMetadata[];
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -966,9 +1033,9 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * has styles,
    * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
    */
-  encapsulation: ViewEncapsulation;
+  encapsulation?: ViewEncapsulation;
 
-  interpolation: [string, string];
+  interpolation?: [string, string];
 
   /**
    * Defines the components that should be compiled as well when
@@ -976,44 +1043,7 @@ export class ComponentMetadata extends DirectiveMetadata implements ComponentMet
    * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
    * {@link ComponentFactoryResolver ComponentFactoryResolver}.
    */
-  entryComponents: Array<Type<any>|any[]>;
-
-  constructor(
-      {selector, inputs, outputs, host, exportAs, moduleId, providers, viewProviders,
-       changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template, styleUrls,
-       styles, animations, encapsulation, interpolation,
-       entryComponents}: ComponentMetadataType = {}) {
-    super({
-      selector: selector,
-      inputs: inputs,
-      outputs: outputs,
-      host: host,
-      exportAs: exportAs,
-      providers: providers,
-      queries: queries
-    });
-
-    this.changeDetection = changeDetection;
-    this._viewProviders = viewProviders;
-    this.templateUrl = templateUrl;
-    this.template = template;
-    this.styleUrls = styleUrls;
-    this.styles = styles;
-    this.encapsulation = encapsulation;
-    this.moduleId = moduleId;
-    this.animations = animations;
-    this.interpolation = interpolation;
-    this.entryComponents = entryComponents;
-  }
-}
-
-/**
- * Interface for creating {@link PipeMetadata}
- * @stable
- */
-export interface PipeMetadataType {
-  name: string;
-  pure?: boolean;
+  entryComponents?: Array<Type<any>|any[]>;
 }
 
 /**
@@ -1028,18 +1058,21 @@ export interface PipeMetadataType {
  * {@example core/ts/metadata/metadata.ts region='pipe'}
  * @stable
  */
-export class PipeMetadata extends InjectableMetadata implements PipeMetadataType {
-  name: string;
-  /** @internal */
-  _pure: boolean;
+// Note: we keep the constructor separate and make it return `TypeDecorator` to trick typescript
+// into
+// looking up the docs for the decorator from this function.
+export function PipeMetadata({name, pure = true}: PipeMetadata): TypeDecorator {
+  InjectableMetadata.call(this);
+  this.name = name;
+  this.pure = pure;
+  return null;
+}
+PipeMetadata.prototype = Object.create(InjectableMetadata.prototype);
 
-  constructor({name, pure}: PipeMetadataType) {
-    super();
-    this.name = name;
-    this._pure = pure;
-  }
-
-  get pure(): boolean { return isPresent(this._pure) ? this._pure : true; }
+// Note: No documentation needed as the constructor is a separate function.
+export interface PipeMetadata extends InjectableMetadata {
+  name?: string;
+  pure?: boolean;
 }
 
 /**
@@ -1082,13 +1115,27 @@ export class PipeMetadata extends InjectableMetadata implements PipeMetadataType
  * ```
  * @stable
  */
-export class InputMetadata {
-  constructor(
-      /**
-       * Name used when instantiating a component in the template.
-       */
-      public bindingPropertyName?: string) {}
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function InputMetadata(
+    /**
+     * Name used when instantiating a component in the template.
+     */
+    bindingPropertyName?: string): any {
+  this.bindingPropertyName = bindingPropertyName;
+  return null;
 }
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface InputMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (bindingPropertyName?: string): InputMetadata;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface InputMetadata { bindingPropertyName?: string; }
 
 /**
  * Declares an event-bound output property.
@@ -1130,9 +1177,23 @@ export class InputMetadata {
  * ```
  * @stable
  */
-export class OutputMetadata {
-  constructor(public bindingPropertyName?: string) {}
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function OutputMetadata(bindingPropertyName?: string): any {
+  this.bindingPropertyName = bindingPropertyName;
+  return null;
 }
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface OutputMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (bindingPropertyName?: string): OutputMetadata;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface OutputMetadata { bindingPropertyName?: string; }
 
 /**
  * Declares a host property binding.
@@ -1167,9 +1228,23 @@ export class OutputMetadata {
  * ```
  * @stable
  */
-export class HostBindingMetadata {
-  constructor(public hostPropertyName?: string) {}
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function HostBindingMetadata(hostPropertyName?: string): any {
+  this.hostPropertyName = hostPropertyName;
+  return null;
 }
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface HostBindingMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (hostPropertyName?: string): HostBindingMetadata;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface HostBindingMetadata { hostPropertyName?: string; }
 
 /**
  * Declares a host listener.
@@ -1203,6 +1278,24 @@ export class HostBindingMetadata {
  * ```
  * @stable
  */
-export class HostListenerMetadata {
-  constructor(public eventName: string, public args?: string[]) {}
+// Note: we keep the constructor separate and make it return `any` to trick typescript into
+// looking up the docs for the decorator from this function.
+export function HostListenerMetadata(eventName: string, args?: string[]): any {
+  this.eventName = eventName;
+  this.args = args;
+  return null;
+}
+
+// Note: Can't make this generic as typescript does not support tuple types for varargs.
+export interface HostListenerMetadataCtor {
+  /**
+   * See the corresponding decorator.
+   */
+  new (eventName: string, args?: string[]): HostListenerMetadata;
+}
+
+// Note: No documentation needed as the constructor is a separate function.
+export interface HostListenerMetadata {
+  eventName: string;
+  args?: string[];
 }

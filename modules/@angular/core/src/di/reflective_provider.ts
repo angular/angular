@@ -12,7 +12,7 @@ import {reflector} from '../reflection/reflection';
 import {Type} from '../type';
 
 import {resolveForwardRef} from './forward_ref';
-import {DependencyMetadata, HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
+import {HostMetadata, InjectMetadata, OptionalMetadata, SelfMetadata, SkipSelfMetadata} from './metadata';
 import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
 import {InvalidProviderError, MixingMultiProvidersWithRegularProvidersError, NoAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
@@ -256,12 +256,6 @@ function _extractToken(
 
     } else if (paramMetadata instanceof SkipSelfMetadata) {
       lowerBoundVisibility = paramMetadata;
-
-    } else if (paramMetadata instanceof DependencyMetadata) {
-      if (isPresent(paramMetadata.token)) {
-        token = paramMetadata.token;
-      }
-      depProps.push(paramMetadata);
     }
   }
 

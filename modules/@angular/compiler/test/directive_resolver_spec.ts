@@ -119,7 +119,7 @@ export function main() {
     it('should read out the Directive metadata', () => {
       var directiveMetadata = resolver.resolve(SomeDirective);
       expect(directiveMetadata)
-          .toEqual(new DirectiveMetadata(
+          .toEqual(new Directive(
               {selector: 'someDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
@@ -132,7 +132,7 @@ export function main() {
     it('should not read parent class Directive metadata', function() {
       var directiveMetadata = resolver.resolve(SomeChildDirective);
       expect(directiveMetadata)
-          .toEqual(new DirectiveMetadata(
+          .toEqual(new Directive(
               {selector: 'someChildDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 

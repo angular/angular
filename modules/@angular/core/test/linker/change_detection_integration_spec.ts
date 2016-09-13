@@ -29,7 +29,7 @@ export function main() {
   function createCompFixture<T>(template: string, compType: Type<T>): ComponentFixture<T>;
   function createCompFixture<T>(
       template: string, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
-    TestBed.overrideComponent(compType, {set: new ComponentMetadata({template})});
+    TestBed.overrideComponent(compType, {set: {template}});
 
     initHelpers();
 
@@ -655,10 +655,10 @@ export function main() {
     describe('lifecycle', () => {
       function createCompWithContentAndViewChild(): ComponentFixture<any> {
         TestBed.overrideComponent(AnotherComponent, {
-          set: new ComponentMetadata({
+          set: {
             selector: 'other-cmp',
             template: '<div testDirective="viewChild"></div>',
-          })
+          }
         });
 
         return createCompFixture(
@@ -1002,10 +1002,9 @@ export function main() {
            }));
 
         it('should be called after processing the content and view children', fakeAsync(() => {
-             TestBed.overrideComponent(AnotherComponent, {
-               set: new ComponentMetadata(
-                   {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
-             });
+             TestBed.overrideComponent(
+                 AnotherComponent,
+                 {set: {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'}});
 
              var ctx = createCompFixture(
                  '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
