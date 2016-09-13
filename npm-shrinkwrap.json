@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-rc.6",
+  "version": "2.0.0-rc.7",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -4602,24 +4602,24 @@
       "resolved": "https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz"
     },
     "jasmine": {
-      "version": "2.5.1",
-      "from": "jasmine@2.5.1",
-      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.5.1.tgz",
+      "version": "2.4.1",
+      "from": "jasmine@>=2.4.0 <2.5.0",
+      "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.4.1.tgz",
       "dependencies": {
         "glob": {
-          "version": "7.0.6",
-          "from": "glob@>=7.0.6 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.6.tgz"
+          "version": "3.2.11",
+          "from": "glob@>=3.2.11 <4.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz"
         },
         "jasmine-core": {
-          "version": "2.5.1",
-          "from": "jasmine-core@>=2.5.1 <2.6.0",
-          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.5.1.tgz"
+          "version": "2.4.1",
+          "from": "jasmine-core@>=2.4.0 <2.5.0",
+          "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.4.1.tgz"
         },
         "minimatch": {
-          "version": "3.0.3",
-          "from": "minimatch@>=3.0.2 <4.0.0",
-          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz"
+          "version": "0.3.0",
+          "from": "minimatch@>=0.3.0 <0.4.0",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz"
         }
       }
     },
