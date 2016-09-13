@@ -12,7 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion JsonPipe
 @Component({
-  selector: 'json-example',
+  selector: 'json-pipe',
   template: `<div>
     <p>Without JSON pipe:</p>
     <pre>{{object}}</pre>
@@ -20,25 +20,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     <pre>{{object | json}}</pre>
   </div>`
 })
-export class JsonPipeExample {
+export class JsonPipeComponent {
   object: Object = {foo: 'bar', baz: 'qux', nested: {xyz: 3, numbers: [1, 2, 3, 4, 5]}};
 }
 // #enddocregion
-
-@Component({
-  selector: 'example-app',
-  template: `
-    <h1>JsonPipe Example</h1>
-    <json-example></json-example>
-  `
-})
-export class AppCmp {
-}
-
-@NgModule({imports: [BrowserModule], bootstrap: [AppCmp], declarations: [AppCmp, JsonPipeExample]})
-class AppModule {
-}
-
-export function main() {
-  platformBrowserDynamic().bootstrapModule(AppModule);
-}

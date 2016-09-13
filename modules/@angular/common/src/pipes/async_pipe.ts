@@ -42,29 +42,27 @@ var _observableStrategy = new ObservableStrategy();
 var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
 
 /**
+ * @ngModule CommonModule
+ * @whatItDoes Unwraps a value from an asynchronous primitive.
+ * @howToUse `observable_or_promise_expression | async`
+ * @description
  * The `async` pipe subscribes to an `Observable` or `Promise` and returns the latest value it has
- * emitted.
- * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
- * When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
+ * emitted. When a new value is emitted, the `async` pipe marks the component to be checked for
+ * changes. When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
  * potential memory leaks.
  *
- * ## Usage
- *
- *     object | async
- *
- * where `object` is of type `Observable` or of type `Promise`.
  *
  * ## Examples
  *
  * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
  * promise.
  *
- * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipePromise'}
+ * {@example common/pipes/ts/async_pipe.ts region='AsyncPipePromise'}
  *
  * It's also possible to use `async` with Observables. The example below binds the `time` Observable
- * to the view. Every 500ms, the `time` Observable updates the view with the current time.
+ * to the view. The Observable continuesly updates the view with the current time.
  *
- * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipeObservable'}
+ * {@example common/pipes/ts/async_pipe.ts region='AsyncPipeObservable'}
  *
  * @stable
  */
