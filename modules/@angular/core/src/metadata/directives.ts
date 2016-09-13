@@ -1100,7 +1100,7 @@ export interface PipeDecorator {
  * @stable
  */
 export interface Pipe {
-  name?: string;
+  name: string;
   pure?: boolean;
 }
 
