@@ -131,4 +131,5 @@ do
   fi
 done
 
-./modules/@angular/examples/build.sh
+# TODO(i): uncomment once the protractor typings issue is resolved
+#./modules/@angular/examples/build.sh
