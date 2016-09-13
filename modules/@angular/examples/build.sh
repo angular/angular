@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ex -o pipefail
+
 #
 # This script is used to compile and copy the contents for each of
 # example directories over to the dist/examples directory so that they

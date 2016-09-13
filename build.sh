@@ -131,4 +131,5 @@ do
   fi
 done
 
+echo "====== Building examples: ./modules/@angular/examples/build.sh====="
 ./modules/@angular/examples/build.sh

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {protractor, browser, element, by, $} from 'protractor/globals';
 import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
 function waitForElement(selector: string) {
-  var EC = (<any>protractor).ExpectedConditions;
+  const EC = protractor.ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
   browser.wait(EC.presenceOf($(selector)), 20000);
 }
@@ -18,7 +19,7 @@ describe('animation example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    var URL = '/core/animation/ts/dsl/index.html';
+    const URL = '/core/animation/ts/dsl/index.html';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);

@@ -18,9 +18,6 @@
     "@types/node": {
       "version": "4.0.22-alpha"
     },
-    "@types/protractor": {
-      "version": "1.5.11-alpha"
-    },
     "@types/selenium-webdriver": {
       "version": "2.44.20-alpha"
     },
@@ -2982,7 +2979,7 @@
       "version": "0.1.0"
     },
     "json-schema": {
-      "version": "0.2.2"
+      "version": "0.2.3"
     },
     "json-stringify-safe": {
       "version": "5.0.1"
@@ -3009,7 +3006,7 @@
       "version": "0.0.11"
     },
     "jsprim": {
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     "jstransform": {
       "version": "10.1.0",
@@ -3579,7 +3576,7 @@
       "version": "1.0.0"
     },
     "path-is-inside": {
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "path-type": {
       "version": "1.1.0",
@@ -3632,7 +3629,7 @@
       "version": "0.3.0"
     },
     "protractor": {
-      "version": "4.0.5",
+      "version": "4.0.7",
       "dependencies": {
         "@types/jasmine": {
           "version": "2.2.33"
