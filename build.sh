@@ -106,7 +106,7 @@ do
 
   rm -rf ${DESTDIR}
 
-  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig.json        ====="
+  echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-build.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-build.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
