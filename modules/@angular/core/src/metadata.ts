@@ -18,7 +18,9 @@ import {ViewEncapsulation} from './metadata/view';
 import {Type} from './type';
 import {TypeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
 
-export {ANALYZE_FOR_ENTRY_COMPONENTS, Attribute, ContentChild, ContentChildren, Query, ViewChild, ViewChildren} from './metadata/di';
+export {ANALYZE_FOR_ENTRY_COMPONENTS, Attribute, ContentChild, ContentChildren, Query, ViewChild, ViewChildren,
+  ContentChildDecorator, ContentChildrenDecorator, ViewChildDecorator, ViewChildrenDecorator
+} from './metadata/di';
 export {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from './metadata/directives';
 export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from './metadata/lifecycle_hooks';
 export {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NO_ERRORS_SCHEMA, NgModule, SchemaMetadata} from './metadata/ng_module';
