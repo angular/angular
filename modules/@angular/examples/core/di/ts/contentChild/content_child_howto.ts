@@ -7,7 +7,7 @@
  */
 
 // #docregion HowTo
-import {AfterContentInit, Component, ContentChildren, Directive, QueryList} from '@angular/core';
+import {AfterContentInit, Component, ContentChild, Directive, QueryList} from '@angular/core';
 
 @Directive({selector: 'child-directive'})
 class ChildDirective {
@@ -15,7 +15,7 @@ class ChildDirective {
 
 @Directive({selector: 'someDir'})
 class SomeDir implements AfterContentInit {
-  @ContentChild(ChildDirective) contentChild;
+  @ContentChild(ChildDirective) contentChild: ChildDirective;
 
   ngAfterContentInit() {
     // contentChild is set
