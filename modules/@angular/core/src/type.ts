@@ -7,7 +7,9 @@
  */
 
 /**
- * Runtime representation a type that a Component or other object is instances of.
+ * @whatItDoes Represents a type that a Component or other object is instances of.
+ *
+ * @description
  *
  * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
  * the `MyCustomComponent` constructor function.
