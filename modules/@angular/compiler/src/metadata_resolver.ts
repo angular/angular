@@ -759,15 +759,21 @@ function staticTypeModuleUrl(value: any): string {
   return cpl.isStaticSymbol(value) ? value.filePath : null;
 }
 
-function componentModuleUrl(reflector: ReflectorReader, type: Type<any>, cmpMetadata: Component): string {
+function componentModuleUrl(
+    reflector: ReflectorReader, type: Type<any>, cmpMetadata: Component): string {
   if (cpl.isStaticSymbol(type)) {
     return staticTypeModuleUrl(type);
   }
 
-  if (isPresent(cmpMetadata.moduleId)) {
-    const moduleId = cmpMetadata.moduleId;
+  const moduleId = cmpMetadata.moduleId;
+
+  if (typeof moduleId === 'string') {
     const scheme = getUrlScheme(moduleId);
     return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
+  } else if (moduleId !== null && moduleId !== void 0) {
+    throw new Error(
+        `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
+        `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
   }
 
   return reflector.importUri(type);

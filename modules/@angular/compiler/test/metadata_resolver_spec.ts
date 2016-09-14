@@ -52,6 +52,17 @@ export function main() {
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
 
+      it('should throw when the moduleId is not a string',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidModuleId))
+               .toThrowError(
+                   `moduleId should be a string in "ComponentWithInvalidModuleId". See` +
+                   ` https://goo.gl/wIDDiL for more information.\n` +
+                   `If you're using Webpack you should inline the template and the styles, see` +
+                   ` https://goo.gl/X2J8zc.`);
+         }));
+
+
       it('should throw when metadata is incorrectly typed',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
            expect(() => resolver.getDirectiveMetadata(MalformedStylesComponent))
@@ -177,6 +188,10 @@ export function main() {
 
 @Component({selector: 'someComponent', template: ''})
 class ComponentWithoutModuleId {
+}
+
+@Component({selector: 'someComponent', template: '', moduleId: <any>0})
+class ComponentWithInvalidModuleId {
 }
 
 @Component({
