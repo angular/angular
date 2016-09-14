@@ -1,7 +1,7 @@
 {
   "name": "@angular/platform-webworker-dynamic",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Angular 2 platform-webworker-dynamic",
+  "description": "Angular - library for using Angular in a web browser with web workers",
   "main": "bundles/platform-webworker-dynamic.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",

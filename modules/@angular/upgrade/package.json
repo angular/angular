@@ -1,7 +1,7 @@
 {
   "name": "@angular/upgrade",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
+  "description": "Angular - the library for easing update from v1 to v2",
   "main": "bundles/upgrade.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",

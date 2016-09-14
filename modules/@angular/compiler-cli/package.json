@@ -1,7 +1,7 @@
 {
   "name": "@angular/compiler-cli",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Execute angular2 template compiler in nodejs.",
+  "description": "Angular - the compiler CLI for Node.js",
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {

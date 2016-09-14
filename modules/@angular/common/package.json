@@ -1,7 +1,7 @@
 {
   "name": "@angular/common",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
+  "description": "Angular - commonly needed directives and services",
   "main": "bundles/common.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",

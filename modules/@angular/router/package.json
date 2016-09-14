@@ -1,7 +1,7 @@
 {
   "name": "@angular/router",
   "version": "3.0.0-rc.1",
-  "description": "Angular 2 router",
+  "description": "Angular - the routing library",
   "main": "bundles/router.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",

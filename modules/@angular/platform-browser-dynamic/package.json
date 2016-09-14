@@ -1,7 +1,7 @@
 {
   "name": "@angular/platform-browser-dynamic",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Angular 2 platform-browser-dynamic",
+  "description": "Angular - library for using Angular in a web browser with JIT compilation",
   "main": "bundles/platform-browser-dynamic.umd.js",
   "module": "index.js",
   "typings": "index.d.ts",
