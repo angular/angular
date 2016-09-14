@@ -26,6 +26,6 @@
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts",
     // TODO(i): we can't use protractor's built-in typings because they contain lots of ambient definitions
-    "../../../node_modules/@types/protractor/index.d.ts",
+    "../../../node_modules/@types/protractor/index.d.ts"
   ]
 }
