@@ -23,420 +23,50 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveDecorator {
   /**
-   * Directives allow you to attach behavior to elements in the DOM.
+   * @whatItDoes Marks a class as an Angular directive and collects directive configuration
+   * metadata.
    *
-   * {@link Directive}s with an embedded view are called {@link Component}s.
-   *
-   * A directive consists of a single directive annotation and a controller class. When the
-   * directive's `selector` matches
-   * elements in the DOM, the following steps occur:
-   *
-   * 1. For each directive, the `ElementInjector` attempts to resolve the directive's constructor
-   * arguments.
-   * 2. Angular instantiates directives for each matched element using `ElementInjector` in a
-   * depth-first order,
-   *    as declared in the HTML.
-   *
-   * ## Understanding How Injection Works
-   *
-   * There are three stages of injection resolution.
-   * - *Pre-existing Injectors*:
-   *   - The terminal {@link Injector} cannot resolve dependencies. It either throws an error or, if
-   * the dependency was
-   *     specified as `@Optional`, returns `null`.
-   *   - The platform injector resolves browser singleton resources, such as: cookies, title,
-   * location, and others.
-   * - *Component Injectors*: Each component instance has its own {@link Injector}, and they follow
-   * the same parent-child hierarchy
-   *     as the component instances in the DOM.
-   * - *Element Injectors*: Each component instance has a Shadow DOM. Within the Shadow DOM each
-   * element has an `ElementInjector`
-   *     which follow the same parent-child hierarchy as the DOM elements themselves.
-   *
-   * When a template is instantiated, it also must instantiate the corresponding directives in a
-   * depth-first order. The
-   * current `ElementInjector` resolves the constructor dependencies for each directive.
-   *
-   * Angular then resolves dependencies as follows, according to the order in which they appear in
-   * the
-   * {@link Component}:
-   *
-   * 1. Dependencies on the current element
-   * 2. Dependencies on element injectors and their parents until it encounters a Shadow DOM
-   * boundary
-   * 3. Dependencies on component injectors and their parents until it encounters the root component
-   * 4. Dependencies on pre-existing injectors
-   *
-   *
-   * The `ElementInjector` can inject other directives, element-specific special objects, or it can
-   * delegate to the parent
-   * injector.
-   *
-   * To inject other directives, declare the constructor parameter as:
-   * - `directive:DirectiveType`: a directive on the current element only
-   * - `@Host() directive:DirectiveType`: any directive that matches the type between the current
-   * element and the
-   *    Shadow DOM root.
-   * - `@Query(DirectiveType) query:QueryList<DirectiveType>`: A live collection of direct child
-   * directives.
-   * - `@QueryDescendants(DirectiveType) query:QueryList<DirectiveType>`: A live collection of any
-   * child directives.
-   *
-   * To inject element-specific special objects, declare the constructor parameter as:
-   * - `element: ElementRef` to obtain a reference to logical element in the view.
-   * - `viewContainer: ViewContainerRef` to control child template instantiation, for
-   * {@link Directive} directives only
-   * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
-   *
-   * ### Example
-   *
-   * The following example demonstrates how dependency injection resolves constructor arguments in
-   * practice.
-   *
-   *
-   * Assume this HTML template:
+   * @howToUse
    *
    * ```
-   * <div dependency="1">
-   *   <div dependency="2">
-   *     <div dependency="3" my-directive>
-   *       <div dependency="4">
-   *         <div dependency="5"></div>
-   *       </div>
-   *       <div dependency="6"></div>
-   *     </div>
-   *   </div>
-   * </div>
-   * ```
-   *
-   * With the following `dependency` decorator and `SomeService` injectable class.
-   *
-   * ```
-   * @Injectable()
-   * class SomeService {
-   * }
+   * import {Directive} from '@angular/core';
    *
    * @Directive({
-   *   selector: '[dependency]',
-   *   inputs: [
-   *     'id: dependency'
-   *   ]
+   *   selector: 'my-directive',
    * })
-   * class Dependency {
-   *   id:string;
+   * export class MyDirective {
    * }
    * ```
    *
-   * Let's step through the different ways in which `MyDirective` could be declared...
+   * @description
    *
-   *
-   * ### No injection
-   *
-   * Here the constructor is declared with no arguments, therefore nothing is injected into
-   * `MyDirective`.
-   *
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor() {
-   *   }
-   * }
-   * ```
-   *
-   * This directive would be instantiated with no dependencies.
-   *
-   *
-   * ### Component-level injection
-   *
-   * Directives can inject any injectable instance from the closest component injector or any of its
-   * parents.
-   *
-   * Here, the constructor declares a parameter, `someService`, and injects the `SomeService` type
-   * from the parent
-   * component's injector.
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(someService: SomeService) {
-   *   }
-   * }
-   * ```
-   *
-   * This directive would be instantiated with a dependency on `SomeService`.
-   *
-   *
-   * ### Injecting a directive from the current element
-   *
-   * Directives can inject other directives declared on the current element.
-   *
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(dependency: Dependency) {
-   *     expect(dependency.id).toEqual(3);
-   *   }
-   * }
-   * ```
-   * This directive would be instantiated with `Dependency` declared at the same element, in this
-   * case
-   * `dependency="3"`.
-   *
-   * ### Injecting a directive from any ancestor elements
-   *
-   * Directives can inject other directives declared on any ancestor element (in the current Shadow
-   * DOM), i.e. on the current element, the
-   * parent element, or its parents.
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(@Host() dependency: Dependency) {
-   *     expect(dependency.id).toEqual(2);
-   *   }
-   * }
-   * ```
-   *
-   * `@Host` checks the current element, the parent, as well as its parents recursively. If
-   * `dependency="2"` didn't
-   * exist on the direct parent, this injection would
-   * have returned
-   * `dependency="1"`.
-   *
-   *
-   * ### Injecting a live collection of direct child directives
-   *
-   *
-   * A directive can also query for other child directives. Since parent directives are instantiated
-   * before child directives, a directive can't simply inject the list of child directives. Instead,
-   * the directive injects a {@link QueryList}, which updates its contents as children are added,
-   * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
-   * `ngIf`, or an `ngSwitch`.
-   *
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(@Query(Dependency) dependencies:QueryList<Dependency>) {
-   *   }
-   * }
-   * ```
-   *
-   * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and
-   * `Dependency` 6. Here, `Dependency` 5 would not be included, because it is not a direct child.
-   *
-   * ### Injecting a live collection of descendant directives
-   *
-   * By passing the descendant flag to `@Query` above, we can include the children of the child
-   * elements.
-   *
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(@Query(Dependency, {descendants: true}) dependencies:QueryList<Dependency>) {
-   *   }
-   * }
-   * ```
-   *
-   * This directive would be instantiated with a Query which would contain `Dependency` 4, 5 and 6.
-   *
-   * ### Optional injection
-   *
-   * The normal behavior of directives is to return an error when a specified dependency cannot be
-   * resolved. If you
-   * would like to inject `null` on unresolved dependency instead, you can annotate that dependency
-   * with `@Optional()`.
-   * This explicitly permits the author of a template to treat some of the surrounding directives as
-   * optional.
-   *
-   * ```
-   * @Directive({ selector: '[my-directive]' })
-   * class MyDirective {
-   *   constructor(@Optional() dependency:Dependency) {
-   *   }
-   * }
-   * ```
-   *
-   * This directive would be instantiated with a `Dependency` directive found on the current
-   * element.
-   * If none can be
-   * found, the injector supplies `null` instead of throwing an error.
-   *
-   * ### Example
-   *
-   * Here we use a decorator directive to simply define basic tool-tip behavior.
-   *
-   * ```
-   * @Directive({
-   *   selector: '[tooltip]',
-   *   inputs: [
-   *     'text: tooltip'
-   *   ],
-   *   host: {
-   *     '(mouseenter)': 'onMouseEnter()',
-   *     '(mouseleave)': 'onMouseLeave()'
-   *   }
-   * })
-   * class Tooltip{
-   *   text:string;
-   *   overlay:Overlay; // NOT YET IMPLEMENTED
-   *   overlayManager:OverlayManager; // NOT YET IMPLEMENTED
-   *
-   *   constructor(overlayManager:OverlayManager) {
-   *     this.overlay = overlay;
-   *   }
-   *
-   *   onMouseEnter() {
-   *     // exact signature to be determined
-   *     this.overlay = this.overlayManager.open(text, ...);
-   *   }
-   *
-   *   onMouseLeave() {
-   *     this.overlay.close();
-   *     this.overlay = null;
-   *   }
-   * }
-   * ```
-   * In our HTML template, we can then add this behavior to a `<div>` or any other element with the
-   * `tooltip` selector,
-   * like so:
-   *
-   * ```
-   * <div tooltip="some text here"></div>
-   * ```
-   *
-   * Directives can also control the instantiation, destruction, and positioning of inline template
-   * elements:
-   *
-   * A directive uses a {@link ViewContainerRef} to instantiate, insert, move, and destroy views at
+   * Directive decorator allows you to mark a class as an Angular directive and provide additional
+   * metadata that determines how the directive should be processed, instantiated and used at
    * runtime.
-   * The {@link ViewContainerRef} is created as a result of `<template>` element, and represents a
-   * location in the current view
-   * where these actions are performed.
    *
-   * Views are always created as children of the current {@link Component}, and as siblings
-   * of
-   * the
-   * `<template>` element. Thus a
-   * directive in a child view cannot inject the directive that created it.
+   * Directives allow you to attach behavior to elements in the DOM..
    *
-   * Since directives that create views via ViewContainers are common in Angular, and using the full
-   * `<template>` element syntax is wordy, Angular
-   * also supports a shorthand notation: `<li *foo="bar">` and `<li template="foo: bar">` are
-   * equivalent.
+   * A directive must belong to an NgModule in order for it to be usable
+   * by another directive, component, or application. To specify that a directive is a member of an
+   * NgModule,
+   * you should list it in the `declarations` field of that NgModule.
    *
-   * Thus,
+   * In addition to the metadata configuration specified via the Directive decorator,
+   * directives can control their runtime behavior by implementing various Life-Cycle hooks.
    *
-   * ```
-   * <ul>
-   *   <li *foo="bar" title="text"></li>
-   * </ul>
-   * ```
+   * **Metadata Properties:**
    *
-   * Expands in use to:
+   * **exportAs** - name under which the component instance is exported in a template
+   * **host** - map of class property to host element bindings for events, properties and attributes
+   * **inputs** - list of class property names to data-bind as component inputs
+   * **outputs** - list of class property names that expose output events that others can subscribe
+   * to
+   * **providers** - list of providers available to this component and its children
+   * **queries** -  configure queries that can be injected into the component
+   * **selector** - css selector that identifies this component in a template
    *
-   * ```
-   * <ul>
-   *   <template [foo]="bar">
-   *     <li title="text"></li>
-   *   </template>
-   * </ul>
-   * ```
-   *
-   * Notice that although the shorthand places `*foo="bar"` within the `<li>` element, the binding
-   * for
-   * the directive
-   * controller is correctly instantiated on the `<template>` element rather than the `<li>`
-   * element.
-   *
-   * ## Lifecycle hooks
-   *
-   * When the directive class implements some {@linkDocs guide/lifecycle-hooks} the
-   * callbacks are called by the change detection at defined points in time during the life of the
-   * directive.
-   *
-   * ### Example
-   *
-   * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
-   *
-   * Here is a simple directive that triggers on an `unless` selector:
-   *
-   * ```
-   * @Directive({
-   *   selector: '[unless]',
-   *   inputs: ['unless']
-   * })
-   * export class Unless {
-   *   viewContainer: ViewContainerRef;
-   *   templateRef: TemplateRef;
-   *   prevCondition: boolean;
-   *
-   *   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef) {
-   *     this.viewContainer = viewContainer;
-   *     this.templateRef = templateRef;
-   *     this.prevCondition = null;
-   *   }
-   *
-   *   set unless(newCondition) {
-   *     if (newCondition && (isBlank(this.prevCondition) || !this.prevCondition)) {
-   *       this.prevCondition = true;
-   *       this.viewContainer.clear();
-   *     } else if (!newCondition && (isBlank(this.prevCondition) || this.prevCondition)) {
-   *       this.prevCondition = false;
-   *       this.viewContainer.create(this.templateRef);
-   *     }
-   *   }
-   * }
-   * ```
-   *
-   * We can then use this `unless` selector in a template:
-   * ```
-   * <ul>
-   *   <li *unless="expr"></li>
-   * </ul>
-   * ```
-   *
-   * Once the directive instantiates the child view, the shorthand notation for the template expands
-   * and the result is:
-   *
-   * ```
-   * <ul>
-   *   <template [unless]="exp">
-   *     <li></li>
-   *   </template>
-   *   <li></li>
-   * </ul>
-   * ```
-   *
-   * Note also that although the `<li></li>` template still exists inside the
-   * `<template></template>`,
-   * the instantiated
-   * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
-   *
-   * ### Example as TypeScript Decorator
-   *
-   * {@example core/ts/metadata/metadata.ts region='directive'}
-   *
-   * ### Example as ES5 DSL
-   *
-   * ```
-   * var MyDirective = ng
-   *   .Directive({...})
-   *   .Class({
-   *     constructor: function() {
-   *       ...
-   *     }
-   *   })
-   * ```
-   *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyDirective = function() {
-   *   ...
-   * };
-   *
-   * MyDirective.annotations = [
-   *   new ng.Directive({...})
-   * ]
-   * ```
+   * @stable
+   * @Annotation
    */
   (obj: Directive): TypeDecorator;
 
@@ -787,58 +417,68 @@ export const Directive: DirectiveDecorator = <DirectiveDecorator>makeDecorator('
  */
 export interface ComponentDecorator {
   /**
-   * Declare reusable UI building blocks for an application.
+   * @whatItDoes Marks a class as an Angular component and collects component configuration
+   * metadata.
    *
-   * Each Angular component requires a single `@Component` annotation. The
-   * `@Component`
-   * annotation specifies when a component is instantiated, and which properties and hostListeners
-   * it
-   * binds to.
+   * @howToUse
    *
-   * When a component is instantiated, Angular
-   * - creates a shadow DOM for the component.
-   * - loads the selected template into the shadow DOM.
-   * - creates all the injectable objects configured with `providers` and `viewProviders`.
+   * ```
+   * import {Component} from '@angular/core';
    *
-   * All template expressions and statements are then evaluated against the component instance.
+   * @Component({
+   *   selector: 'my-component',
+   *   templateUrl: 'myComponent.html'
+   * })
+   * export class MyComponent {
+   * }
+   * ```
    *
-   * ## Lifecycle hooks
+   * @description
+   * Component decorator allows you to mark a class as an Angular component and provide additional
+   * metadata that determines how the component should be processed, instantiated and used at
+   * runtime.
    *
-   * When the component class implements some {@linkDocs guide/lifecycle-hooks} the
-   * callbacks are called by the change detection at defined points in time during the life of the
-   * component.
+   * Components are the most basic building block of an UI in an Angular application.
+   * An Angular application is a tree of Angular components.
+   * Angular components are a subset of directives. Unlike directives, components always have
+   * a template and only one component can be instantiated per an element in a template.
+   *
+   * A component must belong to an NgModule in order for it to be usable
+   * by another component or application. To specify that a component is a member of an NgModule,
+   * you should list it in the `declarations` field of that NgModule.
+   *
+   * In addition to the metadata configuration specified via the Component decorator,
+   * components can control their runtime behavior by implementing various Life-Cycle hooks.
+   *
+   * **Metadata Properties:**
+   *
+   * **animations** - list of animations of this component
+   * **changeDetection** - change detection strategy used by this component
+   * **encapsulation** - style encapsulation strategy used by this component
+   * **entryComponents** - list of components that are dynamically inserted into the view of this
+   * component
+   * **exportAs** - name under which the component instance is exported in a template
+   * **host** - map of class property to host element bindings for events, properties and attributes
+   * **inputs** - list of class property names to data-bind as component inputs
+   * **interpolation** - custom interpolation markers used in this component's template
+   * **moduleId** - ES/CommonJS module id of the file in which this component is defined
+   * **outputs** - list of class property names that expose output events that others can subscribe
+   * to
+   * **providers** - list of providers available to this component and its children
+   * **queries** -  configure queries that can be injected into the component
+   * **selector** - css selector that identifies this component in a template
+   * **styleUrls** - list of urls to stylesheets to be applied to this component's view
+   * **styles** - inline-defined styles to be applied to this component's view
+   * **template** - inline-defined template for the view
+   * **templateUrl** - url to an external file containing a template for the view
+   * **viewProviders** - list of providers available to this component and its view children
    *
    * ### Example
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
    *
-   * ### Example as TypeScript Decorator
-   *
-   * {@example core/ts/metadata/metadata.ts region='component'}
-   *
-   * ### Example as ES5 DSL
-   *
-   * ```
-   * var MyComponent = ng
-   *   .Component({...})
-   *   .Class({
-   *     constructor: function() {
-   *       ...
-   *     }
-   *   })
-   * ```
-   *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyComponent = function() {
-   *   ...
-   * };
-   *
-   * MyComponent.annotations = [
-   *   new ng.Component({...})
-   * ]
-   * ```
+   * @stable
+   * @Annotation
    */
   (obj: Component): TypeDecorator;
   /**
@@ -927,23 +567,19 @@ export interface Component extends Directive {
   /**
    * Specifies a template URL for an Angular component.
    *
-   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
-   *
-   * <!-- TODO: what's the url relative to? -->
+   *Only one of `templateUrl` or `template` can be defined per View.
    */
   templateUrl?: string;
 
   /**
    * Specifies an inline template for an Angular component.
    *
-   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
+   * Only one of `templateUrl` or `template` can be defined per Component.
    */
   template?: string;
 
   /**
    * Specifies stylesheet URLs for an Angular component.
-   *
-   * <!-- TODO: what's the url relative to? -->
    */
   styleUrls?: string[];
 
