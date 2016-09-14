@@ -15,6 +15,7 @@ import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
 import {BrowserGetTestability} from './browser/testability';
+import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
 import {DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
@@ -85,7 +86,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
     {provide: RootRenderer, useExisting: DomRootRenderer},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver}, DomSharedStylesHost,
-    Testability, EventManager, ELEMENT_PROBE_PROVIDERS
+    Testability, EventManager, ELEMENT_PROBE_PROVIDERS, Title
   ],
   exports: [CommonModule, ApplicationModule]
 })

@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Title} from '@angular/platform-browser';
+import {Injectable} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {BrowserModule, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('title service', () => {
@@ -29,6 +32,23 @@ export function main() {
       titleService.setTitle(null);
       expect(getDOM().getTitle()).toEqual('');
     });
+  });
 
+  describe('integration test', () => {
+
+    @Injectable()
+    class DependsOnTitle {
+      constructor(public title: Title) {}
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserModule],
+        providers: [DependsOnTitle],
+      });
+    });
+
+    it('should inject Title service when using BrowserModule',
+       () => { expect(TestBed.get(DependsOnTitle).title).toBeAnInstanceOf(Title); });
   });
 }
