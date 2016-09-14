@@ -265,29 +265,7 @@ export declare abstract class ComponentRef<C> {
 export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
-export interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ContentChild;
-}
-
-/** @stable */
 export declare const ContentChildren: ContentChildrenDecorator;
-
-/** @stable */
-export interface ContentChildrenDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {descendants, read}?: {
-        descendants?: boolean;
-        read?: any;
-    }): Query;
-}
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -929,26 +907,7 @@ export interface ValueProvider {
 export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
-export interface ViewChildDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ViewChild;
-}
-
-/** @stable */
 export declare const ViewChildren: ViewChildrenDecorator;
-
-/** @stable */
-export interface ViewChildrenDecorator { (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
-        read?: any;
-    }): ViewChildren;
-}
 
 /** @stable */
 export declare abstract class ViewContainerRef {
