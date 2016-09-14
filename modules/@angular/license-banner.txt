@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v0.0.0-PLACEHOLDER
+ * @license Angular v0.0.0-PLACEHOLDER
  * (c) 2010-2016 Google, Inc. https://angular.io/
  * License: MIT
  */
