@@ -1,3 +1,14 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/angular/angular/compare/2.0.0-rc.7...2.0.0) (2016-09-14)
+
+
+### Bug Fixes
+
+* **platform-browser:** provide Title service as part of the module ([#11605](https://github.com/angular/angular/issues/11605)) ([85d9db6](https://github.com/angular/angular/commit/85d9db6)), closes [#11600](https://github.com/angular/angular/issues/11600)
+* **upgrade:** correct the main entry path in package.json ([a2519c6](https://github.com/angular/angular/commit/a2519c6))
+
+
+
 <a name="2.0.0-rc.7"></a>
 # [2.0.0-rc.7](https://github.com/angular/angular/compare/2.0.0-rc.6...2.0.0-rc.7) (2016-09-13)
 
