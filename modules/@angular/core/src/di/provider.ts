@@ -9,50 +9,45 @@
 import {Type} from '../type';
 
 /**
- * Configures the {@link Injector} to return an instance of `Type` when `Type' is used as token.
+ * @whatItDoes Configures the {@link Injector} to return an instance of `Type` when `Type' is used
+ * as token.
+ * @howToUse
+ * ```
+ * @Injectable()
+ * class MyService {}
+ *
+ * const provider: TypeProvider = MyService;
+ * ```
+ *
+ * @description
  *
  * Create an instance by invoking the `new` operator and supplying additional arguments.
  * This form is a short form of `TypeProvider`;
  *
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ *
  * ### Example
- * ```javascript
- * @Injectable()
- * class Greeting {
- *   text: 'Hello';
- * }
  *
- * @Injectable()
- * class MyClass {
- *   greeting:string;
- *   constructor(greeting: Greeting) {
- *     this.greeting = greeting.text;
- *   }
- * }
- *
- * const injector = Injector.resolveAndCreate([
- *   Greeting, // Shorthand for { provide: Greeting, useClass: Greeting }
- *   MyClass   // Shorthand for { provide: MyClass,  useClass: MyClass }
- * ]);
- *
- * const myClass: MyClass = injector.get(MyClass);
- * expect(myClass.greeting).toEqual('Hello');
- * ```
+ * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
  *
  * @stable
  */
 export interface TypeProvider extends Type<any> {}
 
 /**
- * Configures the {@link Injector} to return a value for a token.
+ * @whatItDoes Configures the {@link Injector} to return a value for a token.
+ * @howToUse
+ * ```
+ * const provider: ValueProvider = {provide: 'someToken', useValue: 'someValue'};
+ * ```
+ *
+ * @description
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
  * ### Example
- * ```javascript
- * const injector = Injector.resolveAndCreate([
- *   {provide: String, useValue: 'Hello'}
- * ]);
  *
- * expect(injector.get(String)).toEqual('Hello');
- * ```
+ * {@example core/di/ts/provider_spec.ts region='ValueProvider'}
+ *
  * @stable
  */
 export interface ValueProvider {
@@ -71,62 +66,31 @@ export interface ValueProvider {
    * providers spread across many files to provide configuration information to a common token.
    *
    * ### Example
-   * ```javascript
-   * var locale = new OpaqueToken('local');
    *
-   * const injector = Injector.resolveAndCreate([
-   *   { provide: locale, multi: true, useValue: 'en' },
-   *   { provide: locale, multi: true, useValue: 'sk' },
-   * ]);
-   *
-   * const locales: string[] = injector.get(locale);
-   * expect(locales).toEqual(['en', 'sk']);
-   * ```
+   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
    */
   multi?: boolean;
 }
 
 /**
- * Configures the {@link Injector} to return an instance of `useClass` for a token.
+ * @whatItDoes Configures the {@link Injector} to return an instance of `useClass` for a token.
+ * @howToUse
+ * ```
+ * @Injectable()
+ * class MyService {}
+ *
+ * const provider: ClassProvider = {provide: 'someToken', useClass: MyService};
+ * ```
+ *
+ * @description
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
  * ### Example
- * ```javascript
- * abstract class Shape {
- *   name: string;
- * }
  *
- * class Square extends Shape {
- *   name = 'square';
- * }
+ * {@example core/di/ts/provider_spec.ts region='ClassProvider'}
  *
- * const injector = Injector.resolveAndCreate([
- *   {provide: Shape, useClass: Square}
- * ]);
- *
- * const shape: Shape = injector.get(Shape);
- * expect(shape.name).toEqual('square');
- * expect(shape instanceof Square).toBe(true);
- * ```
- *
- * Note that following is not equal:
- * ```javascript
- * class Greeting {
- *   salutation = 'Hello';
- * }
- *
- * class FormalGreeting extends Greeting {
- *   salutation = 'Greetings';
- * }
- *
- * const injector = Injector.resolveAndCreate([
- *   FormalGreeting,
- *   {provide: Greeting, useClass: FormalGreeting}
- * ]);
- *
- * // The injector returns different instances.
- * // See: {provide: ?, useExisting: ?} if you want the same instance.
- * expect(injector.get(FormalGreeting)).not.toBe(injector.get(Greeting));
- * ```
+ * Note that following two providers are not equal:
+ * {@example core/di/ts/provider_spec.ts region='ClassProviderDifference'}
  *
  * @stable
  */
@@ -146,56 +110,26 @@ export interface ClassProvider {
    * providers spread across many files to provide configuration information to a common token.
    *
    * ### Example
-   * ```javascript
-   * abstract class Locale {
-   *   name: string;
-   * };
    *
-   * @Injectable()
-   * class EnLocale extends Locale {
-   *   name: 'en';
-   * };
-   *
-   * @Injectable()
-   * class SkLocale extends Locale {
-   *   name: 'sk';
-   * };
-   *
-   * const injector = Injector.resolveAndCreate([
-   *   { provide: Locale, useValue: EnLocale, multi: true },
-   *   { provide: Locale, useValue: SkLocale, multi: true },
-   * ]);
-   *
-   * const locales: Locale[] = injector.get(Locale);
-   * const localeNames: string[] = locals.map((l) => l.name);
-   * expect(localeNames).toEqual(['en', 'sk']);
-   * ```
+   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
    */
   multi?: boolean;
 }
 
 /**
- * Configures the {@link Injector} to return a value of another `useExisting` token.
+ * @whatItDoes Configures the {@link Injector} to return a value of another `useExisting` token.
+ * @howToUse
+ * ```
+ * const provider: ExistingProvider = {provide: 'someToken', useExisting: 'someOtherToken'};
+ * ```
+ *
+ * @description
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
  * ### Example
- * ```javascript
- * class Greeting {
- *   salutation = 'Hello';
- * }
  *
- * class FormalGreeting extends Greeting {
- *   salutation = 'Greetings';
- * }
+ * {@example core/di/ts/provider_spec.ts region='ExistingProvider'}
  *
- * const injector = Injector.resolveAndCreate([
- *   FormalGreeting,
- *   {provide: Greeting, useExisting: FormalGreeting}
- * ]);
- *
- * expect(injector.get(Greeting).name).toEqual('Hello');
- * expect(injector.get(FormalGreeting).name).toEqual('Hello');
- * expect(injector.get(Salutation).name).toBe(injector.get(Greeting));
- * ```
  * @stable
  */
 export interface ExistingProvider {
@@ -214,52 +148,32 @@ export interface ExistingProvider {
    * providers spread across many files to provide configuration information to a common token.
    *
    * ### Example
-   * ```javascript
-   * abstract class Locale {
-   *   name: string;
-   * };
    *
-   * @Injectable()
-   * class EnLocale extends Locale {
-   *   name: 'en';
-   * };
-   *
-   * @Injectable()
-   * class SkLocale extends Locale {
-   *   name: 'sk';
-   * };
-   *
-   * const injector = Injector.resolveAndCreate([
-   *   EnLocale,
-   *   SkLocale
-   *   { provide: Locale, useExisting: EnLocale, multi: true },
-   *   { provide: Locale, useExisting: SkLocale, multi: true },
-   * ]);
-   *
-   * const locales: Locale[] = injector.get(Locale);
-   * const localeNames: string[] = locals.map((l) => l.name);
-   * expect(localeNames).toEqual(['en', 'sk']);
-   * ```
+   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
    */
   multi?: boolean;
 }
 
 /**
- * Configures the {@link Injector} to return a value by invoking a `useFactory` function.
+ * @whatItDoes Configures the {@link Injector} to return a value by invoking a `useFactory`
+ * function.
+ * @howToUse
+ * ```
+ * function serviceFactory() { ... }
+ *
+ * const provider: FactoryProvider = {provide: 'someToken', useFactory: serviceFactory, deps: []};
+ * ```
+ *
+ * @description
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
  * ### Example
- * ```javascript
- * const HASH = new OpaqueToken('hash');
  *
- * const injector = Injector.resolveAndCreate([
- *   {provide: Location, useValue: window.location},
- *   {provide: HASH, useFactory: (location: Location) => location.hash, deps: [Location]}
- * ]);
+ * {@example core/di/ts/provider_spec.ts region='FactoryProvider'}
  *
+ * Dependencies can also be marked as optional:
+ * {@example core/di/ts/provider_spec.ts region='FactoryProviderOptionalDeps'}
  *
- * // Assume location is: http://angular.io/#someLocation
- * expect(injector.get(HASH)).toEqual('someLocation');
- * ```
  * @stable
  */
 export interface FactoryProvider {
@@ -285,65 +199,21 @@ export interface FactoryProvider {
    * providers spread across many files to provide configuration information to a common token.
    *
    * ### Example
-   * ```javascript
-   * class Locale {
-   *   constructor(public name: string) {}
-   * };
-   * const PRIMARY = new OpequeToken('primary');
-   * const SECONDARY = new OpequeToken('secondary');
    *
-   * const injector = Injector.resolveAndCreate([
-   *   { provide: PRIMARY: useValue: 'en'},
-   *   { provide: SECONDARY: useValue: 'sk'},
-   *   { provide: Locale, useFactory: (n) => new Locale(n), deps: [PRIMARY], multi: true},
-   *   { provide: Locale, useFactory: (n) => new Locale(n), deps: [SECONDARY], multi: true},
-   * ]);
-   *
-   * const locales: Locale[] = injector.get(Locale);
-   * const localeNames: string[] = locals.map((l) => l.name);
-   * expect(localeNames).toEqual(['en', 'sk']);
-   * ```
+   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
    */
   multi?: boolean;
 }
 
 /**
- * Describes how the {@link Injector} should be configured.
- *
+ * @whatItDoes Describes how the {@link Injector} should be configured.
+ * @howToUse
  * See {@link TypeProvider}, {@link ValueProvider}, {@link ClassProvider}, {@link ExistingProvider},
  * {@link FactoryProvider}.
  *
- * ```javascript
- * class Greeting {
- *   salutation = 'Hello';
- * }
+ * @description
+ * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
- * class FormalGreeting extends Greeting {
- *   salutation = 'Greetings';
- * }
- *
- * abstract class Operation {
- *   apply(a,b): any;
- * }
- *
- * class AddOperation extends Operation {
- *   apply(a,b) { return a+b; }
- * }
- *
- *
- * const injector = Injector.resolveAndCreate([
- *   FormalGreeting,
- *   {provide: String, useValue: 'Hello World!'},
- *   {provide: Greeting, useExisting: FormalGreeting},
- *   {provide: Operation, useClass: AddOperation},
- *   {provide: Number, useFactory: (op) =>op.apply(1,2), deps: [Operation] }
- * ]);
- *
- * expect(injector.get(FormalGreeting).name).toEqual('Greetings');
- * expect(injector.get(String).name).toEqual('Hello World!');
- * expect(injector.get(Greeting).name).toBe(injector.get(FormalGreeting));
- * expect(injector.get(Number).toEqual(3);
- * ```
  * @stable
  */
 export type Provider =
