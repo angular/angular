@@ -483,7 +483,7 @@ function stripComments(input: string): string {
   return StringWrapper.replaceAllMapped(input, _commentRe, (_: any /** TODO #9100 */) => '');
 }
 
-// all comments except inline source mapping ("/* #sourceMappingURL= ... */")
+// all comments except inline source mapping
 const _sourceMappingUrlRe = /\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\//;
 
 function extractSourceMappingUrl(input: string): string {
