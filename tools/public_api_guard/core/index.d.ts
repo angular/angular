@@ -236,6 +236,12 @@ export declare type CompilerOptions = {
 export declare const Component: ComponentDecorator;
 
 /** @stable */
+export interface ComponentDecorator {
+    /** @stable */ (obj: Component): TypeDecorator;
+    new (obj: Component): Component;
+}
+
+/** @stable */
 export declare class ComponentFactory<C> {
     componentType: Type<any>;
     selector: string;
@@ -366,6 +372,12 @@ export declare function destroyPlatform(): void;
 
 /** @stable */
 export declare const Directive: DirectiveDecorator;
+
+/** @stable */
+export interface DirectiveDecorator {
+    /** @stable */ (obj: Directive): TypeDecorator;
+    new (obj: Directive): Directive;
+}
 
 /** @stable */
 export declare abstract class DoCheck {
