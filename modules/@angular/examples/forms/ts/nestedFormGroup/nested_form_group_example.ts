@@ -15,15 +15,15 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <p *ngIf="name.invalid">Name is invalid.</p>
-    
+
       <div formGroupName="name">
         <input formControlName="first" placeholder="First name">
         <input formControlName="last" placeholder="Last name">
-      </div>  
+      </div>
       <input formControlName="email" placeholder="Email">
       <button type="submit">Submit</button>
     </form>
-     
+
     <button (click)="setPreset()">Set preset</button>
 `,
 })
@@ -36,9 +36,9 @@ export class NestedFormGroupComp {
     email: new FormControl()
   });
 
-  get first() { return this.form.get('name.first'); }
+  get first(): any { return this.form.get('name.first'); }
 
-  get name() { return this.form.get('name'); }
+  get name(): any { return this.form.get('name'); }
 
   onSubmit() {
     console.log(this.first.value);  // 'Nancy'

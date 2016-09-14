@@ -11,7 +11,7 @@ declare var expect: any;
 
 // TODO (juliemr): remove this method once this becomes a protractor plugin
 export function verifyNoBrowserErrors() {
-  browser.manage().logs().get('browser').then(function(browserLog) {
+  browser.manage().logs().get('browser').then(function(browserLog: any[]) {
     var errors: any[] = [];
     browserLog.filter(logEntry => {
       var msg = logEntry.message;
