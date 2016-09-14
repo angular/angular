@@ -7,6 +7,8 @@
  */
 
 import {AUTO_STYLE} from '@angular/core';
+
+import {isPresent} from '../facade/lang';
 import {AnimationPlayer} from '../private_import_core';
 
 import {getDOM} from './dom_adapter';
@@ -21,13 +23,22 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
+  private _finalKeyframe: {[key: string]: string | number};
 
   public parentPlayer: AnimationPlayer = null;
+  public previousStyles: {[styleName: string]: string | number};
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number}) {
+      public options: {[key: string]: string | number},
+      previousPlayers: WebAnimationsPlayer[] = []) {
     this._duration = <number>options['duration'];
+
+    this.previousStyles = {};
+    previousPlayers.forEach(player => {
+      let styles = player._captureStyles();
+      Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+    });
   }
 
   private _onFinish() {
@@ -44,14 +55,30 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
     const keyframes = this.keyframes.map(styles => {
       const formattedKeyframe: {[key: string]: string | number} = {};
-      Object.keys(styles).forEach(prop => {
-        const value = styles[prop];
-        formattedKeyframe[prop] = value == AUTO_STYLE ? _computeStyle(this.element, prop) : value;
+      Object.keys(styles).forEach((prop, index) => {
+        let value = styles[prop];
+        if (value == AUTO_STYLE) {
+          value = _computeStyle(this.element, prop);
+        }
+        if (value != undefined) {
+          formattedKeyframe[prop] = value;
+        }
       });
       return formattedKeyframe;
     });
 
+    const previousStyleProps = Object.keys(this.previousStyles);
+    if (previousStyleProps.length) {
+      let startingKeyframe = findStartingKeyframe(keyframes);
+      previousStyleProps.forEach(prop => {
+        if (isPresent(startingKeyframe[prop])) {
+          startingKeyframe[prop] = this.previousStyles[prop];
+        }
+      });
+    }
+
     this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
+    this._finalKeyframe = _copyKeyframeStyles(keyframes[keyframes.length - 1]);
 
     // this is required so that the player doesn't start to animate right away
     this._resetDomPlayerState();
@@ -119,8 +146,47 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   setPosition(p: number): void { this._player.currentTime = p * this.totalTime; }
 
   getPosition(): number { return this._player.currentTime / this.totalTime; }
+
+  private _captureStyles(): {[prop: string]: string | number} {
+    const styles: {[key: string]: string | number} = {};
+    if (this.hasStarted()) {
+      Object.keys(this._finalKeyframe).forEach(prop => {
+        if (prop != 'offset') {
+          styles[prop] =
+              this._finished ? this._finalKeyframe[prop] : _computeStyle(this.element, prop);
+        }
+      });
+    }
+
+    return styles;
+  }
 }
 
 function _computeStyle(element: any, prop: string): string {
   return getDOM().getComputedStyle(element)[prop];
+}
+
+function _copyKeyframeStyles(styles: {[style: string]: string | number}):
+    {[style: string]: string | number} {
+  const newStyles: {[style: string]: string | number} = {};
+  Object.keys(styles).forEach(prop => {
+    if (prop != 'offset') {
+      newStyles[prop] = styles[prop];
+    }
+  });
+  return newStyles;
+}
+
+function findStartingKeyframe(keyframes: {[prop: string]: string | number}[]):
+    {[prop: string]: string | number} {
+  let startingKeyframe = keyframes[0];
+  // it's important that we find the LAST keyframe
+  // to ensure that style overidding is final.
+  for (let i = 1; i < keyframes.length; i++) {
+    const kf = keyframes[i];
+    const offset = kf['offset'];
+    if (offset !== 0) break;
+    startingKeyframe = kf;
+  }
+  return startingKeyframe;
 }

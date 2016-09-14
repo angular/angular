@@ -104,7 +104,9 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p: any /** TODO #9100 */): void { this._players[0].setPosition(p); }
+  setPosition(p: number): void { this._players[0].setPosition(p); }
 
   getPosition(): number { return this._players[0].getPosition(); }
+
+  get players(): AnimationPlayer[] { return this._players; }
 }

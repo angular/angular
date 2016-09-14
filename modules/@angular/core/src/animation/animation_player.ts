@@ -56,6 +56,6 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
   finish(): void { this._onFinish(); }
   destroy(): void {}
   reset(): void {}
-  setPosition(p: any /** TODO #9100 */): void {}
+  setPosition(p: number): void {}
   getPosition(): number { return 0; }
 }
