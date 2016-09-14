@@ -181,7 +181,7 @@ export declare class NgTemplateOutlet implements OnChanges {
     ngOutletContext: Object;
     ngTemplateOutlet: TemplateRef<Object>;
     constructor(_viewContainerRef: ViewContainerRef);
-    ngOnChanges(): void;
+    ngOnChanges(changes: SimpleChanges): void;
 }
 
 /** @stable */

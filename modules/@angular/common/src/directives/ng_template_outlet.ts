@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, OnChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -44,7 +44,7 @@ export class NgTemplateOutlet implements OnChanges {
   @Input()
   set ngTemplateOutlet(templateRef: TemplateRef<Object>) { this._templateRef = templateRef; }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     if (this._viewRef) {
       this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
     }
