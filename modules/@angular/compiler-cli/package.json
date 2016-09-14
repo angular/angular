@@ -17,7 +17,6 @@
   "peerDependencies": {
     "typescript": "^2.0.2",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "@angular/platform-server": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "repository": {
