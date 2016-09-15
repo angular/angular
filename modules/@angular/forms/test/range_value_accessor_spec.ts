@@ -28,6 +28,7 @@ export function main() {
          const template = `<input type="range" [(ngModel)]="val">`;
          fixture = createTestComponent(template);
          fixture.nativeElement.value = '2';
+         fixture.detectChanges();
          expect(typeof(fixture.componentInstance.val)).toBe('number');
        }));
 
