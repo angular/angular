@@ -9,12 +9,8 @@
 import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {NumberWrapper, StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
-
-
 
 /**
  * Set the following 'traceCategories' to collect metrics in Chrome:
@@ -35,18 +31,18 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   private _parseChromeVersion(userAgent: string): number {
-    if (isBlank(userAgent)) {
+    if (!userAgent) {
       return -1;
     }
-    var v = StringWrapper.split(userAgent, /Chrom(e|ium)\//g)[2];
-    if (isBlank(v)) {
+    var v = userAgent.split(/Chrom(e|ium)\//g)[2];
+    if (!v) {
       return -1;
     }
     v = v.split('.')[0];
-    if (isBlank(v)) {
+    if (!v) {
       return -1;
     }
-    return NumberWrapper.parseInt(v, 10);
+    return parseInt(v, 10);
   }
 
   gc() { return this._driver.executeScript('window.gc()'); }
@@ -57,7 +53,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
     var script = `console.timeEnd('${name}');`;
-    if (isPresent(restartName)) {
+    if (restartName) {
       script += `console.time('${restartName}');`;
     }
     return this._driver.executeScript(script);
@@ -74,10 +70,10 @@ export class ChromeDriverExtension extends WebDriverExtension {
           var events: PerfLogEvent[] = [];
           entries.forEach(entry => {
             var message = JSON.parse(entry['message'])['message'];
-            if (StringWrapper.equals(message['method'], 'Tracing.dataCollected')) {
+            if (message['method'] === 'Tracing.dataCollected') {
               events.push(message['params']);
             }
-            if (StringWrapper.equals(message['method'], 'Tracing.bufferUsage')) {
+            if (message['method'] ===  'Tracing.bufferUsage') {
               throw new Error('The DevTools trace buffer filled during the test!');
             }
           });
@@ -87,7 +83,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   private _convertPerfRecordsToEvents(
       chromeEvents: Array<{[key: string]: any}>, normalizedEvents: PerfLogEvent[] = null) {
-    if (isBlank(normalizedEvents)) {
+    if (!normalizedEvents) {
       normalizedEvents = [];
     }
     var majorGCPids = {};
@@ -137,8 +133,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
     var ph = event['ph'];
     if (this._isEvent(
             categories, name, ['disabled-by-default-devtools.timeline'], 'FunctionCall') &&
-        (isBlank(args) || isBlank(args['data']) ||
-         !StringWrapper.equals(args['data']['scriptName'], 'InjectedScript'))) {
+        (!args || !args['data'] ||
+         args['data']['scriptName'] !==  'InjectedScript')) {
       return normalizeEvent(event, {'name': 'script'});
     } else if (
         this._isEvent(
@@ -151,16 +147,16 @@ export class ChromeDriverExtension extends WebDriverExtension {
     } else if (this._isEvent(
                    categories, name, ['disabled-by-default-devtools.timeline'], 'GCEvent')) {
       var normArgs: {[key: string]: any} = {
-        'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
+        'usedHeapSize': args['usedHeapSizeAfter'] ? args['usedHeapSizeAfter'] :
                                                                args['usedHeapSizeBefore']
       };
-      if (StringWrapper.equals(ph, 'E')) {
-        normArgs['majorGc'] = isPresent(majorGCPids[pid]) && majorGCPids[pid];
+      if (ph ===  'E') {
+        normArgs['majorGc'] = majorGCPids[pid] && majorGCPids[pid];
       }
       majorGCPids[pid] = false;
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (
-        this._isEvent(categories, name, ['v8'], 'majorGC') && StringWrapper.equals(ph, 'B')) {
+        this._isEvent(categories, name, ['v8'], 'majorGC') && ph ===  'B') {
       majorGCPids[pid] = true;
     }
     return null;  // nothing useful in this event
@@ -172,22 +168,22 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
       var normArgs = {
         'majorGc': true,
-        'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
+        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
                                                                args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MinorGC')) {
       var normArgs = {
         'majorGc': false,
-        'usedHeapSize': isPresent(args['usedHeapSizeAfter']) ? args['usedHeapSizeAfter'] :
+        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
                                                                args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (
         this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
-        (isBlank(args) || isBlank(args['data']) ||
-         (!StringWrapper.equals(args['data']['scriptName'], 'InjectedScript') &&
-          !StringWrapper.equals(args['data']['scriptName'], '')))) {
+        (!args || !args['data'] ||
+         (args['data']['scriptName'] !==  'InjectedScript' &&
+          args['data']['scriptName'] !==  ''))) {
       return normalizeEvent(event, {'name': 'script'});
     } else if (this._isEvent(
                    categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')) {
@@ -216,9 +212,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
       eventCategories: string[], eventName: string, expectedCategories: string[],
       expectedName: string = null): boolean {
     var hasCategories = expectedCategories.reduce(
-        (value, cat) => { return value && ListWrapper.contains(eventCategories, cat); }, true);
-    return isBlank(expectedName) ? hasCategories :
-                                   hasCategories && StringWrapper.equals(eventName, expectedName);
+        (value, cat) => { return value && eventCategories.indexOf(cat) !== -1; }, true);
+    return !expectedName ? hasCategories :
+                                   hasCategories && eventName ===  expectedName;
   }
 
   perfLogFeatures(): PerfLogFeatures {
@@ -227,27 +223,29 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   supports(capabilities: {[key: string]: any}): boolean {
     return this._majorChromeVersion != -1 &&
-        StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
+        capabilities['browserName'].toLowerCase() ===  'chrome';
   }
 }
 
 function normalizeEvent(
     chromeEvent: {[key: string]: any}, data: {[key: string]: any}): PerfLogEvent {
   var ph = chromeEvent['ph'];
-  if (StringWrapper.equals(ph, 'S')) {
+  if (ph ===  'S') {
     ph = 'b';
-  } else if (StringWrapper.equals(ph, 'F')) {
+  } else if (ph ===  'F') {
     ph = 'e';
   }
   var result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};
   if (chromeEvent['ph'] === 'X') {
     var dur = chromeEvent['dur'];
-    if (isBlank(dur)) {
+    if (dur === undefined) {
       dur = chromeEvent['tdur'];
     }
-    result['dur'] = isBlank(dur) ? 0.0 : dur / 1000;
+    result['dur'] = !dur ? 0.0 : dur / 1000;
   }
-  StringMapWrapper.forEach(data, (value, prop) => { result[prop] = value; });
+  for (let prop in data) {
+    result[prop] = data[prop];
+  }
   return result;
 }
