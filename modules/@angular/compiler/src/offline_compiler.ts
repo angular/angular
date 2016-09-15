@@ -10,7 +10,6 @@ import {SchemaMetadata} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {ListWrapper} from './facade/collection';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
@@ -58,10 +57,10 @@ export class OfflineCompiler {
   compile(
       moduleUrl: string, ngModulesSummary: NgModulesSummary, components: StaticSymbol[],
       ngModules: StaticSymbol[]): Promise<SourceModule[]> {
-    let fileSuffix = _splitTypescriptSuffix(moduleUrl)[1];
-    let statements: o.Statement[] = [];
-    let exportedVars: string[] = [];
-    let outputSourceModules: SourceModule[] = [];
+    const fileSuffix = _splitTypescriptSuffix(moduleUrl)[1];
+    const statements: o.Statement[] = [];
+    const exportedVars: string[] = [];
+    const outputSourceModules: SourceModule[] = [];
 
     // compile all ng modules
     exportedVars.push(
@@ -75,12 +74,12 @@ export class OfflineCompiler {
           if (!ngModule) {
             throw new Error(`Cannot determine the module for component ${compMeta.type.name}!`);
           }
+
           return Promise
               .all([compMeta, ...ngModule.transitiveModule.directives].map(
                   dirMeta => this._directiveNormalizer.normalizeDirective(dirMeta).asyncResult))
               .then((normalizedCompWithDirectives) => {
-                const compMeta = normalizedCompWithDirectives[0];
-                const dirMetas = normalizedCompWithDirectives.slice(1);
+                const [compMeta, ...dirMetas] = normalizedCompWithDirectives;
                 _assertComponent(compMeta);
 
                 // compile styles
@@ -90,8 +89,9 @@ export class OfflineCompiler {
                 });
 
                 // compile components
-                exportedVars.push(this._compileComponentFactory(compMeta, fileSuffix, statements));
-                exportedVars.push(this._compileComponent(
+                exportedVars.push(
+                  this._compileComponentFactory(compMeta, fileSuffix, statements),
+                  this._compileComponent(
                     compMeta, dirMetas, ngModule.transitiveModule.pipes, ngModule.schemas,
                     stylesCompileResults.componentStylesheet, fileSuffix, statements));
               });
@@ -106,8 +106,8 @@ export class OfflineCompiler {
   }
 
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
-    const ngModule = this._metadataResolver.getNgModuleMetadata(<any>ngModuleType);
-    let appCompileResult = this._ngModuleCompiler.compile(ngModule, [
+    const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType);
+    const appCompileResult = this._ngModuleCompiler.compile(ngModule, [
       new CompileProviderMetadata(
           {token: resolveIdentifierToken(Identifiers.LOCALE_ID), useValue: this._localeId}),
       new CompileProviderMetadata({
@@ -126,18 +126,19 @@ export class OfflineCompiler {
   private _compileComponentFactory(
       compMeta: CompileDirectiveMetadata, fileSuffix: string,
       targetStatements: o.Statement[]): string {
-    var hostMeta = createHostComponentMeta(compMeta);
-    var hostViewFactoryVar =
+    const hostMeta = createHostComponentMeta(compMeta);
+    const hostViewFactoryVar =
         this._compileComponent(hostMeta, [compMeta], [], [], null, fileSuffix, targetStatements);
-    var compFactoryVar = _componentFactoryName(compMeta.type);
+    const compFactoryVar = _componentFactoryName(compMeta.type);
     targetStatements.push(
         o.variable(compFactoryVar)
             .set(o.importExpr(resolveIdentifier(Identifiers.ComponentFactory), [o.importType(
                                                                                    compMeta.type)])
                      .instantiate(
                          [
-                           o.literal(compMeta.selector), o.variable(hostViewFactoryVar),
-                           o.importExpr(compMeta.type)
+                           o.literal(compMeta.selector),
+                           o.variable(hostViewFactoryVar),
+                           o.importExpr(compMeta.type),
                          ],
                          o.importType(
                              resolveIdentifier(Identifiers.ComponentFactory),
@@ -150,15 +151,15 @@ export class OfflineCompiler {
       compMeta: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], schemas: SchemaMetadata[], componentStyles: CompiledStylesheet,
       fileSuffix: string, targetStatements: o.Statement[]): string {
-    var parsedTemplate = this._templateParser.parse(
+    const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, schemas, compMeta.type.name);
-    var stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
-    var viewResult =
+    const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
+    const viewResult =
         this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, pipes);
     if (componentStyles) {
-      ListWrapper.addAll(targetStatements, _resolveStyleStatements(componentStyles, fileSuffix));
+      targetStatements.push(..._resolveStyleStatements(componentStyles, fileSuffix));
     }
-    ListWrapper.addAll(targetStatements, _resolveViewStatements(viewResult));
+    targetStatements.push(..._resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;
   }
 
@@ -180,12 +181,10 @@ export class OfflineCompiler {
 function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[] {
   compileResult.dependencies.forEach((dep) => {
     if (dep instanceof ViewFactoryDependency) {
-      let vfd = <ViewFactoryDependency>dep;
-      vfd.placeholder.moduleUrl = _ngfactoryModuleUrl(vfd.comp.moduleUrl);
+      dep.placeholder.moduleUrl = _ngfactoryModuleUrl(dep.comp.moduleUrl);
     } else if (dep instanceof ComponentFactoryDependency) {
-      let cfd = <ComponentFactoryDependency>dep;
-      cfd.placeholder.name = _componentFactoryName(cfd.comp);
-      cfd.placeholder.moduleUrl = _ngfactoryModuleUrl(cfd.comp.moduleUrl);
+      dep.placeholder.name = _componentFactoryName(dep.comp);
+      dep.placeholder.moduleUrl = _ngfactoryModuleUrl(dep.comp.moduleUrl);
     }
   });
   return compileResult.statements;
@@ -201,7 +200,7 @@ function _resolveStyleStatements(
 }
 
 function _ngfactoryModuleUrl(compUrl: string): string {
-  var urlWithSuffix = _splitTypescriptSuffix(compUrl);
+  const urlWithSuffix = _splitTypescriptSuffix(compUrl);
   return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
 }
 
@@ -220,13 +219,15 @@ function _assertComponent(meta: CompileDirectiveMetadata) {
 }
 
 function _splitTypescriptSuffix(path: string): string[] {
-  if (/\.d\.ts$/.test(path)) {
-    return [path.substring(0, path.length - 5), '.ts'];
+  if (path.endsWith('.d.ts')) {
+    return [path.slice(0, -5), '.ts'];
   }
-  let lastDot = path.lastIndexOf('.');
+
+  const lastDot = path.lastIndexOf('.');
+
   if (lastDot !== -1) {
     return [path.substring(0, lastDot), path.substring(lastDot)];
-  } else {
-    return [path, ''];
   }
+
+  return [path, ''];
 }
