@@ -23,13 +23,12 @@ export function main() {
     });
 
     it('should add styles specified in an object literal', async(() => {
-      const template = `<input type="range" [(ngModel)]="val">`;
-      fixture = createTestComponent(template);
-      expect(typeof(fixture.componentInstance.val)).toBe('number');
-    }));
+         const template = `<input type="range" [(ngModel)]="val">`;
+         fixture = createTestComponent(template);
+         expect(typeof(fixture.componentInstance.val)).toBe('number');
+       }));
 
   });
-
 }
 
 @Component({selector: 'test-cmp', template: ''})
@@ -41,4 +40,3 @@ function createTestComponent(template: string): ComponentFixture<TestComponent> 
   return TestBed.overrideComponent(TestComponent, {set: {template: template}})
       .createComponent(TestComponent);
 }
-

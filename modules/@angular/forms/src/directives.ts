@@ -7,6 +7,8 @@
  */
 
 import {NgModule, Type} from '@angular/core';
+import {NumberValueAccessor} from '@angular/forms/src/directives/number_value_accessor';
+import {RangeValueAccessor} from '@angular/forms/src/directives/range_value_accessor';
 
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
@@ -22,8 +24,6 @@ import {FormArrayName, FormGroupName} from './directives/reactive_directives/for
 import {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 import {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 import {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
-import {RangeValueAccessor} from "@angular/forms/src/directives/range_value_accessor";
-import {NumberValueAccessor} from "@angular/forms/src/directives/number_value_accessor";
 
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
@@ -33,9 +33,7 @@ export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_sta
 export {NgForm} from './directives/ng_form';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
-export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
-export {RangeValueAccessor} from './directives/range_value_accessor';
 export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
