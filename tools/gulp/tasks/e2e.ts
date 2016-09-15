@@ -3,7 +3,7 @@ import * as path from 'path';
 import gulpMerge = require('merge2');
 import gulpRunSequence = require('run-sequence');
 
-import {SOURCE_ROOT, DIST_ROOT, PROJECT_ROOT, NPM_VENDOR_FILES} from '../constants';
+import {SOURCE_ROOT, DIST_ROOT, PROJECT_ROOT} from '../constants';
 import {
   tsBuildTask, sassBuildTask, copyTask, buildAppTask, execNodeTask,
   vendorTask, sequenceTask, serverTask
@@ -41,13 +41,16 @@ let stopE2eServer: () => void = null;
 task(':serve:e2eapp', serverTask(false, (stream) => { stopE2eServer = () => stream.emit('kill') }));
 task(':serve:e2eapp:stop', () => stopE2eServer());
 task('serve:e2eapp', ['build:e2eapp'], sequenceTask([
+  ':inline-resources',
   ':serve:e2eapp',
   ':watch:components',
-  ':watch:e2eapp'
 ]));
 
 
 task('e2e', sequenceTask(
-  ':test:protractor:setup', 'serve:e2eapp', ':test:protractor', ':serve:e2eapp:stop',
-  ':e2e:done'
+  ':test:protractor:setup',
+  'serve:e2eapp',
+  ':test:protractor',
+  ':serve:e2eapp:stop',
+  ':e2e:done',
 ));

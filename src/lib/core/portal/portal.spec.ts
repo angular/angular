@@ -1,11 +1,4 @@
-import {
-  inject,
-  fakeAsync,
-  flushMicrotasks,
-  ComponentFixture,
-  TestBed,
-  async,
-} from '@angular/core/testing';
+import {inject, ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {
   NgModule,
   Component,
@@ -34,25 +27,22 @@ describe('Portals', () => {
   describe('PortalHostDirective', () => {
     let fixture: ComponentFixture<PortalTestApp>;
 
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(PortalTestApp);
-    }));
+    });
 
-    it('should load a component into the portal', fakeAsync(() => {
+    it('should load a component into the portal', () => {
       // Set the selectedHost to be a ComponentPortal.
       let testAppComponent = fixture.debugElement.componentInstance;
       testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg);
       fixture.detectChanges();
 
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Pizza');
-    }));
+    });
 
-    it('should load a component into the portal with a given injector', fakeAsync(() => {
+    it('should load a component into the portal with a given injector', () => {
       // Create a custom injector for the component.
       let chocolateInjector = new ChocolateInjector(fixture.componentInstance.injector);
 
@@ -61,17 +51,13 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg, null, chocolateInjector);
       fixture.detectChanges();
 
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-      fixture.detectChanges();
-
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Pizza');
       expect(hostContainer.textContent).toContain('Chocolate');
-    }));
+    });
 
-    it('should load a <template> portal', fakeAsync(() => {
+    it('should load a <template> portal', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
 
       // Detect changes initially so that the component's ViewChildren are resolved.
@@ -81,15 +67,12 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = testAppComponent.cakePortal;
       fixture.detectChanges();
 
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Cake');
-    }));
+    });
 
-    it('should load a <template> portal with the `*` sugar', fakeAsync(() => {
+    it('should load a <template> portal with the `*` sugar', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
 
       // Detect changes initially so that the component's ViewChildren are resolved.
@@ -99,15 +82,12 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = testAppComponent.piePortal;
       fixture.detectChanges();
 
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Pie');
-    }));
+    });
 
-    it('should load a <template> portal with a binding', fakeAsync(() => {
+    it('should load a <template> portal with a binding', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
 
       // Detect changes initially so that the component's ViewChildren are resolved.
@@ -115,13 +95,6 @@ describe('Portals', () => {
 
       // Set the selectedHost to be a TemplatePortal.
       testAppComponent.selectedPortal = testAppComponent.portalWithBinding;
-      fixture.detectChanges();
-
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-
-      // Now that the portal is attached, change detection has to happen again in order
-      // for the bindings to update.
       fixture.detectChanges();
 
       // Expect that the content of the attached portal is present.
@@ -134,9 +107,9 @@ describe('Portals', () => {
 
       // Expect the new value to be reflected in the rendered output.
       expect(hostContainer.textContent).toContain('Mango');
-    }));
+    });
 
-    it('should change the attached portal', fakeAsync(() => {
+    it('should change the attached portal', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
 
       // Detect changes initially so that the component's ViewChildren are resolved.
@@ -146,10 +119,6 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = testAppComponent.piePortal;
       fixture.detectChanges();
 
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
-      fixture.detectChanges();
-
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Pie');
@@ -157,13 +126,11 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg);
       fixture.detectChanges();
 
-      flushMicrotasks();
-
       expect(hostContainer.textContent).toContain('Pizza');
-    }));
+    });
   });
 
-  describe('DomPortalHost', function () {
+  describe('DomPortalHost', () => {
     let componentFactoryResolver: ComponentFactoryResolver;
     let someViewContainerRef: ViewContainerRef;
     let someInjector: Injector;
@@ -183,23 +150,20 @@ describe('Portals', () => {
       someInjector = fixture.componentInstance.injector;
     });
 
-    it('should attach and detach a component portal', fakeAsync(() => {
+    it('should attach and detach a component portal', () => {
       let portal = new ComponentPortal(PizzaMsg, someViewContainerRef);
 
       let componentInstance: PizzaMsg = portal.attach(host).instance;
-
-      flushMicrotasks();
 
       expect(componentInstance).toEqual(jasmine.any(PizzaMsg));
       expect(someDomElement.textContent).toContain('Pizza');
 
       host.detach();
-      flushMicrotasks();
 
       expect(someDomElement.innerHTML).toBe('');
-    }));
+    });
 
-    it('should attach and detach a component portal with a given injector', fakeAsync(() => {
+    it('should attach and detach a component portal with a given injector', () => {
       let fixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
       someViewContainerRef = fixture.componentInstance.viewContainerRef;
       someInjector = fixture.componentInstance.injector;
@@ -208,8 +172,6 @@ describe('Portals', () => {
       let portal = new ComponentPortal(PizzaMsg, someViewContainerRef, chocolateInjector);
 
       let componentInstance: PizzaMsg = portal.attach(host).instance;
-
-      flushMicrotasks();
       fixture.detectChanges();
 
       expect(componentInstance).toEqual(jasmine.any(PizzaMsg));
@@ -217,22 +179,20 @@ describe('Portals', () => {
       expect(someDomElement.textContent).toContain('Chocolate');
 
       host.detach();
-      flushMicrotasks();
 
       expect(someDomElement.innerHTML).toBe('');
-    }));
+    });
 
-    it('should attach and detach a template portal', fakeAsync(() => {
+    it('should attach and detach a template portal', () => {
       let fixture = TestBed.createComponent(PortalTestApp);
       fixture.detectChanges();
 
       fixture.componentInstance.cakePortal.attach(host);
-      flushMicrotasks();
 
       expect(someDomElement.textContent).toContain('Cake');
-    }));
+    });
 
-    it('should attach and detach a template portal with a binding', fakeAsync(() => {
+    it('should attach and detach a template portal with a binding', () => {
       let fixture = TestBed.createComponent(PortalTestApp);
 
       let testAppComponent = fixture.debugElement.componentInstance;
@@ -243,9 +203,6 @@ describe('Portals', () => {
       // Attach the TemplatePortal.
       testAppComponent.portalWithBinding.attach(host);
       fixture.detectChanges();
-
-      // Flush the attachment of the Portal.
-      flushMicrotasks();
 
       // Now that the portal is attached, change detection has to happen again in order
       // for the bindings to update.
@@ -263,9 +220,9 @@ describe('Portals', () => {
 
       host.detach();
       expect(someDomElement.innerHTML).toBe('');
-    }));
+    });
 
-    it('should change the attached portal', fakeAsync(() => {
+    it('should change the attached portal', () => {
       let fixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
       someViewContainerRef = fixture.componentInstance.viewContainerRef;
 
@@ -273,18 +230,14 @@ describe('Portals', () => {
       appFixture.detectChanges();
 
       appFixture.componentInstance.piePortal.attach(host);
-      flushMicrotasks();
 
       expect(someDomElement.textContent).toContain('Pie');
 
       host.detach();
-      flushMicrotasks();
-
       host.attach(new ComponentPortal(PizzaMsg, someViewContainerRef));
-      flushMicrotasks();
 
       expect(someDomElement.textContent).toContain('Pizza');
-    }));
+    });
   });
 });
 

@@ -37,6 +37,8 @@ System.import(distPath + '@angular2-material/system-config-spec.js').then(functi
     var testing = providers[0];
     var testingBrowser = providers[1];
 
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
     testing.TestBed.initTestEnvironment(
         testingBrowser.BrowserDynamicTestingModule,
         testingBrowser.platformBrowserDynamicTesting());

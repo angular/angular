@@ -46,7 +46,7 @@ describe('MdButtonToggle', () => {
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonTogglesInsideButtonToggleGroup;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(ButtonTogglesInsideButtonToggleGroup);
       fixture.detectChanges();
 
@@ -65,7 +65,7 @@ describe('MdButtonToggle', () => {
         .map(debugEl => debugEl.nativeElement);
 
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
-    }));
+    });
 
     it('should set individual button toggle names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
@@ -326,7 +326,7 @@ describe('MdButtonToggle', () => {
 
   describe('with initial value and change event', () => {
 
-    it('should not fire an initial change event', async(() => {
+    it('should not fire an initial change event', () => {
       let fixture = TestBed.createComponent(ButtonToggleGroupWithInitialValue);
       let testComponent = fixture.debugElement.componentInstance;
       let groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
@@ -342,7 +342,7 @@ describe('MdButtonToggle', () => {
 
       expect(groupInstance.value).toBe('green');
       expect(testComponent.lastEvent.value).toBe('green');
-    }));
+    });
 
   });
 

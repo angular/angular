@@ -1,11 +1,12 @@
 import gulp = require('gulp');
-const karma = require('karma');
 import path = require('path');
 import gulpMerge = require('merge2');
 
-import {PROJECT_ROOT} from '../constants';
+import {PROJECT_ROOT, DIST_COMPONENTS_ROOT} from '../constants';
 import {sequenceTask} from '../task_helpers';
 
+const karma = require('karma');
+const runSequence = require('run-sequence');
 
 gulp.task(':build:test:vendor', function() {
   const npmVendorFiles = [
@@ -23,8 +24,11 @@ gulp.task(':build:test:vendor', function() {
 gulp.task(':test:deps', sequenceTask(
   'clean',
   [
-    ':build:test:vendor', ':build:components:assets', ':build:components:scss',
-    ':build:components:spec'
+    ':build:test:vendor',
+    ':build:components:assets',
+    ':build:components:scss',
+    ':build:components:spec',
+    ':watch:components:spec',
   ]
 ));
 
@@ -33,9 +37,14 @@ gulp.task('test', [':test:deps'], (done: () => void) => {
     configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js')
   }, done).start();
 });
+
 gulp.task('test:single-run', [':test:deps'], (done: () => void) => {
-  new karma.Server({
-    configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
-    singleRun: true
-  }, done).start();
+  runSequence(
+    ':inline-resources',
+    () => {
+      new karma.Server({
+        configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
+        singleRun: true
+    }, done).start();
+  });
 });

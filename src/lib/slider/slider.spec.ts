@@ -322,7 +322,7 @@ describe('MdSlider', () => {
     let sliderInstance: MdSlider;
     let sliderTrackElement: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(SliderWithValue);
       fixture.detectChanges();
 
@@ -330,7 +330,7 @@ describe('MdSlider', () => {
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
       sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
-    }));
+    });
 
     it('should set the default value from the attribute', () => {
       expect(sliderInstance.value).toBe(26);
@@ -425,7 +425,7 @@ describe('MdSlider', () => {
     let tickContainer: HTMLElement;
     let lastTickContainer: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(SliderWithAutoTickInterval);
       fixture.detectChanges();
 
@@ -434,7 +434,7 @@ describe('MdSlider', () => {
       tickContainer = <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
       lastTickContainer =
           <HTMLElement>sliderNativeElement.querySelector('.md-slider-last-tick-container');
-    }));
+    });
 
     it('should set the correct tick separation', () => {
       // The first tick mark is going to be at value 30 as it is the first step after 30px. The

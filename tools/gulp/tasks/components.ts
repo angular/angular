@@ -3,7 +3,7 @@ import {readdirSync, statSync, writeFileSync} from 'fs';
 import * as path from 'path';
 
 import {SOURCE_ROOT, DIST_COMPONENTS_ROOT, PROJECT_ROOT} from '../constants';
-import {sassBuildTask, tsBuildTask, execNodeTask, copyTask} from '../task_helpers';
+import {sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask} from '../task_helpers';
 
 // No typings for these.
 const inlineResources = require('../../../scripts/release/inline-resources');
@@ -21,6 +21,12 @@ function camelCase(str: string) {
 
 task(':watch:components', () => {
   watch(path.join(componentsDir, '**/*.ts'), [':build:components:ts']);
+  watch(path.join(componentsDir, '**/*.scss'), [':build:components:scss']);
+  watch(path.join(componentsDir, '**/*.html'), [':build:components:assets']);
+});
+
+task(':watch:components:spec', () => {
+  watch(path.join(componentsDir, '**/*.ts'), [':build:components:spec']);
   watch(path.join(componentsDir, '**/*.scss'), [':build:components:scss']);
   watch(path.join(componentsDir, '**/*.html'), [':build:components:assets']);
 });
@@ -88,12 +94,17 @@ task(':build:components:rollup', [':build:components:ts'], () => {
   }, Promise.resolve());
 });
 
-task('build:components', [
+task('build:components', sequenceTask(
   ':build:components:rollup',
   ':build:components:assets',
-  ':build:components:scss'
-], () => inlineResources([DIST_COMPONENTS_ROOT]));
+  ':build:components:scss',
+  ':inline-resources',
+));
 
 task(':build:components:ngc', ['build:components'], execNodeTask(
   '@angular/compiler-cli', 'ngc', ['-p', path.relative(PROJECT_ROOT, path.join(componentsDir, 'tsconfig.json'))]
 ));
+
+task(':inline-resources', () => {
+  inlineResources([DIST_COMPONENTS_ROOT]);
+});

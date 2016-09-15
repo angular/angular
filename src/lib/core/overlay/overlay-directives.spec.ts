@@ -1,4 +1,4 @@
-import {async, fakeAsync, flushMicrotasks, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
@@ -9,7 +9,7 @@ describe('Overlay directives', () => {
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OverlayModule.forRoot()],
       declarations: [ConnectedOverlayDirectiveTest],
@@ -20,23 +20,22 @@ describe('Overlay directives', () => {
         }}
       ],
     });
-  }));
+  });
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     fixture = TestBed.createComponent(ConnectedOverlayDirectiveTest);
     fixture.detectChanges();
-  }));
+  });
 
   it(`should create an overlay and attach the directive's template`, () => {
     expect(overlayContainerElement.textContent).toContain('Menu content');
   });
 
-  it('should destroy the overlay when the directive is destroyed', fakeAsync(() => {
+  it('should destroy the overlay when the directive is destroyed', () => {
     fixture.destroy();
-    flushMicrotasks();
 
     expect(overlayContainerElement.textContent.trim()).toBe('');
-  }));
+  });
 
   it('should use a connected position strategy with a default set of positions', () => {
     let testComponent: ConnectedOverlayDirectiveTest =

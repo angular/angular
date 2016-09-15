@@ -1,4 +1,4 @@
-import {async, fakeAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -130,7 +130,7 @@ describe('MdRadio', () => {
       expect(groupInstance.selected).toBe(radioInstances[0]);
     });
 
-    it('should emit a change event from radio buttons', fakeAsync(() => {
+    it('should emit a change event from radio buttons', () => {
       expect(radioInstances[0].checked).toBe(false);
 
       let spies = radioInstances
@@ -150,9 +150,9 @@ describe('MdRadio', () => {
       // be triggered when the radio got unselected.
       expect(spies[0]).toHaveBeenCalledTimes(1);
       expect(spies[1]).toHaveBeenCalledTimes(1);
-    }));
+    });
 
-    it('should emit a change event from the radio group', fakeAsync(() => {
+    it('should emit a change event from the radio group', () => {
       expect(groupInstance.value).toBeFalsy();
 
       let changeSpy = jasmine.createSpy('radio-group change listener');
@@ -167,7 +167,7 @@ describe('MdRadio', () => {
       fixture.detectChanges();
 
       expect(changeSpy).toHaveBeenCalledTimes(2);
-    }));
+    });
 
     // TODO(jelbourn): test this in an e2e test with *real* focus, rather than faking
     // a focus / blur event.
@@ -274,7 +274,7 @@ describe('MdRadio', () => {
       expect(groupInstance.selected.value).toBe(groupInstance.value);
     });
 
-    it('should have the correct control state initially and after interaction', fakeAsync(() => {
+    it('should have the correct control state initially and after interaction', () => {
       // The control should start off valid, pristine, and untouched.
       expect(groupNgControl.valid).toBe(true);
       expect(groupNgControl.pristine).toBe(true);
@@ -297,16 +297,16 @@ describe('MdRadio', () => {
       expect(groupNgControl.valid).toBe(true);
       expect(groupNgControl.pristine).toBe(false);
       expect(groupNgControl.touched).toBe(true);
-    }));
+    });
 
-    it('should update the ngModel value when selecting a radio button', fakeAsync(() => {
+    it('should update the ngModel value when selecting a radio button', () => {
       radioInstances[1].checked = true;
       fixture.detectChanges();
 
       expect(testComponent.modelValue).toBe('chocolate');
-    }));
+    });
 
-    it('should update the model before firing change event', fakeAsync(() => {
+    it('should update the model before firing change event', () => {
       expect(testComponent.modelValue).toBeUndefined();
       expect(testComponent.lastEvent).toBeUndefined();
 
@@ -321,7 +321,7 @@ describe('MdRadio', () => {
 
       expect(testComponent.modelValue).toBe('vanilla');
       expect(testComponent.lastEvent.value).toBe('vanilla');
-    }));
+    });
   });
 
   describe('as standalone', () => {

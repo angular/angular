@@ -70,7 +70,7 @@ describe('MdInput', function () {
     expect(fixture.debugElement.query(By.css('input'))).toBeTruthy();
   });
 
-  it('should not be treated as empty if type is date', async(() => {
+  it('should not be treated as empty if type is date', () => {
     if (isInternetExplorer11()) {
       return;
     }
@@ -81,9 +81,9 @@ describe('MdInput', function () {
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
     expect(el.className.includes('md-empty')).toBe(false);
-  }));
+  });
 
-  it('should treat text input type as empty at init', async(() => {
+  it('should treat text input type as empty at init', () => {
     if (isInternetExplorer11()) {
       return;
     }
@@ -94,9 +94,9 @@ describe('MdInput', function () {
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
     expect(el.className.includes('md-empty')).toBe(true);
-  }));
+  });
 
-  it('should treat password input type as empty at init', async(() => {
+  it('should treat password input type as empty at init', () => {
     if (isInternetExplorer11()) {
       return;
     }
@@ -107,9 +107,9 @@ describe('MdInput', function () {
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
     expect(el.className.includes('md-empty')).toBe(true);
-  }));
+  });
 
-  it('should treat number input type as empty at init', async(() => {
+  it('should treat number input type as empty at init', () => {
     if (isInternetExplorer11()) {
       return;
     }
@@ -120,7 +120,7 @@ describe('MdInput', function () {
     let el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el).not.toBeNull();
     expect(el.className.includes('md-empty')).toBe(true);
-  }));
+  });
 
   // TODO(kara): update when core/testing adds fix
   it('support ngModel', async(() => {

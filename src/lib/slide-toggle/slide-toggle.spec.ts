@@ -116,11 +116,10 @@ describe('MdSlideToggle', () => {
 
       expect(slideToggleElement.classList).toContain('md-checked');
       expect(slideToggle.checked).toBe(true);
-
       expect(testComponent.onSlideClick).toHaveBeenCalledTimes(1);
     });
 
-    it('should trigger the change event properly', async(() => {
+    it('should trigger the change event properly', () => {
       expect(inputElement.checked).toBe(false);
       expect(slideToggleElement.classList).not.toContain('md-checked');
 
@@ -129,16 +128,8 @@ describe('MdSlideToggle', () => {
 
       expect(inputElement.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('md-checked');
-
-      // Wait for the fixture to become stable, because the EventEmitter for the change event,
-      // will only fire after the zone async change detection has finished.
-      fixture.whenStable().then(() => {
-        // The change event shouldn't fire, because the value change was not caused
-        // by any interaction.
-        expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
-      });
-
-    }));
+      expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
+    });
 
     it('should not trigger the change event by changing the native value', async(() => {
       expect(inputElement.checked).toBe(false);
@@ -150,14 +141,11 @@ describe('MdSlideToggle', () => {
       expect(inputElement.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('md-checked');
 
-      // Wait for the fixture to become stable, because the EventEmitter for the change event,
-      // will only fire after the zone async change detection has finished.
+      // The change event shouldn't fire because the value change was not caused
+      // by any interaction. Use whenStable to ensure an event isn't fired asynchronously.
       fixture.whenStable().then(() => {
-        // The change event shouldn't fire, because the value change was not caused
-        // by any interaction.
         expect(testComponent.onSlideChange).not.toHaveBeenCalled();
       });
-
     }));
 
     it('should not trigger the change event on initialization', async(() => {
@@ -170,13 +158,11 @@ describe('MdSlideToggle', () => {
       expect(inputElement.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('md-checked');
 
-      // Wait for the fixture to become stable, because the EventEmitter for the change event,
-      // will only fire after the zone async change detection has finished.
+      // The change event shouldn't fire, because the native input element is not focused.
+      // Use whenStable to ensure an event isn't fired asynchronously.
       fixture.whenStable().then(() => {
-        // The change event shouldn't fire, because the native input element is not focused.
         expect(testComponent.onSlideChange).not.toHaveBeenCalled();
       });
-
     }));
 
     it('should add a suffix to the inputs id', () => {

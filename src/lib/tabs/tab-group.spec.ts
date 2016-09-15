@@ -23,15 +23,15 @@ describe('MdTabGroup', () => {
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTabsTestApp>;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(SimpleTabsTestApp);
-    }));
+    });
 
-    it('should default to the first tab', async(() => {
+    it('should default to the first tab', () => {
       checkSelectedIndex(1, fixture);
-    }));
+    });
 
-    it('should change selected index on click', async(() => {
+    it('should change selected index on click', () => {
       let component = fixture.debugElement.componentInstance;
       component.selectedIndex = 0;
       checkSelectedIndex(0, fixture);
@@ -45,7 +45,7 @@ describe('MdTabGroup', () => {
       tabLabel = fixture.debugElement.queryAll(By.css('.md-tab-label'))[2];
       tabLabel.nativeElement.click();
       checkSelectedIndex(2, fixture);
-    }));
+    });
 
     it('should support two-way binding for selectedIndex', async(() => {
       let component = fixture.componentInstance;
