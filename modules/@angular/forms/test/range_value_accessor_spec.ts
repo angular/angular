@@ -9,6 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
 
 export function main() {
   describe('range value accessor', () => {
@@ -19,7 +20,8 @@ export function main() {
     afterEach(() => { fixture = null; });
 
     beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
+      TestBed.configureTestingModule(
+          {declarations: [TestComponent], imports: [CommonModule, FormsModule]});
     });
 
     it('should add styles specified in an object literal', async(() => {
