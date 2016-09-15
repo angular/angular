@@ -110,6 +110,7 @@ do
   $TSC -p ${SRCDIR}/tsconfig-build.json
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
+  cp ${PWD}/modules/@angular/README.md ${DESTDIR}/
 
   if [[ -e ${SRCDIR}/tsconfig-testing.json ]]; then
     echo "======      COMPILING TESTING: ${TSC} -p ${SRCDIR}/tsconfig-testing.json"
