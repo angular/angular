@@ -15,7 +15,7 @@ export type PerfLogEvent = {
   [key: string]: any
 } & {
   cat?: string,
-  ph?: 'X' | 'B' | 'E' | 'b' | 'e' | 'i' | 'I',
+  ph?: 'X' | 'B' | 'E' | 'b' | 'e' | 'I',
   ts?: number,
   dur?: number,
   name?: string,

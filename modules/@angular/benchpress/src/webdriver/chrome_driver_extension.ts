@@ -140,6 +140,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
         (!args || !args['data'] ||
          (args['data']['scriptName'] !== 'InjectedScript' && args['data']['scriptName'] !== ''))) {
       return normalizeEvent(event, {'name': 'script'});
+    } else if (this._isEvent(categories, name, ['devtools.timeline'], 'EvaluateScript')) {
+      return normalizeEvent(event, {'name': 'script'});
     } else if (this._isEvent(
                    categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')) {
       return normalizeEvent(event, {'name': 'render'});
@@ -187,6 +189,12 @@ function normalizeEvent(
     ph = 'b';
   } else if (ph === 'F') {
     ph = 'e';
+  } else if (ph === 'R') {
+    // mark events from navigation timing
+    ph = 'I';
+  } else if (ph === 'i') {
+    // legacy support
+    ph = 'I';
   }
   var result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};

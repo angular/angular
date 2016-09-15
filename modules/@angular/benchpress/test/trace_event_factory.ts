@@ -30,7 +30,7 @@ export class TraceEventFactory {
   end(name: string, time: number, args: any = null) { return this.create('E', name, time, args); }
 
   instant(name: string, time: number, args: any = null) {
-    return this.create('i', name, time, args);
+    return this.create('I', name, time, args);
   }
 
   complete(name: string, time: number, duration: number, args: any = null) {

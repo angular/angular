@@ -123,6 +123,18 @@ export function main() {
              });
        }));
 
+    it('should report EvaluateScript events as "script"',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         createExtension([chromeTimelineV8Events.start('EvaluateScript', 0)])
+             .readPerfLog()
+             .then((events) => {
+               expect(events).toEqual([
+                 normEvents.start('script', 0),
+               ]);
+               async.done();
+             });
+       }));
+
     it('should report minor gc', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension([
            chromeTimelineV8Events.start('MinorGC', 1000, {'usedHeapSizeBefore': 1000}),
@@ -192,8 +204,6 @@ export function main() {
              });
        }));
 
-
-
     it('should ignore FunctionCalls from webdriver',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension([chromeTimelineV8Events.start(
@@ -218,10 +228,10 @@ export function main() {
 
     it('should report navigationStart',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension([chromeBlinkUserTimingEvents.start('navigationStart', 1234)])
+         createExtension([chromeBlinkUserTimingEvents.instant('navigationStart', 1234)])
              .readPerfLog()
              .then((events) => {
-               expect(events).toEqual([normEvents.start('navigationStart', 1.234)]);
+               expect(events).toEqual([normEvents.instant('navigationStart', 1.234)]);
                async.done();
              });
        }));
@@ -290,7 +300,7 @@ export function main() {
                  .readPerfLog()
                  .then((events) => {
                    expect(events).toEqual([
-                     normEvents.create('i', 'frame', 1.1),
+                     normEvents.instant('frame', 1.1),
                    ]);
                    async.done();
                  });
