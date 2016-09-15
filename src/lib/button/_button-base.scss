@@ -1,11 +1,25 @@
+@import '../core/style/variables';
+@import '../core/style/elevation';
+@import '../core/style/button-common';
 
-@import 'variables';
-@import 'elevation';
-@import 'button-mixins';
 
-// TODO(jelbourn): This goes away.
-@import 'default-theme';
-@import 'button-theme';
+// Applies a focus style to an md-button element.
+@mixin md-button-focus {
+  &::after {
+    // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
+    // black, 12% opacity shade over the normal color (for both light and dark themes).
+    // We do this by placing an :after pseudo-element with the appropriate shade over the button.
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    content: '';
+    background-color: rgba(black, 0.12);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
 
 // Flat and raised button standards
 $md-button-padding: 0 16px !default;
@@ -29,8 +43,6 @@ $md-mini-fab-padding: 8px !default;
 
 // Applies base styles to all button types.
 %md-button-base {
-  @include md-button-theme('color');
-
   box-sizing: border-box;
   position: relative;
 
@@ -71,10 +83,7 @@ $md-mini-fab-padding: 8px !default;
   @extend %md-button-base;
 
   @include md-elevation(2);
-  @include md-button-theme('color', default-contrast);
-  @include md-button-theme('background-color');
 
-  background-color: md-color($md-background, background);
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);
 
@@ -97,8 +106,6 @@ $md-mini-fab-padding: 8px !default;
 
   min-width: 0;
   border-radius: $md-fab-border-radius;
-  background-color: md-color($md-accent);
-  color: md-color($md-accent, default-contrast);
   width: $size;
   height: $size;
   padding: 0;

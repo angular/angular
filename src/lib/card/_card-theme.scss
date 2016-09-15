@@ -1,0 +1,17 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-card-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  md-card {
+    background: md-color($background, card);
+    color: md-color($foreground, base);
+  }
+
+  md-card-subtitle {
+    color: md-color($foreground, secondary-text);
+  }
+}

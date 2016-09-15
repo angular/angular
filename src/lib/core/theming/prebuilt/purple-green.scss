@@ -1,0 +1,17 @@
+@import '../theming';
+@import '../palette';
+@import '../../core';
+@import '../../../all/all-theme';
+
+
+$primary: md-palette($md-purple, 700, 500, 800);
+$accent:  md-palette($md-green, A200, A100, A400);
+$warn:    md-palette($md-red);
+
+$theme: md-dark-theme($primary, $accent, $warn);
+
+// Include non-theme styles for core.
+@include md-core();
+
+// Include all theme-styles for the components based on the current theme.
+@include angular-material-theme($theme);

@@ -39,7 +39,6 @@
 
     "block-closing-brace-newline-after": "always",
     "block-closing-brace-newline-before": "always-multi-line",
-    "block-no-empty": true,
     "block-opening-brace-newline-after": "always-multi-line",
     "block-opening-brace-space-before": "always-multi-line",
 

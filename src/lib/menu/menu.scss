@@ -1,11 +1,11 @@
 // TODO(kara): update vars for desktop when MD team responds
 // TODO(kara): animation for menu opening
-@import 'variables';
-@import 'elevation';
-@import 'default-theme';
-@import 'button-mixins';
-@import 'sidenav-mixins';
-@import 'list-shared';
+@import '../core/style/variables';
+@import '../core/style/elevation';
+@import '../core/style/button-common';
+@import '../core/style/sidenav-common';
+@import '../core/style/list-common';
+
 
 // menu width must be a multiple of 56px
 $md-menu-overlay-min-width: 112px !default;   // 56 * 2
@@ -26,7 +26,6 @@ $md-menu-vertical-padding: 8px !default;
   overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
 
-  background: md-color($md-background, 'card');
   padding-top: $md-menu-vertical-padding;
   padding-bottom: $md-menu-vertical-padding;
 }
@@ -45,15 +44,9 @@ $md-menu-vertical-padding: 8px !default;
   font-family: $md-font-family;
   text-align: start;
   text-decoration: none;   // necessary to reset anchor tags
-  color: md-color($md-foreground, 'text');
 
   &[disabled] {
-    color: md-color($md-foreground, 'disabled');
     cursor: default;
-  }
-
-  &:hover:not([disabled]), &:focus:not([disabled]) {
-    background: md-color($md-background, 'hover');
   }
 }
 

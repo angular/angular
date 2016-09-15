@@ -1,0 +1,6 @@
+// Implement the rem unit with SCSS so we don't have to actually set a font-size on
+// the user's body element.
+@function rem($multiplier) {
+  $font-size: 10px;
+  @return $multiplier * $font-size;
+}

@@ -1,6 +1,5 @@
-@import 'variables';
-@import 'theme-functions';
-@import 'palette';
+@import '../core/style/variables';
+
 
 $md-tooltip-height: 22px;
 $md-tooltip-margin: 14px;
@@ -9,8 +8,8 @@ $md-tooltip-padding: 8px;
 :host {
   pointer-events: none;
 }
+
 .md-tooltip {
-  background: md-color($md-grey, 700, 0.9);
   color: white;
   padding: 0 $md-tooltip-padding;
   border-radius: 2px;

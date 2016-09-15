@@ -1,0 +1,77 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin _md-slide-toggle-checked($palette) {
+  &.md-checked {
+    .md-slide-toggle-thumb {
+      background-color: md-color($palette);
+    }
+
+    .md-slide-toggle-bar {
+      background-color: md-color($palette, 0.5);
+    }
+  }
+}
+
+// TODO(jelbourn): remove this when the real ripple has been applied to slide-toggle.
+@mixin _md-slide-toggle-ripple($palette, $foreground) {
+  &.md-slide-toggle-focused {
+    &:not(.md-checked) .md-ink-ripple {
+      // When the slide-toggle is not checked and it shows its focus indicator, it should use a 12% opacity
+      // of black in light themes and 12% of white in dark themes.
+      background-color: md-color($foreground, divider);
+    }
+  }
+
+  &.md-slide-toggle-focused .md-ink-ripple {
+    background-color: md-color($palette, 0.26);
+  }
+}
+
+@mixin md-slide-toggle-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  md-slide-toggle {
+    @include _md-slide-toggle-checked($accent);
+    @include _md-slide-toggle-ripple($accent, $foreground);
+    
+
+    &.md-primary {
+      @include _md-slide-toggle-checked($primary);
+      @include _md-slide-toggle-ripple($primary, $foreground);
+    }
+  
+    &.md-warn {
+      @include _md-slide-toggle-checked($warn);
+      @include _md-slide-toggle-ripple($warn, $foreground);
+    }
+
+  }
+
+  .md-disabled {
+    .md-slide-toggle-thumb {
+      // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark or light themes.
+      // Since this is very specific to the slide-toggle component, we're not providing
+      // it in the background palette.
+      background-color: md-color($md-grey, 400);
+    }
+    .md-slide-toggle-bar {
+      background-color: md-color($foreground, divider);
+    }
+  }
+
+  .md-slide-toggle-thumb {
+    background-color: md-color($background, background);
+  }
+
+  .md-slide-toggle-bar {
+    // The slide-toggle bar always uses grey-500 for both dark and light themes.
+    // Since this is very specific to slide-toggle, it's not part of the common background palette.
+    background-color: md-color($md-grey, 500);
+  }
+}

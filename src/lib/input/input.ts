@@ -16,6 +16,7 @@ import {
   Output,
   NgModule,
   ModuleWithProviders,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -100,7 +101,8 @@ export class MdHint {
   templateUrl: 'input.html',
   styleUrls: ['input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
-  host: {'(click)' : 'focus()'}
+  host: {'(click)' : 'focus()'},
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdInput implements ControlValueAccessor, AfterContentInit, OnChanges {
   private _focused: boolean = false;

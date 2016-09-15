@@ -1,25 +1,24 @@
 @import 'variables';
 
-/**
- * A collection of mixins and CSS classes that can be used to apply elevation to a material
- * element.
- * See: https://www.google.com/design/spec/what-is-material/elevation-shadows.html
- * Examples:
- *
- *
- * .md-foo {
- *   @include $md-elevation(2);
- *
- *   &:active {
- *     @include $md-elevation(8);
- *   }
- * }
- *
- * <div id="external-card" class="md-elevation-z2"><p>Some content</p></div>
- *
- * For an explanation of the design behind how elevation is implemented, see the design doc at
- * https://goo.gl/Kq0k9Z.
- */
+
+// A collection of mixins and CSS classes that can be used to apply elevation to a material
+// element.
+// See: https://www.google.com/design/spec/what-is-material/elevation-shadows.html
+// Examples:
+//
+//
+// .md-foo {
+//   @include $md-elevation(2);
+//
+//   &:active {
+//     @include $md-elevation(8);
+//   }
+// }
+//
+// <div id="external-card" class="md-elevation-z2"><p>Some content</p></div>
+//
+// For an explanation of the design behind how elevation is implemented, see the design doc at
+// https://goo.gl/Kq0k9Z.
 
 // Colors for umbra, penumbra, and ambient shadows. As described in the design doc, each elevation
 // level is created using a set of 3 shadow values, one for umbra (the shadow representing the
@@ -120,23 +119,20 @@ $_ambient-elevation-map: (
   24: '0px 9px 46px 8px #{$_ambient-color}'
 );
 
-/**
- * The css property used for elevation. In most cases this should not be changed. It is exposed
- * as a variable for abstraction / easy use when needing to reference the property directly, for
- * example in a will-change rule.
- */
+
+// The css property used for elevation. In most cases this should not be changed. It is exposed
+// as a variable for abstraction / easy use when needing to reference the property directly, for
+// example in a will-change rule.
 $md-elevation-property: box-shadow !default;
 
-/** The default duration value for elevation transitions. */
+// The default duration value for elevation transitions.
 $md-elevation-transition-duration: 280ms !default;
 
-/** The default easing value for elevation transitions. */
+// The default easing value for elevation transitions.
 $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
 
-/**
- * Applies the correct css rules to an element to give it the elevation specified by $zValue.
- * The $zValue must be between 0 and 24.
- */
+// Applies the correct css rules to an element to give it the elevation specified by $zValue.
+// The $zValue must be between 0 and 24.
 @mixin md-elevation($zValue) {
   @if type-of($zValue) != number or not unitless($zValue) {
     @error '$zValue must be a unitless number';
@@ -150,27 +146,24 @@ $md-elevation-transition-timing-function: $md-fast-out-slow-in-timing-function;
                              #{map-get($_ambient-elevation-map, $zValue)};
 }
 
-/**
- * Returns a string that can be used as the value for a transition property for elevation.
- * Calling this function directly is useful in situations where a component needs to transition
- * more than one property.
- *
- * .foo {
- *   transition: md-elevation-transition-property-value(), opacity 100ms ease;
- *   will-change: $md-elevation-property, opacity;
- * }
- */
+// Returns a string that can be used as the value for a transition property for elevation.
+// Calling this function directly is useful in situations where a component needs to transition
+// more than one property.
+//
+// .foo {
+//   transition: md-elevation-transition-property-value(), opacity 100ms ease;
+//   will-change: $md-elevation-property, opacity;
+// }
 @function md-elevation-transition-property-value(
     $duration: $md-elevation-transition-duration,
     $easing: $md-elevation-transition-timing-function) {
   @return #{$md-elevation-property} #{$duration} #{$easing};
 }
 
-/**
- * Applies the correct css rules needed to have an element transition between elevations.
- * This mixin should be applied to elements whose elevation values will change depending on their
- * context (e.g. when active or disabled).
- */
+// Applies the correct css rules needed to have an element transition between elevations.
+// This mixin should be applied to elements whose elevation values will change depending on their
+// context (e.g. when active or disabled).
+//
 // NOTE(traviskaufman): Both this mixin and the above function use default parameters so they can
 // be used in the same way by clients.
 @mixin md-elevation-transition(

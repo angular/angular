@@ -1,0 +1,14 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-button-toggle-theme($theme) {
+  $foreground: map-get($theme, foreground);
+
+  .md-button-toggle-checked .md-button-toggle-label-content {
+    background-color: md-color($md-grey, 300);
+  }
+  .md-button-toggle-disabled .md-button-toggle-label-content {
+    background-color: md-color($foreground, disabled);
+  }
+}

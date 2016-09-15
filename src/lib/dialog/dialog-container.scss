@@ -1,14 +1,12 @@
-@import 'elevation';
-@import 'default-theme';
+@import '../core/style/elevation';
+
 
 $md-dialog-padding: 24px !default;
 
-:host {
+md-dialog-container {
+  @include md-elevation(24);
+
   display: block;
   overflow: hidden;
-
   padding: $md-dialog-padding;
-
-  background: md-color($md-background, dialog);
-  @include md-elevation(24);
 }

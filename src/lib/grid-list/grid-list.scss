@@ -1,13 +1,14 @@
-@import 'list-shared';
+@import '../core/style/list-common';
 
-/* height of tile header or footer if it has one line */
+
+// height of tile header or footer if it has one line
 $md-grid-list-one-line-height: 48px;
-/* height of tile header or footer if it has two lines */
+// height of tile header or footer if it has two lines
 $md-grid-list-two-line-height: 68px;
-/* side padding for text in tile headers and footers */
+// side padding for text in tile headers and footers
 $md-grid-list-text-padding: 16px;
 
-/* font styles for text in tile headers and footers */
+// font styles for text in tile headers and footers
 $md-grid-list-font-size: 16px;
 $md-grid-list-secondary-font: 12px;
 

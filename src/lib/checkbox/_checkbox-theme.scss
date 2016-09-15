@@ -1,0 +1,69 @@
+@import '../core/theming/theming';
+
+
+@mixin md-checkbox-theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $background: map-get($theme, background);
+
+
+  // The color of the checkbox border.
+  $checkbox-border-color: if($is-dark-theme, rgba(white, 0.7), rgba(black, 0.54)) !default;
+
+  // The color of the checkbox's checkmark / mixedmark.
+  $checkbox-mark-color: md-color($background, background);
+
+  // The color that is used as the checkbox background when it is checked.
+  $checkbox-background-color: md-color($accent, 500);
+
+  // NOTE(traviskaufman): While the spec calls for translucent blacks/whites for disabled colors,
+  // this does not work well with elements layered on top of one another. To get around this we
+  // blend the colors together based on the base color and the theme background.
+  $white-30pct-opacity-on-dark: #686868;
+  $black-26pct-opacity-on-light: #b0b0b0;
+  $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
+
+  .md-checkbox-frame {
+    border-color: $checkbox-border-color;
+  }
+
+  .md-checkbox-checkmark {
+    fill: $checkbox-mark-color;
+  }
+
+  .md-checkbox-checkmark-path {
+    // !important is needed here because a stroke must be set as an attribute on the SVG in order
+    // for line animation to work properly.
+    stroke: $checkbox-mark-color !important;
+  }
+
+  .md-checkbox-mixedmark {
+    background-color: $checkbox-mark-color;
+  }
+
+  .md-checkbox-indeterminate, .md-checkbox-checked {
+    .md-checkbox-background {
+      background-color: $checkbox-background-color;
+    }
+  }
+
+  .md-checkbox-disabled {
+    &.md-checkbox-checked, &.md-checkbox-indeterminate {
+      .md-checkbox-background {
+        background-color: $disabled-color;
+      }
+    }
+
+    &:not(.md-checkbox-checked) {
+      .md-checkbox-frame {
+        border-color: $disabled-color;
+      }
+    }
+  }
+
+  // TODO(jelbourn): remove style for temporary ripple once the real ripple is applied.
+  .md-checkbox-focused .md-ink-ripple {
+    background-color: md-color($accent, 0.26);
+  }
+}

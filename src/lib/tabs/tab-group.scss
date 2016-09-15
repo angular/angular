@@ -1,5 +1,5 @@
-@import 'variables';
-@import 'default-theme';
+@import '../core/style/variables';
+
 
 $md-tab-bar-height: 48px !default;
 
@@ -9,17 +9,16 @@ $md-tab-bar-height: 48px !default;
   font-family: $md-font-family;
 }
 
-/** The top section of the view; contains the tab labels */
+// The top section of the view; contains the tab labels
 .md-tab-header {
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid md-color($md-background, status-bar);
   flex-shrink: 0;
 }
 
-/** Wraps each tab label */
+// Wraps each tab label 
 .md-tab-label {
   line-height: $md-tab-bar-height;
   height: $md-tab-bar-height;
@@ -36,7 +35,6 @@ $md-tab-bar-height: 48px !default;
   &:focus {
     outline: none;
     opacity: 1;
-    background-color: md-color($md-primary, 100, 0.3);
   }
 }
 
@@ -45,7 +43,7 @@ $md-tab-bar-height: 48px !default;
   pointer-events: none;
 }
 
-/** The bottom section of the view; contains the tab bodies */
+// The bottom section of the view; contains the tab bodies 
 .md-tab-body-wrapper {
   position: relative;
   overflow: hidden;
@@ -53,7 +51,7 @@ $md-tab-bar-height: 48px !default;
   display: flex;
 }
 
-/** Wraps each tab body */
+// Wraps each tab body 
 .md-tab-body {
   display: none;
   overflow: auto;
@@ -65,11 +63,10 @@ $md-tab-bar-height: 48px !default;
   }
 }
 
-/** The colored bar that underlines the active tab */
+// The colored bar that underlines the active tab 
 md-ink-bar {
   position: absolute;
   bottom: 0;
   height: 2px;
-  background-color: md-color($md-primary, 500);
   transition: 350ms ease-out;
 }

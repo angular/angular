@@ -1,0 +1,30 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-sidenav-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  // We use invert() here to have the darken the background color expected to be used. If the
+  // background is light, we use a dark backdrop. If the background is dark, 
+  // we use a light backdrop.
+  $sidenav-backdrop-color: invert(md-color($background, card, 0.6)) !default;
+  $sidenav-background-color: md-color($background, dialog) !default;
+  $sidenav-push-background-color: md-color($background, dialog) !default;
+
+  md-sidenav {
+    background-color: $sidenav-background-color;
+
+    &.md-sidenav-push {
+      background-color: $sidenav-push-background-color;
+    }
+  }
+
+  .md-sidenav-backdrop.md-sidenav-shown {
+    background-color: $sidenav-backdrop-color;
+  }
+}

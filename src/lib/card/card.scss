@@ -1,7 +1,6 @@
+@import '../core/style/variables';
+@import '../core/style/elevation';
 
-@import 'variables';
-@import 'elevation';
-@import 'default-theme';   // TODO: Remove this
 
 $md-card-default-padding: 24px !default;
 $md-card-mobile-padding: 24px 16px !default;
@@ -16,8 +15,6 @@ md-card {
   padding: $md-card-default-padding;
   border-radius: $md-card-border-radius;
   font-family: $md-font-family;
-  background: md-color($md-background, card);
-  color: md-color($md-foreground, base);
 }
 
 md-card:hover {
@@ -43,7 +40,6 @@ md-card-title {
 md-card-subtitle {
   @extend %md-card-section-base;
   font-size: $md-body-font-size-base;
-  color: md-color($md-foreground, secondary-text);
 }
 
 md-card-content {
@@ -85,7 +81,7 @@ md-card-actions {
   }
 }
 
-/* HEADER STYLES */
+// HEADER STYLES
 
 md-card-header {
   display: flex;
@@ -109,7 +105,7 @@ md-card-header md-card-title {
   font-size: $md-body-font-size-base;
 }
 
-/* TITLE-GROUP STYLES */
+// TITLE-GROUP STYLES
 
 // images grouped with title in title-group layout
 %md-card-title-img {
@@ -140,7 +136,7 @@ md-card-title-group {
   height: 152px;
 }
 
-/* MEDIA QUERIES */
+// MEDIA QUERIES
 
 @media ($md-xsmall) {
   md-card {
@@ -167,7 +163,7 @@ md-card-title-group {
 
 }
 
-/* FIRST/LAST CHILD ADJUSTMENTS */
+// FIRST/LAST CHILD ADJUSTMENTS
 
 // top els in md-card-content and md-card can't have their default margin-tops (e.g. <p> tags)
 // or they'll incorrectly add to card's top padding

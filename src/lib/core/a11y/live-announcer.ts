@@ -43,7 +43,7 @@ export class MdLiveAnnouncer {
   private _createLiveElement(): Element {
     let liveEl = document.createElement('div');
 
-    liveEl.classList.add('md-live-announcer');
+    liveEl.classList.add('md-visually-hidden');
     liveEl.setAttribute('aria-atomic', 'true');
     liveEl.setAttribute('aria-live', 'polite');
 

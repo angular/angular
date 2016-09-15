@@ -1,0 +1,78 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-progress-bar-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+
+  // TODO(josephperrott): Find better way to inline svgs.
+  // In buffer mode a repeated SVG object is used as a background.
+  //  Each of the following defines the SVG object for each of the class defined colors.
+  //
+  //  Each string is a URL encoded version of:
+  //
+  //  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  //       version="1.1" x="0px" y="0px" enable-background="new 0 0 5 2"
+  //       xml:space="preserve" viewBox="0 0 5 2" preserveAspectRatio="none slice">
+  //    <circle cx="1" cy="1" r="1" fill="{INJECTED_COLOR}"/>
+  //  </svg>
+  //
+  $buffer-bubbles-primary-url: url(
+    'data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27' +
+    '%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun' +
+    'd%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio' +
+    '%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27' +
+    md-color($primary, 100) + '%27%2F%3E%3C%2Fsvg%3E') !default;
+  $buffer-bubbles-accent-url: url(
+    'data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27' +
+    '%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun' +
+    'd%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio' +
+    '%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27' +
+    md-color($accent, 100) + '%27%2F%3E%3C%2Fsvg%3E') !default;
+  $buffer-bubbles-warn-url: url(
+    'data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27' +
+    '%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-backgroun' +
+    'd%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio' +
+    '%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27' +
+    md-color($warn, 100) + '%27%2F%3E%3C%2Fsvg%3E') !default;
+
+  .md-progress-bar-background {
+    background: $buffer-bubbles-primary-url;
+  }
+  
+  .md-progress-bar-buffer {
+    background-color: md-color($primary, 100);
+  }
+  
+  md-progress-bar[color='accent'] {
+    .md-progress-bar-background {
+      background: $buffer-bubbles-accent-url;
+    }
+    
+    .md-progress-bar-buffer {
+      background-color: md-color($accent, 100);
+    }
+    .md-progress-bar-fill::after {
+      background-color: md-color($accent, 600);
+    }
+  }
+  
+  md-progress-bar[color='warn'] {
+    .md-progress-bar-background {
+      background: $buffer-bubbles-warn-url;
+    }
+    
+    .md-progress-bar-buffer {
+      background-color: md-color($warn, 100);
+    }
+    .md-progress-bar-fill::after {
+      background-color: md-color($warn, 600);
+    }
+  }
+
+  .md-progress-bar-fill::after {
+    background-color: md-color($primary, 600);
+  }
+}

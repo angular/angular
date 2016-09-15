@@ -1,4 +1,4 @@
-import {Component, ComponentRef, ViewChild} from '@angular/core';
+import {Component, ComponentRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {
   BasePortalHost,
   ComponentPortal,
@@ -20,7 +20,8 @@ import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
   host: {
     'class': 'md-dialog-container',
     '[attr.role]': 'dialogConfig?.role'
-  }
+  },
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdDialogContainer extends BasePortalHost {
   /** The portal host inside of this container into which the dialog content will be loaded. */

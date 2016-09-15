@@ -1,48 +1,21 @@
-@import 'default-theme';
-@import 'mixins';
-@import 'variables';
+@import '../core/style/variables';
+
 
 $md-input-floating-placeholder-scale-factor: 0.75 !default;
 
-// Placeholder colors. Required is used for the `*` star shown in the placeholder.
-$md-input-placeholder-color: md-color($md-foreground, hint-text);
-$md-input-floating-placeholder-color: md-color($md-primary);
-$md-input-required-placeholder-color: md-color($md-accent);
-
-// Underline colors.
-$md-input-underline-color: md-color($md-foreground, hint-text);
-$md-input-underline-color-accent: md-color($md-accent);
-$md-input-underline-color-warn: md-color($md-warn);
-$md-input-underline-disabled-color: md-color($md-foreground, hint-text);
-$md-input-underline-focused-color: md-color($md-primary);
-
 // Gradient for showing the dashed line when the input is disabled.
-$md-input-underline-disabled-background-image: linear-gradient(to right,
-        rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 33%, transparent 0%);
+$md-input-underline-disabled-background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 33%, transparent 0%);
 
-/**
- * Undo the red box-shadow glow added by Firefox on invalid inputs.
- * See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
- */
-:-moz-ui-invalid {
-  box-shadow: none;
-}
-
-/**
- * Applies a floating placeholder above the input itself.
- */
+// Applies a floating placeholder above the input itself.
 @mixin md-input-placeholder-floating {
   display: block;
   padding-bottom: 5px;
   transform: translateY(-100%) scale($md-input-floating-placeholder-scale-factor);
   width: 100% / $md-input-floating-placeholder-scale-factor;
-
-  .md-placeholder-required {
-    color: $md-input-required-placeholder-color;
-  }
 }
 
-:host {
+md-input {
   display: inline-block;
   position: relative;
   font-family: $md-font-family;
@@ -50,102 +23,63 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
   // To avoid problems with text-align.
   text-align: left;
 
-  // Global wrapper. We need to apply margin to the element for spacing, but
-  // cannot apply it to the host element directly.
-  .md-input-wrapper {
-    margin: 16px 0;
+  [dir='rtl'] & {
+    text-align: right;
+  }
+}
+
+// Global wrapper. We need to apply margin to the element for spacing, but
+// cannot apply it to the host element directly.
+.md-input-wrapper {
+  margin: 16px 0;
+}
+
+// We use a table layout to baseline align the prefix and suffix classes.
+// The underline is outside of it so it can cover all of the elements under
+// this table.
+// Flex does not respect the baseline. What we really want is akin to a table
+// as want an inline-block where elements don't wrap.
+.md-input-table {
+  display: inline-table;
+  flex-flow: column;
+  vertical-align: bottom;
+  width: 100%;
+
+  & > * {
+    display: table-cell;
+  }
+}
+
+.md-input-infix {
+  position: relative;
+}
+
+// The Input element proper.
+.md-input-element {
+  // Font needs to be inherited, because by default <input> has a system font.
+  font: inherit;
+
+  // The Material input should match whatever background it is above.
+  background: transparent;
+
+  // By default, <input> has a padding, border, outline and a default width.
+  border: none;
+  outline: none;
+  padding: 0;
+  width: 100%;
+
+  &.md-end {
+    text-align: right;
+
+    [dir='rtl'] & {
+      text-align: left;
+    }
   }
 
-  // We use a table layout to baseline align the prefix and suffix classes.
-  // The underline is outside of it so it can cover all of the elements under
-  // this table.
-  // Flex does not respect the baseline. What we really want is akin to a table
-  // as want an inline-block where elements don't wrap.
-  .md-input-table {
-    display: inline-table;
-    flex-flow: column;
-    vertical-align: bottom;
-    width: 100%;
-
-    & > * {
-      display: table-cell;
-    }
-  }
-
-  // The Input element proper.
-  .md-input-element {
-    // Font needs to be inherited, because by default <input> has a system font.
-    font: inherit;
-
-    // The Material input should match whatever background it is above.
-    background: transparent;
-
-    // By default, <input> has a padding, border, outline and a default width.
-    border: none;
-    outline: none;
-    padding: 0;
-    width: 100%;
-
-    &.md-end {
-      text-align: right;
-    }
-  }
-
-  .md-input-infix {
-    position: relative;
-  }
-
-  // The placeholder label. This is invisible unless it is. The logic to show it is
-  // basically `empty || (float && (!empty || focused))`. Float is dependent on the
-  // `floatingPlaceholder` input.
-  .md-input-placeholder {
-    // The placeholder is after the <input>, but needs to be aligned top-left of the
-    // infix <div>.
-    position: absolute;
-    left: 0;
-    top: 0;
-
-    font-size: 100%;
-    pointer-events: none;  // We shouldn't catch mouse events (let them through).
-    color: $md-input-placeholder-color;
-    z-index: 1;
-
-    // Put ellipsis text overflow.
-    width: 100%;
-    display: none;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-
-    transform: translateY(0);
-    transform-origin: bottom left;
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-                scale $swift-ease-out-duration $swift-ease-out-timing-function,
-                color $swift-ease-out-duration $swift-ease-out-timing-function,
-                width $swift-ease-out-duration $swift-ease-out-timing-function;
-
-    &.md-empty {
-      display: block;
-      cursor: text;
-    }
-
-    // Show the placeholder above the input when it's not empty, or focused.
-    &.md-float:not(.md-empty), &.md-float.md-focused {
-      @include md-input-placeholder-floating;
-    }
-
-    // :focus is applied to the input, but we apply md-focused to the other elements
-    // that need to listen to it.
-    &.md-focused {
-      color: $md-input-floating-placeholder-color;
-
-      &.md-accent {
-        color: $md-input-underline-color-accent;
-      }
-      &.md-warn {
-        color: $md-input-underline-color-warn;
-      }
-    }
+  // Undo the red box-shadow glow added by Firefox on invalid inputs.
+  // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
+  &:-moz-ui-invalid {
+    box-shadow: none;
   }
 
   // Pseudo-class for Chrome and Safari auto-fill to move the placeholder to
@@ -153,81 +87,103 @@ $md-input-underline-disabled-background-image: linear-gradient(to right,
   // fire any events when a form auto-fill is occurring.
   // Once the autofill is committed, a change event happen and the regular md-input
   // classes take over to fulfill this behaviour.
-  input:-webkit-autofill + .md-input-placeholder {
+  &:-webkit-autofill + .md-input-placeholder {
+    @include md-input-placeholder-floating;
+  }
+}
+
+// The placeholder label. This is invisible unless it is. The logic to show it is
+// basically `empty || (float && (!empty || focused))`. Float is dependent on the
+// `floatingPlaceholder` input.
+.md-input-placeholder {
+  // The placeholder is after the <input>, but needs to be aligned top-left of the
+  // infix <div>.
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  font-size: 100%;
+  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+  z-index: 1;
+
+  // Put ellipsis text overflow.
+  width: 100%;
+  display: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+
+  transform: translateY(0);
+  transform-origin: bottom left;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+              scale $swift-ease-out-duration $swift-ease-out-timing-function,
+              color $swift-ease-out-duration $swift-ease-out-timing-function,
+              width $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  &.md-empty {
+    display: block;
+    cursor: text;
+  }
+
+  // Show the placeholder above the input when it's not empty, or focused.
+  &.md-float:not(.md-empty), &.md-float.md-focused {
     @include md-input-placeholder-floating;
   }
 
-  // The underline is what's shown under the input, its prefix and its suffix.
-  // The ripple is the blue animation coming on top of it.
-  .md-input-underline {
-    position: absolute;
-    height: 1px;
-    width: 100%;
-    margin-top: 4px;
-    border-top: 1px solid $md-input-underline-color;
+  [dir='rtl'] & {
+    transform-origin: bottom right;
+  }
+}
 
-    &.md-disabled {
-      border-top: 0;
-      background-image: $md-input-underline-disabled-background-image;
-      background-position: 0;
-      background-size: 4px 1px;
-      background-repeat: repeat-x;
-    }
+// The underline is what's shown under the input, its prefix and its suffix.
+// The ripple is the blue animation coming on top of it.
+.md-input-underline {
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  margin-top: 4px;
+  border-top-width: 1px;
+  border-top-style: solid;
 
-    .md-input-ripple {
-      position: absolute;
-      height: 2px;
-      z-index: 1;
-      background-color: $md-input-underline-focused-color;
-      top: -1px;
-      width: 100%;
-      transform-origin: top;
-      opacity: 0;
-      transform: scaleY(0);
-      transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-                  opacity $swift-ease-out-duration $swift-ease-out-timing-function;
-
-      &.md-accent {
-        background-color: $md-input-underline-color-accent;
-      }
-      &.md-warn {
-        background-color: $md-input-underline-color-warn;
-      }
-
-      &.md-focused {
-        opacity: 1;
-        transform: scaleY(1);
-      }
-    }
+  &.md-disabled {
+    border-top: 0;
+    background-image: $md-input-underline-disabled-background-image;
+    background-position: 0;
+    background-size: 4px 1px;
+    background-repeat: repeat-x;
   }
 
-  // The hint is shown below the underline. There can be more than one; one at the start
-  // and one at the end.
-  .md-hint {
+  .md-input-ripple {
     position: absolute;
-    font-size: 75%;
-    bottom: -0.5em;
+    height: 2px;
+    z-index: 1;
+    top: -1px;
+    width: 100%;
+    transform-origin: top;
+    opacity: 0;
+    transform: scaleY(0);
+    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+                opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 
-    &.md-right {
-      right: 0;
+    &.md-focused {
+      opacity: 1;
+      transform: scaleY(1);
     }
   }
 }
 
+// The hint is shown below the underline. There can be more than one; one at the start
+// and one at the end.
+.md-hint {
+  position: absolute;
+  font-size: 75%;
+  bottom: -0.5em;
 
-// RTL support.
-:host-context([dir='rtl']) {
-  text-align: right;
-
-  .md-input-placeholder {
-    transform-origin: bottom right;
+  &.md-right {
+    right: 0;
   }
 
-  .md-input-element.md-end {
-    text-align: left;
-  }
-
-  .md-hint {
+  [dir='rtl'] & {
     right: 0;
     left: auto;
 

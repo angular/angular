@@ -1,0 +1,28 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-list-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  md-list, md-nav-list {
+    md-list-item, a[md-list-item] {
+      color: md-color($foreground, base);
+    }
+
+    [md-subheader] {
+      color: md-color($foreground, secondary-text);
+    }
+  }
+
+  md-divider {
+    border-top-color: md-color($foreground, divider);
+  }
+
+  md-nav-list .md-list-item {
+    &:hover, &.md-list-item-focus {
+      background: md-color($background, 'hover');
+    }
+  }
+}

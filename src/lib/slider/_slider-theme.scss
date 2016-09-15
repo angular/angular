@@ -1,0 +1,33 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-slider-theme($theme) {
+  $accent: map-get($theme, accent);
+
+  // TODO(iveysaur): Find an implementation to hide the track under a disabled thumb.
+  $md-slider-off-color: rgba(black, 0.26);
+  $md-slider-focused-color: rgba(black, 0.38);
+  $md-slider-disabled-color: rgba(black, 0.26);
+
+  .md-slider-track {
+    background-color: $md-slider-off-color;
+  }
+
+  .md-slider-track-fill {
+    background-color: md-color($accent);
+  }
+
+  .md-slider-thumb::after {
+    background-color: md-color($accent);
+    border-color: md-color($accent);
+  }
+
+  .md-slider-thumb-label {
+    background-color: md-color($accent);
+  }
+
+  .md-slider-thumb-label-text {
+    color: md-color($accent, default-contrast);
+  }
+}

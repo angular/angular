@@ -1,17 +1,13 @@
-/**
- * This mixin will ensure that lines that overflow the container will
- * hide the overflow and truncate neatly with an ellipsis.
- */
+// This mixin will ensure that lines that overflow the container will hide the overflow and
+// truncate neatly with an ellipsis.
 @mixin md-truncate-line() {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
-/**
- * This mixin provides all md-line styles, changing secondary font size
- * based on whether the list is in dense mode.
- */
+// Mixin to provide all md-line styles, changing secondary font size based on whether the list
+// is in dense mode.
 @mixin md-line-base($secondary-font-size) {
   [md-line] {
     @include md-truncate-line();
@@ -25,10 +21,17 @@
   }
 }
 
-/**
- * This mixin provides base styles for the wrapper around md-line
- * elements in a list.
- */
+// This mixin normalizes default element styles, e.g. font weight for heading text.
+@mixin md-normalize-text() {
+  & > * {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    font-size: inherit;
+  }
+}
+
+// This mixin provides base styles for the wrapper around md-line elements in a list.
 @mixin md-line-wrapper-base() {
   @include md-normalize-text();
 
@@ -42,17 +45,5 @@
   // space and pushes other elements to the right.
   &:empty {
     display: none;
-  }
-}
-
-/**
- * This mixin normalizes default element styles, e.g. font weight for heading text.
- */
-@mixin md-normalize-text() {
-  & > * {
-    margin: 0;
-    padding: 0;
-    font-weight: normal;
-    font-size: inherit;
   }
 }

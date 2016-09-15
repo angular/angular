@@ -1,21 +1,11 @@
-@import 'default-theme';
-@import 'mixins';
-@import 'variables';
-@import 'elevation';
-@import 'sidenav-mixins';
-
-// We use invert() here to have the darken the background color expected to be used. If the
-// background is light, we use a dark backdrop. If the background is dark, we use a light backdrop.
-$md-sidenav-backdrop-color: invert(md-color($md-background, card, 0.6)) !default;
-$md-sidenav-background-color: md-color($md-background, dialog) !default;
-$md-sidenav-push-background-color: md-color($md-background, dialog) !default;
+@import '../core/style/variables';
+@import '../core/style/elevation';
+@import '../core/style/sidenav-common';
 
 
-/**
- * Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
- * @param $open The translation value when the sidenav is opened.
- * @param $close The translation value when the sidenav is closed.
- */
+// Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
+// @param $open The translation value when the sidenav is opened.
+// @param $close The translation value when the sidenav is closed.
 @mixin md-sidenav-transition($open, $close) {
   transform: translate3d($close, 0, 0);
 
@@ -42,12 +32,21 @@ $md-sidenav-push-background-color: md-color($md-background, dialog) !default;
   }
 }
 
+// Mixin that creates a new stacking context.
+// see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+@mixin md-sidenav-stacking-context() {
+  position: relative;
+
+  // Use a transform to create a new stacking context.
+  transform: translate3d(0, 0, 0);
+}
+
 md-sidenav-layout {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
   // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
   // We create another stacking context in the '.md-sidenav-content' and in each sidenav so that
   // the application content does not get messed up with our own CSS.
-  @include md-stacking-context();
+  @include md-sidenav-stacking-context();
 
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
@@ -85,12 +84,11 @@ md-sidenav-layout {
 
   &.md-sidenav-shown {
     visibility: visible;
-    background-color: $md-sidenav-backdrop-color;
   }
 }
 
 .md-sidenav-content {
-  @include md-stacking-context();
+  @include md-sidenav-stacking-context();
 
   display: block;
   height: 100%;
@@ -98,7 +96,7 @@ md-sidenav-layout {
 }
 
 md-sidenav {
-  @include md-stacking-context();
+  @include md-sidenav-stacking-context();
 
   display: block;
   position: absolute;
@@ -110,13 +108,7 @@ md-sidenav {
   // TODO(kara): revisit scrolling behavior for sidenavs
   overflow-y: auto;
 
-  background-color: $md-sidenav-background-color;
-
   @include md-sidenav-transition(0, -100%);
-
-  &.md-sidenav-push {
-    background-color: $md-sidenav-push-background-color;
-  }
 
   &.md-sidenav-side {
     z-index: 1;

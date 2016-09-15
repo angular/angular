@@ -1,0 +1,11 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin md-dialog-theme($theme) {
+  $background: map-get($theme, background);
+
+  md-dialog-container {
+    background: md-color($background, dialog);
+  }
+}

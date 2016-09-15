@@ -92,7 +92,7 @@ describe('MdLiveAnnouncer', () => {
 
 
 function getLiveElement(): Element {
-  return document.body.querySelector('.md-live-announcer');
+  return document.body.querySelector('[aria-live]');
 }
 
 @Component({template: `<button (click)="announceText('Test')">Announce</button>`})

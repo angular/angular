@@ -1,0 +1,6 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+// Include this empty mixin for consistency with the other components.
+@mixin md-grid-list-theme($theme) { }
