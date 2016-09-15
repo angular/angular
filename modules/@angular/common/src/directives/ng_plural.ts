@@ -61,8 +61,7 @@ export class NgPlural {
 
   addCase(value: string, switchView: SwitchView): void { this._caseViews[value] = switchView; }
 
-  /** @internal */
-  _updateView(): void {
+  private _updateView(): void {
     this._clearViews();
 
     const cases = Object.keys(this._caseViews);
@@ -70,13 +69,11 @@ export class NgPlural {
     this._activateView(this._caseViews[key]);
   }
 
-  /** @internal */
-  _clearViews() {
+  private _clearViews() {
     if (this._activeView) this._activeView.destroy();
   }
 
-  /** @internal */
-  _activateView(view: SwitchView) {
+  private _activateView(view: SwitchView) {
     if (view) {
       this._activeView = view;
       this._activeView.create();

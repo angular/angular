@@ -14,15 +14,13 @@ export function unimplemented(): any {
  * @stable
  */
 export class BaseError extends Error {
-  /**
-   * @internal
-   */
+  /** @internal **/
   _nativeError: Error;
 
   constructor(message: string) {
     // Errors don't use current this, instead they create a new instance.
     // We have to do forward all of our api to the nativeInstance.
-    var nativeError = super(message) as any as Error;
+    const nativeError = super(message) as any as Error;
     this._nativeError = nativeError;
   }
 
@@ -39,11 +37,6 @@ export class BaseError extends Error {
  */
 export class WrappedError extends BaseError {
   originalError: any;
-
-  /**
-   * @internal
-   */
-  _nativeError: Error;
 
   constructor(message: string, error: any) {
     super(`${message} caused by: ${error instanceof Error ? error.message: error }`);
