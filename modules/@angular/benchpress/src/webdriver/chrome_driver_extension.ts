@@ -14,7 +14,7 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 
 /**
  * Set the following 'traceCategories' to collect metrics in Chrome:
- * 'v8,blink.console,disabled-by-default-devtools.timeline,devtools.timeline'
+ * 'v8,blink.console,disabled-by-default-devtools.timeline,devtools.timeline,blink.user_timing'
  *
  * In order to collect the frame rate related metrics, add 'benchmark'
  * to the list above.
@@ -28,7 +28,6 @@ export class ChromeDriverExtension extends WebDriverExtension {
   constructor(private _driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string) {
     super();
     this._majorChromeVersion = this._parseChromeVersion(userAgent);
-
   }
 
   private _parseChromeVersion(userAgent: string): number {
@@ -74,7 +73,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
             if (message['method'] === 'Tracing.dataCollected') {
               events.push(message['params']);
             }
-            if (message['method'] ===  'Tracing.bufferUsage') {
+            if (message['method'] === 'Tracing.bufferUsage') {
               throw new Error('The DevTools trace buffer filled during the test!');
             }
           });
@@ -87,64 +86,59 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (!normalizedEvents) {
       normalizedEvents = [];
     }
-    var majorGCPids = {};
     chromeEvents.forEach((event) => {
-      var categories = this._parseCategories(event['cat']);
-      var name = event['name'];
-      if (this._isEvent(categories, name, ['blink.console'])) {
-        normalizedEvents.push(normalizeEvent(event, {'name': name}));
-      } else if (this._isEvent(
-                     categories, name, ['benchmark'],
-                     'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
-        // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
-        // following events should be used (if available) for more accurate measurments:
-        //   1st choice: vsync_before - ground truth on Android
-        //   2nd choice: BenchmarkInstrumentation::DisplayRenderingStats - available on systems with
-        //               new surfaces framework (not broadly enabled yet)
-        //   3rd choice: BenchmarkInstrumentation::ImplThreadRenderingStats - fallback event that is
-        //               always available if something is rendered
-        var frameCount = event['args']['data']['frame_count'];
-        if (frameCount > 1) {
-          throw new Error('multi-frame render stats not supported');
-        }
-        if (frameCount == 1) {
-          normalizedEvents.push(normalizeEvent(event, {'name': 'frame'}));
-        }
-      } else if (
-          this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Rasterize') ||
-          this._isEvent(
-              categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
-        normalizedEvents.push(normalizeEvent(event, {'name': 'render'}));
-      } else {
-        var normalizedEvent = this._processAsPostChrome44Event(event, categories);
-        if (normalizedEvent != null) normalizedEvents.push(normalizedEvent);
-      }
+      const categories = this._parseCategories(event['cat']);
+      const normalizedEvent = this._convertEvent(event, categories);
+      if (normalizedEvent != null) normalizedEvents.push(normalizedEvent);
     });
     return normalizedEvents;
   }
 
-  private _processAsPostChrome44Event(event: {[key: string]: any}, categories: string[]) {
+  private _convertEvent(event: {[key: string]: any}, categories: string[]) {
     var name = event['name'];
     var args = event['args'];
-    if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
+    if (this._isEvent(categories, name, ['blink.console'])) {
+      return normalizeEvent(event, {'name': name});
+    } else if (this._isEvent(
+                   categories, name, ['benchmark'],
+                   'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
+      // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
+      // following events should be used (if available) for more accurate measurments:
+      //   1st choice: vsync_before - ground truth on Android
+      //   2nd choice: BenchmarkInstrumentation::DisplayRenderingStats - available on systems with
+      //               new surfaces framework (not broadly enabled yet)
+      //   3rd choice: BenchmarkInstrumentation::ImplThreadRenderingStats - fallback event that is
+      //               always available if something is rendered
+      var frameCount = event['args']['data']['frame_count'];
+      if (frameCount > 1) {
+        throw new Error('multi-frame render stats not supported');
+      }
+      if (frameCount == 1) {
+        return normalizeEvent(event, {'name': 'frame'});
+      }
+    } else if (
+        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Rasterize') ||
+        this._isEvent(
+            categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
+      return normalizeEvent(event, {'name': 'render'});
+    } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
       var normArgs = {
         'majorGc': true,
         'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                               args['usedHeapSizeBefore']
+                                                                  args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MinorGC')) {
       var normArgs = {
         'majorGc': false,
         'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                               args['usedHeapSizeBefore']
+                                                                  args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (
         this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
         (!args || !args['data'] ||
-         (args['data']['scriptName'] !==  'InjectedScript' &&
-          args['data']['scriptName'] !==  ''))) {
+         (args['data']['scriptName'] !== 'InjectedScript' && args['data']['scriptName'] !== ''))) {
       return normalizeEvent(event, {'name': 'script'});
     } else if (this._isEvent(
                    categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')) {
@@ -174,8 +168,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       expectedName: string = null): boolean {
     var hasCategories = expectedCategories.reduce(
         (value, cat) => { return value && eventCategories.indexOf(cat) !== -1; }, true);
-    return !expectedName ? hasCategories :
-                                   hasCategories && eventName ===  expectedName;
+    return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
   }
 
   perfLogFeatures(): PerfLogFeatures {
@@ -183,17 +176,16 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return this._majorChromeVersion >=44 &&
-        capabilities['browserName'].toLowerCase() ===  'chrome';
+    return this._majorChromeVersion >= 44 && capabilities['browserName'].toLowerCase() === 'chrome';
   }
 }
 
 function normalizeEvent(
     chromeEvent: {[key: string]: any}, data: {[key: string]: any}): PerfLogEvent {
   var ph = chromeEvent['ph'];
-  if (ph ===  'S') {
+  if (ph === 'S') {
     ph = 'b';
-  } else if (ph ===  'F') {
+  } else if (ph === 'F') {
     ph = 'e';
   }
   var result: {[key: string]: any} =

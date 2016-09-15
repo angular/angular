@@ -12,8 +12,10 @@ import {Options} from './common_options';
 import {isBlank, isPresent} from './facade/lang';
 
 export type PerfLogEvent = {
+  [key: string]: any
+} & {
   cat?: string,
-  ph?: 'X' | 'B' | 'E' | 'b' | 'e',
+  ph?: 'X' | 'B' | 'E' | 'b' | 'e' | 'i' | 'I',
   ts?: number,
   dur?: number,
   name?: string,
