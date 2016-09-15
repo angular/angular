@@ -90,10 +90,10 @@ export class OfflineCompiler {
 
                 // compile components
                 exportedVars.push(
-                  this._compileComponentFactory(compMeta, fileSuffix, statements),
-                  this._compileComponent(
-                    compMeta, dirMetas, ngModule.transitiveModule.pipes, ngModule.schemas,
-                    stylesCompileResults.componentStylesheet, fileSuffix, statements));
+                    this._compileComponentFactory(compMeta, fileSuffix, statements),
+                    this._compileComponent(
+                        compMeta, dirMetas, ngModule.transitiveModule.pipes, ngModule.schemas,
+                        stylesCompileResults.componentStylesheet, fileSuffix, statements));
               });
         }))
         .then(() => {
@@ -107,18 +107,29 @@ export class OfflineCompiler {
 
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
     const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType);
-    const appCompileResult = this._ngModuleCompiler.compile(ngModule, [
-      new CompileProviderMetadata(
-          {token: resolveIdentifierToken(Identifiers.LOCALE_ID), useValue: this._localeId}),
-      new CompileProviderMetadata({
+    const providers: CompileProviderMetadata[] = [];
+
+    if (this._localeId) {
+      providers.push(new CompileProviderMetadata({
+        token: resolveIdentifierToken(Identifiers.LOCALE_ID),
+        useValue: this._localeId,
+      }));
+    }
+
+    if (this._translationFormat) {
+      providers.push(new CompileProviderMetadata({
         token: resolveIdentifierToken(Identifiers.TRANSLATIONS_FORMAT),
         useValue: this._translationFormat
-      })
-    ]);
+      }));
+    }
+
+    const appCompileResult = this._ngModuleCompiler.compile(ngModule, providers);
+
     appCompileResult.dependencies.forEach((dep) => {
       dep.placeholder.name = _componentFactoryName(dep.comp);
       dep.placeholder.moduleUrl = _ngfactoryModuleUrl(dep.comp.moduleUrl);
     });
+
     targetStatements.push(...appCompileResult.statements);
     return appCompileResult.ngModuleFactoryVar;
   }
