@@ -22,7 +22,7 @@ export const RANGE_VALUE_ACCESSOR: any = {
  *
  *  ### Example
  *  ```
- *  <input type="range" [(ngModel)]="age">
+ *  <input type="range" [(ngModel)]="age" >
  *  ```
  */
 @Directive({
