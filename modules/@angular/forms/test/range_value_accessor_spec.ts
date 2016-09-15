@@ -14,13 +14,9 @@ export function main() {
   describe('range value accessor', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent {
-      return fixture.componentInstance;
-    }
+    function getComponent(): TestComponent { return fixture.componentInstance; }
 
-    afterEach(() => {
-      fixture = null;
-    });
+    afterEach(() => { fixture = null; });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
@@ -29,7 +25,7 @@ export function main() {
     it('should add styles specified in an object literal', async(() => {
       const template = `<input type="range" [(ngModel)]="val">`;
       fixture = createTestComponent(template);
-      expect(typeof(fixture.componentInstance.val)).toBe("number")
+      expect(typeof(fixture.componentInstance.val)).toBe('number');
     }));
 
   });
@@ -43,6 +39,6 @@ class TestComponent {
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
   return TestBed.overrideComponent(TestComponent, {set: {template: template}})
-    .createComponent(TestComponent);
+      .createComponent(TestComponent);
 }
 
