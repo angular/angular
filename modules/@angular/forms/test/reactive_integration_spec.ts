@@ -22,11 +22,26 @@ export function main() {
       TestBed.configureTestingModule({
         imports: [FormsModule, ReactiveFormsModule],
         declarations: [
-          FormControlComp, FormGroupComp, FormArrayComp, FormArrayNestedGroup,
-          FormControlNameSelect, FormControlNumberInput, FormControlRadioButtons, WrappedValue,
-          WrappedValueForm, MyInput, MyInputForm, FormGroupNgModel, FormControlNgModel,
-          LoginIsEmptyValidator, LoginIsEmptyWrapper, ValidationBindingsForm, UniqLoginValidator,
-          UniqLoginWrapper, NestedFormGroupComp
+          FormControlComp,
+          FormGroupComp,
+          FormArrayComp,
+          FormArrayNestedGroup,
+          FormControlNameSelect,
+          FormControlNumberInput,
+          FormControlRangeInput,
+          FormControlRadioButtons,
+          WrappedValue,
+          WrappedValueForm,
+          MyInput,
+          MyInputForm,
+          FormGroupNgModel,
+          FormControlNgModel,
+          LoginIsEmptyValidator,
+          LoginIsEmptyWrapper,
+          ValidationBindingsForm,
+          UniqLoginValidator,
+          UniqLoginWrapper,
+          NestedFormGroupComp
         ]
       });
     });
@@ -1072,6 +1087,57 @@ export function main() {
 
       });
 
+      describe('should support <type=range>', () => {
+        it('with basic use case', () => {
+          const fixture = TestBed.createComponent(FormControlRangeInput);
+          const control = new FormControl(10);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          // model -> view
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('10');
+
+          input.nativeElement.value = '20';
+          dispatchEvent(input.nativeElement, 'input');
+
+          // view -> model
+          expect(control.value).toEqual(20);
+        });
+
+        it('when value is cleared in the UI', () => {
+          const fixture = TestBed.createComponent(FormControlNumberInput);
+          const control = new FormControl(10, Validators.required);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          input.nativeElement.value = '';
+          dispatchEvent(input.nativeElement, 'input');
+
+          expect(control.valid).toBe(false);
+          expect(control.value).toEqual(null);
+
+          input.nativeElement.value = '0';
+          dispatchEvent(input.nativeElement, 'input');
+
+          expect(control.valid).toBe(true);
+          expect(control.value).toEqual(0);
+        });
+
+        it('when value is cleared programmatically', () => {
+          const fixture = TestBed.createComponent(FormControlNumberInput);
+          const control = new FormControl(10);
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          control.setValue(null);
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.value).toEqual('');
+        });
+      });
+
       describe('custom value accessors', () => {
         it('should support basic functionality', () => {
           const fixture = TestBed.createComponent(WrappedValueForm);
@@ -1795,6 +1861,16 @@ class NestedFormGroupComp {
   `
 })
 class FormControlNumberInput {
+  control: FormControl;
+}
+
+@Component({
+  selector: 'form-control-range-input',
+  template: `
+    <input type="range" [formControl]="control">
+  `
+})
+class FormControlRangeInput {
   control: FormControl;
 }
 

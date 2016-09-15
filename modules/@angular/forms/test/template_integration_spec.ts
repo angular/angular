@@ -20,7 +20,7 @@ export function main() {
       TestBed.configureTestingModule({
         declarations: [
           StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
-          NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
+          NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
           NgModelValidationBindings, NgModelMultipleValidators
         ],
@@ -478,6 +478,26 @@ export function main() {
            expect(inputs[3].nativeElement.disabled).toBe(false);
          }));
 
+    });
+
+    describe('range control', () => {
+      it('should support <type=range>', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRangeForm);
+           // model -> view
+           fixture.componentInstance.val = 4;
+           fixture.detectChanges();
+           tick();
+           let input = fixture.debugElement.query(By.css('input'));
+           expect(input.nativeElement.value).toBe('4');
+           fixture.detectChanges();
+           tick();
+           let newVal = '4';
+           input.triggerEventHandler('input', {target: {value: newVal}});
+           tick();
+           // view -> model
+           fixture.detectChanges();
+           expect(typeof(fixture.componentInstance.val)).toBe('number');
+         }));
     });
 
     describe('radio controls', () => {
@@ -998,6 +1018,11 @@ class InvalidNgModelNoName {
 class NgModelOptionsStandalone {
   one: string;
   two: string;
+}
+
+@Component({selector: 'ng-model-range-form', template: '<input type="range" [(ngModel)]="val">'})
+class NgModelRangeForm {
+  val: any;
 }
 
 @Component({
