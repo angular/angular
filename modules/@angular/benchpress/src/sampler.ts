@@ -49,7 +49,7 @@ export class Sampler {
   }
 
   private _iterate(lastState: SampleState): Promise<SampleState> {
-    var resultPromise: Promise<any>;
+    var resultPromise: Promise<SampleState>;
     if (this._prepare !== Options.NO_PREPARE) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {
@@ -77,5 +77,5 @@ export class Sampler {
 }
 
 export class SampleState {
-  constructor(public completeSample: any[], public validSample: any[]) {}
+  constructor(public completeSample: MeasureValues[], public validSample: MeasureValues[]) {}
 }
