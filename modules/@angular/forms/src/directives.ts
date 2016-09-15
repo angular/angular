@@ -14,7 +14,6 @@ import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_sta
 import {NgForm} from './directives/ng_form';
 import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
-import {NumberValueAccessor} from './directives/number_value_accessor';
 import {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 import {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 import {FormControlName} from './directives/reactive_directives/form_control_name';
@@ -23,6 +22,7 @@ import {FormArrayName, FormGroupName} from './directives/reactive_directives/for
 import {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 import {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 import {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
+export {RangeValueAccessor} from './directives/range_value_accessor';
 
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
@@ -43,7 +43,7 @@ export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './dire
 export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
-  NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
+  NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor, RangeValueAccessor,
   CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
   RadioControlValueAccessor, NgControlStatus, NgControlStatusGroup, RequiredValidator,
   MinLengthValidator, MaxLengthValidator, PatternValidator
