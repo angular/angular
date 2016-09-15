@@ -84,7 +84,7 @@ gulp.task('public-api:enforce', (done) => {
 
   childProcess
     .spawn(
-      path.join(__dirname, pfScriptPath(`/node_modules/.bin/ts-api-guardian`)),
+      path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
       ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
     .on('close', (errorCode) => {
       if (errorCode !== 0) {
@@ -102,13 +102,23 @@ gulp.task('public-api:update', ['build.sh'], (done) => {
 
   childProcess
     .spawn(
-      path.join(__dirname, pfScriptPath(`/node_modules/.bin/ts-api-guardian`)),
+      path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
       ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
     .on('close', done);
 });
 
+// Checks tests for presence of ddescribe, fdescribe, fit, iit and fails the build if one of the focused tests is found.
+// Currently xdescribe and xit are _not_ reported as errors since there are a couple of excluded tests in our code base.
+gulp.task('check-tests', function() {
+  const ddescribeIit = require('gulp-ddescribe-iit');
+  return gulp.src([
+    'modules/**/*.spec.ts',
+    'modules/**/*_spec.ts',
+  ]).pipe(ddescribeIit({allowDisabledTests: true}));
+});
+
 // Check the coding standards and programming errors
-gulp.task('lint', [ 'format:enforce', 'tools:build'], () => {
+gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
   const tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
