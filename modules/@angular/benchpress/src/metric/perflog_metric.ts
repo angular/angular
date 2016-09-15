@@ -222,13 +222,13 @@ export class PerflogMetric extends Metric {
     events.forEach((event) => {
       var ph = event['ph'];
       var name = event['name'];
-      if (ph === 'b' && name === markName) {
+      if (ph === 'B' && name === markName) {
         markStartEvent = event;
       } else if (ph === 'I' && name === 'navigationStart') {
         // if a benchmark measures reload of a page, use the last
         // navigationStart as begin event
         markStartEvent = event;
-      } else if (ph === 'e' && name === markName) {
+      } else if (ph === 'E' && name === markName) {
         markEndEvent = event;
       }
     });
@@ -272,7 +272,7 @@ export class PerflogMetric extends Metric {
       } else if (this._receivedData && name === 'receivedData' && ph === 'I') {
         result['receivedData'] += event['args']['encodedDataLength'];
       }
-      if (ph === 'b' && name === _MARK_NAME_FRAME_CAPUTRE) {
+      if (ph === 'B' && name === _MARK_NAME_FRAME_CAPUTRE) {
         if (frameCaptureStartEvent) {
           throw new Error('can capture frames only once per benchmark run');
         }
@@ -281,7 +281,7 @@ export class PerflogMetric extends Metric {
               'found start event for frame capture, but frame capture was not requested in benchpress');
         }
         frameCaptureStartEvent = event;
-      } else if (ph === 'e' && name === _MARK_NAME_FRAME_CAPUTRE) {
+      } else if (ph === 'E' && name === _MARK_NAME_FRAME_CAPUTRE) {
         if (!frameCaptureStartEvent) {
           throw new Error('missing start event for frame capture');
         }
@@ -297,14 +297,14 @@ export class PerflogMetric extends Metric {
         }
       }
 
-      if (ph === 'B' || ph === 'b') {
+      if (ph === 'B') {
         if (!intervalStarts[name]) {
           intervalStartCount[name] = 1;
           intervalStarts[name] = event;
         } else {
           intervalStartCount[name]++;
         }
-      } else if ((ph === 'E' || ph === 'e') && intervalStarts[name]) {
+      } else if ((ph === 'E') && intervalStarts[name]) {
         intervalStartCount[name]--;
         if (intervalStartCount[name] === 0) {
           var startEvent = intervalStarts[name];

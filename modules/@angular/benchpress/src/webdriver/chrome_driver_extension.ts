@@ -158,7 +158,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       let normArgs = {'url': data['url'], 'method': data['requestMethod']};
       return normalizeEvent(event, {'name': 'sendRequest', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['blink.user_timing'], 'navigationStart')) {
-      return normalizeEvent(event, {'name': name});
+      return normalizeEvent(event, {'name': 'navigationStart'});
     }
     return null;  // nothing useful in this event
   }
@@ -182,23 +182,19 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 }
 
-function normalizeEvent(
-    chromeEvent: {[key: string]: any}, data: {[key: string]: any}): PerfLogEvent {
-  var ph = chromeEvent['ph'];
+function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): PerfLogEvent {
+  var ph = chromeEvent['ph'].toUpperCase();
   if (ph === 'S') {
-    ph = 'b';
+    ph = 'B';
   } else if (ph === 'F') {
-    ph = 'e';
+    ph = 'E';
   } else if (ph === 'R') {
     // mark events from navigation timing
-    ph = 'I';
-  } else if (ph === 'i') {
-    // legacy support
     ph = 'I';
   }
   var result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};
-  if (chromeEvent['ph'] === 'X') {
+  if (ph === 'X') {
     var dur = chromeEvent['dur'];
     if (dur === undefined) {
       dur = chromeEvent['tdur'];
