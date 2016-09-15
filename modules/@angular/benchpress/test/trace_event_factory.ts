@@ -21,9 +21,9 @@ export class TraceEventFactory {
     return res;
   }
 
-  markStart(name: string, time: number) { return this.create('b', name, time); }
+  markStart(name: string, time: number) { return this.create('B', name, time); }
 
-  markEnd(name: string, time: number) { return this.create('e', name, time); }
+  markEnd(name: string, time: number) { return this.create('E', name, time); }
 
   start(name: string, time: number, args: any = null) { return this.create('B', name, time, args); }
 
