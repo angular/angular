@@ -28,6 +28,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   constructor(private _driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string) {
     super();
     this._majorChromeVersion = this._parseChromeVersion(userAgent);
+
   }
 
   private _parseChromeVersion(userAgent: string): number {
@@ -114,52 +115,12 @@ export class ChromeDriverExtension extends WebDriverExtension {
           this._isEvent(
               categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
         normalizedEvents.push(normalizeEvent(event, {'name': 'render'}));
-      } else if (this._majorChromeVersion < 45) {
-        var normalizedEvent = this._processAsPreChrome45Event(event, categories, majorGCPids);
-        if (normalizedEvent != null) normalizedEvents.push(normalizedEvent);
       } else {
         var normalizedEvent = this._processAsPostChrome44Event(event, categories);
         if (normalizedEvent != null) normalizedEvents.push(normalizedEvent);
       }
     });
     return normalizedEvents;
-  }
-
-  private _processAsPreChrome45Event(
-      event: {[key: string]: any}, categories: string[], majorGCPids: {[key: string]: any}) {
-    var name = event['name'];
-    var args = event['args'];
-    var pid = event['pid'];
-    var ph = event['ph'];
-    if (this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'FunctionCall') &&
-        (!args || !args['data'] ||
-         args['data']['scriptName'] !==  'InjectedScript')) {
-      return normalizeEvent(event, {'name': 'script'});
-    } else if (
-        this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'RecalculateStyles') ||
-        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Layout') ||
-        this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'UpdateLayerTree') ||
-        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Paint')) {
-      return normalizeEvent(event, {'name': 'render'});
-    } else if (this._isEvent(
-                   categories, name, ['disabled-by-default-devtools.timeline'], 'GCEvent')) {
-      var normArgs: {[key: string]: any} = {
-        'usedHeapSize': args['usedHeapSizeAfter'] ? args['usedHeapSizeAfter'] :
-                                                               args['usedHeapSizeBefore']
-      };
-      if (ph ===  'E') {
-        normArgs['majorGc'] = majorGCPids[pid] && majorGCPids[pid];
-      }
-      majorGCPids[pid] = false;
-      return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
-    } else if (
-        this._isEvent(categories, name, ['v8'], 'majorGC') && ph ===  'B') {
-      majorGCPids[pid] = true;
-    }
-    return null;  // nothing useful in this event
   }
 
   private _processAsPostChrome44Event(event: {[key: string]: any}, categories: string[]) {
@@ -222,7 +183,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return this._majorChromeVersion != -1 &&
+    return this._majorChromeVersion >=44 &&
         capabilities['browserName'].toLowerCase() ===  'chrome';
   }
 }
