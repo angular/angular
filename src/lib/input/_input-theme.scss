@@ -40,7 +40,7 @@
 
   // See md-input-placeholder-floating mixin in input.scss
   md-input input:-webkit-autofill + .md-input-placeholder,
-  .md-input-placeholder.md-float:not(.md-empty), &.md-float.md-focused {
+  .md-input-placeholder.md-float:not(.md-empty), .md-input-placeholder.md-float.md-focused {
 
     .md-placeholder-required {
       color: $input-required-placeholder-color;
