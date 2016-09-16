@@ -7,7 +7,7 @@
  */
 
 
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
@@ -120,8 +120,8 @@ export function composeAsyncValidators(validators: /* Array<Validator|Function> 
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
-  if (!StringMapWrapper.contains(changes, 'model')) return false;
-  var change = changes['model'];
+  if (!changes.hasOwnProperty('model')) return false;
+  const change = changes['model'];
 
   if (change.isFirstChange()) return true;
   return !looseIdentical(viewModel, change.currentValue);

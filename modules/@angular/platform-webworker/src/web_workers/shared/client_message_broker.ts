@@ -156,15 +156,11 @@ class MessageData {
   }
 
   /**
-   * Returns the value from the StringMap if present. Otherwise returns null
+   * Returns the value if present, otherwise returns null
    * @internal
    */
   _getValueIfPresent(data: {[key: string]: any}, key: string) {
-    if (StringMapWrapper.contains(data, key)) {
-      return StringMapWrapper.get(data, key);
-    } else {
-      return null;
-    }
+    return data.hasOwnProperty(key) ? data[key] : null;
   }
 }
 

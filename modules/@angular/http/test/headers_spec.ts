@@ -7,8 +7,6 @@
  */
 
 import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
-import {Map, StringMapWrapper} from '../src/facade/collection';
 import {Json} from '../src/facade/lang';
 import {Headers} from '../src/headers';
 
@@ -24,21 +22,20 @@ export function main() {
       // Spec at https://tools.ietf.org/html/rfc2616
       expect(firstHeaders.get('content-type')).toBe('image/jpeg');
       expect(firstHeaders.get('content-Type')).toBe('image/jpeg');
-      var httpHeaders = StringMapWrapper.create();
-      StringMapWrapper.set(httpHeaders, 'Content-Type', 'image/jpeg');
-      StringMapWrapper.set(httpHeaders, 'Accept-Charset', 'utf-8');
-      StringMapWrapper.set(httpHeaders, 'X-My-Custom-Header', 'Zeke are cool');
-      var secondHeaders = new Headers(httpHeaders);
-      var secondHeadersObj = new Headers(secondHeaders);
+      const httpHeaders = {
+        'Content-Type': 'image/jpeg',
+        'Accept-Charset': 'utf-8',
+        'X-My-Custom-Header': 'Zeke are cool',
+      };
+      const secondHeaders = new Headers(httpHeaders);
+      const secondHeadersObj = new Headers(secondHeaders);
       expect(secondHeadersObj.get('Content-Type')).toBe('image/jpeg');
     });
 
 
     describe('initialization', () => {
       it('should merge values in provided dictionary', () => {
-        var map = StringMapWrapper.create();
-        StringMapWrapper.set(map, 'foo', 'bar');
-        var headers = new Headers(map);
+        var headers = new Headers({'foo': 'bar'});
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
       });
@@ -55,9 +52,7 @@ export function main() {
 
     describe('.set()', () => {
       it('should clear all values and re-set for the provided key', () => {
-        var map = StringMapWrapper.create();
-        StringMapWrapper.set(map, 'foo', 'bar');
-        var headers = new Headers(map);
+        var headers = new Headers({'foo': 'bar'});
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
         headers.set('foo', 'baz');

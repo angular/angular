@@ -121,7 +121,7 @@ export class ReflectiveProtoInjectorDynamicStrategy implements ReflectiveProtoIn
   constructor(protoInj: ReflectiveProtoInjector, public providers: ResolvedReflectiveProvider[]) {
     var len = providers.length;
 
-    this.keyIds = ListWrapper.createFixedSize(len);
+    this.keyIds = new Array(len);
 
     for (var i = 0; i < len; i++) {
       this.keyIds[i] = providers[i].key.id;
@@ -286,7 +286,7 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
   constructor(
       public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
       public injector: ReflectiveInjector_) {
-    this.objs = ListWrapper.createFixedSize(protoStrategy.providers.length);
+    this.objs = new Array(protoStrategy.providers.length);
     ListWrapper.fill(this.objs, UNDEFINED);
   }
 
@@ -648,7 +648,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
-      var res = ListWrapper.createFixedSize(provider.resolvedFactories.length);
+      var res = new Array(provider.resolvedFactories.length);
       for (var i = 0; i < provider.resolvedFactories.length; ++i) {
         res[i] = this._instantiate(provider, provider.resolvedFactories[i]);
       }

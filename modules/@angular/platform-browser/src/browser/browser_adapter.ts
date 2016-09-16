@@ -164,7 +164,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   childNodes(el: any /** TODO #9100 */): Node[] { return el.childNodes; }
   childNodesAsList(el: any /** TODO #9100 */): any[] {
     var childNodes = el.childNodes;
-    var res = ListWrapper.createFixedSize(childNodes.length);
+    var res = new Array(childNodes.length);
     for (var i = 0; i < childNodes.length; i++) {
       res[i] = childNodes[i];
     }
