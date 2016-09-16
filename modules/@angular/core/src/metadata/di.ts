@@ -275,7 +275,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
       ['selector', undefined], {
         first: true,
         isViewQuery: false,
-        descendants: false,
+        descendants: true,
         read: undefined,
       }
     ],
