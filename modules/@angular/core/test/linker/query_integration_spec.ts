@@ -250,6 +250,17 @@ export function main() {
         expect(comp.textDirChild.text).toEqual('ca');
       });
 
+      it('should contain the first descendant content child', () => {
+        const template = '<needs-content-child-read>' +
+            '<div dir><div #q text="ca"></div></div>' +
+            '</needs-content-child-read>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+        const comp: NeedsContentChildWithRead =
+            view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
+        expect(comp.textDirChild.text).toEqual('ca');
+      });
+
       it('should contain the first view child', () => {
         const template = '<needs-view-child-read></needs-view-child-read>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
