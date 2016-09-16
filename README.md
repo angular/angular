@@ -62,11 +62,11 @@ High level items planned for September 2016:
 | ripples          |  Available, but needs to be applied | [README][19] |   [#108][0108] |
 | dialog           |  Started, not yet ready for release |           -  |   [#114][0114] |
 | snackbar / toast |                    Proof-of-concept |           -  |   [#115][0115] |
-| select           |                         Not started |           -  |   [#118][0118] |
+| select           |                      Design started |           -  |   [#118][0118] |
 | textarea         |                         Not started |           -  |   [#546][0546] |
 | autocomplete     |                         Not started |           -  |   [#117][0117] |
 | chips            |                         Not started |           -  |   [#120][0120] |
-| theming          |               Designed, no code yet |           -  |   [#123][0123] |
+| theming          | In master, not released, some bugs  | [Guide][20]  |   [#123][0123] |
 | prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
@@ -99,6 +99,7 @@ High level items planned for September 2016:
 [17]: https://github.com/angular/material2/blob/master/src/lib/menu/README.md
 [18]: https://github.com/angular/material2/blob/master/src/lib/tooltip/README.md
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
+[20]: https://github.com/angular/material2/blob/master/docs/theming.md
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
