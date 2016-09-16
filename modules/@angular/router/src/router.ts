@@ -318,6 +318,15 @@ export class Router {
   }
 
   /**
+   * @internal
+   * TODO: this should be removed once the constructor of the router made internal
+   */
+  resetRootComponentType(rootComponentType: Type<any>): void {
+    this.rootComponentType = rootComponentType;
+    this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+  }
+
+  /**
    * Sets up the location change listener and performs the initial navigation.
    */
   initialNavigation(): void {
