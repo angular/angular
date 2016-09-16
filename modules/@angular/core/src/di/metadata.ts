@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../facade/lang';
 import {makeParamDecorator} from '../util/decorators';
 
 /**
@@ -250,8 +249,7 @@ export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf', []);
 export interface HostDecorator {
   /**
    * @whatItDoes Specifies that an injector should retrieve a dependency from any injector until
-   * reaching the
-   * host element of the current component.
+   * reaching the host element of the current component.
    * @howToUse
    * ```
    * @Injectable()

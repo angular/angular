@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Host, Inject, Injectable, Optional, ReflectiveInjector, Self, SkipSelf} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 export function main() {
   describe('di metadata examples', () => {
@@ -140,26 +140,28 @@ export function main() {
 
         @Directive({selector: 'child-directive'})
         class ChildDirective {
+          logs: string[] = [];
+
           constructor(@Optional() @Host() os: OtherService, @Optional() @Host() hs: HostService) {
-            console.log('os is null', os);
-            console.log('hs is NOT null', hs);
+            // os is null: true
+            this.logs.push(`os is null: ${os === null}`);
+            // hs is an instance of HostService: true
+            this.logs.push(`hs is an instance of HostService: ${hs instanceof HostService}`);
           }
         }
 
         @Component({
           selector: 'parent-cmp',
-          providers: [HostService],
-          template: `
-            Dir: <child-directive></child-directive>
-          `
+          viewProviders: [HostService],
+          template: '<child-directive></child-directive>',
         })
         class ParentCmp {
         }
 
         @Component({
           selector: 'app',
-          providers: [OtherService],
-          template: `Parent: <parent-cmp></parent-cmp>`
+          viewProviders: [OtherService],
+          template: '<parent-cmp></parent-cmp>',
         })
         class App {
         }
@@ -168,7 +170,14 @@ export function main() {
         TestBed.configureTestingModule({
           declarations: [App, ParentCmp, ChildDirective],
         });
-        expect(() => TestBed.createComponent(App)).not.toThrow();
+
+        let cmp: ComponentFixture<App>;
+        expect(() => cmp = TestBed.createComponent(App)).not.toThrow();
+
+        expect(cmp.debugElement.children[0].children[0].injector.get(ChildDirective).logs).toEqual([
+          'os is null: true',
+          'hs is an instance of HostService: true',
+        ]);
       });
     });
 
