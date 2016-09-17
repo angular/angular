@@ -91,6 +91,7 @@ export function main() {
       expect(s('one[attr$="value"] {}', 'a')).toEqual('one[attr$="value"][a] {}');
       expect(s('one[attr*="value"] {}', 'a')).toEqual('one[attr*="value"][a] {}');
       expect(s('one[attr|="value"] {}', 'a')).toEqual('one[attr|="value"][a] {}');
+      expect(s('one[attr~="value"] {}', 'a')).toEqual('one[attr~="value"][a] {}');
       expect(s('one[attr] {}', 'a')).toEqual('one[attr][a] {}');
       expect(s('[is="one"] {}', 'a')).toEqual('[is="one"][a] {}');
     });
