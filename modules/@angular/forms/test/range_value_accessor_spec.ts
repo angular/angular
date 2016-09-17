@@ -27,7 +27,7 @@ export function main() {
     it('should add styles specified in an object literal', async(() => {
          const template = `<input type="range" [(ngModel)]="val">`;
          fixture = createTestComponent(template);
-         fixture.nativeElement.value = '2';
+         fixture.nativeElement.querySelector('input').value = '2';
          fixture.detectChanges();
          expect(typeof(fixture.componentInstance.val)).toBe('number');
        }));
