@@ -74,6 +74,7 @@ export interface ExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: boolean;
+    preloadingStrategy?: any;
     useHash?: boolean;
 }
 
@@ -140,10 +141,25 @@ export declare class NavigationStart {
     toString(): string;
 }
 
+/** @experimental */
+export declare class NoPreloading implements PreloadingStrategy {
+    preload(route: Route, fn: () => Observable<any>): Observable<any>;
+}
+
 /** @stable */
 export declare type Params = {
     [key: string]: any;
 };
+
+/** @experimental */
+export declare class PreloadAllModules implements PreloadingStrategy {
+    preload(route: Route, fn: () => Observable<any>): Observable<any>;
+}
+
+/** @experimental */
+export declare abstract class PreloadingStrategy {
+    abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
+}
 
 /** @stable */
 export declare const PRIMARY_OUTLET: string;
