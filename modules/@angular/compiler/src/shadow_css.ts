@@ -426,7 +426,7 @@ export class ShadowCss {
       return scopedP;
     };
 
-    const sep = /( |>|\+|~)\s*/g;
+    const sep = /( |>|\+|~(?!=))\s*/g;
     const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
 
     let scoped = '';
