@@ -224,17 +224,17 @@ export function main() {
     ];
 
     browsers.forEach((browser: {[key: string]: any}) => {
-      it(`should detect ${StringMapWrapper.get(browser, 'name')}`, () => {
-        var bd = new BrowserDetection(<string>StringMapWrapper.get(browser, 'ua'));
-        expect(bd.isFirefox).toBe(StringMapWrapper.get(browser, 'isFirefox'));
-        expect(bd.isAndroid).toBe(StringMapWrapper.get(browser, 'isAndroid'));
-        expect(bd.isEdge).toBe(StringMapWrapper.get(browser, 'isEdge'));
-        expect(bd.isIE).toBe(StringMapWrapper.get(browser, 'isIE'));
-        expect(bd.isWebkit).toBe(StringMapWrapper.get(browser, 'isWebkit'));
-        expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
-        expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
-        expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
-        expect(bd.isOldChrome).toBe(StringMapWrapper.get(browser, 'isOldChrome'));
+      it(`should detect ${browser[ 'name']}`, () => {
+        var bd = new BrowserDetection(<string>browser['ua']);
+        expect(bd.isFirefox).toBe(browser['isFirefox']);
+        expect(bd.isAndroid).toBe(browser['isAndroid']);
+        expect(bd.isEdge).toBe(browser['isEdge']);
+        expect(bd.isIE).toBe(browser['isIE']);
+        expect(bd.isWebkit).toBe(browser['isWebkit']);
+        expect(bd.isIOS7).toBe(browser['isIOS7']);
+        expect(bd.isSlow).toBe(browser['isSlow']);
+        expect(bd.isChromeDesktop).toBe(browser['isChromeDesktop']);
+        expect(bd.isOldChrome).toBe(browser['isOldChrome']);
       });
     });
   });

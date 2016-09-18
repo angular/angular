@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Math, StringWrapper} from '../src/facade/lang';
+import {StringWrapper} from '../src/facade/lang';
 
 import {OpaqueToken} from './di';
 

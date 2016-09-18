@@ -150,7 +150,7 @@ class MessageData {
   id: string;
 
   constructor(data: {[key: string]: any}) {
-    this.type = StringMapWrapper.get(data, 'type');
+    this.type = data['type'];
     this.id = this._getValueIfPresent(data, 'id');
     this.value = this._getValueIfPresent(data, 'value');
   }

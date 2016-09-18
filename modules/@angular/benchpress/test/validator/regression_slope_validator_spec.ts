@@ -10,7 +10,7 @@ import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, 
 
 import {MeasureValues, ReflectiveInjector, RegressionSlopeValidator} from '../../index';
 import {ListWrapper} from '../../src/facade/collection';
-import {Date, DateWrapper} from '../../src/facade/lang';
+import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('regression slope validator', () => {
