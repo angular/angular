@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
+import {MapWrapper, StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -64,7 +64,7 @@ export class Reflector extends ReflectorReader {
       throw new Error('Usage tracking is disabled');
     }
     var allTypes = MapWrapper.keys(this._injectableInfo);
-    return allTypes.filter(key => !SetWrapper.has(this._usedKeys, key));
+    return allTypes.filter(key => !this._usedKeys.has(key));
   }
 
   registerFunction(func: Function, funcInfo: ReflectionInfo): void {

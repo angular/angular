@@ -492,7 +492,7 @@ export abstract class AbstractControl {
   getError(errorCode: string, path: string[] = null): any {
     var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.get(path) : this;
     if (isPresent(control) && isPresent(control._errors)) {
-      return StringMapWrapper.get(control._errors, errorCode);
+      return control._errors[errorCode];
     } else {
       return null;
     }

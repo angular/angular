@@ -9,7 +9,7 @@
 
 import * as chars from '../chars';
 import {BaseError} from '../facade/errors';
-import {StringWrapper, isPresent, resolveEnumToken} from '../facade/lang';
+import {StringWrapper, isPresent} from '../facade/lang';
 
 export enum CssTokenType {
   EOF,
@@ -223,8 +223,8 @@ export class CssScanner {
 
     var error: CssScannerError = null;
     if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
-      var errorMessage = resolveEnumToken(CssTokenType, next.type) + ' does not match expected ' +
-          resolveEnumToken(CssTokenType, type) + ' value';
+      var errorMessage =
+          CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
 
       if (isPresent(value)) {
         errorMessage += ' ("' + next.strValue + '" should match "' + value + '")';

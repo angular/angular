@@ -8,9 +8,9 @@
 
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {MeasureValues, ReflectiveInjector, SizeValidator, Validator} from '../../index';
+import {MeasureValues, ReflectiveInjector, SizeValidator} from '../../index';
 import {ListWrapper} from '../../src/facade/collection';
-import {Date, DateWrapper} from '../../src/facade/lang';
+import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('size validator', () => {

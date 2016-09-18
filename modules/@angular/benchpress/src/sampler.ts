@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 
 import {Options} from './common_options';
-import {Date, DateWrapper, isBlank, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {MeasureValues} from './measure_values';
 import {Metric} from './metric';
 import {Reporter} from './reporter';

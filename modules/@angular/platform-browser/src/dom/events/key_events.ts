@@ -39,11 +39,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
 
     var outsideHandler = KeyEventsPlugin.eventCallback(
-        element, StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
+        element, parsedEvent['fullKey'], handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(
-          element, StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
+      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
     });
   }
 
@@ -72,9 +71,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       // returning null instead of throwing to let another plugin process the event
       return null;
     }
-    var result = {};
-    StringMapWrapper.set(result, 'domEventName', domEventName);
-    StringMapWrapper.set(result, 'fullKey', fullKey);
+
+    var result: {[k: string]: string} = {};
+    result['domEventName'] = domEventName;
+    result['fullKey'] = fullKey;
     return result;
   }
 
@@ -89,7 +89,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     }
     modifierKeys.forEach(modifierName => {
       if (modifierName != key) {
-        var modifierGetter = StringMapWrapper.get(modifierKeyGetters, modifierName);
+        var modifierGetter = modifierKeyGetters[modifierName];
         if (modifierGetter(event)) {
           fullKey += modifierName + '.';
         }
