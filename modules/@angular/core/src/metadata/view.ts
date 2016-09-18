@@ -37,10 +37,6 @@ export enum ViewEncapsulation {
   None
 }
 
-export var VIEW_ENCAPSULATION_VALUES =
-    [ViewEncapsulation.Emulated, ViewEncapsulation.Native, ViewEncapsulation.None];
-
-
 /**
  * Metadata properties available for configuring Views.
  *
