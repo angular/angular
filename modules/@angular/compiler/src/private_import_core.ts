@@ -12,7 +12,6 @@ export const isDefaultChangeDetectionStrategy: typeof r.isDefaultChangeDetection
     r.isDefaultChangeDetectionStrategy;
 export type ChangeDetectorStatus = typeof r._ChangeDetectorStatus;
 export const ChangeDetectorStatus: typeof r.ChangeDetectorStatus = r.ChangeDetectorStatus;
-r.CHANGE_DETECTION_STRATEGY_VALUES;
 export type LifecycleHooks = typeof r._LifecycleHooks;
 export const LifecycleHooks: typeof r.LifecycleHooks = r.LifecycleHooks;
 export const LIFECYCLE_HOOKS_VALUES: typeof r.LIFECYCLE_HOOKS_VALUES = r.LIFECYCLE_HOOKS_VALUES;
