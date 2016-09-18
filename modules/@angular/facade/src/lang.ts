@@ -59,15 +59,8 @@ export {_global as global};
 
 
 export function getTypeNameForDebugging(type: any): string {
-  if (type['name']) {
-    return type['name'];
-  }
-  return typeof type;
+  return type['name'] || typeof type;
 }
-
-
-export var Math = _global.Math;
-export var Date = _global.Date;
 
 // TODO: remove calls to assert in production environment
 // Note: Can't just export this and import in in other files
@@ -139,24 +132,9 @@ export function stringify(token: any): string {
     return token.name;
   }
 
-  var res = token.toString();
-  var newLineIndex = res.indexOf('\n');
-  return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
-}
-
-// serialize / deserialize enum exist only for consistency with dart API
-// enums in typescript don't need to be serialized
-
-export function serializeEnum(val: any): number {
-  return val;
-}
-
-export function deserializeEnum(val: any, values: Map<number, any>): any {
-  return val;
-}
-
-export function resolveEnumToken(enumValue: any, val: any): string {
-  return enumValue[val];
+  const res = token.toString();
+  const newLineIndex = res.indexOf('\n');
+  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }
 
 export class StringWrapper {

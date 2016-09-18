@@ -35,7 +35,7 @@ export function main() {
 
     describe('initialization', () => {
       it('should merge values in provided dictionary', () => {
-        var headers = new Headers({'foo': 'bar'});
+        const headers = new Headers({'foo': 'bar'});
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
       });
@@ -52,7 +52,7 @@ export function main() {
 
     describe('.set()', () => {
       it('should clear all values and re-set for the provided key', () => {
-        var headers = new Headers({'foo': 'bar'});
+        const headers = new Headers({'foo': 'bar'});
         expect(headers.get('foo')).toBe('bar');
         expect(headers.getAll('foo')).toEqual(['bar']);
         headers.set('foo', 'baz');

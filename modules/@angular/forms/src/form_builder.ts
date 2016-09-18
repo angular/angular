@@ -43,10 +43,8 @@ export class FormBuilder {
    */
   group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any} = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
-    const validator: ValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, 'validator') : null;
-    const asyncValidator: AsyncValidatorFn =
-        isPresent(extra) ? StringMapWrapper.get(extra, 'asyncValidator') : null;
+    const validator: ValidatorFn = isPresent(extra) ? extra['validator'] : null;
+    const asyncValidator: AsyncValidatorFn = isPresent(extra) ? extra['asyncValidator'] : null;
     return new FormGroup(controls, validator, asyncValidator);
   }
   /**
