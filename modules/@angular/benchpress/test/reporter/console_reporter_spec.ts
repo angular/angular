@@ -9,8 +9,8 @@
 import {Provider} from '@angular/core';
 import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
 
-import {ConsoleReporter, MeasureValues, ReflectiveInjector, Reporter, SampleDescription, SampleState} from '../../index';
-import {Date, DateWrapper, isBlank, isPresent} from '../../src/facade/lang';
+import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
+import {DateWrapper, isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {

@@ -98,10 +98,15 @@ export class MapWrapper {
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static get<V>(map: {[key: string]: V}, key: string): V {
-    return map.hasOwnProperty(key) ? map[key] : undefined;
+  static create(): {[k: /*any*/ string]: any} {
+    // Note: We are not using Object.create(null) here due to
+    // performance!
+    // http://jsperf.com/ng2-object-create-null
+    return {};
   }
-  static set<V>(map: {[key: string]: V}, key: string, value: V) { map[key] = value; }
+  static contains(map: {[key: string]: any}, key: string): boolean {
+    return map.hasOwnProperty(key);
+  }
 
   static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
   static values<T>(map: {[key: string]: T}): T[] {
@@ -312,28 +317,4 @@ export function iterateListLike(obj: any, fn: Function) {
       fn(item.value);
     }
   }
-}
-
-// Safari and Internet Explorer do not support the iterable parameter to the
-// Set constructor.  We work around that by manually adding the items.
-var createSetFromList: {(lst: any[]): Set<any>} = (function() {
-  var test = new Set([1, 2, 3]);
-  if (test.size === 3) {
-    return function createSetFromList(lst: any[]): Set<any> { return new Set(lst); };
-  } else {
-    return function createSetAndPopulateFromList(lst: any[]): Set<any> {
-      var res = new Set(lst);
-      if (res.size !== lst.length) {
-        for (var i = 0; i < lst.length; i++) {
-          res.add(lst[i]);
-        }
-      }
-      return res;
-    };
-  }
-})();
-export class SetWrapper {
-  static createFromList<T>(lst: T[]): Set<T> { return createSetFromList(lst); }
-  static has<T>(s: Set<T>, key: T): boolean { return s.has(key); }
-  static delete<K>(m: Set<K>, k: K) { m.delete(k); }
 }

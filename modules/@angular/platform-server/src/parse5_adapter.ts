@@ -146,16 +146,14 @@ export class Parse5DomAdapter extends DomAdapter {
       el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
       listener: any /** TODO #9100 */): Function {
     this.on(el, evt, listener);
-    return () => {
-      ListWrapper.remove(StringMapWrapper.get<any[]>(el._eventListenersMap, evt), listener);
-    };
+    return () => { ListWrapper.remove(<any[]>(el._eventListenersMap[evt]), listener); };
   }
   dispatchEvent(el: any /** TODO #9100 */, evt: any /** TODO #9100 */) {
     if (isBlank(evt.target)) {
       evt.target = el;
     }
     if (isPresent(el._eventListenersMap)) {
-      var listeners: any = StringMapWrapper.get(el._eventListenersMap, evt.type);
+      var listeners: any = el._eventListenersMap[evt.type];
       if (isPresent(listeners)) {
         for (var i = 0; i < listeners.length; i++) {
           listeners[i](evt);
@@ -499,9 +497,9 @@ export class Parse5DomAdapter extends DomAdapter {
     var body = treeAdapter.createElement('body', 'http://www.w3.org/1999/xhtml', []);
     this.appendChild(newDoc, head);
     this.appendChild(newDoc, body);
-    StringMapWrapper.set(newDoc, 'head', head);
-    StringMapWrapper.set(newDoc, 'body', body);
-    StringMapWrapper.set(newDoc, '_window', {});
+    newDoc['head'] = head;
+    newDoc['body'] = body;
+    newDoc['_window'] = StringMapWrapper.create();
     return newDoc;
   }
   defaultDoc(): Document {
@@ -541,32 +539,31 @@ export class Parse5DomAdapter extends DomAdapter {
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
       var rule: {[key: string]: any} = {};
-      StringMapWrapper.set(rule, 'cssText', css);
-      StringMapWrapper.set(rule, 'style', {content: '', cssText: ''});
+      rule['cssText'] = css;
+      rule['style'] = {content: '', cssText: ''};
       if (parsedRule.type == 'rule') {
-        StringMapWrapper.set(rule, 'type', 1);
-        StringMapWrapper.set(
-            rule, 'selectorText', parsedRule.selectors.join(', ')
-                                      .replace(/\s{2,}/g, ' ')
-                                      .replace(/\s*~\s*/g, ' ~ ')
-                                      .replace(/\s*\+\s*/g, ' + ')
-                                      .replace(/\s*>\s*/g, ' > ')
-                                      .replace(/\[(\w+)=(\w+)\]/g, '[$1="$2"]'));
+        rule['type'] = 1;
+
+        rule['selectorText'] =
+            parsedRule.selectors.join(', '.replace(/\s{2,}/g, ' ')
+                                          .replace(/\s*~\s*/g, ' ~ ')
+                                          .replace(/\s*\+\s*/g, ' + ')
+                                          .replace(/\s*>\s*/g, ' > ')
+                                          .replace(/\[(\w+)=(\w+)\]/g, '[$1="$2"]'));
         if (isBlank(parsedRule.declarations)) {
           continue;
         }
         for (var j = 0; j < parsedRule.declarations.length; j++) {
           var declaration = parsedRule.declarations[j];
-          StringMapWrapper.set(
-              StringMapWrapper.get(rule, 'style'), declaration.property, declaration.value);
-          StringMapWrapper.get(rule, 'style').cssText +=
-              declaration.property + ': ' + declaration.value + ';';
+
+          rule['style'] = declaration.property[declaration.value];
+          rule['style'].cssText += declaration.property + ': ' + declaration.value + ';';
         }
       } else if (parsedRule.type == 'media') {
-        StringMapWrapper.set(rule, 'type', 4);
-        StringMapWrapper.set(rule, 'media', {mediaText: parsedRule.media});
+        rule['type'] = 4;
+        rule['media'] = {mediaText: parsedRule.media};
         if (parsedRule.rules) {
-          StringMapWrapper.set(rule, 'cssRules', this._buildRules(parsedRule.rules));
+          rule['cssRules'] = this._buildRules(parsedRule.rules);
         }
       }
       rules.push(rule);
