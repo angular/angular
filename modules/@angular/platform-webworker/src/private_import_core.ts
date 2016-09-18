@@ -13,9 +13,6 @@ export var RenderDebugInfo: typeof r.RenderDebugInfo = r.RenderDebugInfo;
 
 export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
 
-export var VIEW_ENCAPSULATION_VALUES: typeof r.VIEW_ENCAPSULATION_VALUES =
-    r.VIEW_ENCAPSULATION_VALUES;
-
 export type DebugDomRootRenderer = typeof r._DebugDomRootRenderer;
 export var DebugDomRootRenderer: typeof r.DebugDomRootRenderer = r.DebugDomRootRenderer;
 export var reflector: typeof r.reflector = r.reflector;

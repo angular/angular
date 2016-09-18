@@ -9,7 +9,6 @@
 import {Injectable, RenderComponentType, Type, ViewEncapsulation} from '@angular/core';
 
 import {isArray, isPresent} from '../../facade/lang';
-import {VIEW_ENCAPSULATION_VALUES} from '../../private_import_core';
 
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
@@ -54,26 +53,32 @@ export class Serializer {
     if (!isPresent(map)) {
       return null;
     }
-    if (isArray(map)) {
-      var obj: any[] = [];
-      (<any[]>map).forEach(val => obj.push(this.deserialize(val, type, data)));
-      return obj;
+
+    if (Array.isArray(map)) {
+      return (<any[]>map).map(val => this.deserialize(val, type, data));
     }
-    if (type == PRIMITIVE) {
+
+    if (type === PRIMITIVE) {
       return map;
     }
 
-    if (type == RenderStoreObject) {
+    if (type === RenderStoreObject) {
       return this._renderStore.deserialize(map);
-    } else if (type === RenderComponentType) {
-      return this._deserializeRenderComponentType(map);
-    } else if (type === ViewEncapsulation) {
-      return VIEW_ENCAPSULATION_VALUES[map];
-    } else if (type === LocationType) {
-      return this._deserializeLocation(map);
-    } else {
-      throw new Error('No deserializer for ' + type.toString());
     }
+
+    if (type === RenderComponentType) {
+      return this._deserializeRenderComponentType(map);
+    }
+
+    if (type === ViewEncapsulation) {
+      return map as ViewEncapsulation;
+    }
+
+    if (type === LocationType) {
+      return this._deserializeLocation(map);
+    }
+
+    throw new Error('No deserializer for ' + type.toString());
   }
 
   private _serializeLocation(loc: LocationType): Object {
