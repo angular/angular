@@ -29,7 +29,9 @@ export function main() {
          fixture = createTestComponent(template);
          fixture.nativeElement.querySelector('input').value = '2';
          fixture.detectChanges();
-         expect(typeof(fixture.componentInstance.val)).toBe('number');
+         setTimeout(()=>{
+           expect(typeof(fixture.componentInstance.val)).toBe('number');
+         })
        }));
 
   });
