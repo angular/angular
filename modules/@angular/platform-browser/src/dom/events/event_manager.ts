@@ -8,7 +8,6 @@
 
 import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
 
-
 /**
  * @stable
  */
@@ -27,12 +26,12 @@ export class EventManager {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin: EventManagerPlugin = this._findPluginFor(eventName);
     return plugin.addEventListener(element, eventName, handler);
   }
 
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin: EventManagerPlugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
 
@@ -40,9 +39,9 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
-    var plugins = this._plugins;
-    for (var i = 0; i < plugins.length; i++) {
-      var plugin = plugins[i];
+    const plugins: EventManagerPlugin[] = this._plugins;
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin: EventManagerPlugin = plugins[i];
       if (plugin.supports(eventName)) {
         return plugin;
       }
@@ -51,17 +50,14 @@ export class EventManager {
   }
 }
 
-export class EventManagerPlugin {
+export abstract class EventManagerPlugin {
   manager: EventManager;
 
-  // That is equivalent to having supporting $event.target
-  supports(eventName: string): boolean { return false; }
+  abstract supports(eventName: string): boolean;
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    throw 'not implemented';
-  }
+  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    throw 'not implemented';
+    throw 'Event manager plugin does not implement addGlobalEventListener method';
   }
 }

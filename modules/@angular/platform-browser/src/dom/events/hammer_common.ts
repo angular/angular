@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../../facade/collection';
-
 import {EventManagerPlugin} from './event_manager';
 
-var _eventNames = {
+const EVENT_NAMES: {[key: string]: boolean} = {
   // pan
   'pan': true,
   'panstart': true,
@@ -48,12 +46,11 @@ var _eventNames = {
   'tap': true,
 };
 
-
-export class HammerGesturesPluginCommon extends EventManagerPlugin {
+export abstract class HammerGesturesPluginCommon extends EventManagerPlugin {
   constructor() { super(); }
 
   supports(eventName: string): boolean {
-    eventName = eventName.toLowerCase();
-    return StringMapWrapper.contains(_eventNames, eventName);
+    const name: string = eventName.toLowerCase();
+    return EVENT_NAMES.hasOwnProperty(name);
   }
 }
