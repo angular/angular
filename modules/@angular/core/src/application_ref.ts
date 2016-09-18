@@ -9,7 +9,8 @@
 import {ErrorHandler} from '../src/error_handler';
 import {ListWrapper} from '../src/facade/collection';
 import {unimplemented} from '../src/facade/errors';
-import {isBlank, isPresent, isPromise, stringify} from '../src/facade/lang';
+import {isBlank, isPresent, stringify} from '../src/facade/lang';
+import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
