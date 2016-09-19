@@ -15,7 +15,7 @@ There are two modes:
 Example:
 
  ```html
-<md-progress-circle mode="determinate" value="myValue"></md-progress-circle>
+<md-progress-circle mode="determinate" [value]="myValue"></md-progress-circle>
 <md-progress-circle mode="indeterminate"></md-progress-circle>
 <md-spinner></md-spinner>
  ```
