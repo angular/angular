@@ -1025,7 +1025,7 @@ export function main() {
       });
 
       describe('custom value accessors', () => {
-        it('should support custom value accessors', () => {
+        it('should support basic functionality', () => {
           const fixture = TestBed.createComponent(WrappedValueForm);
           const form = new FormGroup({'login': new FormControl('aa')});
           fixture.componentInstance.form = form;
@@ -1047,7 +1047,7 @@ export function main() {
           expect(form.get('login').errors).toEqual(null);
         });
 
-        it('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
+        it('should support non builtin input elements that fire a change event without a \'target\' property',
            () => {
              const fixture = TestBed.createComponent(MyInputForm);
              fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
@@ -1061,6 +1061,27 @@ export function main() {
                expect(fixture.componentInstance.form.value).toEqual({'login': 'bb'});
              });
              input.componentInstance.dispatchChangeEvent();
+           });
+
+        it('should support custom accessors without setDisabledState - formControlName', () => {
+          const fixture = TestBed.createComponent(WrappedValueForm);
+          fixture.componentInstance.form = new FormGroup({
+            'login': new FormControl({value: 'aa', disabled: true}),
+          });
+          fixture.detectChanges();
+          expect(fixture.componentInstance.form.status).toEqual('DISABLED');
+          expect(fixture.componentInstance.form.get('login').status).toEqual('DISABLED');
+        });
+
+        it('should support custom accessors without setDisabledState - formControlDirective',
+           () => {
+             TestBed.overrideComponent(
+                 FormControlComp,
+                 {set: {template: `<input type="text" [formControl]="control" wrapped-value>`}});
+             const fixture = TestBed.createComponent(FormControlComp);
+             fixture.componentInstance.control = new FormControl({value: 'aa', disabled: true});
+             fixture.detectChanges();
+             expect(fixture.componentInstance.control.status).toEqual('DISABLED');
            });
 
       });
