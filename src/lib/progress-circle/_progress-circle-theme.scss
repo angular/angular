@@ -7,7 +7,7 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  md-progress-circle {
+  md-progress-circle, md-spinner {
     path {
       stroke: md-color($primary, 600);
     }
