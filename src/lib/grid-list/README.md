@@ -14,7 +14,7 @@ To use `md-grid-list`, import the MdGridList module into your application's NgMo
 import {MdGridListModule} from '@angular2-material/gridlist';
 
 @NgModule({
-  imports: [MdGridListModule],
+  imports: [MdGridListModule.forRoot()],
   ...
 })
 export class MyAppModule {}

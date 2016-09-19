@@ -22,7 +22,7 @@ You can read more about the slider in the
 Importing the module:
 ```ts
  @NgModule({
-    imports: [MdSliderModule],
+    imports: [MdSliderModule.forRoot()],
     ...
  })
  export class MyAppModule { }

@@ -14,7 +14,7 @@ You can read more about button toggles in the
 Importing the module:
 ```ts
  @NgModule({
-    imports: [MdButtonToggleModule],
+    imports: [MdButtonToggleModule.forRoot()],
     ...
  })
  export class MyAppModule { }

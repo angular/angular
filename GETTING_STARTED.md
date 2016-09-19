@@ -35,7 +35,7 @@ import { MdButtonModule } from '@angular2-material/button';
 import { MdCardModule } from '@angular2-material/card';
 // other imports 
 @NgModule({
-  imports: [MdButtonModule, MdCardModule],
+  imports: [MdButtonModule.forRoot(), MdCardModule.forRoot()],
   ...
 })
 ```

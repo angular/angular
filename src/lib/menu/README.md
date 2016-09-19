@@ -20,7 +20,7 @@ Import the MdMenu module.
 import {MdMenuModule} from '@angular2-material/menu';
 
 @NgModule({
-  imports: [MdMenuModule],
+  imports: [MdMenuModule.forRoot()],
   ...
 })
 export class MyAppModule {}

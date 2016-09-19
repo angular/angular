@@ -12,7 +12,7 @@ import { MdRadioModule } from '@angular2-material/radio';
 Adding providers and directives:
 ```ts
 @NgModule({
-  imports: [MdRadioModule],
+  imports: [MdRadioModule.forRoot()],
   ...
 })
 export class MyAppModule { }
