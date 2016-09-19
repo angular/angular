@@ -76,6 +76,11 @@ const resolvedPromise = Promise.resolve(null);
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
  *
+ * To see `ngModel` examples with different form control types, see:
+ *
+ * * Radio buttons: {@link RadioControlValueAccessor}
+ * * Selects: {@link SelectControlValueAccessor}
+ *
  * **npm package**: `@angular/forms`
  *
  * **NgModule**: `FormsModule`
