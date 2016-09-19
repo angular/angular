@@ -62,6 +62,9 @@ md-input {
   // The Material input should match whatever background it is above.
   background: transparent;
 
+  // If background matches current background then so should the color for proper contrast
+  color: currentColor;
+
   // By default, <input> has a padding, border, outline and a default width.
   border: none;
   outline: none;
