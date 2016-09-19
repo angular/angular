@@ -12,13 +12,11 @@
 var exec = require('child_process').exec;
 var checkNodeModules;
 var semver;
-
-
 var issues = [];
 
 // coarse Node version check
-if (Number.parseInt(process.version[1], 10) < 5) {
-  issues.push("Angular 2 build currently requires Node 5. Use nvm to update your node version.");
+if (+process.version[1] < 5) {
+  issues.push("Angular 2 build currently requires Node 5+. Use nvm to update your node version.");
 }
 
 try {
@@ -45,7 +43,6 @@ try {
   // print warnings and move on, the next steps will likely fail, but hey, we warned them.
   printWarning(issues);
 }
-
 
 function checkEnvironment(reqs) {
 
@@ -77,10 +74,10 @@ function printWarning(issues) {
   if (!issues.length) return;
 
   console.warn('');
-  console.warn(Array(110).join('!'));
+  console.warn('!'.repeat(110));
   console.warn('!!!  Your environment is not in a good shape. Following issues were found:');
   issues.forEach(function(issue) {console.warn('!!!   - ' + issue);});
-  console.warn(Array(110).join('!'));
+  console.warn('!'.repeat(110));
   console.warn('');
 
   if (process.env.CI) {
