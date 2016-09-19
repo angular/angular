@@ -3,7 +3,7 @@ Get started with Angular Material 2 using the Angular CLI.
 ## Install the CLI
  
  ```bash
- npm install -g angular-cli@webpack
+ npm install -g angular-cli
  ```
  
 ## Create a new project
