@@ -4,7 +4,7 @@
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 require('./tools/check-environment')({
   requiredNpmVersion: '>=3.5.3 <4.0.0',
-  requiredNodeVersion: '>=5.4.1 <6.0.0',
+  requiredNodeVersion: '>=5.4.1 <7.0.0',
 });
 
 const gulp = require('gulp');
