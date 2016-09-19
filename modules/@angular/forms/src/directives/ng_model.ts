@@ -195,7 +195,9 @@ export class NgModel extends NgControl implements OnChanges,
 
               private _updateDisabled(changes: SimpleChanges) {
                 const disabledValue = changes['isDisabled'].currentValue;
-                const isDisabled = disabledValue != null && disabledValue != false;
+
+                const isDisabled =
+                    disabledValue === '' || (disabledValue && disabledValue !== 'false');
 
                 resolvedPromise.then(() => {
                   if (isDisabled && !this.control.disabled) {

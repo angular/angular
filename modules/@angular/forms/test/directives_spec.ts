@@ -485,7 +485,7 @@ export function main() {
     });
 
     describe('NgModel', () => {
-      var ngModel: any /** TODO #9100 */;
+      let ngModel: NgModel;
 
       beforeEach(() => {
         ngModel = new NgModel(
@@ -538,6 +538,45 @@ export function main() {
            tick();
 
            expect(ngModel.control.errors).toEqual({'async': true});
+         }));
+
+      it('should mark as disabled properly', fakeAsync(() => {
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined)});
+           tick();
+           expect(ngModel.control.disabled).toEqual(false);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', null)});
+           tick();
+           expect(ngModel.control.disabled).toEqual(false);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', false)});
+           tick();
+           expect(ngModel.control.disabled).toEqual(false);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false')});
+           tick();
+           expect(ngModel.control.disabled).toEqual(false);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0)});
+           tick();
+           expect(ngModel.control.disabled).toEqual(false);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '')});
+           tick();
+           expect(ngModel.control.disabled).toEqual(true);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true')});
+           tick();
+           expect(ngModel.control.disabled).toEqual(true);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true)});
+           tick();
+           expect(ngModel.control.disabled).toEqual(true);
+
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else')});
+           tick();
+           expect(ngModel.control.disabled).toEqual(true);
+
          }));
     });
 
