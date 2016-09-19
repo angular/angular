@@ -3,6 +3,7 @@ import {MdButtonToggleModule} from '@angular2-material/button-toggle';
 import {MdButtonModule} from '@angular2-material/button';
 import {MdCheckboxModule} from '@angular2-material/checkbox';
 import {MdRadioModule} from '@angular2-material/radio';
+import {MdSelectModule} from '@angular2-material/select';
 import {MdSlideToggleModule} from '@angular2-material/slide-toggle';
 import {MdSliderModule} from '@angular2-material/slider';
 import {MdSidenavModule} from '@angular2-material/sidenav';
@@ -42,6 +43,7 @@ const MATERIAL_MODULES = [
   MdProgressCircleModule,
   MdRadioModule,
   MdRippleModule,
+  MdSelectModule,
   MdSidenavModule,
   MdSliderModule,
   MdSlideToggleModule,
@@ -64,6 +66,7 @@ const MATERIAL_MODULES = [
     MdProgressBarModule.forRoot(),
     MdProgressCircleModule.forRoot(),
     MdRippleModule.forRoot(),
+    MdSelectModule.forRoot(),
     MdSidenavModule.forRoot(),
     MdTabsModule.forRoot(),
     MdToolbarModule.forRoot(),
