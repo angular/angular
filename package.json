@@ -8,7 +8,7 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">= 5.4.1 < 6"
+    "node": ">= 5.4.1 < 7"
   },
   "repository": {
     "type": "git",
