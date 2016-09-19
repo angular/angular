@@ -152,7 +152,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _setUpControl() {
     this._checkParentType();
     this._control = this.formDirective.addControl(this);
-    if (this.control.disabled) this.valueAccessor.setDisabledState(true);
+    if (this.control.disabled && this.valueAccessor.setDisabledState) {
+      this.valueAccessor.setDisabledState(true);
+    }
     this._added = true;
   }
 }
