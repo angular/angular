@@ -11,7 +11,7 @@ To use `md-list`, import the MdList module into your application's NgModule:
 
 *my-app-module.ts*
 ```ts
-import {MdLisTModule} from '@angular2-material/list/list';
+import {MdListModule} from '@angular2-material/list';
 
 @NgModule({
   imports: [MdListModule],
