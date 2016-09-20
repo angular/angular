@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 
 export function main() {
@@ -24,11 +24,11 @@ export function main() {
           {declarations: [TestComponent], imports: [CommonModule, FormsModule]});
     });
 
-    it('should add styles specified in an object literal', async(() => {
+    it('should add styles specified in an object literal', fakeAsync(() => {
          const template = `<input type="range" [(ngModel)]="val">`;
          fixture = createTestComponent(template);
-         fixture.nativeElement.querySelector('input').value = '2';
-         fixture.detectChanges();
+         fixture.componentInstance.val = '1';
+         tick();
          expect(typeof(fixture.componentInstance.val)).toBe('number');
 
        }));
