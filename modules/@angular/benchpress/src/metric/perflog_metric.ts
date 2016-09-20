@@ -9,8 +9,6 @@
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
 import {Options} from '../common_options';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {Math, NumberWrapper, StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {Metric} from '../metric';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -95,8 +93,9 @@ export class PerflogMetric extends Metric {
         res['frameTime.smooth'] = 'percentage of frames that hit 60fps';
       }
     }
-    StringMapWrapper.forEach(
-        this._microMetrics, (desc, name) => { StringMapWrapper.set(res, name, desc); });
+    for (let name in this._microMetrics) {
+      res[name] = this._microMetrics[name];
+    }
     return res;
   }
 
@@ -126,8 +125,8 @@ export class PerflogMetric extends Metric {
           .then((_) => this._endMeasure(restartMeasure))
           .then((forceGcMeasureValues) => {
             this._captureFrames = originalFrameCaptureValue;
-            StringMapWrapper.set(measureValues, 'forcedGcTime', forceGcMeasureValues['gcTime']);
-            StringMapWrapper.set(measureValues, 'forcedGcAmount', forceGcMeasureValues['gcAmount']);
+            measureValues['forcedGcTime'] = forceGcMeasureValues['gcTime'];
+            measureValues['forcedGcAmount'] = forceGcMeasureValues['gcAmount'];
             return measureValues;
           });
     });
@@ -152,7 +151,7 @@ export class PerflogMetric extends Metric {
     return this._driverExtension.readPerfLog().then((events) => {
       this._addEvents(events);
       var result = this._aggregateEvents(this._remainingEvents, markName);
-      if (isPresent(result)) {
+      if (result) {
         this._remainingEvents = events;
         return result;
       }
@@ -166,14 +165,14 @@ export class PerflogMetric extends Metric {
   private _addEvents(events: PerfLogEvent[]) {
     var needSort = false;
     events.forEach(event => {
-      if (StringWrapper.equals(event['ph'], 'X')) {
+      if (event['ph'] === 'X') {
         needSort = true;
         var startEvent: PerfLogEvent = {};
         var endEvent: PerfLogEvent = {};
-        StringMapWrapper.forEach(event, (value, prop) => {
-          (<any>startEvent)[prop] = value;
-          (<any>endEvent)[prop] = value;
-        });
+        for (let prop in event) {
+          startEvent[prop] = event[prop];
+          endEvent[prop] = event[prop];
+        }
         startEvent['ph'] = 'B';
         endEvent['ph'] = 'E';
         endEvent['ts'] = startEvent['ts'] + startEvent['dur'];
@@ -185,7 +184,7 @@ export class PerflogMetric extends Metric {
     });
     if (needSort) {
       // Need to sort because of the ph==='X' events
-      ListWrapper.sort(this._remainingEvents, (a, b) => {
+      this._remainingEvents.sort((a, b) => {
         var diff = a['ts'] - b['ts'];
         return diff > 0 ? 1 : diff < 0 ? -1 : 0;
       });
@@ -208,7 +207,9 @@ export class PerflogMetric extends Metric {
       result['frameTime.worst'] = 0;
       result['frameTime.smooth'] = 0;
     }
-    StringMapWrapper.forEach(this._microMetrics, (desc, name) => { result[name] = 0; });
+    for (let name in this._microMetrics) {
+      result[name] = 0;
+    }
     if (this._receivedData) {
       result['receivedData'] = 0;
     }
@@ -218,6 +219,24 @@ export class PerflogMetric extends Metric {
 
     var markStartEvent: PerfLogEvent = null;
     var markEndEvent: PerfLogEvent = null;
+    events.forEach((event) => {
+      var ph = event['ph'];
+      var name = event['name'];
+      if (ph === 'B' && name === markName) {
+        markStartEvent = event;
+      } else if (ph === 'I' && name === 'navigationStart') {
+        // if a benchmark measures reload of a page, use the last
+        // navigationStart as begin event
+        markStartEvent = event;
+      } else if (ph === 'E' && name === markName) {
+        markEndEvent = event;
+      }
+    });
+    if (!markStartEvent || !markEndEvent) {
+      // not all events have been received, no further processing for now
+      return null;
+    }
+
     var gcTimeInScript = 0;
     var renderTimeInScript = 0;
 
@@ -228,120 +247,99 @@ export class PerflogMetric extends Metric {
 
     var intervalStarts: {[key: string]: PerfLogEvent} = {};
     var intervalStartCount: {[key: string]: number} = {};
+
+    var inMeasureRange = false;
     events.forEach((event) => {
       var ph = event['ph'];
       var name = event['name'];
       var microIterations = 1;
       var microIterationsMatch = name.match(_MICRO_ITERATIONS_REGEX);
-      if (isPresent(microIterationsMatch)) {
+      if (microIterationsMatch) {
         name = microIterationsMatch[1];
-        microIterations = NumberWrapper.parseInt(microIterationsMatch[2], 10);
+        microIterations = parseInt(microIterationsMatch[2], 10);
+      }
+      if (event === markStartEvent) {
+        inMeasureRange = true;
+      } else if (event === markEndEvent) {
+        inMeasureRange = false;
+      }
+      if (!inMeasureRange || event['pid'] !== markStartEvent['pid']) {
+        return;
       }
 
-      if (StringWrapper.equals(ph, 'b') && StringWrapper.equals(name, markName)) {
-        markStartEvent = event;
-      } else if (StringWrapper.equals(ph, 'e') && StringWrapper.equals(name, markName)) {
-        markEndEvent = event;
-      }
-
-      let isInstant = StringWrapper.equals(ph, 'I') || StringWrapper.equals(ph, 'i');
-      if (this._requestCount && StringWrapper.equals(name, 'sendRequest')) {
+      if (this._requestCount && name === 'sendRequest') {
         result['requestCount'] += 1;
-      } else if (this._receivedData && StringWrapper.equals(name, 'receivedData') && isInstant) {
+      } else if (this._receivedData && name === 'receivedData' && ph === 'I') {
         result['receivedData'] += event['args']['encodedDataLength'];
-      } else if (StringWrapper.equals(name, 'navigationStart')) {
-        // We count data + requests since the last navigationStart
-        // (there might be chrome extensions loaded by selenium before our page, so there
-        // will likely be more than one navigationStart).
-        if (this._receivedData) {
-          result['receivedData'] = 0;
+      }
+      if (ph === 'B' && name === _MARK_NAME_FRAME_CAPUTRE) {
+        if (frameCaptureStartEvent) {
+          throw new Error('can capture frames only once per benchmark run');
         }
-        if (this._requestCount) {
-          result['requestCount'] = 0;
+        if (!this._captureFrames) {
+          throw new Error(
+              'found start event for frame capture, but frame capture was not requested in benchpress');
+        }
+        frameCaptureStartEvent = event;
+      } else if (ph === 'E' && name === _MARK_NAME_FRAME_CAPUTRE) {
+        if (!frameCaptureStartEvent) {
+          throw new Error('missing start event for frame capture');
+        }
+        frameCaptureEndEvent = event;
+      }
+
+      if (ph === 'I' && frameCaptureStartEvent && !frameCaptureEndEvent && name === 'frame') {
+        frameTimestamps.push(event['ts']);
+        if (frameTimestamps.length >= 2) {
+          frameTimes.push(
+              frameTimestamps[frameTimestamps.length - 1] -
+              frameTimestamps[frameTimestamps.length - 2]);
         }
       }
-      if (isPresent(markStartEvent) && isBlank(markEndEvent) &&
-          event['pid'] === markStartEvent['pid']) {
-        if (StringWrapper.equals(ph, 'b') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
-          if (isPresent(frameCaptureStartEvent)) {
-            throw new Error('can capture frames only once per benchmark run');
-          }
-          if (!this._captureFrames) {
-            throw new Error(
-                'found start event for frame capture, but frame capture was not requested in benchpress');
-          }
-          frameCaptureStartEvent = event;
-        } else if (
-            StringWrapper.equals(ph, 'e') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
-          if (isBlank(frameCaptureStartEvent)) {
-            throw new Error('missing start event for frame capture');
-          }
-          frameCaptureEndEvent = event;
-        }
 
-        if (isInstant) {
-          if (isPresent(frameCaptureStartEvent) && isBlank(frameCaptureEndEvent) &&
-              StringWrapper.equals(name, 'frame')) {
-            frameTimestamps.push(event['ts']);
-            if (frameTimestamps.length >= 2) {
-              frameTimes.push(
-                  frameTimestamps[frameTimestamps.length - 1] -
-                  frameTimestamps[frameTimestamps.length - 2]);
-            }
-          }
+      if (ph === 'B') {
+        if (!intervalStarts[name]) {
+          intervalStartCount[name] = 1;
+          intervalStarts[name] = event;
+        } else {
+          intervalStartCount[name]++;
         }
-
-        if (StringWrapper.equals(ph, 'B') || StringWrapper.equals(ph, 'b')) {
-          if (isBlank(intervalStarts[name])) {
-            intervalStartCount[name] = 1;
-            intervalStarts[name] = event;
-          } else {
-            intervalStartCount[name]++;
-          }
-        } else if (
-            (StringWrapper.equals(ph, 'E') || StringWrapper.equals(ph, 'e')) &&
-            isPresent(intervalStarts[name])) {
-          intervalStartCount[name]--;
-          if (intervalStartCount[name] === 0) {
-            var startEvent = intervalStarts[name];
-            var duration = (event['ts'] - startEvent['ts']);
-            intervalStarts[name] = null;
-            if (StringWrapper.equals(name, 'gc')) {
-              result['gcTime'] += duration;
-              var amount =
-                  (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
-              result['gcAmount'] += amount;
-              var majorGc = event['args']['majorGc'];
-              if (isPresent(majorGc) && majorGc) {
-                result['majorGcTime'] += duration;
-              }
-              if (isPresent(intervalStarts['script'])) {
-                gcTimeInScript += duration;
-              }
-            } else if (StringWrapper.equals(name, 'render')) {
-              result['renderTime'] += duration;
-              if (isPresent(intervalStarts['script'])) {
-                renderTimeInScript += duration;
-              }
-            } else if (StringWrapper.equals(name, 'script')) {
-              result['scriptTime'] += duration;
-            } else if (isPresent(this._microMetrics[name])) {
-              (<any>result)[name] += duration / microIterations;
+      } else if ((ph === 'E') && intervalStarts[name]) {
+        intervalStartCount[name]--;
+        if (intervalStartCount[name] === 0) {
+          var startEvent = intervalStarts[name];
+          var duration = (event['ts'] - startEvent['ts']);
+          intervalStarts[name] = null;
+          if (name === 'gc') {
+            result['gcTime'] += duration;
+            var amount =
+                (startEvent['args']['usedHeapSize'] - event['args']['usedHeapSize']) / 1000;
+            result['gcAmount'] += amount;
+            var majorGc = event['args']['majorGc'];
+            if (majorGc && majorGc) {
+              result['majorGcTime'] += duration;
             }
+            if (intervalStarts['script']) {
+              gcTimeInScript += duration;
+            }
+          } else if (name === 'render') {
+            result['renderTime'] += duration;
+            if (intervalStarts['script']) {
+              renderTimeInScript += duration;
+            }
+          } else if (name === 'script') {
+            result['scriptTime'] += duration;
+          } else if (this._microMetrics[name]) {
+            (<any>result)[name] += duration / microIterations;
           }
         }
       }
     });
-    if (!isPresent(markStartEvent) || !isPresent(markEndEvent)) {
-      // not all events have been received, no further processing for now
-      return null;
-    }
 
-    if (isPresent(markEndEvent) && isPresent(frameCaptureStartEvent) &&
-        isBlank(frameCaptureEndEvent)) {
+    if (frameCaptureStartEvent && !frameCaptureEndEvent) {
       throw new Error('missing end event for frame capture');
     }
-    if (this._captureFrames && isBlank(frameCaptureStartEvent)) {
+    if (this._captureFrames && !frameCaptureStartEvent) {
       throw new Error('frame capture requested in benchpress, but no start event was found');
     }
     if (frameTimes.length > 0) {

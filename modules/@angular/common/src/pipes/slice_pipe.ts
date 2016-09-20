@@ -7,8 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {ListWrapper} from '../facade/collection';
-import {StringWrapper, isArray, isBlank, isString} from '../facade/lang';
+import {isBlank} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -58,16 +57,15 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 @Pipe({name: 'slice', pure: false})
 export class SlicePipe implements PipeTransform {
-  transform(value: any, start: number, end: number = null): any {
+  transform(value: any, start: number, end?: number): any {
     if (isBlank(value)) return value;
+
     if (!this.supports(value)) {
       throw new InvalidPipeArgumentError(SlicePipe, value);
     }
-    if (isString(value)) {
-      return StringWrapper.slice(value, start, end);
-    }
-    return ListWrapper.slice(value, start, end);
+
+    return value.slice(start, end);
   }
 
-  private supports(obj: any): boolean { return isString(obj) || isArray(obj); }
+  private supports(obj: any): boolean { return typeof obj === 'string' || Array.isArray(obj); }
 }

@@ -9,8 +9,7 @@
 import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
-import {ListWrapper} from './facade/collection';
-import {FunctionWrapper, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
 import {MetadataOverride} from './metadata_override';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
@@ -25,23 +24,26 @@ export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
 }
 
-var _nextRootElementId = 0;
+let _nextRootElementId = 0;
 
 /**
  * @experimental
  */
-export var ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
+export const ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
 
 /**
  * @experimental
  */
-export var ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
+export const ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
 
 /**
  * @experimental
  */
 export type TestModuleMetadata = {
-  providers?: any[]; declarations?: any[]; imports?: any[]; schemas?: Array<SchemaMetadata|any[]>;
+  providers?: any[],
+  declarations?: any[],
+  imports?: any[],
+  schemas?: Array<SchemaMetadata|any[]>,
 };
 
 /**
@@ -63,7 +65,7 @@ export class TestBed implements Injector {
    */
   static initTestEnvironment(ngModule: Type<any>, platform: PlatformRef): TestBed {
     const testBed = getTestBed();
-    getTestBed().initTestEnvironment(ngModule, platform);
+    testBed.initTestEnvironment(ngModule, platform);
     return testBed;
   }
 
@@ -216,16 +218,16 @@ export class TestBed implements Injector {
   configureTestingModule(moduleDef: TestModuleMetadata) {
     this._assertNotInstantiated('TestBed.configureTestingModule', 'configure the test module');
     if (moduleDef.providers) {
-      this._providers = ListWrapper.concat(this._providers, moduleDef.providers);
+      this._providers.push(...moduleDef.providers);
     }
     if (moduleDef.declarations) {
-      this._declarations = ListWrapper.concat(this._declarations, moduleDef.declarations);
+      this._declarations.push(...moduleDef.declarations);
     }
     if (moduleDef.imports) {
-      this._imports = ListWrapper.concat(this._imports, moduleDef.imports);
+      this._imports.push(...moduleDef.imports);
     }
     if (moduleDef.schemas) {
-      this._schemas = ListWrapper.concat(this._schemas, moduleDef.schemas);
+      this._schemas.push(...moduleDef.schemas);
     }
   }
 
@@ -304,14 +306,14 @@ export class TestBed implements Injector {
     }
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
-    let result = this._moduleRef.injector.get(token, UNDEFINED);
+    const result = this._moduleRef.injector.get(token, UNDEFINED);
     return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue) : result;
   }
 
   execute(tokens: any[], fn: Function): any {
     this._initIfNeeded();
-    var params = tokens.map(t => this.get(t));
-    return FunctionWrapper.apply(fn, params);
+    const params = tokens.map(t => this.get(t));
+    return fn(...params);
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
@@ -350,26 +352,23 @@ export class TestBed implements Injector {
     testComponentRenderer.insertRootElement(rootElId);
 
     const initComponent = () => {
-      var componentRef = componentFactory.create(this, [], `#${rootElId}`);
+      const componentRef = componentFactory.create(this, [], `#${rootElId}`);
       return new ComponentFixture<T>(componentRef, ngZone, autoDetect);
     };
 
-    const fixture = ngZone == null ? initComponent() : ngZone.run(initComponent);
+    const fixture = !ngZone ? initComponent() : ngZone.run(initComponent);
     this._activeFixtures.push(fixture);
     return fixture;
   }
 }
 
-var _testBed: TestBed = null;
+let _testBed: TestBed = null;
 
 /**
  * @experimental
  */
 export function getTestBed() {
-  if (_testBed == null) {
-    _testBed = new TestBed();
-  }
-  return _testBed;
+  return _testBed = _testBed || new TestBed();
 }
 
 /**
@@ -397,14 +396,14 @@ export function getTestBed() {
  * @stable
  */
 export function inject(tokens: any[], fn: Function): () => any {
-  let testBed = getTestBed();
+  const testBed = getTestBed();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
     return () =>
                // Return an async test method that returns a Promise if AsyncTestCompleter is one of
         // the
         // injected tokens.
         testBed.compileComponents().then(() => {
-          let completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
+          const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
           testBed.execute(tokens, fn);
           return completer.promise;
         });

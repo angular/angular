@@ -77,7 +77,7 @@ export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: nu
     res = EMPTY_ARR;
   } else if (projectableNodes.length < expectedSlotCount) {
     var givenSlotCount = projectableNodes.length;
-    res = ListWrapper.createFixedSize(expectedSlotCount);
+    res = new Array(expectedSlotCount);
     for (var i = 0; i < expectedSlotCount; i++) {
       res[i] = (i < givenSlotCount) ? projectableNodes[i] : EMPTY_ARR;
     }

@@ -97,7 +97,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 }
 
 function createEvent(
-    ph: 'X' | 'B' | 'E' | 'b' | 'e', name: string, time: number, args: any = null) {
+    ph: 'X' | 'B' | 'E' | 'B' | 'E', name: string, time: number, args: any = null) {
   var result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,
@@ -122,9 +122,9 @@ function createEndEvent(name: string, time: number, args: any = null) {
 }
 
 function createMarkStartEvent(name: string, time: number) {
-  return createEvent('b', name, time);
+  return createEvent('B', name, time);
 }
 
 function createMarkEndEvent(name: string, time: number) {
-  return createEvent('e', name, time);
+  return createEvent('E', name, time);
 }

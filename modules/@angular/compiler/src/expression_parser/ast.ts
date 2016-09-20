@@ -376,7 +376,7 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitAll(asts: any[]): any[] {
-    var res = ListWrapper.createFixedSize(asts.length);
+    var res = new Array(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
     }

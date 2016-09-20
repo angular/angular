@@ -12,8 +12,8 @@ import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isPromise, isStringMap, normalizeBool} from './facade/lang';
-
+import {isBlank, isPresent, isStringMap, normalizeBool} from './facade/lang';
+import {isPromise} from './private_import_core';
 
 
 /**
@@ -885,7 +885,7 @@ export class FormGroup extends AbstractControl {
    */
   removeControl(name: string): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    StringMapWrapper.delete(this.controls, name);
+    delete (this.controls[name]);
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -895,7 +895,7 @@ export class FormGroup extends AbstractControl {
    */
   setControl(name: string, control: AbstractControl): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    StringMapWrapper.delete(this.controls, name);
+    delete (this.controls[name]);
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity();
     this._onCollectionChange();

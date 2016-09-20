@@ -9,7 +9,7 @@
 import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {ListWrapper, StringMapWrapper} from '../../facade/collection';
+import {ListWrapper} from '../../facade/collection';
 import {isBlank} from '../../facade/lang';
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
@@ -80,7 +80,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   ngOnChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
-    if (StringMapWrapper.contains(changes, 'form')) {
+    if (changes.hasOwnProperty('form')) {
       this._updateValidators();
       this._updateDomValue();
       this._updateRegistrations();
