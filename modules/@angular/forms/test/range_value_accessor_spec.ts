@@ -29,9 +29,8 @@ export function main() {
          fixture = createTestComponent(template);
          fixture.nativeElement.querySelector('input').value = '2';
          fixture.detectChanges();
-         setTimeout(()=>{
-           expect(typeof(fixture.componentInstance.val)).toBe('number');
-         })
+         expect(typeof(fixture.componentInstance.val)).toBe('number');
+
        }));
 
   });
@@ -40,6 +39,7 @@ export function main() {
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   val: any;
+  constructor() { this.val = '1'; }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
