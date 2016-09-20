@@ -9,7 +9,6 @@
 import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {StringMapWrapper} from '../../facade/collection';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
@@ -117,6 +116,6 @@ export class FormControlDirective extends NgControl implements OnChanges {
               }
 
               private _isControlChanged(changes: {[key: string]: any}): boolean {
-                return StringMapWrapper.contains(changes, 'form');
+                return changes.hasOwnProperty('form');
               }
 }

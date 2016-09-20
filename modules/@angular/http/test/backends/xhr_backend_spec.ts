@@ -15,7 +15,6 @@ import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ResponseContentType, ResponseType} from '../../src/enums';
-import {Map} from '../../src/facade/collection';
 import {Json} from '../../src/facade/lang';
 import {Headers} from '../../src/headers';
 import {XSRFStrategy} from '../../src/interfaces';
@@ -27,9 +26,7 @@ var abortSpy: any;
 var sendSpy: any;
 var openSpy: any;
 var setRequestHeaderSpy: any;
-var addEventListenerSpy: any;
 var existingXHRs: MockBrowserXHR[] = [];
-var unused: Response;
 
 class MockBrowserXHR extends BrowserXhr {
   abort: any;

@@ -117,7 +117,7 @@ export class CompileElement extends CompileNode {
   setComponentView(compViewExpr: o.Expression) {
     this._compViewExpr = compViewExpr;
     this.contentNodesByNgContentIndex =
-        ListWrapper.createFixedSize(this.component.template.ngContentSelectors.length);
+        new Array(this.component.template.ngContentSelectors.length);
     for (var i = 0; i < this.contentNodesByNgContentIndex.length; i++) {
       this.contentNodesByNgContentIndex[i] = [];
     }

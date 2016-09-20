@@ -24,7 +24,7 @@ export function main() {
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
     if (isBlank(userMetrics)) {
-      userMetrics = StringMapWrapper.create();
+      userMetrics = {};
     }
     wdAdapter = new MockDriverAdapter();
     var providers: Provider[] = [
