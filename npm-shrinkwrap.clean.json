@@ -4642,7 +4642,7 @@
       }
     },
     "zone.js": {
-      "version": "0.6.21"
+      "version": "0.6.25"
     }
   },
   "name": "angular-srcs",
