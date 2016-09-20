@@ -1022,6 +1022,54 @@ export function main() {
 
         });
 
+        it('should disable all radio buttons when disable() is called', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form =
+              new FormGroup({food: new FormControl('fish'), drink: new FormControl('cola')});
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.disabled).toEqual(false);
+          expect(inputs[1].nativeElement.disabled).toEqual(false);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+
+          form.get('food').disable();
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+
+          form.disable();
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(true);
+          expect(inputs[3].nativeElement.disabled).toEqual(true);
+
+          form.enable();
+          expect(inputs[0].nativeElement.disabled).toEqual(false);
+          expect(inputs[1].nativeElement.disabled).toEqual(false);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+        });
+
+        it('should disable all radio buttons when initially disabled', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form = new FormGroup({
+            food: new FormControl({value: 'fish', disabled: true}),
+            drink: new FormControl('cola')
+          });
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+        });
+
       });
 
       describe('custom value accessors', () => {
