@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
+import {RangeValueAccessor} from "@angular/forms/src/directives/range_value_accessor";
 
 export function main() {
   describe('range value accessor', () => {
@@ -21,7 +22,7 @@ export function main() {
 
     beforeEach(() => {
       TestBed.configureTestingModule(
-          {declarations: [TestComponent], imports: [CommonModule, FormsModule]});
+          {declarations: [TestComponent,RangeValueAccessor], imports: [CommonModule, FormsModule]});
     });
 
     it('should add styles specified in an object literal', fakeAsync(() => {
