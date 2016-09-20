@@ -12,10 +12,7 @@ import {CompileDirectiveMetadata, CompileProviderMetadata, CompileTokenMetadata}
 import {AST} from '../expression_parser/ast';
 import {isPresent} from '../facade/lang';
 import {ParseSourceSpan} from '../parse_util';
-
 import {LifecycleHooks} from '../private_import_core';
-
-
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.
@@ -61,7 +58,8 @@ export class AttrAst implements TemplateAst {
 }
 
 /**
- * A binding for an element property (e.g. `[property]="expression"`).
+ * A binding for an element property (e.g. `[property]="expression"`) or an animation trigger (e.g.
+ * `[@trigger]="stateExp"`)
  */
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(
@@ -71,14 +69,16 @@ export class BoundElementPropertyAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }
+  get isAnimation(): boolean { return this.type === PropertyBindingType.Animation; }
 }
 
 /**
- * A binding for an element event (e.g. `(event)="handler()"`).
+ * A binding for an element event (e.g. `(event)="handler()"`) or an animation trigger event (e.g.
+ * `(@trigger.phase)="callback($event)"`).
  */
 export class BoundEventAst implements TemplateAst {
   constructor(
-      public name: string, public target: string, public handler: AST,
+      public name: string, public target: string, public phase: string, public handler: AST,
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
@@ -90,6 +90,7 @@ export class BoundEventAst implements TemplateAst {
       return this.name;
     }
   }
+  get isAnimation(): boolean { return !!this.phase; }
 }
 
 /**

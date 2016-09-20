@@ -7,7 +7,8 @@
  */
 
 import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, Optional, Provider, SchemaMetadata, SkipSelf, Type} from '@angular/core';
-
+import {AnimationCompiler} from './animation/animation_compiler';
+import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -23,8 +24,6 @@ import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';
 import {ComponentFactoryDependency, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
 
-
-
 /**
  * An internal module of the Angular compiler that begins with component types,
  * extracts templates, and eventually produces a compiled version of the component
@@ -39,6 +38,8 @@ export class RuntimeCompiler implements Compiler {
   private _compiledTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledNgModuleCache = new Map<Type<any>, NgModuleFactory<any>>();
+  private _animationParser = new AnimationParser();
+  private _animationCompiler = new AnimationCompiler();
 
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
@@ -253,12 +254,15 @@ export class RuntimeCompiler implements Compiler {
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
     const viewCompMetas = template.viewComponentTypes.map(
         (compType) => this._assertComponentLoaded(compType, false).normalizedCompMeta);
+    const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, template.viewDirectives.concat(viewCompMetas),
         template.viewPipes, template.schemas, compMeta.type.name);
+    const compiledAnimations =
+        this._animationCompiler.compile(compMeta.type.name, parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
-        template.viewPipes);
+        template.viewPipes, compiledAnimations);
     compileResult.dependencies.forEach((dep) => {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewFactoryDependency) {
@@ -275,6 +279,8 @@ export class RuntimeCompiler implements Compiler {
     });
     const statements =
         stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
+    compiledAnimations.forEach(
+        entry => { entry.statements.forEach(statement => { statements.push(statement); }); });
     let factory: any;
     if (!this._compilerConfig.useJit) {
       factory = interpretStatements(statements, compileResult.viewFactoryVar);

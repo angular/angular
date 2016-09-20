@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata} from '../compile_metadata';
+import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
 import {Math} from '../facade/math';
 import {ParseError} from '../parse_util';
+import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 
-import {ANY_STATE, AnimationOutput, FILL_STYLE_FLAG} from '../private_import_core';
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
 import {StylesCollection} from './styles_collection';
 
@@ -21,62 +21,70 @@ const _TERMINAL_KEYFRAME = 1;
 const _ONE_SECOND = 1000;
 
 export class AnimationParseError extends ParseError {
-  constructor(message: any /** TODO #9100 */) { super(null, message); }
+  constructor(message: string) { super(null, message); }
   toString(): string { return `${this.msg}`; }
 }
 
-export class ParsedAnimationResult {
+export class AnimationEntryParseResult {
   constructor(public ast: AnimationEntryAst, public errors: AnimationParseError[]) {}
 }
 
-export function parseAnimationEntry(entry: CompileAnimationEntryMetadata): ParsedAnimationResult {
-  var errors: AnimationParseError[] = [];
-  var stateStyles: {[key: string]: AnimationStylesAst} = {};
-  var transitions: CompileAnimationStateTransitionMetadata[] = [];
+export class AnimationParser {
+  parseComponent(component: CompileDirectiveMetadata): AnimationEntryAst[] {
+    const errors: string[] = [];
+    const componentName = component.type.name;
+    const animationTriggerNames = new Set<string>();
+    const asts = component.template.animations.map(entry => {
+      const result = this.parseEntry(entry);
+      const ast = result.ast;
+      const triggerName = ast.name;
+      if (animationTriggerNames.has(triggerName)) {
+        result.errors.push(new AnimationParseError(
+            `The animation trigger "${triggerName}" has already been registered for the ${componentName} component`));
+      } else {
+        animationTriggerNames.add(triggerName);
+      }
+      if (result.errors.length > 0) {
+        let errorMessage =
+            `- Unable to parse the animation sequence for "${triggerName}" on the ${componentName} component due to the following errors:`;
+        result.errors.forEach(
+            (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
+        errors.push(errorMessage);
+      }
+      return ast;
+    });
 
-  var stateDeclarationAsts: any[] /** TODO #9100 */ = [];
-  entry.definitions.forEach(def => {
-    if (def instanceof CompileAnimationStateDeclarationMetadata) {
-      _parseAnimationDeclarationStates(def, errors).forEach(ast => {
-        stateDeclarationAsts.push(ast);
-        stateStyles[ast.stateName] = ast.styles;
-      });
-    } else {
-      transitions.push(<CompileAnimationStateTransitionMetadata>def);
+    if (errors.length > 0) {
+      const errorString = errors.join('\n');
+      throw new Error(`Animation parse errors:\n${errorString}`);
     }
-  });
 
-  var stateTransitionAsts =
-      transitions.map(transDef => _parseAnimationStateTransition(transDef, stateStyles, errors));
-
-  var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
-  return new ParsedAnimationResult(ast, errors);
-}
-
-export function parseAnimationOutputName(
-    outputName: string, errors: AnimationParseError[]): AnimationOutput {
-  var values = outputName.split('.');
-  var name: string;
-  var phase: string = '';
-  if (values.length > 1) {
-    name = values[0];
-    let parsedPhase = values[1];
-    switch (parsedPhase) {
-      case 'start':
-      case 'done':
-        phase = parsedPhase;
-        break;
-
-      default:
-        errors.push(new AnimationParseError(
-            `The provided animation output phase value "${parsedPhase}" for "@${name}" is not supported (use start or done)`));
-    }
-  } else {
-    name = outputName;
-    errors.push(new AnimationParseError(
-        `The animation trigger output event (@${name}) is missing its phase value name (start or done are currently supported)`));
+    return asts;
   }
-  return new AnimationOutput(name, phase, outputName);
+
+  parseEntry(entry: CompileAnimationEntryMetadata): AnimationEntryParseResult {
+    var errors: AnimationParseError[] = [];
+    var stateStyles: {[key: string]: AnimationStylesAst} = {};
+    var transitions: CompileAnimationStateTransitionMetadata[] = [];
+
+    var stateDeclarationAsts: AnimationStateDeclarationAst[] = [];
+    entry.definitions.forEach(def => {
+      if (def instanceof CompileAnimationStateDeclarationMetadata) {
+        _parseAnimationDeclarationStates(def, errors).forEach(ast => {
+          stateDeclarationAsts.push(ast);
+          stateStyles[ast.stateName] = ast.styles;
+        });
+      } else {
+        transitions.push(<CompileAnimationStateTransitionMetadata>def);
+      }
+    });
+
+    var stateTransitionAsts =
+        transitions.map(transDef => _parseAnimationStateTransition(transDef, stateStyles, errors));
+
+    var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
+    return new AnimationEntryParseResult(ast, errors);
+  }
 }
 
 function _parseAnimationDeclarationStates(

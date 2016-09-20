@@ -31,8 +31,6 @@ function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
   return o.variable(`currVal_${exprIndex}`);  // fix syntax highlighting: `
 }
 
-const _animationViewCheckedFlagMap = new Map<CompileView, boolean>();
-
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
     parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],

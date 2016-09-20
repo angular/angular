@@ -11,7 +11,8 @@ import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
-import {parseAnimationEntry} from '../../src/animation/animation_parser';
+import {AnimationParser} from '../../src/animation/animation_parser';
+import {CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 import {FILL_STYLE_FLAG, flattenStyles} from '../private_import_core';
@@ -46,9 +47,10 @@ export function main() {
         inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
 
     var parseAnimation = (data: AnimationMetadata[]) => {
-      var entry = trigger('myAnimation', [transition('state1 => state2', sequence(data))]);
-      var compiledAnimationEntry = resolver.getAnimationEntryMetadata(entry);
-      return parseAnimationEntry(compiledAnimationEntry);
+      const entry = trigger('myAnimation', [transition('state1 => state2', sequence(data))]);
+      const compiledAnimationEntry = resolver.getAnimationEntryMetadata(entry);
+      const parser = new AnimationParser();
+      return parser.parseEntry(compiledAnimationEntry);
     };
 
     var getAnimationAstFromEntryAst =

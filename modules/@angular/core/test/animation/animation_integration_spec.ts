@@ -997,7 +997,7 @@ function declareTests({useJit}: {useJit: boolean}) {
               <div *ngIf="exp" [@outer]="exp">
                 outer
                 <div *ngIf="exp2" [@inner]="exp">
-                  inner 
+                  inner
 <               </div>
 <             </div>
             `,
@@ -1234,8 +1234,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              message = e.message;
            }
 
-           expect(message).toMatch(
-               /- Couldn't find the corresponding animation trigger definition for \(@something\)/);
+           expect(message).toMatch(/Couldn't find an animation entry for "something"/);
          });
 
       it('should throw an error if an animation output is referenced that is not bound to as a property on the same element',
@@ -1258,7 +1257,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            }
 
            expect(message).toMatch(
-               /- Unable to listen on \(@trigger.done\) because the animation trigger \[@trigger\] isn't being used on the same element/);
+               /Unable to listen on \(@trigger.done\) because the animation trigger \[@trigger\] isn't being used on the same element/);
          });
 
       it('should throw an error if an unsupported animation output phase name is used', () => {
@@ -1287,7 +1286,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(DummyIfCmp, {
           set: {
             template: `
-              <div (@trigger)="callback($event)"></div>
+              <div [@trigger]="exp" (@trigger)="callback($event)"></div>
             `,
             animations: [trigger('trigger', [transition('one => two', [animate(1000)])])]
           }
@@ -1319,7 +1318,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            }
 
            expect(message).toMatch(
-               /Couldn't find the corresponding host-level animation trigger definition for \(@trigger\)/);
+               /Unable to listen on \(@trigger.done\) because the animation trigger \[@trigger\] isn't being used on the same element/);
          });
 
       it('should allow host and element-level animation bindings to be defined on the same tag/component',
@@ -1480,10 +1479,26 @@ function declareTests({useJit}: {useJit: boolean}) {
              failureMessage = e.message;
            }
 
-           expect(failureMessage)
-               .toMatch(/Animation parsing for DummyIfCmp has failed due to the following errors:/);
-           expect(failureMessage).toMatch(/- Couldn't find an animation entry for status/);
+           expect(failureMessage).toMatch(/Template parse errors:/);
+           expect(failureMessage).toMatch(/Couldn't find an animation entry for "status"/);
          });
+
+      it('should throw an error if an animation trigger is registered but is already in use', () => {
+        TestBed.overrideComponent(
+            DummyIfCmp, {set: {animations: [trigger('matias', []), trigger('matias', [])]}});
+
+        var failureMessage = '';
+        try {
+          const fixture = TestBed.createComponent(DummyLoadingCmp);
+        } catch (e) {
+          failureMessage = e.message;
+        }
+
+        expect(failureMessage).toMatch(/Animation parse errors:/);
+        expect(failureMessage)
+            .toMatch(
+                /The animation trigger "matias" has already been registered for the DummyIfCmp component/);
+      });
 
       it('should be permitted to be registered on the host element', fakeAsync(() => {
            TestBed.overrideComponent(DummyLoadingCmp, {
@@ -1521,7 +1536,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              failureMessage = e.message;
            }
 
-           expect(failureMessage).toMatch(/- Couldn't find an animation entry for loading/);
+           expect(failureMessage).toMatch(/Couldn't find an animation entry for "loading"/);
          });
 
       it('should retain the destination animation state styles once the animation is complete',
