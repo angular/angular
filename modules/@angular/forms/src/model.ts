@@ -334,7 +334,7 @@ export abstract class AbstractControl {
     }
 
     this._updateAncestors(onlySelf);
-    this._onDisabledChange(true);
+    this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
   /**
@@ -350,7 +350,7 @@ export abstract class AbstractControl {
     this.updateValueAndValidity({onlySelf: true, emitEvent: emitEvent});
 
     this._updateAncestors(onlySelf);
-    this._onDisabledChange(false);
+    this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
   private _updateAncestors(onlySelf: boolean) {
@@ -595,7 +595,7 @@ export abstract class AbstractControl {
   }
 
   /** @internal */
-  _onDisabledChange(isDisabled: boolean): void {}
+  _onDisabledChange: Function[] = [];
 
   /** @internal */
   _isBoxedValue(formState: any): boolean {
@@ -770,14 +770,16 @@ export class FormControl extends AbstractControl {
    */
   _clearChangeFns(): void {
     this._onChange = [];
-    this._onDisabledChange = null;
+    this._onDisabledChange = [];
     this._onCollectionChange = () => {};
   }
 
   /**
    * Register a listener for disabled events.
    */
-  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void { this._onDisabledChange = fn; }
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    this._onDisabledChange.push(fn);
+  }
 
   /**
    * @internal
