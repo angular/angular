@@ -115,27 +115,27 @@ export class DirectiveNormalizer {
     const templateStyles = this.normalizeStylesheet(new CompileStylesheetMetadata(
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
-    const allStyles = templateMetadataStyles.styles.concat(templateStyles.styles);
-    const allStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
-
     let encapsulation = templateMeta.encapsulation;
     if (isBlank(encapsulation)) {
       encapsulation = this._config.defaultEncapsulation;
     }
-    if (encapsulation === ViewEncapsulation.Emulated && allStyles.length === 0 &&
-        allStyleUrls.length === 0) {
+
+    const styles = templateMetadataStyles.styles.concat(templateStyles.styles);
+    const styleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
+
+    if (encapsulation === ViewEncapsulation.Emulated && styles.length === 0 &&
+        styleUrls.length === 0) {
       encapsulation = ViewEncapsulation.None;
     }
+
     return new CompileTemplateMetadata({
       encapsulation,
-      template: template,
-      templateUrl: templateAbsUrl,
-      styles: allStyles,
-      styleUrls: allStyleUrls,
+      template,
+      templateUrl: templateAbsUrl, styles, styleUrls,
       externalStylesheets: templateMeta.externalStylesheets,
       ngContentSelectors: visitor.ngContentSelectors,
       animations: templateMeta.animations,
-      interpolation: templateMeta.interpolation
+      interpolation: templateMeta.interpolation,
     });
   }
 
@@ -251,7 +251,6 @@ function _cloneDirectiveWithTemplate(
     viewProviders: directive.viewProviders,
     queries: directive.queries,
     viewQueries: directive.viewQueries,
-    entryComponents: directive.entryComponents,
-    template: template
+    entryComponents: directive.entryComponents, template,
   });
 }

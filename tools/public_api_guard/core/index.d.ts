@@ -916,7 +916,7 @@ export declare const TRANSLATIONS_FORMAT: OpaqueToken;
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
 
 /** @stable */
-export declare var Type: FunctionConstructor;
+export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {
