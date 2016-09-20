@@ -420,6 +420,31 @@ export function main() {
            });
          }));
 
+      it('should disable a control with unbound disabled attr', fakeAsync(() => {
+           TestBed.overrideComponent(NgModelForm, {
+             set: {
+               template: `
+            <form>
+             <input name="name" [(ngModel)]="name" disabled>
+            </form>
+          `,
+             }
+           });
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.detectChanges();
+           tick();
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.get('name').disabled).toBe(true);
+
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(input.nativeElement.disabled).toEqual(true);
+
+           form.control.enable();
+           fixture.detectChanges();
+           tick();
+           expect(input.nativeElement.disabled).toEqual(false);
+         }));
+
     });
 
     describe('radio controls', () => {
