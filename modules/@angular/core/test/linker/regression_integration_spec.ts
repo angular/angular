@@ -79,6 +79,24 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('counting method value');
         expect(MyCountingComp.calls).toBe(1);
       });
+
+      it('should evalute a conditional in a statement binding', () => {
+        @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
+        class SomeComponent {
+          nullValue: SomeReferencedClass;
+        }
+
+        class SomeReferencedClass {
+          click() {}
+        }
+
+        expect(() => {
+          const fixture = TestBed.configureTestingModule({declarations: [SomeComponent]})
+                              .createComponent(SomeComponent);
+
+          fixture.detectChanges(/* checkNoChanges */ false);
+        }).not.toThrow();
+      });
     });
 
     describe('providers', () => {
