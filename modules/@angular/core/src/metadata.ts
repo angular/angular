@@ -15,8 +15,6 @@ import {Attribute, ContentChild, ContentChildren, Query, ViewChild, ViewChildren
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from './metadata/directives';
 import {ModuleWithProviders, NgModule, SchemaMetadata} from './metadata/ng_module';
 import {ViewEncapsulation} from './metadata/view';
-import {Type} from './type';
-import {TypeDecorator, makeParamDecorator, makePropDecorator} from './util/decorators';
 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, Attribute, ContentChild, ContentChildDecorator, ContentChildren, ContentChildrenDecorator, Query, ViewChild, ViewChildDecorator, ViewChildren, ViewChildrenDecorator} from './metadata/di';
 export {Component, ComponentDecorator, Directive, DirectiveDecorator, HostBinding, HostListener, Input, Output, Pipe} from './metadata/directives';

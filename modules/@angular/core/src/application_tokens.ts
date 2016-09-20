@@ -34,7 +34,7 @@ export function _appIdRandomProviderFactory() {
 export const APP_ID_RANDOM_PROVIDER = {
   provide: APP_ID,
   useFactory: _appIdRandomProviderFactory,
-  deps: <any[]>[]
+  deps: <any[]>[],
 };
 
 function _randomChar(): string {

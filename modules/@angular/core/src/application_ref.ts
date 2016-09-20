@@ -9,7 +9,7 @@
 import {ErrorHandler} from '../src/error_handler';
 import {ListWrapper} from '../src/facade/collection';
 import {unimplemented} from '../src/facade/errors';
-import {isBlank, isPresent, stringify} from '../src/facade/lang';
+import {stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
@@ -26,9 +26,9 @@ import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
 import {NgZone} from './zone/ng_zone';
 
-var _devMode: boolean = true;
-var _runModeLocked: boolean = false;
-var _platform: PlatformRef;
+let _devMode: boolean = true;
+let _runModeLocked: boolean = false;
+let _platform: PlatformRef;
 
 /**
  * Disable Angular's development mode, which turns off assertions and other
@@ -67,13 +67,13 @@ export function isDevMode(): boolean {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (isPresent(_platform) && !_platform.destroyed) {
+  if (_platform && !_platform.destroyed) {
     throw new Error(
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
   _platform = injector.get(PlatformRef);
   const inits: Function[] = <Function[]>injector.get(PLATFORM_INITIALIZER, null);
-  if (isPresent(inits)) inits.forEach(init => init());
+  if (inits) inits.forEach(init => init());
   return _platform;
 }
 
@@ -107,14 +107,17 @@ export function createPlatformFactory(
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
-  var platform = getPlatform();
-  if (isBlank(platform)) {
+  const platform = getPlatform();
+
+  if (!platform) {
     throw new Error('No platform exists!');
   }
-  if (isPresent(platform) && isBlank(platform.injector.get(requiredToken, null))) {
+
+  if (!platform.injector.get(requiredToken, null)) {
     throw new Error(
         'A platform with a different configuration has been created. Please destroy it first.');
   }
+
   return platform;
 }
 
@@ -124,7 +127,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function destroyPlatform(): void {
-  if (isPresent(_platform) && !_platform.destroyed) {
+  if (_platform && !_platform.destroyed) {
     _platform.destroy();
   }
 }
@@ -135,7 +138,7 @@ export function destroyPlatform(): void {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function getPlatform(): PlatformRef {
-  return isPresent(_platform) && !_platform.destroyed ? _platform : null;
+  return _platform && !_platform.destroyed ? _platform : null;
 }
 
 /**
@@ -224,9 +227,9 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
         // rethrow as the exception handler might not do it
         throw e;
       });
-    } else {
-      return result;
     }
+
+    return result;
   } catch (e) {
     errorHandler.handleError(e);
     // rethrow as the exception handler might not do it
@@ -238,7 +241,6 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
 export class PlatformRef_ extends PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Function[] = [];
-
   private _destroyed: boolean = false;
 
   constructor(private _injector: Injector) { super(); }
@@ -253,8 +255,8 @@ export class PlatformRef_ extends PlatformRef {
     if (this._destroyed) {
       throw new Error('The platform has already been destroyed!');
     }
-    ListWrapper.clone(this._modules).forEach((app) => app.destroy());
-    this._destroyListeners.forEach((dispose) => dispose());
+    this._modules.slice().forEach(module => module.destroy());
+    this._destroyListeners.forEach(listener => listener());
     this._destroyed = true;
   }
 
@@ -301,7 +303,7 @@ export class PlatformRef_ extends PlatformRef {
       componentFactoryCallback?: any): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const compiler = compilerFactory.createCompiler(
-        compilerOptions instanceof Array ? compilerOptions : [compilerOptions]);
+        Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
 
     // ugly internal api hack: generate host component factories for all declared components and
     // pass the factories into the callback - this is used by UpdateAdapter to get hold of all
@@ -424,10 +426,10 @@ export class ApplicationRef_ extends ApplicationRef {
       componentFactory = this._componentFactoryResolver.resolveComponentFactory(componentOrFactory);
     }
     this._rootComponentTypes.push(componentFactory.componentType);
-    var compRef = componentFactory.create(this._injector, [], componentFactory.selector);
+    const compRef = componentFactory.create(this._injector, [], componentFactory.selector);
     compRef.onDestroy(() => { this._unloadComponent(compRef); });
-    var testability = compRef.injector.get(Testability, null);
-    if (isPresent(testability)) {
+    const testability = compRef.injector.get(Testability, null);
+    if (testability) {
       compRef.injector.get(TestabilityRegistry)
           .registerApplication(compRef.location.nativeElement, testability);
     }
@@ -454,7 +456,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   /** @internal */
   _unloadComponent(componentRef: ComponentRef<any>): void {
-    if (!ListWrapper.contains(this._rootComponents, componentRef)) {
+    if (this._rootComponents.indexOf(componentRef) == -1) {
       return;
     }
     this.unregisterChangeDetector(componentRef.changeDetectorRef);
@@ -466,7 +468,7 @@ export class ApplicationRef_ extends ApplicationRef {
       throw new Error('ApplicationRef.tick is called recursively');
     }
 
-    var s = ApplicationRef_._tickScope();
+    const scope = ApplicationRef_._tickScope();
     try {
       this._runningTick = true;
       this._changeDetectorRefs.forEach((detector) => detector.detectChanges());
@@ -475,13 +477,13 @@ export class ApplicationRef_ extends ApplicationRef {
       }
     } finally {
       this._runningTick = false;
-      wtfLeave(s);
+      wtfLeave(scope);
     }
   }
 
   ngOnDestroy() {
     // TODO(alxhub): Dispose of the NgZone.
-    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.destroy());
+    this._rootComponents.slice().forEach((component) => component.destroy());
   }
 
   get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
