@@ -56,7 +56,7 @@ export declare type MetadataOverride<T> = {
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
-/** @experimental */
+/** @stable */
 export declare class TestBed implements Injector {
     ngModule: Type<any>;
     platform: PlatformRef;
