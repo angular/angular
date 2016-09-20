@@ -7,7 +7,7 @@
  */
 
 
-import {ListWrapper, Map, MapWrapper, StringMapWrapper, isListLikeIterable, iterateListLike} from '../src/facade/collection';
+import {ListWrapper, MapWrapper, StringMapWrapper, isListLikeIterable, iterateListLike} from '../src/facade/collection';
 import {isBlank} from '../src/facade/lang';
 
 

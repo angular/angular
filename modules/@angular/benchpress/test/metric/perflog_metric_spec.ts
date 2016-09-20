@@ -33,7 +33,7 @@ export function main() {
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
     if (isBlank(microMetrics)) {
-      microMetrics = StringMapWrapper.create();
+      microMetrics = {};
     }
     var providers: Provider[] = [
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,

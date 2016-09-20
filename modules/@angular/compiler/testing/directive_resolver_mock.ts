@@ -8,8 +8,7 @@
 import {DirectiveResolver} from '@angular/compiler';
 import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
 
-import {Map} from './facade/collection';
-import {isArray, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {ViewMetadata} from './private_import_core';
 
 
@@ -156,7 +155,7 @@ function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
   if (!isPresent(tree)) return;
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
-    if (isArray(item)) {
+    if (Array.isArray(item)) {
       flattenArray(item, out);
     } else {
       out.push(item);

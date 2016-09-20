@@ -9,7 +9,6 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {ListWrapper, Map} from '../../facade/collection';
 import {FunctionWrapper, isPresent} from '../../facade/lang';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer} from '../shared/serializer';
@@ -72,7 +71,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       var serializedArgs = message.args;
       let numArgs = signature === null ? 0 : signature.length;
-      var deserializedArgs: any[] = ListWrapper.createFixedSize(numArgs);
+      var deserializedArgs: any[] = new Array(numArgs);
       for (var i = 0; i < numArgs; i++) {
         var serializedArg = serializedArgs[i];
         deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);

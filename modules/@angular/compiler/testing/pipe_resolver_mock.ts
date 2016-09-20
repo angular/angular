@@ -9,8 +9,6 @@
 import {PipeResolver} from '@angular/compiler';
 import {Compiler, Injectable, Injector, Pipe, Type} from '@angular/core';
 
-import {Map} from './facade/collection';
-
 @Injectable()
 export class MockPipeResolver extends PipeResolver {
   private _pipes = new Map<Type<any>, Pipe>();

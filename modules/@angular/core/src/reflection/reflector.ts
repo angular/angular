@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Map, MapWrapper, Set, SetWrapper, StringMapWrapper} from '../facade/collection';
+import {MapWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -40,14 +40,9 @@ export class Reflector extends ReflectorReader {
   /** @internal */
   _methods = new Map<string, MethodFn>();
   /** @internal */
-  _usedKeys: Set<any>;
-  reflectionCapabilities: PlatformReflectionCapabilities;
+  _usedKeys: Set<any> = null;
 
-  constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
-    super();
-    this._usedKeys = null;
-    this.reflectionCapabilities = reflectionCapabilities;
-  }
+  constructor(public reflectionCapabilities: PlatformReflectionCapabilities) { super(); }
 
   updateCapabilities(caps: PlatformReflectionCapabilities) { this.reflectionCapabilities = caps; }
 
