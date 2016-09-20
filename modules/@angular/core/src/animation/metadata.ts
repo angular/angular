@@ -266,7 +266,7 @@ export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
  * ])
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * {@liveExample core/animation/ts/dsl embedded}
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
