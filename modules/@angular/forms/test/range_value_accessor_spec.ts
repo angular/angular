@@ -22,7 +22,7 @@ export function main() {
 
     beforeEach(() => {
       TestBed.configureTestingModule(
-          {declarations: [TestComponent,RangeValueAccessor], imports: [CommonModule, FormsModule]});
+          {declarations: [TestComponent], imports: [CommonModule, FormsModule]});
     });
 
     it('should add styles specified in an object literal', fakeAsync(() => {
@@ -40,7 +40,7 @@ export function main() {
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   val: any;
-  constructor() { this.val = '1'; }
+  constructor() {  }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
