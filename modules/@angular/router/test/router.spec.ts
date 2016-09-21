@@ -6,13 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PreActivation} from '../src/router';
+import {TestBed} from '@angular/core/testing';
+
+import {PreActivation, Router} from '../src/router';
 import {RouterOutletMap} from '../src/router_outlet_map';
 import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
+import {RouterTestingModule} from '../testing/router_testing_module';
 
 describe('Router', () => {
+  describe('resetRootComponentType', () => {
+    class NewRootComponent {}
+
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should not change root route when updating the root component', () => {
+      const r: Router = TestBed.get(Router);
+      const root = r.routerState.root;
+
+      r.resetRootComponentType(NewRootComponent);
+
+      expect(r.routerState.root).toBe(root);
+    });
+  });
+
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};
