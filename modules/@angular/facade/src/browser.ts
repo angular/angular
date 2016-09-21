@@ -23,3 +23,7 @@ export const EventTarget = win['EventTarget'];
 export const History = win['History'];
 export const Location = win['Location'];
 export const EventListener = win['EventListener'];
+export const Navigator = win['navigator'];
+export const Language = Navigator.languages ?
+    Navigator.languages[0] :
+    (Navigator.language || Navigator.userLanguage || 'en_US');
