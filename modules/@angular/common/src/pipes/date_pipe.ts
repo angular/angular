@@ -8,7 +8,7 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {DateFormatter} from '../facade/intl';
-import {NumberWrapper, isBlank, isDate} from '../facade/lang';
+import {DateWrapper, NumberWrapper, isBlank, isDate, isJsObject, isString} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
@@ -22,7 +22,9 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  * - `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
  * (https://www.w3.org/TR/NOTE-datetime).
  * - `format` indicates which date/time components to include. The format can be predifined as
- *   shown below or custom as shown in the table.
+ *   formatting object `Intl.DateTimeFormatOptions` from Intl API
+ * (http://www.ecma-international.org/ecma-402/2.0/#sec-InitializeDateTimeFormat)
+ *   or `string` as shown below or custom as shown in the table.
  *   - `'medium'`: equivalent to `'yMMMdjms'` (e.g. `Sep 3, 2010, 12:05:08 PM` for `en-US`)
  *   - `'short'`: equivalent to `'yMdjm'` (e.g. `9/3/2010, 12:05 PM` for `en-US`)
  *   - `'fullDate'`: equivalent to `'yMMMMEEEEd'` (e.g. `Friday, September 3, 2010` for `en-US`)
@@ -94,7 +96,7 @@ export class DatePipe implements PipeTransform {
 
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, pattern: string = 'mediumDate'): string {
+  transform(value: any, pattern: string|Intl.DateTimeFormatOptions = 'mediumDate'): string {
     if (isBlank(value)) return null;
 
     if (!this.supports(value)) {
@@ -105,8 +107,12 @@ export class DatePipe implements PipeTransform {
       value = parseFloat(value);
     }
 
-    return DateFormatter.format(
-        new Date(value), this._locale, DatePipe._ALIASES[pattern] || pattern);
+    if (typeof pattern === 'string') {
+      return DateFormatter.format(
+          new Date(value), this._locale, DatePipe._ALIASES[pattern.toString()] || pattern);
+    }
+
+    return DateFormatter.intlFormat(value, this._locale, <Intl.DateTimeFormatOptions>pattern);
   }
 
   private supports(obj: any): boolean {

@@ -67,6 +67,7 @@ const publicApiArgs = [
   '--allowModuleIdentifiers', 'jasmine',
   '--allowModuleIdentifiers', 'protractor',
   '--allowModuleIdentifiers', 'angular',
+  '--allowModuleIdentifiers', 'Intl',
   '--onStabilityMissing', 'error',
 ].concat(entrypoints);
 

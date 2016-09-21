@@ -96,6 +96,8 @@ export function main() {
         if (!browserDetection.isEdge && !browserDetection.isIE ||
             !browserDetection.supportsNativeIntlApi) {
           expect(pipe.transform(date, 'ms')).toEqual('31');
+          expect(pipe.transform(date, {day: 'numeric', month: 'short', weekday: 'short'}))
+              .toEqual('Mon, Jun 15');
         }
         if (!browserDetection.isOldChrome) {
           expect(pipe.transform(date, 'jm')).toEqual('9:03 AM');
