@@ -38,6 +38,8 @@ export class MdDuplicatedSidenavError extends MdError {
   template: '<ng-content></ng-content>',
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
+    // must prevent the browser from aligning text based on value
+    '[attr.align]': 'null'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
