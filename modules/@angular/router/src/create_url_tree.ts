@@ -182,6 +182,7 @@ function createPositionApplyingDoubleDots(
 }
 
 function getPath(command: any): any {
+  if (typeof command === 'object' && command.outlets) return command.outlets[PRIMARY_OUTLET];
   return `${command}`;
 }
 
@@ -201,9 +202,13 @@ function updateSegmentGroup(
   }
 
   const m = prefixedWith(segmentGroup, startIndex, commands);
-  const slicedCommands = commands.slice(m.lastIndex);
-
-  if (m.match && slicedCommands.length === 0) {
+  const slicedCommands = commands.slice(m.commandIndex);
+  if (m.match && m.pathIndex < segmentGroup.segments.length) {
+    var g = new UrlSegmentGroup(segmentGroup.segments.slice(0, m.pathIndex), {});
+    g.children[PRIMARY_OUTLET] =
+        new UrlSegmentGroup(segmentGroup.segments.slice(m.pathIndex), segmentGroup.children);
+    return updateSegmentGroupChildren(g, 0, slicedCommands);
+  } else if (m.match && slicedCommands.length === 0) {
     return new UrlSegmentGroup(segmentGroup.segments, {});
   } else if (m.match && !segmentGroup.hasChildren()) {
     return createNewSegmentGroup(segmentGroup, startIndex, commands);
@@ -241,13 +246,15 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
   let currentCommandIndex = 0;
   let currentPathIndex = startIndex;
 
-  const noMatch = {match: false, lastIndex: 0};
+  const noMatch = {match: false, pathIndex: 0, commandIndex: 0};
   while (currentPathIndex < segmentGroup.segments.length) {
     if (currentCommandIndex >= commands.length) return noMatch;
     const path = segmentGroup.segments[currentPathIndex];
     const curr = getPath(commands[currentCommandIndex]);
     const next =
         currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
+
+    if (currentPathIndex > 0 && curr === undefined) break;
 
     if (curr && next && (typeof next === 'object') && next.outlets === undefined) {
       if (!compare(curr, next, path)) return noMatch;
@@ -259,7 +266,7 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
     currentPathIndex++;
   }
 
-  return {match: true, lastIndex: currentCommandIndex};
+  return {match: true, pathIndex: currentPathIndex, commandIndex: currentCommandIndex};
 }
 
 function createNewSegmentGroup(
