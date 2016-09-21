@@ -16,7 +16,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, MdError, BooleanFieldValue} from '@angular2-material/core';
+import {Dir, MdError} from '@angular2-material/core';
 
 /** Exception thrown when two MdSidenav are matching the same side. */
 export class MdDuplicatedSidenavError extends MdError {
@@ -50,7 +50,7 @@ export class MdSidenav {
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
   /** Whether the sidenav is opened. */
-  @Input('opened') @BooleanFieldValue() private _opened: boolean = false;
+  _opened: boolean = false;
 
   /** Event emitted when the sidenav is being opened. Use this to synchronize animations. */
   @Output('open-start') onOpenStart = new EventEmitter<void>();
@@ -75,9 +75,12 @@ export class MdSidenav {
    * Whether the sidenav is opened. We overload this because we trigger an event when it
    * starts or end.
    */
+  @Input()
   get opened(): boolean { return this._opened; }
   set opened(v: boolean) {
-    this.toggle(v);
+    // TODO(jelbourn): this coercion goes away when BooleanFieldValue is removed.
+    let booleanValue = v != null && `${v}` !== 'false';
+    this.toggle(booleanValue);
   }
 
 

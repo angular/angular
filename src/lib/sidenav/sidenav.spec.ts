@@ -218,6 +218,7 @@ describe('MdSidenav', () => {
     it('should correctly parse opened="true"', () => {
       let fixture = TestBed.createComponent(SidenavSetToOpenedTrue);
       fixture.detectChanges();
+      endSidenavTransition(fixture);
 
       let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
 

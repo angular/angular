@@ -21,7 +21,6 @@ import {MdRippleModule} from '@angular2-material/core';
   moduleId: module.id,
   selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
             'button[md-fab], button[md-mini-fab]',
-  inputs: ['color'],
   host: {
     '[class.md-button-focus]': '_isKeyboardFocused',
     '(mousedown)': '_setMousedown()',
@@ -47,6 +46,7 @@ export class MdButton {
 
   constructor(private _elementRef: ElementRef, private _renderer: Renderer) { }
 
+  @Input()
   get color(): string {
     return this._color;
   }
