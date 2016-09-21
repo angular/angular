@@ -1,3 +1,32 @@
-{
-  "directory" : "bower_components"
-}
+
+    -  <body>
+     -  <script>
+     -  window.fbAsyncInit = function() {
+    -  FB.init( {
+     -  appId     :'1638676273115757',
+     -  xfbml     :  true,
+     -  version   : 'v2.7'
+     -  });
+     -   // ADD ADDITIONAL FACEBOOK CODE HERE 
+     -   };
+     -   (function(d, s, id) {
+     -  var js, fjs = d.getElementsByTagName(s)[0];
+     -  if (d.getElementById(id)) { return; }
+     -  js = d.createElement(s); js.id = id;
+     -  js.src = "//connect.facebook.net/en_US/sdk.js";
+     -  fjs.parentNode.insertBefore(js, fjs);
+     -   }(document, 'script', 'facebook-jssdk'));
+     -  </script>
+     -  https://facebook-jssdk.com
+
+     -   js.src = "//connect.facebook.net/en_US/sdk/debug.js";
+     -  <script>
+     -  FB.Event.subscribe( 'send_to_messenger', function(e) {
+     -  //callback for events triggered by the plugin 
+     -  });
+     -  </script>
+     -  @0072016
+     -  https://developers.facebook.com
+     -  foo.gradle@gmail.com
+      - September 21, 2016
+      -  09:15:13PST
