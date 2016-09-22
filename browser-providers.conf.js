@@ -22,9 +22,11 @@ var CIconfiguration = {
   'Safari7':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari8':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9':      { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Safari10':     { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS7':         { unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
   'iOS8':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS9':         { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'iOS10':        { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': { unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
@@ -83,6 +85,12 @@ var customLaunchers = {
     platform: 'OS X 10.11',
     version: '9.0'
   },
+  'SL_SAFARI10': {
+    base: 'SauceLabs',
+    browserName: 'safari',
+    platform: 'OS X 10.12',
+    version: '10.0'
+  },
   'SL_IOS7': {
     base: 'SauceLabs',
     browserName: 'iphone',
@@ -100,6 +108,12 @@ var customLaunchers = {
     browserName: 'iphone',
     platform: 'OS X 10.10',
     version: '9.3'
+  },
+  'SL_IOS10': {
+    base: 'SauceLabs',
+    browserName: 'iphone',
+    platform: 'OS X 10.10',
+    version: '10.0'
   },
   'SL_IE9': {
     base: 'SauceLabs',
@@ -186,6 +200,12 @@ var customLaunchers = {
     os: 'OS X',
     os_version: 'El Capitan'
   },
+  'BS_SAFARI10': {
+    base: 'BrowserStack',
+    browser: 'safari',
+    os: 'OS X',
+    os_version: 'Sierra'
+  },
   'BS_IOS7': {
     base: 'BrowserStack',
     device: 'iPhone 5S',
@@ -203,6 +223,12 @@ var customLaunchers = {
     device: 'iPhone 6S',
     os: 'ios',
     os_version: '9.1'
+  },
+  'BS_IOS10': {
+    base: 'BrowserStack',
+    device: 'iPhone SE',
+    os: 'ios',
+    os_version: '10.0'
   },
   'BS_IE9': {
     base: 'BrowserStack',
@@ -271,12 +297,12 @@ var customLaunchers = {
 
 var sauceAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
-  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9'],
-  'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
+  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'],
+  'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9', 'SL_IOS10'],
   'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
-  'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
-  'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9'],
+  'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9', 'SL_IOS10'],
+  'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
   'CI_REQUIRED': buildConfiguration('unitTest', 'SL', true),
@@ -285,12 +311,12 @@ var sauceAliases = {
 
 var browserstackAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'BrowserStack';}),
-  'DESKTOP': ['BS_CHROME', 'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
-  'MOBILE': ['BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_WINDOWSPHONE'],
+  'DESKTOP': ['BS_CHROME', 'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'],
+  'MOBILE': ['BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10', 'BS_WINDOWSPHONE'],
   'ANDROID': ['BS_ANDROID4.3', 'BS_ANDROID4.4'],
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
-  'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
-  'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
+  'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10'],
+  'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'],
   'CI_REQUIRED': buildConfiguration('unitTest', 'BS', true),
   'CI_OPTIONAL': buildConfiguration('unitTest', 'BS', false)
 };
