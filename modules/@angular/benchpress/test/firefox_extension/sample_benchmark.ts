@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {browser} from 'protractor';
+import {$, browser} from 'protractor';
 
 var benchpress = require('../../index.js');
 var runner = new benchpress.Runner([
