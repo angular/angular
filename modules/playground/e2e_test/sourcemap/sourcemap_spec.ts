@@ -7,7 +7,7 @@
  */
 
 import * as testUtil from 'e2e_util/e2e_util';
-import {browser} from 'protractor';
+import {$, browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
 var fs = require('fs');
