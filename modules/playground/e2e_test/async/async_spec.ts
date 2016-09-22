@@ -7,6 +7,8 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, browser} from 'protractor';
+import {promise} from 'selenium-webdriver';
 
 describe('async', () => {
   var URL = 'all/playground/src/async/index.html';
@@ -67,7 +69,7 @@ describe('async', () => {
   });
 
   it('should wait via frameworkStabilizer', () => {
-    var whenAllStable = function() {
+    var whenAllStable = (): promise.Promise<any> => {
       return browser.executeAsyncScript('window.frameworkStabilizers[0](arguments[0]);');
     };
 
@@ -82,14 +84,14 @@ describe('async', () => {
 
     timeout.$('.action').click();
 
-    whenAllStable().then((didWork) => {
+    whenAllStable().then((didWork: any) => {
       // whenAllStable should only be called when all the async actions
       // finished, so the count should be 10 at this point.
       expect(timeout.$('.val').getText()).toEqual('10');
       expect(didWork).toBeTruthy();  // Work was done.
     });
 
-    whenAllStable().then((didWork) => {
+    whenAllStable().then((didWork: any) => {
       // whenAllStable should be called immediately since nothing is pending.
       expect(didWork).toBeFalsy();  // No work was done.
       browser.ignoreSynchronization = false;

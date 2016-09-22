@@ -18,11 +18,8 @@
     "@types/node": {
       "version": "4.0.22-alpha"
     },
-    "@types/protractor": {
-      "version": "1.5.11-alpha"
-    },
     "@types/selenium-webdriver": {
-      "version": "2.44.20-alpha"
+      "version": "2.53.30"
     },
     "accepts": {
       "version": "1.2.13",
@@ -3607,7 +3604,7 @@
       "version": "0.3.0"
     },
     "protractor": {
-      "version": "4.0.5",
+      "version": "4.0.9",
       "dependencies": {
         "@types/jasmine": {
           "version": "2.2.33"

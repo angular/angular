@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('simpleFormControl example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    let input: protractor.ElementFinder;
-    let valueP: protractor.ElementFinder;
-    let statusP: protractor.ElementFinder;
+    let input: ElementFinder;
+    let valueP: ElementFinder;
+    let statusP: ElementFinder;
 
     beforeEach(() => {
       browser.get('/forms/ts/simpleFormControl/index.html');

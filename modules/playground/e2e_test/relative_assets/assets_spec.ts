@@ -7,9 +7,10 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, ExpectedConditions, browser, by, element} from 'protractor';
 
 function waitForElement(selector: any /** TODO #9100 */) {
-  var EC = (<any>protractor).ExpectedConditions;
+  var EC = ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
   browser.wait(EC.presenceOf($(selector)), 20000);
 }

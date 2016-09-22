@@ -32,15 +32,10 @@
       "from": "@types/node@latest",
       "resolved": "https://registry.npmjs.org/@types/node/-/node-4.0.22-alpha.tgz"
     },
-    "@types/protractor": {
-      "version": "1.5.11-alpha",
-      "from": "@types/protractor@latest",
-      "resolved": "https://registry.npmjs.org/@types/protractor/-/protractor-1.5.11-alpha.tgz"
-    },
     "@types/selenium-webdriver": {
-      "version": "2.44.20-alpha",
+      "version": "2.53.30",
       "from": "@types/selenium-webdriver@latest",
-      "resolved": "https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-2.44.20-alpha.tgz"
+      "resolved": "https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-2.53.30.tgz"
     },
     "accepts": {
       "version": "1.2.13",
@@ -5749,9 +5744,9 @@
       "resolved": "https://registry.npmjs.org/promzard/-/promzard-0.3.0.tgz"
     },
     "protractor": {
-      "version": "4.0.5",
-      "from": "protractor@4.0.5",
-      "resolved": "https://registry.npmjs.org/protractor/-/protractor-4.0.5.tgz",
+      "version": "4.0.9",
+      "from": "protractor@4.0.9",
+      "resolved": "https://registry.npmjs.org/protractor/-/protractor-4.0.9.tgz",
       "dependencies": {
         "@types/jasmine": {
           "version": "2.2.33",

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
+import * as testUtil from 'e2e_util/e2e_util';
+import {browser} from 'protractor';
+import {logging} from 'selenium-webdriver';
 
 var fs = require('fs');
 var sourceMap = require('source-map');
@@ -22,10 +24,10 @@ describe('sourcemaps', function() {
     // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
     // so that the browser logs can be read out!
     browser.executeScript('1+1');
-    browser.manage().logs().get('browser').then(function(logs) {
+    browser.manage().logs().get(logging.Type.BROWSER).then(function(logs: any) {
       var errorLine: number = null;
       var errorColumn: number = null;
-      logs.forEach(function(log) {
+      logs.forEach(function(log: any) {
         const match = log.message.match(/\.createError\s+\(.+:(\d+):(\d+)/m);
         if (match) {
           errorLine = parseInt(match[1]);
