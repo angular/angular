@@ -6870,9 +6870,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "typescript": {
-      "version": "2.0.2",
-      "from": "typescript@rc",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.0.2.tgz"
+      "version": "2.0.3",
+      "from": "typescript@2.0.3",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.0.3.tgz"
     },
     "ua-parser-js": {
       "version": "0.7.10",
