@@ -18,7 +18,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 ## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to *use* Angular, please direct them to the [Google Group][angular-group]
-discussion list or [StackOverflow][stackoverflow]. Please note that Angular 2 is still in early developer preview, and the core team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
+discussion list or [StackOverflow][stackoverflow]. Please note that the Angular team's capacity to answer usage questions is limited. We are also available on [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code, you can help us by
@@ -28,8 +28,7 @@ If you find a bug in the source code, you can help us by
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
 Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. Angular 2 is in developer preview
-and we are not ready to accept major contributions ahead of the full release.
+a proposal for your work first, to be sure that we can use it.
 Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
