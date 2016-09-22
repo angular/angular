@@ -223,6 +223,19 @@ export class InheritedResolve {
                          this.resolvedData;
   }
 
+  /**
+   * Gets the names of all resolved attributes
+   * @internal
+   */
+  get flattenedAttributes(): string[] {
+    let keys = Object.keys(this.current);
+    if (this.parent) {
+      keys = keys.concat(
+          this.parent.flattenedAttributes.filter(attrib => keys.indexOf(attrib) === -1));
+    }
+    return keys;
+  }
+
   static get empty(): InheritedResolve { return new InheritedResolve(null, {}); }
 }
 
