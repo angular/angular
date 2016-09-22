@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdUniqueSelectionDispatcher} from '@angular2-material/core';
+import {MdUniqueSelectionDispatcher} from '@angular/material';
 
 @Component({
   moduleId: module.id,

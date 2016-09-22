@@ -29,7 +29,7 @@ const blocked_statements = [
 ];
 
 const sourceFolders = ['./src', './e2e'];
-const scopePackages = glob('src/lib/*');
+const libRoot = 'src/lib';
 const blockedRegex = new RegExp(blocked_statements.join('|'), 'g');
 const importRegex = /from\s+'(.*)';/g;
 
@@ -58,7 +58,9 @@ findTestFiles()
         lineCount++;
 
         let matches = line.match(blockedRegex);
-        let scopeImport = isRelativeScopeImport(fileName, line);
+        let scopeImport = path.relative(libRoot, fileName).startsWith('..')
+          ? isRelativeScopeImport(fileName, line)
+          : false;
 
         if (matches || scopeImport) {
 
@@ -155,6 +157,10 @@ function findChangedFiles() {
  * @param line Line to be checked.
  */
 function isRelativeScopeImport(fileName, line) {
+  if (fileName.startsWith(libRoot)) {
+    return false;
+  }
+
   let importMatch = importRegex.exec(line);
 
   // We have to reset the last index of the import regex, otherwise we
@@ -184,8 +190,7 @@ function isRelativeScopeImport(fileName, line) {
   if (fileScope.path !== importScope.path) {
 
     // Creates a valid import statement, which uses the correct scope package.
-    let importFilePath = path.relative(importScope.path, importPath);
-    let validImportPath = `@angular2-material/${importScope.name}/${importFilePath}`;
+    let validImportPath = `@angular/material`;
 
     return {
       fileScope: fileScope.name,
@@ -200,9 +205,7 @@ function isRelativeScopeImport(fileName, line) {
     filePath = path.normalize(filePath);
 
     // Iterate through all scope paths and try to find them inside of the file path.
-    var scopePath = scopePackages
-      .filter(scope => filePath.indexOf(path.normalize(scope)) !== -1)
-      .pop();
+    var scopePath = filePath.indexOf(path.normalize(libRoot)) == -1 ? libRoot : filePath;
 
     // Return an object containing the name of the scope and the associated path.
     return {

@@ -4,7 +4,7 @@ import {
   ComponentPortal,
   PortalHostDirective,
   TemplatePortal
-} from '@angular2-material/core';
+} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
 

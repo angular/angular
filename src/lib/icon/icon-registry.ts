@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import {MdError} from '@angular2-material/core';
+import {MdError} from '../core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';

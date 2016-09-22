@@ -24,7 +24,7 @@ import {
   FormsModule,
 } from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {BooleanFieldValue, MdError} from '@angular2-material/core';
+import {BooleanFieldValue, MdError} from '../core';
 import {Observable} from 'rxjs/Observable';
 
 

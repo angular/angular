@@ -1,8 +1,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {TooltipPosition, MdTooltip} from '@angular2-material/tooltip';
-import {OverlayContainer} from '@angular2-material/core';
+import {TooltipPosition, MdTooltip} from './tooltip';
+import {OverlayContainer} from '../core';
 import {MdTooltipModule} from './tooltip';
 
 

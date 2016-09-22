@@ -41,7 +41,6 @@ let stopE2eServer: () => void = null;
 task(':serve:e2eapp', serverTask(false, (stream) => { stopE2eServer = () => stream.emit('kill') }));
 task(':serve:e2eapp:stop', () => stopE2eServer());
 task('serve:e2eapp', ['build:e2eapp'], sequenceTask([
-  ':inline-resources',
   ':serve:e2eapp',
   ':watch:components',
 ]));

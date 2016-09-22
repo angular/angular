@@ -28,7 +28,7 @@ System.config({
   baseURL: distPath
 });
 
-System.import(distPath + '@angular2-material/system-config-spec.js').then(function() {
+System.import(distPath + '@angular/material/system-config-spec.js').then(function() {
   // Load and configure the TestComponentBuilder.
   return Promise.all([
     System.import('@angular/core/testing'),

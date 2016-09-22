@@ -21,7 +21,7 @@ import {
     ConnectedPositionStrategy,
     HorizontalConnectionPos,
     VerticalConnectionPos
-} from '@angular2-material/core';
+} from '../core';
 
 /**
  * This directive is intended to be used in conjunction with an md-menu tag.  It is

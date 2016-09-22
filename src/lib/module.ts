@@ -1,31 +1,33 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {MdButtonToggleModule} from '@angular2-material/button-toggle';
-import {MdButtonModule} from '@angular2-material/button';
-import {MdCheckboxModule} from '@angular2-material/checkbox';
-import {MdRadioModule} from '@angular2-material/radio';
-import {MdSelectModule} from '@angular2-material/select';
-import {MdSlideToggleModule} from '@angular2-material/slide-toggle';
-import {MdSliderModule} from '@angular2-material/slider';
-import {MdSidenavModule} from '@angular2-material/sidenav';
-import {MdListModule} from '@angular2-material/list';
-import {MdGridListModule} from '@angular2-material/grid-list';
-import {MdCardModule} from '@angular2-material/card';
-import {MdIconModule} from '@angular2-material/icon';
-import {MdProgressCircleModule} from '@angular2-material/progress-circle';
-import {MdProgressBarModule} from '@angular2-material/progress-bar';
-import {MdInputModule} from '@angular2-material/input';
-import {MdTabsModule} from '@angular2-material/tabs';
-import {MdToolbarModule} from '@angular2-material/toolbar';
-import {MdTooltipModule} from '@angular2-material/tooltip';
+
 import {
   MdLiveAnnouncer,
   MdRippleModule,
   RtlModule,
   PortalModule,
   OverlayModule
-} from '@angular2-material/core';
-import {MdMenuModule} from '@angular2-material/menu';
-import {MdDialogModule} from '@angular2-material/dialog';
+} from './core/index';
+
+import {MdButtonToggleModule} from './button-toggle/index';
+import {MdButtonModule} from './button/index';
+import {MdCheckboxModule} from './checkbox/index';
+import {MdRadioModule} from './radio/index';
+import {MdSelectModule} from './select/index';
+import {MdSlideToggleModule} from './slide-toggle/index';
+import {MdSliderModule} from './slider/index';
+import {MdSidenavModule} from './sidenav/index';
+import {MdListModule} from './list/index';
+import {MdGridListModule} from './grid-list/index';
+import {MdCardModule} from './card/index';
+import {MdIconModule} from './icon/index';
+import {MdProgressCircleModule} from './progress-circle/index';
+import {MdProgressBarModule} from './progress-bar/index';
+import {MdInputModule} from './input/index';
+import {MdTabsModule} from './tabs/index';
+import {MdToolbarModule} from './toolbar/index';
+import {MdTooltipModule} from './tooltip/index';
+import {MdMenuModule} from './menu/index';
+import {MdDialogModule} from './dialog/index';
 
 
 const MATERIAL_MODULES = [

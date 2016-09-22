@@ -26,8 +26,8 @@ gulp.task(':test:deps', sequenceTask(
   [
     ':build:test:vendor',
     ':build:components:assets',
-    ':build:components:scss',
     ':build:components:spec',
+    ':build:components:inline',
     ':watch:components:spec',
   ]
 ));
@@ -39,12 +39,8 @@ gulp.task('test', [':test:deps'], (done: () => void) => {
 });
 
 gulp.task('test:single-run', [':test:deps'], (done: () => void) => {
-  runSequence(
-    ':inline-resources',
-    () => {
-      new karma.Server({
-        configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
-        singleRun: true
-    }, done).start();
-  });
+  new karma.Server({
+    configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
+    singleRun: true
+  }, done).start();
 });

@@ -21,7 +21,7 @@ import {
     FixedTileStyler
 } from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
-import {Dir, MdLineModule} from '@angular2-material/core';
+import {Dir, MdLineModule} from '../core';
 import {coerceToString, coerceToNumber} from './grid-list-measure';
 
 // TODO(kara): Conditional (responsive) column count / row size.

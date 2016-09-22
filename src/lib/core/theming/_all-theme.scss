@@ -1,0 +1,46 @@
+// Import all the theming functionality.
+@import '../core';
+@import '../../button/button-theme';
+@import '../../button-toggle/button-toggle-theme';
+@import '../../card/card-theme';
+@import '../../checkbox/checkbox-theme';
+@import '../../dialog/dialog-theme';
+@import '../../grid-list/grid-list-theme';
+@import '../../icon/icon-theme';
+@import '../../input/input-theme';
+@import '../../list/list-theme';
+@import '../../menu/menu-theme';
+@import '../../progress-bar/progress-bar-theme';
+@import '../../progress-circle/progress-circle-theme';
+@import '../../radio/radio-theme';
+@import '../../sidenav/sidenav-theme';
+@import '../../slide-toggle/slide-toggle-theme';
+@import '../../slider/slider-theme';
+@import '../../tabs/tabs-theme';
+@import '../../toolbar/toolbar-theme';
+@import '../../tooltip/tooltip-theme';
+
+
+// Create a theme.
+@mixin angular-material-theme($theme) {
+  @include md-core-theme($theme);
+  @include md-button-theme($theme);
+  @include md-button-toggle-theme($theme);
+  @include md-card-theme($theme);
+  @include md-checkbox-theme($theme);
+  @include md-dialog-theme($theme);
+  @include md-grid-list-theme($theme);
+  @include md-icon-theme($theme);
+  @include md-input-theme($theme);
+  @include md-list-theme($theme);
+  @include md-menu-theme($theme);
+  @include md-progress-bar-theme($theme);
+  @include md-progress-circle-theme($theme);
+  @include md-radio-theme($theme);
+  @include md-sidenav-theme($theme);
+  @include md-slide-toggle-theme($theme);
+  @include md-slider-theme($theme);
+  @include md-tabs-theme($theme);
+  @include md-toolbar-theme($theme);
+  @include md-tooltip-theme($theme);
+}

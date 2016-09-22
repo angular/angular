@@ -1,4 +1,4 @@
-import {OverlayRef} from '@angular2-material/core';
+import {OverlayRef} from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 

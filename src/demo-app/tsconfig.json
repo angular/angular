@@ -15,12 +15,11 @@
     "stripInternal": true,
     "baseUrl": "",
     "typeRoots": [
-      "../../node_modules/@types",
-      "../../node_modules"
+      "../../node_modules/@types"
     ],
     "paths": {
-      "@angular2-material/*": [
-        "../../dist/@angular2-material/*"
+      "@angular/material": [
+        "../../dist/@angular/material"
       ]
     },
     "types": [

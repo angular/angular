@@ -9,18 +9,12 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "outDir": "../../dist/@angular2-material",
+    "outDir": "../../dist/@angular/material",
     "rootDir": ".",
     "sourceMap": true,
     "target": "es5",
     "inlineSources": true,
     "stripInternal": true,
-    "baseUrl": "",
-    "paths": {
-      "@angular2-material/*": [
-        "./*"
-      ]
-    },
     "typeRoots": [
       "../../node_modules/@types"
     ],
@@ -29,10 +23,10 @@
   },
   "exclude": [
     "**/*.spec.*",
-    "system-config-spec"
+    "system-config-spec.ts"
   ],
   "angularCompilerOptions": {
-    "genDir": "../../dist",
+    "genDir": "../../dist/@angular/material",
     "skipTemplateCodegen": true,
     "debug": true
   }

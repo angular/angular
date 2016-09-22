@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {TooltipPosition} from '@angular2-material/tooltip';
+import {TooltipPosition} from '@angular/material';
 
 
 @Component({
