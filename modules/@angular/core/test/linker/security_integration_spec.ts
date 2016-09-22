@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
-import {Component} from '@angular/core/src/metadata';
-import {TestBed, getTestBed} from '@angular/core/testing';
+import {Component, Directive, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
@@ -24,12 +23,22 @@ class SecuredComponent {
   ctxProp: any = 'some value';
 }
 
+@Directive({selector: '[onPrefixedProp]'})
+class OnPrefixDir {
+  @Input() onPrefixedProp: any;
+  @Input() onclick: any;
+}
+
 function declareTests({useJit}: {useJit: boolean}) {
   describe('security integration tests', function() {
 
     beforeEach(() => {
-      TestBed.configureCompiler({useJit: useJit});
-      TestBed.configureTestingModule({declarations: [SecuredComponent]});
+      TestBed.configureCompiler({useJit: useJit}).configureTestingModule({
+        declarations: [
+          SecuredComponent,
+          OnPrefixDir,
+        ]
+      });
     });
 
     let originalLog: (msg: any) => any;
@@ -43,15 +52,10 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should disallow binding to attr.on*', () => {
         const template = `<div [attr.onclick]="ctxProp"></div>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
-        try {
-          TestBed.createComponent(SecuredComponent);
-          throw 'Should throw';
-        } catch (e) {
-          expect(e.message).toContain(
-              `Template parse errors:\n` +
-              `Binding to event attribute 'onclick' is disallowed ` +
-              `for security reasons, please use (click)=... `);
-        }
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(
+                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
       });
 
       it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
@@ -59,17 +63,31 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
           schemas: [NO_ERRORS_SCHEMA]
         });
-        ;
-        try {
-          TestBed.createComponent(SecuredComponent);
-          throw 'Should throw';
-        } catch (e) {
-          expect(e.message).toContain(
-              `Template parse errors:\n` +
-              `Binding to event attribute 'onclick' is disallowed ` +
-              `for security reasons, please use (click)=... `);
-        }
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(
+                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
       });
+
+      it('should disallow binding to on* unless it is consumed by a directive', () => {
+        const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+          schemas: [NO_ERRORS_SCHEMA]
+        });
+
+        // should not throw for inputs starting with "on"
+        let cmp: ComponentFixture<SecuredComponent>;
+        expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
+
+        // must bind to the directive not to the property of the div
+        const value = cmp.componentInstance.ctxProp = {};
+        cmp.detectChanges();
+        const div = cmp.debugElement.children[0];
+        expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
+        expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
+        expect(getDOM().hasAttribute(div.nativeElement, 'onclick')).toEqual(false);
+      });
+
     });
 
     describe('safe HTML values', function() {
@@ -157,12 +175,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-        try {
-          TestBed.createComponent(SecuredComponent);
-          throw 'Should throw';
-        } catch (e) {
-          expect(e.message).toContain(`Can't bind to 'xlink:href'`);
-        }
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Can't bind to 'xlink:href'/);
       });
 
       it('should escape unsafe HTML values', () => {
