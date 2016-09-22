@@ -28,8 +28,10 @@ task(':watch:components:spec', () => {
 
 task(':build:components:ts', tsBuildTask(componentsDir));
 task(':build:components:spec', tsBuildTask(path.join(componentsDir, 'tsconfig-spec.json')));
-task(':build:components:assets',
-     copyTask(path.join(componentsDir, '*/**/*.!(ts|spec.ts)'), DIST_COMPONENTS_ROOT));
+task(':build:components:assets', copyTask([
+  path.join(componentsDir, '**/*.!(ts|spec.ts)'),
+  path.join(PROJECT_ROOT, 'README.md'),
+], DIST_COMPONENTS_ROOT));
 task(':build:components:scss', sassBuildTask(
   DIST_COMPONENTS_ROOT, componentsDir, [path.join(componentsDir, 'core/style')]
 ));

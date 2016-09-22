@@ -19,7 +19,16 @@ const resolveBin = require('resolve-bin');
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
-  return maybeGlob.indexOf('*') != -1 ? maybeGlob : path.join(maybeGlob, suffix);
+  if (maybeGlob.indexOf('*') != -1) {
+    return maybeGlob;
+  }
+  try {
+    const stat = fs.statSync(maybeGlob);
+    if (stat.isFile()) {
+      return maybeGlob;
+    }
+  } catch (e) {}
+  return path.join(maybeGlob, suffix);
 }
 
 
@@ -133,9 +142,11 @@ export function execNodeTask(packageName: string, executable: string | string[],
 
 
 /** Copy files from a glob to a destination. */
-export function copyTask(srcGlobOrDir: string, outRoot: string) {
-  return () => {
-    return gulp.src(_globify(srcGlobOrDir)).pipe(gulp.dest(outRoot));
+export function copyTask(srcGlobOrDir: string | string[], outRoot: string) {
+  if (typeof srcGlobOrDir === 'string') {
+    return () => gulp.src(_globify(srcGlobOrDir)).pipe(gulp.dest(outRoot));
+  } else {
+    return () => gulp.src(srcGlobOrDir.map(name => _globify(name))).pipe(gulp.dest(outRoot));
   }
 }
 
