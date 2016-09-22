@@ -23,5 +23,8 @@
   "peerDependencies": {
     "@angular/core": "^2.0.0",
     "@angular/common": "^2.0.0"
+  },
+  "dependencies": {
+    "@types/hammerjs": "^2.0.30"
   }
 }
