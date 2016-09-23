@@ -964,6 +964,31 @@ export function main() {
          }));
     });
 
+    it('should allow attribute selectors for components in ng2', async(() => {
+         const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
+         var ng1Module = angular.module('myExample', []);
+
+         @Component({selector: '[works]', template: 'works!'})
+         class WorksComponent {
+         }
+
+         @Component({selector: 'root-component', template: 'It <div works></div>'})
+         class RootComponent {
+         }
+
+         @NgModule({imports: [BrowserModule], declarations: [RootComponent, WorksComponent]})
+         class MyNg2Module {
+         }
+
+         ng1Module.directive('rootComponent', adapter.downgradeNg2Component(RootComponent));
+
+         document.body.innerHTML = '<root-component></root-component>';
+         adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
+           expect(multiTrim(document.body.textContent)).toEqual('It works!');
+           ref.dispose();
+         });
+       }));
+
     describe('examples', () => {
       it('should verify UpgradeAdapter example', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
@@ -994,7 +1019,7 @@ export function main() {
 
            document.body.innerHTML = '<ng2 name="World">project</ng2>';
 
-           adapter.bootstrap(document.body, ['myExample']).ready((ref) => {
+           adapter.bootstrap(document.body.firstElementChild, ['myExample']).ready((ref) => {
              expect(multiTrim(document.body.textContent))
                  .toEqual('ng2[ng1[Hello World!](transclude)](project)');
              ref.dispose();
