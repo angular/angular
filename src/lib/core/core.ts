@@ -50,6 +50,9 @@ export {
   LIVE_ANNOUNCER_ELEMENT_TOKEN,
 } from './a11y/live-announcer';
 
+export {FocusTrap} from './a11y/focus-trap';
+export {InteractivityChecker} from './a11y/interactivity-checker';
+
 export {
   MdUniqueSelectionDispatcher,
   MdUniqueSelectionDispatcherListener
