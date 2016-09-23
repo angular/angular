@@ -686,6 +686,23 @@ Connection: keep-alive`;
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
+
+      it('should not throw invalidStateError if response without body and responseType not equal to text',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const base = new BaseRequestOptions();
+           const connection = new XHRConnection(
+               new Request(
+                   base.merge(new RequestOptions({responseType: ResponseContentType.Json}))),
+               new MockBrowserXHR());
+
+           connection.response.subscribe((res: Response) => {
+             expect(res.json()).toBe(null);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(204);
+           existingXHRs[0].dispatchEvent('load');
+         }));
     });
   });
 }
