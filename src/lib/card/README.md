@@ -27,7 +27,7 @@ We also provide a number of preset sections that you can mix and match within th
   * `<md-card-content>`: main content section, intended for blocks of text
   * `<img md-card-image>`: stretches image to container width
   * `<md-card-actions>`: wraps and styles buttons
-  * `<md-card-footer>`: anchors section to bottom of card
+  * `<md-card-footer>`: anchors section to bottom of card (e.g progress bar)
 
 Example markup for a card with section presets:
 
