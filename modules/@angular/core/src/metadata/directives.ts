@@ -928,7 +928,6 @@ export interface HostBindingDecorator {
    * @Component({
    *   selector: 'app',
    *   template: `<input [(ngModel)]="prop">`,
-   *   directives: [FORM_DIRECTIVES, NgModelStatus]
    * })
    * class App {
    *   prop;
@@ -968,8 +967,7 @@ export interface HostListenerDecorator {
    *
    * Angular will invoke the decorated method when the host element emits the specified event.
    *
-   * If the decorated method returns `false`, then `preventDefault` is applied on the DOM
-   * event.
+   * If the decorated method returns `false`, then `preventDefault` is applied on the DOM event.
    *
    * ### Example
    *
@@ -983,14 +981,13 @@ export interface HostListenerDecorator {
    *
    *   @HostListener('click', ['$event.target'])
    *   onClick(btn) {
-   *     console.log("button", btn, "number of clicks:", this.numberOfClicks++);
+   *     console.log('button', btn, 'number of clicks:', this.numberOfClicks++);
    *   }
    * }
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<button counting>Increment</button>`,
-   *   directives: [CountClicks]
+   *   template: '<button counting>Increment</button>',
    * })
    * class App {}
    * ```
