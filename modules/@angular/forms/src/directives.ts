@@ -55,20 +55,8 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
     [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
 
 /**
+ * A list of all the form directives.
  *
- * A list of all the form directives used as part of a `@Component` annotation.
- *
- *  This is a shorthand for importing them each individually.
- *
- * ### Example
- *
- * ```typescript
- * @Component({
- *   selector: 'my-app',
- *   directives: [FORM_DIRECTIVES]
- * })
- * class MyApp {}
- * ```
  * @stable
  */
 export const FORM_DIRECTIVES: Type<any>[][] = [TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
@@ -76,7 +64,6 @@ export const FORM_DIRECTIVES: Type<any>[][] = [TEMPLATE_DRIVEN_DIRECTIVES, SHARE
 /**
  * @stable
  */
-
 export const REACTIVE_FORM_DIRECTIVES: Type<any>[][] =
     [REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
 
