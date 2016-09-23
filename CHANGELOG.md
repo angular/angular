@@ -4,7 +4,6 @@
 ### Features
 
 * **router:** add router preloader to optimistically preload routes ([5a84982](https://github.com/angular/angular/commit/5a84982))
-* **router:** update dts files ([676bb0f](https://github.com/angular/angular/commit/676bb0f))
 
 
 ### Bug Fixes
