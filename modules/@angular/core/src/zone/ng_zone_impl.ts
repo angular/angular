@@ -36,7 +36,7 @@ export class NgZoneImpl {
     this.onError = onError;
 
     if (typeof Zone == 'undefined') {
-      throw new Error('Angular requires Zone.js prolyfill.');
+      throw new Error('Angular requires Zone.js polyfill.');
     }
     Zone.assertZonePatched();
     this.outer = this.inner = Zone.current;
