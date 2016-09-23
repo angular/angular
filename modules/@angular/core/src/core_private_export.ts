@@ -9,7 +9,6 @@
 import {ANY_STATE as ANY_STATE_, DEFAULT_STATE as DEFAULT_STATE_, EMPTY_STATE as EMPTY_STATE_, FILL_STYLE_FLAG as FILL_STYLE_FLAG_} from './animation/animation_constants';
 import {AnimationGroupPlayer as AnimationGroupPlayer_} from './animation/animation_group_player';
 import {AnimationKeyframe as AnimationKeyframe_} from './animation/animation_keyframe';
-import {AnimationOutput as AnimationOutput_} from './animation/animation_output';
 import {AnimationPlayer as AnimationPlayer_, NoOpAnimationPlayer as NoOpAnimationPlayer_} from './animation/animation_player';
 import {AnimationSequencePlayer as AnimationSequencePlayer_} from './animation/animation_sequence_player';
 import * as animationUtils from './animation/animation_style_util';
@@ -115,7 +114,6 @@ export var __core_private__: {
   renderStyles: typeof animationUtils.renderStyles,
   collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles,
   AnimationStyles: typeof AnimationStyles_, _AnimationStyles?: AnimationStyles_,
-  AnimationOutput: typeof AnimationOutput_, _AnimationOutput?: AnimationOutput_,
   ANY_STATE: typeof ANY_STATE_,
   DEFAULT_STATE: typeof DEFAULT_STATE_,
   EMPTY_STATE: typeof EMPTY_STATE_,
@@ -183,7 +181,6 @@ export var __core_private__: {
   renderStyles: animationUtils.renderStyles,
   collectAndResolveStyles: animationUtils.collectAndResolveStyles,
   AnimationStyles: AnimationStyles_,
-  AnimationOutput: AnimationOutput_,
   ANY_STATE: ANY_STATE_,
   DEFAULT_STATE: DEFAULT_STATE_,
   EMPTY_STATE: EMPTY_STATE_,

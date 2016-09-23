@@ -21,9 +21,17 @@ export function camelCaseToDashCase(input: string): string {
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  const colonIndex = input.indexOf(':');
-  if (colonIndex == -1) return defaultValues;
-  return [input.slice(0, colonIndex).trim(), input.slice(colonIndex + 1).trim()];
+  return _splitAt(input, ':', defaultValues);
+}
+
+export function splitAtPeriod(input: string, defaultValues: string[]): string[] {
+  return _splitAt(input, '.', defaultValues);
+}
+
+function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
+  const characterIndex = input.indexOf(character);
+  if (characterIndex == -1) return defaultValues;
+  return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
 export function sanitizeIdentifier(name: string): string {

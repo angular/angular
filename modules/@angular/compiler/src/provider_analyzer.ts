@@ -50,14 +50,14 @@ export class ProviderElementContext {
   private _hasViewContainer: boolean = false;
 
   constructor(
-      private _viewContext: ProviderViewContext, private _parent: ProviderElementContext,
+      public viewContext: ProviderViewContext, private _parent: ProviderElementContext,
       private _isViewRoot: boolean, private _directiveAsts: DirectiveAst[], attrs: AttrAst[],
       refs: ReferenceAst[], private _sourceSpan: ParseSourceSpan) {
     this._attrs = {};
     attrs.forEach((attrAst) => this._attrs[attrAst.name] = attrAst.value);
     var directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
     this._allProviders =
-        _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, _viewContext.errors);
+        _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, viewContext.errors);
     this._contentQueries = _getContentQueries(directivesMeta);
     var queriedTokens = new Map<any, boolean>();
     MapWrapper.values(this._allProviders).forEach((provider) => {
@@ -124,7 +124,7 @@ export class ProviderElementContext {
       }
       currentEl = currentEl._parent;
     }
-    queries = this._viewContext.viewQueries.get(token.reference);
+    queries = this.viewContext.viewQueries.get(token.reference);
     if (isPresent(queries)) {
       ListWrapper.addAll(result, queries);
     }
@@ -150,7 +150,7 @@ export class ProviderElementContext {
       return transformedProviderAst;
     }
     if (isPresent(this._seenProviders.get(token.reference))) {
-      this._viewContext.errors.push(new ProviderError(
+      this.viewContext.errors.push(new ProviderError(
           `Cannot instantiate cyclic dependency! ${token.name}`, this._sourceSpan));
       return null;
     }
@@ -254,9 +254,9 @@ export class ProviderElementContext {
       }
       // check @Host restriction
       if (isBlank(result)) {
-        if (!dep.isHost || this._viewContext.component.type.isHost ||
-            this._viewContext.component.type.reference === dep.token.reference ||
-            isPresent(this._viewContext.viewProviders.get(dep.token.reference))) {
+        if (!dep.isHost || this.viewContext.component.type.isHost ||
+            this.viewContext.component.type.reference === dep.token.reference ||
+            isPresent(this.viewContext.viewProviders.get(dep.token.reference))) {
           result = dep;
         } else {
           result = dep.isOptional ?
@@ -266,7 +266,7 @@ export class ProviderElementContext {
       }
     }
     if (isBlank(result)) {
-      this._viewContext.errors.push(
+      this.viewContext.errors.push(
           new ProviderError(`No provider for ${dep.token.name}`, this._sourceSpan));
     }
     return result;

@@ -8,7 +8,7 @@
 
 import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTokenMetadata, removeIdentifierDuplicates} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTemplateMetadata, CompileTokenMetadata, removeIdentifierDuplicates} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {StringMapWrapper} from '../facade/collection';
@@ -26,10 +26,11 @@ import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer'
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {splitAtColon} from '../util';
+import {splitAtColon, splitAtPeriod} from '../util';
 
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
+
 
 
 // Group 1 = "bind-"
@@ -142,7 +143,6 @@ export class TemplateParser {
       const parseVisitor = new TemplateParseVisitor(
           providerViewContext, uniqDirectives, uniqPipes, schemas, this._exprParser,
           this._schemaRegistry);
-
       result = html.visitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors.push(...parseVisitor.errors, ...providerViewContext.errors);
     } else {
@@ -444,6 +444,15 @@ class TemplateParseVisitor implements html.Visitor {
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
           providerContext.transformedHasViewContainer, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
+
+      this._findComponentDirectives(directiveAsts)
+          .forEach(
+              componentDirectiveAst => this._validateElementAnimationInputOutputs(
+                  componentDirectiveAst.hostProperties, componentDirectiveAst.hostEvents,
+                  componentDirectiveAst.directive.template));
+
+      const componentTemplate = providerContext.viewContext.component.template;
+      this._validateElementAnimationInputOutputs(elementProps, events, componentTemplate);
     }
 
     if (hasInlineTemplates) {
@@ -469,7 +478,34 @@ class TemplateParseVisitor implements html.Visitor {
           templateProviderContext.transformedHasViewContainer, [parsedElement], ngContentIndex,
           element.sourceSpan);
     }
+
     return parsedElement;
+  }
+
+  private _validateElementAnimationInputOutputs(
+      inputs: BoundElementPropertyAst[], outputs: BoundEventAst[],
+      template: CompileTemplateMetadata) {
+    const triggerLookup = new Set<string>();
+    template.animations.forEach(entry => { triggerLookup.add(entry.name); });
+
+    const animationInputs = inputs.filter(input => input.isAnimation);
+    animationInputs.forEach(input => {
+      const name = input.name;
+      if (!triggerLookup.has(name)) {
+        this._reportError(`Couldn't find an animation entry for "${name}"`, input.sourceSpan);
+      }
+    });
+
+    outputs.forEach(output => {
+      if (output.isAnimation) {
+        const found = animationInputs.find(input => input.name == output.name);
+        if (!found) {
+          this._reportError(
+              `Unable to listen on (@${output.name}.${output.phase}) because the animation trigger [@${output.name}] isn't being used on the same element`,
+              output.sourceSpan);
+        }
+      }
+    });
   }
 
   private _parseInlineTemplateBinding(
@@ -533,7 +569,7 @@ class TemplateParseVisitor implements html.Visitor {
         this._parseReference(identifier, value, srcSpan, targetRefs);
 
       } else if (bindParts[KW_ON_IDX]) {
-        this._parseEvent(
+        this._parseEventOrAnimationEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, targetMatchableAttrs, targetEvents);
 
       } else if (bindParts[KW_BINDON_IDX]) {
@@ -544,7 +580,7 @@ class TemplateParseVisitor implements html.Visitor {
             bindParts[IDENT_KW_IDX], value, srcSpan, targetMatchableAttrs, targetEvents);
 
       } else if (bindParts[KW_AT_IDX]) {
-        if (name[0] == '@' && isPresent(value) && value.length > 0) {
+        if (_isAnimationLabel(name) && isPresent(value) && value.length > 0) {
           this._reportError(
               `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
                   ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
@@ -565,7 +601,7 @@ class TemplateParseVisitor implements html.Visitor {
             targetAnimationProps);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
-        this._parseEvent(
+        this._parseEventOrAnimationEvent(
             bindParts[IDENT_EVENT_IDX], value, srcSpan, targetMatchableAttrs, targetEvents);
       }
     } else {
@@ -608,7 +644,7 @@ class TemplateParseVisitor implements html.Visitor {
       targetMatchableAttrs: string[][], targetProps: BoundElementOrDirectiveProperty[],
       targetAnimationProps: BoundElementPropertyAst[]) {
     const animatePropLength = ANIMATE_PROP_PREFIX.length;
-    var isAnimationProp = name[0] == '@';
+    var isAnimationProp = _isAnimationLabel(name);
     var animationPrefixLength = 1;
     if (name.substring(0, animatePropLength) == ANIMATE_PROP_PREFIX) {
       isAnimationProp = true;
@@ -635,6 +671,7 @@ class TemplateParseVisitor implements html.Visitor {
     if (!isPresent(expression) || expression.length == 0) {
       expression = 'null';
     }
+
     const ast = this._parseBinding(expression, sourceSpan);
     targetMatchableAttrs.push([name, ast.source]);
     targetAnimationProps.push(new BoundElementPropertyAst(
@@ -662,20 +699,56 @@ class TemplateParseVisitor implements html.Visitor {
   private _parseAssignmentEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
-    this._parseEvent(
+    this._parseEventOrAnimationEvent(
         `${name}Change`, `${expression}=$event`, sourceSpan, targetMatchableAttrs, targetEvents);
+  }
+
+  private _parseEventOrAnimationEvent(
+      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
+    if (_isAnimationLabel(name)) {
+      name = name.substr(1);
+      this._parseAnimationEvent(name, expression, sourceSpan, targetEvents);
+    } else {
+      this._parseEvent(name, expression, sourceSpan, targetMatchableAttrs, targetEvents);
+    }
+  }
+
+  private _parseAnimationEvent(
+      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      targetEvents: BoundEventAst[]) {
+    const matches = splitAtPeriod(name, [name, '']);
+    const eventName = matches[0];
+    const phase = matches[1].toLowerCase();
+    if (phase) {
+      switch (phase) {
+        case 'start':
+        case 'done':
+          const ast = this._parseAction(expression, sourceSpan);
+          targetEvents.push(new BoundEventAst(eventName, null, phase, ast, sourceSpan));
+          break;
+
+        default:
+          this._reportError(
+              `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
+              sourceSpan);
+          break;
+      }
+    } else {
+      this._reportError(
+          `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
+          sourceSpan);
+    }
   }
 
   private _parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
     // long format: 'target: eventName'
-    const parts = splitAtColon(name, [null, name]);
-    const target = parts[0];
-    const eventName = parts[1];
+    const [target, eventName] = splitAtColon(name, [null, name]);
     const ast = this._parseAction(expression, sourceSpan);
     targetMatchableAttrs.push([name, ast.source]);
-    targetEvents.push(new BoundEventAst(eventName, target, ast, sourceSpan));
+    targetEvents.push(new BoundEventAst(eventName, target, null, ast, sourceSpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }
@@ -779,7 +852,7 @@ class TemplateParseVisitor implements html.Visitor {
     if (hostListeners) {
       StringMapWrapper.forEach(hostListeners, (expression: string, propName: string) => {
         if (isString(expression)) {
-          this._parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
+          this._parseEventOrAnimationEvent(propName, expression, sourceSpan, [], targetEventAsts);
         } else {
           this._reportError(
               `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
@@ -846,7 +919,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (parts.length === 1) {
       var partValue = parts[0];
-      if (partValue[0] == '@') {
+      if (_isAnimationLabel(partValue)) {
         boundPropertyName = partValue.substr(1);
         bindingType = PropertyBindingType.Animation;
         securityContext = SecurityContext.NONE;
@@ -922,15 +995,13 @@ class TemplateParseVisitor implements html.Visitor {
     }
   }
 
+  private _findComponentDirectives(directives: DirectiveAst[]): DirectiveAst[] {
+    return directives.filter(directive => directive.directive.isComponent);
+  }
+
   private _findComponentDirectiveNames(directives: DirectiveAst[]): string[] {
-    const componentTypeNames: string[] = [];
-    directives.forEach(directive => {
-      const typeName = directive.directive.type.name;
-      if (directive.directive.isComponent) {
-        componentTypeNames.push(typeName);
-      }
-    });
-    return componentTypeNames;
+    return this._findComponentDirectives(directives)
+        .map(directive => directive.directive.type.name);
   }
 
   private _assertOnlyOneComponent(directives: DirectiveAst[], sourceSpan: ParseSourceSpan) {
@@ -1113,4 +1184,8 @@ export class PipeCollector extends RecursiveAstVisitor {
     this.visitAll(ast.args, context);
     return null;
   }
+}
+
+function _isAnimationLabel(name: string): boolean {
+  return name[0] == '@';
 }
