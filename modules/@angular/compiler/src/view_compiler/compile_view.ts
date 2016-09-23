@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompiledAnimationTriggerResult} from '../animation/animation_compiler';
+import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ListWrapper, MapWrapper} from '../facade/collection';
@@ -72,7 +72,7 @@ export class CompileView implements NameResolver {
   constructor(
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
       public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
-      public animations: CompiledAnimationTriggerResult[], public viewIndex: number,
+      public animations: AnimationEntryCompileResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
     this.createMethod = new CompileMethod(this);
     this.animationBindingsMethod = new CompileMethod(this);
