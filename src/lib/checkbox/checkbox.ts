@@ -12,7 +12,7 @@ import {
     ModuleWithProviders,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {BooleanFieldValue} from '@angular2-material/core';
+import {BooleanFieldValue} from '../core';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
