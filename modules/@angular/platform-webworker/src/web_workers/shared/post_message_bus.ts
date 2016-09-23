@@ -9,7 +9,6 @@
 import {Injectable, NgZone} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {StringMapWrapper} from '../../facade/collection';
 
 import {MessageBus, MessageBusSink, MessageBusSource} from './message_bus';
 
@@ -22,7 +21,7 @@ export interface PostMessageTarget {
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
-  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = {};
   private _messageBuffer: Array<Object> = [];
 
   constructor(private _postMessageTarget: PostMessageTarget) {}
@@ -34,7 +33,7 @@ export class PostMessageBusSink implements MessageBusSink {
   }
 
   initChannel(channel: string, runInZone: boolean = true): void {
-    if (StringMapWrapper.contains(this._channels, channel)) {
+    if (this._channels.hasOwnProperty(channel)) {
       throw new Error(`${channel} has already been initialized`);
     }
 
@@ -52,7 +51,7 @@ export class PostMessageBusSink implements MessageBusSink {
   }
 
   to(channel: string): EventEmitter<any> {
-    if (StringMapWrapper.contains(this._channels, channel)) {
+    if (this._channels.hasOwnProperty(channel)) {
       return this._channels[channel].emitter;
     } else {
       throw new Error(`${channel} is not set up. Did you forget to call initChannel?`);
@@ -71,7 +70,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
 export class PostMessageBusSource implements MessageBusSource {
   private _zone: NgZone;
-  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = {};
 
   constructor(eventTarget?: EventTarget) {
     if (eventTarget) {
@@ -86,7 +85,7 @@ export class PostMessageBusSource implements MessageBusSource {
   attachToZone(zone: NgZone) { this._zone = zone; }
 
   initChannel(channel: string, runInZone: boolean = true) {
-    if (StringMapWrapper.contains(this._channels, channel)) {
+    if (this._channels.hasOwnProperty(channel)) {
       throw new Error(`${channel} has already been initialized`);
     }
 
@@ -96,7 +95,7 @@ export class PostMessageBusSource implements MessageBusSource {
   }
 
   from(channel: string): EventEmitter<any> {
-    if (StringMapWrapper.contains(this._channels, channel)) {
+    if (this._channels.hasOwnProperty(channel)) {
       return this._channels[channel].emitter;
     } else {
       throw new Error(`${channel} is not set up. Did you forget to call initChannel?`);
@@ -112,7 +111,7 @@ export class PostMessageBusSource implements MessageBusSource {
 
   private _handleMessage(data: any): void {
     var channel = data.channel;
-    if (StringMapWrapper.contains(this._channels, channel)) {
+    if (this._channels.hasOwnProperty(channel)) {
       var channelInfo = this._channels[channel];
       if (channelInfo.runInZone) {
         this._zone.run(() => { channelInfo.emitter.emit(data.message); });

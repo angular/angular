@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../../facade/collection';
-
 import {EventManagerPlugin} from './event_manager';
 
 var _eventNames = {
@@ -53,7 +51,6 @@ export class HammerGesturesPluginCommon extends EventManagerPlugin {
   constructor() { super(); }
 
   supports(eventName: string): boolean {
-    eventName = eventName.toLowerCase();
-    return StringMapWrapper.contains(_eventNames, eventName);
+    return _eventNames.hasOwnProperty(eventName.toLowerCase());
   }
 }

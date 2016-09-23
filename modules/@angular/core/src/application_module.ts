@@ -14,7 +14,6 @@ import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
 import {ViewUtils} from './linker/view_utils';
 import {NgModule} from './metadata';
-import {Type} from './type';
 
 export function _iterableDiffersFactory() {
   return defaultIterableDiffers;

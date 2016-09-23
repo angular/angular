@@ -8,12 +8,9 @@
 
 import {getSymbolIterator, global, isArray, isBlank, isJsObject, isPresent} from './lang';
 
-export var Map = global.Map;
-export var Set = global.Set;
-
 // Safari and Internet Explorer do not support the iterable parameter to the
 // Map constructor.  We work around that by manually adding the items.
-var createMapFromPairs: {(pairs: any[]): Map<any, any>} = (function() {
+const createMapFromPairs: {(pairs: any[]): Map<any, any>} = (function() {
   try {
     if (new Map(<any>[[1, 2]]).size === 1) {
       return function createMapFromPairs(pairs: any[]): Map<any, any> { return new Map(pairs); };
@@ -29,7 +26,7 @@ var createMapFromPairs: {(pairs: any[]): Map<any, any>} = (function() {
     return map;
   };
 })();
-var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
+const createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
   try {
     if (new Map(<any>new Map())) {
       return function createMapFromMap(m: Map<any, any>): Map<any, any> { return new Map(<any>m); };
@@ -42,7 +39,7 @@ var createMapFromMap: {(m: Map<any, any>): Map<any, any>} = (function() {
     return map;
   };
 })();
-var _clearValues: {(m: Map<any, any>): void} = (function() {
+const _clearValues: {(m: Map<any, any>): void} = (function() {
   if ((<any>(new Map()).keys()).next) {
     return function _clearValues(m: Map<any, any>) {
       var keyIterator = m.keys();
@@ -69,7 +66,7 @@ var _arrayFromMap: {(m: Map<any, any>, getValues: boolean): any[]} = (function()
   } catch (e) {
   }
   return function createArrayFromMapWithForeach(m: Map<any, any>, getValues: boolean): any[] {
-    var res = ListWrapper.createFixedSize(m.size), i = 0;
+    var res = new Array(m.size), i = 0;
     m.forEach((v, k) => {
       res[i] = getValues ? v : k;
       i++;
@@ -79,7 +76,6 @@ var _arrayFromMap: {(m: Map<any, any>, getValues: boolean): any[]} = (function()
 })();
 
 export class MapWrapper {
-  static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
   static createFromStringMap<T>(stringMap: {[key: string]: T}): Map<string, T> {
     var result = new Map<string, T>();
     for (var prop in stringMap) {
@@ -93,7 +89,6 @@ export class MapWrapper {
     return r;
   }
   static createFromPairs(pairs: any[]): Map<any, any> { return createMapFromPairs(pairs); }
-  static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable<T>(m: T): T { return m; }
   static keys<K>(m: Map<K, any>): K[] { return _arrayFromMap(m, false); }
   static values<V>(m: Map<any, V>): V[] { return _arrayFromMap(m, true); }
@@ -103,15 +98,6 @@ export class MapWrapper {
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static create(): {[k: /*any*/ string]: any} {
-    // Note: We are not using Object.create(null) here due to
-    // performance!
-    // http://jsperf.com/ng2-object-create-null
-    return {};
-  }
-  static contains(map: {[key: string]: any}, key: string): boolean {
-    return map.hasOwnProperty(key);
-  }
   static get<V>(map: {[key: string]: V}, key: string): V {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
@@ -127,7 +113,6 @@ export class StringMapWrapper {
     }
     return true;
   }
-  static delete (map: {[key: string]: any}, key: string) { delete map[key]; }
   static forEach<K, V>(map: {[key: string]: V}, callback: (v: V, K: string) => void) {
     for (let k of Object.keys(map)) {
       callback(map[k], k);

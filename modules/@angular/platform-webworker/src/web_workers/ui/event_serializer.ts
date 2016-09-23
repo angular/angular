@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Set} from '../../facade/collection';
-import {isPresent} from '../../facade/lang';
-
 const MOUSE_EVENT_PROPERTIES = [
   'altKey', 'button', 'clientX', 'clientY', 'metaKey', 'movementX', 'movementY', 'offsetX',
   'offsetY', 'region', 'screenX', 'screenY', 'shiftKey'
@@ -56,7 +53,7 @@ function addTarget(e: Event, serializedEvent: {[key: string]: any}): {[key: stri
   if (NODES_WITH_VALUE.has((<HTMLElement>e.target).tagName.toLowerCase())) {
     var target = <HTMLInputElement>e.target;
     serializedEvent['target'] = {'value': target.value};
-    if (isPresent(target.files)) {
+    if (target.files) {
       serializedEvent['target']['files'] = target.files;
     }
   }

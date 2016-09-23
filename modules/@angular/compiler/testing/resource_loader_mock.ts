@@ -7,10 +7,8 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ListWrapper, Map} from './facade/collection';
+import {ListWrapper} from './facade/collection';
 import {isBlank, normalizeBlank} from './facade/lang';
-
-
 
 /**
  * A mock implementation of {@link ResourceLoader} that allows outgoing requests to be mocked

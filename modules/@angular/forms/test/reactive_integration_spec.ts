@@ -1022,10 +1022,58 @@ export function main() {
 
         });
 
+        it('should disable all radio buttons when disable() is called', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form =
+              new FormGroup({food: new FormControl('fish'), drink: new FormControl('cola')});
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.disabled).toEqual(false);
+          expect(inputs[1].nativeElement.disabled).toEqual(false);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+
+          form.get('food').disable();
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+
+          form.disable();
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(true);
+          expect(inputs[3].nativeElement.disabled).toEqual(true);
+
+          form.enable();
+          expect(inputs[0].nativeElement.disabled).toEqual(false);
+          expect(inputs[1].nativeElement.disabled).toEqual(false);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+        });
+
+        it('should disable all radio buttons when initially disabled', () => {
+          const fixture = TestBed.createComponent(FormControlRadioButtons);
+          const form = new FormGroup({
+            food: new FormControl({value: 'fish', disabled: true}),
+            drink: new FormControl('cola')
+          });
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.disabled).toEqual(true);
+          expect(inputs[1].nativeElement.disabled).toEqual(true);
+          expect(inputs[2].nativeElement.disabled).toEqual(false);
+          expect(inputs[3].nativeElement.disabled).toEqual(false);
+        });
+
       });
 
       describe('custom value accessors', () => {
-        it('should support custom value accessors', () => {
+        it('should support basic functionality', () => {
           const fixture = TestBed.createComponent(WrappedValueForm);
           const form = new FormGroup({'login': new FormControl('aa')});
           fixture.componentInstance.form = form;
@@ -1047,7 +1095,7 @@ export function main() {
           expect(form.get('login').errors).toEqual(null);
         });
 
-        it('should support custom value accessors on non builtin input elements that fire a change event without a \'target\' property',
+        it('should support non builtin input elements that fire a change event without a \'target\' property',
            () => {
              const fixture = TestBed.createComponent(MyInputForm);
              fixture.componentInstance.form = new FormGroup({'login': new FormControl('aa')});
@@ -1061,6 +1109,27 @@ export function main() {
                expect(fixture.componentInstance.form.value).toEqual({'login': 'bb'});
              });
              input.componentInstance.dispatchChangeEvent();
+           });
+
+        it('should support custom accessors without setDisabledState - formControlName', () => {
+          const fixture = TestBed.createComponent(WrappedValueForm);
+          fixture.componentInstance.form = new FormGroup({
+            'login': new FormControl({value: 'aa', disabled: true}),
+          });
+          fixture.detectChanges();
+          expect(fixture.componentInstance.form.status).toEqual('DISABLED');
+          expect(fixture.componentInstance.form.get('login').status).toEqual('DISABLED');
+        });
+
+        it('should support custom accessors without setDisabledState - formControlDirective',
+           () => {
+             TestBed.overrideComponent(
+                 FormControlComp,
+                 {set: {template: `<input type="text" [formControl]="control" wrapped-value>`}});
+             const fixture = TestBed.createComponent(FormControlComp);
+             fixture.componentInstance.control = new FormControl({value: 'aa', disabled: true});
+             fixture.detectChanges();
+             expect(fixture.componentInstance.control.status).toEqual('DISABLED');
            });
 
       });

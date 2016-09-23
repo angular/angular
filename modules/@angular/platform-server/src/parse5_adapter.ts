@@ -12,8 +12,6 @@ import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './private_import_platform-browser';
 import {isPresent, isBlank, global, setValueOnPath, DateWrapper} from '../src/facade/lang';
 import {SelectorMatcher, CssSelector} from './private_import_compiler';
-import {Type} from '@angular/core';
-import {ResourceLoader} from '@angular/compiler';
 
 var parser: any /** TODO #9100 */ = null;
 var serializer: any /** TODO #9100 */ = null;
@@ -136,17 +134,13 @@ export class Parse5DomAdapter extends DomAdapter {
     return result;
   }
   on(el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */) {
-    var listenersMap: {[k: /*any*/ string]: any} = el._eventListenersMap;
+    var listenersMap: {[k: string]: any} = el._eventListenersMap;
     if (isBlank(listenersMap)) {
-      var listenersMap: {[k: /*any*/ string]: any} = StringMapWrapper.create();
+      var listenersMap: {[k: string]: any} = {};
       el._eventListenersMap = listenersMap;
     }
-    var listeners = StringMapWrapper.get(listenersMap, evt);
-    if (isBlank(listeners)) {
-      listeners = [];
-    }
-    listeners.push(listener);
-    StringMapWrapper.set(listenersMap, evt, listeners);
+    const listeners = listenersMap[evt] || [];
+    listenersMap[evt] = [...listeners, listener];
   }
   onAndCancel(
       el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
@@ -209,7 +203,7 @@ export class Parse5DomAdapter extends DomAdapter {
   childNodes(el: any /** TODO #9100 */): Node[] { return el.childNodes; }
   childNodesAsList(el: any /** TODO #9100 */): any[] {
     var childNodes = el.childNodes;
-    var res = ListWrapper.createFixedSize(childNodes.length);
+    var res = new Array(childNodes.length);
     for (var i = 0; i < childNodes.length; i++) {
       res[i] = childNodes[i];
     }
@@ -489,7 +483,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   removeAttribute(element: any /** TODO #9100 */, attribute: string) {
     if (attribute) {
-      StringMapWrapper.delete(element.attribs, attribute);
+      delete element.attribs[attribute];
     }
   }
   removeAttributeNS(element: any /** TODO #9100 */, ns: string, name: string) {
@@ -507,7 +501,7 @@ export class Parse5DomAdapter extends DomAdapter {
     this.appendChild(newDoc, body);
     StringMapWrapper.set(newDoc, 'head', head);
     StringMapWrapper.set(newDoc, 'body', body);
-    StringMapWrapper.set(newDoc, '_window', StringMapWrapper.create());
+    StringMapWrapper.set(newDoc, '_window', {});
     return newDoc;
   }
   defaultDoc(): Document {
@@ -546,7 +540,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var rules: any[] /** TODO #9100 */ = [];
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
-      var rule: {[key: string]: any} = StringMapWrapper.create();
+      var rule: {[key: string]: any} = {};
       StringMapWrapper.set(rule, 'cssText', css);
       StringMapWrapper.set(rule, 'style', {content: '', cssText: ''});
       if (parsedRule.type == 'rule') {

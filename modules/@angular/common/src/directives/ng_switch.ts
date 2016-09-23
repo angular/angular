@@ -111,8 +111,7 @@ export class NgSwitch {
     }
   }
 
-  /** @internal */
-  _emptyAllActiveViews(): void {
+  private _emptyAllActiveViews(): void {
     const activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
       activeContainers[i].destroy();
@@ -120,9 +119,7 @@ export class NgSwitch {
     this._activeViews = [];
   }
 
-  /** @internal */
-  _activateViews(views: SwitchView[]): void {
-    // TODO(vicb): assert(this._activeViews.length === 0);
+  private _activateViews(views: SwitchView[]): void {
     if (views) {
       for (var i = 0; i < views.length; i++) {
         views[i].create();
@@ -141,8 +138,7 @@ export class NgSwitch {
     views.push(view);
   }
 
-  /** @internal */
-  _deregisterView(value: any, view: SwitchView): void {
+  private _deregisterView(value: any, view: SwitchView): void {
     // `_CASE_DEFAULT` is used a marker for non-registered cases
     if (value === _CASE_DEFAULT) return;
     const views = this._valueViews.get(value);
@@ -162,10 +158,11 @@ export class NgSwitch {
  *             expression.
  *
  * @howToUse
- *     <container-element [ngSwitch]="switch_expression">
- *       <some-element *ngSwitchCase="match_expression_1">...</some-element>
- *     </container-element>
- *
+ * ```
+ * <container-element [ngSwitch]="switch_expression">
+ *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
+ * </container-element>
+ *```
  * @description
  *
  * Insert the sub-tree when the expression evaluates to the same value as the enclosing switch
@@ -180,10 +177,8 @@ export class NgSwitch {
 @Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase {
   // `_CASE_DEFAULT` is used as a marker for a not yet initialized value
-  /** @internal */
-  _value: any = _CASE_DEFAULT;
-  /** @internal */
-  _view: SwitchView;
+  private _value: any = _CASE_DEFAULT;
+  private _view: SwitchView;
   private _switch: NgSwitch;
 
   constructor(
@@ -207,10 +202,12 @@ export class NgSwitchCase {
  *             switch expression.
  *
  * @howToUse
- *     <container-element [ngSwitch]="switch_expression">
- *       <some-element *ngSwitchCase="match_expression_1">...</some-element>
- *       <some-other-element *ngSwitchDefault>...</some-other-element>
- *     </container-element>
+ * ```
+ * <container-element [ngSwitch]="switch_expression">
+ *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
+ *   <some-other-element *ngSwitchDefault>...</some-other-element>
+ * </container-element>
+ * ```
  *
  * @description
  *

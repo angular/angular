@@ -880,7 +880,7 @@ export declare abstract class TemplateRef<C> {
 export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
     decreasePendingRequestCount(): number;
-    findBindings(using: any, provider: string, exactMatch: boolean): any[];
+    /** @deprecated */ findBindings(using: any, provider: string, exactMatch: boolean): any[];
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
     getPendingRequestCount(): number;
     increasePendingRequestCount(): number;
@@ -916,7 +916,7 @@ export declare const TRANSLATIONS_FORMAT: OpaqueToken;
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;
 
 /** @stable */
-export declare var Type: FunctionConstructor;
+export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {

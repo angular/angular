@@ -42,11 +42,11 @@ class Profiler {
   }
 
   addStartEvent(name: string, timeStarted: number) {
-    this._markerEvents.push({ph: 'b', ts: timeStarted - this._profilerStartTime, name: name});
+    this._markerEvents.push({ph: 'B', ts: timeStarted - this._profilerStartTime, name: name});
   }
 
   addEndEvent(name: string, timeEnded: number) {
-    this._markerEvents.push({ph: 'e', ts: timeEnded - this._profilerStartTime, name: name});
+    this._markerEvents.push({ph: 'E', ts: timeEnded - this._profilerStartTime, name: name});
   }
 }
 

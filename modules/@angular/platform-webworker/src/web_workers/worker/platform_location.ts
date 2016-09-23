@@ -10,7 +10,6 @@ import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Injectable} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {StringMapWrapper} from '../../facade/collection';
 import {StringWrapper} from '../../facade/lang';
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -37,7 +36,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     this._channelSource.subscribe({
       next: (msg: {[key: string]: any}) => {
         var listeners: Array<Function> = null;
-        if (StringMapWrapper.contains(msg, 'event')) {
+        if (msg.hasOwnProperty('event')) {
           let type: string = msg['event']['type'];
           if (StringWrapper.equals(type, 'popstate')) {
             listeners = this._popStateListeners;

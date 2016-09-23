@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Provider} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
 import {StringMapWrapper} from '../facade/collection';
@@ -48,9 +48,9 @@ export class UserMetric extends Metric {
             if (values.every(isNumber)) {
               Promise.all(names.map(name => adapter.executeScript(`delete window.${name}`)))
                   .then((_: any[]) => {
-                    let map = StringMapWrapper.create();
+                    let map: {[k: string]: any} = {};
                     for (let i = 0, n = names.length; i < n; i++) {
-                      StringMapWrapper.set(map, names[i], values[i]);
+                      map[names[i]] = values[i];
                     }
                     resolve(map);
                   }, reject);

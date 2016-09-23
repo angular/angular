@@ -7,7 +7,7 @@
  */
 
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, inject} from '@angular/core/testing';
 
@@ -23,7 +23,7 @@ export function main() {
     describe('getDirectiveMetadata', () => {
       it('should read metadata',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-           var meta = resolver.getDirectiveMetadata(ComponentWithEverything);
+           const meta = resolver.getDirectiveMetadata(ComponentWithEverything);
            expect(meta.selector).toEqual('someSelector');
            expect(meta.exportAs).toEqual('someExportAs');
            expect(meta.isComponent).toBe(true);
@@ -51,6 +51,17 @@ export function main() {
            const expectedEndValue = './ComponentWithoutModuleId';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
+
+      it('should throw when the moduleId is not a string',
+         inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+           expect(() => resolver.getDirectiveMetadata(ComponentWithInvalidModuleId))
+               .toThrowError(
+                   `moduleId should be a string in "ComponentWithInvalidModuleId". See` +
+                   ` https://goo.gl/wIDDiL for more information.\n` +
+                   `If you're using Webpack you should inline the template and the styles, see` +
+                   ` https://goo.gl/X2J8zc.`);
+         }));
+
 
       it('should throw when metadata is incorrectly typed',
          inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
@@ -175,16 +186,12 @@ export function main() {
   });
 }
 
-@Directive({selector: 'a-directive'})
-class ADirective {
-}
-
-@Directive({selector: 'someSelector'})
-class SomeDirective {
-}
-
 @Component({selector: 'someComponent', template: ''})
 class ComponentWithoutModuleId {
+}
+
+@Component({selector: 'someComponent', template: '', moduleId: <any>0})
+class ComponentWithInvalidModuleId {
 }
 
 @Component({

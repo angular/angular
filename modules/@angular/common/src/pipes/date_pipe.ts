@@ -7,10 +7,8 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-
-import {StringMapWrapper} from '../facade/collection';
 import {DateFormatter} from '../facade/intl';
-import {DateWrapper, NumberWrapper, isBlank, isDate, isString} from '../facade/lang';
+import {NumberWrapper, isBlank, isDate} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
@@ -83,7 +81,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
   /** @internal */
-  static _ALIASES: {[key: string]: String} = {
+  static _ALIASES: {[key: string]: string} = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
     'fullDate': 'yMMMMEEEEd',
@@ -104,23 +102,15 @@ export class DatePipe implements PipeTransform {
     }
 
     if (NumberWrapper.isNumeric(value)) {
-      value = DateWrapper.fromMillis(parseFloat(value));
-    } else if (isString(value)) {
-      value = DateWrapper.fromISOString(value);
+      value = parseFloat(value);
     }
-    if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
-      pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
-    }
-    return DateFormatter.format(value, this._locale, pattern);
+
+    return DateFormatter.format(
+        new Date(value), this._locale, DatePipe._ALIASES[pattern] || pattern);
   }
 
   private supports(obj: any): boolean {
-    if (isDate(obj) || NumberWrapper.isNumeric(obj)) {
-      return true;
-    }
-    if (isString(obj) && isDate(DateWrapper.fromISOString(obj))) {
-      return true;
-    }
-    return false;
+    return isDate(obj) || NumberWrapper.isNumeric(obj) ||
+        (typeof obj === 'string' && isDate(new Date(obj)));
   }
 }

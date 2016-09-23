@@ -16,8 +16,6 @@ import {SpyMessageBroker} from '../worker/spies';
 
 import {MockEventEmitter} from './mock_event_emitter';
 
-var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
-
 /**
  * Returns two MessageBus instances that are attached to each other.
  * Such that whatever goes into one's sink comes out the others source.
@@ -49,9 +47,9 @@ export function expectBrokerCall(
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
-      ListWrapper.forEachWithIndex(vals, (v, i) => { expect(v).toEqual(args.args[i].value); });
+      vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
     }
-    var promise: any /** TODO #9100 */ = null;
+    var promise: Promise<any>|void = null;
     if (isPresent(handler)) {
       let givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
@@ -81,13 +79,13 @@ export class MockMessageBusSource implements MessageBusSource {
   constructor(private _channels: {[key: string]: MockEventEmitter<any>}) {}
 
   initChannel(channel: string, runInZone = true) {
-    if (!StringMapWrapper.contains(this._channels, channel)) {
+    if (!this._channels.hasOwnProperty(channel)) {
       this._channels[channel] = new MockEventEmitter();
     }
   }
 
   from(channel: string): MockEventEmitter<any> {
-    if (!StringMapWrapper.contains(this._channels, channel)) {
+    if (!this._channels.hasOwnProperty(channel)) {
       throw new Error(`${channel} is not set up. Did you forget to call initChannel?`);
     }
     return this._channels[channel];
@@ -100,13 +98,13 @@ export class MockMessageBusSink implements MessageBusSink {
   constructor(private _channels: {[key: string]: MockEventEmitter<any>}) {}
 
   initChannel(channel: string, runInZone = true) {
-    if (!StringMapWrapper.contains(this._channels, channel)) {
+    if (!this._channels.hasOwnProperty(channel)) {
       this._channels[channel] = new MockEventEmitter();
     }
   }
 
   to(channel: string): MockEventEmitter<any> {
-    if (!StringMapWrapper.contains(this._channels, channel)) {
+    if (!this._channels.hasOwnProperty(channel)) {
       this._channels[channel] = new MockEventEmitter();
     }
     return this._channels[channel];

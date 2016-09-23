@@ -16,6 +16,7 @@ import {RouterOutlet} from './directives/router_outlet';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
+import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
@@ -58,8 +59,8 @@ export const ROUTER_PROVIDERS: Provider[] = [
     ]
   },
   RouterOutletMap, {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
-  {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
+  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader}, RouterPreloader, NoPreloading,
+  PreloadAllModules, {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
 ];
 
 /**
@@ -145,6 +146,11 @@ export class RouterModule {
             PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION
           ]
         },
+        {
+          provide: PreloadingStrategy,
+          useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
+                                                             NoPreloading
+        },
         provideRouterInitializer()
       ]
     };
@@ -220,19 +226,19 @@ export interface ExtraOptions {
    * A custom error handler.
    */
   errorHandler?: ErrorHandler;
+
+  /**
+   * Configures a preloading strategy. See {@link PreloadAllModules}.
+   */
+  preloadingStrategy?: any;
 }
 
 export function setupRouter(
     ref: ApplicationRef, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
     location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
     config: Route[][], opts: ExtraOptions = {}) {
-  if (ref.componentTypes.length == 0) {
-    throw new Error('Bootstrap at least one component before injecting Router.');
-  }
-  const componentType = ref.componentTypes[0];
   const r = new Router(
-      componentType, urlSerializer, outletMap, location, injector, loader, compiler,
-      flatten(config));
+      null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(config));
 
   if (opts.errorHandler) {
     r.errorHandler = opts.errorHandler;
@@ -254,8 +260,11 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-export function initialRouterNavigation(router: Router, opts: ExtraOptions) {
+export function initialRouterNavigation(
+    router: Router, ref: ApplicationRef, preloader: RouterPreloader, opts: ExtraOptions) {
   return () => {
+    router.resetRootComponentType(ref.componentTypes[0]);
+    preloader.setUpPreloading();
     if (opts.initialNavigation === false) {
       router.setUpLocationChangeListener();
     } else {
@@ -269,6 +278,6 @@ export function provideRouterInitializer() {
     provide: APP_BOOTSTRAP_LISTENER,
     multi: true,
     useFactory: initialRouterNavigation,
-    deps: [Router, ROUTER_CONFIGURATION]
+    deps: [Router, ApplicationRef, RouterPreloader, ROUTER_CONFIGURATION]
   };
 }

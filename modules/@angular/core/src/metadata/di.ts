@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {resolveForwardRef} from '../di/forward_ref';
 import {OpaqueToken} from '../di/opaque_token';
-import {StringWrapper, isString, stringify} from '../facade/lang';
 import {Type} from '../type';
 import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 
@@ -48,7 +46,6 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
  */
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new OpaqueToken('AnalyzeForEntryComponents');
 
-
 /**
  * Type of the Attribute decorator / constructor function.
  *
@@ -56,55 +53,56 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new OpaqueToken('AnalyzeForEntryComp
  */
 export interface AttributeDecorator {
   /**
- * Specifies that a constant attribute value should be injected.
- *
- * The directive can inject constant string literals of host element attributes.
- *
- * ### Example
- *
- * Suppose we have an `<input>` element and want to know its `type`.
- *
- * ```html
- * <input type="text">
- * ```
- *
- * A decorator can inject string literal `text` like so:
- *
- * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
- *
- * ### Example as TypeScript Decorator
- *
- * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
- *
- * ### Example as ES5 DSL
- *
- * ```
- * var MyComponent = ng
- *   .Component({...})
- *   .Class({
- *     constructor: [new ng.Attribute('title'), function(title) {
- *       ...
- *     }]
- *   })
- * ```
- *
- * ### Example as ES5 annotation
- *
- * ```
- * var MyComponent = function(title) {
- *   ...
- * };
- *
- * MyComponent.annotations = [
- *   new ng.Component({...})
- * ]
- * MyComponent.parameters = [
- *   [new ng.Attribute('title')]
- * ]
- * ```
- *
- * @stable
- */ (name: string): any;
+   * Specifies that a constant attribute value should be injected.
+   *
+   * The directive can inject constant string literals of host element attributes.
+   *
+   * ### Example
+   *
+   * Suppose we have an `<input>` element and want to know its `type`.
+   *
+   * ```html
+   * <input type="text">
+   * ```
+   *
+   * A decorator can inject string literal `text` like so:
+   *
+   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+   *
+   * ### Example as TypeScript Decorator
+   *
+   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
+   *
+   * ### Example as ES5 DSL
+   *
+   * ```
+   * var MyComponent = ng
+   *   .Component({...})
+   *   .Class({
+   *     constructor: [new ng.Attribute('title'), function(title) {
+   *       ...
+   *     }]
+   *   })
+   * ```
+   *
+   * ### Example as ES5 annotation
+   *
+   * ```
+   * var MyComponent = function(title) {
+   *   ...
+   * };
+   *
+   * MyComponent.annotations = [
+   *   new ng.Component({...})
+   * ]
+   * MyComponent.parameters = [
+   *   [new ng.Attribute('title')]
+   * ]
+   * ```
+   *
+   * @stable
+   */
+  (name: string): any;
   new (name: string): Attribute;
 }
 
@@ -210,8 +208,12 @@ export const ContentChildren: ContentChildrenDecorator =
     <ContentChildrenDecorator>makePropDecorator(
         'ContentChildren',
         [
-          ['selector', undefined],
-          {first: false, isViewQuery: false, descendants: false, read: undefined}
+          ['selector', undefined], {
+            first: false,
+            isViewQuery: false,
+            descendants: false,
+            read: undefined,
+          }
         ],
         Query);
 
@@ -273,7 +275,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
       ['selector', undefined], {
         first: true,
         isViewQuery: false,
-        descendants: false,
+        descendants: true,
         read: undefined,
       }
     ],
@@ -341,7 +343,6 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
     ],
     Query);
 
-
 /**
  * Type of the ViewChild decorator / constructor function.
  *
@@ -369,8 +370,6 @@ export interface ViewChildDecorator {
    *
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
-   *
-   * Let's look at an example!!!!:
    *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *

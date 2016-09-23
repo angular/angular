@@ -33,7 +33,7 @@ export function main() {
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
     if (isBlank(microMetrics)) {
-      microMetrics = StringMapWrapper.create();
+      microMetrics = {};
     }
     var providers: Provider[] = [
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,
@@ -166,6 +166,22 @@ export function main() {
                ['timeBegin', 'benchpress0'], ['timeEnd', 'benchpress0', null], 'readPerfLog'
              ]);
              expect(data['scriptTime']).toBe(2);
+
+             async.done();
+           });
+         }));
+
+      it('should mark and aggregate events since navigationStart',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           var events = [[
+             eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 4),
+             eventFactory.end('script', 6), eventFactory.instant('navigationStart', 7),
+             eventFactory.start('script', 8), eventFactory.end('script', 9),
+             eventFactory.markEnd('benchpress0', 10)
+           ]];
+           var metric = createMetric(events, null);
+           metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
+             expect(data['scriptTime']).toBe(1);
 
              async.done();
            });

@@ -18,9 +18,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 @Injectable()
 export class SpyLocation implements Location {
   urlChanges: string[] = [];
-  /** @internal */
   private _history: LocationState[] = [new LocationState('', '')];
-  /** @internal */
   private _historyIndex: number = 0;
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();

@@ -8,7 +8,7 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">= 5.4.1 < 6"
+    "node": ">= 5.4.1 < 7"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.3",
     "rxjs": "5.0.0-beta.12",
-    "zone.js": "^0.6.21"
+    "zone.js": "^0.6.25"
   },
   "devDependencies": {
     "@types/angularjs": "^1.5.13-alpha",
@@ -44,11 +44,13 @@
     "cors": "^2.7.1",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.26.3",
+    "fsevents": "^1.0.14",
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-clang-format": "^1.0.23",
     "gulp-connect": "^2.3.1",
     "gulp-conventional-changelog": "^1.1.0",
+    "gulp-ddescribe-iit": "^1.3.0",
     "gulp-tslint": "^6.1.1",
     "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
@@ -64,6 +66,7 @@
     "madge": "0.5.0",
     "minimatch": "^3.0.0",
     "minimist": "^1.2.0",
+    "nan": "^2.4.0",
     "node-uuid": "1.4.x",
     "parse5": "1.3.2",
     "protractor": "^4.0.5",

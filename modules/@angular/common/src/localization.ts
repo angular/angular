@@ -67,7 +67,7 @@ export enum Plural {
   Two,
   Few,
   Many,
-  Other
+  Other,
 }
 
 /**
