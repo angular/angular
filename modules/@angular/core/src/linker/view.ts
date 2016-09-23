@@ -7,7 +7,6 @@
  */
 
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationOutput} from '../animation/animation_output';
 import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
 import {queueAnimation} from '../animation/animation_queue';
 import {AnimationTransitionEvent} from '../animation/animation_transition_event';
@@ -53,7 +52,7 @@ export abstract class AppView<T> {
 
   public animationPlayers = new ViewAnimationMap();
 
-  private _animationListeners = new Map<any, _AnimationOutputWithHandler[]>();
+  private _animationListeners = new Map<any, _AnimationOutputHandler[]>();
 
   public context: T;
 
@@ -107,7 +106,7 @@ export abstract class AppView<T> {
         let listener = listeners[i];
         // we check for both the name in addition to the phase in the event
         // that there may be more than one @trigger on the same element
-        if (listener.output.name == animationName && listener.output.phase == phase) {
+        if (listener.eventName === animationName && listener.eventPhase === phase) {
           listener.handler(event);
           break;
         }
@@ -115,14 +114,13 @@ export abstract class AppView<T> {
     }
   }
 
-  registerAnimationOutput(element: any, outputEvent: AnimationOutput, eventHandler: Function):
-      void {
-    var entry = new _AnimationOutputWithHandler(outputEvent, eventHandler);
+  registerAnimationOutput(
+      element: any, eventName: string, eventPhase: string, eventHandler: Function): void {
     var animations = this._animationListeners.get(element);
     if (!isPresent(animations)) {
       this._animationListeners.set(element, animations = []);
     }
-    animations.push(entry);
+    animations.push(new _AnimationOutputHandler(eventName, eventPhase, eventHandler));
   }
 
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
@@ -469,6 +467,6 @@ function _findLastRenderNode(node: any): any {
   return lastNode;
 }
 
-class _AnimationOutputWithHandler {
-  constructor(public output: AnimationOutput, public handler: Function) {}
+class _AnimationOutputHandler {
+  constructor(public eventName: string, public eventPhase: string, public handler: Function) {}
 }

@@ -10,7 +10,8 @@ import {AnimationMetadata, animate, group, sequence, style, transition, trigger}
 import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
 import {StringMapWrapper} from '../../../platform-browser-dynamic/src/facade/collection';
-import {AnimationCompiler, CompiledAnimationTriggerResult} from '../../src/animation/animation_compiler';
+import {AnimationCompiler, AnimationEntryCompileResult} from '../../src/animation/animation_compiler';
+import {AnimationParser} from '../../src/animation/animation_parser';
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 
@@ -20,12 +21,13 @@ export function main() {
     beforeEach(
         inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
 
-    var compiler = new AnimationCompiler();
+    const parser = new AnimationParser();
+    const compiler = new AnimationCompiler();
 
     var compileAnimations =
-        (component: CompileDirectiveMetadata): CompiledAnimationTriggerResult => {
-          var result = compiler.compileComponent(component, []);
-          return result.triggers[0];
+        (component: CompileDirectiveMetadata): AnimationEntryCompileResult[] => {
+          const parsedAnimations = parser.parseComponent(component);
+          return compiler.compile(component.type.name, parsedAnimations);
         };
 
     var compileTriggers = (input: any[]) => {
@@ -65,15 +67,6 @@ export function main() {
 
       expect(capturedErrorMessage)
           .toMatch(/Animation states via styles must be prefixed with a ":"/);
-    });
-
-    it('should throw an error when two or more animation triggers contain the same name', () => {
-      var t1Data: any[] = [];
-      var t2Data: any[] = [];
-
-      expect(() => {
-        compileTriggers([['myTrigger', t1Data], ['myTrigger', t2Data]]);
-      }).toThrowError(/The animation trigger "myTrigger" has already been registered on "myCmp"/);
     });
   });
 }

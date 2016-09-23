@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
+import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
@@ -16,7 +16,6 @@ import {SchemaMetadata, SecurityContext, Type} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed} from '@angular/core/testing';
 import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-
 import {Identifiers, identifierToken, resolveIdentifierToken} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {MockSchemaRegistry} from '../../testing/index';
@@ -32,9 +31,9 @@ const MOCK_SCHEMA_REGISTRY = [{
 
 export function main() {
   var ngIf: CompileDirectiveMetadata;
-  var parse:
-      (template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[]) =>
-          TemplateAst[];
+  var parse: (
+      template: string, directives: CompileDirectiveMetadata[], pipes?: CompilePipeMetadata[],
+      schemas?: SchemaMetadata[]) => TemplateAst[];
   var console: ArrayConsole;
 
   function commonBeforeEach() {
@@ -43,14 +42,18 @@ export function main() {
       TestBed.configureCompiler({providers: [{provide: Console, useValue: console}]});
     });
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
+      var someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
+      var someTemplate = new CompileTemplateMetadata({animations: [someAnimation]});
       var component = CompileDirectiveMetadata.create({
         selector: 'root',
+        template: someTemplate,
         type: new CompileTypeMetadata(
             {moduleUrl: someModuleUrl, name: 'Root', reference: {} as Type<any>}),
         isComponent: true
       });
       ngIf = CompileDirectiveMetadata.create({
         selector: '[ngIf]',
+        template: someTemplate,
         type: new CompileTypeMetadata(
             {moduleUrl: someModuleUrl, name: 'NgIf', reference: {} as Type<any>}),
         inputs: ['ngIf']
@@ -302,27 +305,31 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
           ]);
         });
 
-        it('should parse bound properties via bind-animate- and not report them as animation properties',
+        it('should parse bound properties via bind-animate- and not report them as attributes',
            () => {
-             expect(humanizeTplAst(parse('<div bind-animate-something="value2">', []))).toEqual([
-               [ElementAst, 'div'],
-               [
-                 BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null
-               ]
-             ]);
+             expect(humanizeTplAst(parse('<div bind-animate-someAnimation="value2">', [], [], [])))
+                 .toEqual([
+                   [ElementAst, 'div'],
+                   [
+                     BoundElementPropertyAst, PropertyBindingType.Animation, 'someAnimation',
+                     'value2', null
+                   ]
+                 ]);
            });
 
         it('should throw an error when parsing detects non-bound properties via @ that contain a value',
            () => {
-             expect(() => { parse('<div @something="value2">', []); })
+             expect(() => { parse('<div @someAnimation="value2">', [], [], []); })
                  .toThrowError(
-                     /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@something="value2">"\): TestComp@0:5/);
+                     /Assigning animation triggers via @prop="exp" attributes with an expression is invalid. Use property bindings \(e.g. \[@prop\]="exp"\) or use an attribute without a value \(e.g. @prop\) instead. \("<div \[ERROR ->\]@someAnimation="value2">"\): TestComp@0:5/);
            });
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
+             const animationEntries = [new CompileAnimationEntryMetadata('prop', [])];
              var dirA = CompileDirectiveMetadata.create({
                selector: 'div',
+               template: new CompileTemplateMetadata({animations: animationEntries}),
                type: new CompileTypeMetadata(
                    {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>}),
                host: {'[@prop]': 'expr'}
@@ -360,14 +367,17 @@ Can't bind to 'invalidProp' since it isn't a known property of 'my-component'.
 
         it('should not issue a warning when an animation property is bound without an expression',
            () => {
-             humanizeTplAst(parse('<div @something>', []));
+             humanizeTplAst(parse('<div @someAnimation>', [], [], []));
              expect(console.warnings.length).toEqual(0);
            });
 
         it('should parse bound properties via [@] and not report them as attributes', () => {
-          expect(humanizeTplAst(parse('<div [@something]="value2">', []))).toEqual([
+          expect(humanizeTplAst(parse('<div [@someAnimation]="value2">', [], [], []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Animation, 'something', 'value2', null]
+            [
+              BoundElementPropertyAst, PropertyBindingType.Animation, 'someAnimation', 'value2',
+              null
+            ]
           ]);
         });
       });

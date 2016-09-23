@@ -8,6 +8,8 @@
 
 import {SchemaMetadata} from '@angular/core';
 
+import {AnimationCompiler} from './animation/animation_compiler';
+import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
@@ -28,6 +30,9 @@ export class NgModulesSummary {
 }
 
 export class OfflineCompiler {
+  private _animationParser = new AnimationParser();
+  private _animationCompiler = new AnimationCompiler();
+
   constructor(
       private _metadataResolver: CompileMetadataResolver,
       private _directiveNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
@@ -162,14 +167,19 @@ export class OfflineCompiler {
       compMeta: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], schemas: SchemaMetadata[], componentStyles: CompiledStylesheet,
       fileSuffix: string, targetStatements: o.Statement[]): string {
+    const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, schemas, compMeta.type.name);
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
-    const viewResult =
-        this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, pipes);
+    const compiledAnimations =
+        this._animationCompiler.compile(compMeta.type.name, parsedAnimations);
+    const viewResult = this._viewCompiler.compileComponent(
+        compMeta, parsedTemplate, stylesExpr, pipes, compiledAnimations);
     if (componentStyles) {
       targetStatements.push(..._resolveStyleStatements(componentStyles, fileSuffix));
     }
+    compiledAnimations.forEach(
+        entry => { entry.statements.forEach(statement => { targetStatements.push(statement); }); });
     targetStatements.push(..._resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;
   }
