@@ -1,0 +1,19 @@
+@import '../core/style/elevation';
+
+$md-snack-bar-padding: 14px 24px !default;
+$md-snack-bar-height: 20px !default;
+$md-snack-bar-min-width: 288px !default;
+$md-snack-bar-max-width: 568px !default;
+
+
+:host {
+  @include md-elevation(24);
+  background: #323232;
+  border-radius: 2px;
+  display: block;
+  height: $md-snack-bar-height;
+  max-width: $md-snack-bar-max-width;
+  min-width: $md-snack-bar-min-width;
+  overflow: hidden;
+  padding: $md-snack-bar-padding;
+}

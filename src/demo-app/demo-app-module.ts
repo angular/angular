@@ -29,6 +29,7 @@ import {MdCheckboxDemoNestedChecklist, CheckboxDemo} from './checkbox/checkbox-d
 import {SelectDemo} from './select/select-demo';
 import {SliderDemo} from './slider/slider-demo';
 import {SidenavDemo} from './sidenav/sidenav-demo';
+import {SnackBarDemo} from './snack-bar/snack-bar-demo';
 import {PortalDemo, ScienceJoke} from './portal/portal-demo';
 import {MenuDemo} from './menu/menu-demo';
 import {TabsDemo} from './tabs/tab-group-demo';
@@ -61,6 +62,7 @@ import {TabsDemo} from './tabs/tab-group-demo';
     LiveAnnouncerDemo,
     MdCheckboxDemoNestedChecklist,
     MenuDemo,
+    SnackBarDemo,
     OverlayDemo,
     PortalDemo,
     ProgressBarDemo,

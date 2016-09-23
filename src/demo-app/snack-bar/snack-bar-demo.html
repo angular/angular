@@ -1,0 +1,15 @@
+<h1>SnackBar demo</h1>
+<div>
+  <div>Message: <md-input type="text" [(ngModel)]="message"></md-input></div>
+  <div>
+    <md-checkbox [(ngModel)]="action">
+      <p *ngIf="!action">Show button on snack bar</p>
+      <md-input type="text" class="demo-button-label-input"
+                *ngIf="action"
+                placeholder="Snack bar action label"
+                [(ngModel)]="actionButtonLabel"></md-input>
+    </md-checkbox>
+  </div>
+</div>
+
+<button md-raised-button (click)="open()">OPEN</button>

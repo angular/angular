@@ -1,0 +1,28 @@
+md-simple-snackbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.md-simple-snackbar-message {
+  box-sizing: border-box;
+  border: none;
+  color: white;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  outline: none;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.md-simple-snackbar-action {
+  box-sizing: border-box;
+  color: white;
+  float: right;
+  font-weight: 600;
+  line-height: 20px;
+  margin: -5px 0 0 48px;
+  min-width: initial;
+  padding: 5px;
+  text-transform: uppercase;
+}

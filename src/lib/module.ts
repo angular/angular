@@ -23,6 +23,7 @@ import {MdIconModule} from './icon/index';
 import {MdProgressCircleModule} from './progress-circle/index';
 import {MdProgressBarModule} from './progress-bar/index';
 import {MdInputModule} from './input/index';
+import {MdSnackBarModule} from './snack-bar/snack-bar';
 import {MdTabsModule} from './tabs/index';
 import {MdToolbarModule} from './toolbar/index';
 import {MdTooltipModule} from './tooltip/index';
@@ -49,6 +50,7 @@ const MATERIAL_MODULES = [
   MdSidenavModule,
   MdSliderModule,
   MdSlideToggleModule,
+  MdSnackBarModule,
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
@@ -83,6 +85,7 @@ const MATERIAL_MODULES = [
     MdRadioModule.forRoot(),
     MdSliderModule.forRoot(),
     MdSlideToggleModule.forRoot(),
+    MdSnackBarModule.forRoot(),
     MdTooltipModule.forRoot(),
     OverlayModule.forRoot(),
   ],

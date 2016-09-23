@@ -26,6 +26,7 @@ import {MenuDemo} from '../menu/menu-demo';
 import {RippleDemo} from '../ripple/ripple-demo';
 import {DialogDemo} from '../dialog/dialog-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
+import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 
 
 export const DEMO_APP_ROUTES: Routes = [
@@ -56,4 +57,5 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'ripple', component: RippleDemo},
   {path: 'dialog', component: DialogDemo},
   {path: 'tooltip', component: TooltipDemo},
+  {path: 'snack-bar', component: SnackBarDemo},
 ];
