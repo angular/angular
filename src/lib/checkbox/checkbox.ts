@@ -12,6 +12,7 @@ import {
     ModuleWithProviders,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
+import {BooleanFieldValue} from '@angular2-material/core';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -91,6 +92,9 @@ export class MdCheckbox implements ControlValueAccessor {
   get inputId(): string {
     return `input-${this.id}`;
   }
+
+  /** Whether the checkbox is required or not. */
+  @Input() @BooleanFieldValue() required: boolean = false;
 
   /** Whether or not the checkbox should come before or after the label. */
   @Input() align: 'start' | 'end' = 'start';

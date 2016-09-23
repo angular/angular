@@ -66,6 +66,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   private _slideRenderer: SlideToggleRenderer = null;
 
   @Input() @BooleanFieldValue() disabled: boolean = false;
+  @Input() @BooleanFieldValue() required: boolean = false;
   @Input() name: string = null;
   @Input() id: string = this._uniqueId;
   @Input() tabIndex: number = 0;

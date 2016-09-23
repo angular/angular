@@ -123,6 +123,15 @@ $md-slide-toggle-margin: 16px !default;
   border-radius: 8px;
 }
 
+// The slide toggle shows a visually hidden input inside of the component, which is used
+// to take advantage of the native browser functionality.
+.md-slide-toggle-input {
+  // Move the input to the bottom and in the middle of the thumb.
+  // Visual improvement to properly show browser popups when being required.
+  bottom: 0;
+  left: $md-slide-toggle-thumb-size / 2;
+}
+
 .md-slide-toggle-bar,
 .md-slide-toggle-thumb {
   transition: $swift-linear;

@@ -11,4 +11,19 @@
   <md-slide-toggle [disabled]="firstToggle">
     Disable Bound
   </md-slide-toggle>
+
+  <p>Example where the slide toggle is required inside of a form.</p>
+
+  <form #form="ngForm" (ngSubmit)="onFormSubmit()">
+
+    <md-slide-toggle name="slideToggle" required ngModel>
+      Slide Toggle
+    </md-slide-toggle>
+
+    <p>
+      <button md-raised-button type="submit">Submit Form</button>
+    </p>
+
+  </form>
+
 </div>

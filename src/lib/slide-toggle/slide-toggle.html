@@ -13,8 +13,9 @@
       </div>
     </div>
 
-    <input #input class="md-slide-toggle-checkbox md-visually-hidden" type="checkbox"
+    <input #input class="md-slide-toggle-input md-visually-hidden" type="checkbox"
            [id]="getInputId()"
+           [required]="required"
            [tabIndex]="tabIndex"
            [checked]="checked"
            [disabled]="disabled"

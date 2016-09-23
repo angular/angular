@@ -255,6 +255,18 @@ describe('MdCheckbox', () => {
 
     }));
 
+    it('should forward the required attribute', () => {
+      testComponent.isRequired = true;
+      fixture.detectChanges();
+
+      expect(inputElement.required).toBe(true);
+
+      testComponent.isRequired = false;
+      fixture.detectChanges();
+
+      expect(inputElement.required).toBe(false);
+    });
+
     describe('state transition css classes', () => {
       it('should transition unchecked -> checked -> unchecked', () => {
         testComponent.isChecked = true;
@@ -502,6 +514,7 @@ describe('MdCheckbox', () => {
   <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true">    
     <md-checkbox 
         id="simple-check"
+        [required]="isRequired"
         [align]="alignment"
         [checked]="isChecked" 
         [indeterminate]="isIndeterminate" 
@@ -516,6 +529,7 @@ describe('MdCheckbox', () => {
 class SingleCheckbox {
   alignment: string = 'start';
   isChecked: boolean = false;
+  isRequired: boolean = false;
   isIndeterminate: boolean = false;
   isDisabled: boolean = false;
   parentElementClicked: boolean = false;

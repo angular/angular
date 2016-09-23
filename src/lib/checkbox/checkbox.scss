@@ -402,4 +402,11 @@ md-checkbox {
   }
 }
 
+.md-checkbox-input {
+  // Move the input to the bottom and in the middle.
+  // Visual improvement to properly show browser popups when being required.
+  bottom: 0;
+  left: 50%;
+}
+
 @include md-temporary-ink-ripple(checkbox);

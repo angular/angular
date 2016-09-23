@@ -9,4 +9,9 @@ import {Component} from '@angular/core';
 })
 export class SlideToggleDemo {
   firstToggle: boolean;
+
+  onFormSubmit() {
+    alert(`You submitted the form.`);
+  }
+
 }
