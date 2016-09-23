@@ -86,7 +86,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     const result = super.visitLiteralArrayExpr(ast, ctx);
     if (ast.entries.length === 0) {
-      ctx.print(' as any)');
+      ctx.print(' as any[])');
     }
     return result;
   }
