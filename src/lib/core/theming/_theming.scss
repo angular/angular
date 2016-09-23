@@ -59,7 +59,7 @@
 
 
 // Creates a container object for a light theme to be given to individual component theme mixins.
-@function md-light-theme($primary, $accent, $warn) {
+@function md-light-theme($primary, $accent, $warn: md-palette($md-red)) {
   @return (
     primary: $primary,
     accent: $accent,
@@ -72,7 +72,7 @@
 
 
 // Creates a container object for a dark theme to be given to individual component theme mixins.
-@function md-dark-theme($primary, $accent, $warn) {
+@function md-dark-theme($primary, $accent, $warn: md-palette($md-red)) {
   @return (
     primary: $primary,
     accent: $accent,
