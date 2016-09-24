@@ -53,6 +53,18 @@ export function main() {
       expect(s(css, 'a')).toEqual(expected);
     });
 
+    it('should handle page rules', () => {
+      const css = '@page {div {font-size:50px;}}';
+      const expected = '@page {div[a] {font-size:50px;}}';
+      expect(s(css, 'a')).toEqual(expected);
+    });
+
+    it('should handle document rules', () => {
+      const css = '@document url(http://www.w3.org/) {div {font-size:50px;}}';
+      const expected = '@document url(http://www.w3.org/) {div[a] {font-size:50px;}}';
+      expect(s(css, 'a')).toEqual(expected);
+    });
+
     it('should handle media rules with simple rules', () => {
       const css = '@media screen and (max-width: 800px) {div {font-size: 50px;}} div {}';
       const expected = '@media screen and (max-width:800px) {div[a] {font-size:50px;}} div[a] {}';

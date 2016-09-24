@@ -331,10 +331,12 @@ export class ShadowCss {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
-      if (rule.selector[0] != '@' || rule.selector.startsWith('@page')) {
+      if (rule.selector[0] != '@') {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
-      } else if (rule.selector.startsWith('@media') || rule.selector.startsWith('@supports')) {
+      } else if (
+          rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
+          rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       }
       return new CssRule(selector, content);
