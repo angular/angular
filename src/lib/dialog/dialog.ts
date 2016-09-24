@@ -13,18 +13,18 @@ import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
+import {A11yModule} from '../core/a11y/index';
 
 export {MdDialogConfig} from './dialog-config';
 export {MdDialogRef} from './dialog-ref';
 
 
-// TODO(jelbourn): add shortcuts for `alert` and `confirm`.
 // TODO(jelbourn): add support for opening with a TemplateRef
 // TODO(jelbourn): add `closeAll` method
-// TODO(jelbourn): add backdrop
 // TODO(jelbourn): default dialog config
-// TODO(jelbourn): focus trapping
-// TODO(jelbourn): potentially change API from accepting component constructor to component factory.
+// TODO(jelbourn): escape key closes dialog
+// TODO(jelbourn): dialog content directives (e.g., md-dialog-header)
+// TODO(jelbourn): animations
 
 
 
@@ -123,7 +123,7 @@ export class MdDialog {
 
 
 @NgModule({
-  imports: [OverlayModule, PortalModule],
+  imports: [OverlayModule, PortalModule, A11yModule],
   exports: [MdDialogContainer],
   declarations: [MdDialogContainer],
   entryComponents: [MdDialogContainer],
@@ -132,7 +132,7 @@ export class MdDialogModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdDialogModule,
-      providers: [MdDialog, OVERLAY_PROVIDERS],
+      providers: [MdDialog, OVERLAY_PROVIDERS, A11yModule.forRoot().providers],
     };
   }
 }

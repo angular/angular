@@ -26,7 +26,7 @@ describe('FocusTrap', () => {
 
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
-      focusTrapInstance.wrapFocus();
+      focusTrapInstance.focusFirstTabbableElement();
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe('input', 'Expected input element to be focused');
@@ -38,7 +38,7 @@ describe('FocusTrap', () => {
 
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
-      focusTrapInstance.reverseWrapFocus();
+      focusTrapInstance.focusLastTabbableElement();
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe('button', 'Expected button element to be focused');

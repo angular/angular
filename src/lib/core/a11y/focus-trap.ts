@@ -15,9 +15,9 @@ import {InteractivityChecker} from './interactivity-checker';
   selector: 'focus-trap',
   // TODO(jelbourn): move this to a separate file.
   template: `
-  <div tabindex="0" (focus)="reverseWrapFocus()"></div>
+  <div tabindex="0" (focus)="focusLastTabbableElement()"></div>
   <div #trappedContent><ng-content></ng-content></div>
-  <div tabindex="0" (focus)="wrapFocus()"></div>`,
+  <div tabindex="0" (focus)="focusFirstTabbableElement()"></div>`,
   encapsulation: ViewEncapsulation.None,
 })
 export class FocusTrap {
@@ -25,16 +25,16 @@ export class FocusTrap {
 
   constructor(private _checker: InteractivityChecker) { }
 
-  /** Wrap focus from the end of the trapped region to the beginning. */
-  wrapFocus() {
+  /** Focuses the first tabbable element within the focus trap region. */
+  focusFirstTabbableElement() {
     let redirectToElement = this._getFirstTabbableElement(this.trappedContent.nativeElement);
     if (redirectToElement) {
       redirectToElement.focus();
     }
   }
 
-  /** Wrap focus from the beginning of the trapped region to the end. */
-  reverseWrapFocus() {
+  /** Focuses the last tabbable element within the focus trap region. */
+  focusLastTabbableElement() {
     let redirectToElement = this._getLastTabbableElement(this.trappedContent.nativeElement);
     if (redirectToElement) {
       redirectToElement.focus();

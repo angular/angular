@@ -4,7 +4,8 @@ import {RtlModule} from './rtl/dir';
 import {MdRippleModule} from './ripple/ripple';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
-import {MdLiveAnnouncer} from './a11y/live-announcer';
+import {A11yModule} from './a11y/index';
+
 
 // RTL
 export {Dir, LayoutDirection, RtlModule} from './rtl/dir';
@@ -77,14 +78,14 @@ export * from './keyboard/keycodes';
 
 
 @NgModule({
-  imports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule],
-  exports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule],
+  imports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule, A11yModule],
+  exports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule, A11yModule],
 })
 export class MdCoreModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdCoreModule,
-      providers: [MdLiveAnnouncer]
+      providers: [A11yModule.forRoot().providers],
     };
   }
 }
