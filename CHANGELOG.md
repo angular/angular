@@ -1,3 +1,39 @@
+<a name="2.0.0-alpha.9"></a>
+# [2.0.0-alpha.9 cobalt-kraken](https://github.com/angular/material2/compare/2.0.0-alpha.8...2.0.0-alpha.9) (2016-09-26)
+
+
+## Breaking Changes
+
+Angular Material has changed from `@angular2-material/...` packages to a single package under
+`@angular/material`. Along with this change, there is a new NgModule, `MaterialModule`, that
+contains all of the components. Build tools such as [`rollup.js`](http://rollupjs.org/) can perform
+tree-shaking to eliminate the code for components that you aren't using.
+
+
+### Features
+
+* **theming:** add initial version for theming ([#1239](https://github.com/angular/material2/issues/1239)) ([e0726e1](https://github.com/angular/material2/commit/e0726e1))
+* **dialog:** initial version of dialog ([#1041](https://github.com/angular/material2/issues/1041)) ([7ecda22](https://github.com/angular/material2/commit/7ecda22), [#1321](https://github.com/angular/material2/issues/1321)) ([74dc5b2](https://github.com/angular/material2/commit/74dc5b2), [#1330](https://github.com/angular/material2/issues/1330)) ([23143b9](https://github.com/angular/material2/commit/23143b9))
+* **snack-bar:** initial version of MdSnackBar. ([#1296](https://github.com/angular/material2/issues/1296)) ([a732e88](https://github.com/angular/material2/commit/a732e88))
+* **packaging:** move packaging to a single "[@angular](https://github.com/angular)/material" ([#1286](https://github.com/angular/material2/issues/1286)) ([b5c8c63](https://github.com/angular/material2/commit/b5c8c63))
+* **a11y:** add basic focus-trap directive ([#1311](https://github.com/angular/material2/issues/1311)) ([3e8b9d9](https://github.com/angular/material2/commit/3e8b9d9))
+* **a11y:** initial interactivity checker ([#1288](https://github.com/angular/material2/issues/1288)) ([8a4b69d](https://github.com/angular/material2/commit/8a4b69d))
+* **card:** add md-card-footer ([#1178](https://github.com/angular/material2/issues/1178)) ([1c2a3f1](https://github.com/angular/material2/commit/1c2a3f1))
+
+### Bug Fixes
+
+* **aot:** change [@Inputs](https://github.com/Inputs) to not be private ([#1289](https://github.com/angular/material2/issues/1289)) ([b284dd4](https://github.com/angular/material2/commit/b284dd4))
+* **checkbox, slide-toggle:** forward required attribute to input. ([#1137](https://github.com/angular/material2/issues/1137)) ([0e9383a](https://github.com/angular/material2/commit/0e9383a)), closes [#1133](https://github.com/angular/material2/issues/1133)
+* **gestures:** add hammer types by default ([#1309](https://github.com/angular/material2/issues/1309)) ([1a824d2](https://github.com/angular/material2/commit/1a824d2))
+* **grid-list:** darken grid footer ([#1310](https://github.com/angular/material2/issues/1310)) ([f9116f3](https://github.com/angular/material2/commit/f9116f3))
+* **grid-list:** hide overflow on tiles ([#1299](https://github.com/angular/material2/issues/1299)) ([06a6076](https://github.com/angular/material2/commit/06a6076))
+* **input:** input should not be treated as empty if it is a date field.  ([#846](https://github.com/angular/material2/issues/846)) ([fe2b493](https://github.com/angular/material2/commit/fe2b493)), closes [#845](https://github.com/angular/material2/issues/845) [#845](https://github.com/angular/material2/issues/845) [#845](https://github.com/angular/material2/issues/845)
+* **sidenav:** align text at start ([#1297](https://github.com/angular/material2/issues/1297)) ([0e0ff0e](https://github.com/angular/material2/commit/0e0ff0e))
+* **sidenav:** fix dark theme ([#1319](https://github.com/angular/material2/issues/1319)) ([332a4a2](https://github.com/angular/material2/commit/332a4a2))
+* **sidenav:** fix Promise type to match ([#1188](https://github.com/angular/material2/issues/1188)) ([3d5ceab](https://github.com/angular/material2/commit/3d5ceab))
+* **theming:** set input default color to currentColor in input theme ([#1260](https://github.com/angular/material2/issues/1260)) ([#1262](https://github.com/angular/material2/issues/1262)) ([fa78f72](https://github.com/angular/material2/commit/fa78f72))
+
+
 <a name="2.0.0-alpha.8"></a>
 # [2.0.0-alpha.8 ectoplasm-helicopter](https://github.com/angular/material2/compare/g3_v2_0...2.0.0-alpha.8) (2016-09-01)
 
