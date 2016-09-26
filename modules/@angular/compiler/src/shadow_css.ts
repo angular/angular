@@ -417,21 +417,35 @@ export class ShadowCss {
       return scopedP;
     };
 
-    const sep = /( |>|\+|~(?!=))\s*/g;
+    const sep = /( |>|\+|~(?!=)|\[|\])\s*/g;
     const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
 
     let scoped = '';
     let startIndex = 0;
     let res: RegExpExecArray;
+    let inAttributeSelector: boolean = false;
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
-      const part = selector.slice(startIndex, res.index).trim();
-      // if a selector appears before :host-context it should not be shimmed as it
-      // matches on ancestor elements and not on elements in the host's shadow
-      const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
-      scoped += `${scopedPart} ${separator} `;
-      startIndex = sep.lastIndex;
+      if (separator === '[') {
+        inAttributeSelector = true;
+        scoped += selector.slice(startIndex, res.index).trim() + '[';
+        startIndex = sep.lastIndex;
+      }
+      if (!inAttributeSelector) {
+        const part = selector.slice(startIndex, res.index).trim();
+        // if a selector appears before :host-context it should not be shimmed as it
+        // matches on ancestor elements and not on elements in the host's shadow
+        const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
+        scoped += `${scopedPart} ${separator} `;
+        startIndex = sep.lastIndex;
+      } else if (separator === ']') {
+        const part = selector.slice(startIndex, res.index).trim() + ']';
+        const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
+        scoped += `${scopedPart} `;
+        startIndex = sep.lastIndex;
+        inAttributeSelector = false;
+      }
     }
     return scoped + _scopeSelectorPart(selector.substring(startIndex));
   }
