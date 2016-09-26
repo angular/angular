@@ -14,7 +14,8 @@ import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
+import {RouterPreloader} from '../src/router_preloader';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
@@ -1413,7 +1414,7 @@ describe('Integration', () => {
     it('should not set the class until the first navigation succeeds', fakeAsync(() => {
          @Component({
            template:
-               '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" >'
+               '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>'
          })
          class RootCmpWithLink {
          }
@@ -1532,6 +1533,7 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy/loaded/child');
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
+
     it('throws an error when forRoot() is used in a lazy context',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
@@ -1702,6 +1704,60 @@ describe('Integration', () => {
                  recordedEvents,
                  [[NavigationStart, '/lazy/loaded'], [NavigationError, '/lazy/loaded']]);
            })));
+
+    describe('preloading', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule(
+            {providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]});
+        const preloader = TestBed.get(RouterPreloader);
+        preloader.setUpPreloading();
+      });
+
+      it('should work',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+               @Component({selector: 'lazy', template: 'should not show'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [LazyLoadedComponent],
+                 imports: [RouterModule.forChild(
+                     [{path: 'LoadedModule2', component: LazyLoadedComponent}])]
+               })
+               class LoadedModule2 {
+               }
+
+               @NgModule({
+                 imports:
+                     [RouterModule.forChild([{path: 'LoadedModule1', loadChildren: 'expected2'}])]
+               })
+               class LoadedModule1 {
+               }
+
+               loader.stubbedModules = {expected: LoadedModule1, expected2: LoadedModule2};
+
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([
+                 {path: 'blank', component: BlankCmp}, {path: 'lazy', loadChildren: 'expected'}
+               ]);
+
+               router.navigateByUrl('/blank');
+               advance(fixture);
+
+               const config: any = router.config;
+               const firstConfig = config[1]._loadedConfig;
+               expect(firstConfig).toBeDefined();
+               expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
+
+               const secondConfig = firstConfig.routes[0]._loadedConfig;
+               expect(secondConfig).toBeDefined();
+               expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
+             })));
+
+    });
   });
 });
 

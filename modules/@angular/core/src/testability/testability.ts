@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '../di';
-import {Map, MapWrapper} from '../facade/collection';
+import {MapWrapper} from '../facade/collection';
 import {scheduleMicroTask} from '../facade/lang';
 import {NgZone} from '../zone/ng_zone';
 
@@ -110,6 +110,7 @@ export class Testability implements PublicTestability {
 
   getPendingRequestCount(): number { return this._pendingCount; }
 
+  /** @deprecated use findProviders */
   findBindings(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];

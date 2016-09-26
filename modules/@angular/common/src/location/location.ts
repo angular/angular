@@ -49,16 +49,20 @@ export class Location {
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
   _baseHref: string;
-
   /** @internal */
   _platformStrategy: LocationStrategy;
 
   constructor(platformStrategy: LocationStrategy) {
     this._platformStrategy = platformStrategy;
-    var browserBaseHref = this._platformStrategy.getBaseHref();
+    const browserBaseHref = this._platformStrategy.getBaseHref();
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
-    this._platformStrategy.onPopState(
-        (ev) => { this._subject.emit({'url': this.path(true), 'pop': true, 'type': ev.type}); });
+    this._platformStrategy.onPopState((ev) => {
+      this._subject.emit({
+        'url': this.path(true),
+        'pop': true,
+        'type': ev.type,
+      });
+    });
   }
 
   /**

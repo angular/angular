@@ -9,18 +9,19 @@
 import {WrappedError} from './facade/errors';
 
 /**
- * Provides a hook for centralized exception handling.
+ * @whatItDoes Provides a hook for centralized exception handling.
  *
- * The default implementation of `ErrorHandler` prints error messages to the `Console`. To
- * intercept error handling,
- * write a custom exception handler that replaces this default as appropriate for your app.
+ * @description
+ *
+ * The default implementation of `ErrorHandler` prints error messages to the `console`. To
+ * intercept error handling, write a custom exception handler that replaces this default as
+ * appropriate for your app.
  *
  * ### Example
  *
- * ```javascript
- *
+ * ```
  * class MyErrorHandler implements ErrorHandler {
- *   call(error, stackTrace = null, reason = null) {
+ *   handleError(error) {
  *     // do something with the exception
  *   }
  * }
@@ -30,6 +31,7 @@ import {WrappedError} from './facade/errors';
  * })
  * class MyModule {}
  * ```
+ *
  * @stable
  */
 export class ErrorHandler {
@@ -46,9 +48,9 @@ export class ErrorHandler {
   constructor(rethrowError: boolean = true) { this.rethrowError = rethrowError; }
 
   handleError(error: any): void {
-    var originalError = this._findOriginalError(error);
-    var originalStack = this._findOriginalStack(error);
-    var context = this._findContext(error);
+    const originalError = this._findOriginalError(error);
+    const originalStack = this._findOriginalStack(error);
+    const context = this._findContext(error);
 
     this._console.error(`EXCEPTION: ${this._extractMessage(error)}`);
 
@@ -81,14 +83,14 @@ export class ErrorHandler {
     if (error) {
       return error.context ? error.context :
                              this._findContext((error as WrappedError).originalError);
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   /** @internal */
   _findOriginalError(error: any): any {
-    var e = (error as WrappedError).originalError;
+    let e = (error as WrappedError).originalError;
     while (e && (e as WrappedError).originalError) {
       e = (e as WrappedError).originalError;
     }
@@ -100,8 +102,8 @@ export class ErrorHandler {
   _findOriginalStack(error: any): string {
     if (!(error instanceof Error)) return null;
 
-    var e: any = error;
-    var stack: string = e.stack;
+    let e: any = error;
+    let stack: string = e.stack;
     while (e instanceof Error && (e as WrappedError).originalError) {
       e = (e as WrappedError).originalError;
       if (e instanceof Error && e.stack) {

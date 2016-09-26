@@ -75,6 +75,22 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     super.visitLiteralExpr(ast, ctx, '(null as any)');
   }
 
+
+  // Temporary workaround to support strictNullCheck enabled consumers of ngc emit.
+  // In SNC mode, [] have the type never[], so we cast here to any[].
+  // TODO: narrow the cast to a more explicit type, or use a pattern that does not
+  // start with [].concat. see https://github.com/angular/angular/pull/11846
+  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
+    if (ast.entries.length === 0) {
+      ctx.print('(');
+    }
+    const result = super.visitLiteralArrayExpr(ast, ctx);
+    if (ast.entries.length === 0) {
+      ctx.print(' as any[])');
+    }
+    return result;
+  }
+
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;

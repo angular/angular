@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
 import {EventEmitter, Observable} from '../facade/async';
-import {isBlank, isPresent, isPromise} from '../facade/lang';
+import {isPromise} from '../private_import_core';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
@@ -37,9 +37,8 @@ class PromiseStrategy implements SubscriptionStrategy {
   onDestroy(subscription: any): void {}
 }
 
-var _promiseStrategy = new PromiseStrategy();
-var _observableStrategy = new ObservableStrategy();
-var __unused: Promise<any>;  // avoid unused import when Promise union types are erased
+const _promiseStrategy = new PromiseStrategy();
+const _observableStrategy = new ObservableStrategy();
 
 /**
  * @ngModule CommonModule
@@ -68,30 +67,24 @@ var __unused: Promise<any>;  // avoid unused import when Promise union types are
  */
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy {
-  /** @internal */
-  _latestValue: Object = null;
-  /** @internal */
-  _latestReturnedValue: Object = null;
+  private _latestValue: Object = null;
+  private _latestReturnedValue: Object = null;
 
-  /** @internal */
-  _subscription: Object = null;
-  /** @internal */
-  _obj: Observable<any>|Promise<any>|EventEmitter<any> = null;
-  /** @internal */
-  _ref: ChangeDetectorRef;
+  private _subscription: Object = null;
+  private _obj: Observable<any>|Promise<any>|EventEmitter<any> = null;
   private _strategy: SubscriptionStrategy = null;
 
-  constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
+  constructor(private _ref: ChangeDetectorRef) {}
 
   ngOnDestroy(): void {
-    if (isPresent(this._subscription)) {
+    if (this._subscription) {
       this._dispose();
     }
   }
 
   transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
-    if (isBlank(this._obj)) {
-      if (isPresent(obj)) {
+    if (!this._obj) {
+      if (obj) {
         this._subscribe(obj);
       }
       this._latestReturnedValue = this._latestValue;
@@ -105,33 +98,32 @@ export class AsyncPipe implements OnDestroy {
 
     if (this._latestValue === this._latestReturnedValue) {
       return this._latestReturnedValue;
-    } else {
-      this._latestReturnedValue = this._latestValue;
-      return WrappedValue.wrap(this._latestValue);
     }
+
+    this._latestReturnedValue = this._latestValue;
+    return WrappedValue.wrap(this._latestValue);
   }
 
-  /** @internal */
-  _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
+  private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
         obj, (value: Object) => this._updateLatestValue(obj, value));
   }
 
-  /** @internal */
-  _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
+  private _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
     if (isPromise(obj)) {
       return _promiseStrategy;
-    } else if ((<any>obj).subscribe) {
-      return _observableStrategy;
-    } else {
-      throw new InvalidPipeArgumentError(AsyncPipe, obj);
     }
+
+    if ((<any>obj).subscribe) {
+      return _observableStrategy;
+    }
+
+    throw new InvalidPipeArgumentError(AsyncPipe, obj);
   }
 
-  /** @internal */
-  _dispose(): void {
+  private _dispose(): void {
     this._strategy.dispose(this._subscription);
     this._latestValue = null;
     this._latestReturnedValue = null;
@@ -139,8 +131,7 @@ export class AsyncPipe implements OnDestroy {
     this._obj = null;
   }
 
-  /** @internal */
-  _updateLatestValue(async: any, value: Object) {
+  private _updateLatestValue(async: any, value: Object) {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();

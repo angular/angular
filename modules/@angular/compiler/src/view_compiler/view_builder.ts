@@ -7,8 +7,6 @@
  */
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
-
-import {AnimationCompiler} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata, CompileTypeMetadata} from '../compile_metadata';
 import {ListWrapper, SetWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
@@ -64,8 +62,6 @@ export function finishView(view: CompileView, targetStatements: o.Statement[]) {
 
 class ViewBuilderVisitor implements TemplateAstVisitor {
   nestedViewCount: number = 0;
-
-  private _animationCompiler = new AnimationCompiler();
 
   constructor(
       public view: CompileView,
@@ -279,12 +275,10 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
         ast.hasViewContainer, true, ast.references);
     this.view.nodes.push(compileElement);
 
-    var compiledAnimations = this._animationCompiler.compileComponent(this.view.component, [ast]);
-
     this.nestedViewCount++;
     var embeddedView = new CompileView(
         this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
-        compiledAnimations.triggers, this.view.viewIndex + this.nestedViewCount, compileElement,
+        this.view.animations, this.view.viewIndex + this.nestedViewCount, compileElement,
         templateVariableBindings);
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
@@ -518,7 +512,7 @@ function createViewFactory(
     templateUrlInfo = view.component.template.templateUrl;
   }
   if (view.viewIndex === 0) {
-    var animationsExpr = o.literalMap(view.animations.map(entry => [entry.name, entry.fnVariable]));
+    var animationsExpr = o.literalMap(view.animations.map(entry => [entry.name, entry.fnExp]));
     initRenderCompTypeStmts = [new o.IfStmt(renderCompTypeVar.identical(o.NULL_EXPR), [
       renderCompTypeVar
           .set(ViewConstructorVars.viewUtils.callMethod(

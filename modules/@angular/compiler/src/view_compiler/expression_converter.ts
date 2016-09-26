@@ -340,7 +340,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // Notice that the first guard condition is the left hand of the left most safe access node
     // which comes in as leftMostSafe to this routine.
 
-    let guardedExpression = this.visit(leftMostSafe.receiver, mode);
+    let guardedExpression = this.visit(leftMostSafe.receiver, _Mode.Expression);
     let temporary: o.ReadVarExpr;
     if (this.needsTemporary(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
@@ -369,7 +369,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     // Recursively convert the node now without the guarded member access.
-    const access = this.visit(ast, mode);
+    const access = this.visit(ast, _Mode.Expression);
 
     // Remove the mapping. This is not strictly required as the converter only traverses each node
     // once but is safer if the conversion is changed to traverse the nodes more than once.
@@ -381,7 +381,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     // Produce the conditional
-    return condition.conditional(o.literal(null), access);
+    return convertToStatementIfNeeded(mode, condition.conditional(o.literal(null), access));
   }
 
   // Given a expression of the form a?.b.c?.d.e the the left most safe node is

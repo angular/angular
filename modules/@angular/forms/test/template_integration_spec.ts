@@ -420,6 +420,64 @@ export function main() {
            });
          }));
 
+      it('should disable a control with unbound disabled attr', fakeAsync(() => {
+           TestBed.overrideComponent(NgModelForm, {
+             set: {
+               template: `
+            <form>
+             <input name="name" [(ngModel)]="name" disabled>
+            </form>
+          `,
+             }
+           });
+           const fixture = TestBed.createComponent(NgModelForm);
+           fixture.detectChanges();
+           tick();
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.get('name').disabled).toBe(true);
+
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(input.nativeElement.disabled).toEqual(true);
+
+           form.control.enable();
+           fixture.detectChanges();
+           tick();
+           expect(input.nativeElement.disabled).toEqual(false);
+         }));
+
+      it('should disable radio controls properly with programmatic call', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelRadioForm);
+           fixture.componentInstance.food = 'fish';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           form.control.get('food').disable();
+           tick();
+
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           expect(inputs[0].nativeElement.disabled).toBe(true);
+           expect(inputs[1].nativeElement.disabled).toBe(true);
+           expect(inputs[2].nativeElement.disabled).toBe(false);
+           expect(inputs[3].nativeElement.disabled).toBe(false);
+
+           form.control.disable();
+           tick();
+
+           expect(inputs[0].nativeElement.disabled).toBe(true);
+           expect(inputs[1].nativeElement.disabled).toBe(true);
+           expect(inputs[2].nativeElement.disabled).toBe(true);
+           expect(inputs[3].nativeElement.disabled).toBe(true);
+
+           form.control.enable();
+           tick();
+
+           expect(inputs[0].nativeElement.disabled).toBe(false);
+           expect(inputs[1].nativeElement.disabled).toBe(false);
+           expect(inputs[2].nativeElement.disabled).toBe(false);
+           expect(inputs[3].nativeElement.disabled).toBe(false);
+         }));
+
     });
 
     describe('radio controls', () => {
@@ -903,7 +961,7 @@ class NgModelOptionsStandalone {
     <form>
       <input type="radio" name="food" [(ngModel)]="food" value="chicken">
       <input type="radio" name="food"  [(ngModel)]="food" value="fish">
-      
+
       <input type="radio" name="drink" [(ngModel)]="drink" value="cola">
       <input type="radio" name="drink" [(ngModel)]="drink" value="sprite">
     </form>

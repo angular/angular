@@ -72,7 +72,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       // returning null instead of throwing to let another plugin process the event
       return null;
     }
-    var result = StringMapWrapper.create();
+    var result = {};
     StringMapWrapper.set(result, 'domEventName', domEventName);
     StringMapWrapper.set(result, 'fullKey', fullKey);
     return result;

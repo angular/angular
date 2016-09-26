@@ -401,9 +401,12 @@ export class UpgradeAdapter {
                     ._bootstrapModuleWithZone(
                         DynamicNgUpgradeModule, undefined, ngZone,
                         (componentFactories: ComponentFactory<any>[]) => {
-                          componentFactories.forEach((componentFactory) => {
-                            componentFactoryRefMap[getComponentInfo(componentFactory.componentType)
-                                                       .selector] = componentFactory;
+                          componentFactories.forEach((componentFactory: ComponentFactory<any>) => {
+                            var type: Type<any> = componentFactory.componentType;
+                            if (this.upgradedComponents.indexOf(type) !== -1) {
+                              componentFactoryRefMap[getComponentInfo(type).selector] =
+                                  componentFactory;
+                            }
                           });
                         })
                     .then((ref: NgModuleRef<any>) => {

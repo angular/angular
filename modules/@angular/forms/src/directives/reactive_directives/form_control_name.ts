@@ -67,9 +67,14 @@ export const controlNameBinding: any = {
  *
  * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
  *
- *  * **npm package**: `@angular/forms`
+ * To see `formControlName` examples with different form control types, see:
  *
- *  * **NgModule**: {@link ReactiveFormsModule}
+ * * Radio buttons: {@link RadioControlValueAccessor}
+ * * Selects: {@link SelectControlValueAccessor}
+ *
+ * **npm package**: `@angular/forms`
+ *
+ * **NgModule**: {@link ReactiveFormsModule}
  *
  *  @stable
  */
@@ -147,7 +152,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _setUpControl() {
     this._checkParentType();
     this._control = this.formDirective.addControl(this);
-    if (this.control.disabled) this.valueAccessor.setDisabledState(true);
+    if (this.control.disabled && this.valueAccessor.setDisabledState) {
+      this.valueAccessor.setDisabledState(true);
+    }
     this._added = true;
   }
 }

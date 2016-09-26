@@ -15,7 +15,9 @@ export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Resolve} from './
 export {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationExtras, NavigationStart, Router, RoutesRecognized} from './router';
 export {ExtraOptions, RouterModule, provideRoutes} from './router_module';
 export {RouterOutletMap} from './router_outlet_map';
+export {NoPreloading, PreloadAllModules, PreloadingStrategy} from './router_preloader';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 export {PRIMARY_OUTLET, Params} from './shared';
 export {DefaultUrlSerializer, UrlSegment, UrlSerializer, UrlTree} from './url_tree';
+
 export * from './private_export'

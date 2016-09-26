@@ -6,18 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Map} from './facade/collection';
-import {Date, DateWrapper} from './facade/lang';
-
 export class MeasureValues {
   constructor(
       public runIndex: number, public timeStamp: Date, public values: {[key: string]: any}) {}
 
   toJson() {
     return {
-      'timeStamp': DateWrapper.toJson(this.timeStamp),
+      'timeStamp': this.timeStamp.toJSON(),
       'runIndex': this.runIndex,
-      'values': this.values
+      'values': this.values,
     };
   }
 }

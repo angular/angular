@@ -11,7 +11,6 @@ import {ListWrapper, StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isBlank, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {AnimationOutput} from '../private_import_core';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileBinding} from './compile_binding';
@@ -19,10 +18,6 @@ import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {EventHandlerVars, ViewProperties} from './constants';
 import {convertCdStatementToIr} from './expression_converter';
-
-export class CompileElementAnimationOutput {
-  constructor(public listener: CompileEventListener, public output: AnimationOutput) {}
-}
 
 export class CompileEventListener {
   private _method: CompileMethod;
@@ -32,13 +27,14 @@ export class CompileEventListener {
   private _actionResultExprs: o.Expression[] = [];
 
   static getOrCreate(
-      compileElement: CompileElement, eventTarget: string, eventName: string,
+      compileElement: CompileElement, eventTarget: string, eventName: string, eventPhase: string,
       targetEventListeners: CompileEventListener[]): CompileEventListener {
     var listener = targetEventListeners.find(
-        listener => listener.eventTarget == eventTarget && listener.eventName == eventName);
+        listener => listener.eventTarget == eventTarget && listener.eventName == eventName &&
+            listener.eventPhase == eventPhase);
     if (isBlank(listener)) {
       listener = new CompileEventListener(
-          compileElement, eventTarget, eventName, targetEventListeners.length);
+          compileElement, eventTarget, eventName, eventPhase, targetEventListeners.length);
       targetEventListeners.push(listener);
     }
     return listener;
@@ -48,7 +44,7 @@ export class CompileEventListener {
 
   constructor(
       public compileElement: CompileElement, public eventTarget: string, public eventName: string,
-      listenerIndex: number) {
+      public eventPhase: string, listenerIndex: number) {
     this._method = new CompileMethod(compileElement.view);
     this._methodName =
         `_handle_${santitizeEventName(eventName)}_${compileElement.nodeIndex}_${listenerIndex}`;
@@ -119,7 +115,7 @@ export class CompileEventListener {
         disposable.set(listenExpr).toDeclStmt(o.FUNCTION_TYPE, [o.StmtModifier.Private]));
   }
 
-  listenToAnimation(output: AnimationOutput) {
+  listenToAnimation() {
     var outputListener = o.THIS_EXPR.callMethod(
         'eventHandler',
         [o.THIS_EXPR.prop(this._methodName).callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR])]);
@@ -129,11 +125,8 @@ export class CompileEventListener {
                    .callMethod(
                        'registerAnimationOutput',
                        [
-                         this.compileElement.renderNode,
-                         o.importExpr(resolveIdentifier(Identifiers.AnimationOutput)).instantiate([
-                           o.literal(output.name), o.literal(output.phase)
-                         ]),
-                         outputListener
+                         this.compileElement.renderNode, o.literal(this.eventName),
+                         o.literal(this.eventPhase), outputListener
                        ])
                    .toStmt();
     this.compileElement.view.createMethod.addStmt(stmt);
@@ -160,7 +153,7 @@ export function collectEventListeners(
   hostEvents.forEach((hostEvent) => {
     compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
     var listener = CompileEventListener.getOrCreate(
-        compileElement, hostEvent.target, hostEvent.name, eventListeners);
+        compileElement, hostEvent.target, hostEvent.name, hostEvent.phase, eventListeners);
     listener.addAction(hostEvent, null, null);
   });
   dirs.forEach((directiveAst) => {
@@ -169,7 +162,7 @@ export function collectEventListeners(
     directiveAst.hostEvents.forEach((hostEvent) => {
       compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
       var listener = CompileEventListener.getOrCreate(
-          compileElement, hostEvent.target, hostEvent.name, eventListeners);
+          compileElement, hostEvent.target, hostEvent.name, hostEvent.phase, eventListeners);
       listener.addAction(hostEvent, directiveAst.directive, directiveInstance);
     });
   });
@@ -190,11 +183,13 @@ export function bindDirectiveOutputs(
 }
 
 export function bindRenderOutputs(eventListeners: CompileEventListener[]) {
-  eventListeners.forEach(listener => listener.listenToRenderer());
-}
-
-export function bindAnimationOutputs(eventListeners: CompileElementAnimationOutput[]) {
-  eventListeners.forEach(entry => { entry.listener.listenToAnimation(entry.output); });
+  eventListeners.forEach(listener => {
+    if (listener.eventPhase) {
+      listener.listenToAnimation();
+    } else {
+      listener.listenToRenderer();
+    }
+  });
 }
 
 function convertStmtIntoExpression(stmt: o.Statement): o.Expression {

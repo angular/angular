@@ -448,15 +448,15 @@ export interface ComponentDecorator {
    * * **changeDetection** - change detection strategy used by this component
    * * **encapsulation** - style encapsulation strategy used by this component
    * * **entryComponents** - list of components that are dynamically inserted into the view of this
-   * component
+   *   component
    * * **exportAs** - name under which the component instance is exported in a template
    * * **host** - map of class property to host element bindings for events, properties and
-   * attributes
+   *   attributes
    * * **inputs** - list of class property names to data-bind as component inputs
    * * **interpolation** - custom interpolation markers used in this component's template
    * * **moduleId** - ES/CommonJS module id of the file in which this component is defined
    * * **outputs** - list of class property names that expose output events that others can
-   * subscribe to
+   *   subscribe to
    * * **providers** - list of providers available to this component and its children
    * * **queries** -  configure queries that can be injected into the component
    * * **selector** - css selector that identifies this component in a template
@@ -655,20 +655,33 @@ export interface Component extends Directive {
   animations?: AnimationEntryMetadata[];
 
   /**
-   * Specify how the template and the styles should be encapsulated.
-   * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
-   * has styles,
-   * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
+   * Specifies how the template and the styles should be encapsulated:
+   * - {@link ViewEncapsulation#Native `ViewEncapsulation.Native`} to use shadow roots - only works
+   *   if natively available on the platform,
+   * - {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} to use shimmed CSS that
+   *   emulates the native behavior,
+   * - {@link ViewEncapsulation#None `ViewEncapsulation.None`} to use global CSS without any
+   *   encapsulation.
+   *
+   * When no `encapsulation` is defined for the component, the default value from the
+   * {@link CompilerConfig} is used. The default is `ViewEncapsulation.Emulated`}. Provide a new
+   * `CompilerConfig` to override this value.
+   *
+   * If the encapsulation is set to `ViewEncapsulation.Emulated` and the component has no `styles`
+   * nor `styleUrls` the encapsulation will automatically be switched to `ViewEncapsulation.None`.
    */
   encapsulation?: ViewEncapsulation;
 
+  /**
+   * Overrides the default encapsulation start and end delimiters (respectively `{{` and `}}`)
+   */
   interpolation?: [string, string];
 
   /**
    * Defines the components that should be compiled as well when
    * this component is defined. For each components listed here,
-   * Angular will create a {@link ComponentFactory ComponentFactory} and store it in the
-   * {@link ComponentFactoryResolver ComponentFactoryResolver}.
+   * Angular will create a {@link ComponentFactory} and store it in the
+   * {@link ComponentFactoryResolver}.
    */
   entryComponents?: Array<Type<any>|any[]>;
 }
@@ -915,7 +928,6 @@ export interface HostBindingDecorator {
    * @Component({
    *   selector: 'app',
    *   template: `<input [(ngModel)]="prop">`,
-   *   directives: [FORM_DIRECTIVES, NgModelStatus]
    * })
    * class App {
    *   prop;
@@ -955,8 +967,7 @@ export interface HostListenerDecorator {
    *
    * Angular will invoke the decorated method when the host element emits the specified event.
    *
-   * If the decorated method returns `false`, then `preventDefault` is applied on the DOM
-   * event.
+   * If the decorated method returns `false`, then `preventDefault` is applied on the DOM event.
    *
    * ### Example
    *
@@ -970,14 +981,13 @@ export interface HostListenerDecorator {
    *
    *   @HostListener('click', ['$event.target'])
    *   onClick(btn) {
-   *     console.log("button", btn, "number of clicks:", this.numberOfClicks++);
+   *     console.log('button', btn, 'number of clicks:', this.numberOfClicks++);
    *   }
    * }
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<button counting>Increment</button>`,
-   *   directives: [CountClicks]
+   *   template: '<button counting>Increment</button>',
    * })
    * class App {}
    * ```

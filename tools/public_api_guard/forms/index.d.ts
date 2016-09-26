@@ -440,6 +440,23 @@ export declare class PatternValidator implements Validator, OnChanges {
 }
 
 /** @stable */
+export declare class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
+    formControlName: string;
+    name: string;
+    onChange: () => void;
+    onTouched: () => void;
+    value: any;
+    constructor(_renderer: Renderer, _elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
+    fireUncheck(value: any): void;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    registerOnChange(fn: (_: any) => {}): void;
+    registerOnTouched(fn: () => {}): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: any): void;
+}
+
+/** @stable */
 export declare class ReactiveFormsModule {
 }
 
