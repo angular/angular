@@ -120,7 +120,22 @@ describe('MdButton', () => {
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('true');
     });
+  });
 
+  // Ripple tests.
+  describe('button ripples', () => {
+    it('should remove ripple if md-ripple-disabled input is set', () => {
+      let fixture = TestBed.createComponent(TestApp);
+      let testComponent = fixture.debugElement.componentInstance;
+      let buttonDebugElement = fixture.debugElement.query(By.css('button'));
+
+      fixture.detectChanges();
+      expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(1);
+
+      testComponent.rippleDisabled = true;
+      fixture.detectChanges();
+      expect(buttonDebugElement.nativeElement.querySelectorAll('[md-ripple]').length).toBe(0);
+    });
   });
 });
 
