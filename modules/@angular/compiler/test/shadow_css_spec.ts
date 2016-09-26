@@ -7,7 +7,6 @@
  */
 
 import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
