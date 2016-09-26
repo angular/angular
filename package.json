@@ -68,7 +68,7 @@
     "minimist": "^1.2.0",
     "nan": "^2.4.0",
     "node-uuid": "1.4.x",
-    "parse5": "1.3.2",
+    "parse5": "^2.2.1",
     "protractor": "^4.0.5",
     "react": "^0.14.0",
     "rewire": "^2.3.3",
