@@ -6,11 +6,13 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
+import {MdDialogContainer} from './dialog-container';
 
 
 describe('MdDialog', () => {
@@ -91,6 +93,24 @@ describe('MdDialog', () => {
     dialogRef.close('Charmander');
 
     expect(afterCloseResult).toBe('Charmander');
+    expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
+  });
+
+
+  it('should close a dialog via the escape key', () => {
+    let config = new MdDialogConfig();
+    config.viewContainerRef = testViewContainerRef;
+
+    dialog.open(PizzaMsg, config);
+
+    viewContainerFixture.detectChanges();
+
+    let dialogContainer: MdDialogContainer =
+        viewContainerFixture.debugElement.query(By.directive(MdDialogContainer)).componentInstance;
+
+    // Fake the user pressing the escape key by calling the handler directly.
+    dialogContainer.handleEscapeKey();
+
     expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
   });
 

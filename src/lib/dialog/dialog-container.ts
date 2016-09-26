@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
+import {MdDialogRef} from './dialog-ref';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
 import {FocusTrap} from '../core/a11y/focus-trap';
 import 'rxjs/add/operator/first';
@@ -23,7 +24,8 @@ import 'rxjs/add/operator/first';
   styleUrls: ['dialog-container.css'],
   host: {
     'class': 'md-dialog-container',
-    '[attr.role]': 'dialogConfig?.role'
+    '[attr.role]': 'dialogConfig?.role',
+    '(keydown.escape)': 'handleEscapeKey()',
   },
   encapsulation: ViewEncapsulation.None,
 })
@@ -39,6 +41,9 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
 
   /** The dialog configuration. */
   dialogConfig: MdDialogConfig;
+
+  /** Reference to the open dialog. */
+  dialogRef: MdDialogRef<any>;
 
   constructor(private _ngZone: NgZone) {
     super();
@@ -65,6 +70,12 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
 
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     throw Error('Not yet implemented');
+  }
+
+  /** Handles the user pressing the Escape key. */
+  handleEscapeKey() {
+    // TODO(jelbourn): add MdDialogConfig option to disable this behavior.
+    this.dialogRef.close();
   }
 
   ngOnDestroy() {

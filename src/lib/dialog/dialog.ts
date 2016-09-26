@@ -90,6 +90,9 @@ export class MdDialog {
     // When the dialog backdrop is clicked, we want to close it.
     overlayRef.backdropClick().subscribe(() => dialogRef.close());
 
+    // Set the dialogRef to the container so that it can use the ref to close the dialog.
+    dialogContainer.dialogRef = dialogRef;
+
     // We create an injector specifically for the component we're instantiating so that it can
     // inject the MdDialogRef. This allows a component loaded inside of a dialog to close itself
     // and, optionally, to return a value.
