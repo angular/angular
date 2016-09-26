@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0",
+  "version": "2.1.0-beta.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -5617,9 +5617,9 @@
       "resolved": "https://registry.npmjs.org/parse-json/-/parse-json-2.2.0.tgz"
     },
     "parse5": {
-      "version": "1.3.2",
-      "from": "parse5@1.3.2",
-      "resolved": "https://registry.npmjs.org/parse5/-/parse5-1.3.2.tgz"
+      "version": "2.2.1",
+      "from": "parse5@2.2.1",
+      "resolved": "https://registry.npmjs.org/parse5/-/parse5-2.2.1.tgz"
     },
     "parsejson": {
       "version": "0.0.1",
