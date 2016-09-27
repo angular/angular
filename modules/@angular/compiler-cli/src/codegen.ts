@@ -126,7 +126,7 @@ export class CodeGenerator {
   static create(
       options: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
       compilerHost: ts.CompilerHost, reflectorHostContext?: ReflectorHostContext,
-      resourceLoader?: compiler.ResourceLoader): CodeGenerator {
+      resourceLoader?: compiler.ResourceLoader, reflectorHost?: ReflectorHost): CodeGenerator {
     resourceLoader = resourceLoader || {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
@@ -148,10 +148,12 @@ export class CodeGenerator {
     }
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-    const reflectorHost = usePathMapping ?
-        new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
-        new ReflectorHost(program, compilerHost, options, reflectorHostContext);
+    if (!reflectorHost) {
+      const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
+      reflectorHost = usePathMapping ?
+          new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
+          new ReflectorHost(program, compilerHost, options, reflectorHostContext);
+    }
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
