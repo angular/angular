@@ -7,7 +7,7 @@
  */
 
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {beforeEach, ddescribe, describe, expect, iit, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';

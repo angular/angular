@@ -1,8 +1,8 @@
-import {ApplicationRef, NgModule, enableProdMode} from '@angular/core';
+import {ApplicationRef, enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {bindAction, profile} from '../../util';
-import {TreeNode, buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree} from '../util';
 
 import {AppModule, RootTreeComponent} from './tree';
 

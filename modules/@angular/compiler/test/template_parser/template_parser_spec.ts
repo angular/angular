@@ -15,7 +15,7 @@ import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {SchemaMetadata, SecurityContext, Type} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed} from '@angular/core/testing';
-import {afterEach, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {Identifiers, identifierToken, resolveIdentifierToken} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {MockSchemaRegistry} from '../../testing/index';

@@ -8,7 +8,7 @@
 
 import {global} from '@angular/common/src/facade/lang';
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
-import {async, tick} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 function mockSystem(modules: {[module: string]: any}) {

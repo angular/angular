@@ -9,7 +9,7 @@
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
 import {Options} from '../common_options';
-import {DateWrapper, Json, isBlank, isPresent} from '../facade/lang';
+import {DateWrapper, Json} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';

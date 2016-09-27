@@ -8,7 +8,7 @@
 
 import {hasLifecycleHook} from '@angular/compiler/src/lifecycle_reflector';
 import {LifecycleHooks} from '@angular/core/src/metadata/lifecycle_hooks';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('Create Directive', () => {

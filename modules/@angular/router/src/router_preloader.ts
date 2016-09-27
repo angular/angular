@@ -6,7 +6,7 @@
 *found in the LICENSE file at https://angular.io/license
 */
 
-import {Compiler, ComponentFactoryResolver, Injectable, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleFactoryLoader} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
@@ -14,7 +14,6 @@ import {of } from 'rxjs/observable/of';
 import {_catch} from 'rxjs/operator/catch';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
-import {map} from 'rxjs/operator/map';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 

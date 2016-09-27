@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
-import {NoPreloading, PreloadAllModules, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
+import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
 
 import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
 

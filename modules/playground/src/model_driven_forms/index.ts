@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Host, NgModule} from '@angular/core';
+import {Component, Host, NgModule} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
 import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';

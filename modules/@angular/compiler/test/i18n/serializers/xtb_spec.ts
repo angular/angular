@@ -7,7 +7,7 @@
  */
 
 import {escapeRegExp} from '@angular/core/src/facade/lang';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {Xtb} from '../../../src/i18n/serializers/xtb';

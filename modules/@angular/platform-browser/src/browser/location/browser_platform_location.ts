@@ -10,7 +10,6 @@ import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Injectable} from '@angular/core';
 
 import {getDOM} from '../../dom/dom_adapter';
-import {History, Location} from '../../facade/browser';
 
 import {supportsState} from './history';
 

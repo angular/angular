@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
+
 import {Component, Directive, Host, NgModule} from '@angular/core';
 import {isPresent, print} from '@angular/core/src/facade/lang';
-import {FormGroup, FormsModule, NG_VALIDATORS, NgControl, NgForm, Validators} from '@angular/forms';
+import {FormGroup, FormsModule, NG_VALIDATORS, NgForm} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 

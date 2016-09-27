@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, ReflectiveInjector, ValueProvider} from '@angular/core';
+import {Inject, Injectable, OpaqueToken, Optional, ReflectiveInjector} from '@angular/core';
 
 export function main() {
   describe('Provider examples', () => {

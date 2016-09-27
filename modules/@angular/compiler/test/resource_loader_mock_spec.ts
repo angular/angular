@@ -7,7 +7,7 @@
  */
 
 import {MockResourceLoader} from '@angular/compiler/testing/resource_loader_mock';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {isPresent} from '../src/facade/lang';
 
 export function main() {

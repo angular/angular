@@ -8,7 +8,7 @@
 
 import {AsyncPipe} from '@angular/common';
 import {WrappedValue} from '@angular/core';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 

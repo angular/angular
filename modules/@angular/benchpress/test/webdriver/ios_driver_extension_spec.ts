@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {IOsDriverExtension, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {Json, isBlank, isPresent} from '../../src/facade/lang';
+import {Json, isBlank} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {

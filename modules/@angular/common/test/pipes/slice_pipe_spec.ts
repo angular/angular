@@ -9,7 +9,6 @@
 import {CommonModule, SlicePipe} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {

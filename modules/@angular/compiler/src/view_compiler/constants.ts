@@ -9,7 +9,6 @@
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isBlank} from '../facade/lang';
 import {Identifiers, resolveEnumIdentifier, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 

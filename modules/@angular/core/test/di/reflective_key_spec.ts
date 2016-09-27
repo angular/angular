@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyRegistry, ReflectiveKey} from '@angular/core/src/di/reflective_key';
+import {KeyRegistry} from '@angular/core/src/di/reflective_key';
 
 export function main() {
   describe('key', function() {

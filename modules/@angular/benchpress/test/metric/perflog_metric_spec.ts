@@ -7,7 +7,7 @@
  */
 
 import {Provider} from '@angular/core';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
 import {StringMapWrapper} from '../../src/facade/collection';

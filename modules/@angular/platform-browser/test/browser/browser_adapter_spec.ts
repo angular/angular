@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {parseCookieValue} from '../../src/browser/browser_adapter';

@@ -12,7 +12,7 @@ import {ListWrapper, MapWrapper} from './facade/collection';
 import {isArray, isBlank, isPresent, normalizeBlank} from './facade/lang';
 import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
-import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst, VariableAst} from './template_parser/template_ast';
+import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
 
 export class ProviderError extends ParseError {
   constructor(message: string, span: ParseSourceSpan) { super(span, message); }

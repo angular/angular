@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location} from '@angular/common';
+
 import {Component, Injectable} from '@angular/core';
 import {DateWrapper, isPresent} from '@angular/core/src/facade/lang';
 import {ActivatedRoute, Router} from '@angular/router';

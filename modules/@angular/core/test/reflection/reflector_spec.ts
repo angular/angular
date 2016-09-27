@@ -9,10 +9,9 @@
 import {OnInit} from '@angular/core';
 import {ReflectionInfo, Reflector} from '@angular/core/src/reflection/reflection';
 import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {ClassDecorator, HasGetterAndSetterDecorators, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator} from './reflector_common';
+import {ClassDecorator, ParamDecorator, PropDecorator, classDecorator, paramDecorator, propDecorator} from './reflector_common';
 
 class AType {
   value: any /** TODO #9100 */;
