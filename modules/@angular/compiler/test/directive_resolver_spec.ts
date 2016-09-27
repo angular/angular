@@ -108,6 +108,15 @@ class SomeDirectiveWithViewChild {
 class ComponentWithTemplate {
 }
 
+@Directive({
+  selector: 'someDirective',
+  host: {'[decorator]': 'decorator'},
+  inputs: ['decorator'],
+})
+class SomeDirectiveWithSameHostBindingAndInput {
+  @Input() @HostBinding() prop: any;
+}
+
 class SomeDirectiveWithoutMetadata {}
 
 export function main() {
@@ -188,6 +197,12 @@ export function main() {
       it('should append host bindings', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostBindings);
         expect(directiveMetadata.host).toEqual({'[c]': 'c', '[a]': 'a', '[renamed]': 'b'});
+      });
+
+      it('should append host binding and input on the same property', () => {
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithSameHostBindingAndInput);
+        expect(directiveMetadata.host).toEqual({'[decorator]': 'decorator', '[prop]': 'prop'});
+        expect(directiveMetadata.inputs).toEqual(['decorator', 'prop']);
       });
 
       it('should append host listeners', () => {
