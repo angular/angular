@@ -60,7 +60,7 @@ var upgradeCount: number = 0;
  * ```
  * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
  * var module = angular.module('myExample', []);
- * module.directive('ng2Comp', adapter.downgradeNg2Component(Ng2));
+ * module.directive('ng2Comp', adapter.downgradeNg2Component(Ng2Component));
  *
  * module.directive('ng1Hello', function() {
  *   return {
