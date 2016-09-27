@@ -9,6 +9,9 @@ Angular Material has changed from `@angular2-material/...` packages to a single 
 contains all of the components. Build tools such as [`rollup.js`](http://rollupjs.org/) can perform
 tree-shaking to eliminate the code for components that you aren't using.
 
+The addition of theming as also changed the directory structure for bringing the core css into your
+application. See the new [theming guide](docs/theming.md) for more information.
+
 
 ### Features
 
