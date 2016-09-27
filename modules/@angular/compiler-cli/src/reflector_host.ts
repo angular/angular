@@ -55,27 +55,33 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     };
   }
 
-  // We use absolute paths on disk as canonical.
-  getCanonicalFileName(fileName: string): string { return fileName; }
-
   protected resolve(m: string, containingFile: string) {
     m = m.replace(EXT, '');
-    const resolved =
-        ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
-            .resolvedModule;
-    return resolved ? resolved.resolvedFileName : null;
-  };
+    containingFile = containingFile.replace(/\\/g, '/');
+    // FIXME: add test coverage
+    for (const root of this.options.rootDirs || ['', this.options.rootDir || '.']) {
+      const rootedContainingFile = path.join(root, containingFile);
+      const resolved =
+        ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
+      if (resolved) {
+        if (this.options.trace) {
+          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
+        }
+        return resolved.resolvedFileName;
+      }
+    }
+  }
 
   protected normalizeAssetUrl(url: string): string {
     let assetUrl = AssetUrl.parse(url);
     const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
-    return this.getCanonicalFileName(path);
+    return this.compilerHost.getCanonicalFileName(path);
   }
 
   protected resolveAssetUrl(url: string, containingFile: string): string {
     let assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
-      return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
+      return this.compilerHost.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
     return url;
   }
@@ -151,7 +157,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   private rewriteGenDirPath(filepath: string) {
     var nodeModulesIndex = filepath.indexOf(NODE_MODULES);
     if (nodeModulesIndex !== -1) {
-      // If we are in node_modulse, transplant them into `genDir`.
+      // If we are in node_modules, transplant them into `genDir`.
       return path.join(this.genDir, filepath.substring(nodeModulesIndex));
     } else {
       // pretend that containing file is on top of the `genDir` to normalize the paths.
@@ -204,7 +210,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
         symbol = tc.getAliasedSymbol(symbol);
       }
       const declaration = symbol.getDeclarations()[0];
-      const declarationFile = this.getCanonicalFileName(declaration.getSourceFile().fileName);
+      const declarationFile = this.compilerHost.getCanonicalFileName(declaration.getSourceFile().fileName);
 
       return this.getStaticSymbol(declarationFile, symbol.getName());
     } catch (e) {
@@ -234,25 +240,34 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     return result;
   }
 
+  /**
+   * @param filePath a canonical file path
+   * @returns Metadata read
+   */
   getMetadataFor(filePath: string): ModuleMetadata {
-    if (!this.context.fileExists(filePath)) {
-      // If the file doesn't exists then we cannot return metadata for the file.
-      // This will occur if the user refernced a declared module for which no file
-      // exists for the module (i.e. jQuery or angularjs).
-      return;
-    }
-    if (DTS.test(filePath)) {
-      const metadataPath = filePath.replace(DTS, '.metadata.json');
-      if (this.context.fileExists(metadataPath)) {
-        const metadata = this.readMetadata(metadataPath);
-        return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+    for (const root of this.options.rootDirs || ['', this.options.rootDir || '.']) {
+      const rootedPath = path.join(root, filePath);
+      console.error('try', rootedPath);
+      if (!this.compilerHost.fileExists(rootedPath)) {
+        // If the file doesn't exists then we cannot return metadata for the file.
+        // This will occur if the user referenced a declared module for which no file
+        // exists for the module (i.e. jQuery or angularjs).
+        continue;
       }
-    } else {
-      const sf = this.program.getSourceFile(filePath);
-      if (!sf) {
-        throw new Error(`Source file ${filePath} not present in program.`);
+      if (DTS.test(rootedPath)) {
+        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
+        if (this.context.fileExists(metadataPath)) {
+          const metadata = this.readMetadata(metadataPath);
+          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+        }
+      } else {
+        const sf = this.program.getSourceFile(rootedPath);
+        if (!sf) {
+          throw new Error(`Source file ${rootedPath} not present in program.`);
+        }
+        sf.fileName = this.compilerHost.getCanonicalFileName(sf.fileName);
+        return this.metadataCollector.getMetadata(sf);
       }
-      return this.metadataCollector.getMetadata(sf);
     }
   }
 
@@ -276,7 +291,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
 
   protected resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.getCanonicalFileName(this.resolve(moduleName, filePath));
+      const resolvedModulePath = this.compilerHost.getCanonicalFileName(this.resolve(moduleName, filePath));
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }
@@ -342,7 +357,7 @@ export class NodeReflectorHostContext implements ReflectorHostContext {
     }
   }
 
-  readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+  readFile(fileName: string): string { return this.host.readFile(fileName); }
 
   assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }

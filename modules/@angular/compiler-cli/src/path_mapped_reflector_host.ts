@@ -31,31 +31,6 @@ export class PathMappedReflectorHost extends ReflectorHost {
     super(program, compilerHost, options, context);
   }
 
-  getCanonicalFileName(fileName: string): string {
-    if (!fileName) return fileName;
-    // NB: the rootDirs should have been sorted longest-first
-    for (let dir of this.options.rootDirs || []) {
-      if (fileName.indexOf(dir) === 0) {
-        fileName = fileName.substring(dir.length);
-      }
-    }
-    return fileName;
-  }
-
-  protected resolve(m: string, containingFile: string) {
-    for (const root of this.options.rootDirs || ['']) {
-      const rootedContainingFile = path.join(root, containingFile);
-      const resolved =
-          ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
-      if (resolved) {
-        if (this.options.traceResolution) {
-          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
-        }
-        return resolved.resolvedFileName;
-      }
-    }
-  }
-
   /**
    * We want a moduleId that will appear in import statements in the generated code.
    * These need to be in a form that system.js can load, so absolute file paths don't work.
@@ -66,7 +41,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
     importedFile = this.resolveAssetUrl(importedFile, containingFile);
     containingFile = this.resolveAssetUrl(containingFile, '');
 
-    if (this.options.traceResolution) {
+    if (this.options.trace) {
       console.log(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
     }
@@ -82,7 +57,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.getCanonicalFileName(this.resolve(candidate, importedFile));
+      const resolved = this.compilerHost.getCanonicalFileName(this.resolve(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 
@@ -110,31 +85,5 @@ export class PathMappedReflectorHost extends ReflectorHost {
 
     throw new Error(
         `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
-  }
-
-  getMetadataFor(filePath: string): ModuleMetadata {
-    for (const root of this.options.rootDirs || []) {
-      const rootedPath = path.join(root, filePath);
-      if (!this.compilerHost.fileExists(rootedPath)) {
-        // If the file doesn't exists then we cannot return metadata for the file.
-        // This will occur if the user refernced a declared module for which no file
-        // exists for the module (i.e. jQuery or angularjs).
-        continue;
-      }
-      if (DTS.test(rootedPath)) {
-        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
-        if (this.context.fileExists(metadataPath)) {
-          const metadata = this.readMetadata(metadataPath);
-          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
-        }
-      } else {
-        const sf = this.program.getSourceFile(rootedPath);
-        if (!sf) {
-          throw new Error(`Source file ${rootedPath} not present in program.`);
-        }
-        sf.fileName = this.getCanonicalFileName(sf.fileName);
-        return this.metadataCollector.getMetadata(sf);
-      }
-    }
   }
 }

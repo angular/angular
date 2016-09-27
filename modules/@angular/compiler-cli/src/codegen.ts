@@ -101,7 +101,7 @@ export class CodeGenerator {
         GENERATED_FILES;
     let filePaths = this.program.getSourceFiles()
                         .filter(sf => !skipFileNames.test(sf.fileName))
-                        .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName));
+                        .map(sf => this.host.getCanonicalFileName(sf.fileName));
     const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
     const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
       ngModules.push(...fileMeta.ngModules);
@@ -148,10 +148,7 @@ export class CodeGenerator {
     }
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-    const reflectorHost = usePathMapping ?
-        new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
-        new ReflectorHost(program, compilerHost, options, reflectorHostContext);
+    const reflectorHost = new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     const staticReflector = new StaticReflector(reflectorHost);
     StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
