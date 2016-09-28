@@ -927,7 +927,7 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
         securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
         bindingType = PropertyBindingType.Property;
-        this._assertNoEventBinding(boundPropertyName, sourceSpan, false);
+        this._validatePropertyOrAttributeName(boundPropertyName, sourceSpan, false);
         if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName, this._schemas)) {
           let errorMsg =
               `Can't bind to '${boundPropertyName}' since it isn't a known property of '${elementName}'.`;
@@ -942,7 +942,7 @@ class TemplateParseVisitor implements html.Visitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
-        this._assertNoEventBinding(boundPropertyName, sourceSpan, true);
+        this._validatePropertyOrAttributeName(boundPropertyName, sourceSpan, true);
         // NB: For security purposes, use the mapped property name, not the attribute name.
         const mapPropName = this._schemaRegistry.getMappedPropName(boundPropertyName);
         securityContext = this._schemaRegistry.securityContext(elementName, mapPropName);
@@ -975,23 +975,19 @@ class TemplateParseVisitor implements html.Visitor {
         boundPropertyName, bindingType, securityContext, ast, unit, sourceSpan);
   }
 
+
   /**
    * @param propName the name of the property / attribute
    * @param sourceSpan
    * @param isAttr true when binding to an attribute
    * @private
    */
-  private _assertNoEventBinding(propName: string, sourceSpan: ParseSourceSpan, isAttr: boolean):
-      void {
-    if (propName.toLowerCase().startsWith('on')) {
-      let msg = `Binding to event attribute '${propName}' is disallowed for security reasons, ` +
-          `please use (${propName.slice(2)})=...`;
-      if (!isAttr) {
-        msg +=
-            `\nIf '${propName}' is a directive input, make sure the directive is imported by the` +
-            ` current module.`;
-      }
-      this._reportError(msg, sourceSpan, ParseErrorLevel.FATAL);
+  private _validatePropertyOrAttributeName(
+      propName: string, sourceSpan: ParseSourceSpan, isAttr: boolean): void {
+    const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
+                            this._schemaRegistry.validateProperty(propName);
+    if (report.error) {
+      this._reportError(report.msg, sourceSpan, ParseErrorLevel.FATAL);
     }
   }
 
