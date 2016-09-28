@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 
-var _DOM: DomAdapter = null;
+let _DOM: DomAdapter = null;
 
 export function getDOM() {
   return _DOM;
