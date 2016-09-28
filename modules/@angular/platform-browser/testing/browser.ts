@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_ID, ClassProvider, ExistingProvider, FactoryProvider, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
 import {AnimationDriver, BrowserModule} from '@angular/platform-browser';
 
 import {BrowserDetection, createNgZone} from './browser_util';

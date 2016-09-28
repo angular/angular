@@ -8,8 +8,8 @@
 
 
 import {CompilePipeMetadata} from '../compile_metadata';
-import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
+import {isBlank} from '../facade/lang';
+import {Identifiers, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 
 import {CompileView} from './compile_view';

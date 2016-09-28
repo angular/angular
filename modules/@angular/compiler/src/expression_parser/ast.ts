@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
+
 import {isBlank} from '../facade/lang';
 
 export class ParserError {

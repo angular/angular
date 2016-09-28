@@ -7,14 +7,13 @@
  */
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ListWrapper, MapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
-import {createDiTokenExpression} from '../util';
 
 import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
@@ -23,7 +22,7 @@ import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {EventHandlerVars} from './constants';
 import {NameResolver} from './expression_converter';
-import {createPureProxy, getPropertyInView, getViewFactoryName, injectFromViewParentInjector} from './util';
+import {createPureProxy, getPropertyInView, getViewFactoryName} from './util';
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;

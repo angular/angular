@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ReflectiveInjector, createPlatformFactory} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Component, createPlatformFactory} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion longform

@@ -1,5 +1,5 @@
 import {bindAction} from '../../util';
-import {TreeNode, buildTree, emptyTree, flattenTree} from '../util';
+import {buildTree, flattenTree} from '../util';
 
 declare var Polymer: any;
 

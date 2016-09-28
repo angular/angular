@@ -9,7 +9,7 @@
 import {Injector, OpaqueToken} from '@angular/core';
 
 import {Options} from './common_options';
-import {isBlank, isPresent} from './facade/lang';
+import {isBlank} from './facade/lang';
 
 export type PerfLogEvent = {
   [key: string]: any

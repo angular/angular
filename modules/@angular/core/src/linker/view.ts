@@ -7,7 +7,7 @@
  */
 
 import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationPlayer, NoOpAnimationPlayer} from '../animation/animation_player';
+import {AnimationPlayer} from '../animation/animation_player';
 import {queueAnimation} from '../animation/animation_queue';
 import {AnimationTransitionEvent} from '../animation/animation_transition_event';
 import {ViewAnimationMap} from '../animation/view_animation_map';

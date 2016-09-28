@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
 
 import {isPresent} from '../src/facade/lang';

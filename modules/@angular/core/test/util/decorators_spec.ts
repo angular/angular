@@ -8,8 +8,8 @@
 
 import {Inject} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
-import {Class, makeDecorator, makeParamDecorator} from '@angular/core/src/util/decorators';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {Class, makeDecorator} from '@angular/core/src/util/decorators';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {global} from '../../src/facade/lang';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, MockAnimationPlayer, beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {MockAnimationPlayer, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';

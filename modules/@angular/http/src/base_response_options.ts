@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {isJsObject, isPresent} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 
 import {ResponseType} from './enums';
 import {Headers} from './headers';

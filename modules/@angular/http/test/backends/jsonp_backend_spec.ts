@@ -7,7 +7,7 @@
  */
 
 import {ReflectiveInjector} from '@angular/core';
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '../../src/backends/jsonp_backend';
@@ -16,7 +16,6 @@ import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_opti
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
 import {isPresent} from '../../src/facade/lang';
 import {Request} from '../../src/static_request';
-import {Response} from '../../src/static_response';
 
 var existingScripts: MockBrowserJsonp[] = [];
 

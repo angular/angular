@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, describe, expect, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {ON_WEB_WORKER} from '@angular/platform-webworker/src/web_workers/shared/api';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
 import {PRIMITIVE, Serializer} from '@angular/platform-webworker/src/web_workers/shared/serializer';

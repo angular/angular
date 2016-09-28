@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync} from '@angular/core/testing/fake_async';
-import {beforeEach, beforeEachProviders, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {SyncAsyncResult, splitAtColon} from '../src/util';
 

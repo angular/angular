@@ -7,7 +7,7 @@
  */
 
 import {async, fakeAsync, tick} from '@angular/core/testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {EventEmitter} from '../src/facade/async';

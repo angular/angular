@@ -8,7 +8,7 @@
 
 import {QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {iterateListLike} from '../../src/facade/collection';

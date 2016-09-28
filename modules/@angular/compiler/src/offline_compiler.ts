@@ -10,7 +10,7 @@ import {SchemaMetadata} from '@angular/core';
 
 import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTokenMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';

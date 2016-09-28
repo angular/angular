@@ -10,7 +10,6 @@ import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {ListWrapper, StringMapWrapper} from '../../../src/facade/collection';
 import {isPresent} from '../../../src/facade/lang';
 import {SpyMessageBroker} from '../worker/spies';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
+import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {stringify} from './facade/lang';

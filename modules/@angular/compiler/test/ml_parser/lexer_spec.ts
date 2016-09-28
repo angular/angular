@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {describe, expect, it} from '../../../core/testing/testing_internal';
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
 import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import * as lex from '../../src/ml_parser/lexer';
