@@ -29,6 +29,7 @@ import {MdToolbarModule} from './toolbar/index';
 import {MdTooltipModule} from './tooltip/index';
 import {MdMenuModule} from './menu/index';
 import {MdDialogModule} from './dialog/index';
+import {A11yModule} from './core/a11y/index';
 
 
 const MATERIAL_MODULES = [
@@ -57,6 +58,7 @@ const MATERIAL_MODULES = [
   OverlayModule,
   PortalModule,
   RtlModule,
+  A11yModule,
 ];
 
 @NgModule({
@@ -78,6 +80,7 @@ const MATERIAL_MODULES = [
     RtlModule.forRoot(),
 
     // These modules include providers.
+    A11yModule.forRoot(),
     MdButtonToggleModule.forRoot(),
     MdDialogModule.forRoot(),
     MdIconModule.forRoot(),

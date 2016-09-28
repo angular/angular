@@ -5,6 +5,8 @@ import {MdRippleModule} from './ripple/ripple';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
 import {A11yModule} from './a11y/index';
+import {MdLiveAnnouncer} from './a11y/live-announcer';
+import {InteractivityChecker} from './a11y/interactivity-checker';
 
 
 // RTL
@@ -54,6 +56,8 @@ export {
 export {FocusTrap} from './a11y/focus-trap';
 export {InteractivityChecker} from './a11y/interactivity-checker';
 
+export {A11yModule} from './a11y/index';
+
 export {
   MdUniqueSelectionDispatcher,
   MdUniqueSelectionDispatcherListener
@@ -85,7 +89,7 @@ export class MdCoreModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdCoreModule,
-      providers: [A11yModule.forRoot().providers],
+      providers: [MdLiveAnnouncer, InteractivityChecker],
     };
   }
 }
