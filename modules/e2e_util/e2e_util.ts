@@ -34,7 +34,9 @@ export function openBrowser(config: {
     browser.ignoreSynchronization = true;
   }
   var params = config.params || [];
-  params = params.concat([{name: 'bundles', value: cmdArgs.bundles}]);
+  if (!params.some((param) => param.name === 'bundles')) {
+    params = params.concat([{name: 'bundles', value: cmdArgs.bundles}]);
+  }
 
   var urlParams: string[] = [];
   params.forEach((param) => { urlParams.push(param.name + '=' + param.value); });
