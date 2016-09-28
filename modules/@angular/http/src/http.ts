@@ -16,7 +16,6 @@ import {RequestMethod} from './enums';
 import {ConnectionBackend, RequestOptionsArgs} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
-import {URLSearchParams} from './url_search_params';
 
 function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;

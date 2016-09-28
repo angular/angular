@@ -7,10 +7,9 @@
  */
 
 import {ResourceLoader, platformCoreDynamic} from '@angular/compiler';
-import {ClassProvider, ExistingProvider, FactoryProvider, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory} from '@angular/core';
+import {PlatformRef, Provider, createPlatformFactory} from '@angular/core';
 
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';
-import {Console} from './private_import_core';
 import {CachedResourceLoader} from './resource_loader/resource_loader_cache';
 
 export * from './private_export';

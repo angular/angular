@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ForwardRefFn, Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angular/core';
+import {Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angular/core';
 
 export function main() {
   describe('forwardRef examples', () => {

@@ -7,7 +7,7 @@
  */
 
 import {Provider} from '@angular/core';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
 import {DateWrapper, isBlank, isPresent} from '../../src/facade/lang';

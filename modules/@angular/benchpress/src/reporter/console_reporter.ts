@@ -7,10 +7,7 @@
  */
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
-
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {NumberWrapper, isBlank, isPresent, print} from '../facade/lang';
-import {Math} from '../facade/math';
+import {print} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';

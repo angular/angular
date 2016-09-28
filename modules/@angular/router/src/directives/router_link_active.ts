@@ -10,7 +10,6 @@ import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChang
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
-import {UrlTree} from '../url_tree';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
 

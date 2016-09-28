@@ -8,7 +8,7 @@
 
 import {LOCALE_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../src/localization';

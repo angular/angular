@@ -11,7 +11,7 @@ import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import * as animationUtils from '../../src/animation/animation_style_util';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AUTO_STYLE} from '../../src/animation/metadata';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('Animation Style Utils', function() {

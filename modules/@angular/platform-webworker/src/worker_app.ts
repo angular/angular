@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {APP_INITIALIZER, ApplicationModule, ClassProvider, ErrorHandler, ExistingProvider, FactoryProvider, NgModule, NgZone, PlatformRef, Provider, RootRenderer, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PlatformRef, Provider, RootRenderer, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BROWSER_SANITIZATION_PROVIDERS} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';

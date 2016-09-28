@@ -7,7 +7,7 @@
  */
 
 import {UpperCasePipe} from '@angular/common';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('UpperCasePipe', () => {

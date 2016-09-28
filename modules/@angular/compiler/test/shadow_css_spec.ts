@@ -7,7 +7,7 @@
  */
 
 import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
-import {beforeEach, ddescribe, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {

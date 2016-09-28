@@ -10,7 +10,7 @@ import {interpretStatements} from '@angular/compiler/src/output/output_interpret
 import {jitStatements} from '@angular/compiler/src/output/output_jit';
 import {EventEmitter} from '@angular/core';
 import {ViewType} from '@angular/core/src/linker/view_type';
-import {beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {Component, animate, keyframes, state, style, transition, trigger} from '@angular/core';
 
 @Component({
   host: {

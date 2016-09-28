@@ -7,7 +7,7 @@
  */
 
 import {ReflectiveInjector} from '@angular/core';
-import {AsyncTestCompleter, afterEach, beforeEach, ddescribe, describe, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, inject, it, xit} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 

@@ -7,7 +7,7 @@
  */
 
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';

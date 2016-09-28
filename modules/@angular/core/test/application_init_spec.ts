@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
-import {TestBed, async, inject, withModule} from '../testing';
+import {TestBed, async, inject} from '../testing';
 
 export function main() {
   describe('ApplicationInitStatus', () => {

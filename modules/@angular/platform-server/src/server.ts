@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {ClassProvider, ExistingProvider, FactoryProvider, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, TypeProvider, ValueProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';

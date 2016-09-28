@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {describe, expect, it} from '../../../core/testing/testing_internal';
 import {CssLexer, CssLexerMode, CssScannerError, CssToken, CssTokenType} from '../../src/css_parser/css_lexer';
 import {isPresent} from '../../src/facade/lang';
 

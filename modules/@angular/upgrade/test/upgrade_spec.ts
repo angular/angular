@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Class, Component, EventEmitter, Inject, NO_ERRORS_SCHEMA, NgModule, OpaqueToken, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {UpgradeAdapter} from '@angular/upgrade';

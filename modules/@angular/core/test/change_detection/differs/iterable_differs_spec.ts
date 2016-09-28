@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ReflectiveInjector} from '@angular/core';
+import {ReflectiveInjector} from '@angular/core';
 import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {SpyIterableDifferFactory} from '../../spies';
 
