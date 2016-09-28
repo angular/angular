@@ -213,7 +213,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setStyle(element: any, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;
   }
-  removeStyle(element: any, stylename: string) { element.style[stylename] = null; }
+  removeStyle(element: any, stylename: string) {
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    element.style[stylename] = '';
+  }
   getStyle(element: any, stylename: string): string { return element.style[stylename]; }
   hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
     const value = this.getStyle(element, styleName) || '';
