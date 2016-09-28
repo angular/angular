@@ -67,7 +67,7 @@ export class NgStyle implements DoCheck {
 
   private _setStyle(nameAndUnit: string, value: string): void {
     const [name, unit] = nameAndUnit.split('.');
-    value = value !== null && value !== void(0) && unit ? `${value}${unit}` : value;
+    value = value && unit ? `${value}${unit}` : value;
 
     this._renderer.setElementStyle(this._ngEl.nativeElement, name, value);
   }
