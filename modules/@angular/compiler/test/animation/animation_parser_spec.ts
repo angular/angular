@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {AnimationMetadata, animate, group, keyframes, sequence, style, transition, trigger} from '@angular/core';
+import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
+import {AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
 import {AnimationParser} from '../../src/animation/animation_parser';
-import {CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {StringMapWrapper} from '../../src/facade/collection';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 import {FILL_STYLE_FLAG, flattenStyles} from '../private_import_core';

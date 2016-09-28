@@ -8,9 +8,9 @@
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewContainerRef, WrappedValue, forwardRef} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewContainerRef, WrappedValue} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
-import {ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -18,7 +18,7 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 import {EventEmitter} from '../../src/facade/async';
 import {StringMapWrapper} from '../../src/facade/collection';
-import {NumberWrapper, isBlank} from '../../src/facade/lang';
+import {NumberWrapper} from '../../src/facade/lang';
 
 export function main() {
   let elSchema: MockSchemaRegistry;

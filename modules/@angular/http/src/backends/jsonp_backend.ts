@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
-import {BaseResponseOptions, ResponseOptions} from '../base_response_options';
+import {ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {Connection, ConnectionBackend} from '../interfaces';

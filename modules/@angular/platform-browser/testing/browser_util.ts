@@ -9,7 +9,7 @@
 import {NgZone} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
-import {RegExp, StringWrapper, global, isPresent, isString} from './facade/lang';
+import {StringWrapper, global, isPresent, isString} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassProvider, ExistingProvider, FactoryProvider, OpaqueToken, Provider, TypeProvider, ValueProvider} from '@angular/core';
+
 
 import {ROUTES} from './router_config_loader';
 import {ROUTER_PROVIDERS} from './router_module';

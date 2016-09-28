@@ -9,10 +9,9 @@
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper, MapWrapper, StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
-import {LifecycleHooks, reflector} from './private_import_core';
+import {isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
+import {LifecycleHooks} from './private_import_core';
 import {CssSelector} from './selector';
-import {getUrlScheme} from './url_resolver';
 import {sanitizeIdentifier, splitAtColon} from './util';
 
 function unimplemented(): any {

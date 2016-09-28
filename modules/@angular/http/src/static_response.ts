@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Json, isString} from '../src/facade/lang';
+
 
 import {ResponseOptions} from './base_response_options';
 import {Body} from './body';
 import {ResponseType} from './enums';
 import {Headers} from './headers';
-import {isJsObject} from './http_utils';
 
 
 /**

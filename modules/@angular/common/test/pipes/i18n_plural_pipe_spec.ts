@@ -8,7 +8,7 @@
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('I18nPluralPipe', () => {

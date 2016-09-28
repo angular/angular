@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectorRef, CompilerFactory, Component, Injector, NgModule, PlatformRef, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, Type} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';

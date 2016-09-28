@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from '@angular/core';
+
 import {INTERNAL_SERVER_PLATFORM_PROVIDERS} from './server';
 
 export var __platform_server_private__:

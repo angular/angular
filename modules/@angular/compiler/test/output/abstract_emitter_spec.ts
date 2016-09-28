@@ -7,7 +7,7 @@
  */
 
 import {escapeIdentifier} from '@angular/compiler/src/output/abstract_emitter';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('AbstractEmitter', () => {

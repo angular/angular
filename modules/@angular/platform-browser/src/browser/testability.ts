@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetTestability, Injectable, Testability, TestabilityRegistry, setTestabilityGetter} from '@angular/core';
+import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
 import {ListWrapper} from '../facade/collection';

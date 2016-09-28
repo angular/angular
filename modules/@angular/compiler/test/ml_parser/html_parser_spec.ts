@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {afterEach, beforeEach, ddescribe, describe, expect, iit, it, xit} from '../../../core/testing/testing_internal';
+import {beforeEach, describe, expect, it} from '../../../core/testing/testing_internal';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_parser';
 import {TokenType} from '../../src/ml_parser/lexer';

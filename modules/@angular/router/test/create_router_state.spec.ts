@@ -10,7 +10,7 @@ import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
-import {PRIMARY_OUTLET, Params} from '../src/shared';
+import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 

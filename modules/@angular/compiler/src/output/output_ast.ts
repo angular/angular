@@ -8,9 +8,7 @@
 
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent, isString} from '../facade/lang';
-import {ValueTransformer, visitValue} from '../util';
 
 
 

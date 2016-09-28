@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {digestMessage, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';

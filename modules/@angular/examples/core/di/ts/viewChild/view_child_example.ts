@@ -7,7 +7,7 @@
  */
 
 // #docregion Component
-import {AfterViewInit, Component, Directive, Input, ViewChild} from '@angular/core';
+import {Component, Directive, Input, ViewChild} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {

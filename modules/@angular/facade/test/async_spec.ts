@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xit} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/browser_util';
-import {EventEmitter, Observable, Subject} from '../src/async';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {EventEmitter} from '../src/async';
 
 export function main() {
   describe('EventEmitter', () => {

@@ -7,7 +7,7 @@
  */
 
 // ATTENTION: This file will be overwritten with generated code by main()
-import * as o from '@angular/compiler/src/output/output_ast';
+
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
 import {print} from '../../src/facade/lang';

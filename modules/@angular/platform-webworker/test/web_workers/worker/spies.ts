@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SpyObject, proxy} from '@angular/core/testing/testing_internal';
+import {SpyObject} from '@angular/core/testing/testing_internal';
 import {ClientMessageBroker} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 
 export class SpyMessageBroker extends SpyObject {

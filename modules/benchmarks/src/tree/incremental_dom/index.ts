@@ -1,5 +1,5 @@
 import {bindAction, profile} from '../../util';
-import {TreeNode, buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree} from '../util';
 import {TreeComponent} from './tree';
 const {patch} = require('incremental-dom');
 

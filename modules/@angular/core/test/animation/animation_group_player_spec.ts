@@ -9,7 +9,7 @@
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {beforeEach, describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('AnimationGroupPlayer', function() {

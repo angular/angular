@@ -8,8 +8,7 @@
 
 import {AnimationEntryMetadata} from '../animation/metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Injectable, Provider} from '../di';
-import {isPresent} from '../facade/lang';
+import {Provider} from '../di';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 

@@ -1,7 +1,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {TreeNode, emptyTree, flattenTree} from '../util';
+import {TreeNode, emptyTree} from '../util';
 
 @Component({
   selector: 'tree',

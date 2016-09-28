@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Type} from '@angular/core';
-import {beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
+import {Component} from '@angular/core';
+import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getComponentInfo, parseFields} from '@angular/upgrade/src/metadata';
 
 export function main() {

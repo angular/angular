@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animation_player';
+import {NoOpAnimationPlayer} from '../../src/animation/animation_player';
 import {fakeAsync, flushMicrotasks} from '../../testing';
-import {AsyncTestCompleter, beforeEach, ddescribe, describe, expect, iit, inject, it, xdescribe, xit} from '../../testing/testing_internal';
+import {describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('NoOpAnimationPlayer', function() {

@@ -9,7 +9,7 @@
 import {Provider, ReflectiveInjector} from '@angular/core';
 
 import {Options} from './common_options';
-import {isBlank, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {Metric} from './metric';
 import {MultiMetric} from './metric/multi_metric';
 import {PerflogMetric} from './metric/perflog_metric';

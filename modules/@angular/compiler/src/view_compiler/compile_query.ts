@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileQueryMetadata} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
