@@ -105,6 +105,47 @@ export function main() {
       expect(registry.getMappedPropName('exotic-unknown')).toEqual('exotic-unknown');
     });
 
+    it('should return an error message when asserting event properties', () => {
+      let report = registry.validateProperty('onClick');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event property 'onClick' is disallowed for security reasons, please use (Click)=...
+If 'onClick' is a directive input, make sure the directive is imported by the current module.`);
+
+      report = registry.validateProperty('onAnything');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
+If 'onAnything' is a directive input, make sure the directive is imported by the current module.`);
+    });
+
+    it('should return an error message when asserting event attributes', () => {
+      let report = registry.validateAttribute('onClick');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event attribute 'onClick' is disallowed for security reasons, please use (Click)=...`);
+
+      report = registry.validateAttribute('onAnything');
+      expect(report.error).toBeTruthy();
+      expect(report.msg)
+          .toEqual(
+              `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`);
+    });
+
+    it('should not return an error message when asserting non-event properties or attributes',
+       () => {
+         let report = registry.validateProperty('title');
+         expect(report.error).toBeFalsy();
+         expect(report.msg).not.toBeDefined();
+
+         report = registry.validateProperty('exotic-unknown');
+         expect(report.error).toBeFalsy();
+         expect(report.msg).not.toBeDefined();
+       });
+
     it('should return security contexts for elements', () => {
       expect(registry.securityContext('iframe', 'srcdoc')).toBe(SecurityContext.HTML);
       expect(registry.securityContext('p', 'innerHTML')).toBe(SecurityContext.HTML);

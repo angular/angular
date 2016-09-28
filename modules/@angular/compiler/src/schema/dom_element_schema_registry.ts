@@ -344,4 +344,26 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   getMappedPropName(propName: string): string { return _ATTR_TO_PROP[propName] || propName; }
 
   getDefaultComponentElementName(): string { return 'ng-component'; }
+
+  validateProperty(name: string): {error: boolean, msg?: string} {
+    if (name.toLowerCase().startsWith('on')) {
+      const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...` +
+          `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+          ` current module.`;
+      return {error: true, msg: msg};
+    } else {
+      return {error: false};
+    }
+  }
+
+  validateAttribute(name: string): {error: boolean, msg?: string} {
+    if (name.toLowerCase().startsWith('on')) {
+      const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+          `please use (${name.slice(2)})=...`;
+      return {error: true, msg: msg};
+    } else {
+      return {error: false};
+    }
+  }
 }

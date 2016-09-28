@@ -66,7 +66,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => TestBed.createComponent(SecuredComponent))
             .toThrowError(
-                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+                /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
       });
 
       it('should disallow binding to on* unless it is consumed by a directive', () => {
