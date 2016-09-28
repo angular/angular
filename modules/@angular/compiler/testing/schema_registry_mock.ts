@@ -13,7 +13,8 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
       public existingProperties: {[key: string]: boolean},
       public attrPropMapping: {[key: string]: string},
-      public existingElements: {[key: string]: boolean}) {}
+      public existingElements: {[key: string]: boolean}, public invalidProperties: Array<string>,
+      public invalidAttributes: Array<string>) {}
 
   hasProperty(tagName: string, property: string, schemas: SchemaMetadata[]): boolean {
     const value = this.existingProperties[property];
@@ -32,4 +33,23 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
   getMappedPropName(attrName: string): string { return this.attrPropMapping[attrName] || attrName; }
 
   getDefaultComponentElementName(): string { return 'ng-component'; }
+
+  validateProperty(name: string): {error: boolean, msg?: string} {
+    if (this.invalidProperties.indexOf(name) > -1) {
+      return {error: true, msg: `Binding to property '${name}' is disallowed for security reasons`};
+    } else {
+      return {error: false};
+    }
+  }
+
+  validateAttribute(name: string): {error: boolean, msg?: string} {
+    if (this.invalidAttributes.indexOf(name) > -1) {
+      return {
+        error: true,
+        msg: `Binding to attribute '${name}' is disallowed for security reasons`
+      };
+    } else {
+      return {error: false};
+    }
+  }
 }
