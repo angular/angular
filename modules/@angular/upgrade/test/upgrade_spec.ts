@@ -297,12 +297,12 @@ export function main() {
     describe('upgrade ng1 component', () => {
       it('should bind properties, events', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           var ng1Module = angular.module('ng1', []);
+           const ng1Module = angular.module('ng1', []);
 
-           var ng1 = function() {
+           const ng1 = () => {
              return {
-               template: 'Hello {{fullName}}; A: {{dataA}}; B: {{dataB}}; | ',
-               scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', event: '&'},
+               template: 'Hello {{fullName}}; A: {{dataA}}; B: {{dataB}}; C: {{modelC}}; | ',
+               scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', modelC: '=', event: '&'},
                link: function(scope: any /** TODO #9100 */) {
                  scope.$watch('dataB', (v: any /** TODO #9100 */) => {
                    if (v == 'Savkin') {
@@ -317,37 +317,82 @@ export function main() {
              };
            };
            ng1Module.directive('ng1', ng1);
-           var Ng2 =
+           const Ng2 =
                Component({
                  selector: 'ng2',
                  template:
-                     '<ng1 fullName="{{last}}, {{first}}" [modelA]="first" [(modelB)]="last" ' +
+                     '<ng1 fullName="{{last}}, {{first}}, {{city}}" [modelA]="first" [(modelB)]="last" [modelC]="city" ' +
                      '(event)="event=$event"></ng1>' +
-                     '<ng1 fullName="{{\'TEST\'}}" modelA="First" modelB="Last"></ng1>' +
-                     '{{event}}-{{last}}, {{first}}'
+                     '<ng1 fullName="{{\'TEST\'}}" modelA="First" modelB="Last" modelC="City"></ng1>' +
+                     '{{event}}-{{last}}, {{first}}, {{city}}'
                }).Class({
                  constructor: function() {
                    this.first = 'Victor';
                    this.last = 'Savkin';
+                   this.city = 'SF';
                    this.event = '?';
                  }
                });
 
-           var Ng2Module = NgModule({
-                             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                             imports: [BrowserModule],
-                             schemas: [NO_ERRORS_SCHEMA],
-                           }).Class({constructor: function() {}});
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-           var element = html(`<div><ng2></ng2></div>`);
+           const element = html(`<div><ng2></ng2></div>`);
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
              // events, and so without this we would not see the events processed.
              setTimeout(() => {
                expect(multiTrim(document.body.textContent))
                    .toEqual(
-                       'Hello SAVKIN, Victor; A: VICTOR; B: SAVKIN; | Hello TEST; A: First; B: Last; | WORKS-SAVKIN, Victor');
+                       'Hello SAVKIN, Victor, SF; A: VICTOR; B: SAVKIN; C: SF; | Hello TEST; A: First; B: Last; C: City; | WORKS-SAVKIN, Victor, SF');
+               ref.dispose();
+             }, 0);
+           });
+         }));
+
+      it('should bind optional properties', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+
+           const ng1 = () => {
+             return {
+               template: 'Hello; A: {{dataA}}; B: {{modelB}}; | ',
+               scope: {modelA: '=?dataA', modelB: '=?'}
+             };
+           };
+           ng1Module.directive('ng1', ng1);
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: '<ng1 [modelA]="first" [modelB]="last"></ng1>' +
+                             '<ng1 modelA="First" modelB="Last"></ng1>' +
+                             '<ng1></ng1>' +
+                             '<ng1></ng1>'
+                       }).Class({
+             constructor: function() {
+               this.first = 'Victor';
+               this.last = 'Savkin';
+             }
+           });
+
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
+
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           const element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
+             // events, and so without this we would not see the events processed.
+             setTimeout(() => {
+               expect(multiTrim(document.body.textContent))
+                   .toEqual(
+                       'Hello; A: Victor; B: Savkin; | Hello; A: First; B: Last; | Hello; A: ; B: ; | Hello; A: ; B: ; |');
                ref.dispose();
              }, 0);
            });
