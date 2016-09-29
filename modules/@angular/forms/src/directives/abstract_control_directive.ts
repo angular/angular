@@ -57,4 +57,12 @@ export abstract class AbstractControlDirective {
   reset(value: any = undefined): void {
     if (isPresent(this.control)) this.control.reset(value);
   }
+
+  hasError(errorCode: string, path: string[] = null): boolean {
+    return isPresent(this.control) ? this.control.hasError(errorCode, path) : false;
+  }
+
+  getError(errorCode: string, path: string[] = null): any {
+    return isPresent(this.control) ? this.control.getError(errorCode, path) : null;
+  }
 }
