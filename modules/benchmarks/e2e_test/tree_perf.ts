@@ -7,6 +7,7 @@
  */
 
 import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
+import {$} from 'protractor';
 
 interface Worker {
   id: string;

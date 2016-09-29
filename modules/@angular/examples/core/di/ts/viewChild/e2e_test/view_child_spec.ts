@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
 describe('viewChild example', () => {
   afterEach(verifyNoBrowserErrors);
-  let button: protractor.ElementFinder;
-  let result: protractor.ElementFinder;
+  let button: ElementFinder;
+  let result: ElementFinder;
 
   beforeEach(() => {
     browser.get('/core/di/ts/viewChild/index.html');

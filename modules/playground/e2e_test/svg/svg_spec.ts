@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, by, element} from 'protractor';
 
 describe('SVG', function() {
 
