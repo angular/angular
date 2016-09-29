@@ -1,3 +1,5 @@
+import {Injectable} from '@angular/core';
+
 /**
  * Utility for checking the interactivity of an element, such as whether is is focusable or
  * tabbable.
@@ -11,6 +13,7 @@
  * TODO(jelbourn): explore using ally.js directly for its significantly more robust
  * checks (need to evaluate payload size, performance, and compatibility with tree-shaking).
  */
+@Injectable()
 export class InteractivityChecker {
 
   /** Gets whether an element is disabled. */

@@ -4,9 +4,8 @@ import {RtlModule} from './rtl/dir';
 import {MdRippleModule} from './ripple/ripple';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
-import {A11yModule} from './a11y/index';
-import {MdLiveAnnouncer} from './a11y/live-announcer';
-import {InteractivityChecker} from './a11y/interactivity-checker';
+import {A11yModule, A11Y_PROVIDERS} from './a11y/index';
+import {OVERLAY_PROVIDERS} from './overlay/overlay';
 
 
 // RTL
@@ -89,7 +88,7 @@ export class MdCoreModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdCoreModule,
-      providers: [MdLiveAnnouncer, InteractivityChecker],
+      providers: [A11Y_PROVIDERS, OVERLAY_PROVIDERS],
     };
   }
 }
