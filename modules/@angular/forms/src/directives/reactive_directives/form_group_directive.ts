@@ -112,7 +112,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   removeControl(dir: FormControlName): void { ListWrapper.remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
-    var ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
@@ -122,7 +122,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   addFormArray(dir: FormArrayName): void {
-    var ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
@@ -132,7 +132,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
 
   updateModel(dir: FormControlName, value: any): void {
-    var ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl  = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
 

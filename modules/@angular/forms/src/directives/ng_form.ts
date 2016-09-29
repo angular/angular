@@ -103,7 +103,7 @@ export class NgForm extends ControlContainer implements Form {
 
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
+      const container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
       }
@@ -112,8 +112,8 @@ export class NgForm extends ControlContainer implements Form {
 
   addFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
-      var group = new FormGroup({});
+      const container = this._findContainer(dir.path);
+      const group = new FormGroup({});
       setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
       group.updateValueAndValidity({emitEvent: false});
@@ -122,7 +122,7 @@ export class NgForm extends ControlContainer implements Form {
 
   removeFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
-      var container = this._findContainer(dir.path);
+      const container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
       }
@@ -133,7 +133,7 @@ export class NgForm extends ControlContainer implements Form {
 
   updateModel(dir: NgControl, value: any): void {
     resolvedPromise.then(() => {
-      var ctrl = <FormControl>this.form.get(dir.path);
+      const ctrl = <FormControl>this.form.get(dir.path);
       ctrl.setValue(value);
     });
   }
