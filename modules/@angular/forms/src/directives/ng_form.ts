@@ -48,7 +48,8 @@ const resolvedPromise = Promise.resolve(null);
  * sub-groups within the form.
  *
  * You can listen to the directive's `ngSubmit` event to be notified when the user has
- * triggered a form submission.
+ * triggered a form submission. The `ngSubmit` event will be emitted with the original form
+ * submission event.
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
  *
@@ -61,7 +62,7 @@ const resolvedPromise = Promise.resolve(null);
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',
   providers: [formDirectiveProvider],
-  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
+  host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
@@ -139,9 +140,9 @@ export class NgForm extends ControlContainer implements Form {
 
   setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
-  onSubmit(): boolean {
+  onSubmit($event: Event): boolean {
     this._submitted = true;
-    this.ngSubmit.emit(null);
+    this.ngSubmit.emit($event);
     return false;
   }
 
