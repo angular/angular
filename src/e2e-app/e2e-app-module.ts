@@ -1,4 +1,4 @@
-import {NgModule, ApplicationRef} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 import {E2EApp, Home} from './e2e-app/e2e-app';
@@ -24,14 +24,6 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     BasicTabs,
     Home,
   ],
-  entryComponents: [
-    E2EApp,
-  ],
+  bootstrap: [E2EApp],
 })
-export class E2eAppModule {
-  constructor(private _appRef: ApplicationRef) { }
-
-  ngDoBootstrap() {
-    this._appRef.bootstrap(E2EApp);
-  }
-}
+export class E2eAppModule { }
