@@ -146,6 +146,87 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(kf[1]).toEqual([1, {'background': 'blue'}]);
          }));
 
+      describe('animation aliases', () => {
+        it('should animate the ":enter" animation alias as "void => *"', fakeAsync(() => {
+             TestBed.overrideComponent(DummyIfCmp, {
+               set: {
+                 template: `
+                  <div *ngIf="exp" [@myAnimation]="exp"></div>
+                `,
+                 animations: [trigger(
+                     'myAnimation',
+                     [transition(
+                         ':enter',
+                         [style({'opacity': 0}), animate('500ms', style({opacity: 1}))])])]
+               }
+             });
+
+             const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var cmp = fixture.componentInstance;
+             cmp.exp = true;
+             fixture.detectChanges();
+
+             expect(driver.log.length).toEqual(1);
+
+             var animation = driver.log[0];
+             expect(animation['duration']).toEqual(500);
+           }));
+
+        it('should animate the ":leave" animation alias as "* => void"', fakeAsync(() => {
+             TestBed.overrideComponent(DummyIfCmp, {
+               set: {
+                 template: `
+                  <div *ngIf="exp" [@myAnimation]="exp"></div>
+                `,
+                 animations: [trigger(
+                     'myAnimation',
+                     [transition(':leave', [animate('999ms', style({opacity: 0}))])])]
+               }
+             });
+
+             const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+             let fixture = TestBed.createComponent(DummyIfCmp);
+             var cmp = fixture.componentInstance;
+             cmp.exp = true;
+             fixture.detectChanges();
+
+             expect(driver.log.length).toEqual(0);
+
+             cmp.exp = false;
+             fixture.detectChanges();
+
+             expect(driver.log.length).toEqual(1);
+
+             var animation = driver.log[0];
+             expect(animation['duration']).toEqual(999);
+           }));
+
+        it('should throw an error when an unsupported alias is detected which is prefixed a colon value',
+           fakeAsync(() => {
+             TestBed.overrideComponent(DummyIfCmp, {
+               set: {
+                 template: `
+                  <div *ngIf="exp" [@myAnimation]="exp"></div>
+                `,
+                 animations: [trigger(
+                     'myAnimation',
+                     [transition(':dont_leave_me', [animate('444ms', style({opacity: 0}))])])]
+               }
+             });
+
+             var message = '';
+             try {
+               let fixture = TestBed.createComponent(DummyIfCmp);
+             } catch (e) {
+               message = e.message;
+             }
+
+             expect(message).toMatch(
+                 /the transition alias value ":dont_leave_me" is not supported/);
+           }));
+      });
+
       it('should animate between * and void and back even when no expression is assigned',
          fakeAsync(() => {
            TestBed.overrideComponent(DummyIfCmp, {

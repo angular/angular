@@ -132,9 +132,25 @@ function _parseAnimationStateTransition(
   return new AnimationStateTransitionAst(transitionExprs, stepsAst);
 }
 
+function _parseAnimationAlias(alias: string, errors: AnimationParseError[]): string {
+  switch (alias) {
+    case ':enter':
+      return 'void => *';
+    case ':leave':
+      return '* => void';
+    default:
+      errors.push(
+          new AnimationParseError(`the transition alias value "${alias}" is not supported`));
+      return '* => *';
+  }
+}
+
 function _parseAnimationTransitionExpr(
     eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
-  var expressions: any[] /** TODO #9100 */ = [];
+  var expressions: AnimationStateTransitionExpression[] = [];
+  if (eventStr[0] == ':') {
+    eventStr = _parseAnimationAlias(eventStr, errors);
+  }
   var match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (!isPresent(match) || match.length < 4) {
     errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
