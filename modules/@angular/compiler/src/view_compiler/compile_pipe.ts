@@ -8,7 +8,6 @@
 
 
 import {CompilePipeMetadata} from '../compile_metadata';
-import {isBlank} from '../facade/lang';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 
@@ -23,7 +22,7 @@ export class CompilePipe {
     if (meta.pure) {
       // pure pipes live on the component view
       pipe = compView.purePipes.get(name);
-      if (isBlank(pipe)) {
+      if (!pipe) {
         pipe = new CompilePipe(compView, meta);
         compView.purePipes.set(name, pipe);
         compView.pipes.push(pipe);
@@ -85,7 +84,7 @@ function _findPipeMeta(view: CompileView, name: string): CompilePipeMetadata {
       break;
     }
   }
-  if (isBlank(pipeMeta)) {
+  if (!pipeMeta) {
     throw new Error(
         `Illegal state: Could not find pipe ${name} although the parser should have detected this error!`);
   }

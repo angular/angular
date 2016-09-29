@@ -35,8 +35,8 @@ export function controlPath(name: string, parent: ControlContainer): string[] {
 }
 
 export function setUpControl(control: FormControl, dir: NgControl): void {
-  if (isBlank(control)) _throwError(dir, 'Cannot find control with');
-  if (isBlank(dir.valueAccessor)) _throwError(dir, 'No value accessor for form control with');
+  if (!control) _throwError(dir, 'Cannot find control with');
+  if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
 
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
@@ -139,7 +139,7 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
-  if (isBlank(valueAccessors)) return null;
+  if (!valueAccessors) return null;
 
   var defaultAccessor: ControlValueAccessor;
   var builtinAccessor: ControlValueAccessor;

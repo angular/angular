@@ -12,7 +12,7 @@ import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {isBlank, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
 import * as ir from './output/output_ast';
@@ -191,7 +191,7 @@ export class RuntimeCompiler implements Compiler {
 
   private _createCompiledHostTemplate(compType: Type<any>): CompiledTemplate {
     var compiledTemplate = this._compiledHostTemplateCache.get(compType);
-    if (isBlank(compiledTemplate)) {
+    if (!compiledTemplate) {
       var compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
       var hostMeta = createHostComponentMeta(compMeta);
@@ -206,7 +206,7 @@ export class RuntimeCompiler implements Compiler {
   private _createCompiledTemplate(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata): CompiledTemplate {
     var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.reference);
-    if (isBlank(compiledTemplate)) {
+    if (!compiledTemplate) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
           false, compMeta.selector, compMeta.type, ngModule.transitiveModule.directives,

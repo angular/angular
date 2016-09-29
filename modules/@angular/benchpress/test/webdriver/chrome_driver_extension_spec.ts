@@ -35,7 +35,7 @@ export function main() {
     function createExtension(
         perfRecords: any[] = null, userAgent: string = null,
         messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
-      if (isBlank(perfRecords)) {
+      if (!perfRecords) {
         perfRecords = [];
       }
       if (isBlank(userAgent)) {

@@ -11,7 +11,7 @@ import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, Ref
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {isBlank, isPresent, stringify} from '../../src/facade/lang';
+import {isPresent, stringify} from '../../src/facade/lang';
 
 class Engine {}
 
@@ -458,7 +458,7 @@ export function main() {
       it('should resolve and flatten', () => {
         var providers = ReflectiveInjector.resolve([Engine, [BrokenEngine]]);
         providers.forEach(function(b) {
-          if (isBlank(b)) return;  // the result is a sparse array
+          if (!b) return;  // the result is a sparse array
           expect(b instanceof ResolvedReflectiveProvider_).toBe(true);
         });
       });

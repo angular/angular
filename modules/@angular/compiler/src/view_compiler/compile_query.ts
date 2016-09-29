@@ -8,7 +8,7 @@
 
 import {CompileQueryMetadata} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
@@ -129,7 +129,7 @@ export function createQueryList(
 export function addQueryToTokenMap(map: Map<any, CompileQuery[]>, query: CompileQuery) {
   query.meta.selectors.forEach((selector) => {
     var entry = map.get(selector.reference);
-    if (isBlank(entry)) {
+    if (!entry) {
       entry = [];
       map.set(selector.reference, entry);
     }

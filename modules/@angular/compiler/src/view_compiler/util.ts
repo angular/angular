@@ -8,7 +8,7 @@
 
 
 import {CompileDirectiveMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {createDiTokenExpression} from '../util';
@@ -84,7 +84,7 @@ export function createPureProxy(
   view.fields.push(new o.ClassField(pureProxyProp.name, null));
   var pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
-  if (isBlank(pureProxyId)) {
+  if (!pureProxyId) {
     throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);
   }
   view.createMethod.addStmt(o.THIS_EXPR.prop(pureProxyProp.name)

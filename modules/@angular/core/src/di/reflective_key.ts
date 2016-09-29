@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 
 import {resolveForwardRef} from './forward_ref';
 
@@ -32,7 +32,7 @@ export class ReflectiveKey {
    * Private
    */
   constructor(public token: Object, public id: number) {
-    if (isBlank(token)) {
+    if (!token) {
       throw new Error('Token must be defined!');
     }
   }

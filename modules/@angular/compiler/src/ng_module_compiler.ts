@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
-import {isBlank, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
@@ -190,7 +190,7 @@ class _InjectorBuilder {
       resolvedProviderValueExpr = providerValueExpressions[0];
       type = providerValueExpressions[0].type;
     }
-    if (isBlank(type)) {
+    if (!type) {
       type = o.DYNAMIC_TYPE;
     }
     if (isEager) {
@@ -223,11 +223,11 @@ class _InjectorBuilder {
                resolveIdentifierToken(Identifiers.ComponentFactoryResolver).reference)) {
         result = o.THIS_EXPR;
       }
-      if (isBlank(result)) {
+      if (!result) {
         result = this._instances.get(dep.token.reference);
       }
     }
-    if (isBlank(result)) {
+    if (!result) {
       var args = [createDiTokenExpression(dep.token)];
       if (dep.isOptional) {
         args.push(o.NULL_EXPR);

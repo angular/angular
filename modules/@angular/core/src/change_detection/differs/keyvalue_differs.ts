@@ -8,7 +8,7 @@
 
 import {Optional, Provider, SkipSelf} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {isBlank, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 
@@ -72,7 +72,7 @@ export class KeyValueDiffers {
     return {
       provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
-        if (isBlank(parent)) {
+        if (!parent) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.

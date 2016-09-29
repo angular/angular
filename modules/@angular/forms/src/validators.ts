@@ -114,7 +114,7 @@ export class Validators {
    * of the individual error maps.
    */
   static compose(validators: ValidatorFn[]): ValidatorFn {
-    if (isBlank(validators)) return null;
+    if (!validators) return null;
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
@@ -124,7 +124,7 @@ export class Validators {
   }
 
   static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
-    if (isBlank(validators)) return null;
+    if (!validators) return null;
     var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 

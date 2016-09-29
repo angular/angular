@@ -9,7 +9,7 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper, MapWrapper, StringMapWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
@@ -27,7 +27,7 @@ export class CompileNode {
       public parent: CompileElement, public view: CompileView, public nodeIndex: number,
       public renderNode: o.Expression, public sourceAst: TemplateAst) {}
 
-  isNull(): boolean { return isBlank(this.renderNode); }
+  isNull(): boolean { return !this.renderNode; }
 
   isRootElement(): boolean { return this.view != this.parent.view; }
 }
@@ -313,12 +313,12 @@ export class CompileElement extends CompileNode {
       requestingProviderType: ProviderAstType, dep: CompileDiDependencyMetadata): o.Expression {
     var result: o.Expression = null;
     // constructor content query
-    if (isBlank(result) && isPresent(dep.query)) {
+    if (!result && isPresent(dep.query)) {
       result = this._addQuery(dep.query, null).queryList;
     }
 
     // constructor view query
-    if (isBlank(result) && isPresent(dep.viewQuery)) {
+    if (!result && isPresent(dep.viewQuery)) {
       result = createQueryList(
           dep.viewQuery, null,
           `_viewQuery_${dep.viewQuery.selectors[0].name}_${this.nodeIndex}_${this._componentConstructorViewQueryLists.length}`,
@@ -328,7 +328,7 @@ export class CompileElement extends CompileNode {
 
     if (isPresent(dep.token)) {
       // access builtins with special visibility
-      if (isBlank(result)) {
+      if (!result) {
         if (dep.token.reference ===
             resolveIdentifierToken(Identifiers.ChangeDetectorRef).reference) {
           if (requestingProviderType === ProviderAstType.Component) {
@@ -339,7 +339,7 @@ export class CompileElement extends CompileNode {
         }
       }
       // access regular providers on the element
-      if (isBlank(result)) {
+      if (!result) {
         let resolvedProvider = this._resolvedProviders.get(dep.token.reference);
         // don't allow directives / public services to access private services.
         // only components and private services can access private services.
@@ -361,20 +361,20 @@ export class CompileElement extends CompileNode {
     if (dep.isValue) {
       result = o.literal(dep.value);
     }
-    if (isBlank(result) && !dep.isSkipSelf) {
+    if (!result && !dep.isSkipSelf) {
       result = this._getLocalDependency(requestingProviderType, dep);
     }
     // check parent elements
-    while (isBlank(result) && !currElement.parent.isNull()) {
+    while (!result && !currElement.parent.isNull()) {
       currElement = currElement.parent;
       result = currElement._getLocalDependency(
           ProviderAstType.PublicService, new CompileDiDependencyMetadata({token: dep.token}));
     }
 
-    if (isBlank(result)) {
+    if (!result) {
       result = injectFromViewParentInjector(dep.token, dep.isOptional);
     }
-    if (isBlank(result)) {
+    if (!result) {
       result = o.NULL_EXPR;
     }
     return getPropertyInView(result, this.view, currElement.view);
@@ -411,7 +411,7 @@ function createProviderProperty(
     resolvedProviderValueExpr = providerValueExpressions[0];
     type = providerValueExpressions[0].type;
   }
-  if (isBlank(type)) {
+  if (!type) {
     type = o.DYNAMIC_TYPE;
   }
   if (isEager) {
