@@ -10,7 +10,7 @@ import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ListWrapper, MapWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
@@ -138,7 +138,7 @@ export class CompileView implements NameResolver {
     }
     var currView: CompileView = this;
     var result = currView.locals.get(name);
-    while (isBlank(result) && isPresent(currView.declarationElement.view)) {
+    while (!result && isPresent(currView.declarationElement.view)) {
       currView = currView.declarationElement.view;
       result = currView.locals.get(name);
     }

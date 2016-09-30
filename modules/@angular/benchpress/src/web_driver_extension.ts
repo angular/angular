@@ -9,7 +9,6 @@
 import {Injector, OpaqueToken} from '@angular/core';
 
 import {Options} from './common_options';
-import {isBlank} from './facade/lang';
 
 export type PerfLogEvent = {
   [key: string]: any
@@ -50,7 +49,7 @@ export abstract class WebDriverExtension {
               delegate = extension;
             }
           });
-          if (isBlank(delegate)) {
+          if (!delegate) {
             throw new Error('Could not find a delegate for given capabilities!');
           }
           return delegate;

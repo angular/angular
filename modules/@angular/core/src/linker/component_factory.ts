@@ -9,7 +9,6 @@
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/errors';
-import {isBlank} from '../facade/lang';
 import {Type} from '../type';
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
@@ -101,7 +100,7 @@ export class ComponentFactory<C> {
       injector: Injector, projectableNodes: any[][] = null,
       rootSelectorOrNode: string|any = null): ComponentRef<C> {
     var vu: ViewUtils = injector.get(ViewUtils);
-    if (isBlank(projectableNodes)) {
+    if (!projectableNodes) {
       projectableNodes = [];
     }
     // Note: Host views don't need a declarationAppElement!

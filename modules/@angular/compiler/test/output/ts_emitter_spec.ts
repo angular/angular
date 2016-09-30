@@ -11,8 +11,6 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {isBlank} from '../../src/facade/lang';
-
 import {SimpleJsImportGenerator} from './output_emitter_util';
 
 var someModuleUrl = 'asset:somePackage/lib/somePath';
@@ -39,7 +37,7 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement, exportedVars: string[] = null): string {
-      if (isBlank(exportedVars)) {
+      if (!exportedVars) {
         exportedVars = [];
       }
       return emitter.emitStatements(someModuleUrl, [stmt], exportedVars);

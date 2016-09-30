@@ -26,10 +26,10 @@ export function main() {
       execute?: any
     } = {}) {
       var time = 1000;
-      if (isBlank(metric)) {
+      if (!metric) {
         metric = new MockMetric([]);
       }
-      if (isBlank(reporter)) {
+      if (!reporter) {
         reporter = new MockReporter([]);
       }
       if (isBlank(driver)) {

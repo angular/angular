@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank} from '../../src/facade/lang';
+
 
 export function iterableChangesAsString(
     {collection = [] as any, previous = [] as any, additions = [] as any, moves = [] as any,
@@ -23,11 +23,11 @@ export function kvChangesAsString(
     {map, previous, additions, changes, removals}:
         {map?: any[], previous?: any[], additions?: any[], changes?: any[], removals?: any[]}):
     string {
-  if (isBlank(map)) map = [];
-  if (isBlank(previous)) previous = [];
-  if (isBlank(additions)) additions = [];
-  if (isBlank(changes)) changes = [];
-  if (isBlank(removals)) removals = [];
+  if (!map) map = [];
+  if (!previous) previous = [];
+  if (!additions) additions = [];
+  if (!changes) changes = [];
+  if (!removals) removals = [];
 
   return 'map: ' + map.join(', ') + '\n' +
       'previous: ' + previous.join(', ') + '\n' +

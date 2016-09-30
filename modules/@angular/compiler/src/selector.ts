@@ -216,7 +216,7 @@ export class SelectorMatcher {
         if (isTerminal) {
           var terminalMap = matcher._attrValueMap;
           var terminalValuesMap = terminalMap.get(attrName);
-          if (isBlank(terminalValuesMap)) {
+          if (!terminalValuesMap) {
             terminalValuesMap = new Map<string, SelectorContext[]>();
             terminalMap.set(attrName, terminalValuesMap);
           }
@@ -224,7 +224,7 @@ export class SelectorMatcher {
         } else {
           var parttialMap = matcher._attrValuePartialMap;
           var partialValuesMap = parttialMap.get(attrName);
-          if (isBlank(partialValuesMap)) {
+          if (!partialValuesMap) {
             partialValuesMap = new Map<string, SelectorMatcher>();
             parttialMap.set(attrName, partialValuesMap);
           }
@@ -237,7 +237,7 @@ export class SelectorMatcher {
   private _addTerminal(
       map: Map<string, SelectorContext[]>, name: string, selectable: SelectorContext) {
     var terminalList = map.get(name);
-    if (isBlank(terminalList)) {
+    if (!terminalList) {
       terminalList = [];
       map.set(name, terminalList);
     }
@@ -246,7 +246,7 @@ export class SelectorMatcher {
 
   private _addPartial(map: Map<string, SelectorMatcher>, name: string): SelectorMatcher {
     var matcher = map.get(name);
-    if (isBlank(matcher)) {
+    if (!matcher) {
       matcher = new SelectorMatcher();
       map.set(name, matcher);
     }
@@ -316,7 +316,7 @@ export class SelectorMatcher {
   _matchTerminal(
       map: Map<string, SelectorContext[]>, name: string, cssSelector: CssSelector,
       matchedCallback: (c: CssSelector, a: any) => void): boolean {
-    if (isBlank(map) || isBlank(name)) {
+    if (!map || isBlank(name)) {
       return false;
     }
 
@@ -325,7 +325,7 @@ export class SelectorMatcher {
     if (isPresent(starSelectables)) {
       selectables = selectables.concat(starSelectables);
     }
-    if (isBlank(selectables)) {
+    if (!selectables) {
       return false;
     }
     var selectable: SelectorContext;
@@ -341,11 +341,11 @@ export class SelectorMatcher {
   _matchPartial(
       map: Map<string, SelectorMatcher>, name: string, cssSelector: CssSelector,
       matchedCallback: (c: CssSelector, a: any) => void): boolean {
-    if (isBlank(map) || isBlank(name)) {
+    if (!map || isBlank(name)) {
       return false;
     }
     var nestedSelector = map.get(name);
-    if (isBlank(nestedSelector)) {
+    if (!nestedSelector) {
       return false;
     }
     // TODO(perf): get rid of recursion and measure again
@@ -374,13 +374,11 @@ export class SelectorContext {
 
   finalize(cssSelector: CssSelector, callback: (c: CssSelector, a: any) => void): boolean {
     var result = true;
-    if (this.notSelectors.length > 0 &&
-        (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
+    if (this.notSelectors.length > 0 && (!this.listContext || !this.listContext.alreadyMatched)) {
       var notMatcher = SelectorMatcher.createNotMatcher(this.notSelectors);
       result = !notMatcher.match(cssSelector, null);
     }
-    if (result && isPresent(callback) &&
-        (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
+    if (result && isPresent(callback) && (!this.listContext || !this.listContext.alreadyMatched)) {
       if (isPresent(this.listContext)) {
         this.listContext.alreadyMatched = true;
       }

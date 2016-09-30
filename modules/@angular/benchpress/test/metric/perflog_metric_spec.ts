@@ -11,7 +11,7 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
 
 import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
 import {StringMapWrapper} from '../../src/facade/collection';
-import {isBlank, isPresent} from '../../src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -28,11 +28,11 @@ export function main() {
         requestCount?: boolean
       } = {}): Metric {
     commandLog = [];
-    if (isBlank(perfLogFeatures)) {
+    if (!perfLogFeatures) {
       perfLogFeatures =
           new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
-    if (isBlank(microMetrics)) {
+    if (!microMetrics) {
       microMetrics = {};
     }
     var providers: Provider[] = [

@@ -10,7 +10,6 @@ import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChang
 
 import {EventEmitter} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
-import {isBlank} from '../../facade/lang';
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
@@ -174,7 +173,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   private _checkFormPresent() {
-    if (isBlank(this.form)) {
+    if (!this.form) {
       ReactiveErrors.missingFormException();
     }
   }
