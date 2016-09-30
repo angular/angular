@@ -99,16 +99,27 @@ export function main() {
     it('should handle :host', () => {
       expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
 
-      expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('[a-host].x, [a-host].y {}');
+      expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}');
+      expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}');
+
+      expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('.x[a-host], .y[a-host] {}');
+      expect(s(':host(ul,li) {}', 'a', 'a-host')).toEqual('ul[a-host], li[a-host] {}');
 
       expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .z[a], [a-host].y > .z[a] {}');
+          .toEqual('.x[a-host] > .z[a], .y[a-host] > .z[a] {}');
+      expect(s(':host(ul,li) > .z {}', 'a', 'a-host'))
+          .toEqual('ul[a-host] > .z[a], li[a-host] > .z[a] {}');
     });
 
     it('should handle :host-context', () => {
-      expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('[a-host].x, .x [a-host] {}');
+      expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('.x[a-host], .x [a-host] {}');
+      expect(s(':host-context(div) {}', 'a', 'a-host')).toEqual('div[a-host], div [a-host] {}');
+
       expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
-          .toEqual('[a-host].x > .y[a], .x [a-host] > .y[a] {}');
+          .toEqual('.x[a-host] > .y[a], .x [a-host] > .y[a] {}');
+      expect(s(':host-context(ul) > .y {}', 'a', 'a-host'))
+          .toEqual('ul[a-host] > .y[a], ul [a-host] > .y[a] {}');
+
     });
 
     it('should support polyfill-next-selector', () => {
@@ -138,10 +149,10 @@ export function main() {
 
     it('should support polyfill-rule', () => {
       let css = s('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
+      expect(css).toEqual('.foo[a-host] .bar[a] {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar[a] {;color:blue;}');
+      expect(css).toEqual('.foo[a-host] .bar[a] {;color:blue;}');
     });
 
     it('should handle ::shadow', () => {
