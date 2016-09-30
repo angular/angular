@@ -174,7 +174,7 @@ export class ShadowCss {
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return cssText.replace(
-        _cssContentNextSelectorRe, function(...m: string[]) { return m[1] + '{'; });
+        _cssContentNextSelectorRe, function(...m: string[]) { return m[2] + '{'; });
   }
 
   /*
@@ -196,7 +196,7 @@ export class ShadowCss {
     // Difference with webcomponents.js: does not handle comments
     return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
       const rule = m[0].replace(m[1], '').replace(m[2], '');
-      return m[3] + rule;
+      return m[4] + rule;
     });
   }
 
@@ -242,7 +242,7 @@ export class ShadowCss {
     let m: RegExpExecArray;
     _cssContentUnscopedRuleRe.lastIndex = 0;
     while ((m = _cssContentUnscopedRuleRe.exec(cssText)) !== null) {
-      const rule = m[0].replace(m[2], '').replace(m[1], m[3]);
+      const rule = m[0].replace(m[2], '').replace(m[1], m[4]);
       r += rule + '\n\n';
     }
     return r;
@@ -458,10 +458,10 @@ export class ShadowCss {
   }
 }
 const _cssContentNextSelectorRe =
-    /polyfill-next-selector[^}]*content:[\s]*?['"](.*?)['"][;\s]*}([^{]*?){/gim;
-const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
+    /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
+const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
 const _cssContentUnscopedRuleRe =
-    /(polyfill-unscoped-rule)[^}]*(content:[\s]*['"](.*?)['"])[;\s]*[^}]*}/gim;
+    /(polyfill-unscoped-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';

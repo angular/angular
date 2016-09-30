@@ -128,6 +128,9 @@ export function main() {
 
       css = s('polyfill-next-selector {content: "x > y"} z {}', 'a');
       expect(css).toEqual('x[a] > y[a]{}');
+
+      css = s(`polyfill-next-selector {content: 'button[priority="1"]'} z {}`, 'a');
+      expect(css).toEqual('button[priority="1"][a] {}');
     });
 
     it('should support polyfill-unscoped-rule', () => {
@@ -136,6 +139,9 @@ export function main() {
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'a');
       expect(css).toContain('#menu > .bar {;color:blue;}');
+
+      css = s(`polyfill-unscoped-rule {content: 'button[priority="1"]'}`, 'a');
+      expect(css).toContain('button[priority="1"] {}');
     });
 
     it('should support multiple instances polyfill-unscoped-rule', () => {
@@ -153,6 +159,9 @@ export function main() {
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
       expect(css).toEqual('.foo[a-host] .bar[a] {;color:blue;}');
+
+      css = s(`polyfill-rule {content: 'button[priority="1"]'}`, 'a', 'a-host');
+      expect(css).toEqual('button[priority="1"][a] {}');
     });
 
     it('should handle ::shadow', () => {
