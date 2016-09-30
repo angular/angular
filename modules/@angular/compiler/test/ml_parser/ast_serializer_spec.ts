@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, describe, expect, it} from '../../../core/testing/testing_internal';
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
+import * as html from '@angular/compiler/src/ml_parser/ast';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
 
 export function main() {
   describe('Node serializer', () => {
@@ -62,6 +62,10 @@ export function main() {
 
 class _SerializerVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
+    if (getHtmlTagDefinition(element.name).isVoid) {
+      return `<${element.name}${this._visitAll(element.attrs, ' ')}/>`;
+    }
+
     return `<${element.name}${this._visitAll(element.attrs, ' ')}>${this._visitAll(element.children)}</${element.name}>`;
   }
 
