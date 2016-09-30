@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../src/facade/collection';
+
 import {BrowserDetection} from '../testing/browser_util';
 
 export function main() {

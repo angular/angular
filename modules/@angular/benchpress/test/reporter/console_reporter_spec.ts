@@ -25,7 +25,7 @@ export function main() {
           metrics?: {[key: string]: any}
         }) {
       log = [];
-      if (isBlank(descriptions)) {
+      if (!descriptions) {
         descriptions = [];
       }
       if (isBlank(sampleId)) {

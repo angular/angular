@@ -9,7 +9,7 @@
 import {Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {isBlank, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../../private_import_core';
 import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -50,7 +50,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
 
   renderComponent(componentType: RenderComponentType): Renderer {
     var result = this._componentRenderers.get(componentType.id);
-    if (isBlank(result)) {
+    if (!result) {
       result = new WebWorkerRenderer(this, componentType);
       this._componentRenderers.set(componentType.id, result);
       var id = this._renderStore.allocateId();
@@ -243,11 +243,11 @@ export class NamedEventEmitter {
   private _listeners: Map<string, Function[]>;
 
   private _getListeners(eventName: string): Function[] {
-    if (isBlank(this._listeners)) {
+    if (!this._listeners) {
       this._listeners = new Map<string, Function[]>();
     }
     var listeners = this._listeners.get(eventName);
-    if (isBlank(listeners)) {
+    if (!listeners) {
       listeners = [];
       this._listeners.set(eventName, listeners);
     }

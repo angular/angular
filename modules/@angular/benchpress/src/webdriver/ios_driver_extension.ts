@@ -52,7 +52,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 
   /** @internal */
   private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[] = null) {
-    if (isBlank(events)) {
+    if (!events) {
       events = [];
     }
     records.forEach((record) => {

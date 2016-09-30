@@ -8,7 +8,7 @@
 
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
-import {StringWrapper, isBlank, isPresent} from '../facade/lang';
+import {StringWrapper, isPresent} from '../facade/lang';
 import {identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
@@ -32,7 +32,7 @@ export class CompileEventListener {
     var listener = targetEventListeners.find(
         listener => listener.eventTarget == eventTarget && listener.eventName == eventName &&
             listener.eventPhase == eventPhase);
-    if (isBlank(listener)) {
+    if (!listener) {
       listener = new CompileEventListener(
           compileElement, eventTarget, eventName, eventPhase, targetEventListeners.length);
       targetEventListeners.push(listener);

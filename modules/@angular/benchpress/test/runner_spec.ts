@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
-import {isBlank} from '../src/facade/lang';
 
 export function main() {
   describe('runner', () => {
@@ -17,7 +16,7 @@ export function main() {
     var runner: Runner;
 
     function createRunner(defaultProviders: any[] = null): Runner {
-      if (isBlank(defaultProviders)) {
+      if (!defaultProviders) {
         defaultProviders = [];
       }
       runner = new Runner([

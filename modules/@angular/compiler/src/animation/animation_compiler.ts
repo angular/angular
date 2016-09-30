@@ -7,7 +7,7 @@
  */
 
 import {StringMapWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
@@ -323,7 +323,7 @@ class _AnimationBuilderStateMap {
   get states() { return this._states; }
   registerState(name: string, value: {[prop: string]: string | number} = null): void {
     var existingEntry = this._states[name];
-    if (isBlank(existingEntry)) {
+    if (!existingEntry) {
       this._states[name] = value;
     }
   }
