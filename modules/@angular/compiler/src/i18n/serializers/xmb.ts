@@ -43,7 +43,6 @@ export class Xmb implements Serializer {
   write(messageMap: {[k: string]: i18n.Message}): string {
     const visitor = new _Visitor();
     let rootNode = new xml.Tag(_MESSAGES_TAG);
-    rootNode.children.push(new xml.Text('\n'));
 
     Object.keys(messageMap).forEach((id) => {
       const message = messageMap[id];
@@ -58,16 +57,18 @@ export class Xmb implements Serializer {
       }
 
       rootNode.children.push(
-          new xml.Text('  '), new xml.Tag(_MESSAGE_TAG, attrs, visitor.serialize(message.nodes)),
-          new xml.Text('\n'));
+          new xml.CR(2), new xml.Tag(_MESSAGE_TAG, attrs, visitor.serialize(message.nodes)));
     });
+
+    rootNode.children.push(new xml.CR());
 
     return xml.serialize([
       new xml.Declaration({version: '1.0', encoding: 'UTF-8'}),
-      new xml.Text('\n'),
+      new xml.CR(),
       new xml.Doctype(_MESSAGES_TAG, _DOCTYPE),
-      new xml.Text('\n'),
+      new xml.CR(),
       rootNode,
+      new xml.CR(),
     ]);
   }
 

@@ -88,6 +88,10 @@ export class Text implements Node {
   visit(visitor: IVisitor): any { return visitor.visitText(this); }
 }
 
+export class CR extends Text {
+  constructor(ws: number = 0) { super(`\n${new Array(ws + 1).join(' ')}`); }
+}
+
 const _ESCAPED_CHARS: [RegExp, string][] = [
   [/&/g, '&amp;'],
   [/"/g, '&quot;'],
