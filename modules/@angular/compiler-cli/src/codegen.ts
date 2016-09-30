@@ -40,50 +40,47 @@ export class CodeGeneratorModuleCollector {
       private staticReflector: StaticReflector, private reflectorHost: StaticReflectorHost,
       private program: ts.Program, private options: AngularCompilerOptions) {}
 
-  getModuleSymbols(program: ts.Program): {fileMetas: FileMetadata[], ngModules: StaticSymbol[]} {
+  getModuleSymbols(): StaticSymbol[] {
     // Compare with false since the default should be true
-    const skipFileNames = (this.options.generateCodeForLibraries === false) ?
-        GENERATED_OR_DTS_FILES :
-        GENERATED_FILES;
-    let filePaths = this.program.getSourceFiles()
-                        .filter(sf => !skipFileNames.test(sf.fileName))
-                        .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName));
-    const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
-    const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
-      ngModules.push(...fileMeta.ngModules);
-      return ngModules;
-    }, <StaticSymbol[]>[]);
-    return {fileMetas, ngModules};
-  }
+    const skipFileNames =
+        this.options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
 
-  private readFileMetadata(absSourcePath: string): FileMetadata {
-    const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
-    const result: FileMetadata = {directives: [], ngModules: [], fileUrl: absSourcePath};
-    if (!moduleMetadata) {
-      console.log(`WARNING: no metadata found for ${absSourcePath}`);
-      return result;
-    }
-    const metadata = moduleMetadata['metadata'];
-    const symbols = metadata && Object.keys(metadata);
-    if (!symbols || !symbols.length) {
-      return result;
-    }
-    for (const symbol of symbols) {
-      if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-        // Ignore symbols that are only included to record error information.
-        continue;
-      }
-      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
-      const annotations = this.staticReflector.annotations(staticType);
-      annotations.forEach((annotation) => {
-        if (annotation instanceof NgModule) {
-          result.ngModules.push(staticType);
-        } else if (annotation instanceof Directive) {
-          result.directives.push(staticType);
-        }
-      });
-    }
-    return result;
+    const ngModules: StaticSymbol[] = [];
+
+    this.program.getSourceFiles()
+        .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))
+        .forEach(sourceFile => {
+          const absSrcPath = this.reflectorHost.getCanonicalFileName(sourceFile.fileName);
+
+          const moduleMetadata = this.staticReflector.getModuleMetadata(absSrcPath);
+          if (!moduleMetadata) {
+            console.log(`WARNING: no metadata found for ${absSrcPath}`);
+            return;
+          }
+
+          const metadata = moduleMetadata['metadata'];
+
+          if (!metadata) {
+            return;
+          }
+
+          for (const symbol of Object.keys(metadata)) {
+            if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
+              // Ignore symbols that are only included to record error information.
+              continue;
+            }
+            const staticType = this.reflectorHost.findDeclaration(absSrcPath, symbol, absSrcPath);
+            const annotations = this.staticReflector.annotations(staticType);
+            annotations.some((annotation) => {
+              if (annotation instanceof NgModule) {
+                ngModules.push(staticType);
+                return true;
+              }
+            });
+          }
+        });
+
+    return ngModules;
   }
 }
 
@@ -101,7 +98,7 @@ export class CodeGenerator {
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
     let root = this.options.basePath;
-    for (let eachRootDir of this.options.rootDirs || []) {
+    for (const eachRootDir of this.options.rootDirs || []) {
       if (this.options.trace) {
         console.log(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
       }
@@ -111,31 +108,27 @@ export class CodeGenerator {
     }
 
     // transplant the codegen path to be inside the `genDir`
-    var relativePath: string = path.relative(root, filePath);
+    let relativePath: string = path.relative(root, filePath);
     while (relativePath.startsWith('..' + path.sep)) {
       // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
       // into `genDir`.
       relativePath = relativePath.substr(3);
     }
+
     return path.join(this.options.genDir, relativePath);
   }
 
   codegen(): Promise<any> {
-    const {fileMetas, ngModules} = this.moduleCollector.getModuleSymbols(this.program);
-    const analyzedNgModules = this.compiler.analyzeModules(ngModules);
-    return Promise.all(fileMetas.map(
-        (fileMeta) =>
-            this.compiler
-                .compile(
-                    fileMeta.fileUrl, analyzedNgModules, fileMeta.directives, fileMeta.ngModules)
-                .then((generatedModules) => {
-                  generatedModules.forEach((generatedModule) => {
-                    const sourceFile = this.program.getSourceFile(fileMeta.fileUrl);
-                    const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
-                    this.host.writeFile(
-                        emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
-                  });
-                })));
+    const ngModules = this.moduleCollector.getModuleSymbols();
+
+    return this.compiler.compileModules(ngModules).then(generatedModules => {
+      generatedModules.forEach(generatedModule => {
+        const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
+        const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
+        this.host.writeFile(
+            emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+      });
+    });
   }
 
   static create(
@@ -200,10 +193,4 @@ export class CodeGenerator {
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
   }
-}
-
-export interface FileMetadata {
-  fileUrl: string;
-  directives: StaticSymbol[];
-  ngModules: StaticSymbol[];
 }

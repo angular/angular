@@ -1,0 +1,29 @@
+{
+  "angularCompilerOptions": {
+    // For TypeScript 1.8, we have to lay out generated files
+    // in the same source directory with your code.
+    "genDir": ".",
+    "debug": true
+  },
+
+  "compilerOptions": {
+    "target": "es5",
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "rootDir": "",
+    "declaration": true,
+    "lib": ["es6", "dom"],
+    "baseUrl": "."
+  },
+
+  "files": [
+    "src/module",
+    "src/bootstrap",
+    "test/all_spec",
+    "benchmarks/src/tree/ng2/index_aot.ts",
+    "benchmarks/src/tree/ng2_switch/index_aot.ts",
+    "benchmarks/src/largetable/ng2/index_aot.ts",
+    "benchmarks/src/largetable/ng2_switch/index_aot.ts"
+  ]
+}

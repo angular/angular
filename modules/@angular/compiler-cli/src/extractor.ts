@@ -18,16 +18,13 @@ import 'reflect-metadata';
 import * as compiler from '@angular/compiler';
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
-import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
-const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 export class Extractor {
   constructor(
@@ -37,82 +34,82 @@ export class Extractor {
       private metadataResolver: compiler.CompileMetadataResolver,
       private directiveNormalizer: compiler.DirectiveNormalizer) {}
 
-  private readFileMetadata(absSourcePath: string): FileMetadata {
+  private readModuleSymbols(absSourcePath: string): StaticSymbol[] {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
-    const result: FileMetadata = {components: [], ngModules: [], fileUrl: absSourcePath};
+    const modSymbols: StaticSymbol[] = [];
     if (!moduleMetadata) {
       console.log(`WARNING: no metadata found for ${absSourcePath}`);
-      return result;
+      return modSymbols;
     }
+
     const metadata = moduleMetadata['metadata'];
     const symbols = metadata && Object.keys(metadata);
     if (!symbols || !symbols.length) {
-      return result;
+      return modSymbols;
     }
+
     for (const symbol of symbols) {
       if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
         // Ignore symbols that are only included to record error information.
         continue;
       }
+
       const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
       const annotations = this.staticReflector.annotations(staticType);
-      annotations.forEach((annotation) => {
-        if (annotation instanceof NgModule) {
-          result.ngModules.push(staticType);
-        } else if (annotation instanceof Component) {
-          result.components.push(staticType);
+
+      annotations.some(a => {
+        if (a instanceof NgModule) {
+          modSymbols.push(staticType);
+          return true;
         }
       });
     }
-    return result;
+
+    return modSymbols;
   }
 
   extract(): Promise<compiler.MessageBundle> {
-    const skipFileNames = (this.options.generateCodeForLibraries === false) ?
-        GENERATED_OR_DTS_FILES :
-        GENERATED_FILES;
     const filePaths =
-        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !skipFileNames.test(f));
-    const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
-    const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
-      ngModules.push(...fileMeta.ngModules);
-      return ngModules;
-    }, <StaticSymbol[]>[]);
-    const analyzedNgModules = compiler.analyzeModules(ngModules, this.metadataResolver);
-    const errors: compiler.ParseError[] = [];
+        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
+    const ngModules: StaticSymbol[] = [];
 
-    let bundlePromise =
-        Promise
-            .all(fileMetas.map((fileMeta) => {
-              const url = fileMeta.fileUrl;
-              return Promise.all(fileMeta.components.map(compType => {
-                const compMeta = this.metadataResolver.getDirectiveMetadata(<any>compType);
-                const ngModule = analyzedNgModules.ngModuleByDirective.get(compType);
-                if (!ngModule) {
-                  throw new Error(
-                      `Cannot determine the module for component ${compMeta.type.name}!`);
-                }
-                return Promise
-                    .all([compMeta, ...ngModule.transitiveModule.directives].map(
-                        dirMeta =>
-                            this.directiveNormalizer.normalizeDirective(dirMeta).asyncResult))
-                    .then((normalizedCompWithDirectives) => {
-                      const compMeta = normalizedCompWithDirectives[0];
-                      const html = compMeta.template.template;
-                      const interpolationConfig =
-                          compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
-                      errors.push(
-                          ...this.messageBundle.updateFromTemplate(html, url, interpolationConfig));
-                    });
-              }));
-            }))
-            .then(_ => this.messageBundle);
+    filePaths.forEach((filePath) => ngModules.push(...this.readModuleSymbols(filePath)));
+
+    const files = compiler.analyzeNgModules(ngModules, this.metadataResolver).files;
+    const errors: compiler.ParseError[] = [];
+    const filePromises: Promise<any>[] = [];
+
+    files.forEach(file => {
+      const cmpPromises: Promise<compiler.CompileDirectiveMetadata>[] = [];
+      file.directives.forEach(directiveType => {
+        const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
+        if (dirMeta.isComponent) {
+          cmpPromises.push(this.directiveNormalizer.normalizeDirective(dirMeta).asyncResult);
+        }
+      });
+
+      if (cmpPromises.length) {
+        const done =
+            Promise.all(cmpPromises).then((compMetas: compiler.CompileDirectiveMetadata[]) => {
+              compMetas.forEach(compMeta => {
+                const html = compMeta.template.template;
+                const interpolationConfig =
+                    compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
+                errors.push(...this.messageBundle.updateFromTemplate(
+                    html, file.srcUrl, interpolationConfig));
+              });
+            });
+
+        filePromises.push(done);
+      }
+    });
+
 
     if (errors.length) {
       throw new Error(errors.map(e => e.toString()).join('\n'));
     }
 
-    return bundlePromise;
+    return Promise.all(filePromises).then(_ => this.messageBundle);
   }
 
   static create(
@@ -148,10 +145,4 @@ export class Extractor {
         options, program, compilerHost, staticReflector, messageBundle, reflectorHost, resolver,
         normalizer);
   }
-}
-
-interface FileMetadata {
-  fileUrl: string;
-  components: StaticSymbol[];
-  ngModules: StaticSymbol[];
 }
