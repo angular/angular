@@ -27,7 +27,6 @@ const _PLACEHOLDER_TAG = 'x';
 const _SOURCE_TAG = 'source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
-const _CR = (ws: number = 0) => new xml.Text(`\n${new Array(ws).join(' ')}`);
 
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
@@ -44,34 +43,37 @@ export class Xliff implements Serializer {
 
       let transUnit = new xml.Tag(_UNIT_TAG, {id: id, datatype: 'html'});
       transUnit.children.push(
-          _CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)), _CR(8),
-          new xml.Tag(_TARGET_TAG));
+          new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
+          new xml.CR(8), new xml.Tag(_TARGET_TAG));
 
       if (message.description) {
         transUnit.children.push(
-            _CR(8),
+            new xml.CR(8),
             new xml.Tag(
                 'note', {priority: '1', from: 'description'}, [new xml.Text(message.description)]));
       }
 
       if (message.meaning) {
         transUnit.children.push(
-            _CR(8),
+            new xml.CR(8),
             new xml.Tag('note', {priority: '1', from: 'meaning'}, [new xml.Text(message.meaning)]));
       }
 
-      transUnit.children.push(_CR(6));
+      transUnit.children.push(new xml.CR(6));
 
-      transUnits.push(_CR(6), transUnit);
+      transUnits.push(new xml.CR(6), transUnit);
     });
 
-    const body = new xml.Tag('body', {}, [...transUnits, _CR(4)]);
+    const body = new xml.Tag('body', {}, [...transUnits, new xml.CR(4)]);
     const file = new xml.Tag(
         'file', {'source-language': _SOURCE_LANG, datatype: 'plaintext', original: 'ng2.template'},
-        [_CR(4), body, _CR(2)]);
-    const xliff = new xml.Tag('xliff', {version: _VERSION, xmlns: _XMLNS}, [_CR(2), file, _CR()]);
+        [new xml.CR(4), body, new xml.CR(2)]);
+    const xliff = new xml.Tag(
+        'xliff', {version: _VERSION, xmlns: _XMLNS}, [new xml.CR(2), file, new xml.CR()]);
 
-    return xml.serialize([new xml.Declaration({version: '1.0', encoding: 'UTF-8'}), _CR(), xliff]);
+    return xml.serialize([
+      new xml.Declaration({version: '1.0', encoding: 'UTF-8'}), new xml.CR(), xliff, new xml.CR()
+    ]);
   }
 
   load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: ml.Node[]} {

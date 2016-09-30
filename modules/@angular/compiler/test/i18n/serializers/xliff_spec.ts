@@ -21,47 +21,49 @@ const HTML = `
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
- <file source-language="en" datatype="plaintext" original="ng2.template">
-   <body>
-     <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
-       <source>translatable attribute</source>
-       <target/>
-     </trans-unit>
-     <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
-       <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
-       <target/>
-     </trans-unit>
-     <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
-       <source>foo</source>
-       <target/>
-       <note priority="1" from="description">d</note>
-       <note priority="1" from="meaning">m</note>
-     </trans-unit>
-   </body>
- </file>
-</xliff>`;
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
+        <source>translatable attribute</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
+        <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
+        <source>foo</source>
+        <target/>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+`;
 
 const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
- <file source-language="en" datatype="plaintext" original="ng2.template">
-   <body>
-     <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
-       <source>translatable attribute</source>
-       <target>etubirtta elbatalsnart</target>
-     </trans-unit>
-     <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
-       <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
-       <target><x id="INTERPOLATION"/> footnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="b"/></target>
-     </trans-unit>
-     <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
-       <source>foo</source>
-       <target>oof</target>
-       <note priority="1" from="description">d</note>
-       <note priority="1" from="meaning">m</note>
-     </trans-unit>
-   </body>
- </file>
-</xliff>`;
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
+        <source>translatable attribute</source>
+        <target>etubirtta elbatalsnart</target>
+      </trans-unit>
+      <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
+        <source>translatable element <x id="START_BOLD_TEXT" ctype="b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="b"/> <x id="INTERPOLATION"/></source>
+        <target><x id="INTERPOLATION"/> footnemele elbatalsnart <x id="START_BOLD_TEXT" ctype="b"/>sredlohecalp htiw<x id="CLOSE_BOLD_TEXT" ctype="b"/></target>
+      </trans-unit>
+      <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
+        <source>foo</source>
+        <target>oof</target>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+`;
 
 export function main(): void {
   let serializer: Xliff;

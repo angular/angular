@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
-
-import {MessageBundle} from '../../../src/i18n/message_bundle';
-import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
 export function main(): void {
   describe('XMB serializer', () => {
@@ -49,7 +47,8 @@ export function main(): void {
   <msg id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2">{ count, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
   <msg id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" desc="d" meaning="m">foo</msg>
   <msg id="83dd87699b8c1779dd72277ef6e2d46ca58be042">{ count, plural, =0 {{ sex, gender, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
-</messagebundle>`;
+</messagebundle>
+`;
 
     it('should write a valid xmb file', () => { expect(toXmb(HTML)).toEqual(XMB); });
 
