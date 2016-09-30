@@ -139,13 +139,15 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): xml.Node[] {
-    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.startName, ctype: ph.tag});
+    const ctype = getCtypeForTag(ph.tag);
+
+    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.startName, ctype});
     if (ph.isVoid) {
       // void tags have no children nor closing tags
       return [startTagPh];
     }
 
-    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.closeName, ctype: ph.tag});
+    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.closeName, ctype});
 
     return [startTagPh, ...this.serialize(ph.children), closeTagPh];
   }
@@ -287,5 +289,16 @@ class _LoadVisitor implements ml.Visitor {
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
+  }
+}
+
+function getCtypeForTag(tag: string): string {
+  switch (tag.toLowerCase()) {
+    case 'br':
+      return 'lb';
+    case 'img':
+      return 'image';
+    default:
+      return `x-${tag}`;
   }
 }
