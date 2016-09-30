@@ -36,25 +36,27 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <messagebundle>
   <msg id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" desc="desc" meaning="meaning">translate me</msg>
   <msg id="65cc4ab3b4c438e07c89be2b677d08369fb62da2">Welcome</msg>
-</messagebundle>`;
+</messagebundle>
+`;
 
 const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
- <file source-language="en" datatype="plaintext" original="ng2.template">
-   <body>
-     <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
-       <source>translate me</source>
-       <target/>
-       <note priority="1" from="description">desc</note>
-       <note priority="1" from="meaning">meaning</note>
-     </trans-unit>
-     <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
-       <source>Welcome</source>
-       <target/>
-     </trans-unit>
-   </body>
- </file>
-</xliff>`;
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
+        <source>translate me</source>
+        <target/>
+        <note priority="1" from="description">desc</note>
+        <note priority="1" from="meaning">meaning</note>
+      </trans-unit>
+      <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
+        <source>Welcome</source>
+        <target/>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+`;
 
 describe('template i18n extraction output', () => {
   const outDir = '';
