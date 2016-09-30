@@ -509,7 +509,7 @@ export class CssRule {
   constructor(public selector: string, public content: string) {}
 }
 
-export function processRules(input: string, ruleCallback: Function): string {
+export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
   const inputWithEscapedBlocks = escapeBlocks(input);
   let nextBlockIndex = 0;
   return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
