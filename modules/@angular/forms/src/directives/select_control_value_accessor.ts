@@ -117,9 +117,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   /** @internal */
   _getOptionValue(valueString: string): any {
     let key: string = _extractId(valueString);
-		return this._optionMap.has(key)
-			? this._optionMap.get(key)
-			: valueString;
+    return this._optionMap.has(key) ? this._optionMap.get(key) : valueString;
   }
 }
 
