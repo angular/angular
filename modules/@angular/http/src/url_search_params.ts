@@ -102,6 +102,10 @@ export class URLSearchParams {
   getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
 
   set(param: string, val: string) {
+    if (val === void 0 || val === null) {
+      this.delete(param);
+      return;
+    }
     const list = this.paramsMap.get(param) || [];
     list.length = 0;
     list.push(val);
@@ -124,6 +128,7 @@ export class URLSearchParams {
   }
 
   append(param: string, val: string): void {
+    if (val === void 0 || val === null) return;
     const list = this.paramsMap.get(param) || [];
     list.push(val);
     this.paramsMap.set(param, list);
