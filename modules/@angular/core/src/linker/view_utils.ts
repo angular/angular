@@ -10,7 +10,7 @@ import {APP_ID} from '../application_tokens';
 import {devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
-import {isBlank, isPresent, looseIdentical} from '../facade/lang';
+import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
@@ -72,7 +72,7 @@ const EMPTY_ARR: any[] = [];
 
 export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
   var res: any[][];
-  if (isBlank(projectableNodes)) {
+  if (!projectableNodes) {
     res = EMPTY_ARR;
   } else if (projectableNodes.length < expectedSlotCount) {
     var givenSlotCount = projectableNodes.length;

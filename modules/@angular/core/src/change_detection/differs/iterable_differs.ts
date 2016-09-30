@@ -8,7 +8,7 @@
 
 import {Optional, Provider, SkipSelf} from '../../di';
 import {ListWrapper} from '../../facade/collection';
-import {getTypeNameForDebugging, isBlank, isPresent} from '../../facade/lang';
+import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 
@@ -82,7 +82,7 @@ export class IterableDiffers {
     return {
       provide: IterableDiffers,
       useFactory: (parent: IterableDiffers) => {
-        if (isBlank(parent)) {
+        if (!parent) {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.

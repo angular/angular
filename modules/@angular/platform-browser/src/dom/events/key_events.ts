@@ -8,7 +8,7 @@
 
 import {Injectable, NgZone} from '@angular/core';
 
-import {ListWrapper, StringMapWrapper} from '../../facade/collection';
+import {ListWrapper} from '../../facade/collection';
 import {StringWrapper, isPresent} from '../../facade/lang';
 import {getDOM} from '../dom_adapter';
 

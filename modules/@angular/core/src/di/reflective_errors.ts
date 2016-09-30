@@ -8,7 +8,7 @@
 
 import {ListWrapper} from '../facade/collection';
 import {BaseError, WrappedError} from '../facade/errors';
-import {isBlank, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {ReflectiveInjector} from './reflective_injector';
@@ -229,7 +229,7 @@ export class NoAnnotationError extends BaseError {
     var signature: string[] = [];
     for (var i = 0, ii = params.length; i < ii; i++) {
       var parameter = params[i];
-      if (isBlank(parameter) || parameter.length == 0) {
+      if (!parameter || parameter.length == 0) {
         signature.push('?');
       } else {
         signature.push(parameter.map(stringify).join(' '));

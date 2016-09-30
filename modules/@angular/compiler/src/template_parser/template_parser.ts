@@ -12,7 +12,7 @@ import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTemplateMetadata, 
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {StringMapWrapper} from '../facade/collection';
-import {isBlank, isPresent, isString} from '../facade/lang';
+import {isPresent, isString} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, identifierToken, resolveIdentifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
@@ -869,7 +869,7 @@ class TemplateParseVisitor implements html.Visitor {
       const boundPropsByName = new Map<string, BoundElementOrDirectiveProperty>();
       boundProps.forEach(boundProp => {
         const prevValue = boundPropsByName.get(boundProp.name);
-        if (isBlank(prevValue) || prevValue.isLiteral) {
+        if (!prevValue || prevValue.isLiteral) {
           // give [a]="b" a higher precedence than a="b" on the same element
           boundPropsByName.set(boundProp.name, boundProp);
         }
@@ -900,7 +900,7 @@ class TemplateParseVisitor implements html.Visitor {
     });
 
     props.forEach((prop: BoundElementOrDirectiveProperty) => {
-      if (!prop.isLiteral && isBlank(boundDirectivePropsIndex.get(prop.name))) {
+      if (!prop.isLiteral && !boundDirectivePropsIndex.get(prop.name)) {
         boundElementProps.push(this._createElementPropertyAst(
             elementName, prop.name, prop.expression, prop.sourceSpan));
       }

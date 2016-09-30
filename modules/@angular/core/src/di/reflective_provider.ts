@@ -201,7 +201,7 @@ function _normalizeProviders(providers: Provider[], res: Provider[]): Provider[]
 
 export function constructDependencies(
     typeOrFunc: any, dependencies: any[]): ReflectiveDependency[] {
-  if (isBlank(dependencies)) {
+  if (!dependencies) {
     return _dependenciesFor(typeOrFunc);
   } else {
     var params: any[][] = dependencies.map(t => [t]);
@@ -211,7 +211,7 @@ export function constructDependencies(
 
 function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
   var params = reflector.parameters(typeOrFunc);
-  if (isBlank(params)) return [];
+  if (!params) return [];
   if (params.some(isBlank)) {
     throw new NoAnnotationError(typeOrFunc, params);
   }

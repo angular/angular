@@ -722,7 +722,7 @@ class _DuplicateMap {
     var key = getMapKey(trackById);
 
     var recordList = this.map.get(key);
-    return isBlank(recordList) ? null : recordList.get(trackById, afterIndex);
+    return recordList ? recordList.get(trackById, afterIndex) : null;
   }
 
   /**
