@@ -109,17 +109,18 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
-    const isActiveLinks = this.reduceList(this.links);
-    const isActiveLinksWithHrefs = this.reduceList(this.linksWithHrefs);
+    const isActive = this.hasActiveLink();
     this.classes.forEach(
-        c => this.renderer.setElementClass(
-            this.element.nativeElement, c, isActiveLinks || isActiveLinksWithHrefs));
+        c => this.renderer.setElementClass(this.element.nativeElement, c, isActive));
   }
 
-  private reduceList(q: QueryList<any>): boolean {
-    return q.reduce(
-        (res: boolean, link: any) =>
-            res || this.router.isActive(link.urlTree, this.routerLinkActiveOptions.exact),
-        false);
+  private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
+    return (link: RouterLink | RouterLinkWithHref) =>
+               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+  }
+
+  private hasActiveLink(): boolean {
+    return this.links.some(this.isLinkActive(this.router)) ||
+        this.linksWithHrefs.some(this.isLinkActive(this.router));
   }
 }
