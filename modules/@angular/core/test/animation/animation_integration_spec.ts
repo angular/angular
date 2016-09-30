@@ -227,6 +227,24 @@ function declareTests({useJit}: {useJit: boolean}) {
            }));
       });
 
+      it('should throw an error when an transition state does not contain [abc123_-] characters within the state names',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@myAnimation]="exp"></div>
+                `,
+               animations: [trigger(
+                   'myAnimation',
+                   [transition('%a => %b', [animate('444ms', style({opacity: 0}))])])]
+             }
+           });
+
+           expect(() => {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+           }).toThrowError(/the provided transition value "%a => %b" is not of a supported format/);
+         }));
+
       it('should animate between * and void and back even when no expression is assigned',
          fakeAsync(() => {
            TestBed.overrideComponent(DummyIfCmp, {
