@@ -44,6 +44,20 @@ describe('tree benchmark perf', () => {
         runTreeBenchmark({
           id: `deepTree.ng2.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2/index.html',
+          work: worker.work,
+          prepare: worker.prepare,
+        }).then(done, done.fail);
+      });
+
+      it('should run for ng2 ftl', (done) => {
+        runTreeBenchmark({
+          id: `deepTree.ng2.ftl.${worker.id}`,
+          url: 'all/benchmarks/src/tree/ng2_ftl/index.html',
+          work: worker.work,
+          prepare: worker.prepare,
+          // Can't use bundles as we use AoT generated code
+          // which relies on deep imports
+          extraParams: [{name: 'bundles', value: false}]
         }).then(done, done.fail);
       });
 
@@ -51,6 +65,20 @@ describe('tree benchmark perf', () => {
         runTreeBenchmark({
           id: `deepTree.ng2.static.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2_static/index.html',
+          work: worker.work,
+          prepare: worker.prepare,
+        }).then(done, done.fail);
+      });
+
+      it('should run for ng2 static ftl', (done) => {
+        runTreeBenchmark({
+          id: `deepTree.ng2.ftl.${worker.id}`,
+          url: 'all/benchmarks/src/tree/ng2_static_ftl/index.html',
+          work: worker.work,
+          prepare: worker.prepare,
+          // Can't use bundles as we use AoT generated code
+          // which relies on deep imports
+          extraParams: [{name: 'bundles', value: false}]
         }).then(done, done.fail);
       });
 
@@ -58,6 +86,8 @@ describe('tree benchmark perf', () => {
         runTreeBenchmark({
           id: `deepTree.ng2_switch.${worker.id}`,
           url: 'all/benchmarks/src/tree/ng2_switch/index.html',
+          work: worker.work,
+          prepare: worker.prepare,
         }).then(done, done.fail);
       });
 
@@ -66,6 +96,8 @@ describe('tree benchmark perf', () => {
           id: `deepTree.baseline.${worker.id}`,
           url: 'all/benchmarks/src/tree/baseline/index.html',
           ignoreBrowserSynchronization: true,
+          work: worker.work,
+          prepare: worker.prepare,
         }).then(done, done.fail);
       });
 
@@ -74,6 +106,8 @@ describe('tree benchmark perf', () => {
           id: `deepTree.incremental_dom.${worker.id}`,
           url: 'all/benchmarks/src/tree/incremental_dom/index.html',
           ignoreBrowserSynchronization: true,
+          work: worker.work,
+          prepare: worker.prepare,
         }).then(done, done.fail);
       });
 
@@ -82,6 +116,8 @@ describe('tree benchmark perf', () => {
           id: `deepTree.polymer.${worker.id}`,
           url: 'all/benchmarks/src/tree/polymer/index.html',
           ignoreBrowserSynchronization: true,
+          work: worker.work,
+          prepare: worker.prepare,
         }).then(done, done.fail);
       });
 
@@ -90,22 +126,30 @@ describe('tree benchmark perf', () => {
           id: `deepTree.polymer_leaves.${worker.id}`,
           url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
           ignoreBrowserSynchronization: true,
+          work: worker.work,
+          prepare: worker.prepare,
         }).then(done, done.fail);
       });
     });
   });
 
-  function runTreeBenchmark(
-      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean}) {
+  function runTreeBenchmark(config: {
+    id: string,
+    url: string, ignoreBrowserSynchronization?: boolean,
+    work: () => any,
+    prepare: () => any, extraParams?: {name: string, value: any}[]
+  }) {
+    let params = [{name: 'depth', value: 11}];
+    if (config.extraParams) {
+      params = params.concat(config.extraParams);
+    }
     return runBenchmark({
       id: config.id,
       url: config.url,
       ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
-      params: [{name: 'depth', value: 9}],
-      work: () => {
-        $('#createDom').click();
-        $('#destroyDom').click();
-      }
+      params: params,
+      work: config.work,
+      prepare: config.prepare
     });
   }
 });
