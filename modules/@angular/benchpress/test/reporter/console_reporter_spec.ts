@@ -10,7 +10,7 @@ import {Provider} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
-import {DateWrapper, isBlank, isPresent} from '../../src/facade/lang';
+import {isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {
@@ -90,5 +90,5 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

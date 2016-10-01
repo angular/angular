@@ -9,8 +9,6 @@
 import {OpaqueToken} from '@angular/core';
 import * as fs from 'fs';
 
-import {DateWrapper} from './facade/lang';
-
 export class Options {
   static SAMPLE_ID = new OpaqueToken('Options.sampleId');
   static DEFAULT_DESCRIPTION = new OpaqueToken('Options.defaultDescription');
@@ -34,7 +32,7 @@ export class Options {
     {provide: Options.FORCE_GC, useValue: false},
     {provide: Options.PREPARE, useValue: Options.NO_PREPARE},
     {provide: Options.MICRO_METRICS, useValue: {}}, {provide: Options.USER_METRICS, useValue: {}},
-    {provide: Options.NOW, useValue: () => DateWrapper.now()},
+    {provide: Options.NOW, useValue: () => new Date()},
     {provide: Options.RECEIVED_DATA, useValue: false},
     {provide: Options.REQUEST_COUNT, useValue: false},
     {provide: Options.CAPTURE_FRAMES, useValue: false},
