@@ -32,6 +32,7 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('animation tests', function() {
     beforeEach(() => {
       InnerContentTrackingAnimationPlayer.initLog = [];
+      InnerContentTrackingAnimationPlayer.constructorLog = [];
 
       TestBed.configureCompiler({useJit: useJit});
       TestBed.configureTestingModule({
@@ -1121,6 +1122,10 @@ function declareTests({useJit}: {useJit: boolean}) {
            var outer: any = driver.log.pop();
            var outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
 
+           expect(InnerContentTrackingAnimationPlayer.constructorLog).toEqual([
+             outerPlayer.element, innerPlayer.element
+           ]);
+
            expect(InnerContentTrackingAnimationPlayer.initLog).toEqual([
              outerPlayer.element, innerPlayer.element
            ]);
@@ -1934,9 +1939,13 @@ class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
 }
 
 class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
+  static constructorLog: any[] = [];
   static initLog: any[] = [];
 
-  constructor(public element: any) { super(); }
+  constructor(public element: any) {
+    super();
+    InnerContentTrackingAnimationPlayer.constructorLog.push(this.element);
+  }
 
   public computedHeight: number;
   public capturedInnerText: string;
