@@ -18,6 +18,7 @@ import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {Renderer} from '@angular/core/src/render';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -825,6 +826,46 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(tc.nativeElement.id).toEqual('newId');
       });
+
+      it('should properly evaluate property access in host when local and directive names conflict',
+         () => {
+           const fixture =
+               TestBed
+                   .configureTestingModule(
+                       {declarations: [MyComp, DirectiveUpdatingHostProperties]})
+                   .overrideComponent(MyComp, {
+                     set: {
+                       template:
+                           `<div *ngFor="let id of ['red', 'blue']"><span update-host-properties></span></div>`
+                     }
+                   })
+                   .createComponent(MyComp);
+           fixture.detectChanges();
+
+           const spanEls = fixture.debugElement.queryAll(By.css('span'));
+           expect(spanEls[0].nativeElement.id).toBe('one');
+           expect(spanEls[1].nativeElement.id).toBe('one');
+         });
+
+      it('should properly evaluate method calls in host when local and directive names conflict',
+         () => {
+           const fixture =
+               TestBed
+                   .configureTestingModule(
+                       {declarations: [MyComp, DirectiveUpdatingHostPropertiesFromMethod]})
+                   .overrideComponent(MyComp, {
+                     set: {
+                       template:
+                           `<div *ngFor="let id of ['red', 'blue']"><span update-host-properties-from-method></span></div>`
+                     }
+                   })
+                   .createComponent(MyComp);
+           fixture.detectChanges();
+
+           const spanEls = fixture.debugElement.queryAll(By.css('span'));
+           expect(spanEls[0].nativeElement.id).toBe('one');
+           expect(spanEls[1].nativeElement.id).toBe('one');
+         });
 
       if (getDOM().supportsDOMEvents()) {
         it('should support preventing default on render events', () => {
@@ -1821,6 +1862,16 @@ class DirectiveUpdatingHostProperties {
   id: string;
 
   constructor() { this.id = 'one'; }
+}
+
+@Directive({selector: '[update-host-properties-from-method]', host: {'[id]': 'id()'}})
+class DirectiveUpdatingHostPropertiesFromMethod {
+  id() { return 'one'; }
+}
+
+@Directive({selector: '[directive-listening-to-host-events]', host: {'(click)': 'id = "clicked"'}})
+class DirectiveListeningToHostEvents {
+  id: string;
 }
 
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})

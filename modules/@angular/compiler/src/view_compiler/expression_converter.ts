@@ -27,8 +27,10 @@ export class ExpressionWithWrappedValueInfo {
 
 export function convertCdExpressionToIr(
     nameResolver: NameResolver, implicitReceiver: o.Expression, expression: cdAst.AST,
-    valueUnwrapper: o.ReadVarExpr, bindingIndex: number): ExpressionWithWrappedValueInfo {
-  const visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, valueUnwrapper, bindingIndex);
+    valueUnwrapper: o.ReadVarExpr, bindingIndex: number,
+    accessLocal: boolean): ExpressionWithWrappedValueInfo {
+  const visitor = new _AstToIrVisitor(
+      nameResolver, implicitReceiver, valueUnwrapper, bindingIndex, accessLocal);
   const irAst: o.Expression = expression.visit(visitor, _Mode.Expression);
   return new ExpressionWithWrappedValueInfo(
       irAst, visitor.needsValueUnwrapper, visitor.temporaryCount);
@@ -37,7 +39,7 @@ export function convertCdExpressionToIr(
 export function convertCdStatementToIr(
     nameResolver: NameResolver, implicitReceiver: o.Expression, stmt: cdAst.AST,
     bindingIndex: number): o.Statement[] {
-  const visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, null, bindingIndex);
+  const visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, null, bindingIndex, true);
   let statements: o.Statement[] = [];
   flattenStatements(stmt.visit(visitor, _Mode.Statement), statements);
   prependTemporaryDecls(visitor.temporaryCount, bindingIndex, statements);
@@ -93,7 +95,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _nameResolver: NameResolver, private _implicitReceiver: o.Expression,
-      private _valueUnwrapper: o.ReadVarExpr, private bindingIndex: number) {}
+      private _valueUnwrapper: o.ReadVarExpr, private bindingIndex: number,
+      private accessLocal: boolean) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     var op: o.BinaryOperator;
@@ -233,7 +236,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       const args = this.visitAll(ast.args, _Mode.Expression);
       let result: any = null;
       let receiver = this.visit(ast.receiver, _Mode.Expression);
-      if (receiver === this._implicitReceiver) {
+      if (receiver === this._implicitReceiver && this.accessLocal) {
         var varExpr = this._nameResolver.getLocal(ast.name);
         if (isPresent(varExpr)) {
           result = varExpr.callFn(args);
@@ -257,7 +260,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     } else {
       let result: any = null;
       var receiver = this.visit(ast.receiver, _Mode.Expression);
-      if (receiver === this._implicitReceiver) {
+      if (receiver === this._implicitReceiver && this.accessLocal) {
         result = this._nameResolver.getLocal(ast.name);
       }
       if (isBlank(result)) {
