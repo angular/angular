@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {JsonFileReporter, MeasureValues, Options, ReflectiveInjector, SampleDescription} from '../../index';
-import {DateWrapper, Json, isPresent} from '../../src/facade/lang';
+import {Json, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('file reporter', () => {
@@ -27,7 +27,7 @@ export function main() {
           useValue: new SampleDescription(sampleId, descriptions, metrics)
         },
         {provide: JsonFileReporter.PATH, useValue: path},
-        {provide: Options.NOW, useValue: () => DateWrapper.fromMillis(1234)}, {
+        {provide: Options.NOW, useValue: () => new Date(1234)}, {
           provide: Options.WRITE_FILE,
           useValue: (filename: string, content: string) => {
             loggedFile = {'filename': filename, 'content': content};
@@ -77,5 +77,5 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

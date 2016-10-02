@@ -1,6 +1,6 @@
 import {PromiseWrapper} from '@angular/facade/src/async';
 import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
-import {DateWrapper, Type, isPresent, print} from '@angular/facade/src/lang';
+import {Type, isPresent, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -44,10 +44,10 @@ export function main() {
 
 function measureWrapper(func, desc) {
   return function() {
-    var begin = DateWrapper.now();
+    var begin = new Date();
     print(`[${desc}] Begin...`);
     var onSuccess = function(_) {
-      var elapsedMs = DateWrapper.toMillis(DateWrapper.now()) - DateWrapper.toMillis(begin);
+      var elapsedMs = new Date().getTime() - begin.getTime();
       print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
     var onError = function(e) { DOM.logError(e); };
