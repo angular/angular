@@ -9,7 +9,7 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {DateWrapper, StringWrapper, isPresent, print, stringify} from '../../facade/lang';
+import {StringWrapper, isPresent, print, stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
@@ -71,7 +71,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   private _generateMessageId(name: string): string {
-    var time: string = stringify(DateWrapper.toMillis(DateWrapper.now()));
+    var time: string = stringify(new Date().getTime());
     var iteration: number = 0;
     var id: string = name + time + stringify(iteration);
     while (isPresent((this as any /** TODO #9100 */)._pending[id])) {
