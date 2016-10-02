@@ -10,7 +10,6 @@ import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {MeasureValues, ReflectiveInjector, SizeValidator} from '../../index';
 import {ListWrapper} from '../../src/facade/collection';
-import {DateWrapper} from '../../src/facade/lang';
 
 export function main() {
   describe('size validator', () => {
@@ -47,5 +46,5 @@ export function main() {
 }
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
-  return new MeasureValues(runIndex, DateWrapper.fromMillis(time), values);
+  return new MeasureValues(runIndex, new Date(time), values);
 }

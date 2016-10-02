@@ -9,7 +9,7 @@
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
 import {Options} from '../common_options';
-import {DateWrapper, Json} from '../facade/lang';
+import {Json} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -45,8 +45,7 @@ export class JsonFileReporter extends Reporter {
       'completeSample': completeSample,
       'validSample': validSample,
     });
-    var filePath =
-        `${this._path}/${this._description.id}_${DateWrapper.toMillis(this._now())}.json`;
+    var filePath = `${this._path}/${this._description.id}_${this._now().getTime()}.json`;
     return this._writeFile(filePath, content);
   }
 }
