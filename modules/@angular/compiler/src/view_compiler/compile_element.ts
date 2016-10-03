@@ -8,7 +8,7 @@
 
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {ListWrapper, MapWrapper, StringMapWrapper} from '../facade/collection';
+import {ListWrapper, MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -192,7 +192,7 @@ export class CompileElement extends CompileNode {
           queriesWithReads,
           queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
     });
-    StringMapWrapper.forEach(this.referenceTokens, (_: CompileTokenMetadata, varName: string) => {
+    Object.keys(this.referenceTokens).forEach(varName => {
       var token = this.referenceTokens[varName];
       var varValue: o.Expression;
       if (isPresent(token)) {

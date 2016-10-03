@@ -98,32 +98,6 @@ export class MapWrapper {
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static create(): {[k: /*any*/ string]: any} {
-    // Note: We are not using Object.create(null) here due to
-    // performance!
-    // http://jsperf.com/ng2-object-create-null
-    return {};
-  }
-  static contains(map: {[key: string]: any}, key: string): boolean {
-    return map.hasOwnProperty(key);
-  }
-
-  static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
-  static values<T>(map: {[key: string]: T}): T[] {
-    return Object.keys(map).map((k: string): T => map[k]);
-  }
-  static isEmpty(map: {[key: string]: any}): boolean {
-    for (var prop in map) {
-      return false;
-    }
-    return true;
-  }
-  static forEach<K, V>(map: {[key: string]: V}, callback: (v: V, K: string) => void) {
-    for (let k of Object.keys(map)) {
-      callback(map[k], k);
-    }
-  }
-
   static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
     var m: {[key: string]: V} = {};
 

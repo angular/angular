@@ -11,7 +11,6 @@ import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityConte
 import {CompileDirectiveMetadata, CompilePipeMetadata, CompileTemplateMetadata, CompileTokenMetadata, removeIdentifierDuplicates} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {StringMapWrapper} from '../facade/collection';
 import {isPresent, isString} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, identifierToken, resolveIdentifierToken} from '../identifiers';
@@ -832,7 +831,8 @@ class TemplateParseVisitor implements html.Visitor {
       elementName: string, hostProps: {[key: string]: string}, sourceSpan: ParseSourceSpan,
       targetPropertyAsts: BoundElementPropertyAst[]) {
     if (hostProps) {
-      StringMapWrapper.forEach(hostProps, (expression: string, propName: string) => {
+      Object.keys(hostProps).forEach(propName => {
+        const expression = hostProps[propName];
         if (isString(expression)) {
           const exprAst = this._parseBinding(expression, sourceSpan);
           targetPropertyAsts.push(
@@ -850,7 +850,8 @@ class TemplateParseVisitor implements html.Visitor {
       hostListeners: {[key: string]: string}, sourceSpan: ParseSourceSpan,
       targetEventAsts: BoundEventAst[]) {
     if (hostListeners) {
-      StringMapWrapper.forEach(hostListeners, (expression: string, propName: string) => {
+      Object.keys(hostListeners).forEach(propName => {
+        const expression = hostListeners[propName];
         if (isString(expression)) {
           this._parseEventOrAnimationEvent(propName, expression, sourceSpan, [], targetEventAsts);
         } else {
@@ -875,7 +876,8 @@ class TemplateParseVisitor implements html.Visitor {
         }
       });
 
-      StringMapWrapper.forEach(directiveProperties, (elProp: string, dirProp: string) => {
+      Object.keys(directiveProperties).forEach(dirProp => {
+        const elProp = directiveProperties[dirProp];
         const boundProp = boundPropsByName.get(elProp);
 
         // Bindings are optional, so this binding only needs to be set up if an expression is given.
@@ -1047,7 +1049,8 @@ class TemplateParseVisitor implements html.Visitor {
     const allDirectiveEvents = new Set<string>();
 
     directives.forEach(directive => {
-      StringMapWrapper.forEach(directive.directive.outputs, (eventName: string) => {
+      Object.keys(directive.directive.outputs).forEach(k => {
+        const eventName = directive.directive.outputs[k];
         allDirectiveEvents.add(eventName);
       });
     });

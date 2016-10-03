@@ -7,7 +7,6 @@
  */
 
 import {CompileDirectiveMetadata} from '../compile_metadata';
-import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -173,13 +172,12 @@ export function collectEventListeners(
 export function bindDirectiveOutputs(
     directiveAst: DirectiveAst, directiveInstance: o.Expression,
     eventListeners: CompileEventListener[]) {
-  StringMapWrapper.forEach(
-      directiveAst.directive.outputs,
-      (eventName: any /** TODO #9100 */, observablePropName: any /** TODO #9100 */) => {
-        eventListeners.filter(listener => listener.eventName == eventName).forEach((listener) => {
-          listener.listenToDirective(directiveInstance, observablePropName);
-        });
-      });
+  Object.keys(directiveAst.directive.outputs).forEach(observablePropName => {
+    const eventName = directiveAst.directive.outputs[observablePropName];
+    eventListeners.filter(listener => listener.eventName == eventName).forEach((listener) => {
+      listener.listenToDirective(directiveInstance, observablePropName);
+    });
+  });
 }
 
 export function bindRenderOutputs(eventListeners: CompileEventListener[]) {

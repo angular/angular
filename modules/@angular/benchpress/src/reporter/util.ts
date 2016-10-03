@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../facade/collection';
+
 import {NumberWrapper} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
@@ -17,7 +17,7 @@ export function formatNum(n: number) {
 
 export function sortedProps(obj: {[key: string]: any}) {
   var props: string[] = [];
-  StringMapWrapper.forEach(obj, (value, prop) => props.push(prop));
+  props.push(...Object.keys(obj));
   props.sort();
   return props;
 }

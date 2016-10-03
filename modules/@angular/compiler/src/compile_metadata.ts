@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
-import {ListWrapper, MapWrapper, StringMapWrapper} from './facade/collection';
+import {ListWrapper, MapWrapper} from './facade/collection';
 import {isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
 import {LifecycleHooks} from './private_import_core';
 import {CssSelector} from './selector';
@@ -342,7 +342,8 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     var hostProperties: {[key: string]: string} = {};
     var hostAttributes: {[key: string]: string} = {};
     if (isPresent(host)) {
-      StringMapWrapper.forEach(host, (value: string, key: string) => {
+      Object.keys(host).forEach(key => {
+        const value = host[key];
         const matches = key.match(HOST_REG_EXP);
         if (matches === null) {
           hostAttributes[key] = value;
