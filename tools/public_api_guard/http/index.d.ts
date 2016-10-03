@@ -35,19 +35,19 @@ export declare class CookieXSRFStrategy implements XSRFStrategy {
 /** @experimental */
 export declare class Headers {
     constructor(headers?: Headers | {
-        [key: string]: any;
+        [name: string]: any;
     });
     append(name: string, value: string): void;
     delete(name: string): void;
     entries(): void;
     forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void;
-    get(header: string): string;
-    getAll(header: string): string[];
-    has(header: string): boolean;
+    get(name: string): string;
+    getAll(name: string): string[];
+    has(name: string): boolean;
     keys(): string[];
-    set(header: string, value: string | string[]): void;
+    set(name: string, value: string | string[]): void;
     toJSON(): {
-        [key: string]: any;
+        [name: string]: any;
     };
     values(): string[][];
     static fromResponseHeaderString(headersString: string): Headers;
