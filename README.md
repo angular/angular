@@ -28,13 +28,14 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22) 
 label.
 
-High level items planned for September 2016:
-* Work on Angular core towards 2.0.0 final
-* Preparing for conferences (Angular Connect and ng-europe)
-* Final features for dialog
-* Initial version of snackbar.
-* Additional behaviors for menu, start design for select.
-* Finalize high-level design details for data-table.
+High level items planned for October 2016:
+* Initial version of md-select
+* Basic docs for dialog and snackbar
+* Major bug bashing
+* Start design on autocomplete and chips
+* AoT compile e2e app
+* Start work on https://material.angular.io site
+* Onboarding for 3 (!) new Angular Material team members.
 
 
 #### Feature status:
