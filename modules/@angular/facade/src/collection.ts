@@ -280,13 +280,13 @@ export function areIterablesEqual(a: any, b: any, comparator: Function): boolean
 }
 
 export function iterateListLike(obj: any, fn: Function) {
-  if (isArray(obj)) {
-    for (var i = 0; i < obj.length; i++) {
+  if (Array.isArray(obj)) {
+    for (let i = 0; i < obj.length; i++) {
       fn(obj[i]);
     }
   } else {
-    var iterator = obj[getSymbolIterator()]();
-    var item: any /** TODO #???? */;
+    const iterator = obj[getSymbolIterator()]();
+    let item: any;
     while (!((item = iterator.next()).done)) {
       fn(item.value);
     }

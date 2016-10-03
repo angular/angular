@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper} from '../src/facade/collection';
+import {MapWrapper} from './facade/collection';
+import {getSymbolIterator} from './facade/lang';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
@@ -166,9 +167,15 @@ export class Headers {
   }
 
   /**
-   * This method is not implemented.
+   * Returns an iterator of [name: string, value: string[]]
    */
-  entries() { throw new Error('"entries" method is not implemented on Headers class'); }
+  // clang-format off
+  entries(): Iterator<[string, string[] ]> {
+    const entries: [string, string[]][] = [];
+    this.forEach((values, name) => { entries.push([name, values]); });
+    return (<any>entries)[getSymbolIterator()]();
+  }
+  // clang-format on
 
   private mayBeSetNormalizedName(name: string): void {
     const lcName = name.toLowerCase();
