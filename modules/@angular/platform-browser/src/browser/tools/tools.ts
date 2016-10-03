@@ -27,7 +27,7 @@ var context = <any>global;
  * @experimental All debugging apis are currently experimental.
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
-  context.ng = new AngularTools(ref);
+  (<any>Object).assign(context.ng, new AngularTools(ref));
   return ref;
 }
 
@@ -37,5 +37,5 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
  * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
-  delete context.ng;
+  delete context.ng.profiler;
 }
