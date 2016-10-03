@@ -7,7 +7,7 @@
  */
 
 import {CompileDirectiveMetadata} from '../compile_metadata';
-import {StringWrapper, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
@@ -200,5 +200,5 @@ function convertStmtIntoExpression(stmt: o.Statement): o.Expression {
 }
 
 function santitizeEventName(name: string): string {
-  return StringWrapper.replaceAll(name, /[^a-zA-Z_]/g, '_');
+  return name.replace(/[^a-zA-Z_]/g, '_');
 }

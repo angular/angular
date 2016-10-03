@@ -8,7 +8,7 @@
 
 import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
 
-import {StringWrapper, isBlank, isPresent} from './facade/lang';
+import {isBlank, isPresent} from './facade/lang';
 
 
 const _ASSET_SCHEME = 'asset:';
@@ -74,8 +74,8 @@ export class UrlResolver {
         var pathSegements = path.split(/\//);
         resolvedUrl = `asset:${pathSegements[0]}/lib/${pathSegements.slice(1).join('/')}`;
       } else {
-        prefix = StringWrapper.stripRight(prefix, '/');
-        path = StringWrapper.stripLeft(path, '/');
+        prefix = prefix.replace(/\/+$/, '');
+        path = path.replace(/^\/+/, '');
         return `${prefix}/${path}`;
       }
     }

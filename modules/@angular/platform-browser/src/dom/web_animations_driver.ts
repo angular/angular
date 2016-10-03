@@ -7,7 +7,8 @@
  */
 
 import {AUTO_STYLE} from '@angular/core';
-import {StringWrapper, isNumber, isPresent} from '../facade/lang';
+
+import {isNumber, isPresent} from '../facade/lang';
 import {AnimationKeyframe, AnimationStyles} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
@@ -97,7 +98,7 @@ const _$PERIOD = 46;
 
 function _findDimensionalSuffix(value: string): string {
   for (var i = 0; i < value.length; i++) {
-    var c = StringWrapper.charCodeAt(value, i);
+    var c = value.charCodeAt(i);
     if ((c >= _$0 && c <= _$9) || c == _$PERIOD) continue;
     return value.substring(i, value.length);
   }

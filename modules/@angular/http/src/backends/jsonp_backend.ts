@@ -12,7 +12,7 @@ import {Observer} from 'rxjs/Observer';
 
 import {ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';
-import {StringWrapper, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
@@ -75,7 +75,7 @@ export class JSONPConnection_ extends JSONPConnection {
       let callback = _dom.requestCallback(this._id);
       let url: string = req.url;
       if (url.indexOf('=JSONP_CALLBACK&') > -1) {
-        url = StringWrapper.replace(url, '=JSONP_CALLBACK&', `=${callback}&`);
+        url = url.replace('=JSONP_CALLBACK&', `=${callback}&`);
       } else if (url.lastIndexOf('=JSONP_CALLBACK') === url.length - '=JSONP_CALLBACK'.length) {
         url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }

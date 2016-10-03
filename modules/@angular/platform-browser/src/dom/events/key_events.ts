@@ -9,7 +9,7 @@
 import {Injectable, NgZone} from '@angular/core';
 
 import {ListWrapper} from '../../facade/collection';
-import {StringWrapper, isPresent} from '../../facade/lang';
+import {isPresent} from '../../facade/lang';
 import {getDOM} from '../dom_adapter';
 
 import {EventManagerPlugin} from './event_manager';
@@ -50,9 +50,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     var parts: string[] = eventName.toLowerCase().split('.');
 
     var domEventName = parts.shift();
-    if ((parts.length === 0) ||
-        !(StringWrapper.equals(domEventName, 'keydown') ||
-          StringWrapper.equals(domEventName, 'keyup'))) {
+    if ((parts.length === 0) || !(domEventName === 'keydown' || domEventName === 'keyup')) {
       return null;
     }
 
@@ -82,9 +80,9 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     var fullKey = '';
     var key = getDOM().getEventKey(event);
     key = key.toLowerCase();
-    if (StringWrapper.equals(key, ' ')) {
+    if (key === ' ') {
       key = 'space';  // for readability
-    } else if (StringWrapper.equals(key, '.')) {
+    } else if (key === '.') {
       key = 'dot';  // because '.' is used as a separator in event names
     }
     modifierKeys.forEach(modifierName => {
@@ -102,7 +100,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   static eventCallback(element: HTMLElement, fullKey: any, handler: Function, zone: NgZone):
       Function {
     return (event: any /** TODO #9100 */) => {
-      if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
+      if (KeyEventsPlugin.getEventFullKey(event) === fullKey) {
         zone.runGuarded(() => handler(event));
       }
     };

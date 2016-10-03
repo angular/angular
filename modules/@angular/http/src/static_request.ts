@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringWrapper, isPresent} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 
 import {Body} from './body';
 import {ContentType, RequestMethod, ResponseContentType} from './enums';
@@ -82,7 +82,7 @@ export class Request extends Body {
       let search = requestOptions.search.toString();
       if (search.length > 0) {
         let prefix = '?';
-        if (StringWrapper.contains(this.url, '?')) {
+        if (this.url.indexOf('?') != -1) {
           prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
         }
         // TODO: just delete search-query-looking string in url?

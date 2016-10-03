@@ -12,7 +12,6 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_in
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {iterateListLike} from '../../src/facade/collection';
-import {StringWrapper} from '../../src/facade/lang';
 
 interface _JsQueryList {
   filter(c: any): any;
@@ -104,8 +103,8 @@ export function main() {
     it('should support toString', () => {
       queryList.reset(['one', 'two']);
       var listString = queryList.toString();
-      expect(StringWrapper.contains(listString, 'one')).toBeTruthy();
-      expect(StringWrapper.contains(listString, 'two')).toBeTruthy();
+      expect(listString.indexOf('one') != -1).toBeTruthy();
+      expect(listString.indexOf('two') != -1).toBeTruthy();
     });
 
     it('should support first and last', () => {

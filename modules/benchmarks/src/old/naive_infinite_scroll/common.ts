@@ -1,5 +1,4 @@
 import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
-import {StringWrapper} from '@angular/facade/src/lang';
 import {Math} from '@angular/facade/src/math';
 
 export var ITEMS = 1000;

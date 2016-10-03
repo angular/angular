@@ -9,7 +9,7 @@
 import {Injectable, Type} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
-import {StringWrapper, isPresent, print, stringify} from '../../facade/lang';
+import {isPresent, print, stringify} from '../../facade/lang';
 
 import {MessageBus} from './message_bus';
 import {Serializer} from './serializer';
@@ -129,10 +129,10 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   private _handleMessage(message: {[key: string]: any}): void {
     var data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
-    if (StringWrapper.equals(data.type, 'result') || StringWrapper.equals(data.type, 'error')) {
+    if (data.type === 'result' || data.type === 'error') {
       var id = data.id;
       if (this._pending.has(id)) {
-        if (StringWrapper.equals(data.type, 'result')) {
+        if (data.type === 'result') {
           this._pending.get(id).resolve(data.value);
         } else {
           this._pending.get(id).reject(data.value);

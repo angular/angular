@@ -7,7 +7,7 @@
  */
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../src/expression_parser/ast';
-import {StringWrapper, isString} from '../../src/facade/lang';
+import {isString} from '../../src/facade/lang';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
@@ -134,7 +134,7 @@ class Unparser implements AstVisitor {
 
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {
     if (isString(ast.value)) {
-      this._expression += `"${StringWrapper.replaceAll(ast.value, Unparser._quoteRegExp, '\"')}"`;
+      this._expression += `"${ast.value.replace( Unparser._quoteRegExp,  '\"')}"`;
     } else {
       this._expression += `${ast.value}`;
     }

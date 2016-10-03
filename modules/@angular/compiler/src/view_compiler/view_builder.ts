@@ -10,7 +10,7 @@ import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {ListWrapper} from '../facade/collection';
-import {StringWrapper, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
@@ -376,7 +376,7 @@ function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
   Object.keys(data).forEach(name => { entryArray.push([name, data[name]]); });
   // We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
-  ListWrapper.sort(entryArray, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
+  ListWrapper.sort(entryArray);
   return entryArray;
 }
 

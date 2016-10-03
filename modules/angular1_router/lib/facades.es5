@@ -269,8 +269,6 @@ var StringWrapper = {
 
   replaceAllMapped: function(s, from, cb) {
     return s.replace(from, function(matches) {
-      // Remove offset & string from the result array
-      matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
       return cb.apply(null, matches);
     });

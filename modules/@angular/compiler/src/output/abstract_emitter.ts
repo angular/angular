@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringWrapper, isBlank, isPresent, isString} from '../facade/lang';
+import {isBlank, isPresent, isString} from '../facade/lang';
 
 import * as o from './output_ast';
 
@@ -409,18 +409,17 @@ export function escapeIdentifier(
   if (isBlank(input)) {
     return null;
   }
-  var body = StringWrapper.replaceAllMapped(
-      input, _SINGLE_QUOTE_ESCAPE_STRING_RE, (match: any /** TODO #9100 */) => {
-        if (match[0] == '$') {
-          return escapeDollar ? '\\$' : '$';
-        } else if (match[0] == '\n') {
-          return '\\n';
-        } else if (match[0] == '\r') {
-          return '\\r';
-        } else {
-          return `\\${match[0]}`;
-        }
-      });
+  var body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
+    if (match[0] == '$') {
+      return escapeDollar ? '\\$' : '$';
+    } else if (match[0] == '\n') {
+      return '\\n';
+    } else if (match[0] == '\r') {
+      return '\\r';
+    } else {
+      return `\\${match[0]}`;
+    }
+  });
   let requiresQuotes = alwaysQuote || !_LEGAL_IDENTIFIER_RE.test(body);
   return requiresQuotes ? `'${body}'` : body;
 }
