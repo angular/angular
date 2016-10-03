@@ -224,9 +224,7 @@ export class SpyObject {
     }
 
     var m = StringMapWrapper.merge(config, overrides);
-    StringMapWrapper.forEach(m, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-      object.spy(key).andReturn(value);
-    });
+    Object.keys(m).forEach(key => { object.spy(key).andReturn(m[key]); });
     return object;
   }
 

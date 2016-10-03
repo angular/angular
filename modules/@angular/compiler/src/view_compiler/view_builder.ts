@@ -9,7 +9,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {ListWrapper} from '../facade/collection';
 import {StringWrapper, isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -346,10 +346,10 @@ function _mergeHtmlAndDirectiveAttrs(
     declaredHtmlAttrs: {[key: string]: string},
     directives: CompileDirectiveMetadata[]): string[][] {
   var result: {[key: string]: string} = {};
-  StringMapWrapper.forEach(
-      declaredHtmlAttrs, (value: string, key: string) => { result[key] = value; });
+  Object.keys(declaredHtmlAttrs).forEach(key => { result[key] = declaredHtmlAttrs[key]; });
   directives.forEach(directiveMeta => {
-    StringMapWrapper.forEach(directiveMeta.hostAttributes, (value: string, name: string) => {
+    Object.keys(directiveMeta.hostAttributes).forEach(name => {
+      const value = directiveMeta.hostAttributes[name];
       var prevValue = result[name];
       result[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
     });
@@ -373,9 +373,7 @@ function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: s
 
 function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
   var entryArray: string[][] = [];
-  StringMapWrapper.forEach(data, (value: string, name: string) => {
-    entryArray.push([name, value]);
-  });
+  Object.keys(data).forEach(name => { entryArray.push([name, data[name]]); });
   // We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
   ListWrapper.sort(entryArray, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
@@ -421,11 +419,11 @@ function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
     if (isPresent(compileElement.component)) {
       componentToken = createDiTokenExpression(identifierToken(compileElement.component.type));
     }
-    StringMapWrapper.forEach(
-        compileElement.referenceTokens, (token: CompileTokenMetadata, varName: string) => {
-          varTokenEntries.push(
-              [varName, isPresent(token) ? createDiTokenExpression(token) : o.NULL_EXPR]);
-        });
+    Object.keys(compileElement.referenceTokens).forEach(varName => {
+      const token = compileElement.referenceTokens[varName];
+      varTokenEntries.push(
+          [varName, isPresent(token) ? createDiTokenExpression(token) : o.NULL_EXPR]);
+    });
   }
   return o.importExpr(resolveIdentifier(Identifiers.StaticNodeDebugInfo))
       .instantiate(

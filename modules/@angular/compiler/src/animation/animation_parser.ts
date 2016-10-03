@@ -20,6 +20,10 @@ const _INITIAL_KEYFRAME = 0;
 const _TERMINAL_KEYFRAME = 1;
 const _ONE_SECOND = 1000;
 
+declare type Styles = {
+  [key: string]: string | number
+};
+
 export class AnimationParseError extends ParseError {
   constructor(message: string) { super(null, message); }
   toString(): string { return `${this.msg}`; }
@@ -90,11 +94,11 @@ export class AnimationParser {
 function _parseAnimationDeclarationStates(
     stateMetadata: CompileAnimationStateDeclarationMetadata,
     errors: AnimationParseError[]): AnimationStateDeclarationAst[] {
-  var styleValues: {[key: string]: string | number}[] = [];
+  var styleValues: Styles[] = [];
   stateMetadata.styles.styles.forEach(stylesEntry => {
     // TODO (matsko): change this when we get CSS class integration support
     if (isStringMap(stylesEntry)) {
-      styleValues.push(<{[key: string]: string | number}>stylesEntry);
+      styleValues.push(stylesEntry as Styles);
     } else {
       errors.push(new AnimationParseError(
           `State based animations cannot contain references to other states`));
@@ -169,16 +173,6 @@ function _parseAnimationTransitionExpr(
   return expressions;
 }
 
-function _fetchSylesFromState(stateName: string, stateStyles: {[key: string]: AnimationStylesAst}):
-    CompileAnimationStyleMetadata {
-  var entry = stateStyles[stateName];
-  if (isPresent(entry)) {
-    var styles = <{[key: string]: string | number}[]>entry.styles;
-    return new CompileAnimationStyleMetadata(0, styles);
-  }
-  return null;
-}
-
 function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnimationMetadata[]):
     CompileAnimationMetadata {
   return isArray(entry) ? new CompileAnimationSequenceMetadata(<CompileAnimationMetadata[]>entry) :
@@ -234,7 +228,7 @@ function _normalizeStyleStepEntry(
   }
 
   var newSteps: CompileAnimationMetadata[] = [];
-  var combinedStyles: {[key: string]: string | number}[];
+  var combinedStyles: Styles[];
   steps.forEach(step => {
     if (step instanceof CompileAnimationStyleMetadata) {
       // this occurs when a style step is followed by a previous style step
@@ -290,7 +284,7 @@ function _normalizeStyleStepEntry(
 function _resolveStylesFromState(
     stateName: string, stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]) {
-  var styles: {[key: string]: string | number}[] = [];
+  var styles: Styles[] = [];
   if (stateName[0] != ':') {
     errors.push(new AnimationParseError(`Animation states via styles must be prefixed with a ":"`));
   } else {
@@ -302,7 +296,7 @@ function _resolveStylesFromState(
     } else {
       value.styles.forEach(stylesEntry => {
         if (isStringMap(stylesEntry)) {
-          styles.push(<{[key: string]: string | number}>stylesEntry);
+          styles.push(stylesEntry as Styles);
         }
       });
     }
@@ -336,15 +330,13 @@ function _parseAnimationKeyframes(
   var lastOffset = 0;
   keyframeSequence.steps.forEach(styleMetadata => {
     var offset = styleMetadata.offset;
-    var keyframeStyles: {[key: string]: string | number} = {};
+    var keyframeStyles: Styles = {};
     styleMetadata.styles.forEach(entry => {
-      StringMapWrapper.forEach(
-          <{[key: string]: string | number}>entry,
-          (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-            if (prop != 'offset') {
-              keyframeStyles[prop] = value;
-            }
-          });
+      Object.keys(entry).forEach(prop => {
+        if (prop != 'offset') {
+          keyframeStyles[prop] = (entry as Styles)[prop];
+        }
+      });
     });
 
     if (isPresent(offset)) {
@@ -381,24 +373,22 @@ function _parseAnimationKeyframes(
     let entry = rawKeyframes[i];
     let styles = entry[1];
 
-    StringMapWrapper.forEach(
-        styles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-          if (!isPresent(firstKeyframeStyles[prop])) {
-            firstKeyframeStyles[prop] = FILL_STYLE_FLAG;
-          }
-        });
+    Object.keys(styles).forEach(prop => {
+      if (!isPresent(firstKeyframeStyles[prop])) {
+        firstKeyframeStyles[prop] = FILL_STYLE_FLAG;
+      }
+    });
   }
 
   for (i = limit - 1; i >= 0; i--) {
     let entry = rawKeyframes[i];
     let styles = entry[1];
 
-    StringMapWrapper.forEach(
-        styles, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-          if (!isPresent(lastKeyframeStyles[prop])) {
-            lastKeyframeStyles[prop] = value;
-          }
-        });
+    Object.keys(styles).forEach(prop => {
+      if (!isPresent(lastKeyframeStyles[prop])) {
+        lastKeyframeStyles[prop] = styles[prop];
+      }
+    });
   }
 
   return rawKeyframes.map(
@@ -422,11 +412,9 @@ function _parseTransitionAnimation(
       if (entry instanceof CompileAnimationStyleMetadata) {
         entry.styles.forEach(stylesEntry => {
           // by this point we know that we only have stringmap values
-          var map = <{[key: string]: string | number}>stylesEntry;
-          StringMapWrapper.forEach(
-              map, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
-                collectedStyles.insertAtTime(prop, time, value);
-              });
+          var map = stylesEntry as Styles;
+          Object.keys(map).forEach(
+              prop => { collectedStyles.insertAtTime(prop, time, map[prop]); });
         });
         previousStyles = entry.styles;
         return;
@@ -472,7 +460,7 @@ function _parseTransitionAnimation(
     } else {
       let styleData = <CompileAnimationStyleMetadata>styles;
       let offset = _TERMINAL_KEYFRAME;
-      let styleAst = new AnimationStylesAst(<{[key: string]: string | number}[]>styleData.styles);
+      let styleAst = new AnimationStylesAst(styleData.styles as Styles[]);
       var keyframe = new AnimationKeyframeAst(offset, styleAst);
       keyframes = [keyframe];
     }
@@ -484,9 +472,8 @@ function _parseTransitionAnimation(
 
     keyframes.forEach(
         (keyframe: any /** TODO #9100 */) => keyframe.styles.styles.forEach(
-            (entry: any /** TODO #9100 */) => StringMapWrapper.forEach(
-                entry, (value: any /** TODO #9100 */, prop: any /** TODO #9100 */) =>
-                           collectedStyles.insertAtTime(prop, currentTime, value))));
+            (entry: any /** TODO #9100 */) => Object.keys(entry).forEach(
+                prop => { collectedStyles.insertAtTime(prop, currentTime, entry[prop]); })));
   } else {
     // if the code reaches this stage then an error
     // has already been populated within the _normalizeStyleSteps()
@@ -559,10 +546,11 @@ function _parseTimeExpression(
 function _createStartKeyframeFromEndKeyframe(
     endKeyframe: AnimationKeyframeAst, startTime: number, duration: number,
     collectedStyles: StylesCollection, errors: AnimationParseError[]): AnimationKeyframeAst {
-  var values: {[key: string]: string | number} = {};
+  var values: Styles = {};
   var endTime = startTime + duration;
-  endKeyframe.styles.styles.forEach((styleData: {[key: string]: string | number}) => {
-    StringMapWrapper.forEach(styleData, (val: any /** TODO #9100 */, prop: any /** TODO #9100 */) => {
+  endKeyframe.styles.styles.forEach((styleData: Styles) => {
+    Object.keys(styleData).forEach(prop => {
+      const val = styleData[prop];
       if (prop == 'offset') return;
 
       var resultIndex = collectedStyles.indexOfAtOrBeforeTime(prop, startTime);

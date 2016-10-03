@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper, StringMapWrapper} from '../facade/collection';
+import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -181,5 +181,5 @@ export class Reflector extends ReflectorReader {
 }
 
 function _mergeMaps(target: Map<string, Function>, config: {[key: string]: Function}): void {
-  StringMapWrapper.forEach(config, (v: Function, k: string) => target.set(k, v));
+  Object.keys(config).forEach(k => { target.set(k, config[k]); });
 }

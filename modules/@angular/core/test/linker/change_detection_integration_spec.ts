@@ -17,7 +17,6 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 import {EventEmitter} from '../../src/facade/async';
-import {StringMapWrapper} from '../../src/facade/collection';
 import {NumberWrapper} from '../../src/facade/lang';
 
 export function main() {
@@ -1348,7 +1347,7 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
   ngOnChanges(changes: SimpleChanges) {
     this.log.add(this.name, 'ngOnChanges');
     const r: {[k: string]: string} = {};
-    StringMapWrapper.forEach(changes, (c: SimpleChange, key: string) => r[key] = c.currentValue);
+    Object.keys(changes).forEach(key => { r[key] = changes[key].currentValue; });
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
       throw new Error('Boom!');

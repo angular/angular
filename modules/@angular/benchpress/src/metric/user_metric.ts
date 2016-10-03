@@ -9,7 +9,6 @@
 import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
-import {StringMapWrapper} from '../facade/collection';
 import {isNumber} from '../facade/lang';
 import {Metric} from '../metric';
 import {WebDriverAdapter} from '../web_driver_adapter';
@@ -40,7 +39,7 @@ export class UserMetric extends Metric {
       reject = rej;
     });
     let adapter = this._wdAdapter;
-    let names = StringMapWrapper.keys(this._userMetrics);
+    let names = Object.keys(this._userMetrics);
 
     function getAndClearValues() {
       Promise.all(names.map(name => adapter.executeScript(`return window.${name}`)))
