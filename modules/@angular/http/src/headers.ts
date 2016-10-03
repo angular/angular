@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, MapWrapper, StringMapWrapper, isListLikeIterable, iterateListLike} from '../src/facade/collection';
+import {MapWrapper} from '../src/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
@@ -15,7 +15,7 @@ import {ListWrapper, MapWrapper, StringMapWrapper, isListLikeIterable, iterateLi
  * The only known difference between this `Headers` implementation and the spec is the
  * lack of an `entries` method.
  *
- * ### Example ([live demo](http://plnkr.co/edit/MTdwT6?p=preview))
+ * ### Example
  *
  * ```
  * import {Headers} from '@angular/http';
@@ -37,23 +37,31 @@ import {ListWrapper, MapWrapper, StringMapWrapper, isListLikeIterable, iterateLi
  * @experimental
  */
 export class Headers {
-  /** @internal */
-  _headersMap: Map<string, string[]>;
-  constructor(headers?: Headers|{[key: string]: any}) {
-    if (headers instanceof Headers) {
-      this._headersMap = new Map<string, string[]>((<Headers>headers)._headersMap);
-      return;
-    }
+  /** @internal header names are lower case */
+  _headers: Map<string, string[]> = new Map();
+  /** @internal map lower case names to actual names */
+  _normalizedNames: Map<string, string> = new Map();
 
-    this._headersMap = new Map<string, string[]>();
-
+  // TODO(vicb): any -> string|string[]
+  constructor(headers?: Headers|{[name: string]: any}) {
     if (!headers) {
       return;
     }
 
-    // headers instanceof StringMap
-    StringMapWrapper.forEach(headers, (v: any, k: string) => {
-      this._headersMap.set(normalize(k), isListLikeIterable(v) ? v : [v]);
+    if (headers instanceof Headers) {
+      headers._headers.forEach((value: string[], name: string) => {
+        const lcName = name.toLowerCase();
+        this._headers.set(lcName, value);
+        this.mayBeSetNormalizedName(name);
+      });
+      return;
+    }
+
+    Object.keys(headers).forEach((name: string) => {
+      const value = headers[name];
+      const lcName = name.toLowerCase();
+      this._headers.set(lcName, Array.isArray(value) ? value : [value]);
+      this.mayBeSetNormalizedName(name);
     });
   }
 
@@ -61,14 +69,14 @@ export class Headers {
    * Returns a new Headers instance from the given DOMString of Response Headers
    */
   static fromResponseHeaderString(headersString: string): Headers {
-    let headers = new Headers();
+    const headers = new Headers();
 
     headersString.split('\n').forEach(line => {
       const index = line.indexOf(':');
       if (index > 0) {
-        const key = line.substring(0, index);
-        const value = line.substring(index + 1).trim();
-        headers.set(key, value);
+        const name = line.slice(0, index);
+        const value = line.slice(index + 1).trim();
+        headers.set(name, value);
       }
     });
 
@@ -79,92 +87,94 @@ export class Headers {
    * Appends a header to existing list of header values for a given header name.
    */
   append(name: string, value: string): void {
-    name = normalize(name);
-    var mapName = this._headersMap.get(name);
-    var list = isListLikeIterable(mapName) ? mapName : [];
-    list.push(value);
-    this._headersMap.set(name, list);
+    const values = this.getAll(name);
+    this.set(name, values === null ? [value] : [...values, value]);
   }
 
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void { this._headersMap.delete(normalize(name)); }
+  delete (name: string): void {
+    const lcName = name.toLowerCase();
+    this._normalizedNames.delete(lcName);
+    this._headers.delete(lcName);
+  }
 
   forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
-    this._headersMap.forEach(fn);
+    this._headers.forEach(
+        (values, lcName) => fn(values, this._normalizedNames.get(lcName), this._headers));
   }
 
   /**
    * Returns first header that matches given name.
    */
-  get(header: string): string { return ListWrapper.first(this._headersMap.get(normalize(header))); }
+  get(name: string): string {
+    const values = this.getAll(name);
+
+    if (values === null) {
+      return null;
+    }
+
+    return values.length > 0 ? values[0] : null;
+  }
 
   /**
-   * Check for existence of header by given name.
+   * Checks for existence of header by given name.
    */
-  has(header: string): boolean { return this._headersMap.has(normalize(header)); }
+  has(name: string): boolean { return this._headers.has(name.toLowerCase()); }
 
   /**
-   * Provides names of set headers
+   * Returns the names of the headers
    */
-  keys(): string[] { return MapWrapper.keys(this._headersMap); }
+  keys(): string[] { return MapWrapper.values(this._normalizedNames); }
 
   /**
    * Sets or overrides header value for given name.
    */
-  set(header: string, value: string|string[]): void {
-    var list: string[] = [];
-
-    if (isListLikeIterable(value)) {
-      var pushValue = (<string[]>value).join(',');
-      list.push(pushValue);
-    } else {
-      list.push(<string>value);
-    }
-
-    this._headersMap.set(normalize(header), list);
+  set(name: string, value: string|string[]): void {
+    const strValue = Array.isArray(value) ? value.join(',') : value;
+    this._headers.set(name.toLowerCase(), [strValue]);
+    this.mayBeSetNormalizedName(name);
   }
 
   /**
    * Returns values of all headers.
    */
-  values(): string[][] { return MapWrapper.values(this._headersMap); }
+  values(): string[][] { return MapWrapper.values(this._headers); }
 
   /**
    * Returns string of all headers.
    */
-  toJSON(): {[key: string]: any} {
-    let serializableHeaders = {};
-    this._headersMap.forEach((values: string[], name: string) => {
-      let list: any[] /** TODO #9100 */ = [];
+  // TODO(vicb): returns {[name: string]: string[]}
+  toJSON(): {[name: string]: any} {
+    const serialized: {[name: string]: string[]} = {};
 
-      iterateListLike(
-          values, (val: any /** TODO #9100 */) => list = ListWrapper.concat(list, val.split(',')));
-
-      (serializableHeaders as any /** TODO #9100 */)[normalize(name)] = list;
+    this._headers.forEach((values: string[], name: string) => {
+      const split: string[] = [];
+      values.forEach(v => split.push(...v.split(',')));
+      serialized[this._normalizedNames.get(name)] = split;
     });
-    return serializableHeaders;
+
+    return serialized;
   }
 
   /**
    * Returns list of header values for a given name.
    */
-  getAll(header: string): string[] {
-    var headers = this._headersMap.get(normalize(header));
-    return isListLikeIterable(headers) ? headers : [];
+  getAll(name: string): string[] {
+    return this.has(name) ? this._headers.get(name.toLowerCase()) : null;
   }
 
   /**
    * This method is not implemented.
    */
   entries() { throw new Error('"entries" method is not implemented on Headers class'); }
-}
 
-// "HTTP character sets are identified by case-insensitive tokens"
-// Spec at https://tools.ietf.org/html/rfc2616
-// This implementation is same as NodeJS.
-// see https://nodejs.org/dist/latest-v6.x/docs/api/http.html#http_message_headers
-function normalize(name: string): string {
-  return name.toLowerCase();
+  private mayBeSetNormalizedName(name: string): void {
+    const lcName = name.toLowerCase();
+
+    if (!this._normalizedNames.has(lcName)) {
+      this._normalizedNames.set(lcName, name);
+    }
+  }
 }
