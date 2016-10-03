@@ -150,8 +150,6 @@ export interface NgModule {
 
   /**
    * Specifies a list of components that should be compiled when this module is defined.
-   * For each component listed here, Angular will create a {@link ComponentFactory ComponentFactory}
-   * and store it in the {@link ComponentFactoryResolver ComponentFactoryResolver}.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
