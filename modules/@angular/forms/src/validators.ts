@@ -152,5 +152,5 @@ function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
       arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
       }, {});
-  return StringMapWrapper.isEmpty(res) ? null : res;
+  return Object.keys(res).length === 0 ? null : res;
 }

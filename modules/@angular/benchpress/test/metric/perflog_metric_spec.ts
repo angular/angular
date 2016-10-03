@@ -10,7 +10,6 @@ import {Provider} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
-import {StringMapWrapper} from '../../src/facade/collection';
 import {isPresent} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
@@ -68,7 +67,7 @@ export function main() {
 
     function sortedKeys(stringMap: {[key: string]: any}) {
       var res: string[] = [];
-      StringMapWrapper.forEach(stringMap, (_, key) => { res.push(key); });
+      res.push(...Object.keys(stringMap));
       res.sort();
       return res;
     }

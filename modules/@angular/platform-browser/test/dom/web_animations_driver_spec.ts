@@ -12,7 +12,6 @@ import {el} from '@angular/platform-browser/testing/browser_util';
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {StringMapWrapper} from '../../src/facade/collection';
 import {AnimationKeyframe, AnimationStyles} from '../../src/private_import_core';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
@@ -113,7 +112,7 @@ export function main() {
       var player = driver.animate(elm, startingStyles, styles, 1000, 1000, null);
       var details = _formatOptions(player);
       var options = details['options'];
-      var keys = StringMapWrapper.keys(options);
+      var keys = Object.keys(options);
       expect(keys.indexOf('easing')).toEqual(-1);
     });
   });

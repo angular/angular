@@ -8,7 +8,6 @@
 
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {StringMapWrapper} from '../facade/collection';
 import {ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
@@ -24,9 +23,7 @@ class _ValueOutputAstTransformer implements ValueTransformer {
 
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
     var entries: Array<string|o.Expression>[] = [];
-    StringMapWrapper.forEach(map, (value: any, key: string) => {
-      entries.push([key, visitValue(value, this, null)]);
-    });
+    Object.keys(map).forEach(key => { entries.push([key, visitValue(map[key], this, null)]); });
     return o.literalMap(entries, type);
   }
 

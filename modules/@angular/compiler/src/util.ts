@@ -7,7 +7,6 @@
  */
 
 import {CompileTokenMetadata} from './compile_metadata';
-import {StringMapWrapper} from './facade/collection';
 import {StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
 import * as o from './output/output_ast';
 
@@ -63,9 +62,8 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     var result = {};
-    StringMapWrapper.forEach(map, (value: any /** TODO #9100 */, key: any /** TODO #9100 */) => {
-      (result as any /** TODO #9100 */)[key] = visitValue(value, this, context);
-    });
+    Object.keys(map).forEach(
+        key => { (result as any /** TODO #9100 */)[key] = visitValue(map[key], this, context); });
     return result;
   }
   visitPrimitive(value: any, context: any): any { return value; }
