@@ -7,8 +7,6 @@
  */
 
 import {AUTO_STYLE} from '@angular/core';
-
-import {StringMapWrapper} from '../facade/collection';
 import {StringWrapper, isNumber, isPresent} from '../facade/lang';
 import {AnimationKeyframe, AnimationStyles} from '../private_import_core';
 
@@ -65,15 +63,16 @@ function _populateStyles(
     defaultStyles: {[key: string]: string | number}): {[key: string]: string | number} {
   var data: {[key: string]: string | number} = {};
   styles.styles.forEach((entry) => {
-    StringMapWrapper.forEach(entry, (val: any, prop: string) => {
+    Object.keys(entry).forEach(prop => {
+      const val = entry[prop];
       var formattedProp = dashCaseToCamelCase(prop);
       data[formattedProp] =
           val == AUTO_STYLE ? val : val.toString() + _resolveStyleUnit(val, prop, formattedProp);
     });
   });
-  StringMapWrapper.forEach(defaultStyles, (value: string, prop: string) => {
+  Object.keys(defaultStyles).forEach(prop => {
     if (!isPresent(data[prop])) {
-      data[prop] = value;
+      data[prop] = defaultStyles[prop];
     }
   });
   return data;

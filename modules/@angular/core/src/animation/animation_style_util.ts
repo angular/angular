@@ -17,11 +17,12 @@ export function prepareFinalAnimationStyles(
     nullValue: string = null): {[key: string]: string} {
   var finalStyles: {[key: string]: string} = {};
 
-  StringMapWrapper.forEach(newStyles, (value: string, prop: string) => {
+  Object.keys(newStyles).forEach(prop => {
+    const value = newStyles[prop];
     finalStyles[prop] = value == AUTO_STYLE ? nullValue : value.toString();
   });
 
-  StringMapWrapper.forEach(previousStyles, (value: string, prop: string) => {
+  Object.keys(previousStyles).forEach(prop => {
     if (!isPresent(finalStyles[prop])) {
       finalStyles[prop] = nullValue;
     }
@@ -41,7 +42,8 @@ export function balanceAnimationKeyframes(
 
   var extraFirstKeyframeStyles: {[key: string]: string} = {};
   var hasExtraFirstStyles = false;
-  StringMapWrapper.forEach(collectedStyles, (value: string, prop: string) => {
+  Object.keys(collectedStyles).forEach(prop => {
+    const value = collectedStyles[prop] as string;
     // if the style is already defined in the first keyframe then
     // we do not replace it.
     if (!flatenedFirstKeyframeStyles[prop]) {
@@ -60,7 +62,7 @@ export function balanceAnimationKeyframes(
   var flatenedFinalKeyframeStyles = flattenStyles(finalKeyframe.styles.styles);
   var extraFinalKeyframeStyles: {[key: string]: string} = {};
   var hasExtraFinalStyles = false;
-  StringMapWrapper.forEach(keyframeCollectedStyles, (value: string, prop: string) => {
+  Object.keys(keyframeCollectedStyles).forEach(prop => {
     if (!isPresent(flatenedFinalKeyframeStyles[prop])) {
       extraFinalKeyframeStyles[prop] = AUTO_STYLE;
       hasExtraFinalStyles = true;
@@ -71,7 +73,7 @@ export function balanceAnimationKeyframes(
     finalKeyframe.styles.styles.push(extraFinalKeyframeStyles);
   }
 
-  StringMapWrapper.forEach(flatenedFinalKeyframeStyles, (value: string, prop: string) => {
+  Object.keys(flatenedFinalKeyframeStyles).forEach(prop => {
     if (!isPresent(flatenedFirstKeyframeStyles[prop])) {
       extraFirstKeyframeStyles[prop] = AUTO_STYLE;
       hasExtraFirstStyles = true;
@@ -87,7 +89,7 @@ export function balanceAnimationKeyframes(
 
 export function clearStyles(styles: {[key: string]: string | number}): {[key: string]: string} {
   var finalStyles: {[key: string]: string} = {};
-  StringMapWrapper.keys(styles).forEach(key => { finalStyles[key] = null; });
+  Object.keys(styles).forEach(key => { finalStyles[key] = null; });
   return finalStyles;
 }
 
@@ -95,7 +97,8 @@ export function collectAndResolveStyles(
     collection: {[key: string]: string | number}, styles: {[key: string]: string | number}[]) {
   return styles.map(entry => {
     var stylesObj: {[key: string]: string | number} = {};
-    StringMapWrapper.forEach(entry, (value: string | number, prop: string) => {
+    Object.keys(entry).forEach(prop => {
+      let value = entry[prop];
       if (value == FILL_STYLE_FLAG) {
         value = collection[prop];
         if (!isPresent(value)) {
@@ -111,15 +114,13 @@ export function collectAndResolveStyles(
 
 export function renderStyles(
     element: any, renderer: any, styles: {[key: string]: string | number}): void {
-  StringMapWrapper.forEach(
-      styles, (value: string, prop: string) => { renderer.setElementStyle(element, prop, value); });
+  Object.keys(styles).forEach(prop => { renderer.setElementStyle(element, prop, styles[prop]); });
 }
 
 export function flattenStyles(styles: {[key: string]: string | number}[]): {[key: string]: string} {
   var finalStyles: {[key: string]: string} = {};
   styles.forEach(entry => {
-    StringMapWrapper.forEach(
-        entry, (value: string, prop: string) => { finalStyles[prop] = value; });
+    Object.keys(entry).forEach(prop => { finalStyles[prop] = entry[prop] as string; });
   });
   return finalStyles;
 }

@@ -7,8 +7,6 @@
  */
 
 import {AUTO_STYLE} from '@angular/core';
-
-import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {AnimationPlayer} from '../private_import_core';
 
@@ -49,7 +47,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
     var keyframes = this.keyframes.map(styles => {
       var formattedKeyframe: {[key: string]: string | number} = {};
-      StringMapWrapper.forEach(styles, (value: string | number, prop: string) => {
+      Object.keys(styles).forEach(prop => {
+        const value = styles[prop];
         formattedKeyframe[prop] = value == AUTO_STYLE ? _computeStyle(this.element, prop) : value;
       });
       return formattedKeyframe;

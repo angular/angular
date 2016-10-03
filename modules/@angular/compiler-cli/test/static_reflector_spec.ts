@@ -9,7 +9,6 @@
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
 import {HostListener, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {ListWrapper} from '@angular/facade/src/collection';
-import {isBlank} from '@angular/facade/src/lang';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 

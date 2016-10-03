@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di';
-import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {RenderDebugInfo} from '../render/api';
 
@@ -68,7 +67,8 @@ export class DebugContext implements RenderDebugInfo {
     var staticNodeInfo = this._staticNodeInfo;
     if (isPresent(staticNodeInfo)) {
       var refs = staticNodeInfo.refTokens;
-      StringMapWrapper.forEach(refs, (refToken: any, refName: string) => {
+      Object.keys(refs).forEach(refName => {
+        const refToken = refs[refName];
         let varValue: any;
         if (isBlank(refToken)) {
           varValue = this._view.allNodes ? this._view.allNodes[this._nodeIndex] : null;

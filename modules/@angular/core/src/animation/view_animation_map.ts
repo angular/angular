@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringMapWrapper} from '../facade/collection';
+
 import {isPresent} from '../facade/lang';
 
 import {AnimationPlayer} from './animation_player';
@@ -27,7 +27,7 @@ export class ViewAnimationMap {
   findAllPlayersByElement(element: any): AnimationPlayer[] {
     const el = this._map.get(element);
 
-    return el ? StringMapWrapper.values(el) : [];
+    return el ? Object.keys(el).map(k => el[k]) : [];
   }
 
   set(element: any, animationName: string, player: AnimationPlayer): void {
@@ -54,7 +54,7 @@ export class ViewAnimationMap {
       const index = this._allPlayers.indexOf(player);
       this._allPlayers.splice(index, 1);
 
-      if (StringMapWrapper.isEmpty(playersByAnimation)) {
+      if (Object.keys(playersByAnimation).length === 0) {
         this._map.delete(element);
       }
     }

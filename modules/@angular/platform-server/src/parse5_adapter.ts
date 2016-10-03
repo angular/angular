@@ -8,7 +8,7 @@
 
 const parse5 = require('parse5');
 
-import {ListWrapper, StringMapWrapper} from '../src/facade/collection';
+import {ListWrapper} from '../src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './private_import_platform-browser';
 import {isPresent, isBlank, global, setValueOnPath} from '../src/facade/lang';
 import {SelectorMatcher, CssSelector} from './private_import_compiler';
@@ -474,7 +474,7 @@ export class Parse5DomAdapter extends DomAdapter {
     this.appendChild(newDoc, body);
     newDoc['head'] = head;
     newDoc['body'] = body;
-    newDoc['_window'] = StringMapWrapper.create();
+    newDoc['_window'] = {};
     return newDoc;
   }
   defaultDoc(): Document { return defDoc = defDoc || this.createHtmlDocument(); }

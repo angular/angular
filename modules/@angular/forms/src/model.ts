@@ -939,9 +939,9 @@ export class FormGroup extends AbstractControl {
    */
   setValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
-    StringMapWrapper.forEach(value, (newValue: any, name: string) => {
+    Object.keys(value).forEach(name => {
       this._throwIfControlMissing(name);
-      this.controls[name].setValue(newValue, {onlySelf: true});
+      this.controls[name].setValue(value[name], {onlySelf: true});
     });
     this.updateValueAndValidity({onlySelf: onlySelf});
   }
@@ -968,9 +968,9 @@ export class FormGroup extends AbstractControl {
    *  ```
    */
   patchValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
-    StringMapWrapper.forEach(value, (newValue: any, name: string) => {
+    Object.keys(value).forEach(name => {
       if (this.controls[name]) {
-        this.controls[name].patchValue(newValue, {onlySelf: true});
+        this.controls[name].patchValue(value[name], {onlySelf: true});
       }
     });
     this.updateValueAndValidity({onlySelf: onlySelf});
@@ -1046,7 +1046,7 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _forEachChild(cb: (v: any, k: string) => void): void {
-    StringMapWrapper.forEach(this.controls, cb);
+    Object.keys(this.controls).forEach(k => cb(this.controls[k], k));
   }
 
   /** @internal */

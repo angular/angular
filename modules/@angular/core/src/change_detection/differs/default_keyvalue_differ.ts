@@ -284,7 +284,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     if (obj instanceof Map) {
       obj.forEach(fn);
     } else {
-      StringMapWrapper.forEach(obj, fn);
+      Object.keys(obj).forEach(k => fn(obj[k], k));
     }
   }
 }
