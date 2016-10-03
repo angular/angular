@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 export default {
   entry: '../../../dist/packages-dist/compiler/index.js',
@@ -7,9 +14,9 @@ export default {
   globals: {
     '@angular/core': 'ng.core',
     'rxjs/Observable': 'Rx',
-    'rxjs/Subject': 'Rx'
+    'rxjs/Subject': 'Rx',
   },
   plugins: [
-//    nodeResolve({ jsnext: true, main: true }),
+    //    nodeResolve({ jsnext: true, main: true }),
   ]
-}
+};

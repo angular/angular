@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var browserProvidersConf = require('../../../browser-providers.conf.js');
 
 // Karma configuration
@@ -28,11 +36,11 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/fake-async-test.js',
 
       // RxJs.
-      { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
-      { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },
+      {pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false},
+      {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
 
       // shim
-      {pattern: 'modules/@angular/router/karma-test-shim.js', included: true, watched: true },
+      {pattern: 'modules/@angular/router/karma-test-shim.js', included: true, watched: true},
 
       // Angular modules
       {pattern: 'dist/all/@angular/core/*.js', included: false, watched: false},
@@ -49,11 +57,23 @@ module.exports = function(config) {
 
       {pattern: 'dist/all/@angular/platform-browser/*.js', included: false, watched: false},
       {pattern: 'dist/all/@angular/platform-browser/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser/testing/**/*.js', included: false, watched: false},
+      {
+        pattern: 'dist/all/@angular/platform-browser/testing/**/*.js',
+        included: false,
+        watched: false,
+      },
 
       {pattern: 'dist/all/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js', included: false, watched: false},
-      {pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js', included: false, watched: false},
+      {
+        pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js',
+        included: false,
+        watched: false,
+      },
+      {
+        pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js',
+        included: false,
+        watched: false,
+      },
 
       // Router
       {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true}
@@ -66,11 +86,11 @@ module.exports = function(config) {
       'karma-browserstack-launcher',
       'karma-sauce-launcher',
       'karma-chrome-launcher',
-      'karma-sourcemap-loader'
+      'karma-sourcemap-loader',
     ],
 
     preprocessors: {
-      '**/*.js': ['sourcemap']
+      '**/*.js': ['sourcemap'],
     },
 
     reporters: ['dots'],
@@ -81,8 +101,8 @@ module.exports = function(config) {
     browsers: ['Chrome'],
     singleRun: false,
     captureTimeout: 60000,
-    browserDisconnectTimeout : 60000,
-    browserDisconnectTolerance : 3,
-    browserNoActivityTimeout : 60000
+    browserDisconnectTimeout: 60000,
+    browserDisconnectTolerance: 3,
+    browserNoActivityTimeout: 60000,
   });
 };

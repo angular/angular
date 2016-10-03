@@ -1,9 +1,15 @@
-importScripts("../../../vendor/core.js",
-  "../../../vendor/zone.js",
-  "../../../vendor/long-stack-trace-zone.js",
-  "../../../vendor/system.src.js",
-  "../../../vendor/Reflect.js",
-  "b64.js");
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+importScripts(
+    '../../../vendor/core.js', '../../../vendor/zone.js',
+    '../../../vendor/long-stack-trace-zone.js', '../../../vendor/system.src.js',
+    '../../../vendor/Reflect.js', 'b64.js');
 
 
 System.config({
@@ -19,21 +25,19 @@ System.config({
     '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
-    'rxjs': {
-      defaultExtension: 'js'
-    }
+    'rxjs': {defaultExtension: 'js'},
   },
 
   defaultJSExtensions: true
 });
 
-System.import("playground/src/web_workers/images/background_index")
-  .then(
-    function(m) {
-      try {
-        m.main();
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    function(error) { console.error("error loading background", error); });
+System.import('playground/src/web_workers/images/background_index')
+    .then(
+        function(m) {
+          try {
+            m.main();
+          } catch (e) {
+            console.error(e);
+          }
+        },
+        function(error) { console.error('error loading background', error); });

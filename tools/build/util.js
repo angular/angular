@@ -1,5 +1,12 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var fs = require('fs');
-var path = require('path');
 var minimatch = require('minimatch');
 var path = require('path');
 var Q = require('q');
@@ -21,10 +28,8 @@ function subDirs(dir) {
 
 function forEachSubDir(dir, callback) {
   var dirs = subDirs(dir);
-  return Q.all(dirs.map(function(subdir) {
-    return callback(path.join(dir, subdir));
-  }));
-};
+  return Q.all(dirs.map(function(subdir) { return callback(path.join(dir, subdir)); }));
+}
 
 function forEachSubDirSequential(dir, callback) {
   var dirs = subDirs(dir);
@@ -32,9 +37,7 @@ function forEachSubDirSequential(dir, callback) {
 
   function next(index) {
     if (index < dirs.length) {
-      return callback(path.join(dir, dirs[index])).then(function() {
-        return next(index+1);
-      });
+      return callback(path.join(dir, dirs[index])).then(function() { return next(index + 1); });
     } else {
       return true;
     }
@@ -75,6 +78,6 @@ function filterByFile(pathMapping, folder) {
   if (match !== undefined) {
     return match;
   } else {
-    throw new Error('No entry for folder '+folder+' found in '+JSON.stringify(pathMapping));
+    throw new Error('No entry for folder ' + folder + ' found in ' + JSON.stringify(pathMapping));
   }
 }
