@@ -13,7 +13,7 @@ export function main() {
   function createMetric(ids: any[]) {
     var m = ReflectiveInjector
                 .resolveAndCreate([
-                  ids.map(id => { return {provide: id, useValue: new MockMetric(id)}; }),
+                  ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
                   MultiMetric.provideWith(ids)
                 ])
                 .get(MultiMetric);

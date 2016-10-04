@@ -486,8 +486,7 @@ export function main() {
 
       var trackByItemId = (index: number, item: any): any => item.id;
 
-      var buildItemList =
-          (list: string[]) => { return list.map((val) => { return new ItemWithId(val); }); };
+      var buildItemList = (list: string[]) => list.map((val) => new ItemWithId(val));
 
       beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
 

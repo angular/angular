@@ -101,9 +101,8 @@ function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
 function mapNestedViews(
     declarationAppElement: o.Expression, view: CompileView,
     expressions: o.Expression[]): o.Expression {
-  var adjustedExpressions: o.Expression[] = expressions.map((expr) => {
-    return o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr);
-  });
+  var adjustedExpressions: o.Expression[] = expressions.map(
+      (expr) => o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr));
   return declarationAppElement.callMethod('mapNestedViews', [
     o.variable(view.className),
     o.fn(
