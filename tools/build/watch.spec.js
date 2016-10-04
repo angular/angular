@@ -1,11 +1,3 @@
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
 var rewire = require('rewire');
 
 describe('watch()', function() {
@@ -35,7 +27,7 @@ describe('watch()', function() {
 
   it('should fire callback once for events which occur within `delay` window', function() {
     var cb = jasmine.createSpy('callback');
-    watcher = watch('./$$fake_path/**/*', {delay: 10, log: false}, cb);
+    watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('add', './$$fake_path/test.txt');
     timeout.flush(9);
@@ -69,7 +61,7 @@ describe('watch()', function() {
       expect(timeout.pending).toBe(1);
     }
 
-    var watcher = watch('./$$fake_path/**/*', {delay: 10, log: false}, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     expect(timeout.pending).toBe(1);
@@ -89,7 +81,7 @@ describe('watch()', function() {
       done();
     }
 
-    var watcher = watch('./$$fake_path/**/*', {delay: 10, log: false}, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     timeout.flush();
@@ -104,7 +96,7 @@ describe('watch()', function() {
 
   it('should cancel pending callback if FSWatcher is closed', function() {
     var cb = jasmine.createSpy('callback');
-    var watcher = watch('./$$fake_path/**/*', {delay: 10, log: false}, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
 
     watcher._emit('change', './$$fake_path/test1.txt');
     expect(timeout.pending).toBe(1);
@@ -127,7 +119,7 @@ describe('watch()', function() {
       expect(timeout.pending).toBe(0);
     }
 
-    var watcher = watch('./$$fake_path/**/*', {delay: 10, log: false}, cb);
+    var watcher = watch('./$$fake_path/**/*', { delay: 10, log: false }, cb);
     watcher._emit('change', './$$fake_path/test1.txt');
 
     timeout.flush(10);
@@ -144,13 +136,21 @@ function mockTimeout() {
   var now = 0;
 
   return {
-    mocks: {setTimeout: mockSetTimeout, clearTimeout: mockClearTimeout},
-    flush: flush, get pending() { return events.length; }
+    mocks: {
+      setTimeout: mockSetTimeout,
+      clearTimeout: mockClearTimeout
+    },
+    flush: flush,
+    get pending() { return events.length; }
   };
 
   function mockSetTimeout(fn, delay) {
     delay = delay || 0;
-    events.push({time: now + delay, fn: fn, id: id});
+    events.push({
+      time: now + delay,
+      fn: fn,
+      id: id
+    });
     events.sort(function(a, b) { return a.time - b.time; });
     return id++;
   }
@@ -165,12 +165,9 @@ function mockTimeout() {
   }
 
   function flush(delay) {
-    if (delay !== undefined)
-      now += delay;
-    else if (events.length)
-      now = events[events.length - 1].time;
-    else
-      throw new Error('No timer events registered');
+    if (delay !== undefined) now += delay;
+    else if (events.length) now = events[events.length - 1].time;
+    else throw new Error('No timer events registered');
 
     while (events.length && events[0].time <= now) {
       events.shift().fn();

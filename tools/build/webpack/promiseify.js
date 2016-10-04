@@ -1,11 +1,3 @@
-/**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
 var webpack = require('webpack');
 
 /**
@@ -16,7 +8,8 @@ var webpack = require('webpack');
  * @returns {Function}
  */
 function webPackPromiseify(options) {
-  return new Promise(function(resolve, reject) {
+
+  return new Promise(function (resolve, reject) {
 
     webpack(options, function(err, stats) {
       var jsonStats = stats.toJson() || {};
@@ -36,4 +29,4 @@ function webPackPromiseify(options) {
   });
 }
 
-module.exports = webPackPromiseify;
+module.exports  = webPackPromiseify;
