@@ -209,7 +209,8 @@ export class ShadowCss {
    *  scopeName .foo { ... }
   */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
-    const unscoped = this._extractUnscopedRulesFromCssText(cssText);
+    const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
+    // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
@@ -217,7 +218,7 @@ export class ShadowCss {
     if (scopeSelector) {
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
-    cssText = cssText + '\n' + unscoped;
+    cssText = cssText + '\n' + unscopedRules;
     return cssText.trim();
   }
 
@@ -280,15 +281,15 @@ export class ShadowCss {
   }
 
   private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
-    // m[1] = :host, m[2] = contents of (), m[3] rest of rule
+    // m[1] = :host(-context), m[2] = contents of (), m[3] rest of rule
     return cssText.replace(regExp, function(...m: string[]) {
       if (m[2]) {
         const parts = m[2].split(',');
         const r: string[] = [];
         for (let i = 0; i < parts.length; i++) {
-          let p = parts[i];
+          let p = parts[i].trim();
           if (!p) break;
-          r.push(partReplacer(_polyfillHostNoCombinator, p.trim(), m[3]));
+          r.push(partReplacer(_polyfillHostNoCombinator, p, m[3]));
         }
         return r.join(',');
       } else {
@@ -314,8 +315,7 @@ export class ShadowCss {
    * by replacing with space.
   */
   private _convertShadowDOMSelectors(cssText: string): string {
-    return _shadowDOMSelectorsRe.reduce(
-        (result, pattern) => { return result.replace(pattern, ' '); }, cssText);
+    return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
 
   // change a selector like 'div' to 'name div'
@@ -420,38 +420,38 @@ export class ShadowCss {
       return scopedP;
     };
 
-    const sep = /( |>|\+|~(?!=)|\[|\])\s*/g;
-    const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
+    let attrSelectorIndex = 0;
+    const attrSelectors: string[] = [];
 
-    let scoped = '';
+    // replace attribute selectors with placeholders to avoid issue with white space being treated
+    // as separator
+    selector = selector.replace(/\[[^\]]*\]/g, (attrSelector) => {
+      const replaceBy = `__attr_sel_${attrSelectorIndex}__`;
+      attrSelectors.push(attrSelector);
+      attrSelectorIndex++;
+      return replaceBy;
+    });
+
+    let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray;
-    let inAttributeSelector: boolean = false;
+    const sep = /( |>|\+|~(?!=))\s*/g;
+    const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
-      if (separator === '[') {
-        inAttributeSelector = true;
-        scoped += selector.slice(startIndex, res.index).trim() + '[';
-        startIndex = sep.lastIndex;
-      }
-      if (!inAttributeSelector) {
-        const part = selector.slice(startIndex, res.index).trim();
-        // if a selector appears before :host-context it should not be shimmed as it
-        // matches on ancestor elements and not on elements in the host's shadow
-        const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
-        scoped += `${scopedPart} ${separator} `;
-        startIndex = sep.lastIndex;
-      } else if (separator === ']') {
-        const part = selector.slice(startIndex, res.index).trim() + ']';
-        const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
-        scoped += `${scopedPart} `;
-        startIndex = sep.lastIndex;
-        inAttributeSelector = false;
-      }
+      const part = selector.slice(startIndex, res.index).trim();
+      // if a selector appears before :host-context it should not be shimmed as it
+      // matches on ancestor elements and not on elements in the host's shadow
+      const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
+      scopedSelector += `${scopedPart} ${separator} `;
+      startIndex = sep.lastIndex;
     }
 
-    return scoped + _scopeSelectorPart(selector.substring(startIndex));
+    scopedSelector += _scopeSelectorPart(selector.substring(startIndex));
+
+    // replace the placeholders with their original values
+    return scopedSelector.replace(/__attr_sel_(\d+)__/g, (ph, index) => attrSelectors[+index]);
   }
 
   private _insertPolyfillHostInCssText(selector: string): string {
