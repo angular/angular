@@ -17,9 +17,9 @@ with it.
 
 * `comp: animations`: `@matsko`
 * `comp: benchpress`: `@tbosch`
-* `comp: build/ci`: `@IgorMinar` -- All build and CI scripts 
+* `comp: build & ci`: `@IgorMinar` -- All build and CI scripts 
 * `comp: common`: `@mhevery`  -- This includes core components / pipes.
-* `comp: core/compiler`: `@tbosch` -- Because core and compiler are very 
+* `comp: core & compiler`: `@tbosch` -- Because core and compiler are very 
   intertwined, we will be treating them as one.
 * `comp: forms`: `@kara`
 * `comp: http`: `@jeffbcross`
@@ -29,14 +29,14 @@ with it.
 * `comp: testing`: `@juliemr`
 * `comp: upgrade`: `@mhevery`
 * `comp: web-worker`: `@vicb`
-* `comp: zone`: `@mhevery`
+* `comp: zones`: `@mhevery`
 
 There are few components which are cross-cutting. They don't have
 a clear location in the source tree. We will treat them as a component
 even thought no specific source tree is associated with them.
 
 * `comp: documentation`: `@naomiblack`
-* `comp: packaging`: `@mhevery`
+* `comp: packaging`: `@IgorMinar`
 * `comp: performance`: `@tbosch`
 * `comp: security`: `@IgorMinar`
 
