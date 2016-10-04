@@ -91,6 +91,9 @@ export function main() {
       it('should not error on null',
          () => { expect(Validators.pattern('[a-zA-Z ]*')(new FormControl(null))).toEqual(null); });
 
+      it('should not error on null value and "null" pattern',
+         () => { expect(Validators.pattern('null')(new FormControl(null))).toEqual(null); });
+
       it('should not error on valid strings', () => {
         expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaAA'))).toEqual(null);
       });
@@ -98,6 +101,12 @@ export function main() {
       it('should error on failure to match string', () => {
         expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaa0'))).toEqual({
           'pattern': {'requiredPattern': '^[a-zA-Z ]*$', 'actualValue': 'aaa0'}
+        });
+      });
+
+      it('should error on failure to match empty string', () => {
+        expect(Validators.pattern('[a-zA-Z]+')(new FormControl(''))).toEqual({
+          'pattern': {'requiredPattern': '^[a-zA-Z]+$', 'actualValue': ''}
         });
       });
     });

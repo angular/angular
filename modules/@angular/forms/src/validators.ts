@@ -96,7 +96,6 @@ export class Validators {
    */
   static pattern(pattern: string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      if (isPresent(Validators.required(control))) return null;
       let regex = new RegExp(`^${pattern}$`);
       let v: string = control.value;
       return regex.test(v) ? null :
