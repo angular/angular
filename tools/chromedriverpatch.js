@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * Patch Protractor so that it uses ChromeDriver 2.14 instead of 2.15.
  *
  * This is necessary because as of v2.1.0, Protractor by default uses
@@ -13,11 +21,11 @@ var path = require('path');
 var protractorConfigFile = path.resolve(require.resolve('protractor'), '../../config.json');
 
 var newConfig = {
-  "webdriverVersions": {
-    "selenium": "2.45.0",
-    "chromedriver": "2.14",
-    "iedriver": "2.45.0"
+  'webdriverVersions': {
+    'selenium': '2.45.0',
+    'chromedriver': '2.14',
+    'iedriver': '2.45.0',
   }
-}
+};
 
-fs.writeFile(protractorConfigFile,  JSON.stringify(newConfig));
+fs.writeFile(protractorConfigFile, JSON.stringify(newConfig));
