@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export default {
   entry: '../../../dist/packages-dist/router/index.js',
   dest: '../../../dist/packages-dist/router/bundles/router.umd.js',
@@ -28,8 +36,7 @@ export default {
     'rxjs/operator/every': 'Rx.Observable.prototype',
     'rxjs/operator/first': 'Rx.Observable.prototype',
     'rxjs/operator/catch': 'Rx.Observable.prototype',
-    'rxjs/operator/last': 'Rx.Observable.prototype'
+    'rxjs/operator/last': 'Rx.Observable.prototype',
   },
-  plugins: [
-  ]
-}
+  plugins: []
+};
