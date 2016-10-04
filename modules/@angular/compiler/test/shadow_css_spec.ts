@@ -108,30 +108,61 @@ export function main() {
       expect(s('[is="one"] {}', 'a')).toEqual('[is="one"][a] {}');
     });
 
-    it('should handle :host', () => {
-      expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
+    describe((':host'), () => {
+      it('should handle no context',
+         () => { expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}'); });
 
-      expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}');
-      expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}');
+      it('should handle tag selector', () => {
+        expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}');
 
-      expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('.x[a-host], .y[a-host] {}');
-      expect(s(':host(ul,li) {}', 'a', 'a-host')).toEqual('ul[a-host], li[a-host] {}');
+      });
 
-      expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
-          .toEqual('.x[a-host] > .z[a], .y[a-host] > .z[a] {}');
-      expect(s(':host(ul,li) > .z {}', 'a', 'a-host'))
-          .toEqual('ul[a-host] > .z[a], li[a-host] > .z[a] {}');
+      it('should handle class selector',
+         () => { expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}'); });
+
+      it('should handle attribute selector', () => {
+        expect(s(':host([a="b"]) {}', 'a', 'a-host')).toEqual('[a="b"][a-host] {}');
+        expect(s(':host([a=b]) {}', 'a', 'a-host')).toEqual('[a="b"][a-host] {}');
+      });
+
+      it('should handle multiple tag selectors', () => {
+        expect(s(':host(ul,li) {}', 'a', 'a-host')).toEqual('ul[a-host], li[a-host] {}');
+        expect(s(':host(ul,li) > .z {}', 'a', 'a-host'))
+            .toEqual('ul[a-host] > .z[a], li[a-host] > .z[a] {}');
+      });
+
+      it('should handle multiple class selectors', () => {
+        expect(s(':host(.x,.y) {}', 'a', 'a-host')).toEqual('.x[a-host], .y[a-host] {}');
+        expect(s(':host(.x,.y) > .z {}', 'a', 'a-host'))
+            .toEqual('.x[a-host] > .z[a], .y[a-host] > .z[a] {}');
+      });
+
+      it('should handle multiple attribute selectors', () => {
+        expect(s(':host([a="b"],[c=d]) {}', 'a', 'a-host'))
+            .toEqual('[a="b"][a-host], [c="d"][a-host] {}');
+      });
     });
 
-    it('should handle :host-context', () => {
-      expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('.x[a-host], .x [a-host] {}');
-      expect(s(':host-context(div) {}', 'a', 'a-host')).toEqual('div[a-host], div [a-host] {}');
+    describe((':host-context'), () => {
+      it('should handle tag selector', () => {
+        expect(s(':host-context(div) {}', 'a', 'a-host')).toEqual('div[a-host], div [a-host] {}');
+        expect(s(':host-context(ul) > .y {}', 'a', 'a-host'))
+            .toEqual('ul[a-host] > .y[a], ul [a-host] > .y[a] {}');
+      });
 
-      expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
-          .toEqual('.x[a-host] > .y[a], .x [a-host] > .y[a] {}');
-      expect(s(':host-context(ul) > .y {}', 'a', 'a-host'))
-          .toEqual('ul[a-host] > .y[a], ul [a-host] > .y[a] {}');
+      it('should handle class selector', () => {
+        expect(s(':host-context(.x) {}', 'a', 'a-host')).toEqual('.x[a-host], .x [a-host] {}');
 
+        expect(s(':host-context(.x) > .y {}', 'a', 'a-host'))
+            .toEqual('.x[a-host] > .y[a], .x [a-host] > .y[a] {}');
+      });
+
+      it('should handle attribute selector', () => {
+        expect(s(':host-context([a="b"]) {}', 'a', 'a-host'))
+            .toEqual('[a="b"][a-host], [a="b"] [a-host] {}');
+        expect(s(':host-context([a=b]) {}', 'a', 'a-host'))
+            .toEqual('[a=b][a-host], [a="b"] [a-host] {}');
+      });
     });
 
     it('should support polyfill-next-selector', () => {
@@ -142,7 +173,7 @@ export function main() {
       expect(css).toEqual('x[a] > y[a]{}');
 
       css = s(`polyfill-next-selector {content: 'button[priority="1"]'} z {}`, 'a');
-      expect(css).toEqual('button[priority="1"][a] {}');
+      expect(css).toEqual('button[priority="1"][a]{}');
     });
 
     it('should support polyfill-unscoped-rule', () => {
