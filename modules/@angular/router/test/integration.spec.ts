@@ -971,8 +971,7 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'CanActivate',
-              useValue:
-                  (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return of (false); }
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => of (false),
             }]
           });
         });
@@ -1046,7 +1045,7 @@ describe('Integration', () => {
                 useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
                   return a.params['name'] === 'victor';
                 }
-              }
+              },
             ]
           });
         });
@@ -1191,7 +1190,7 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'alwaysFalse',
-              useValue: (a: any, b: any) => { return a.params.id === '22'; }
+              useValue: (a: any, b: any) => a.params.id === '22',
             }]
           });
         });

@@ -77,8 +77,8 @@ export function main() {
            };
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
 
-           ng1Module.directive('ng1a', () => { return {template: '{{ l(\'ng1a\') }}'}; });
-           ng1Module.directive('ng1b', () => { return {template: '{{ l(\'ng1b\') }}'}; });
+           ng1Module.directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}));
+           ng1Module.directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}));
            ng1Module.run(($rootScope: any /** TODO #9100 */) => {
              $rootScope.l = l;
              $rootScope.reset = () => log.length = 0;

@@ -17,7 +17,7 @@ export function main() {
       try {
         res(ReflectiveInjector
                 .resolveAndCreate([
-                  ids.map((id) => { return {provide: id, useValue: new MockExtension(id)}; }),
+                  ids.map((id) => ({provide: id, useValue: new MockExtension(id)})),
                   {provide: Options.CAPABILITIES, useValue: caps},
                   WebDriverExtension.provideFirstSupported(ids)
                 ])

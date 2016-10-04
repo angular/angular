@@ -333,7 +333,5 @@ function buildConfiguration(type, target, required) {
       var conf = CIconfiguration[item][type];
       return conf.required === required && conf.target === target;
     })
-    .map((item) => {
-      return target + '_' + item.toUpperCase();
-    });
+    .map((item) => target + '_' + item.toUpperCase());
 }

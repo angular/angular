@@ -169,7 +169,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       eventCategories: string[], eventName: string, expectedCategories: string[],
       expectedName: string = null): boolean {
     var hasCategories = expectedCategories.reduce(
-        (value, cat) => { return value && eventCategories.indexOf(cat) !== -1; }, true);
+        (value, cat) => value && eventCategories.indexOf(cat) !== -1, true);
     return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
   }
 

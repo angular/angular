@@ -14,7 +14,7 @@ export function main() {
   function createReporters(ids: any[]) {
     var r = ReflectiveInjector
                 .resolveAndCreate([
-                  ids.map(id => { return {provide: id, useValue: new MockReporter(id)}; }),
+                  ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
                   MultiReporter.provideWith(ids)
                 ])
                 .get(MultiReporter);

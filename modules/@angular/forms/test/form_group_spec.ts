@@ -823,7 +823,7 @@ export function main() {
 
       describe('disabled errors', () => {
         it('should clear out group errors when disabled', () => {
-          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
           expect(g.errors).toEqual({'expected': true});
 
           g.disable();
@@ -834,7 +834,7 @@ export function main() {
         });
 
         it('should re-populate group errors when enabled from a child', () => {
-          const g = new FormGroup({'one': new FormControl()}, () => { return {'expected': true}; });
+          const g = new FormGroup({'one': new FormControl()}, () => ({'expected': true}));
           g.disable();
           expect(g.errors).toEqual(null);
 
