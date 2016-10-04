@@ -52,6 +52,6 @@ export class By {
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
   static directive(type: Type<any>): Predicate<DebugElement> {
-    return (debugElement) => { return debugElement.providerTokens.indexOf(type) !== -1; };
+    return (debugElement) => debugElement.providerTokens.indexOf(type) !== -1;
   }
 }

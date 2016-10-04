@@ -814,7 +814,7 @@ export function main() {
 
       describe('disabled errors', () => {
         it('should clear out array errors when disabled', () => {
-          const arr = new FormArray([new FormControl()], () => { return {'expected': true}; });
+          const arr = new FormArray([new FormControl()], () => ({'expected': true}));
           expect(arr.errors).toEqual({'expected': true});
 
           arr.disable();
@@ -825,7 +825,7 @@ export function main() {
         });
 
         it('should re-populate array errors when enabled from a child', () => {
-          const arr = new FormArray([new FormControl()], () => { return {'expected': true}; });
+          const arr = new FormArray([new FormControl()], () => ({'expected': true}));
           arr.disable();
           expect(arr.errors).toEqual(null);
 

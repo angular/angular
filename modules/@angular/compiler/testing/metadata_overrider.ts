@@ -60,7 +60,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
     const propValue = metadata[prop];
     if (propValue instanceof Array) {
       metadata[prop] = propValue.filter(
-          (value: any) => { return !removeObjects.has(_propHashKey(prop, value, references)); });
+          (value: any) => !removeObjects.has(_propHashKey(prop, value, references)));
     } else {
       if (removeObjects.has(_propHashKey(prop, propValue, references))) {
         metadata[prop] = undefined;

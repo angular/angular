@@ -214,7 +214,7 @@ function commonTests() {
   describe('run', () => {
     it('should return the body return value from run',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         macroTask(() => { expect(_zone.run(() => { return 6; })).toEqual(6); });
+         macroTask(() => { expect(_zone.run(() => 6)).toEqual(6); });
 
          macroTask(() => { async.done(); });
        }), testTimeout);

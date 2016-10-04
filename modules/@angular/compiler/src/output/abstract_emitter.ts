@@ -400,7 +400,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitAllStatements(statements: o.Statement[], ctx: EmitterVisitorContext): void {
-    statements.forEach((stmt) => { return stmt.visitStatement(this, ctx); });
+    statements.forEach((stmt) => stmt.visitStatement(this, ctx));
   }
 }
 

@@ -67,7 +67,7 @@ describe('WebWorker Router', () => {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
       var elem = element(by.css(contentSelector));
-      elem.getText().then((text) => { return deferred.fulfill(text === expected); });
+      elem.getText().then((text) => deferred.fulfill(text === expected));
       return deferred.promise;
     }, 5000);
   }
@@ -75,8 +75,7 @@ describe('WebWorker Router', () => {
   function waitForUrl(regex: any /** TODO #9100 */): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
-      browser.getCurrentUrl().then(
-          (url) => { return deferred.fulfill(url.match(regex) !== null); });
+      browser.getCurrentUrl().then((url) => deferred.fulfill(url.match(regex) !== null));
       return deferred.promise;
     }, 5000);
   }
