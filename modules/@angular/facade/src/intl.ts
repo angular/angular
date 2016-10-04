@@ -236,4 +236,7 @@ export class DateFormatter {
   static format(date: Date, locale: string, pattern: string): string {
     return dateFormatter(pattern, date, locale);
   }
+  static intlFormat(date: Date, locale: string, format: Intl.DateTimeFormatOptions) {
+    return new Intl.DateTimeFormat(locale, format).format(date);
+  }
 }
