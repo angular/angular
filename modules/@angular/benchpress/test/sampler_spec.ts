@@ -60,8 +60,8 @@ export function main() {
          createSampler({
            driver: driver,
            validator: createCountingValidator(2),
-           prepare: () => { return count++; },
-           execute: () => { return count++; }
+           prepare: () => count++,
+           execute: () => count++,
          });
          sampler.sample().then((_) => {
            expect(count).toBe(4);
@@ -221,7 +221,7 @@ function createCountingValidator(
 
 function createCountingMetric(log: any[] = []) {
   var scriptTime = 0;
-  return new MockMetric(log, () => { return {'script': scriptTime++}; });
+  return new MockMetric(log, () => ({'script': scriptTime++}));
 }
 
 class MockDriverAdapter extends WebDriverAdapter {

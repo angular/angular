@@ -24,7 +24,7 @@ export class BrowserGetTestability implements GetTestability {
       return testability;
     };
 
-    global.getAllAngularTestabilities = () => { return registry.getAllTestabilities(); };
+    global.getAllAngularTestabilities = () => registry.getAllTestabilities();
 
     global.getAllAngularRootElements = () => registry.getAllRootElements();
 

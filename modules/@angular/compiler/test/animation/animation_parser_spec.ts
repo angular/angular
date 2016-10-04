@@ -24,8 +24,9 @@ export function main() {
       return flatStyles;
     };
 
-    var collectKeyframeStyles = (keyframe: AnimationKeyframeAst):
-        {[key: string]: string | number} => { return combineStyles(keyframe.styles); };
+    var collectKeyframeStyles =
+        (keyframe: AnimationKeyframeAst): {[key: string]: string | number} =>
+            combineStyles(keyframe.styles);
 
     var collectStepStyles = (step: AnimationStepAst): Array<{[key: string]: string | number}> => {
       var keyframes = step.keyframes;
@@ -51,9 +52,8 @@ export function main() {
     var getAnimationAstFromEntryAst =
         (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; };
 
-    var parseAnimationAst = (data: AnimationMetadata[]) => {
-      return getAnimationAstFromEntryAst(parseAnimation(data).ast);
-    };
+    var parseAnimationAst = (data: AnimationMetadata[]) =>
+        getAnimationAstFromEntryAst(parseAnimation(data).ast);
 
     var parseAnimationAndGetErrors = (data: AnimationMetadata[]) => parseAnimation(data).errors;
 

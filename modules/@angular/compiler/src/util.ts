@@ -16,7 +16,7 @@ var CAMEL_CASE_REGEXP = /([A-Z])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(
-      input, CAMEL_CASE_REGEXP, (m: string[]) => { return '-' + m[1].toLowerCase(); });
+      input, CAMEL_CASE_REGEXP, (m: string[]) => '-' + m[1].toLowerCase());
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {

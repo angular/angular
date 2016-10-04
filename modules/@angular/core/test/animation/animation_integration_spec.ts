@@ -839,8 +839,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       describe('*ngFor', () => {
         let tpl = '<div *ngFor="let item of items" @trigger>{{ item }}</div>';
 
-        let getText =
-            (node: any) => { return node.innerHTML ? node.innerHTML : node.children[0].data; };
+        let getText = (node: any) => node.innerHTML ? node.innerHTML : node.children[0].data;
 
         let assertParentChildContents = (parent: any, content: string) => {
           var values: string[] = [];

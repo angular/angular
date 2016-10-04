@@ -396,11 +396,11 @@ class MockDriverAdapter extends WebDriverAdapter {
   logs(type: string) {
     this._log.push(['logs', type]);
     if (type === 'performance') {
-      return Promise.resolve(this._events.map((event) => {
-        return {
-          'message': Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
-        };
-      }));
+      return Promise.resolve(this._events.map(
+          (event) => ({
+            'message':
+                Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
+          })));
     } else {
       return null;
     }

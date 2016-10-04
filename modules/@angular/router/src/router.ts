@@ -577,8 +577,7 @@ export class Router {
         preActivation.traverse(this.outletMap);
       });
 
-      const preactivation2$ =
-          mergeMap.call(preactivation$, () => { return preActivation.checkGuards(); });
+      const preactivation2$ = mergeMap.call(preactivation$, () => preActivation.checkGuards());
 
       const resolveData$ = mergeMap.call(preactivation2$, (shouldActivate: boolean) => {
         if (shouldActivate) {
