@@ -1,7 +1,7 @@
 # Triage Process and Github Labels for Angular 2
 
 This document describes how the Angular team uses labels and milestones 
-to triage issues on github. The basic idea of the new process is that 
+to triage issues on github. The basic idea of the process is that
 caretaker only assigns a component and type (bug, feature) label. The 
 owner of the component than is in full control of how the issues should 
 be triaged further.
@@ -35,7 +35,7 @@ There are few components which are cross-cutting. They don't have
 a clear location in the source tree. We will treat them as a component
 even thought no specific source tree is associated with them.
 
-* `comp: documentation`: `@naomiblack`
+* `comp: docs`: `@naomiblack`
 * `comp: packaging`: `@IgorMinar`
 * `comp: performance`: `@tbosch`
 * `comp: security`: `@IgorMinar`
@@ -53,11 +53,11 @@ What kind of problem is this?
 
 ## Caretaker Triage Process
 
-It is the caretaker's responsibility to assign `comp:  *` and `type: *`
-to each new issue as they come in. The reason why we limit the 
-responsibility of the caretaker to these two labels is that it is 
-unlikely that without domain knowledge the caretaker could add any 
-additional labels of value.
+It is the caretaker's responsibility to assign `comp:  *` to each new
+issue as they come in. The reason why we limit the responsibility of the
+caretaker to these one label is that it is likely that without domain
+knowledge the caretaker could mislabel issues or lack knowledge of
+duplicate issues.
 
 
 ## Component's owner Triage Process
