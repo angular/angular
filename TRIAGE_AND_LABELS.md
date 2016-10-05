@@ -55,7 +55,7 @@ What kind of problem is this?
 
 It is the caretaker's responsibility to assign `comp:  *` to each new
 issue as they come in. The reason why we limit the responsibility of the
-caretaker to these one label is that it is likely that without domain
+caretaker to this one label is that it is likely that without domain
 knowledge the caretaker could mislabel issues or lack knowledge of
 duplicate issues.
 
@@ -68,11 +68,37 @@ process for their component.
 It will be up to the component owner to determine the order in which the
 issues within the component will be resolved.
 
+Several owners have adopted the issue categorization based on
+[user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html)
+used by Angular 1. In this system every issue is assigned frequency and
+severity based on which the total user pain score is calculated.
+
+Following is the definition of various frequency and severity levels:
+
+1. `freq(score): *` – How often does this issue come up? How many developers does this affect?
+    * low (1) - obscure issue affecting a handful of developers
+    * moderate (2) - impacts auxiliary usage patterns, only small number of applications are affected
+    * high (3) - impacts primary usage patterns, affecting most Angular apps
+    * critical (4) - impacts all Angular apps
+1. `severity(score): *` - How bad is the issue?
+    * inconvenience (1) - causes ugly/boilerplate code in apps
+    * confusing (2) - unexpected or inconsistent behavior; hard-to-debug
+    * broken expected use (3) - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
+    * memory leak (4)
+    * regression (5) - functionality that used to work no longer works in a new release due to an unintentional change
+    * security issue (6)
+
+
+These criteria are then used to calculate a "user pain" score as follows:
+
+`pain = severity × frequency`
+
+
 ### Assigning Issues to Milestones
 
 Any issue that is being worked on must have:
 
-* An `assignee`: The person doing the work.
+* An `Assignee`: The person doing the work.
 * A `Milestone`: When we expect to complete this work.
 
 We aim to only have at most three milestones open at a time:
