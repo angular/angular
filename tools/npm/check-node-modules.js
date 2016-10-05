@@ -1,4 +1,12 @@
-"use strict";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
@@ -45,11 +53,11 @@ function _checkCache(markerFile, cacheMarkerFile) {
  * pull in existing module.
  */
 function _deleteDir(path) {
-  if( fs.existsSync(path) ) {
+  if (fs.existsSync(path)) {
     var subpaths = fs.readdirSync(path);
     subpaths.forEach(function(subpath) {
-      var curPath = path + "/" + subpath;
-      if(fs.lstatSync(curPath).isDirectory()) {
+      var curPath = path + '/' + subpath;
+      if (fs.lstatSync(curPath).isDirectory()) {
         _deleteDir(curPath);
       } else {
         fs.unlinkSync(curPath);

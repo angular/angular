@@ -68,7 +68,7 @@ Bitmap.prototype.subsample =
   function gamma(v) { return sample(Math.pow(v, .45455)); }
 
   function row(pixel, width, y) {
-    var data = "\0";
+    var data = '\0';
     for (var x = 0; x < width; x++) {
       var r = pixel[x][y];
       data += String.fromCharCode(gamma(r[0]), gamma(r[1]), gamma(r[2]), sample(r[3]));
@@ -77,7 +77,7 @@ Bitmap.prototype.subsample =
   }
 
   function rows(pixel, width, height) {
-    var data = "";
+    var data = '';
     for (var y = 0; y < height; y++) data += row(pixel, width, y);
     return data;
   }
@@ -95,8 +95,8 @@ Bitmap.prototype.subsample =
 
   function deflate(data) {
     var len = data.length;
-    return "\170\1\1" + String.fromCharCode(len & 255, len >>> 8, ~len & 255, (~len >>> 8) & 255) +
-           data + hton(adler(data));
+    return '\170\1\1' + String.fromCharCode(len & 255, len >>> 8, ~len & 255, (~len >>> 8) & 255) +
+        data + hton(adler(data));
   }
 
   function crc32(data) {
@@ -110,18 +110,18 @@ Bitmap.prototype.subsample =
   function chunk(type, data) { return hton(data.length) + type + data + hton(crc32(type + data)); }
 
   function base64(data) {
-    enc = "";
+    enc = '';
     for (var i = 5, n = data.length * 8 + 5; i < n; i += 6)
-      enc += "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+      enc += 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
           [(data.charCodeAt(~~(i / 8) - 1) << 8 | data.charCodeAt(~~(i / 8))) >> 7 - i % 8 & 63];
-    for (; enc.length % 4; enc += "=")
+    for (; enc.length % 4; enc += '=')
       ;
     return enc;
   }
 
-  var png = "\211PNG\r\n\32\n" +
-            chunk("IHDR", hton(this.width) + hton(this.height) + "\10\6\0\0\0") +
-            chunk("IDAT", deflate(rows(this.pixel, this.width, this.height))) + chunk("IEND", "");
+  var png = '\211PNG\r\n\32\n' +
+      chunk('IHDR', hton(this.width) + hton(this.height) + '\10\6\0\0\0') +
+      chunk('IDAT', deflate(rows(this.pixel, this.width, this.height))) + chunk('IEND', '');
 
-  return "data:image/png;base64," + base64(png);
+  return 'data:image/png;base64,' + base64(png);
 }

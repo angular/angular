@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 'use strict';
 
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
@@ -13,12 +21,14 @@ const os = require('os');
 
 // clang-format entry points
 const srcsToFmt = [
-  'modules/@angular/**/*.ts',
-  'modules/benchmarks/**/*.ts',
-  'modules/e2e_util/**/*.ts',
-  'modules/playground/**/*.ts',
-  'tools/**/*.ts',
+  'modules/@angular/**/*.{js,ts}',
+  'modules/benchmarks/**/*.{js,ts}',
+  'modules/e2e_util/**/*.{js,ts}',
+  'modules/playground/**/*.{js,ts}',
+  'tools/**/*.{js,ts}',
   '!tools/public_api_guard/**/*.d.ts',
+  './*.{js,ts}',
+  '!shims_for_IE.js',
 ];
 
 // Check source code for formatting errors (clang-format)
@@ -26,15 +36,16 @@ gulp.task('format:enforce', () => {
   const format = require('gulp-clang-format');
   const clangFormat = require('clang-format');
   return gulp.src(srcsToFmt).pipe(
-    format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+      format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
 });
 
 // Format the source code with clang-format (see .clang-format)
 gulp.task('format', () => {
   const format = require('gulp-clang-format');
   const clangFormat = require('clang-format');
-  return gulp.src(srcsToFmt, { base: '.' }).pipe(
-    format.format('file', clangFormat)).pipe(gulp.dest('.'));
+  return gulp.src(srcsToFmt, {base: '.'})
+      .pipe(format.format('file', clangFormat))
+      .pipe(gulp.dest('.'));
 });
 
 const entrypoints = [
@@ -62,12 +73,18 @@ const entrypoints = [
 ];
 const publicApiDir = path.normalize('tools/public_api_guard');
 const publicApiArgs = [
-  '--rootDir', 'dist/packages-dist',
-  '--stripExportPattern', '^__',
-  '--allowModuleIdentifiers', 'jasmine',
-  '--allowModuleIdentifiers', 'protractor',
-  '--allowModuleIdentifiers', 'angular',
-  '--onStabilityMissing', 'error',
+  '--rootDir',
+  'dist/packages-dist',
+  '--stripExportPattern',
+  '^__',
+  '--allowModuleIdentifiers',
+  'jasmine',
+  '--allowModuleIdentifiers',
+  'protractor',
+  '--allowModuleIdentifiers',
+  'angular',
+  '--onStabilityMissing',
+  'error',
 ].concat(entrypoints);
 
 // Build angular
@@ -83,17 +100,17 @@ gulp.task('public-api:enforce', (done) => {
   const childProcess = require('child_process');
 
   childProcess
-    .spawn(
-      path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
-      ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-    .on('close', (errorCode) => {
-      if (errorCode !== 0) {
-        done(new Error(
-          'Public API differs from golden file. Please run `gulp public-api:update`.'));
-      } else {
-        done();
-      }
-    });
+      .spawn(
+          path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
+          ['--verifyDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
+      .on('close', (errorCode) => {
+        if (errorCode !== 0) {
+          done(new Error(
+              'Public API differs from golden file. Please run `gulp public-api:update`.'));
+        } else {
+          done();
+        }
+      });
 });
 
 // Generate the public API golden files
@@ -101,20 +118,24 @@ gulp.task('public-api:update', ['build.sh'], (done) => {
   const childProcess = require('child_process');
 
   childProcess
-    .spawn(
-      path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
-      ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
-    .on('close', done);
+      .spawn(
+          path.join(__dirname, platformScriptPath(`/node_modules/.bin/ts-api-guardian`)),
+          ['--outDir', publicApiDir].concat(publicApiArgs), {stdio: 'inherit'})
+      .on('close', done);
 });
 
-// Checks tests for presence of ddescribe, fdescribe, fit, iit and fails the build if one of the focused tests is found.
-// Currently xdescribe and xit are _not_ reported as errors since there are a couple of excluded tests in our code base.
+// Checks tests for presence of ddescribe, fdescribe, fit, iit and fails the build if one of the
+// focused tests is found.
+// Currently xdescribe and xit are _not_ reported as errors since there are a couple of excluded
+// tests in our code base.
 gulp.task('check-tests', function() {
   const ddescribeIit = require('gulp-ddescribe-iit');
-  return gulp.src([
-    'modules/**/*.spec.ts',
-    'modules/**/*_spec.ts',
-  ]).pipe(ddescribeIit({allowDisabledTests: true}));
+  return gulp
+      .src([
+        'modules/**/*.spec.ts',
+        'modules/**/*_spec.ts',
+      ])
+      .pipe(ddescribeIit({allowDisabledTests: true}));
 });
 
 // Check the coding standards and programming errors
@@ -123,14 +144,21 @@ gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   const tslintConfig = require('./tslint.json');
-  return gulp.src(['modules/@angular/**/*.ts', 'modules/benchpress/**/*.ts'])
-    .pipe(tslint({
-      tslint: require('tslint').default,
-      configuration: tslintConfig,
-      rulesDirectory: 'dist/tools/tslint',
-      formatter: 'prose',
-    }))
-    .pipe(tslint.report({emitError: true}));
+  return gulp
+      .src([
+        // todo(vicb): add .js files when supported
+        // see https://github.com/palantir/tslint/pull/1515
+        'modules/@angular/**/*.ts',
+        'modules/benchpress/**/*.ts',
+        './*.ts',
+      ])
+      .pipe(tslint({
+        tslint: require('tslint').default,
+        configuration: tslintConfig,
+        rulesDirectory: 'dist/tools/tslint',
+        formatter: 'prose',
+      }))
+      .pipe(tslint.report({emitError: true}));
 });
 
 gulp.task('tools:build', (done) => { tsc('tools/', done); });
@@ -142,7 +170,7 @@ gulp.task('check-cycle', (done) => {
   const dependencyObject = madge(['dist/all/'], {
     format: 'cjs',
     extensions: ['.js'],
-    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, "//"); }
+    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, '//'); }
   });
   const circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {
@@ -173,11 +201,11 @@ gulp.task('serve-examples', () => {
   const cors = require('cors');
 
   connect.server({
-      root: `${__dirname}/dist/examples`,
-      port: 8001,
-      livereload: false,
-      open: false,
-      middleware: (connect, opt) => [cors()],
+    root: `${__dirname}/dist/examples`,
+    port: 8001,
+    livereload: false,
+    open: false,
+    middleware: (connect, opt) => [cors()],
   });
 });
 
@@ -187,16 +215,13 @@ gulp.task('changelog', () => {
   const conventionalChangelog = require('gulp-conventional-changelog');
 
   return gulp.src('CHANGELOG.md')
-    .pipe(conventionalChangelog({
-      preset: 'angular',
-      releaseCount: 1
-    }, {
-      // Conventional Changelog Context
-      // We have to manually set version number so it doesn't get prefixed with `v`
-      // See https://github.com/conventional-changelog/conventional-changelog-core/issues/10
-      currentTag: require('./package.json').version
-    }))
-    .pipe(gulp.dest('./'));
+      .pipe(conventionalChangelog({preset: 'angular', releaseCount: 1}, {
+        // Conventional Changelog Context
+        // We have to manually set version number so it doesn't get prefixed with `v`
+        // See https://github.com/conventional-changelog/conventional-changelog-core/issues/10
+        currentTag: require('./package.json').version
+      }))
+      .pipe(gulp.dest('./'));
 });
 
 function tsc(projectPath, done) {
@@ -205,8 +230,7 @@ function tsc(projectPath, done) {
   childProcess
       .spawn(
           path.normalize(platformScriptPath(`${__dirname}/node_modules/.bin/tsc`)),
-          ['-p', path.join(__dirname, projectPath)],
-          {stdio: 'inherit'})
+          ['-p', path.join(__dirname, projectPath)], {stdio: 'inherit'})
       .on('close', done);
 }
 
