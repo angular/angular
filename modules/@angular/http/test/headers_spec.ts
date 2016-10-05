@@ -39,7 +39,6 @@ export function main() {
       });
     });
 
-
     describe('.set()', () => {
       it('should clear all values and re-set for the provided key', () => {
         const headers = new Headers({'foo': 'bar'});
@@ -143,20 +142,19 @@ export function main() {
         expect(JSON.stringify(parsedHeaders)).toEqual(JSON.stringify(recreatedHeaders));
       });
     });
-  });
 
-  describe('.fromResponseHeaderString()', () => {
-
-    it('should parse a response header string', () => {
-      const response = `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
-          `Content-Type: application/json; charset=utf-8\n` +
-          `Transfer-Encoding: chunked\n` +
-          `Connection: keep-alive`;
-      const headers = Headers.fromResponseHeaderString(response);
-      expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
-      expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
-      expect(headers.get('Transfer-Encoding')).toEqual('chunked');
-      expect(headers.get('Connection')).toEqual('keep-alive');
+    describe('.fromResponseHeaderString()', () => {
+      it('should parse a response header string', () => {
+        const response = `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
+            `Content-Type: application/json; charset=utf-8\n` +
+            `Transfer-Encoding: chunked\n` +
+            `Connection: keep-alive`;
+        const headers = Headers.fromResponseHeaderString(response);
+        expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
+        expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
+        expect(headers.get('Transfer-Encoding')).toEqual('chunked');
+        expect(headers.get('Connection')).toEqual('keep-alive');
+      });
     });
   });
 }
