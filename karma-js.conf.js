@@ -9,11 +9,12 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
     files: [
+      'node_modules/core-js/client/shim.min.js',
+
       // Sources and specs.
       // Loaded through the System loader, in `test-main.js`.
       {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
 
-      'node_modules/core-js/client/core.js',
       // include Angular v1 for upgrade module testing
       'node_modules/angular/angular.min.js',
 
@@ -26,7 +27,6 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/fake-async-test.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',

@@ -10,13 +10,8 @@ module.exports = function(config) {
 
     files: [
       // Polyfills.
-      'node_modules/core-js/client/core.js',
+      'node_modules/core-js/client/shim.min.js',
       'node_modules/reflect-metadata/Reflect.js',
-      'shims_for_IE.js',
-
-      // System.js for module loading
-      'node_modules/systemjs/dist/system-polyfills.js',
-      'node_modules/systemjs/dist/system.src.js',
 
       // Zone.js dependencies
       'node_modules/zone.js/dist/zone.js',
@@ -26,6 +21,9 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/jasmine-patch.js',
       'node_modules/zone.js/dist/async-test.js',
       'node_modules/zone.js/dist/fake-async-test.js',
+
+      // System.js for module loading
+      'node_modules/systemjs/dist/system.src.js',
 
       // RxJs.
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
