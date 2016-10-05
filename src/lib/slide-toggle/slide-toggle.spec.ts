@@ -1,15 +1,21 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
 import {FormsModule, NgControl} from '@angular/forms';
+import {TestGestureConfig} from '../slider/test-gesture-config';
 
 describe('MdSlideToggle', () => {
+
+  let gestureConfig: TestGestureConfig;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSlideToggleModule.forRoot(), FormsModule],
       declarations: [SlideToggleTestApp, SlideToggleFormsTestApp],
+      providers: [
+        {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()}
+      ]
     });
 
     TestBed.compileComponents();
@@ -389,6 +395,96 @@ describe('MdSlideToggle', () => {
 
       expect(testComponent.isSubmitted).toBe(true);
     });
+
+  });
+
+  describe('with dragging', () => {
+
+    let fixture: ComponentFixture<any>;
+
+    let testComponent: SlideToggleTestApp;
+    let slideToggle: MdSlideToggle;
+    let slideToggleElement: HTMLElement;
+    let slideToggleControl: NgControl;
+    let slideThumbContainer: HTMLElement;
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(SlideToggleTestApp);
+
+      testComponent = fixture.debugElement.componentInstance;
+
+      fixture.detectChanges();
+
+      let slideToggleDebug = fixture.debugElement.query(By.css('md-slide-toggle'));
+      let thumbContainerDebug = slideToggleDebug.query(By.css('.md-slide-toggle-thumb-container'));
+
+      slideToggle = slideToggleDebug.componentInstance;
+      slideToggleElement = slideToggleDebug.nativeElement;
+      slideToggleControl = slideToggleDebug.injector.get(NgControl);
+      slideThumbContainer = thumbContainerDebug.nativeElement;
+    }));
+
+    it('should drag from start to end', fakeAsync(() => {
+      expect(slideToggle.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('md-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(true);
+      expect(slideThumbContainer.classList).not.toContain('md-dragging');
+    }));
+
+    it('should drag from end to start', fakeAsync(() => {
+      slideToggle.checked = true;
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('md-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: -200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(false);
+      expect(slideThumbContainer.classList).not.toContain('md-dragging');
+    }));
+
+    it('should not drag when disbaled', fakeAsync(() => {
+      slideToggle.disabled = true;
+
+      expect(slideToggle.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).not.toContain('md-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(false);
+      expect(slideThumbContainer.classList).not.toContain('md-dragging');
+    }));
 
   });
 

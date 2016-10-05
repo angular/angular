@@ -215,16 +215,24 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   /** TODO: internal */
   _onDragStart() {
-    this._slideRenderer.startThumbDrag(this.checked);
+    if (!this.disabled) {
+      this._slideRenderer.startThumbDrag(this.checked);
+    }
   }
 
   /** TODO: internal */
   _onDrag(event: HammerInput) {
-    this._slideRenderer.updateThumbPosition(event.deltaX);
+    if (this._slideRenderer.isDragging()) {
+      this._slideRenderer.updateThumbPosition(event.deltaX);
+    }
   }
 
   /** TODO: internal */
   _onDragEnd() {
+    if (!this._slideRenderer.isDragging()) {
+      return;
+    }
+
     // Notice that we have to stop outside of the current event handler,
     // because otherwise the click event will be fired and will reset the new checked variable.
     setTimeout(() => {
@@ -258,7 +266,7 @@ class SlideToggleRenderer {
 
   /** Initializes the drag of the slide-toggle. */
   startThumbDrag(checked: boolean) {
-    if (!this._thumbBarWidth) {
+    if (!this.isDragging()) {
       this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
       this._checked = checked;
       this._thumbEl.classList.add('md-dragging');
@@ -267,7 +275,7 @@ class SlideToggleRenderer {
 
   /** Stops the current drag and returns the new checked value. */
   stopThumbDrag(): boolean {
-    if (this._thumbBarWidth) {
+    if (this.isDragging()) {
       this._thumbBarWidth = null;
       this._thumbEl.classList.remove('md-dragging');
 
@@ -279,10 +287,8 @@ class SlideToggleRenderer {
 
   /** Updates the thumb containers position from the specified distance. */
   updateThumbPosition(distance: number) {
-    if (this._thumbBarWidth) {
-      this._percentage = this._getThumbPercentage(distance);
-      applyCssTransform(this._thumbEl, `translate3d(${this._percentage}%, 0, 0)`);
-    }
+    this._percentage = this._getThumbPercentage(distance);
+    applyCssTransform(this._thumbEl, `translate3d(${this._percentage}%, 0, 0)`);
   }
 
   /** Retrieves the percentage of thumb from the moved distance. */

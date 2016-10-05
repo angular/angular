@@ -3,7 +3,9 @@
 
 
 @mixin _md-slide-toggle-checked($palette) {
-  &.md-checked {
+  // Do not apply the checked colors if the toggle is disabled, because the specificity would be to high for
+  // the disabled styles.
+  &.md-checked:not(.md-disabled) {
     .md-slide-toggle-thumb {
       background-color: md-color($palette);
     }

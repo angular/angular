@@ -24,6 +24,12 @@ $md-slide-toggle-margin: 16px !default;
   line-height: $md-slide-toggle-height;
 
   white-space: nowrap;
+
+  // Disable user selection to ensure that dragging is smooth without grabbing some elements
+  // accidentally. Manually prefixing here, because the un-prefixed property is not supported yet.
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 
   outline: none;
@@ -68,7 +74,6 @@ $md-slide-toggle-margin: 16px !default;
   height: $md-slide-toggle-height;
 
   position: relative;
-  user-select: none;
 
   margin-right: 8px;
 }
