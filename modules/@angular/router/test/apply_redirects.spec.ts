@@ -292,6 +292,19 @@ describe('applyRedirects', () => {
               },
               (e) => { throw 'Should not reach'; });
     });
+
+    it('should load the configuration of a whilecard route', () => {
+      const loadedConfig = new LoadedRouterConfig(
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      const config = [{path: '**', loadChildren: 'children'}];
+
+      applyRedirects(<any>'providedInjector', <any>loader, tree('xyz'), config).forEach(r => {
+        expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+      });
+    });
   });
 
   describe('empty paths', () => {
