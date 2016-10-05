@@ -88,7 +88,12 @@ export class Headers {
    */
   append(name: string, value: string): void {
     const values = this.getAll(name);
-    this.set(name, values === null ? [value] : [...values, value]);
+
+    if (values === null) {
+      this.set(name, value);
+    } else {
+      values.push(value);
+    }
   }
 
   /**
