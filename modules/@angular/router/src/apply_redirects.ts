@@ -211,7 +211,14 @@ class ApplyRedirects {
       injector: Injector, rawSegmentGroup: UrlSegmentGroup, route: Route,
       segments: UrlSegment[]): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
-      return of (new UrlSegmentGroup(segments, {}));
+      if (route.loadChildren) {
+        return map.call(this.configLoader.load(injector, route.loadChildren), (r: any) => {
+          (<any>route)._loadedConfig = r;
+          return of (new UrlSegmentGroup(segments, {}));
+        });
+      } else {
+        return of (new UrlSegmentGroup(segments, {}));
+      }
 
     } else {
       const {matched, consumedSegments, lastChild} = match(rawSegmentGroup, route, segments);
