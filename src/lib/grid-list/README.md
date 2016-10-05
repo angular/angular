@@ -7,19 +7,6 @@ See Material Design spec [here](https://www.google.com/design/spec/components/gr
 
 ### Simple grid list
 
-To use `md-grid-list`, import the MdGridList module into your application's NgModule:
-
-*my-app-module.ts*
-```ts
-import {MdGridListModule} from '@angular2-material/grid-list';
-
-@NgModule({
-  imports: [MdGridListModule.forRoot()],
-  ...
-})
-export class MyAppModule {}
-```
-
 In your template, create an `md-grid-list` element and specify the number of columns you want for
 your grid using the `cols` property (this is the only mandatory attribute). 
 

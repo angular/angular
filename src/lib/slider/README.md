@@ -17,17 +17,6 @@ You can read more about the slider in the
 
 ## Usage
 
-### Setup
-
-Importing the module:
-```ts
- @NgModule({
-    imports: [MdSliderModule.forRoot()],
-    ...
- })
- export class MyAppModule { }
-```
-
 ### Basic Usage
 
 `md-slider` can be used on its own as a slider with a min of `0`, a max of `100`, and a step of `1`.

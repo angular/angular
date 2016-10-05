@@ -11,27 +11,6 @@
 
 ## Usage
 
-### Setup
-
-Import the MdMenu module.
-
-*my-app-module.ts*
-```ts
-import {MdMenuModule} from '@angular2-material/menu';
-
-@NgModule({
-  imports: [MdMenuModule.forRoot()],
-  ...
-})
-export class MyAppModule {}
-```
-
-For alpha.7, you need to include the overlay styles in your app via a `link` element. This will
-look something like
-```html
-<link href="vendor/@angular2-material/core/overlay/overlay.css" rel="stylesheet">
-```
-
 ### Simple menu
 
 In your template, create an `md-menu` element. You can use either `<button>` or `<anchor>` tags for 

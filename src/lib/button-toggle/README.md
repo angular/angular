@@ -9,17 +9,6 @@ You can read more about button toggles in the
 
 ## Usage
 
-### Setup
-
-Importing the module:
-```ts
- @NgModule({
-    imports: [MdButtonToggleModule.forRoot()],
-    ...
- })
- export class MyAppModule { }
-```
-
 ### Basic Usage
 
 `md-button-toggle` can be used on its own and acts as a checkbox.

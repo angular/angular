@@ -7,19 +7,6 @@
 
 ### Simple list
 
-To use `md-list`, import the MdList module into your application's NgModule:
-
-*my-app-module.ts*
-```ts
-import {MdListModule} from '@angular2-material/list';
-
-@NgModule({
-  imports: [MdListModule.forRoot()],
-  ...
-})
-export class MyAppModule {}
-```
-
 In your template, create an `md-list` element and wrap each of your items in an `md-list-item` tag.
 
 ```html
