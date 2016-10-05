@@ -111,6 +111,14 @@ export function main() {
     });
 
     describe('.append', () => {
+      it('should append a value to the list', () => {
+        const headers = new Headers();
+        headers.append('foo', 'bar');
+        headers.append('foo', 'baz');
+        expect(headers.get('foo')).toEqual('bar');
+        expect(headers.getAll('foo')).toEqual(['bar', 'baz']);
+      });
+
       it('should preserve the case of the first call', () => {
         const headers = new Headers();
 
