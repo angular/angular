@@ -48,6 +48,23 @@ describe('Router', () => {
       });
     });
 
+    it('should wait for the parent resolve to complete', () => {
+      const parentResolve = new InheritedResolve(InheritedResolve.empty, {data: 'resolver'});
+      const childResolve = new InheritedResolve(parentResolve, {});
+
+      const parent = createActivatedRouteSnapshot('a', {resolve: parentResolve});
+      const child = createActivatedRouteSnapshot('b', {resolve: childResolve});
+
+      const s = new RouterStateSnapshot(
+          'url', new TreeNode(empty.root, [new TreeNode(parent, [new TreeNode(child, [])])]));
+
+      const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
+
+      checkResolveData(s, empty, inj, () => {
+        expect(s.root.firstChild.firstChild.data).toEqual({data: 'resolver_value'});
+      });
+    });
+
     it('should copy over data when creating a snapshot', () => {
       const r1 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver1'});
       const r2 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver2'});

@@ -13,6 +13,7 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
+import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
 import {map} from 'rxjs/operator/map';
 import {mergeAll} from 'rxjs/operator/mergeAll';
@@ -692,7 +693,7 @@ export class PreActivation {
   resolveData(): Observable<any> {
     if (this.checks.length === 0) return of (null);
     const checks$ = from(this.checks);
-    const runningChecks$ = mergeMap.call(checks$, (s: any) => {
+    const runningChecks$ = concatMap.call(checks$, (s: any) => {
       if (s instanceof CanActivate) {
         return this.runResolve(s.route);
       } else {
