@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
 require('./dist/all/e2e_util/perf_util').readCommandLine();
@@ -15,32 +23,26 @@ var BROWSER_CAPS = {
     chromeOptions: CHROME_OPTIONS,
     loggingPrefs: {
       performance: 'ALL',
-      browser: 'ALL'
+      browser: 'ALL',
     }
   },
   ChromeOnTravis: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
-      'binary': process.env.CHROME_BIN
+      'binary': process.env.CHROME_BIN,
     }),
     loggingPrefs: {
       performance: 'ALL',
-      browser: 'ALL'
+      browser: 'ALL',
     }
   }
 };
 
 exports.config = {
-  onPrepare: function() {
-    beforeEach(function() {
-      browser.ignoreSynchronization = false;
-    });
-  },
+  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
-  specs: [
-    'dist/all/**/e2e_test/**/*_perf.js'
-  ],
+  specs: ['dist/all/**/e2e_test/**/*_perf.js'],
   capabilities: process.env.TRAVIS ? BROWSER_CAPS.ChromeOnTravis : BROWSER_CAPS.LocalChrome,
   directConnect: true,
   baseUrl: 'http://localhost:8000/',
@@ -48,14 +50,14 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 60000,
-    print: function(msg) { console.log(msg)}
+    print: function(msg) { console.log(msg); },
   },
   useAllAngular2AppRoots: true
 };
 
 function mergeInto(src, target) {
-for (var prop in src) {
-  target[prop] = src[prop];
-}
-return target;
+  for (var prop in src) {
+    target[prop] = src[prop];
+  }
+  return target;
 }
