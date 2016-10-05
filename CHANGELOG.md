@@ -1,3 +1,30 @@
+<a name="2.1.0-rc.0"></a>
+# [2.1.0-rc.0](https://github.com/angular/angular/compare/2.1.0-beta.0...2.1.0-rc.0) (2016-10-05)
+
+
+### Bug Fixes
+
+* **http:** correctly removes styles on IE ([3898dc4](https://github.com/angular/angular/commit/3898dc4)), closes [#7916](https://github.com/angular/angular/issues/7916)
+* **compiler:** Do not embed templateUrl in view factories in non-debug mode. ([#11818](https://github.com/angular/angular/issues/11818)) ([3a5b488](https://github.com/angular/angular/commit/3a5b488)), closes [#11117](https://github.com/angular/angular/issues/11117)
+* **compiler:** move detection of unsafe properties for binding to ElementSchemaRegistry ([#11378](https://github.com/angular/angular/issues/11378)) ([61129fa](https://github.com/angular/angular/commit/61129fa))
+* **forms:** properly validate empty strings with patterns ([#11450](https://github.com/angular/angular/issues/11450)) ([4a57dcf](https://github.com/angular/angular/commit/4a57dcf))
+* **http:** preserve case of the first init, `set()` or `append()` ([#12023](https://github.com/angular/angular/issues/12023)) ([ed9c2b6](https://github.com/angular/angular/commit/ed9c2b6)), closes [#11624](https://github.com/angular/angular/issues/11624)
+* **compiler-cli:** allow ReflectorHost passed as argument to CodeGenerator#create ([#11951](https://github.com/angular/angular/issues/11951)) ([1564042](https://github.com/angular/angular/commit/1564042))
+* **compiler:** fix `:host(tag)` and `:host-context(tag)` ([a6bb84e](https://github.com/angular/angular/commit/a6bb84e)), closes [#11972](https://github.com/angular/angular/issues/11972)
+* **compiler:** fix attribute selectors in :host and :host-context ([#12056](https://github.com/angular/angular/issues/12056)) ([a633596](https://github.com/angular/angular/commit/a633596)), closes [#11917](https://github.com/angular/angular/issues/11917)
+* **compiler:** support `[@page](https://github.com/page)` and `[@document](https://github.com/document)` CSS rules ([#11878](https://github.com/angular/angular/issues/11878)) ([9316f95](https://github.com/angular/angular/commit/9316f95)), closes [#11860](https://github.com/angular/angular/issues/11860)
+* **compiler:** support `[attr="value with space"]` ([6c4ec05](https://github.com/angular/angular/commit/6c4ec05)), closes [#6249](https://github.com/angular/angular/issues/6249)
+* **compiler:** support quoted attribute values ([83d94b7](https://github.com/angular/angular/commit/83d94b7)), closes [#6085](https://github.com/angular/angular/issues/6085)
+* **upgrade:** bind optional properties when upgrading from ng1 ([#11411](https://github.com/angular/angular/issues/11411)) ([42b4b6d](https://github.com/angular/angular/commit/42b4b6d)), closes [#10181](https://github.com/angular/angular/issues/10181)
+* **http:** change a behavior when a param value is null or undefined ([#11990](https://github.com/angular/angular/issues/11990)) ([bf7b82b](https://github.com/angular/angular/commit/bf7b82b))
+* **compiler:** fix `<x>` ctype names ([040bf57](https://github.com/angular/angular/commit/040bf57)), closes [#12000](https://github.com/angular/angular/issues/12000)
+
+
+### Features
+
+* **animations:** provide aliases for :enter and :leave transitions ([#11991](https://github.com/angular/angular/issues/11991)) ([e884f48](https://github.com/angular/angular/commit/e884f48))
+
+
 <a name="2.1.0-beta.0"></a>
 # [2.1.0-beta.0](https://github.com/angular/angular/compare/2.0.0...2.1.0-beta.0) (2016-09-23)
 
