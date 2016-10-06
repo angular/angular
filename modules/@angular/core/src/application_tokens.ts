@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StringWrapper} from '../src/facade/lang';
-
 import {OpaqueToken} from './di';
 
 
@@ -38,7 +36,7 @@ export const APP_ID_RANDOM_PROVIDER = {
 };
 
 function _randomChar(): string {
-  return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
+  return String.fromCharCode(97 + Math.floor(Math.random() * 25));
 }
 
 /**

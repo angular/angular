@@ -1,5 +1,3 @@
-import {StringWrapper} from '@angular/facade/src/lang';
-
 import {AAT_STATUS_LIST, Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
 export function generateOfferings(count: number): Offering[] {

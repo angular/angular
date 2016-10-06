@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import * as chars from '../chars';
-import {StringWrapper, escapeRegExp, isBlank, isPresent} from '../facade/lang';
+import {escapeRegExp, isBlank, isPresent} from '../facade/lang';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
 import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
@@ -122,7 +122,7 @@ export class Parser {
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): SplitInterpolation {
     const regexp = _createInterpolateRegExp(interpolationConfig);
-    const parts = StringWrapper.split(input, regexp);
+    const parts = input.split(regexp);
     if (parts.length <= 1) {
       return null;
     }
@@ -160,8 +160,8 @@ export class Parser {
   private _commentStart(input: string): number {
     var outerQuote: number = null;
     for (let i = 0; i < input.length - 1; i++) {
-      const char = StringWrapper.charCodeAt(input, i);
-      const nextChar = StringWrapper.charCodeAt(input, i + 1);
+      const char = input.charCodeAt(i);
+      const nextChar = input.charCodeAt(i + 1);
 
       if (char === chars.$SLASH && nextChar == chars.$SLASH && isBlank(outerQuote)) return i;
 
@@ -177,7 +177,7 @@ export class Parser {
   private _checkNoInterpolation(
       input: string, location: any, interpolationConfig: InterpolationConfig): void {
     var regexp = _createInterpolateRegExp(interpolationConfig);
-    var parts = StringWrapper.split(input, regexp);
+    var parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
           `Got interpolation (${interpolationConfig.start}${interpolationConfig.end}) where expression was expected`,
@@ -239,7 +239,7 @@ export class _ParseAST {
 
   expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
-    this.error(`Missing expected ${StringWrapper.fromCharCode(code)}`);
+    this.error(`Missing expected ${String.fromCharCode(code)}`);
   }
 
   optionalOperator(op: string): boolean {

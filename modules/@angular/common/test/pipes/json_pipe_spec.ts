@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {Json, StringWrapper} from '../../src/facade/lang';
+import {Json} from '../../src/facade/lang';
 
 export function main() {
   describe('JsonPipe', () => {
@@ -20,7 +20,7 @@ export function main() {
     var inceptionObjString: string;
     var pipe: JsonPipe;
 
-    function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
+    function normalize(obj: string): string { return obj.replace(regNewLine, ''); }
 
     beforeEach(() => {
       inceptionObj = {dream: {dream: {dream: 'Limbo'}}};

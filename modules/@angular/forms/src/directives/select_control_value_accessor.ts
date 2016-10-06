@@ -9,7 +9,7 @@
 import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
 
 import {MapWrapper} from '../facade/collection';
-import {StringWrapper, isBlank, isPresent, isPrimitive, looseIdentical} from '../facade/lang';
+import {isBlank, isPresent, isPrimitive, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -22,7 +22,7 @@ export const SELECT_VALUE_ACCESSOR: any = {
 function _buildValueString(id: string, value: any): string {
   if (isBlank(id)) return `${value}`;
   if (!isPrimitive(value)) value = 'Object';
-  return StringWrapper.slice(`${id}: ${value}`, 0, 50);
+  return `${id}: ${value}`.slice(0, 50);
 }
 
 function _extractId(valueString: string): string {

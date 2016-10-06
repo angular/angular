@@ -7,7 +7,7 @@
  */
 
 import {CompileTokenMetadata} from './compile_metadata';
-import {StringWrapper, isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
+import {isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
 import * as o from './output/output_ast';
 
 export const MODULE_SUFFIX = '';
@@ -15,8 +15,7 @@ export const MODULE_SUFFIX = '';
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(
-      input, CAMEL_CASE_REGEXP, (m: string[]) => '-' + m[1].toLowerCase());
+  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
@@ -34,7 +33,7 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
 }
 
 export function sanitizeIdentifier(name: string): string {
-  return StringWrapper.replaceAll(name, /\W/g, '_');
+  return name.replace(/\W/g, '_');
 }
 
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {

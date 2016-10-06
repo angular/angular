@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {StringWrapper, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -42,7 +42,7 @@ export class IOsDriverExtension extends WebDriverExtension {
           var records: any[] = [];
           entries.forEach(entry => {
             var message = JSON.parse(entry['message'])['message'];
-            if (StringWrapper.equals(message['method'], 'Timeline.eventRecorded')) {
+            if (message['method'] === 'Timeline.eventRecorded') {
               records.push(message['params']['record']);
             }
           });
@@ -62,19 +62,16 @@ export class IOsDriverExtension extends WebDriverExtension {
       var startTime = record['startTime'];
       var endTime = record['endTime'];
 
-      if (StringWrapper.equals(type, 'FunctionCall') &&
-          (isBlank(data) || !StringWrapper.equals(data['scriptName'], 'InjectedScript'))) {
+      if (type === 'FunctionCall' && (isBlank(data) || data['scriptName'] !== 'InjectedScript')) {
         events.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
-      } else if (StringWrapper.equals(type, 'Time')) {
+      } else if (type === 'Time') {
         events.push(createMarkStartEvent(data['message'], startTime));
-      } else if (StringWrapper.equals(type, 'TimeEnd')) {
+      } else if (type === 'TimeEnd') {
         events.push(createMarkEndEvent(data['message'], startTime));
       } else if (
-          StringWrapper.equals(type, 'RecalculateStyles') || StringWrapper.equals(type, 'Layout') ||
-          StringWrapper.equals(type, 'UpdateLayerTree') || StringWrapper.equals(type, 'Paint') ||
-          StringWrapper.equals(type, 'Rasterize') ||
-          StringWrapper.equals(type, 'CompositeLayers')) {
+          type === 'RecalculateStyles' || type === 'Layout' || type === 'UpdateLayerTree' ||
+          type === 'Paint' || type === 'Rasterize' || type === 'CompositeLayers') {
         events.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -92,7 +89,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true}); }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'safari');
+    return capabilities['browserName'].toLowerCase() === 'safari';
   }
 }
 

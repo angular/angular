@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {StringWrapper, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
@@ -48,6 +48,6 @@ export class FirefoxDriverExtension extends WebDriverExtension {
   perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true, gc: true}); }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'firefox');
+    return capabilities['browserName'].toLowerCase() === 'firefox';
   }
 }

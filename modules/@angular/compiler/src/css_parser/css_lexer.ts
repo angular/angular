@@ -9,7 +9,7 @@
 
 import * as chars from '../chars';
 import {BaseError} from '../facade/errors';
-import {StringWrapper, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 
 export enum CssTokenType {
   EOF,
@@ -155,7 +155,7 @@ export class CssScanner {
   }
 
   peekAt(index: number): number {
-    return index >= this.length ? chars.$EOF : StringWrapper.charCodeAt(this.input, index);
+    return index >= this.length ? chars.$EOF : this.input.charCodeAt(index);
   }
 
   consumeEmptyStatements(): void {
@@ -310,7 +310,7 @@ export class CssScanner {
       return this.scanCharacter();
     }
 
-    return this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`);
+    return this.error(`Unexpected character [${String.fromCharCode(peek)}]`);
   }
 
   scanComment(): CssToken {
@@ -476,8 +476,7 @@ export class CssScanner {
     var index: number = this.index;
     var column: number = this.column;
     var line: number = this.line;
-    errorTokenValue =
-        isPresent(errorTokenValue) ? errorTokenValue : StringWrapper.fromCharCode(this.peek);
+    errorTokenValue = isPresent(errorTokenValue) ? errorTokenValue : String.fromCharCode(this.peek);
     var invalidToken = new CssToken(index, column, line, CssTokenType.Invalid, errorTokenValue);
     var errorMessage =
         generateErrorMessage(this.input, message, errorTokenValue, index, line, column);
@@ -696,11 +695,11 @@ function isValidCssCharacter(code: number, mode: CssLexerMode): boolean {
 }
 
 function charCode(input: string, index: number): number {
-  return index >= input.length ? chars.$EOF : StringWrapper.charCodeAt(input, index);
+  return index >= input.length ? chars.$EOF : input.charCodeAt(index);
 }
 
 function charStr(code: number): string {
-  return StringWrapper.fromCharCode(code);
+  return String.fromCharCode(code);
 }
 
 export function isNewline(code: number): boolean {

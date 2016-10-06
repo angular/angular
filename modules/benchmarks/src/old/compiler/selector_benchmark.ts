@@ -1,6 +1,6 @@
 import {SelectorMatcher} from '@angular/compiler/src/selector';
 import {CssSelector} from '@angular/compiler/src/selector';
-import {Math, StringWrapper} from '@angular/facade/lang';
+import {Math} from '@angular/facade/lang';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 

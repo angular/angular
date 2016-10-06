@@ -9,7 +9,7 @@
 import {NgZone} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
-import {StringWrapper, global, isPresent, isString} from './facade/lang';
+import {global, isPresent, isString} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {
@@ -83,16 +83,12 @@ export function el(html: string): HTMLElement {
 }
 
 export function normalizeCSS(css: string): string {
-  css = StringWrapper.replaceAll(css, /\s+/g, ' ');
-  css = StringWrapper.replaceAll(css, /:\s/g, ':');
-  css = StringWrapper.replaceAll(css, /'/g, '"');
-  css = StringWrapper.replaceAll(css, / }/g, '}');
-  css = StringWrapper.replaceAllMapped(
-      css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g,
-      (match: any /** TODO #9100 */) => `url("${match[2]}")`);
-  css = StringWrapper.replaceAllMapped(
-      css, /\[(.+)=([^"\]]+)\]/g, (match: any /** TODO #9100 */) => `[${match[1]}="${match[2]}"]`);
-  return css;
+  return css.replace(/\s+/g, ' ')
+      .replace(/:\s/g, ':')
+      .replace(/'/g, '"')
+      .replace(/ }/g, '}')
+      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
+      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
 var _singleTagWhitelist = ['br', 'hr', 'input'];

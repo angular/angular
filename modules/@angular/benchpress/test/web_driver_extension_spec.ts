@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {Options, ReflectiveInjector, WebDriverExtension} from '../index';
-import {StringWrapper, isPresent} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 
 export function main() {
   function createExtension(ids: any[], caps: any) {
@@ -52,6 +52,6 @@ class MockExtension extends WebDriverExtension {
   constructor(public id: string) { super(); }
 
   supports(capabilities: {[key: string]: any}): boolean {
-    return StringWrapper.equals(capabilities['browser'], this.id);
+    return capabilities['browser'] === this.id;
   }
 }
