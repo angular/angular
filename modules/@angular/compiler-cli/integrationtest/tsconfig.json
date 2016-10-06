@@ -15,5 +15,15 @@
         "declaration": true,
         "lib": ["es6", "dom"],
         "baseUrl": "."
-    }
+    },
+
+    "files": [
+        "src/module",
+        "src/bootstrap",
+        "test/all_spec",
+        "benchmarks/src/tree/ng2/index_aot.ts",
+        "benchmarks/src/tree/ng2_switch/index_aot.ts",
+        "benchmarks/src/largetable/ng2/index_aot.ts",
+        "benchmarks/src/largetable/ng2_switch/index_aot.ts"
+    ]
 }

@@ -21,6 +21,7 @@ TMPDIR=${TMPDIR:-.}
 readonly TMP=$TMPDIR/e2e_test.$(date +%s)
 mkdir -p $TMP
 cp -R -v modules/@angular/compiler-cli/integrationtest/* $TMP
+cp -R -v modules/benchmarks $TMP
 # Try to use the same versions as angular, in particular, this will
 # cause us to install the same rxjs version.
 cp -v package.json $TMP
