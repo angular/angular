@@ -19,9 +19,13 @@
   </p>
 
   <div>
-    <tree id="root"></tree>
+    <tree id="root">Loading...</tree>
   </div>
 
-  <script src="../../bootstrap_ng2.js"></script>
+  <script>
+    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
+      || '../../bootstrap_ng2.js';
+    document.write('<script src="' + mainUrl + '">\u003c/script>');
+  </script>
 </body>
 </html>
