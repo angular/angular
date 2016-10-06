@@ -21,7 +21,7 @@ import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, 
 import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
-import {StaticReflector, StaticSymbol} from './static_reflector';
+import {StaticReflector, StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const nodeFs = require('fs');
 
@@ -36,11 +36,26 @@ const PREAMBLE = `/**
 
 `;
 
-export class CodeGenerator {
+export class CodeGeneratorModuleCollector {
   constructor(
-      private options: AngularCompilerOptions, private program: ts.Program,
-      public host: ts.CompilerHost, private staticReflector: StaticReflector,
-      private compiler: compiler.OfflineCompiler, private reflectorHost: ReflectorHost) {}
+      private staticReflector: StaticReflector, private reflectorHost: StaticReflectorHost,
+      private program: ts.Program, private options: AngularCompilerOptions) {}
+
+  getModuleSymbols(program: ts.Program): {fileMetas: FileMetadata[], ngModules: StaticSymbol[]} {
+    // Compare with false since the default should be true
+    const skipFileNames = (this.options.generateCodeForLibraries === false) ?
+        GENERATED_OR_DTS_FILES :
+        GENERATED_FILES;
+    let filePaths = this.program.getSourceFiles()
+                        .filter(sf => !skipFileNames.test(sf.fileName))
+                        .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName));
+    const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
+    const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
+      ngModules.push(...fileMeta.ngModules);
+      return ngModules;
+    }, <StaticSymbol[]>[]);
+    return {fileMetas, ngModules};
+  }
 
   private readFileMetadata(absSourcePath: string): FileMetadata {
     const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
@@ -71,6 +86,18 @@ export class CodeGenerator {
     }
     return result;
   }
+}
+
+export class CodeGenerator {
+  private moduleCollector: CodeGeneratorModuleCollector;
+
+  constructor(
+      private options: AngularCompilerOptions, private program: ts.Program,
+      public host: ts.CompilerHost, private staticReflector: StaticReflector,
+      private compiler: compiler.OfflineCompiler, private reflectorHost: StaticReflectorHost) {
+    this.moduleCollector =
+        new CodeGeneratorModuleCollector(staticReflector, reflectorHost, program, options);
+  }
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -95,18 +122,7 @@ export class CodeGenerator {
   }
 
   codegen(): Promise<any> {
-    // Compare with false since the default should be true
-    const skipFileNames = (this.options.generateCodeForLibraries === false) ?
-        GENERATED_OR_DTS_FILES :
-        GENERATED_FILES;
-    let filePaths = this.program.getSourceFiles()
-                        .filter(sf => !skipFileNames.test(sf.fileName))
-                        .map(sf => this.reflectorHost.getCanonicalFileName(sf.fileName));
-    const fileMetas = filePaths.map((filePath) => this.readFileMetadata(filePath));
-    const ngModules = fileMetas.reduce((ngModules, fileMeta) => {
-      ngModules.push(...fileMeta.ngModules);
-      return ngModules;
-    }, <StaticSymbol[]>[]);
+    const {fileMetas, ngModules} = this.moduleCollector.getModuleSymbols(this.program);
     const analyzedNgModules = this.compiler.analyzeModules(ngModules);
     return Promise.all(fileMetas.map(
         (fileMeta) =>
@@ -185,7 +201,7 @@ export class CodeGenerator {
   }
 }
 
-interface FileMetadata {
+export interface FileMetadata {
   fileUrl: string;
   components: StaticSymbol[];
   ngModules: StaticSymbol[];

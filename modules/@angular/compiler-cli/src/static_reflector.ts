@@ -44,6 +44,8 @@ export interface StaticReflectorHost {
     animationMetadata: string,
     provider: string
   };
+
+  getCanonicalFileName(fileName: string): string;
 }
 
 /**

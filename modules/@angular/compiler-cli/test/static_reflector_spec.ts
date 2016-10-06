@@ -450,6 +450,9 @@ class MockReflectorHost implements StaticReflectorHost {
       provider: 'angular2/src/core/di/provider'
     };
   }
+
+  getCanonicalFileName(fileName: string): string { return fileName; }
+
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
     var cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
     var result = this.staticTypeCache.get(cacheKey);
