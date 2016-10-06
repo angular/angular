@@ -39,7 +39,7 @@ export declare class Headers {
     });
     append(name: string, value: string): void;
     delete(name: string): void;
-    entries(): void;
+    entries(): Iterator<[string, string[]]>;
     forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void;
     get(name: string): string;
     getAll(name: string): string[];
