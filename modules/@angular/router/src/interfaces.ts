@@ -98,7 +98,7 @@ export interface CanActivate {
  * }
  *
  * @Injectable()
- * class CanActivateTeam implements CanActivate {
+ * class CanActivateTeam implements CanActivateChild {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
  *   canActivateChild(
