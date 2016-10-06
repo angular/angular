@@ -7,7 +7,6 @@
  */
 
 import {MapWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
 import {Type} from '../type';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {ReflectorReader} from './reflector_reader';
@@ -60,10 +59,10 @@ export class Reflector extends ReflectorReader {
    * potential dead code.
    */
   listUnusedKeys(): any[] {
-    if (this._usedKeys == null) {
+    if (!this._usedKeys) {
       throw new Error('Usage tracking is disabled');
     }
-    var allTypes = MapWrapper.keys(this._injectableInfo);
+    const allTypes = MapWrapper.keys(this._injectableInfo);
     return allTypes.filter(key => !this._usedKeys.has(key));
   }
 
@@ -83,87 +82,73 @@ export class Reflector extends ReflectorReader {
 
   factory(type: Type<any>): Function {
     if (this._containsReflectionInfo(type)) {
-      var res = this._getReflectionInfo(type).factory;
-      return isPresent(res) ? res : null;
-    } else {
-      return this.reflectionCapabilities.factory(type);
+      return this._getReflectionInfo(type).factory || null;
     }
+
+    return this.reflectionCapabilities.factory(type);
   }
 
   parameters(typeOrFunc: Type<any>): any[][] {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._getReflectionInfo(typeOrFunc).parameters;
-      return isPresent(res) ? res : [];
-    } else {
-      return this.reflectionCapabilities.parameters(typeOrFunc);
+      return this._getReflectionInfo(typeOrFunc).parameters || [];
     }
+
+    return this.reflectionCapabilities.parameters(typeOrFunc);
   }
 
   annotations(typeOrFunc: Type<any>): any[] {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._getReflectionInfo(typeOrFunc).annotations;
-      return isPresent(res) ? res : [];
-    } else {
-      return this.reflectionCapabilities.annotations(typeOrFunc);
+      return this._getReflectionInfo(typeOrFunc).annotations || [];
     }
+
+    return this.reflectionCapabilities.annotations(typeOrFunc);
   }
 
   propMetadata(typeOrFunc: Type<any>): {[key: string]: any[]} {
     if (this._injectableInfo.has(typeOrFunc)) {
-      var res = this._getReflectionInfo(typeOrFunc).propMetadata;
-      return isPresent(res) ? res : {};
-    } else {
-      return this.reflectionCapabilities.propMetadata(typeOrFunc);
+      return this._getReflectionInfo(typeOrFunc).propMetadata || {};
     }
+
+    return this.reflectionCapabilities.propMetadata(typeOrFunc);
   }
 
   interfaces(type: Type<any>): any[] {
     if (this._injectableInfo.has(type)) {
-      var res = this._getReflectionInfo(type).interfaces;
-      return isPresent(res) ? res : [];
-    } else {
-      return this.reflectionCapabilities.interfaces(type);
+      return this._getReflectionInfo(type).interfaces || [];
     }
+
+    return this.reflectionCapabilities.interfaces(type);
   }
 
   hasLifecycleHook(type: any, lcInterface: Type<any>, lcProperty: string): boolean {
-    var interfaces = this.interfaces(type);
-    if (interfaces.indexOf(lcInterface) !== -1) {
+    if (this.interfaces(type).indexOf(lcInterface) !== -1) {
       return true;
-    } else {
-      return this.reflectionCapabilities.hasLifecycleHook(type, lcInterface, lcProperty);
     }
+
+    return this.reflectionCapabilities.hasLifecycleHook(type, lcInterface, lcProperty);
   }
 
   getter(name: string): GetterFn {
-    if (this._getters.has(name)) {
-      return this._getters.get(name);
-    } else {
-      return this.reflectionCapabilities.getter(name);
-    }
+    return this._getters.has(name) ? this._getters.get(name) :
+                                     this.reflectionCapabilities.getter(name);
   }
 
   setter(name: string): SetterFn {
-    if (this._setters.has(name)) {
-      return this._setters.get(name);
-    } else {
-      return this.reflectionCapabilities.setter(name);
-    }
+    return this._setters.has(name) ? this._setters.get(name) :
+                                     this.reflectionCapabilities.setter(name);
   }
 
   method(name: string): MethodFn {
-    if (this._methods.has(name)) {
-      return this._methods.get(name);
-    } else {
-      return this.reflectionCapabilities.method(name);
-    }
+    return this._methods.has(name) ? this._methods.get(name) :
+                                     this.reflectionCapabilities.method(name);
   }
 
   /** @internal */
   _getReflectionInfo(typeOrFunc: any): ReflectionInfo {
-    if (isPresent(this._usedKeys)) {
+    if (this._usedKeys) {
       this._usedKeys.add(typeOrFunc);
     }
+
     return this._injectableInfo.get(typeOrFunc);
   }
 

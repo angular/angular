@@ -19,19 +19,11 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
 
-  factory(t: Type<any>): Function {
-    var prototype = t.prototype;
-    return function(...args: any[]) {
-      var instance = Object.create(prototype);
-      t.apply(instance, args);
-      return instance;
-    };
-  }
+  factory<T>(t: Type<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
 
   /** @internal */
-  _zipTypesAndAnnotations(
-      paramTypes: any /** TODO #9100 */, paramAnnotations: any /** TODO #9100 */): any[][] {
-    var result: any /** TODO #9100 */;
+  _zipTypesAndAnnotations(paramTypes: any[], paramAnnotations: any[]): any[][] {
+    var result: any[][];
 
     if (typeof paramTypes === 'undefined') {
       result = new Array(paramAnnotations.length);
@@ -50,48 +42,45 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       } else {
         result[i] = [];
       }
-      if (isPresent(paramAnnotations) && isPresent(paramAnnotations[i])) {
+      if (paramAnnotations && isPresent(paramAnnotations[i])) {
         result[i] = result[i].concat(paramAnnotations[i]);
       }
     }
     return result;
   }
 
-  parameters(typeOrFunc: Type<any>): any[][] {
+  parameters(type: Type<any>): any[][] {
     // Prefer the direct API.
-    if (isPresent((<any>typeOrFunc).parameters)) {
-      return (<any>typeOrFunc).parameters;
+    if ((<any>type).parameters) {
+      return (<any>type).parameters;
     }
 
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).ctorParameters)) {
-      let ctorParameters = (<any>typeOrFunc).ctorParameters;
-      let paramTypes =
-          ctorParameters.map((ctorParam: any /** TODO #9100 */) => ctorParam && ctorParam.type);
-      let paramAnnotations = ctorParameters.map(
-          (ctorParam: any /** TODO #9100 */) =>
+    if ((<any>type).ctorParameters) {
+      const ctorParameters = (<any>type).ctorParameters;
+      const paramTypes = ctorParameters.map((ctorParam: any) => ctorParam && ctorParam.type);
+      const paramAnnotations = ctorParameters.map(
+          (ctorParam: any) =>
               ctorParam && convertTsickleDecoratorIntoMetadata(ctorParam.decorators));
       return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
     // API for metadata created by invoking the decorators.
     if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
-      var paramAnnotations = this._reflect.getMetadata('parameters', typeOrFunc);
-      var paramTypes = this._reflect.getMetadata('design:paramtypes', typeOrFunc);
-      if (isPresent(paramTypes) || isPresent(paramAnnotations)) {
+      const paramAnnotations = this._reflect.getMetadata('parameters', type);
+      const paramTypes = this._reflect.getMetadata('design:paramtypes', type);
+      if (paramTypes || paramAnnotations) {
         return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
     // The array has to be filled with `undefined` because holes would be skipped by `some`
-    let parameters = new Array((<any>typeOrFunc.length));
-    parameters.fill(undefined);
-    return parameters;
+    return new Array((<any>type.length)).fill(undefined);
   }
 
   annotations(typeOrFunc: Type<any>): any[] {
     // Prefer the direct API.
-    if (isPresent((<any>typeOrFunc).annotations)) {
-      var annotations = (<any>typeOrFunc).annotations;
+    if ((<any>typeOrFunc).annotations) {
+      let annotations = (<any>typeOrFunc).annotations;
       if (isFunction(annotations) && annotations.annotations) {
         annotations = annotations.annotations;
       }
@@ -99,22 +88,22 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).decorators)) {
+    if ((<any>typeOrFunc).decorators) {
       return convertTsickleDecoratorIntoMetadata((<any>typeOrFunc).decorators);
     }
 
     // API for metadata created by invoking the decorators.
-    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
-      var annotations = this._reflect.getMetadata('annotations', typeOrFunc);
-      if (isPresent(annotations)) return annotations;
+    if (this._reflect && this._reflect.getMetadata) {
+      const annotations = this._reflect.getMetadata('annotations', typeOrFunc);
+      if (annotations) return annotations;
     }
     return [];
   }
 
   propMetadata(typeOrFunc: any): {[key: string]: any[]} {
     // Prefer the direct API.
-    if (isPresent((<any>typeOrFunc).propMetadata)) {
-      var propMetadata = (<any>typeOrFunc).propMetadata;
+    if ((<any>typeOrFunc).propMetadata) {
+      let propMetadata = (<any>typeOrFunc).propMetadata;
       if (isFunction(propMetadata) && propMetadata.propMetadata) {
         propMetadata = propMetadata.propMetadata;
       }
@@ -122,9 +111,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API of tsickle for lowering decorators to properties on the class.
-    if (isPresent((<any>typeOrFunc).propDecorators)) {
-      let propDecorators = (<any>typeOrFunc).propDecorators;
-      let propMetadata = <{[key: string]: any[]}>{};
+    if ((<any>typeOrFunc).propDecorators) {
+      const propDecorators = (<any>typeOrFunc).propDecorators;
+      const propMetadata = <{[key: string]: any[]}>{};
       Object.keys(propDecorators).forEach(prop => {
         propMetadata[prop] = convertTsickleDecoratorIntoMetadata(propDecorators[prop]);
       });
@@ -132,9 +121,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
-      var propMetadata = this._reflect.getMetadata('propMetadata', typeOrFunc);
-      if (isPresent(propMetadata)) return propMetadata;
+    if (this._reflect && this._reflect.getMetadata) {
+      const propMetadata = this._reflect.getMetadata('propMetadata', typeOrFunc);
+      if (propMetadata) return propMetadata;
     }
     return {};
   }
@@ -147,7 +136,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   hasLifecycleHook(type: any, lcInterface: Type<any>, lcProperty: string): boolean {
     if (!(type instanceof Type)) return false;
 
-    var proto = (<any>type).prototype;
+    const proto = (<any>type).prototype;
     return !!proto[lcProperty];
   }
 
@@ -158,7 +147,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   method(name: string): MethodFn {
-    let functionBody = `if (!o.${name}) throw new Error('"${name}" is undefined');
+    const functionBody = `if (!o.${name}) throw new Error('"${name}" is undefined');
         return o.${name}.apply(o, args);`;
     return <MethodFn>new Function('o', 'args', functionBody);
   }
