@@ -98,7 +98,7 @@ class ApplyRedirects {
   }
 
   private noMatchError(e: NoMatch): any {
-    return new Error(`Cannot match any routes: '${e.segmentGroup}'`);
+    return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
   private createUrlTree(rootCandidate: UrlSegmentGroup): UrlTree {
