@@ -17,7 +17,7 @@ import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
 
 export class SplitInterpolation {
-  constructor(public strings: string[], public expressions: string[]) {}
+  constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}
 }
 
 export class TemplateBindingParseResult {
@@ -41,8 +41,12 @@ export class Parser {
       input: string, location: any,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
+    const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(this._stripComments(input));
-    const ast = new _ParseAST(input, location, tokens, true, this.errors).parseChain();
+    const ast = new _ParseAST(
+                    input, location, tokens, sourceToLex.length, true, this.errors,
+                    input.length - sourceToLex.length)
+                    .parseChain();
     return new ASTWithSource(ast, input, location, this.errors);
   }
 
@@ -79,8 +83,12 @@ export class Parser {
     }
 
     this._checkNoInterpolation(input, location, interpolationConfig);
-    var tokens = this._lexer.tokenize(this._stripComments(input));
-    return new _ParseAST(input, location, tokens, false, this.errors).parseChain();
+    const sourceToLex = this._stripComments(input);
+    const tokens = this._lexer.tokenize(sourceToLex);
+    return new _ParseAST(
+               input, location, tokens, sourceToLex.length, false, this.errors,
+               input.length - sourceToLex.length)
+        .parseChain();
   }
 
   private _parseQuote(input: string, location: any): AST {
@@ -95,7 +103,8 @@ export class Parser {
 
   parseTemplateBindings(input: string, location: any): TemplateBindingParseResult {
     var tokens = this._lexer.tokenize(input);
-    return new _ParseAST(input, location, tokens, false, this.errors).parseTemplateBindings();
+    return new _ParseAST(input, location, tokens, input.length, false, this.errors, 0)
+        .parseTemplateBindings();
   }
 
   parseInterpolation(
@@ -107,8 +116,13 @@ export class Parser {
     let expressions: AST[] = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
-      var tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
-      var ast = new _ParseAST(input, location, tokens, false, this.errors).parseChain();
+      const expressionText = split.expressions[i];
+      const sourceToLex = this._stripComments(expressionText);
+      const tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
+      const ast = new _ParseAST(
+                      input, location, tokens, sourceToLex.length, false, this.errors,
+                      split.offsets[i] + (expressionText.length - sourceToLex.length))
+                      .parseChain();
       expressions.push(ast);
     }
 
@@ -128,14 +142,19 @@ export class Parser {
     }
     const strings: string[] = [];
     const expressions: string[] = [];
-
+    const offsets: number[] = [];
+    let offset = 0;
     for (let i = 0; i < parts.length; i++) {
       var part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string
         strings.push(part);
+        offset += part.length;
       } else if (part.trim().length > 0) {
+        offset += interpolationConfig.start.length;
         expressions.push(part);
+        offsets.push(offset);
+        offset += part.length + interpolationConfig.end.length;
       } else {
         this._reportError(
             'Blank expressions are not allowed in interpolated strings', input,
@@ -143,7 +162,7 @@ export class Parser {
             location);
       }
     }
-    return new SplitInterpolation(strings, expressions);
+    return new SplitInterpolation(strings, expressions, offsets);
   }
 
   wrapLiteralPrimitive(input: string, location: any): ASTWithSource {
@@ -208,8 +227,9 @@ export class _ParseAST {
   index: number = 0;
 
   constructor(
-      public input: string, public location: any, public tokens: any[], public parseAction: boolean,
-      private errors: ParserError[]) {}
+      public input: string, public location: any, public tokens: Token[],
+      public inputLength: number, public parseAction: boolean, private errors: ParserError[],
+      private offset: number) {}
 
   peek(offset: number): Token {
     var i = this.index + offset;
@@ -219,7 +239,8 @@ export class _ParseAST {
   get next(): Token { return this.peek(0); }
 
   get inputIndex(): number {
-    return (this.index < this.tokens.length) ? this.next.index : this.input.length;
+    return (this.index < this.tokens.length) ? this.next.index + this.offset :
+                                               this.inputLength + this.offset;
   }
 
   span(start: number) { return new ParseSpan(start, this.inputIndex); }
@@ -311,7 +332,7 @@ export class _ParseAST {
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
-        result = new BindingPipe(this.span(result.span.start), result, name, args);
+        result = new BindingPipe(this.span(result.span.start - this.offset), result, name, args);
       } while (this.optionalOperator('|'));
     }
 
