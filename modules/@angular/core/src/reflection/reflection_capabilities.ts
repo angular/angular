@@ -20,12 +20,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   isReflectionEnabled(): boolean { return true; }
 
   factory(t: Type<any>): Function {
-    var prototype = t.prototype;
-    return function(...args: any[]) {
-      var instance = Object.create(prototype);
-      t.apply(instance, args);
-      return instance;
-    };
+    var reflect = this._reflect;
+    return function(...args: any[]) { return reflect.construct(t, args); };
   }
 
   /** @internal */
