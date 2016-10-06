@@ -49,19 +49,16 @@ export class Headers {
     }
 
     if (headers instanceof Headers) {
-      headers._headers.forEach((value: string[], name: string) => {
-        const lcName = name.toLowerCase();
-        this._headers.set(lcName, value);
-        this.mayBeSetNormalizedName(name);
+      headers._headers.forEach((values: string[], name: string) => {
+        values.forEach(value => this.append(name, value));
       });
       return;
     }
 
     Object.keys(headers).forEach((name: string) => {
-      const value = headers[name];
-      const lcName = name.toLowerCase();
-      this._headers.set(lcName, Array.isArray(value) ? value : [value]);
-      this.mayBeSetNormalizedName(name);
+      const values: string[] = Array.isArray(headers[name]) ? headers[name] : [headers[name]];
+      this.delete(name);
+      values.forEach(value => this.append(name, value));
     });
   }
 
@@ -137,8 +134,13 @@ export class Headers {
    * Sets or overrides header value for given name.
    */
   set(name: string, value: string|string[]): void {
-    const strValue = Array.isArray(value) ? value.join(',') : value;
-    this._headers.set(name.toLowerCase(), [strValue]);
+    if (Array.isArray(value)) {
+      if (value.length) {
+        this._headers.set(name.toLowerCase(), [value.join(',')]);
+      }
+    } else {
+      this._headers.set(name.toLowerCase(), [value]);
+    }
     this.mayBeSetNormalizedName(name);
   }
 

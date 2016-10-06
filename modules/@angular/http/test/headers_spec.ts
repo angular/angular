@@ -37,6 +37,24 @@ export function main() {
         secondHeaders.append('Content-Type', 'image/jpeg');
         expect(firstHeaders.has('Content-Type')).toEqual(false);
       });
+
+      it('should preserve the list of values', () => {
+        const src = new Headers();
+        src.append('foo', 'a');
+        src.append('foo', 'b');
+        src.append('foo', 'c');
+        const dst = new Headers(src);
+        expect(dst.getAll('foo')).toEqual(src.getAll('foo'));
+      });
+
+      it('should keep the last value when initialized from an object', () => {
+        const headers = new Headers({
+          'foo': 'first',
+          'fOo': 'second',
+        });
+
+        expect(headers.getAll('foo')).toEqual(['second']);
+      });
     });
 
     describe('.set()', () => {
@@ -139,7 +157,6 @@ export function main() {
         headers.set('Accept', values);
         ref = {'Accept': values};
       });
-
 
       it('should be serializable with toJSON',
          () => { expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref)); });
