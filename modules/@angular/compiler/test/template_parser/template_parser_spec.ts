@@ -1614,6 +1614,35 @@ Property binding a not used by any directive on an embedded template. Make sure 
             ]);
           });
 
+          it('should support endSourceSpan for elements', () => {
+            const tagSel = CompileDirectiveMetadata.create({
+              selector: 'circle',
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'elDir', reference: {} as Type<any>})
+            });
+            const result = parse('<circle></circle>', [tagSel]);
+            const circle = result[0] as ElementAst;
+            expect(circle.endSourceSpan).toBeDefined();
+            expect(circle.endSourceSpan.start.offset).toBe(8);
+            expect(circle.endSourceSpan.end.offset).toBe(17);
+          });
+
+          it('should report undefined for endSourceSpan for elements without an end-tag', () => {
+            const ulSel = CompileDirectiveMetadata.create({
+              selector: 'ul',
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'ulDir', reference: {} as Type<any>})
+            });
+            const liSel = CompileDirectiveMetadata.create({
+              selector: 'li',
+              type: new CompileTypeMetadata(
+                  {moduleUrl: someModuleUrl, name: 'liDir', reference: {} as Type<any>})
+            });
+            const result = parse('<ul><li><li></ul>', [ulSel, liSel]);
+            const ul = result[0] as ElementAst;
+            const li = ul.children[0] as ElementAst;
+            expect(li.endSourceSpan).toBe(null);
+          });
         });
 
         describe('pipes', () => {
@@ -1825,7 +1854,8 @@ class FooAstTransformer implements TemplateAstVisitor {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'div') return ast;
     return new ElementAst(
-        'foo', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan);
+        'foo', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
   }
   visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
   visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
@@ -1844,7 +1874,8 @@ class BarAstTransformer extends FooAstTransformer {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'foo') return ast;
     return new ElementAst(
-        'bar', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan);
+        'bar', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
   }
 }
 
