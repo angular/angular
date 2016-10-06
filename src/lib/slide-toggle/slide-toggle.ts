@@ -237,6 +237,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     // because otherwise the click event will be fired and will reset the new checked variable.
     setTimeout(() => {
       this.checked = this._slideRenderer.stopThumbDrag();
+      this._emitChangeEvent();
     }, 0);
   }
 
