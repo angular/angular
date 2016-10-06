@@ -51,11 +51,23 @@ export function main() {
     });
 
     describe('minLength', () => {
-      it('should not error on an empty string',
-         () => { expect(Validators.minLength(2)(new FormControl(''))).toEqual(null); });
+      it('should error on an empty string', () => {
+        expect(Validators.minLength(2)(new FormControl(''))).toEqual({
+          'minlength': {'requiredLength': 2, 'actualLength': 0}
+        });
+      });
 
-      it('should not error on null',
-         () => { expect(Validators.minLength(2)(new FormControl(null))).toEqual(null); });
+      it('should error on null', () => {
+        expect(Validators.minLength(2)(new FormControl(null))).toEqual({
+          'minlength': {'requiredLength': 2, 'actualLength': 0}
+        });
+      });
+
+      it('should error on undefined', () => {
+        expect(Validators.minLength(2)(new FormControl(null))).toEqual({
+          'minlength': {'requiredLength': 2, 'actualLength': 0}
+        });
+      });
 
       it('should not error on valid strings',
          () => { expect(Validators.minLength(2)(new FormControl('aa'))).toEqual(null); });

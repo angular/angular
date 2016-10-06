@@ -70,10 +70,9 @@ export class Validators {
    */
   static minLength(minLength: number): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      if (isPresent(Validators.required(control))) return null;
-      var v: string = control.value;
-      return v.length < minLength ?
-          {'minlength': {'requiredLength': minLength, 'actualLength': v.length}} :
+      const length = typeof control.value === 'string' ? control.value.length : 0;
+      return length < minLength ?
+          {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
           null;
     };
   }
@@ -83,10 +82,9 @@ export class Validators {
    */
   static maxLength(maxLength: number): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      if (isPresent(Validators.required(control))) return null;
-      var v: string = control.value;
-      return v.length > maxLength ?
-          {'maxlength': {'requiredLength': maxLength, 'actualLength': v.length}} :
+      const length = typeof control.value === 'string' ? control.value.length : 0;
+      return length > maxLength ?
+          {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
           null;
     };
   }
