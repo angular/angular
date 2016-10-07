@@ -376,6 +376,18 @@ export function main() {
                 [html.ExpansionCase, '=0', 2, '=0 {msg}'],
               ]);
         });
+
+        it('should not report a value span for an attribute without a value', () => {
+          const ast = parser.parse('<div bar></div>', 'TestComp');
+          expect((ast.rootNodes[0] as html.Element).attrs[0].valueSpan).toBeUndefined();
+        });
+
+        it('should report a value span for an attibute with a value', () => {
+          const ast = parser.parse('<div bar="12"></div>', 'TestComp');
+          const attr = (ast.rootNodes[0] as html.Element).attrs[0];
+          expect(attr.valueSpan.start.offset).toEqual(9);
+          expect(attr.valueSpan.end.offset).toEqual(13);
+        });
       });
 
       describe('errors', () => {

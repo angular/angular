@@ -34,7 +34,9 @@ export class ExpansionCase implements Node {
 }
 
 export class Attribute implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
 }
 

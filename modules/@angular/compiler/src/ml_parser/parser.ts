@@ -331,12 +331,15 @@ class _TreeBuilder {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
     let end = attrName.sourceSpan.end;
     let value = '';
+    let valueSpan: ParseSourceSpan;
     if (this._peek.type === lex.TokenType.ATTR_VALUE) {
       const valueToken = this._advance();
       value = valueToken.parts[0];
       end = valueToken.sourceSpan.end;
+      valueSpan = valueToken.sourceSpan;
     }
-    return new html.Attribute(fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end));
+    return new html.Attribute(
+        fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), valueSpan);
   }
 
   private _getParentElement(): html.Element {
