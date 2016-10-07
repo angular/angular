@@ -5,25 +5,12 @@ The following are canned responses that the Angular team should use to close iss
 Since GitHub currently doesn't allow us to have a repository-wide or organization-wide list of [saved replies](https://help.github.com/articles/working-with-saved-replies/), these replies need to be maintained by individual team members. Since the responses can be modified in the future, all responses are versioned to simplify the process of keeping the responses up to date.
 
 
-## Angular: Insufficient Information Provided (v1)
+## Angular: Already Fixed (v1)
 ```
-Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) to understand why we can't act on issues that are lacking important information.
+Thanks for reporting this issue. Luckily it has already been fixed in one of the recent releases. Please update to the most recent version to resolve the problem.
 
-If the problem still persists, please file a new issue and ensure you provide all of the required information when filling out the issue template.
+If after upgrade the problem still exists in your application please open a new issue and provide a plunker reproducing the problem and describing the difference between the expected and current behavior. You can use this plunker template: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
 ```
-
-## Angular: Non-reproducible (v1)
-```
-I'm sorry but we can't reproduce the problem following the instructions you provided.
-
-If the problem still exists please open a new issue following [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue).
-```
-
-## Angular: Duplicate (v1)
-```
-Thanks for reporting this issue. However this issue is a duplicate of an existing issue #<ISSUE_NUMBER>. Please subscribe to that issue for future updates.
-```
-
 
 ## Angular: Don't Understand (v1)
 ```
@@ -33,24 +20,30 @@ If the problem still exists please open a new issue and provide a plunker reprod
 ```
 
 
+## Angular: Duplicate (v1)
+```
+Thanks for reporting this issue. However this issue is a duplicate of an existing issue #<ISSUE_NUMBER>. Please subscribe to that issue for future updates.
+```
+
+
+## Angular: Insufficient Information Provided (v1)
+```
+Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) to understand why we can't act on issues that are lacking important information.
+
+If the problem still persists, please file a new issue and ensure you provide all of the required information when filling out the issue template.
+```
+
 ## Angular: Issue Outside of Angular (v1)
 ```
 I'm sorry but this issue is not caused by Angular. Please contact the author(s) of project <PROJECT NAME> or file issue on their issue tracker.
 ```
 
 
-## Angular: Already Fixed (v1)
+## Angular: Non-reproducible (v1)
 ```
-Thanks for reporting this issue. Luckily it has already been fixed in one of the recent releases. Please update to the most recent version to resolve the problem.
+I'm sorry but we can't reproduce the problem following the instructions you provided.
 
-If after upgrade the problem still exists in your application please open a new issue and provide a plunker reproducing the problem and describing the difference between the expected and current behavior. You can use this plunker template: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
-```
-
-## Angular: Support Request (v1)
-```
-Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](http://stackoverflow.com/) using tag `angular`.
-
-If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-got-a-question-or-problem).
+If the problem still exists please open a new issue following [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue).
 ```
 
 ## Angular: Obsolete (v1)
@@ -58,4 +51,12 @@ If you are wondering why we don't resolve support issues via the issue tracker, 
 Thanks for reporting this issue. This issue is now obsolete due to changes in the recent releases. Please update to the most recent Angular version.
 
 If the problem still persists, please file a new issue and ensure you provide the version of Angular affected and include the steps to reproduce the problem when filling out the issue template.
+```
+
+
+## Angular: Support Request (v1)
+```
+Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](http://stackoverflow.com/) using tag `angular`.
+
+If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-got-a-question-or-problem).
 ```
