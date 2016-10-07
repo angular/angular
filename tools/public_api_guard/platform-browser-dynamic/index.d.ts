@@ -1,4 +1,4 @@
-/** @experimental */
+/** @stable */
 export declare const platformBrowserDynamic: (extraProviders?: Provider[]) => PlatformRef;
 
 /** @experimental */

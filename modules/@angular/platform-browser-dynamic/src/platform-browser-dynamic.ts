@@ -21,7 +21,7 @@ export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader}];
 
 /**
- * @experimental API related to bootstrapping are still under review.
+ * @stable
  */
 export const platformBrowserDynamic = createPlatformFactory(
     platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
