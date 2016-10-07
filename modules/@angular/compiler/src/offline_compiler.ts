@@ -26,7 +26,26 @@ export class SourceModule {
 }
 
 export class NgModulesSummary {
-  constructor(public ngModuleByComponent: Map<StaticSymbol, CompileNgModuleMetadata>) {}
+  constructor(
+      public ngModuleByComponent: Map<StaticSymbol, CompileNgModuleMetadata>,
+      public ngModules: CompileNgModuleMetadata[]) {}
+}
+
+export function analyzeModules(
+    ngModules: StaticSymbol[], metadataResolver: CompileMetadataResolver) {
+  const ngModuleByComponent = new Map<StaticSymbol, CompileNgModuleMetadata>();
+  const modules: CompileNgModuleMetadata[] = [];
+
+  ngModules.forEach((ngModule) => {
+    const ngModuleMeta = metadataResolver.getNgModuleMetadata(<any>ngModule);
+    modules.push(ngModuleMeta);
+    ngModuleMeta.declaredDirectives.forEach((dirMeta: CompileDirectiveMetadata) => {
+      if (dirMeta.isComponent) {
+        ngModuleByComponent.set(dirMeta.type.reference, ngModuleMeta);
+      }
+    });
+  });
+  return new NgModulesSummary(ngModuleByComponent, modules);
 }
 
 export class OfflineCompiler {
@@ -41,17 +60,7 @@ export class OfflineCompiler {
       private _localeId: string, private _translationFormat: string) {}
 
   analyzeModules(ngModules: StaticSymbol[]): NgModulesSummary {
-    const ngModuleByComponent = new Map<StaticSymbol, CompileNgModuleMetadata>();
-
-    ngModules.forEach((ngModule) => {
-      const ngModuleMeta = this._metadataResolver.getNgModuleMetadata(<any>ngModule);
-      ngModuleMeta.declaredDirectives.forEach((dirMeta) => {
-        if (dirMeta.isComponent) {
-          ngModuleByComponent.set(dirMeta.type.reference, ngModuleMeta);
-        }
-      });
-    });
-    return new NgModulesSummary(ngModuleByComponent);
+    return analyzeModules(ngModules, this._metadataResolver);
   }
 
   clearCache() {
