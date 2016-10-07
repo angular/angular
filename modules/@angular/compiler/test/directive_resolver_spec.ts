@@ -117,6 +117,18 @@ class SomeDirectiveWithSameHostBindingAndInput {
   @Input() @HostBinding() prop: any;
 }
 
+@Directive({selector: 'someDirective'})
+class SomeDirectiveWithMalformedHostBinding1 {
+  @HostBinding('(a)')
+  onA() {}
+}
+
+@Directive({selector: 'someDirective'})
+class SomeDirectiveWithMalformedHostBinding2 {
+  @HostBinding('[a]')
+  onA() {}
+}
+
 class SomeDirectiveWithoutMetadata {}
 
 export function main() {
@@ -209,6 +221,17 @@ export function main() {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostListeners);
         expect(directiveMetadata.host)
             .toEqual({'(c)': 'onC()', '(a)': 'onA()', '(b)': 'onB($event.value)'});
+      });
+
+      it('should throw when @HostBinding name starts with "("', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding1))
+            .toThrowError('@HostBinding can not bind to events. Use @HostListener instead.');
+      });
+
+      it('should throw when @HostBinding name starts with "["', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding2))
+            .toThrowError(
+                `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);
       });
     });
 
