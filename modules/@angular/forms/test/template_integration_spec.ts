@@ -22,7 +22,7 @@ export function main() {
           StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
           NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
-          NgModelValidationBindings
+          NgModelValidationBindings, NgModelMultipleValidators
         ],
         imports: [FormsModule]
       });
@@ -728,6 +728,50 @@ export function main() {
            expect(form.valid).toEqual(true);
          }));
 
+      it('should support optional fields with pattern validator', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           fixture.componentInstance.required = false;
+           fixture.componentInstance.pattern = '[a-z]+';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const input = fixture.debugElement.query(By.css('input'));
+
+           input.nativeElement.value = '';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeTruthy();
+
+           input.nativeElement.value = '1';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeFalsy();
+           expect(form.control.hasError('pattern', ['tovalidate'])).toBeTruthy();
+         }));
+
+      it('should support optional fields with minlength validator', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           fixture.componentInstance.required = false;
+           fixture.componentInstance.minLen = 2;
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const input = fixture.debugElement.query(By.css('input'));
+
+           input.nativeElement.value = '';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeTruthy();
+
+           input.nativeElement.value = '1';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeFalsy();
+           expect(form.control.hasError('minlength', ['tovalidate'])).toBeTruthy();
+         }));
+
       it('changes on bound properties should change the validation state of the form',
          fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelValidationBindings);
@@ -1034,6 +1078,20 @@ class NgModelValidationBindings {
   required: boolean;
   minLen: number;
   maxLen: number;
+  pattern: string;
+}
+
+@Component({
+  selector: 'ng-model-multiple-validators',
+  template: `
+    <form>
+      <input name="tovalidate" ngModel  [required]="required" [minlength]="minLen" [pattern]="pattern">
+    </form>
+  `
+})
+class NgModelMultipleValidators {
+  required: boolean;
+  minLen: number;
   pattern: string;
 }
 

@@ -11,11 +11,13 @@ import {toPromise} from 'rxjs/operator/toPromise';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isString} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {AbstractControl} from './model';
 import {isPromise} from './private_import_core';
 
-
+function isEmptyInputValue(value: any) {
+  return value == null || typeof value === 'string' && value.length === 0;
+}
 
 /**
  * Providers for validators to be used for {@link FormControl}s in a form.
@@ -60,9 +62,7 @@ export class Validators {
    * Validator that requires controls to have a non-empty value.
    */
   static required(control: AbstractControl): {[key: string]: boolean} {
-    return isBlank(control.value) || (isString(control.value) && control.value == '') ?
-        {'required': true} :
-        null;
+    return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
   /**
@@ -70,6 +70,9 @@ export class Validators {
    */
   static minLength(minLength: number): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
       const length = typeof control.value === 'string' ? control.value.length : 0;
       return length < minLength ?
           {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
@@ -94,10 +97,14 @@ export class Validators {
    */
   static pattern(pattern: string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      let regex = new RegExp(`^${pattern}$`);
-      let v: string = control.value;
-      return regex.test(v) ? null :
-                             {'pattern': {'requiredPattern': `^${pattern}$`, 'actualValue': v}};
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      const regex = new RegExp(`^${pattern}$`);
+      const value: string = control.value;
+      return regex.test(value) ?
+          null :
+          {'pattern': {'requiredPattern': `^${pattern}$`, 'actualValue': value}};
     };
   }
 

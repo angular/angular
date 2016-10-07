@@ -44,33 +44,24 @@ export function main() {
          () => { expect(Validators.required(new FormControl(null))).toEqual({'required': true}); });
 
       it('should not error on a non-empty string',
-         () => { expect(Validators.required(new FormControl('not empty'))).toEqual(null); });
+         () => { expect(Validators.required(new FormControl('not empty'))).toBeNull(); });
 
       it('should accept zero as valid',
-         () => { expect(Validators.required(new FormControl(0))).toEqual(null); });
+         () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
     });
 
     describe('minLength', () => {
-      it('should error on an empty string', () => {
-        expect(Validators.minLength(2)(new FormControl(''))).toEqual({
-          'minlength': {'requiredLength': 2, 'actualLength': 0}
-        });
-      });
+      it('should not error on an empty string',
+         () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });
 
-      it('should error on null', () => {
-        expect(Validators.minLength(2)(new FormControl(null))).toEqual({
-          'minlength': {'requiredLength': 2, 'actualLength': 0}
-        });
-      });
+      it('should not error on null',
+         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
 
-      it('should error on undefined', () => {
-        expect(Validators.minLength(2)(new FormControl(null))).toEqual({
-          'minlength': {'requiredLength': 2, 'actualLength': 0}
-        });
-      });
+      it('should not error on undefined',
+         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
 
       it('should not error on valid strings',
-         () => { expect(Validators.minLength(2)(new FormControl('aa'))).toEqual(null); });
+         () => { expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull(); });
 
       it('should error on short strings', () => {
         expect(Validators.minLength(2)(new FormControl('a'))).toEqual({
@@ -81,13 +72,13 @@ export function main() {
 
     describe('maxLength', () => {
       it('should not error on an empty string',
-         () => { expect(Validators.maxLength(2)(new FormControl(''))).toEqual(null); });
+         () => { expect(Validators.maxLength(2)(new FormControl(''))).toBeNull(); });
 
       it('should not error on null',
-         () => { expect(Validators.maxLength(2)(new FormControl(null))).toEqual(null); });
+         () => { expect(Validators.maxLength(2)(new FormControl(null))).toBeNull(); });
 
       it('should not error on valid strings',
-         () => { expect(Validators.maxLength(2)(new FormControl('aa'))).toEqual(null); });
+         () => { expect(Validators.maxLength(2)(new FormControl('aa'))).toBeNull(); });
 
       it('should error on long strings', () => {
         expect(Validators.maxLength(2)(new FormControl('aaa'))).toEqual({
@@ -98,27 +89,23 @@ export function main() {
 
     describe('pattern', () => {
       it('should not error on an empty string',
-         () => { expect(Validators.pattern('[a-zA-Z ]*')(new FormControl(''))).toEqual(null); });
+         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(''))).toBeNull(); });
 
       it('should not error on null',
-         () => { expect(Validators.pattern('[a-zA-Z ]*')(new FormControl(null))).toEqual(null); });
+         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
+
+      it('should not error on undefined',
+         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
 
       it('should not error on null value and "null" pattern',
-         () => { expect(Validators.pattern('null')(new FormControl(null))).toEqual(null); });
+         () => { expect(Validators.pattern('null')(new FormControl(null))).toBeNull(); });
 
-      it('should not error on valid strings', () => {
-        expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaAA'))).toEqual(null);
-      });
+      it('should not error on valid strings',
+         () => { expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaAA'))).toBeNull(); });
 
       it('should error on failure to match string', () => {
         expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaa0'))).toEqual({
           'pattern': {'requiredPattern': '^[a-zA-Z ]*$', 'actualValue': 'aaa0'}
-        });
-      });
-
-      it('should error on failure to match empty string', () => {
-        expect(Validators.pattern('[a-zA-Z]+')(new FormControl(''))).toEqual({
-          'pattern': {'requiredPattern': '^[a-zA-Z]+$', 'actualValue': ''}
         });
       });
     });
@@ -139,7 +126,7 @@ export function main() {
 
       it('should return null when no errors', () => {
         var c = Validators.compose([Validators.nullValidator, Validators.nullValidator]);
-        expect(c(new FormControl(''))).toEqual(null);
+        expect(c(new FormControl(''))).toBeNull();
       });
 
       it('should ignore nulls', () => {
@@ -166,7 +153,7 @@ export function main() {
       }
 
       it('should return null when given null',
-         () => { expect(Validators.composeAsync(null)).toEqual(null); });
+         () => { expect(Validators.composeAsync(null)).toBeNull(); });
 
       it('should collect errors from all the validators', fakeAsync(() => {
            var c = Validators.composeAsync([
@@ -199,7 +186,7 @@ export function main() {
            (<Promise<any>>c(new FormControl('expected'))).then(v => value = v);
            tick(1);
 
-           expect(value).toEqual(null);
+           expect(value).toBeNull();
          }));
 
       it('should ignore nulls', fakeAsync(() => {
