@@ -381,7 +381,10 @@ export class ShadowCss {
 
     if (_polyfillHostRe.test(selector)) {
       const replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
-      return selector.replace(_polyfillHostNoCombinatorRe, (hnc, selector) => selector + replaceBy)
+      return selector
+          .replace(
+              _polyfillHostNoCombinatorRe,
+              (hnc, selector) => selector[0] === ':' ? replaceBy + selector : selector + replaceBy)
           .replace(_polyfillHostRe, replaceBy + ' ');
     }
 
