@@ -17,15 +17,18 @@ const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
 const SCRIPT_ELEMENT = 'script';
+const SCRIPT_TYPE_ATTR = 'type';
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  var selectAttr: string = null;
-  var hrefAttr: string = null;
-  var relAttr: string = null;
-  var nonBindable = false;
-  var projectAs: string = null;
+  let selectAttr: string = null;
+  let hrefAttr: string = null;
+  let relAttr: string = null;
+  let nonBindable = false;
+  let projectAs: string = null;
+  let typeAttr: string = null;
+
   ast.attrs.forEach(attr => {
     let lcAttrName = attr.name.toLowerCase();
     if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
@@ -34,24 +37,25 @@ export function preparseElement(ast: html.Element): PreparsedElement {
       hrefAttr = attr.value;
     } else if (lcAttrName == LINK_STYLE_REL_ATTR) {
       relAttr = attr.value;
+    } else if (lcAttrName == SCRIPT_TYPE_ATTR) {
+      typeAttr = attr.value;
     } else if (attr.name == NG_NON_BINDABLE_ATTR) {
       nonBindable = true;
     } else if (attr.name == NG_PROJECT_AS) {
-      if (attr.value.length > 0) {
-        projectAs = attr.value;
-      }
+      projectAs = attr.value || null;
     }
   });
+
   selectAttr = normalizeNgContentSelect(selectAttr);
-  var nodeName = ast.name.toLowerCase();
-  var type = PreparsedElementType.OTHER;
-  if (splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
+  let lcTagName = ast.name.toLowerCase();
+  let type = PreparsedElementType.OTHER;
+  if (splitNsName(lcTagName)[1] == NG_CONTENT_ELEMENT) {
     type = PreparsedElementType.NG_CONTENT;
-  } else if (nodeName == STYLE_ELEMENT) {
+  } else if (lcTagName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;
-  } else if (nodeName == SCRIPT_ELEMENT) {
-    type = PreparsedElementType.SCRIPT;
-  } else if (nodeName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
+  } else if (isJavascriptScriptTag(lcTagName, typeAttr)) {
+    type = PreparsedElementType.JAVASCRIPT;
+  } else if (lcTagName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
     type = PreparsedElementType.STYLESHEET;
   }
   return new PreparsedElement(type, selectAttr, hrefAttr, nonBindable, projectAs);
@@ -61,7 +65,7 @@ export enum PreparsedElementType {
   NG_CONTENT,
   STYLE,
   STYLESHEET,
-  SCRIPT,
+  JAVASCRIPT,
   OTHER
 }
 
@@ -77,4 +81,15 @@ function normalizeNgContentSelect(selectAttr: string): string {
     return '*';
   }
   return selectAttr;
+}
+
+// see https://html.spec.whatwg.org/multipage/scripting.html#javascript-mime-type
+// The following Regexp is intentionally more lenient
+const IS_JS_MIME_TYPE = /(javascript|ecmascript|jscript|livescript)/i;
+
+function isJavascriptScriptTag(lcTagName: string, type: string): boolean {
+  if (lcTagName !== SCRIPT_ELEMENT) return false;
+  // javascript is the default when no type is specified
+  if (!type) return true;
+  return IS_JS_MIME_TYPE.test(type);
 }
