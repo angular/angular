@@ -47,7 +47,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   private _identityChangesTail: CollectionChangeRecord = null;
 
   constructor(private _trackByFn?: TrackByFn) {
-    this._trackByFn = isPresent(this._trackByFn) ? this._trackByFn : trackByIdentity;
+    this._trackByFn = this._trackByFn || trackByIdentity;
   }
 
   get collection() { return this._collection; }

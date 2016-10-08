@@ -159,7 +159,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
       componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
       projectableNodes: any[][] = null): ComponentRef<C> {
     var s = this._createComponentInContainerScope();
-    var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
+    var contextInjector = injector || this._element.parentInjector;
     var componentRef = componentFactory.create(contextInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);

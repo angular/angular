@@ -102,7 +102,7 @@ export class ProviderElementContext {
 
   private _addQueryReadsTo(token: CompileTokenMetadata, queryReadTokens: Map<any, boolean>) {
     this._getQueriesFor(token).forEach((query) => {
-      const queryReadToken = isPresent(query.read) ? query.read : token;
+      const queryReadToken = query.read || token;
       if (isBlank(queryReadTokens.get(queryReadToken.reference))) {
         queryReadTokens.set(queryReadToken.reference, true);
       }
@@ -169,11 +169,11 @@ export class ProviderElementContext {
           transformedUseValue = existingDiDep.value;
         }
       } else if (isPresent(provider.useFactory)) {
-        var deps = isPresent(provider.deps) ? provider.deps : provider.useFactory.diDeps;
+        var deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
       } else if (isPresent(provider.useClass)) {
-        var deps = isPresent(provider.deps) ? provider.deps : provider.useClass.diDeps;
+        var deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
       }
@@ -338,11 +338,11 @@ export class NgModuleProviderAnalyzer {
           transformedUseValue = existingDiDep.value;
         }
       } else if (isPresent(provider.useFactory)) {
-        var deps = isPresent(provider.deps) ? provider.deps : provider.useFactory.diDeps;
+        var deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
       } else if (isPresent(provider.useClass)) {
-        var deps = isPresent(provider.deps) ? provider.deps : provider.useClass.diDeps;
+        var deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
       }

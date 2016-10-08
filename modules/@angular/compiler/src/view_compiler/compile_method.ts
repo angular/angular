@@ -59,7 +59,7 @@ export class CompileMethod {
 
   resetDebugInfoExpr(nodeIndex: number, templateAst: TemplateAst): o.Expression {
     var res = this._updateDebugContext(new _DebugState(nodeIndex, templateAst));
-    return isPresent(res) ? res : o.NULL_EXPR;
+    return res || o.NULL_EXPR;
   }
 
   resetDebugInfo(nodeIndex: number, templateAst: TemplateAst) {
