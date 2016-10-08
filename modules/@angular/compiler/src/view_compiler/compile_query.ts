@@ -64,7 +64,7 @@ export class CompileQuery {
     return !this._values.values.some(value => value instanceof ViewQueryValues);
   }
 
-  afterChildren(targetStaticMethod: any /** TODO #9100 */, targetDynamicMethod: CompileMethod) {
+  afterChildren(targetStaticMethod: CompileMethod, targetDynamicMethod: CompileMethod) {
     var values = createQueryValues(this._values);
     var updateStmts = [this.queryList.callMethod('reset', [o.literalArr(values)]).toStmt()];
     if (isPresent(this.ownerDirectiveExpression)) {

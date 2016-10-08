@@ -61,7 +61,9 @@ class _AnimationBuilder implements AnimationAstVisitor {
     }
 
     ast.styles.forEach(entry => {
-      stylesArr.push(o.literalMap(Object.keys(entry).map(key => [key, o.literal(entry[key])])));
+      const entries =
+          Object.keys(entry).map((key): [string, o.Expression] => [key, o.literal(entry[key])]);
+      stylesArr.push(o.literalMap(entries));
     });
 
     return o.importExpr(resolveIdentifier(Identifiers.AnimationStyles)).instantiate([

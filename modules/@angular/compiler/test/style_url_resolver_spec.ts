@@ -11,7 +11,7 @@ import {UrlResolver} from '@angular/compiler/src/url_resolver';
 
 export function main() {
   describe('extractStyleUrls', () => {
-    var urlResolver: any /** TODO #9100 */;
+    var urlResolver: UrlResolver;
 
     beforeEach(() => { urlResolver = new UrlResolver(); });
 

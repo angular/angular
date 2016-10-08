@@ -169,16 +169,16 @@ export class CompileView implements NameResolver {
     return proxyExpr.callFn(values);
   }
 
-  createLiteralMap(entries: Array<Array<string|o.Expression>>): o.Expression {
+  createLiteralMap(entries: [string, o.Expression][]): o.Expression {
     if (entries.length === 0) {
       return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
     }
-    var proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
-    var proxyParams: o.FnParam[] = [];
-    var proxyReturnEntries: Array<Array<string|o.Expression>> = [];
-    var values: o.Expression[] = [];
+    const proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
+    const proxyParams: o.FnParam[] = [];
+    const proxyReturnEntries: [string, o.Expression][] = [];
+    const values: o.Expression[] = [];
     for (var i = 0; i < entries.length; i++) {
-      var paramName = `p${i}`;
+      const paramName = `p${i}`;
       proxyParams.push(new o.FnParam(paramName));
       proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
       values.push(<o.Expression>entries[i][1]);

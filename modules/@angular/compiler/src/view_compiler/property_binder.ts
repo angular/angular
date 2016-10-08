@@ -99,10 +99,9 @@ function bindAndWriteToRenderer(
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     var fieldExpr = createBindFieldExpr(bindingIndex);
     var currValExpr = createCurrValueExpr(bindingIndex);
-    var renderMethod: string;
     var oldRenderValue: o.Expression = sanitizedValue(boundProp, fieldExpr);
     var renderValue: o.Expression = sanitizedValue(boundProp, currValExpr);
-    var updateStmts: any[] /** TODO #9100 */ = [];
+    var updateStmts: o.Statement[] = [];
     var compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
       case PropertyBindingType.Property:

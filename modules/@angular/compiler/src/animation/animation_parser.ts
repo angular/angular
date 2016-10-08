@@ -115,13 +115,10 @@ function _parseAnimationStateTransition(
     stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]): AnimationStateTransitionAst {
   var styles = new StylesCollection();
-  var transitionExprs: any[] /** TODO #9100 */ = [];
+  var transitionExprs: AnimationStateTransitionExpression[] = [];
   var transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
-  transitionStates.forEach(expr => {
-    _parseAnimationTransitionExpr(expr, errors).forEach(transExpr => {
-      transitionExprs.push(transExpr);
-    });
-  });
+  transitionStates.forEach(
+      expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
   var entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   var animation = _normalizeStyleSteps(entry, stateStyles, errors);
   var animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
@@ -181,8 +178,8 @@ function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnima
 
 function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    errors: AnimationParseError[]): Array<{[key: string]: string | number}> {
-  var normalizedStyles: any[] /** TODO #9100 */ = [];
+    errors: AnimationParseError[]): {[key: string]: string | number}[] {
+  var normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (isString(styleEntry)) {
       ListWrapper.addAll(
@@ -354,7 +351,6 @@ function _parseAnimationKeyframes(
     ListWrapper.sort(rawKeyframes, (a, b) => a[0] <= b[0] ? -1 : 1);
   }
 
-  var i: any /** TODO #9100 */;
   var firstKeyframe = rawKeyframes[0];
   if (firstKeyframe[0] != _INITIAL_KEYFRAME) {
     ListWrapper.insert(rawKeyframes, 0, firstKeyframe = [_INITIAL_KEYFRAME, {}]);
@@ -369,7 +365,7 @@ function _parseAnimationKeyframes(
   }
 
   var lastKeyframeStyles = lastKeyframe[1];
-  for (i = 1; i <= limit; i++) {
+  for (let i = 1; i <= limit; i++) {
     let entry = rawKeyframes[i];
     let styles = entry[1];
 
@@ -380,7 +376,7 @@ function _parseAnimationKeyframes(
     });
   }
 
-  for (i = limit - 1; i >= 0; i--) {
+  for (let i = limit - 1; i >= 0; i--) {
     let entry = rawKeyframes[i];
     let styles = entry[1];
 

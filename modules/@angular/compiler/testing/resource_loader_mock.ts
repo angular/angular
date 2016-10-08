@@ -67,7 +67,7 @@ export class MockResourceLoader extends ResourceLoader {
   verifyNoOutstandingExpectations() {
     if (this._expectations.length === 0) return;
 
-    var urls: any[] /** TODO #9100 */ = [];
+    var urls: string[] = [];
     for (var i = 0; i < this._expectations.length; i++) {
       var expectation = this._expectations[i];
       urls.push(expectation.url);

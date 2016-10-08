@@ -275,7 +275,7 @@ export function main() {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         var cssCode = '.class > tag';
 
-        var capturedMessage: any /** TODO #9100 */;
+        var capturedMessage: string;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -298,7 +298,7 @@ export function main() {
     describe('Attribute Mode', () => {
       it('should consider attribute selectors as valid input and throw when an invalid modifier is used',
          () => {
-           function tokenizeAttr(modifier: any /** TODO #9100 */) {
+           function tokenizeAttr(modifier: string) {
              var cssCode = 'value' + modifier + '=\'something\'';
              return tokenize(cssCode, false, CssLexerMode.ATTRIBUTE_SELECTOR);
            }
