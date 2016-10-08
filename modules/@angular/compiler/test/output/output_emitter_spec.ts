@@ -43,7 +43,7 @@ export function main() {
   describe('output emitter', () => {
     outputDefs.forEach((outputDef) => {
       describe(`${outputDef['name']}`, () => {
-        var expressions: any /** TODO #9100 */;
+        var expressions: {[k: string]: any};
         beforeEach(() => { expressions = outputDef['getExpressions']()(); });
 
         it('should support literals', () => {
@@ -109,13 +109,16 @@ export function main() {
         });
 
         describe('operators', () => {
-          var ops: any /** TODO #9100 */;
-          var aObj: any /** TODO #9100 */, bObj: any /** TODO #9100 */;
+          var ops: {[k: string]: Function};
+          var aObj: any;
+          var bObj: any;
+
           beforeEach(() => {
             ops = expressions['operators'];
-            aObj = new Object();
-            bObj = new Object();
+            aObj = {};
+            bObj = {};
           });
+
           it('should support ==', () => {
             expect(ops['=='](aObj, aObj)).toBe(true);
             expect(ops['=='](aObj, bObj)).toBe(false);

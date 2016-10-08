@@ -416,7 +416,7 @@ export class LiteralArrayExpr extends Expression {
 
 export class LiteralMapExpr extends Expression {
   public valueType: Type = null;
-  constructor(public entries: Array<Array<string|Expression>>, type: MapType = null) {
+  constructor(public entries: [string, Expression][], type: MapType = null) {
     super(type);
     if (isPresent(type)) {
       this.valueType = type.valueType;
@@ -673,9 +673,11 @@ export class ExpressionTransformer implements StatementVisitor, ExpressionVisito
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): any {
     return new LiteralArrayExpr(this.visitAllExpressions(ast.entries, context));
   }
+
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
-    return new LiteralMapExpr(ast.entries.map(
-        (entry) => [entry[0], (<Expression>entry[1]).visitExpression(this, context)]));
+    const entries = ast.entries.map(
+        (entry): [string, Expression] => [entry[0], entry[1].visitExpression(this, context), ]);
+    return new LiteralMapExpr(entries);
   }
   visitAllExpressions(exprs: Expression[], context: any): Expression[] {
     return exprs.map(expr => expr.visitExpression(this, context));
@@ -881,8 +883,7 @@ export function literalArr(values: Expression[], type: Type = null): LiteralArra
   return new LiteralArrayExpr(values, type);
 }
 
-export function literalMap(
-    values: Array<Array<string|Expression>>, type: MapType = null): LiteralMapExpr {
+export function literalMap(values: [string, Expression][], type: MapType = null): LiteralMapExpr {
   return new LiteralMapExpr(values, type);
 }
 

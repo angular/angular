@@ -28,9 +28,9 @@ export function main() {
         (keyframe: AnimationKeyframeAst): {[key: string]: string | number} =>
             combineStyles(keyframe.styles);
 
-    var collectStepStyles = (step: AnimationStepAst): Array<{[key: string]: string | number}> => {
+    var collectStepStyles = (step: AnimationStepAst): {[key: string]: string | number}[] => {
       var keyframes = step.keyframes;
-      var styles: any[] /** TODO #9100 */ = [];
+      var styles: {[key: string]: string | number}[] = [];
       if (step.startingStyles.styles.length > 0) {
         styles.push(combineStyles(step.startingStyles));
       }
@@ -38,7 +38,7 @@ export function main() {
       return styles;
     };
 
-    var resolver: any /** TODO #9100 */;
+    var resolver: CompileMetadataResolver;
     beforeEach(
         inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
 

@@ -46,7 +46,7 @@ export class TypeScriptEmitter implements OutputEmitter {
     var converter = new _TsEmitterVisitor(moduleUrl);
     var ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts: any[] /** TODO #9100 */ = [];
+    var srcParts: string[] = [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
@@ -243,7 +243,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
-    var typeStr: any /** TODO #9100 */;
+    var typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
         typeStr = 'boolean';
@@ -307,7 +307,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param: any /** TODO #9100 */) => {
+    this.visitAllObjects(param => {
       ctx.print(param.name);
       ctx.print(':');
       this.visitType(param.type, ctx);
@@ -336,8 +336,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);
-      this.visitAllObjects(
-          (type: any /** TODO #9100 */) => type.visitType(this, ctx), typeParams, ctx, ',');
+      this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
     }
   }

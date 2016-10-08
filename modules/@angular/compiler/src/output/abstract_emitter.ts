@@ -368,7 +368,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     var useNewLine = ast.entries.length > 1;
     ctx.print(`{`, useNewLine);
     ctx.incIndent();
-    this.visitAllObjects((entry: any /** TODO #9100 */) => {
+    this.visitAllObjects(entry => {
       ctx.print(`${escapeIdentifier(entry[0], this._escapeDollarInStrings, false)}: `);
       entry[1].visitExpression(this, ctx);
     }, ast.entries, ctx, ',', useNewLine);
@@ -381,12 +381,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {
     this.visitAllObjects(
-        (expr: any /** TODO #9100 */) => expr.visitExpression(this, ctx), expressions, ctx,
-        separator, newLine);
+        expr => expr.visitExpression(this, ctx), expressions, ctx, separator, newLine);
   }
 
-  visitAllObjects(
-      handler: Function, expressions: any, ctx: EmitterVisitorContext, separator: string,
+  visitAllObjects<T>(
+      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {
     for (var i = 0; i < expressions.length; i++) {
       if (i > 0) {

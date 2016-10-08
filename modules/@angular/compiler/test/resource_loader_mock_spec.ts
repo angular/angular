@@ -53,7 +53,7 @@ export function main() {
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
-         var response: any /** TODO #9100 */ = null;
+         var response: string = null;
          resourceLoader.when(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -71,7 +71,7 @@ export function main() {
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          var url = '/foo';
-         var response: any /** TODO #9100 */ = null;
+         var response: string = null;
          resourceLoader.expect(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();

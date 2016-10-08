@@ -1146,7 +1146,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         describe('content projection', () => {
-          var compCounter: any /** TODO #9100 */;
+          var compCounter: number;
           beforeEach(() => { compCounter = 0; });
 
           function createComp(

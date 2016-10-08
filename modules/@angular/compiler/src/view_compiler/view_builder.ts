@@ -511,10 +511,13 @@ function createViewFactory(
     templateUrlInfo = view.component.template.templateUrl;
   }
   if (view.viewIndex === 0) {
-    var animationsExpr = o.literalMap(view.animations.map(entry => [entry.name, entry.fnExp]));
-    initRenderCompTypeStmts = [new o.IfStmt(
+    var animationsExpr = o.literalMap(
+        view.animations.map((entry): [string, o.Expression] => [entry.name, entry.fnExp]));
+    initRenderCompTypeStmts = [
+      new o.IfStmt(
         renderCompTypeVar.identical(o.NULL_EXPR),
-        [renderCompTypeVar
+        [
+          renderCompTypeVar
              .set(ViewConstructorVars.viewUtils.callMethod(
                  'createRenderComponentType',
                  [
@@ -524,13 +527,16 @@ function createViewFactory(
                    view.styles,
                    animationsExpr,
                  ]))
-             .toStmt()])];
+             .toStmt(),
+        ]),
+    ];
   }
   return o
-      .fn(viewFactoryArgs, initRenderCompTypeStmts.concat([new o.ReturnStatement(
-                               o.variable(viewClass.name)
-                                   .instantiate(viewClass.constructorMethod.params.map(
-                                       (param) => o.variable(param.name))))]),
+      .fn(viewFactoryArgs, initRenderCompTypeStmts.concat([
+        new o.ReturnStatement(o.variable(viewClass.name)
+                                  .instantiate(viewClass.constructorMethod.params.map(
+                                      (param) => o.variable(param.name)))),
+      ]),
           o.importType(resolveIdentifier(Identifiers.AppView), [getContextType(view)]))
       .toDeclStmt(view.viewFactory.name, [o.StmtModifier.Final]);
 }

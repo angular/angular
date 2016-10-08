@@ -20,7 +20,7 @@ export class JavaScriptEmitter implements OutputEmitter {
     var converter = new JsEmitterVisitor(moduleUrl);
     var ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts: any[] /** TODO #9100 */ = [];
+    var srcParts: string[] = [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
