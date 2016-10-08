@@ -476,7 +476,7 @@ export class CssScanner {
     var index: number = this.index;
     var column: number = this.column;
     var line: number = this.line;
-    errorTokenValue = isPresent(errorTokenValue) ? errorTokenValue : String.fromCharCode(this.peek);
+    errorTokenValue = errorTokenValue || String.fromCharCode(this.peek);
     var invalidToken = new CssToken(index, column, line, CssTokenType.Invalid, errorTokenValue);
     var errorMessage =
         generateErrorMessage(this.input, message, errorTokenValue, index, line, column);

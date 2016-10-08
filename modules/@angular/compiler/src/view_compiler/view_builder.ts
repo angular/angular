@@ -79,10 +79,10 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     if (this._isRootNode(parent)) {
       // store appElement as root node only for ViewContainers
       if (this.view.viewType !== ViewType.COMPONENT) {
-        this.view.rootNodesOrAppElements.push(isPresent(vcAppEl) ? vcAppEl : node.renderNode);
+        this.view.rootNodesOrAppElements.push(vcAppEl || node.renderNode);
       }
     } else if (isPresent(parent.component) && isPresent(ngContentIndex)) {
-      parent.addContentNode(ngContentIndex, isPresent(vcAppEl) ? vcAppEl : node.renderNode);
+      parent.addContentNode(ngContentIndex, vcAppEl || node.renderNode);
     }
   }
 

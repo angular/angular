@@ -212,7 +212,7 @@ function createCountingValidator(
   return new MockValidator(log, (completeSample: MeasureValues[]) => {
     count--;
     if (count === 0) {
-      return isPresent(validSample) ? validSample : completeSample;
+      return validSample || completeSample;
     } else {
       return null;
     }

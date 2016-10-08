@@ -78,8 +78,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
   }
 
   resolve(component: Type): ViewMetadata {
-    var result = this._cache.get(component);
-    return isPresent(result) ? result : super.resolve(component);
+    return this._cache.get(component) || super.resolve(component);
   }
 }
 

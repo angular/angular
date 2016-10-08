@@ -52,13 +52,14 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
 
   return (<Array<string|number>>path).reduce((v, name) => {
     if (v instanceof FormGroup) {
-      return isPresent(v.controls[name]) ? v.controls[name] : null;
-    } else if (v instanceof FormArray) {
-      var index = <number>name;
-      return isPresent(v.at(index)) ? v.at(index) : null;
-    } else {
-      return null;
+      return v.controls[name] || null;
     }
+
+    if (v instanceof FormArray) {
+      return v.at(<number>name) || null;
+    }
+
+    return null;
   }, control);
 }
 

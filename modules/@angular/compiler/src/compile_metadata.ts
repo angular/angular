@@ -304,7 +304,7 @@ export class CompileTemplateMetadata {
     this.styleUrls = _normalizeArray(styleUrls);
     this.externalStylesheets = _normalizeArray(externalStylesheets);
     this.animations = isPresent(animations) ? ListWrapper.flatten(animations) : [];
-    this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
+    this.ngContentSelectors = ngContentSelectors || [];
     if (isPresent(interpolation) && interpolation.length != 2) {
       throw new Error(`'interpolation' should have a start and an end symbol.`);
     }
@@ -590,7 +590,7 @@ export function removeIdentifierDuplicates<T extends CompileMetadataWithIdentifi
 }
 
 function _normalizeArray(obj: any[]): any[] {
-  return isPresent(obj) ? obj : [];
+  return obj || [];
 }
 
 export function isStaticSymbol(value: any): value is StaticSymbol {

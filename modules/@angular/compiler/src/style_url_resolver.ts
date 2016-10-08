@@ -31,7 +31,7 @@ export function extractStyleUrls(
     resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
   var foundUrls: string[] = [];
   var modifiedCssText = cssText.replace(_cssImportRe, function(...m: string[]) {
-    const url = isPresent(m[1]) ? m[1] : m[2];
+    const url = m[1] || m[2];
     if (!isStyleUrlResolvable(url)) {
       // Do not attempt to resolve non-package absolute URLs with URI scheme
       return m[0];
