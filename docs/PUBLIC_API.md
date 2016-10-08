@@ -30,7 +30,7 @@ Within the supported packages, we provide guarantees for:
 
 We explicitly don't consider the following to be our public API surface:
 
-- any file/import paths within our package except for the `/`, `/testing` and `/bundles/*'
+- any file/import paths within our package except for the `/`, `/testing` and `/bundles/*`
 - constructors of injectable classes (services and directives) - please use DI to obtain instances of these classes
 - any class members or symbols marked as `private` or prefixed with underscore
 - extending any of our classes unless the support for this is specifically documented in the API docs
