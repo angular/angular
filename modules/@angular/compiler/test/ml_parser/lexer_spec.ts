@@ -728,6 +728,76 @@ export function main() {
       });
     });
 
+    describe('ngNonBindable', () => {
+      it('should allow unescaped "{" inside ngNonBindable element', () => {
+        expect(tokenizeAndHumanizeParts(`<p ngNonBindable>before { after</p>`, true)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 'p'],
+          [lex.TokenType.ATTR_NAME, null, 'ngNonBindable'], [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, 'before { after'], [lex.TokenType.TAG_CLOSE, null, 'p'],
+          [lex.TokenType.EOF]
+        ]);
+      });
+
+      it('should ignore expansion forms inside ngNonBindable element', () => {
+        expect(tokenizeAndHumanizeParts(
+                   `<p ngNonBindable>{one.two, three, =4 {four} =5 {five} foo {bar} }</p>`, true))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, null, 'p'],
+              [lex.TokenType.ATTR_NAME, null, 'ngNonBindable'], [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, '{one.two, three, =4 {four} =5 {five} foo {bar} }'],
+              [lex.TokenType.TAG_CLOSE, null, 'p'], [lex.TokenType.EOF]
+            ]);
+      });
+
+      it('should stop ignoring expansion forms after ngNonBindable elements close', () => {
+        expect(tokenizeAndHumanizeParts(
+                   `<p ngNonBindable>{one.two, three, =4 {four} }</p>{one.two, three, =4 {four} }`,
+                   true))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, null, 'p'],
+              [lex.TokenType.ATTR_NAME, null, 'ngNonBindable'], [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, '{one.two, three, =4 {four} }'],
+              [lex.TokenType.TAG_CLOSE, null, 'p'], [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, 'one.two'], [lex.TokenType.RAW_TEXT, 'three'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'], [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'four'], [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END], [lex.TokenType.EOF]
+            ]);
+      });
+
+      it('should handle implicitly closed tags inside ngNonBindable element', () => {
+        expect(
+            tokenizeAndHumanizeErrors(`<ul><li ngNonBindable>{{ dontParseMe }}<li> { </ul>`, true))
+            .toEqual([[
+              lex.TokenType.RAW_TEXT,
+              `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+              '0:51',
+            ]]);
+
+        expect(tokenizeAndHumanizeErrors(
+                   `<ul><li ngNonBindable>{{ dontParseMe }}</ul><div> { </div>`, true))
+            .toEqual([[
+              lex.TokenType.RAW_TEXT,
+              `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+              '0:58',
+            ]]);
+      });
+
+      it('should handle consecutive ngNonBindable elements', () => {
+        expect(tokenizeAndHumanizeParts(
+                   `<ul><li ngNonBindable>{{ dontParseMe }}<li ngNonBindable> { </ul>`, true))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, null, 'ul'], [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TAG_OPEN_START, null, 'li'],
+              [lex.TokenType.ATTR_NAME, null, 'ngNonBindable'], [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, '{{ dontParseMe }}'], [lex.TokenType.TAG_OPEN_START, null, 'li'],
+              [lex.TokenType.ATTR_NAME, null, 'ngNonBindable'], [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, ' { '], [lex.TokenType.TAG_CLOSE, null, 'ul'],
+              [lex.TokenType.EOF]
+            ]);
+      });
+    });
+
     describe('errors', () => {
       it('should report unescaped "{" on error', () => {
         expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, true)).toEqual([[
