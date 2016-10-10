@@ -29,7 +29,7 @@ To save your and our time we will be systematically closing all the issues that 
 
 If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
 
-## <a name="issue"></a> Found an Bug?
+## <a name="issue"></a> Found a Bug?
 If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
