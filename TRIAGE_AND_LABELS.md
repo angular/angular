@@ -73,20 +73,27 @@ Several owners have adopted the issue categorization based on
 used by Angular 1. In this system every issue is assigned frequency and
 severity based on which the total user pain score is calculated.
 
-Following is the definition of various frequency and severity levels:
+Following is the definition of various frequency and one of severity (for bugs) and impact (for features) levels:
 
-1. `freq(score): *` – How often does this issue come up? How many developers does this affect?
-    * low (1) - obscure issue affecting a handful of developers
-    * moderate (2) - impacts auxiliary usage patterns, only small number of applications are affected
-    * high (3) - impacts primary usage patterns, affecting most Angular apps
-    * critical (4) - impacts all Angular apps
-1. `severity(score): *` - How bad is the issue?
-    * inconvenience (1) - causes ugly/boilerplate code in apps
-    * confusing (2) - unexpected or inconsistent behavior; hard-to-debug
-    * broken expected use (3) - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
-    * memory leak (4)
-    * regression (5) - functionality that used to work no longer works in a new release due to an unintentional change
-    * security issue (6)
+- `freq(score): *` – How often does this issue come up? How many developers does this affect? Frequency should be assigned relative to the component (e.g. given a webworker bug, how often does the bug occur for users using webworkers).
+  * low (1) - obscure issue affecting a handful of developers
+  * moderate (2) - impacts auxiliary usage patterns, only small number of applications are affected
+  * high (3) - impacts primary usage patterns, affecting most Angular apps
+  * critical (4) - impacts all Angular apps
+- `severity(score): *` - How bad is the issue? Use for bugs only.
+  * inconvenience (1) - causes ugly/boilerplate code in apps
+  * confusing (2) - unexpected or inconsistent behavior; hard-to-debug
+  * broken expected use (3) - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
+  * memory leak (4)
+  * regression (5) - functionality that used to work no longer works in a new release due to an unintentional change
+  * security issue (6)
+- `impact(score): *` - How impactful is the feature or improvement? Use for features only.
+  * nice to have (1) - Makes existing usage patterns slightly better, but there are already other ways of achieving the same result.
+  * improvement & sugar (2) - Enables new minor capabilities within exiting APIs or significantly improves ergonomics of existing patterns.
+  * new feature (3) - Enables new usage patterns within a given component (e.g. router pre-loading).
+  * ??? (4) - Enables new capabilities that affect several Angular components and usage patterns (e.g. adding support for web worker platform).
+  * world-changing (5) - Enables new capabilities that affect the whole Angular ecosystem (app architecture, tooling, 3rd party packages, etc)
+
 
 
 These criteria are then used to calculate a "user pain" score as follows:
