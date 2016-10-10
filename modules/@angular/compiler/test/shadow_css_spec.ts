@@ -112,10 +112,8 @@ export function main() {
       it('should handle no context',
          () => { expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}'); });
 
-      it('should handle tag selector', () => {
-        expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}');
-
-      });
+      it('should handle tag selector',
+         () => { expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}'); });
 
       it('should handle class selector',
          () => { expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}'); });
@@ -140,6 +138,11 @@ export function main() {
       it('should handle multiple attribute selectors', () => {
         expect(s(':host([a="b"],[c=d]) {}', 'a', 'a-host'))
             .toEqual('[a="b"][a-host], [c="d"][a-host] {}');
+      });
+
+      it('should handle pseudo selector', () => {
+        expect(s(':host(:before) {}', 'a', 'a-host')).toEqual('[a-host]:before {}');
+        expect(s(':host:before {}', 'a', 'a-host')).toEqual('[a-host]:before {}');
       });
     });
 
