@@ -124,7 +124,8 @@ export class ElementAst implements TemplateAst {
       public outputs: BoundEventAst[], public references: ReferenceAst[],
       public directives: DirectiveAst[], public providers: ProviderAst[],
       public hasViewContainer: boolean, public children: TemplateAst[],
-      public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
+      public ngContentIndex: number, public sourceSpan: ParseSourceSpan,
+      public endSourceSpan: ParseSourceSpan) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);

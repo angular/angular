@@ -442,8 +442,7 @@ class TemplateParseVisitor implements html.Visitor {
           nodeName, attrs, elementProps, events, references,
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
           providerContext.transformedHasViewContainer, children,
-          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan);
-
+          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan, element.endSourceSpan);
       this._findComponentDirectives(directiveAsts)
           .forEach(
               componentDirectiveAst => this._validateElementAnimationInputOutputs(
@@ -1083,7 +1082,7 @@ class NonBindableVisitor implements html.Visitor {
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
     return new ElementAst(
         ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, children,
-        ngContentIndex, ast.sourceSpan);
+        ngContentIndex, ast.sourceSpan, ast.endSourceSpan);
   }
   visitComment(comment: html.Comment, context: any): any { return null; }
 
