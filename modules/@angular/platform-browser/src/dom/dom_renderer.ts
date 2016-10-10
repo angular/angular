@@ -127,7 +127,7 @@ export class DomRenderer implements Renderer {
   }
 
   createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
-    var node = getDOM().createTextNode(value);
+    const node = getDOM().createTextNode(value);
     if (isPresent(parentElement)) {
       getDOM().appendChild(parentElement, node);
     }
@@ -142,7 +142,7 @@ export class DomRenderer implements Renderer {
   attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
 
   detachView(viewRootNodes: any[]) {
-    for (var i = 0; i < viewRootNodes.length; i++) {
+    for (let i = 0; i < viewRootNodes.length; i++) {
       getDOM().remove(viewRootNodes[i]);
     }
   }
@@ -168,8 +168,8 @@ export class DomRenderer implements Renderer {
   }
 
   setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void {
-    var attrNs: any /** TODO #9100 */;
-    var nsAndName = splitNamespace(attributeName);
+    let attrNs: any /** TODO #9100 */;
+    const nsAndName = splitNamespace(attributeName);
     if (isPresent(nsAndName[0])) {
       attributeName = nsAndName[0] + ':' + nsAndName[1];
       attrNs = (NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]];
@@ -190,11 +190,11 @@ export class DomRenderer implements Renderer {
   }
 
   setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void {
-    var dashCasedPropertyName = camelCaseToDashCase(propertyName);
+    const dashCasedPropertyName = camelCaseToDashCase(propertyName);
     if (getDOM().isCommentNode(renderElement)) {
       const existingBindings =
           getDOM().getText(renderElement).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      var parsedBindings = Json.parse(existingBindings[1]);
+      const parsedBindings = Json.parse(existingBindings[1]);
       (parsedBindings as any /** TODO #9100 */)[dashCasedPropertyName] = propertyValue;
       getDOM().setText(
           renderElement, TEMPLATE_COMMENT_TEXT.replace('{}', Json.stringify(parsedBindings)));
@@ -234,15 +234,15 @@ export class DomRenderer implements Renderer {
 }
 
 function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  var parent = getDOM().parentElement(sibling);
+  const parent = getDOM().parentElement(sibling);
   if (nodes.length > 0 && isPresent(parent)) {
-    var nextSibling = getDOM().nextSibling(sibling);
+    const nextSibling = getDOM().nextSibling(sibling);
     if (isPresent(nextSibling)) {
-      for (var i = 0; i < nodes.length; i++) {
+      for (let i = 0; i < nodes.length; i++) {
         getDOM().insertBefore(nextSibling, nodes[i]);
       }
     } else {
-      for (var i = 0; i < nodes.length; i++) {
+      for (let i = 0; i < nodes.length; i++) {
         getDOM().appendChild(parent, nodes[i]);
       }
     }
@@ -250,14 +250,14 @@ function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TO
 }
 
 function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  for (var i = 0; i < nodes.length; i++) {
+  for (let i = 0; i < nodes.length; i++) {
     getDOM().appendChild(parent, nodes[i]);
   }
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
   return (event: any /** TODO #9100 */) => {
-    var allowDefaultBehavior = eventHandler(event);
+    const allowDefaultBehavior: boolean = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
       getDOM().preventDefault(event);
@@ -279,11 +279,11 @@ function _shimHostAttribute(componentShortId: string): string {
 }
 
 function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string[]): string[] {
-  for (var i = 0; i < styles.length; i++) {
-    var style = styles[i];
+  for (let i = 0; i < styles.length; i++) {
+    let style = styles[i];
     if (isArray(style)) {
       _flattenStyles(compId, style, target);
-    } else {
+    } else if (isString(style)) {
       style = style.replace(COMPONENT_REGEX, compId);
       target.push(style);
     }
