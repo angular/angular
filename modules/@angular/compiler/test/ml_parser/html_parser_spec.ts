@@ -390,6 +390,70 @@ export function main() {
         });
       });
 
+      describe('visitor', () => {
+        it('should visit text nodes', () => {
+          const result = humanizeDom(parser.parse('text', 'TestComp'));
+          expect(result).toEqual([[html.Text, 'text', 0]]);
+        });
+
+        it('should visit element nodes', () => {
+          const result = humanizeDom(parser.parse('<div></div>', 'TestComp'));
+          expect(result).toEqual([[html.Element, 'div', 0]]);
+        });
+
+        it('should visit attribute nodes', () => {
+          const result = humanizeDom(parser.parse('<div id="foo"></div>', 'TestComp'));
+          expect(result).toContain([html.Attribute, 'id', 'foo']);
+        });
+
+        it('should visit all nodes', () => {
+          const result =
+              parser.parse('<div id="foo"><span id="bar">a</span><span>b</span></div>', 'TestComp');
+          const accumulator: html.Node[] = [];
+          const visitor = new class {
+            visit(node: html.Node, context: any) { accumulator.push(node); }
+            visitElement(element: html.Element, context: any): any {
+              html.visitAll(this, element.attrs);
+              html.visitAll(this, element.children);
+            }
+            visitAttribute(attribute: html.Attribute, context: any): any {}
+            visitText(text: html.Text, context: any): any {}
+            visitComment(comment: html.Comment, context: any): any {}
+            visitExpansion(expansion: html.Expansion, context: any): any {
+              html.visitAll(this, expansion.cases);
+            }
+            visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {}
+          };
+
+          html.visitAll(visitor, result.rootNodes);
+          expect(accumulator.map(n => n.constructor)).toEqual([
+            html.Element, html.Attribute, html.Element, html.Attribute, html.Text, html.Element,
+            html.Text
+          ]);
+        });
+
+        it('should skip typed visit if visit() returns a truthy value', () => {
+          const visitor = new class {
+            visit(node: html.Node, context: any) { return true; }
+            visitElement(element: html.Element, context: any): any { throw Error('Unexpected'); }
+            visitAttribute(attribute: html.Attribute, context: any): any {
+              throw Error('Unexpected');
+            }
+            visitText(text: html.Text, context: any): any { throw Error('Unexpected'); }
+            visitComment(comment: html.Comment, context: any): any { throw Error('Unexpected'); }
+            visitExpansion(expansion: html.Expansion, context: any): any {
+              throw Error('Unexpected');
+            }
+            visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+              throw Error('Unexpected');
+            }
+          };
+          const result = parser.parse('<div id="foo"></div><div id="bar"></div>', 'TestComp');
+          const traversal = html.visitAll(visitor, result.rootNodes);
+          expect(traversal).toEqual([true, true]);
+        });
+      });
+
       describe('errors', () => {
         it('should report unexpected closing tags', () => {
           let errors = parser.parse('<div></p></div>', 'TestComp').errors;
