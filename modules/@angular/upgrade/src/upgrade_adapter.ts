@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
@@ -58,7 +58,7 @@ var upgradeCount: number = 0;
  * ### Example
  *
  * ```
- * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
+ * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module), myCompilerOptions);
  * var module = angular.module('myExample', []);
  * module.directive('ng2Comp', adapter.downgradeNg2Component(Ng2Component));
  *
@@ -114,7 +114,7 @@ export class UpgradeAdapter {
   /* @internal */
   private providers: Provider[] = [];
 
-  constructor(private ng2AppModule: Type<any>) {
+  constructor(private ng2AppModule: Type<any>, private compilerOptions?: CompilerOptions) {
     if (!ng2AppModule) {
       throw new Error(
           'UpgradeAdapter cannot be instantiated without an NgModule of the Angular 2 app.');
@@ -399,7 +399,7 @@ export class UpgradeAdapter {
 
                 (platformBrowserDynamic() as any)
                     ._bootstrapModuleWithZone(
-                        DynamicNgUpgradeModule, undefined, ngZone,
+                        DynamicNgUpgradeModule, this.compilerOptions, ngZone,
                         (componentFactories: ComponentFactory<any>[]) => {
                           componentFactories.forEach((componentFactory: ComponentFactory<any>) => {
                             var type: Type<any> = componentFactory.componentType;
