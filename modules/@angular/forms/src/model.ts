@@ -741,11 +741,12 @@ export class FormControl extends AbstractControl {
    * console.log(this.control.status);  // 'DISABLED'
    * ```
    */
-  reset(formState: any = null, {onlySelf}: {onlySelf?: boolean} = {}): void {
+  reset(formState: any = null, {onlySelf, emitEvent}: {onlySelf?: boolean,
+                                                       emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine({onlySelf});
     this.markAsUntouched({onlySelf});
-    this.setValue(this._value, {onlySelf});
+    this.setValue(this._value, {onlySelf, emitEvent});
   }
 
   /**
@@ -938,13 +939,15 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  setValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
+  setValue(
+      value: {[key: string]: any},
+      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
     Object.keys(value).forEach(name => {
       this._throwIfControlMissing(name);
-      this.controls[name].setValue(value[name], {onlySelf: true});
+      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent});
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf: onlySelf, emitEvent});
   }
 
   /**
@@ -968,13 +971,15 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  patchValue(value: {[key: string]: any}, {onlySelf}: {onlySelf?: boolean} = {}): void {
+  patchValue(
+      value: {[key: string]: any},
+      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     Object.keys(value).forEach(name => {
       if (this.controls[name]) {
-        this.controls[name].patchValue(value[name], {onlySelf: true});
+        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent});
       }
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf: onlySelf, emitEvent});
   }
 
   /**
@@ -1009,13 +1014,14 @@ export class FormGroup extends AbstractControl {
    * console.log(this.form.get('first').status);  // 'DISABLED'
    * ```
    */
-  reset(value: any = {}, {onlySelf}: {onlySelf?: boolean} = {}): void {
+  reset(value: any = {}, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._forEachChild((control: AbstractControl, name: string) => {
-      control.reset(value[name], {onlySelf: true});
+      control.reset(value[name], {onlySelf: true, emitEvent});
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
-    this._updatePristine({onlySelf: onlySelf});
-    this._updateTouched({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf, emitEvent});
+    this._updatePristine({onlySelf});
+    this._updateTouched({onlySelf});
   }
 
   /**
@@ -1240,13 +1246,14 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', 'Drew']
    *  ```
    */
-  setValue(value: any[], {onlySelf}: {onlySelf?: boolean} = {}): void {
+  setValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._checkAllValuesPresent(value);
     value.forEach((newValue: any, index: number) => {
       this._throwIfControlMissing(index);
-      this.at(index).setValue(newValue, {onlySelf: true});
+      this.at(index).setValue(newValue, {onlySelf: true, emitEvent});
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf: onlySelf, emitEvent});
   }
 
   /**
@@ -1269,13 +1276,14 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', null]
    *  ```
    */
-  patchValue(value: any[], {onlySelf}: {onlySelf?: boolean} = {}): void {
+  patchValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
-        this.at(index).patchValue(newValue, {onlySelf: true});
+        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent});
       }
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf: onlySelf, emitEvent});
   }
 
   /**
@@ -1309,13 +1317,14 @@ export class FormArray extends AbstractControl {
    * console.log(this.arr.get(0).status);  // 'DISABLED'
    * ```
    */
-  reset(value: any = [], {onlySelf}: {onlySelf?: boolean} = {}): void {
+  reset(value: any = [], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._forEachChild((control: AbstractControl, index: number) => {
-      control.reset(value[index], {onlySelf: true});
+      control.reset(value[index], {onlySelf: true, emitEvent});
     });
-    this.updateValueAndValidity({onlySelf: onlySelf});
-    this._updatePristine({onlySelf: onlySelf});
-    this._updateTouched({onlySelf: onlySelf});
+    this.updateValueAndValidity({onlySelf, emitEvent});
+    this._updatePristine({onlySelf});
+    this._updateTouched({onlySelf});
   }
 
   /**
