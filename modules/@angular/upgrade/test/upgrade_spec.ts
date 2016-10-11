@@ -9,6 +9,7 @@
 import {Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
 
@@ -69,6 +70,37 @@ export function main() {
            ref.dispose();
          });
        }));
+
+    it('supports the compilerOptions argument', async(() => {
+         const platformRef = platformBrowserDynamic();
+         spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
+
+         const ng1Module = angular.module('ng1', []);
+         const Ng2 = Component({
+                       selector: 'ng2',
+                       template: `{{ 'NG2' }}(<ng-content></ng-content>)`
+                     }).Class({constructor: function() {}});
+
+         const element =
+             html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
+
+         const Ng2AppModule =
+             NgModule({
+               declarations: [Ng2],
+               imports: [BrowserModule],
+             }).Class({constructor: function Ng2AppModule() {}, ngDoBootstrap: function() {}});
+
+         const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
+         ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+         adapter.bootstrap(element, ['ng1']).ready((ref) => {
+           expect((platformRef as any)._bootstrapModuleWithZone)
+               .toHaveBeenCalledWith(
+                   jasmine.any(Function), {providers: []}, jasmine.any(Object),
+                   jasmine.any(Function));
+           ref.dispose();
+         });
+       }));
+
     describe('scope/component change-detection', () => {
       it('should interleave scope and component expressions', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
