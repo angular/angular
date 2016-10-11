@@ -119,6 +119,11 @@ describe('StaticReflector', () => {
     expect(simplify(noContext, 'some value')).toBe('some value');
   });
 
+  it('should simplify a static symbol into itself', () => {
+    const staticSymbol = new StaticSymbol('', '');
+    expect(simplify(noContext, staticSymbol)).toBe(staticSymbol);
+  });
+
   it('should simplify an array into a copy of the array', () => {
     expect(simplify(noContext, [1, 2, 3])).toEqual([1, 2, 3]);
   });
