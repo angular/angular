@@ -540,6 +540,22 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * ])
  * ```
  *
+ * ### Transition Aliases (`:enter` and `:leave`)
+ *
+ * Given that enter (insertion) and leave (removal) animations are so common,
+ * the `transition` function accepts both `:enter` and `:leave` values which
+ * are aliases for the `void => *` and `* => void` state changes.
+ *
+ * ```
+ * transition(":enter", [
+ *   style({ opacity: 0 }),
+ *   animate(500, style({ opacity: 1 }))
+ * ])
+ * transition(":leave", [
+ *   animate(500, style({ opacity: 0 }))
+ * ])
+ * ```
+ *
  * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
