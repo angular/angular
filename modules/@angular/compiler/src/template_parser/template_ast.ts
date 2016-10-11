@@ -10,7 +10,6 @@ import {SecurityContext} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {AST} from '../expression_parser/ast';
-import {isPresent} from '../facade/lang';
 import {ParseSourceSpan} from '../parse_util';
 import {LifecycleHooks} from '../private_import_core';
 
@@ -84,7 +83,7 @@ export class BoundEventAst implements TemplateAst {
     return visitor.visitEvent(this, context);
   }
   get fullName() {
-    if (isPresent(this.target)) {
+    if (this.target) {
       return `${this.target}:${this.name}`;
     } else {
       return this.name;
@@ -242,6 +241,11 @@ export enum PropertyBindingType {
  * A visitor for {@link TemplateAst} trees that will process each node.
  */
 export interface TemplateAstVisitor {
+  // Returning a truthy value from `visit()` will prevent `templateVisitAll()` from the call to
+  // the typed method and result returned will become the result included in `visitAll()`s
+  // result array.
+  visit?(ast: TemplateAst, context: any): any;
+
   visitNgContent(ast: NgContentAst, context: any): any;
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any;
   visitElement(ast: ElementAst, context: any): any;
@@ -261,10 +265,13 @@ export interface TemplateAstVisitor {
  */
 export function templateVisitAll(
     visitor: TemplateAstVisitor, asts: TemplateAst[], context: any = null): any[] {
-  var result: any[] = [];
+  const result: any[] = [];
+  const visit = visitor.visit ?
+      (ast: TemplateAst) => visitor.visit(ast, context) || ast.visit(visitor, context) :
+      (ast: TemplateAst) => ast.visit(visitor, context);
   asts.forEach(ast => {
-    var astResult = ast.visit(visitor, context);
-    if (isPresent(astResult)) {
+    const astResult = visit(ast);
+    if (astResult) {
       result.push(astResult);
     }
   });

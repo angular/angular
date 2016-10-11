@@ -71,6 +71,116 @@ export function main() {
     }));
   }
 
+  describe('TemplateAstVisitor', () => {
+    function expectVisitedNode(visitor: TemplateAstVisitor, node: TemplateAst) {
+      expect(node.visit(visitor, null)).toEqual(node);
+    }
+
+    it('should visit NgContentAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitNgContent(ast: NgContentAst, context: any): any{return ast;}},
+          new NgContentAst(0, 0, null));
+    });
+
+    it('should visit EmbeddedTemplateAst', () => {
+      expectVisitedNode(
+          new class extends NullVisitor{
+            visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any) { return ast; }
+          },
+          new EmbeddedTemplateAst([], [], [], [], [], [], false, [], 0, null));
+    });
+
+    it('should visit ElementAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitElement(ast: ElementAst, context: any) { return ast; }},
+          new ElementAst('foo', [], [], [], [], [], [], false, [], 0, null, null));
+    });
+
+    it('should visit RefererenceAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitReference(ast: ReferenceAst, context: any): any{return ast;}},
+          new ReferenceAst('foo', null, null));
+    });
+
+    it('should visit VariableAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitVariable(ast: VariableAst, context: any): any{return ast;}},
+          new VariableAst('foo', 'bar', null));
+    });
+
+    it('should visit BoundEventAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitEvent(ast: BoundEventAst, context: any): any{return ast;}},
+          new BoundEventAst('foo', 'bar', 'goo', null, null));
+    });
+
+    it('should visit BoundElementPropertyAst', () => {
+      expectVisitedNode(
+          new class extends NullVisitor{
+            visitElementProperty(ast: BoundElementPropertyAst, context: any): any{return ast;}
+          },
+          new BoundElementPropertyAst('foo', null, null, null, 'bar', null));
+    });
+
+    it('should visit AttrAst', () => {
+      expectVisitedNode(
+          new class extends NullVisitor{visitAttr(ast: AttrAst, context: any): any{return ast;}},
+          new AttrAst('foo', 'bar', null));
+    });
+
+    it('should visit BoundTextAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitBoundText(ast: BoundTextAst, context: any): any{return ast;}},
+          new BoundTextAst(null, 0, null));
+    });
+
+    it('should visit TextAst', () => {
+      expectVisitedNode(
+          new class extends NullVisitor{visitText(ast: TextAst, context: any): any{return ast;}},
+          new TextAst('foo', 0, null));
+    });
+
+    it('should visit DirectiveAst', () => {
+      expectVisitedNode(
+          new class extends
+          NullVisitor{visitDirective(ast: DirectiveAst, context: any): any{return ast;}},
+          new DirectiveAst(null, [], [], [], null));
+    });
+
+    it('should visit DirectiveAst', () => {
+      expectVisitedNode(
+          new class extends NullVisitor{
+            visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any{return ast;}
+          },
+          new BoundDirectivePropertyAst('foo', 'bar', null, null));
+    });
+
+    it('should skip the typed call of a visitor if visit() returns a truthy value', () => {
+      const visitor = new class extends ThrowingVisitor {
+        visit(ast: TemplateAst, context: any): any { return true; }
+      };
+      const nodes: TemplateAst[] = [
+        new NgContentAst(0, 0, null),
+        new EmbeddedTemplateAst([], [], [], [], [], [], false, [], 0, null),
+        new ElementAst('foo', [], [], [], [], [], [], false, [], 0, null, null),
+        new ReferenceAst('foo', null, null), new VariableAst('foo', 'bar', null),
+        new BoundEventAst('foo', 'bar', 'goo', null, null),
+        new BoundElementPropertyAst('foo', null, null, null, 'bar', null),
+        new AttrAst('foo', 'bar', null), new BoundTextAst(null, 0, null),
+        new TextAst('foo', 0, null), new DirectiveAst(null, [], [], [], null),
+        new BoundDirectivePropertyAst('foo', 'bar', null, null)
+      ];
+      const result = templateVisitAll(visitor, nodes, null);
+      expect(result).toEqual(new Array(nodes.length).fill(true));
+    });
+  });
+
   describe('TemplateParser template transform', () => {
     beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
@@ -1848,15 +1958,10 @@ class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
 }
 
-class FooAstTransformer implements TemplateAstVisitor {
+class ThrowingVisitor implements TemplateAstVisitor {
   visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
-  visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'div') return ast;
-    return new ElementAst(
-        'foo', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
-        ast.endSourceSpan);
-  }
+  visitElement(ast: ElementAst, context: any): any { throw 'not implemented'; }
   visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
   visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
   visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
@@ -1870,6 +1975,15 @@ class FooAstTransformer implements TemplateAstVisitor {
   }
 }
 
+class FooAstTransformer extends ThrowingVisitor {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'div') return ast;
+    return new ElementAst(
+        'foo', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
+  }
+}
+
 class BarAstTransformer extends FooAstTransformer {
   visitElement(ast: ElementAst, context: any): any {
     if (ast.name != 'foo') return ast;
@@ -1877,6 +1991,21 @@ class BarAstTransformer extends FooAstTransformer {
         'bar', [], [], [], [], [], [], false, [], ast.ngContentIndex, ast.sourceSpan,
         ast.endSourceSpan);
   }
+}
+
+class NullVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any {}
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {}
+  visitElement(ast: ElementAst, context: any): any {}
+  visitReference(ast: ReferenceAst, context: any): any {}
+  visitVariable(ast: VariableAst, context: any): any {}
+  visitEvent(ast: BoundEventAst, context: any): any {}
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {}
+  visitAttr(ast: AttrAst, context: any): any {}
+  visitBoundText(ast: BoundTextAst, context: any): any {}
+  visitText(ast: TextAst, context: any): any {}
+  visitDirective(ast: DirectiveAst, context: any): any {}
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {}
 }
 
 class ArrayConsole implements Console {
