@@ -66,9 +66,11 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   }
 
   openMenu(): void {
-    this._createOverlay();
-    this._overlayRef.attach(this._portal);
-    this._initMenu();
+    if (!this._menuOpen) {
+      this._createOverlay();
+      this._overlayRef.attach(this._portal);
+      this._initMenu();
+    }
   }
 
   closeMenu(): void {
