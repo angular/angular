@@ -67,7 +67,7 @@ High level items planned for October 2016:
 | textarea         |                         Not started |           -  |   [#546][0546] |
 | autocomplete     |                         Not started |           -  |   [#117][0117] |
 | chips            |                         Not started |           -  |   [#120][0120] |
-| theming          | In master, not released, some bugs  | [Guide][20]  |   [#123][0123] |
+| theming          | Initial version, needs enhancements | [Guide][20]  |              - |
 | prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
