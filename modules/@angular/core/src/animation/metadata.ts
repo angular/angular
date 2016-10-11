@@ -174,7 +174,7 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
  * ])
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -223,7 +223,7 @@ export function animate(
  * ])
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -266,7 +266,7 @@ export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
  * ])
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -317,7 +317,7 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
  * animate("1s", style({ height: "*" }))
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -394,7 +394,7 @@ export function style(
  * state("open, visible", style({ height: "*" }))
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -448,7 +448,7 @@ export function state(
  * ]))
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -556,7 +556,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * ])
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
@@ -618,7 +618,7 @@ export function transition(stateChangeExpr: string, steps: AnimationMetadata | A
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
  *
- * ### Example ([live demo](http://plnkr.co/edit/Kez8XGWBxWue7qP7nNvF?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/p8YcNYYqHUMHfYRQFeyI?p=preview))
  *
  * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
