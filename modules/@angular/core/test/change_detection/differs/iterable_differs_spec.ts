@@ -31,17 +31,17 @@ export function main() {
     });
 
     it('should return the first suitable implementation', () => {
-      factory1.spy('supports').andReturn(false);
-      factory2.spy('supports').andReturn(true);
-      factory3.spy('supports').andReturn(true);
+      factory1.spy('supports').and.returnValue(false);
+      factory2.spy('supports').and.returnValue(true);
+      factory3.spy('supports').and.returnValue(true);
 
       var differs = IterableDiffers.create(<any>[factory1, factory2, factory3]);
       expect(differs.find('some object')).toBe(factory2);
     });
 
     it('should copy over differs from the parent repo', () => {
-      factory1.spy('supports').andReturn(true);
-      factory2.spy('supports').andReturn(false);
+      factory1.spy('supports').and.returnValue(true);
+      factory2.spy('supports').and.returnValue(false);
 
       var parent = IterableDiffers.create(<any>[factory1]);
       var child = IterableDiffers.create(<any>[factory2], parent);

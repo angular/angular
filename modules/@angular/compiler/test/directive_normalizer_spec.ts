@@ -435,7 +435,7 @@ export function main() {
 }
 
 function programResourceLoaderSpy(spy: SpyResourceLoader, results: {[key: string]: string}) {
-  spy.spy('get').andCallFake((url: string): Promise<any> => {
+  spy.spy('get').and.callFake((url: string): Promise<any> => {
     var result = results[url];
     if (result) {
       return Promise.resolve(result);

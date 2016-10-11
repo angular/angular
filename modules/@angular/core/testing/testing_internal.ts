@@ -19,7 +19,7 @@ export {inject} from './test_bed';
 export * from './logger';
 export * from './ng_zone_mock';
 
-export var proxy: ClassDecorator = (t: any /** TODO #9100 */) => t;
+export var proxy: ClassDecorator = (t: any) => t;
 
 var _global = <any>(typeof window === 'undefined' ? global : window);
 
@@ -35,7 +35,6 @@ var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
 var runnerStack: BeforeEachRunner[] = [];
-var inIt = false;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -123,7 +122,7 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
   var runner = runnerStack[runnerStack.length - 1];
   var timeOut = Math.max(globalTimeOut, testTimeOut);
 
-  jsmFn(name, (done: any /** TODO #9100 */) => {
+  jsmFn(name, (done: any) => {
     var completerProvider = {
       provide: AsyncTestCompleter,
       useFactory: () => {
@@ -134,7 +133,6 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     testBed.configureTestingModule({providers: [completerProvider]});
     runner.run();
 
-    inIt = true;
     if (testFn.length == 0) {
       let retVal = testFn();
       if (isPromise(retVal)) {
@@ -148,44 +146,26 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
       // Asynchronous test function that takes in 'done' parameter.
       testFn(done);
     }
-    inIt = false;
   }, timeOut);
 }
 
-export function it(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function it(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmIt, name, fn, timeOut);
 }
 
-export function xit(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function xit(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmXIt, name, fn, timeOut);
 }
 
-export function iit(
-    name: any /** TODO #9100 */, fn: any /** TODO #9100 */,
-    timeOut: any /** TODO #9100 */ = null): void {
+export function iit(name: any, fn: any, timeOut: any = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
 
-export interface GuinessCompatibleSpy extends jasmine.Spy {
-  /** By chaining the spy with and.returnValue, all calls to the function will return a specific
-   * value. */
-  andReturn(val: any): void;
-  /** By chaining the spy with and.callFake, all calls to the spy will delegate to the supplied
-   * function. */
-  andCallFake(fn: Function): GuinessCompatibleSpy;
-  /** removes all recorded calls */
-  reset(): any /** TODO #9100 */;
-}
-
 export class SpyObject {
-  constructor(type: any /** TODO #9100 */ = null) {
+  constructor(type?: any) {
     if (type) {
-      for (var prop in type.prototype) {
-        var m: any /** TODO #9100 */ = null;
+      for (let prop in type.prototype) {
+        let m: any = null;
         try {
           m = type.prototype[prop];
         } catch (e) {
@@ -200,23 +180,17 @@ export class SpyObject {
       }
     }
   }
-  // Noop so that SpyObject has the same interface as in Dart
-  noSuchMethod(args: any /** TODO #9100 */) {}
 
-  spy(name: any /** TODO #9100 */) {
-    if (!(this as any /** TODO #9100 */)[name]) {
-      (this as any /** TODO #9100 */)[name] = this._createGuinnessCompatibleSpy(name);
+  spy(name: string) {
+    if (!(this as any)[name]) {
+      (this as any)[name] = jasmine.createSpy(name);
     }
-    return (this as any /** TODO #9100 */)[name];
+    return (this as any)[name];
   }
 
-  prop(name: any /** TODO #9100 */, value: any /** TODO #9100 */) {
-    (this as any /** TODO #9100 */)[name] = value;
-  }
+  prop(name: string, value: any) { (this as any)[name] = value; }
 
-  static stub(
-      object: any /** TODO #9100 */ = null, config: any /** TODO #9100 */ = null,
-      overrides: any /** TODO #9100 */ = null) {
+  static stub(object: any = null, config: any = null, overrides: any = null) {
     if (!(object instanceof SpyObject)) {
       overrides = config;
       config = object;
@@ -224,18 +198,7 @@ export class SpyObject {
     }
 
     var m = StringMapWrapper.merge(config, overrides);
-    Object.keys(m).forEach(key => { object.spy(key).andReturn(m[key]); });
+    Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
     return object;
-  }
-
-  /** @internal */
-  _createGuinnessCompatibleSpy(name: any /** TODO #9100 */): GuinessCompatibleSpy {
-    var newSpy: GuinessCompatibleSpy = <any>jasmine.createSpy(name);
-    newSpy.andCallFake = <any>newSpy.and.callFake;
-    newSpy.andReturn = <any>newSpy.and.returnValue;
-    newSpy.reset = <any>newSpy.calls.reset;
-    // revisit return null here (previously needed for rtts_assert).
-    newSpy.and.returnValue(null);
-    return newSpy;
   }
 }

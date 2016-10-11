@@ -74,7 +74,7 @@ export function main() {
            var cdRef = <any>new SpyChangeDetectorRef();
            try {
              ref.registerChangeDetector(cdRef);
-             cdRef.spy('detectChanges').andCallFake(() => ref.tick());
+             cdRef.spy('detectChanges').and.callFake(() => ref.tick());
              expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
            } finally {
              ref.unregisterChangeDetector(cdRef);

@@ -66,7 +66,7 @@ export function main() {
     });
 
     describe('spy objects', () => {
-      var spyObj: any /** TODO #9100 */;
+      let spyObj: any;
 
       beforeEach(() => { spyObj = <any>new SpyTestObj(); });
 
@@ -74,7 +74,7 @@ export function main() {
          () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
 
       it('should record function calls', () => {
-        spyObj.spy('someFunc').andCallFake((a: any, b: any) => a + b);
+        spyObj.spy('someFunc').and.callFake((a: any, b: any) => a + b);
 
         expect(spyObj.someFunc(1, 2)).toEqual(3);
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);
@@ -106,12 +106,6 @@ export function main() {
 
       it('should create spys for all methods',
          () => { expect(() => spyObj.someFunc()).not.toThrow(); });
-
-      it('should create a default spy that does not fail for numbers', () => {
-        // Previously needed for rtts_assert. Revisit this behavior.
-        expect(spyObj.someFunc()).toBe(null);
-      });
     });
-
   });
 }

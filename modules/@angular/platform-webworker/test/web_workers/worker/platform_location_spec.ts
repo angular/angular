@@ -28,7 +28,7 @@ export function main() {
 
 
     function createWebWorkerPlatformLocation(loc: LocationType): WebWorkerPlatformLocation {
-      broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
+      broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
         if (args.method === 'getLocation') {
           return Promise.resolve(loc);
         }
