@@ -118,22 +118,18 @@ export class TemplateParser {
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveMetadata[],
       pipes: CompilePipeMetadata[], schemas: SchemaMetadata[],
       templateUrl: string): TemplateParseResult {
-    let interpolationConfig: any;
-    if (component.template) {
-      interpolationConfig = InterpolationConfig.fromArray(component.template.interpolation);
-    }
-    let htmlAstWithErrors =
-        this._htmlParser.parse(template, templateUrl, true, interpolationConfig);
-    const errors: ParseError[] = htmlAstWithErrors.errors;
-    let result: TemplateAst[];
+    return this.tryParseHtml(
+        this.expandHtml(this._htmlParser.parse(
+            template, templateUrl, true, this.getInterpolationConfig(component))),
+        component, template, directives, pipes, schemas, templateUrl);
+  }
 
-    if (errors.length == 0) {
-      // Transform ICU messages to angular directives
-      const expandedHtmlAst = expandNodes(htmlAstWithErrors.rootNodes);
-      errors.push(...expandedHtmlAst.errors);
-      htmlAstWithErrors = new ParseTreeResult(expandedHtmlAst.nodes, errors);
-    }
-
+  tryParseHtml(
+      htmlAstWithErrors: ParseTreeResult, component: CompileDirectiveMetadata, template: string,
+      directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
+      schemas: SchemaMetadata[], templateUrl: string): TemplateParseResult {
+    var result: TemplateAst[];
+    var errors = htmlAstWithErrors.errors;
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = removeIdentifierDuplicates(directives);
       const uniqPipes = removeIdentifierDuplicates(pipes);
@@ -147,7 +143,6 @@ export class TemplateParser {
     } else {
       result = [];
     }
-
     this._assertNoReferenceDuplicationOnTemplate(result, errors);
 
     if (errors.length > 0) {
@@ -160,6 +155,24 @@ export class TemplateParser {
     }
 
     return new TemplateParseResult(result, errors);
+  }
+
+  expandHtml(htmlAstWithErrors: ParseTreeResult, forced: boolean = false): ParseTreeResult {
+    const errors: ParseError[] = htmlAstWithErrors.errors;
+
+    if (errors.length == 0 || forced) {
+      // Transform ICU messages to angular directives
+      const expandedHtmlAst = expandNodes(htmlAstWithErrors.rootNodes);
+      errors.push(...expandedHtmlAst.errors);
+      htmlAstWithErrors = new ParseTreeResult(expandedHtmlAst.nodes, errors);
+    }
+    return htmlAstWithErrors;
+  }
+
+  getInterpolationConfig(component: CompileDirectiveMetadata): InterpolationConfig {
+    if (component.template) {
+      return InterpolationConfig.fromArray(component.template.interpolation);
+    }
   }
 
   /** @internal */
@@ -443,6 +456,7 @@ class TemplateParseVisitor implements html.Visitor {
           providerContext.transformedDirectiveAsts, providerContext.transformProviders,
           providerContext.transformedHasViewContainer, children,
           hasInlineTemplates ? null : ngContentIndex, element.sourceSpan, element.endSourceSpan);
+
       this._findComponentDirectives(directiveAsts)
           .forEach(
               componentDirectiveAst => this._validateElementAnimationInputOutputs(
