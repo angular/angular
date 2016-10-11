@@ -299,7 +299,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
     onReset(): void;
-    onSubmit(): boolean;
+    onSubmit($event: Event): boolean;
     removeControl(dir: FormControlName): void;
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
@@ -382,7 +382,7 @@ export declare class NgForm extends ControlContainer implements Form {
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
     onReset(): void;
-    onSubmit(): boolean;
+    onSubmit($event: Event): boolean;
     removeControl(dir: NgModel): void;
     removeFormGroup(dir: NgModelGroup): void;
     resetForm(value?: any): void;

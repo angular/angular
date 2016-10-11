@@ -529,17 +529,17 @@ export function main() {
     });
 
     describe('submit and reset events', () => {
-      it('should emit ngSubmit event on submit', () => {
+      it('should emit ngSubmit event with the original submit event on submit', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
-        fixture.componentInstance.data = 'should be changed';
+        fixture.componentInstance.event = null;
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
-        expect(fixture.componentInstance.data).toEqual('submitted');
+        expect(fixture.componentInstance.event.type).toEqual('submit');
       });
 
       it('should mark formGroup as submitted on submit event', () => {
@@ -1760,7 +1760,7 @@ class FormControlComp {
 @Component({
   selector: 'form-group-comp',
   template: `
-    <form [formGroup]="form" (ngSubmit)="data='submitted'">
+    <form [formGroup]="form" (ngSubmit)="event=$event">
       <input type="text" formControlName="login">
     </form>
   `
@@ -1769,7 +1769,7 @@ class FormGroupComp {
   control: FormControl;
   form: FormGroup;
   myGroup: FormGroup;
-  data: string;
+  event: Event;
 }
 
 @Component({

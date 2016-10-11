@@ -44,6 +44,10 @@ export const formDirectiveProvider: any = {
  * its {@link AbstractControl.statusChanges} event to be notified when the validation status is
  * re-calculated.
  *
+ * Furthermore, you can listen to the directive's `ngSubmit` event to be notified when the user has
+ * triggered a form submission. The `ngSubmit` event will be emitted with the original form
+ * submission event.
+ *
  * ### Example
  *
  * In this example, we create form controls for first name and last name.
@@ -59,7 +63,7 @@ export const formDirectiveProvider: any = {
 @Directive({
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
-  host: {'(submit)': 'onSubmit()', '(reset)': 'onReset()'},
+  host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   exportAs: 'ngForm'
 })
 export class FormGroupDirective extends ControlContainer implements Form,
@@ -107,7 +111,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   removeControl(dir: FormControlName): void { ListWrapper.remove(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
-    var ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
@@ -117,7 +121,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   addFormArray(dir: FormArrayName): void {
-    var ctrl: any = this.form.get(dir.path);
+    const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
   }
@@ -127,13 +131,13 @@ export class FormGroupDirective extends ControlContainer implements Form,
   getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
 
   updateModel(dir: FormControlName, value: any): void {
-    var ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl  = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
 
-  onSubmit(): boolean {
+  onSubmit($event: Event): boolean {
     this._submitted = true;
-    this.ngSubmit.emit(null);
+    this.ngSubmit.emit($event);
     return false;
   }
 

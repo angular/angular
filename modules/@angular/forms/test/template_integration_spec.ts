@@ -237,15 +237,15 @@ export function main() {
     });
 
     describe('submit and reset events', () => {
-      it('should emit ngSubmit event on submit', fakeAsync(() => {
+      it('should emit ngSubmit event with the original submit event on submit', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelForm);
-           fixture.componentInstance.name = 'old';
+           fixture.componentInstance.event = null;
 
            const form = fixture.debugElement.query(By.css('form'));
            dispatchEvent(form.nativeElement, 'submit');
            tick();
 
-           expect(fixture.componentInstance.name).toEqual('submitted');
+           expect(fixture.componentInstance.event.type).toEqual('submit');
          }));
 
       it('should mark NgForm as submitted on submit event', fakeAsync(() => {
@@ -898,13 +898,14 @@ class StandaloneNgModel {
 @Component({
   selector: 'ng-model-form',
   template: `
-    <form (ngSubmit)="name='submitted'" (reset)="onReset()">
+    <form (ngSubmit)="event=$event" (reset)="onReset()">
       <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options">
     </form>
   `
 })
 class NgModelForm {
   name: string;
+  event: Event;
   options = {};
 
   onReset() {}
