@@ -368,6 +368,9 @@ export class StaticReflector implements ReflectorReader {
           }
           return result;
         }
+        if (expression instanceof StaticSymbol) {
+          return expression;
+        }
         if (expression) {
           if (expression['__symbolic']) {
             let staticSymbol: StaticSymbol;
