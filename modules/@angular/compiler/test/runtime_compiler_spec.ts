@@ -117,7 +117,7 @@ export function main() {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
+           resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
            let ngModuleFactory: NgModuleFactory<any>;
            compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
@@ -132,7 +132,7 @@ export function main() {
         class SomeModule {
         }
 
-        resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
+        resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
         expect(() => compiler.compileModuleSync(SomeModule))
             .toThrowError(
                 `Can't compile synchronously as ${stringify(SomeCompWithUrlTemplate)} is still being loaded!`);
@@ -144,7 +144,7 @@ export function main() {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').andCallFake(() => Promise.resolve(''));
+           resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
            dirResolver.setView(SomeComp, new ViewMetadata({template: ''}));
            dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
@@ -161,7 +161,7 @@ export function main() {
            class SomeModule {
            }
 
-           resourceLoader.spy('get').andCallFake(() => Promise.resolve('hello'));
+           resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
            compiler.compileModuleAsync(SomeModule);
            tick();
 

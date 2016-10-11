@@ -42,7 +42,7 @@ export function createPairedMessageBuses(): PairedMessageBuses {
 export function expectBrokerCall(
     broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
     handler?: (..._: any[]) => Promise<any>| void): void {
-  broker.spy('runOnService').andCallFake((args: UiArguments, returnType: Type<any>) => {
+  broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
