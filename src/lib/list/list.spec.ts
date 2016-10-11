@@ -18,6 +18,7 @@ describe('MdList', () => {
         ListWithItemWithCssClass,
         ListWithDynamicNumberOfLines,
         ListWithMultipleItems,
+        ListWithManyLines,
       ],
     });
 
@@ -63,6 +64,15 @@ describe('MdList', () => {
     let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
     expect(listItems[0].nativeElement.className).toBe('md-3-line');
     expect(listItems[1].nativeElement.className).toBe('md-3-line');
+  });
+
+  it('should apply md-multi-line class to lists with more than 3 lines', () => {
+    let fixture = TestBed.createComponent(ListWithManyLines);
+    fixture.detectChanges();
+
+    let listItems = fixture.debugElement.children[0].queryAll(By.css('md-list-item'));
+    expect(listItems[0].nativeElement.className).toBe('md-multi-line');
+    expect(listItems[1].nativeElement.className).toBe('md-multi-line');
   });
 
   it('should apply md-list-avatar class to list items with avatars', () => {
@@ -151,6 +161,17 @@ class ListWithTwoLineItem extends BaseTestList { }
     </md-list-item>
   </md-list>`})
 class ListWithThreeLineItem extends BaseTestList { }
+
+@Component({template: `
+  <md-list>
+    <md-list-item *ngFor="let item of items">
+      <h3 md-line>Line 1</h3>
+      <p md-line>Line 2</p>
+      <p md-line>Line 3</p>
+      <p md-line>Line 4</p>
+    </md-list-item>
+  </md-list>`})
+class ListWithManyLines extends BaseTestList { }
 
 @Component({template: `
   <md-list>

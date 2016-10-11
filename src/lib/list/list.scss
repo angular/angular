@@ -50,8 +50,16 @@ $md-dense-three-line-height: 76px;
     height: $two-line-height;
   }
 
+
   &.md-3-line .md-list-item {
     height: $three-line-height;
+  }
+
+  // list items with more than 3 lines should expand to match
+  // the height of its contained text
+  &.md-multi-line .md-list-item {
+    height: 100%;
+    padding: 8px $md-list-side-padding;
   }
 
   .md-list-text {
