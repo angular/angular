@@ -274,12 +274,17 @@ export function main() {
           });
 
           it('should parse ngContent', () => {
-            var parsed = parse('<ng-content select="a">', []);
+            const parsed = parse('<ng-content select="a"></ng-content>', []);
+            expect(humanizeTplAst(parsed)).toEqual([[NgContentAst]]);
+          });
+
+          it('should parse ngContent when it contains WS only', () => {
+            const parsed = parse('<ng-content select="a">    \n   </ng-content>', []);
             expect(humanizeTplAst(parsed)).toEqual([[NgContentAst]]);
           });
 
           it('should parse ngContent regardless the namespace', () => {
-            var parsed = parse('<svg><ng-content></ng-content></svg>', []);
+            const parsed = parse('<svg><ng-content></ng-content></svg>', []);
             expect(humanizeTplAst(parsed)).toEqual([
               [ElementAst, ':svg:svg'],
               [NgContentAst],
@@ -1418,10 +1423,11 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         describe('error cases', () => {
-          it('should report when ng-content has content', () => {
+          it('should report when ng-content has non WS content', () => {
             expect(() => parse('<ng-content>content</ng-content>', []))
-                .toThrowError(`Template parse errors:
-<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content> ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
+                .toThrowError(
+                    `Template parse errors:\n` +
+                    `<ng-content> element cannot have content. ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
           });
 
           it('should treat *attr on a template element as valid',
