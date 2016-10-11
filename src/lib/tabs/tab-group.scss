@@ -38,6 +38,12 @@ $md-tab-bar-height: 48px !default;
   }
 }
 
+@media ($md-xsmall) {
+  .md-tab-label {
+    min-width: 72px;
+  }
+}
+
 .md-tab-disabled {
   cursor: default;
   pointer-events: none;
