@@ -134,10 +134,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   interfaces(type: Type<any>): any[] { return []; }
 
   hasLifecycleHook(type: any, lcInterface: Type<any>, lcProperty: string): boolean {
-    if (!(type instanceof Type)) return false;
-
-    const proto = (<any>type).prototype;
-    return !!proto[lcProperty];
+    return type instanceof Type && lcProperty in type.prototype;
   }
 
   getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
