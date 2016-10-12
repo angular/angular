@@ -418,7 +418,7 @@ export class UpgradeAdapter {
                       });
                     })
                     .then(resolve, reject);
-              });
+              }, reject);
         }
       ]);
     });
