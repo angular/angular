@@ -1,5 +1,5 @@
 <a name="2.1.0"></a>
-# [2.1.0 incremental-metamorphoses](https://github.com/angular/angular/compare/2.1.0-rc.0...2.1.0) (2016-10-12)
+# [2.1.0 incremental-metamorphosis](https://github.com/angular/angular/compare/2.1.0-rc.0...2.1.0) (2016-10-12)
 
 
 ### Bug Fixes
