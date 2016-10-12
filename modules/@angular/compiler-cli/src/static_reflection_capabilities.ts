@@ -20,11 +20,10 @@ export class StaticAndDynamicReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
   factory(type: any): Function { return this.dynamicDelegate.factory(type); }
-  interfaces(type: any): any[] { return this.dynamicDelegate.interfaces(type); }
-  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean {
-    return isStaticType(type) ?
-        this.staticDelegate.hasLifecycleHook(type, lcInterface, lcProperty) :
-        this.dynamicDelegate.hasLifecycleHook(type, lcInterface, lcProperty);
+
+  hasLifecycleHook(type: any, lcProperty: string): boolean {
+    return isStaticType(type) ? this.staticDelegate.hasLifecycleHook(type, lcProperty) :
+                                this.dynamicDelegate.hasLifecycleHook(type, lcProperty);
   }
   parameters(type: any): any[][] {
     return isStaticType(type) ? this.staticDelegate.parameters(type) :

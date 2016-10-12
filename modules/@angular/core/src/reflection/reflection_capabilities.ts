@@ -128,12 +128,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return {};
   }
 
-  // Note: JavaScript does not support to query for interfaces during runtime.
-  // However, we can't throw here as the reflector will always call this method
-  // when asked for a lifecycle interface as this is what we check in Dart.
-  interfaces(type: Type<any>): any[] { return []; }
-
-  hasLifecycleHook(type: any, lcInterface: Type<any>, lcProperty: string): boolean {
+  hasLifecycleHook(type: any, lcProperty: string): boolean {
     return type instanceof Type && lcProperty in type.prototype;
   }
 
