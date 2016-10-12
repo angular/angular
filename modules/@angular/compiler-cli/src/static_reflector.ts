@@ -159,14 +159,15 @@ export class StaticReflector implements ReflectorReader {
     }
   }
 
-  hasLifecycleHook(type: any, lcInterface: /*Type*/ any, lcProperty: string): boolean {
+  hasLifecycleHook(type: any, lcProperty: string): boolean {
     if (!(type instanceof StaticSymbol)) {
       throw new Error(
           `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`);
     }
-    let classMetadata = this.getTypeMetadata(type);
-    let members = classMetadata ? classMetadata['members'] : null;
-    let member: any[] = members ? members[lcProperty] : null;
+    const classMetadata = this.getTypeMetadata(type);
+    const members = classMetadata ? classMetadata['members'] : null;
+    const member: any[] =
+        members && members.hasOwnProperty(lcProperty) ? members[lcProperty] : null;
     return member ? member.some(a => a['__symbolic'] == 'method') : false;
   }
 
