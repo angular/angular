@@ -32,6 +32,7 @@ export class AnimationCompiler {
 var _ANIMATION_FACTORY_ELEMENT_VAR = o.variable('element');
 var _ANIMATION_DEFAULT_STATE_VAR = o.variable('defaultStateStyles');
 var _ANIMATION_FACTORY_VIEW_VAR = o.variable('view');
+var _ANIMATION_FACTORY_VIEW_CONTEXT = _ANIMATION_FACTORY_VIEW_VAR.prop('animationContext');
 var _ANIMATION_FACTORY_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer');
 var _ANIMATION_CURRENT_STATE_VAR = o.variable('currentState');
 var _ANIMATION_NEXT_STATE_VAR = o.variable('nextState');
@@ -186,7 +187,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     context.stateMap.registerState(DEFAULT_STATE, {});
 
     var statements: o.Statement[] = [];
-    statements.push(_ANIMATION_FACTORY_VIEW_VAR
+    statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT
                         .callMethod(
                             'cancelActiveAnimation',
                             [
@@ -263,13 +264,20 @@ class _AnimationBuilder implements AnimationAstVisitor {
                          .toStmt()])])
             .toStmt());
 
-    statements.push(_ANIMATION_FACTORY_VIEW_VAR
+    var transitionParams = o.literalMap([
+      ['toState', _ANIMATION_NEXT_STATE_VAR], ['fromState', _ANIMATION_CURRENT_STATE_VAR],
+      ['totalTime', _ANIMATION_TIME_VAR]
+    ]);
+
+    var transitionEvent = o.importExpr(resolveIdentifier(Identifiers.AnimationTransitionEvent))
+                              .instantiate([transitionParams]);
+
+    statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT
                         .callMethod(
                             'queueAnimation',
                             [
                               _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
-                              _ANIMATION_PLAYER_VAR, _ANIMATION_TIME_VAR,
-                              _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR
+                              _ANIMATION_PLAYER_VAR, transitionEvent
                             ])
                         .toStmt());
 
