@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit, Type} from '@angular/core';
-
 import {LifecycleHooks, reflector} from './private_import_core';
 
 
 export function hasLifecycleHook(hook: LifecycleHooks, token: any): boolean {
-  return reflector.hasLifecycleHook(token, getInterface(hook), getHookName(hook));
+  return reflector.hasLifecycleHook(token, getHookName(hook));
 }
 
 function getHookName(hook: LifecycleHooks): string {
@@ -33,26 +31,5 @@ function getHookName(hook: LifecycleHooks): string {
       return 'ngAfterViewInit';
     case LifecycleHooks.AfterViewChecked:
       return 'ngAfterViewChecked';
-  }
-}
-
-function getInterface(hook: LifecycleHooks): any {
-  switch (hook) {
-    case LifecycleHooks.OnInit:
-      return OnInit;
-    case LifecycleHooks.OnDestroy:
-      return OnDestroy;
-    case LifecycleHooks.DoCheck:
-      return DoCheck;
-    case LifecycleHooks.OnChanges:
-      return OnChanges;
-    case LifecycleHooks.AfterContentInit:
-      return AfterContentInit;
-    case LifecycleHooks.AfterContentChecked:
-      return AfterContentChecked;
-    case LifecycleHooks.AfterViewInit:
-      return AfterViewInit;
-    case LifecycleHooks.AfterViewChecked:
-      return AfterViewChecked;
   }
 }
