@@ -1,3 +1,28 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/angular/angular/compare/2.1.0-rc.0...2.1.0) (2016-10-12)
+
+
+### Bug Fixes
+
+* **benchmarks:** allow ng2_switch benchmark to be used with AoT. ([#12124](https://github.com/angular/angular/issues/12124)) ([de1f44f](https://github.com/angular/angular/commit/de1f44f))
+* **compiler:** allow whitespace as `<ng-content>` content ([#12225](https://github.com/angular/angular/issues/12225)) ([df1718d](https://github.com/angular/angular/commit/df1718d))
+* **compiler:** interpolation expressions report the correct offset ([#12125](https://github.com/angular/angular/issues/12125)) ([d641c36](https://github.com/angular/angular/commit/d641c36))
+* **compiler:** properly shim `:host:before` and `:host(:before)` ([#12171](https://github.com/angular/angular/issues/12171)) ([aa92512](https://github.com/angular/angular/commit/aa92512)), closes [#12165](https://github.com/angular/angular/issues/12165)
+* **compiler:** validate `[@HostBinding](https://github.com/HostBinding)` name ([#12139](https://github.com/angular/angular/issues/12139)) ([13ecc14](https://github.com/angular/angular/commit/13ecc14))
+* **compiler-cli:** don't clone static symbols when simplifying annotation metadata ([#12158](https://github.com/angular/angular/issues/12158)) ([8c477b2](https://github.com/angular/angular/commit/8c477b2))
+* **compiler-cli:** remove peerDependency on [@angular](https://github.com/angular)/platform-server ([#12122](https://github.com/angular/angular/issues/12122)) ([71b7654](https://github.com/angular/angular/commit/71b7654))
+* **compiler-cli:** remove unused parse5 dependency from package.json ([eaaec69](https://github.com/angular/angular/commit/eaaec69))
+* **forms:** allow optional fields with pattern and minlength validators ([#12147](https://github.com/angular/angular/issues/12147)) ([d22eeb7](https://github.com/angular/angular/commit/d22eeb7))
+* **forms:** properly validate blank strings with minlength ([#12091](https://github.com/angular/angular/issues/12091)) ([f50c1da](https://github.com/angular/angular/commit/f50c1da))
+* **http:** fix Headers initialization from Headers and Object ([#12106](https://github.com/angular/angular/issues/12106)) ([f4566f8](https://github.com/angular/angular/commit/f4566f8))
+* **http:** Headers.append should append to the list ([a67c067](https://github.com/angular/angular/commit/a67c067))
+* **platform-browser-dynamic:** mark platformBrowserDynamic as stable API ([#12154](https://github.com/angular/angular/issues/12154)) ([bcef5ef](https://github.com/angular/angular/commit/bcef5ef))
+* **router:** improve error message ([#12102](https://github.com/angular/angular/issues/12102)) ([e06303a](https://github.com/angular/angular/commit/e06303a))
+* **router:** parent resolve should complete before merging resolved data ([1681e4f](https://github.com/angular/angular/commit/1681e4f)), closes [#12032](https://github.com/angular/angular/issues/12032)
+* **router:** wildcards routes should support lazy loading ([40b92dd](https://github.com/angular/angular/commit/40b92dd)), closes [#12024](https://github.com/angular/angular/issues/12024)
+* **upgrade:** allow compilerOptions in bootstrap ([#10575](https://github.com/angular/angular/issues/10575)) ([5effc33](https://github.com/angular/angular/commit/5effc33))
+
+
 <a name="2.1.0-rc.0"></a>
 # [2.1.0-rc.0](https://github.com/angular/angular/compare/2.1.0-beta.0...2.1.0-rc.0) (2016-10-05)
 
@@ -281,7 +306,7 @@ Note: 2.1.0-beta.0 release also contains all the changes present in the 2.0.1 re
 use `Type<any>` in place of `Type`.
 
   We don't expect that any user applications use the `Type` type directly.
-  
+
 * core: Previously inconsistently named APIs SanitizationService and DomSanitizationService were renamed to Sanitizer and DomSanitizer
 
 * core: previously deprecated @Component.directives and @Component.pipes support was removed.
@@ -295,11 +320,11 @@ use `Type<any>` in place of `Type`.
 * core: deprecated ComponentResolver was removed. Please use ComponentFactoryResolver instead.
 
 * core: animations defined using an at-symbol prefix that are not property bound are now invalid.
-  
+
   ```html
   <!-- this is now invalid -->
   <div @flip="flipState"></div>
-  
+
   <!-- change that to -->
   <div [@flip]="flipState"></div>
   ```
@@ -325,7 +350,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
   ```
   {provide: MyClass, useFactory: ...}
   ```
-  
+
 * core: previously deprecated NgZoneError has been removed
 
 * core: Exceptions are no longer part of the public API. We don't expect that anyone should be referring to the Exception types.
@@ -337,7 +362,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
   ```
   ErrorHandler.handleError(error: any): void;
   ```
-  
+
 * core: deprecated DynamicComponentLoader was removed; see deprecation notice for migration instructions.
 
 * core: deprecated SystemJsComponentResolver and SystemJsCmpFactoryResolver have been removed.
@@ -371,13 +396,13 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 * platform-browser-dynamic: `CACHED_TEMPLATE_PROVIDER` is now renamed to `RESOURCE_CACHE_PROVIDER`
 
   Before:
-  
+
   ```js
   import {CACHED_TEMPLATE_PROVIDER} from '@angular/platform-browser-dynamic';
   ```
-  
+
   After:
-  
+
   ```js
   import {RESOURCE_CACHE_PROVIDER} from '@angular/platform-browser-dynamic';
   ```
@@ -395,7 +420,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 * webworkers: web worker platform is now exported via separate packages.
 
   Please use @angular/platform-webworker and @angular/platform-webworker-dynamic
-  
+
 
 
 <a name="2.0.0-rc.5"></a>
