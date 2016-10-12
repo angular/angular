@@ -15,14 +15,13 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 export {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 export {GetterFn, MethodFn, SetterFn} from './types';
 
-
 /**
  * Reflective information about a symbol, including annotations, interfaces, and other metadata.
  */
 export class ReflectionInfo {
   constructor(
       public annotations?: any[], public parameters?: any[][], public factory?: Function,
-      public interfaces?: any[], public propMetadata?: {[key: string]: any[]}) {}
+      public interfaces?: any[], public propMetadata?: {[name: string]: any[]}) {}
 }
 
 /**
@@ -45,8 +44,6 @@ export class Reflector extends ReflectorReader {
 
   updateCapabilities(caps: PlatformReflectionCapabilities) { this.reflectionCapabilities = caps; }
 
-  isReflectionEnabled(): boolean { return this.reflectionCapabilities.isReflectionEnabled(); }
-
   /**
    * Causes `this` reflector to track keys used to access
    * {@link ReflectionInfo} objects.
@@ -64,10 +61,6 @@ export class Reflector extends ReflectorReader {
     }
     const allTypes = MapWrapper.keys(this._injectableInfo);
     return allTypes.filter(key => !this._usedKeys.has(key));
-  }
-
-  registerFunction(func: Function, funcInfo: ReflectionInfo): void {
-    this._injectableInfo.set(func, funcInfo);
   }
 
   registerType(type: Type<any>, typeInfo: ReflectionInfo): void {
@@ -160,6 +153,7 @@ export class Reflector extends ReflectorReader {
   resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
     return this.reflectionCapabilities.resolveIdentifier(name, moduleUrl, runtime);
   }
+
   resolveEnum(identifier: any, name: string): any {
     return this.reflectionCapabilities.resolveEnum(identifier, name);
   }
