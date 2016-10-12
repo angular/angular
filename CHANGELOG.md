@@ -1,10 +1,9 @@
 <a name="2.1.0"></a>
-# [2.1.0](https://github.com/angular/angular/compare/2.1.0-rc.0...2.1.0) (2016-10-12)
+# [2.1.0 incremental-metamorphoses](https://github.com/angular/angular/compare/2.1.0-rc.0...2.1.0) (2016-10-12)
 
 
 ### Bug Fixes
 
-* **benchmarks:** allow ng2_switch benchmark to be used with AoT. ([#12124](https://github.com/angular/angular/issues/12124)) ([de1f44f](https://github.com/angular/angular/commit/de1f44f))
 * **compiler:** allow whitespace as `<ng-content>` content ([#12225](https://github.com/angular/angular/issues/12225)) ([df1718d](https://github.com/angular/angular/commit/df1718d))
 * **compiler:** interpolation expressions report the correct offset ([#12125](https://github.com/angular/angular/issues/12125)) ([d641c36](https://github.com/angular/angular/commit/d641c36))
 * **compiler:** properly shim `:host:before` and `:host(:before)` ([#12171](https://github.com/angular/angular/issues/12171)) ([aa92512](https://github.com/angular/angular/commit/aa92512)), closes [#12165](https://github.com/angular/angular/issues/12165)
@@ -23,6 +22,7 @@
 * **upgrade:** allow compilerOptions in bootstrap ([#10575](https://github.com/angular/angular/issues/10575)) ([5effc33](https://github.com/angular/angular/commit/5effc33))
 
 
+
 <a name="2.1.0-rc.0"></a>
 # [2.1.0-rc.0](https://github.com/angular/angular/compare/2.1.0-beta.0...2.1.0-rc.0) (2016-10-05)
 
@@ -31,6 +31,21 @@
 * **animations:** provide aliases for `:enter` and `:leave` transitions ([#11991](https://github.com/angular/angular/issues/11991)) ([e884f48](https://github.com/angular/angular/commit/e884f48))
 
 Note: 2.1.0-rc.0 release also contains all the changes present in the 2.0.2 release.
+
+
+
+<a name="2.1.0-beta.0"></a>
+# [2.1.0-beta.0](https://github.com/angular/angular/compare/2.0.0...2.1.0-beta.0) (2016-09-23)
+
+### Features
+
+* **router:** add router preloader to optimistically preload routes ([5a84982](https://github.com/angular/angular/commit/5a84982))
+
+
+### Bug Fixes
+* **router:** update the router not to reset router state when updating root component ([#11799](https://github.com/angular/angular/issues/11799)) ([31dce72](https://github.com/angular/angular/commit/31dce72))
+
+Note: 2.1.0-beta.0 release also contains all the changes present in the 2.0.1 release.
 
 
 
@@ -57,22 +72,6 @@ Note: 2.1.0-rc.0 release also contains all the changes present in the 2.0.2 rele
 * **upgrade:** bind optional properties when upgrading from ng1 ([#11411](https://github.com/angular/angular/issues/11411)) ([0851238](https://github.com/angular/angular/commit/0851238)), closes [#10181](https://github.com/angular/angular/issues/10181)
 
 
-
-<a name="2.1.0-beta.0"></a>
-# [2.1.0-beta.0](https://github.com/angular/angular/compare/2.0.0...2.1.0-beta.0) (2016-09-23)
-
-### Features
-
-* **router:** add router preloader to optimistically preload routes ([5a84982](https://github.com/angular/angular/commit/5a84982))
-
-
-### Bug Fixes
-* **router:** update the router not to reset router state when updating root component ([#11799](https://github.com/angular/angular/issues/11799)) ([31dce72](https://github.com/angular/angular/commit/31dce72))
-
-Note: 2.1.0-beta.0 release also contains all the changes present in the 2.0.1 release.
-
-
-
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/angular/angular/compare/2.0.0...2.0.1) (2016-09-23)
 
@@ -93,7 +92,7 @@ Note: 2.1.0-beta.0 release also contains all the changes present in the 2.0.1 re
 
 
 <a name="2.0.0"></a>
-# [2.0.0](https://github.com/angular/angular/compare/2.0.0-rc.7...2.0.0) (2016-09-14)
+# [2.0.0 proprioception-reinforcement](https://github.com/angular/angular/compare/2.0.0-rc.7...2.0.0) (2016-09-14)
 
 
 ### Bug Fixes
