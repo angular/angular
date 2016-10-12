@@ -297,21 +297,20 @@ export function makeDecorator(
 }
 
 function makeMetadataCtor(props: ([string, any] | {[key: string]: any})[]): any {
-  function ctor(...args: any[]) {
+  return function ctor(...args: any[]) {
     props.forEach((prop, i) => {
       const argVal = args[i];
       if (Array.isArray(prop)) {
         // plain parameter
-        this[prop[0]] = !argVal || argVal === undefined ? prop[1] : argVal;
+        this[prop[0]] = argVal === undefined ? prop[1] : argVal;
       } else {
-        for (let propName in prop) {
+        for (const propName in prop) {
           this[propName] =
-              !argVal || argVal[propName] === undefined ? prop[propName] : argVal[propName];
+              argVal && argVal.hasOwnProperty(propName) ? argVal[propName] : prop[propName];
         }
       }
     });
-  }
-  return ctor;
+  };
 }
 
 export function makeParamDecorator(
