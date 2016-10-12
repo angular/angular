@@ -8,8 +8,7 @@
 
 import {Inject} from '@angular/core';
 import {reflector} from '@angular/core/src/reflection/reflection';
-import {Class, makeDecorator} from '@angular/core/src/util/decorators';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
+import {Class, makeDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
 import {global} from '../../src/facade/lang';
 
@@ -22,6 +21,21 @@ export function main() {
   const TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
   const TestDecorator = makeDecorator(
       'TestDecorator', {marker: undefined}, Object, (fn: any) => fn.Terminal = TerminalDecorator);
+
+  describe('Property decorators', () => {
+    // https://github.com/angular/angular/issues/12224
+    it('should work on the "watch" property', () => {
+      const Prop = makePropDecorator('Prop', [['value', undefined]]);
+
+      class TestClass {
+        @Prop('firefox!')
+        watch: any;
+      }
+
+      const p = reflector.propMetadata(TestClass);
+      expect(p['watch']).toEqual([new Prop('firefox!')]);
+    });
+  });
 
   describe('decorators', () => {
     it('should invoke as decorator', () => {
@@ -64,10 +78,11 @@ export function main() {
             constructor: function() {},
             extendWorks: function() { return 'extend ' + this.arg; }
           }),
-          constructor: [String, function(arg: any /** TODO #9100 */) { this.arg = arg; }],
+          constructor: [String, function(arg: any) { this.arg = arg; }],
           methodA: [
-            i0 = new Inject(String), [i1 = Inject(String), Number],
-            function(a: any /** TODO #9100 */, b: any /** TODO #9100 */) {}
+            i0 = new Inject(String),
+            [i1 = Inject(String), Number],
+            function(a: any, b: any) {},
           ],
           works: function() { return this.arg; },
           prototype: 'IGNORE'

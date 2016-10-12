@@ -354,6 +354,7 @@ export function makeParamDecorator(
 export function makePropDecorator(
     name: string, props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
+
   function PropDecoratorFactory(...args: any[]): any {
     if (this instanceof PropDecoratorFactory) {
       metaCtor.apply(this, args);
@@ -361,16 +362,19 @@ export function makePropDecorator(
     }
 
     const decoratorInstance = new (<any>PropDecoratorFactory)(...args);
+
     return function PropDecorator(target: any, name: string) {
       const meta = Reflect.getOwnMetadata('propMetadata', target.constructor) || {};
-      meta[name] = meta[name] || [];
+      meta[name] = meta.hasOwnProperty(name) && meta[name] || [];
       meta[name].unshift(decoratorInstance);
       Reflect.defineMetadata('propMetadata', meta, target.constructor);
     };
   }
+
   if (parentClass) {
     PropDecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
+
   PropDecoratorFactory.prototype.toString = () => `@${name}`;
   (<any>PropDecoratorFactory).annotationCls = PropDecoratorFactory;
   return PropDecoratorFactory;
