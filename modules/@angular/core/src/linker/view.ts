@@ -6,11 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationGroupPlayer} from '../animation/animation_group_player';
-import {AnimationPlayer} from '../animation/animation_player';
-import {queueAnimation} from '../animation/animation_queue';
-import {AnimationTransitionEvent} from '../animation/animation_transition_event';
-import {ViewAnimationMap} from '../animation/view_animation_map';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
@@ -18,6 +13,7 @@ import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 
+import {AnimationViewContext} from './animation_view_context';
 import {DebugContext, StaticNodeDebugInfo} from './debug_context';
 import {AppElement} from './element';
 import {ElementInjector} from './element_injector';
@@ -49,10 +45,7 @@ export abstract class AppView<T> {
   renderer: Renderer;
 
   private _hasExternalHostElement: boolean;
-
-  public animationPlayers = new ViewAnimationMap();
-
-  private _animationListeners = new Map<any, _AnimationOutputHandler[]>();
+  private _animationContext: AnimationViewContext;
 
   public context: T;
 
@@ -68,60 +61,14 @@ export abstract class AppView<T> {
     }
   }
 
+  get animationContext(): AnimationViewContext {
+    if (!this._animationContext) {
+      this._animationContext = new AnimationViewContext();
+    }
+    return this._animationContext;
+  }
+
   get destroyed(): boolean { return this.cdMode === ChangeDetectorStatus.Destroyed; }
-
-  cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false) {
-    if (removeAllAnimations) {
-      this.animationPlayers.findAllPlayersByElement(element).forEach(player => player.destroy());
-    } else {
-      var player = this.animationPlayers.find(element, animationName);
-      if (isPresent(player)) {
-        player.destroy();
-      }
-    }
-  }
-
-  queueAnimation(
-      element: any, animationName: string, player: AnimationPlayer, totalTime: number,
-      fromState: string, toState: string): void {
-    queueAnimation(player);
-    var event = new AnimationTransitionEvent(
-        {'fromState': fromState, 'toState': toState, 'totalTime': totalTime});
-    this.animationPlayers.set(element, animationName, player);
-
-    player.onDone(() => {
-      // TODO: make this into a datastructure for done|start
-      this.triggerAnimationOutput(element, animationName, 'done', event);
-      this.animationPlayers.remove(element, animationName);
-    });
-
-    player.onStart(() => { this.triggerAnimationOutput(element, animationName, 'start', event); });
-  }
-
-  triggerAnimationOutput(
-      element: any, animationName: string, phase: string, event: AnimationTransitionEvent) {
-    var listeners = this._animationListeners.get(element);
-    if (isPresent(listeners) && listeners.length) {
-      for (let i = 0; i < listeners.length; i++) {
-        let listener = listeners[i];
-        // we check for both the name in addition to the phase in the event
-        // that there may be more than one @trigger on the same element
-        if (listener.eventName === animationName && listener.eventPhase === phase) {
-          listener.handler(event);
-          break;
-        }
-      }
-    }
-  }
-
-  registerAnimationOutput(
-      element: any, eventName: string, eventPhase: string, eventHandler: Function): void {
-    var animations = this._animationListeners.get(element);
-    if (!isPresent(animations)) {
-      this._animationListeners.set(element, animations = []);
-    }
-    animations.push(new _AnimationOutputHandler(eventName, eventPhase, eventHandler));
-  }
 
   create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
       AppElement {
@@ -234,11 +181,11 @@ export abstract class AppView<T> {
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
-    if (this.animationPlayers.length == 0) {
-      this.renderer.destroyView(hostElement, this.allNodes);
+    if (this._animationContext) {
+      this._animationContext.onAllActiveAnimationsDone(
+          () => this.renderer.destroyView(hostElement, this.allNodes));
     } else {
-      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
-      player.onDone(() => { this.renderer.destroyView(hostElement, this.allNodes); });
+      this.renderer.destroyView(hostElement, this.allNodes);
     }
   }
 
@@ -254,11 +201,11 @@ export abstract class AppView<T> {
 
   detach(): void {
     this.detachInternal();
-    if (this.animationPlayers.length == 0) {
-      this.renderer.detachView(this.flatRootNodes);
+    if (this._animationContext) {
+      this._animationContext.onAllActiveAnimationsDone(
+          () => this.renderer.detachView(this.flatRootNodes));
     } else {
-      var player = new AnimationGroupPlayer(this.animationPlayers.getAllPlayers());
-      player.onDone(() => { this.renderer.detachView(this.flatRootNodes); });
+      this.renderer.detachView(this.flatRootNodes);
     }
   }
 
@@ -465,8 +412,4 @@ function _findLastRenderNode(node: any): any {
     lastNode = node;
   }
   return lastNode;
-}
-
-class _AnimationOutputHandler {
-  constructor(public eventName: string, public eventPhase: string, public handler: Function) {}
 }

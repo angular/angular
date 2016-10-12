@@ -15,8 +15,6 @@ export class ViewAnimationMap {
   private _map = new Map<any, {[key: string]: AnimationPlayer}>();
   private _allPlayers: AnimationPlayer[] = [];
 
-  get length(): number { return this.getAllPlayers().length; }
-
   find(element: any, animationName: string): AnimationPlayer {
     var playersByAnimation = this._map.get(element);
     if (isPresent(playersByAnimation)) {

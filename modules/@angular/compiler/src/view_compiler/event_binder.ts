@@ -119,9 +119,9 @@ export class CompileEventListener {
         [o.THIS_EXPR.prop(this._methodName).callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR])]);
 
     // tie the property callback method to the view animations map
-    var stmt = o.THIS_EXPR
+    var stmt = o.THIS_EXPR.prop('animationContext')
                    .callMethod(
-                       'registerAnimationOutput',
+                       'registerOutputHandler',
                        [
                          this.compileElement.renderNode, o.literal(this.eventName),
                          o.literal(this.eventPhase), outputListener
