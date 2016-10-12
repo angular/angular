@@ -428,10 +428,8 @@ class TemplateParseVisitor implements html.Visitor {
     let parsedElement: TemplateAst;
 
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
-      if (isPresent(element.children) && element.children.length > 0) {
-        this._reportError(
-            `<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content>`,
-            element.sourceSpan);
+      if (element.children && !element.children.every(_isEmptyTextNode)) {
+        this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
 
       parsedElement = new NgContentAst(
@@ -1200,4 +1198,8 @@ export class PipeCollector extends RecursiveAstVisitor {
 
 function _isAnimationLabel(name: string): boolean {
   return name[0] == '@';
+}
+
+function _isEmptyTextNode(node: html.Node): boolean {
+  return node instanceof html.Text && node.value.trim().length == 0;
 }
