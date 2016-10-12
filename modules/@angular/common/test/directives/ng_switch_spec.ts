@@ -50,25 +50,6 @@ export function main() {
            detectChangesAndExpectText('when b');
          }));
 
-      // TODO(robwormald): deprecate and remove
-      it('should switch amongst when values using switchCase', async(() => {
-           const template = '<div>' +
-               '<ul [ngSwitch]="switchValue">' +
-               '<template ngSwitchCase="a"><li>when a</li></template>' +
-               '<template ngSwitchCase="b"><li>when b</li></template>' +
-               '</ul></div>';
-
-           fixture = createTestComponent(template);
-
-           detectChangesAndExpectText('');
-
-           getComponent().switchValue = 'a';
-           detectChangesAndExpectText('when a');
-
-           getComponent().switchValue = 'b';
-           detectChangesAndExpectText('when b');
-         }));
-
       it('should switch amongst when values with fallback to default', async(() => {
            const template = '<div>' +
                '<ul [ngSwitch]="switchValue">' +
@@ -83,6 +64,9 @@ export function main() {
            detectChangesAndExpectText('when a');
 
            getComponent().switchValue = 'b';
+           detectChangesAndExpectText('when default');
+
+           getComponent().switchValue = 'c';
            detectChangesAndExpectText('when default');
          }));
 

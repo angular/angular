@@ -10,7 +10,7 @@ import {Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/co
 
 import {ListWrapper} from '../facade/collection';
 
-const _CASE_DEFAULT = new Object();
+const _CASE_DEFAULT = {};
 
 export class SwitchView {
   constructor(
@@ -53,8 +53,7 @@ export class SwitchView {
  * root elements.
  *
  * Elements within `NgSwitch` but outside of a `NgSwitchCase` or `NgSwitchDefault` directives will
- * be
- * preserved at the location.
+ * be preserved at the location.
  *
  * The `ngSwitchCase` directive informs the parent `NgSwitch` of which view to display when the
  * expression is evaluated.
@@ -72,18 +71,23 @@ export class NgSwitch {
 
   @Input()
   set ngSwitch(value: any) {
-    // Empty the currently active ViewContainers
-    this._emptyAllActiveViews();
-
-    // Add the ViewContainers matching the value (with a fallback to default)
-    this._useDefault = false;
+    // Set of views to display for this value
     let views = this._valueViews.get(value);
-    if (!views) {
-      this._useDefault = true;
-      views = this._valueViews.get(_CASE_DEFAULT) || null;
-    }
-    this._activateViews(views);
 
+    if (views) {
+      this._useDefault = false;
+    } else {
+      // No view to display for the current value -> default case
+      // Nothing to do if the default case was already active
+      if (this._useDefault) {
+        return;
+      }
+      this._useDefault = true;
+      views = this._valueViews.get(_CASE_DEFAULT);
+    }
+
+    this._emptyAllActiveViews();
+    this._activateViews(views);
     this._switchValue = value;
   }
 
@@ -119,7 +123,7 @@ export class NgSwitch {
     this._activeViews = [];
   }
 
-  private _activateViews(views: SwitchView[]): void {
+  private _activateViews(views?: SwitchView[]): void {
     if (views) {
       for (var i = 0; i < views.length; i++) {
         views[i].create();

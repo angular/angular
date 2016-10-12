@@ -15,6 +15,10 @@ export class TreeComponent {
   data: TreeNode = emptyTree;
 }
 
-@NgModule({imports: [BrowserModule], bootstrap: [TreeComponent], declarations: [TreeComponent]})
+@NgModule({
+  imports: [BrowserModule],
+  bootstrap: [TreeComponent],
+  declarations: [TreeComponent],
+})
 export class AppModule {
 }
