@@ -240,7 +240,7 @@ export function Class(clsDef: ClassDefinition): Type<any> {
 
   for (let key in clsDef) {
     if (key !== 'extends' && key !== 'prototype' && clsDef.hasOwnProperty(key)) {
-      proto[key] = applyParams(<any>clsDef[key], key);
+      proto[key] = applyParams(clsDef[key], key);
     }
   }
 

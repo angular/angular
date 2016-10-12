@@ -17,28 +17,28 @@ class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
 export function main() {
-  var Reflect = global.Reflect;
+  const Reflect = global.Reflect;
 
-  var TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
-  var TestDecorator = makeDecorator(
+  const TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
+  const TestDecorator = makeDecorator(
       'TestDecorator', {marker: undefined}, Object, (fn: any) => fn.Terminal = TerminalDecorator);
 
   describe('decorators', () => {
     it('should invoke as decorator', () => {
       function Type() {}
       TestDecorator({marker: 'WORKS'})(Type);
-      var annotations = Reflect.getMetadata('annotations', Type);
+      const annotations = Reflect.getMetadata('annotations', Type);
       expect(annotations[0].marker).toEqual('WORKS');
     });
 
     it('should invoke as new', () => {
-      var annotation = new (<any>TestDecorator)({marker: 'WORKS'});
+      const annotation = new (<any>TestDecorator)({marker: 'WORKS'});
       expect(annotation instanceof TestDecorator).toEqual(true);
       expect(annotation.marker).toEqual('WORKS');
     });
 
     it('should invoke as chain', () => {
-      var chain: any = TestDecorator({marker: 'WORKS'});
+      let chain: any = TestDecorator({marker: 'WORKS'});
       expect(typeof chain.Terminal).toEqual('function');
       chain = chain.Terminal();
       expect(chain.annotations[0] instanceof TestDecorator).toEqual(true);
@@ -50,15 +50,16 @@ export function main() {
       TestDecorator({marker: 'parent'})(DecoratedParent);
       TestDecorator({marker: 'child'})(DecoratedChild);
 
-      var annotations = Reflect.getOwnMetadata('annotations', DecoratedChild);
+      const annotations = Reflect.getOwnMetadata('annotations', DecoratedChild);
       expect(annotations.length).toBe(1);
       expect(annotations[0].marker).toEqual('child');
     });
 
     describe('Class', () => {
       it('should create a class', () => {
-        var i0: any /** TODO #9100 */, i1: any /** TODO #9100 */;
-        var MyClass = (<any>TestDecorator({marker: 'test-works'})).Class(<any>{
+        let i0: any;
+        let i1: any;
+        const MyClass = (<any>TestDecorator({marker: 'test-works'})).Class(<any>{
           extends: Class(<any>{
             constructor: function() {},
             extendWorks: function() { return 'extend ' + this.arg; }
@@ -71,14 +72,15 @@ export function main() {
           works: function() { return this.arg; },
           prototype: 'IGNORE'
         });
-        var obj: any = new MyClass('WORKS');
+
+        const obj: any = new MyClass('WORKS');
         expect(obj.arg).toEqual('WORKS');
         expect(obj.works()).toEqual('WORKS');
         expect(obj.extendWorks()).toEqual('extend WORKS');
         expect(reflector.parameters(MyClass)).toEqual([[String]]);
         expect(reflector.parameters(obj.methodA)).toEqual([[i0], [i1.annotation, Number]]);
 
-        var proto = (<Function>MyClass).prototype;
+        const proto = (<Function>MyClass).prototype;
         expect(proto.extends).toEqual(undefined);
         expect(proto.prototype).toEqual(undefined);
 
@@ -115,13 +117,13 @@ export function main() {
         });
 
         it('should ensure that only Function|Arrays are supported', () => {
-          expect(() => { Class(<any>{constructor: function() {}, method: 'non_function'}); })
+          expect(() => { Class({constructor: function() {}, method: <any>'non_function'}); })
               .toThrowError(
                   'Only Function or Array is supported in Class definition for key \'method\' is \'non_function\'');
         });
 
         it('should ensure that extends is a Function', () => {
-          expect(() => { (<Function>Class)({extends: 'non_type', constructor: function() {}}); })
+          expect(() => { Class({extends: <any>'non_type', constructor: function() {}}); })
               .toThrowError(
                   'Class definition \'extends\' property must be a constructor function was: non_type');
         });
