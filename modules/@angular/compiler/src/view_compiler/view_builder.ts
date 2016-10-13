@@ -20,6 +20,7 @@ import {createDiTokenExpression} from '../util';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
 import {ChangeDetectorStatusEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
 import {createFlatArray, getViewFactoryName} from './util';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -30,20 +31,11 @@ const NG_CONTAINER_TAG = 'ng-container';
 var parentRenderNodeVar = o.variable('parentRenderNode');
 var rootSelectorVar = o.variable('rootSelector');
 
-export class ViewFactoryDependency {
-  constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
-}
-
-export class ComponentFactoryDependency {
-  constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
-}
-
-
 export function buildView(
     view: CompileView, template: TemplateAst[],
-    targetDependencies: Array<ViewFactoryDependency|ComponentFactoryDependency>): number {
+    targetDependencies:
+        Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>):
+    number {
   var builderVisitor = new ViewBuilderVisitor(view, targetDependencies);
   templateVisitAll(
       builderVisitor, template,
@@ -66,7 +58,8 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
   constructor(
       public view: CompileView,
-      public targetDependencies: Array<ViewFactoryDependency|ComponentFactoryDependency>) {}
+      public targetDependencies:
+          Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
@@ -204,7 +197,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     }
     var compileElement = new CompileElement(
         parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.providers,
-        ast.hasViewContainer, false, ast.references);
+        ast.hasViewContainer, false, ast.references, this.targetDependencies);
     this.view.nodes.push(compileElement);
     var compViewExpr: o.ReadVarExpr = null;
     if (isPresent(component)) {
@@ -212,13 +205,6 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
       this.targetDependencies.push(
           new ViewFactoryDependency(component.type, nestedComponentIdentifier));
-      let entryComponentIdentifiers =
-          component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
-            var id = new CompileIdentifierMetadata({name: entryComponent.name});
-            this.targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
-            return id;
-          });
-      compileElement.createComponentFactoryResolver(entryComponentIdentifiers);
 
       compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
       compileElement.setComponentView(compViewExpr);
@@ -273,7 +259,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var directives = ast.directives.map(directiveAst => directiveAst.directive);
     var compileElement = new CompileElement(
         parent, this.view, nodeIndex, renderNode, ast, null, directives, ast.providers,
-        ast.hasViewContainer, true, ast.references);
+        ast.hasViewContainer, true, ast.references, this.targetDependencies);
     this.view.nodes.push(compileElement);
 
     this.nestedViewCount++;

@@ -116,8 +116,7 @@ export class CompileMetadataResolver {
     return null;
   }
 
-  getDirectiveMetadata(directiveType: Type<any>, throwIfNotFound = true):
-      cpl.CompileDirectiveMetadata {
+  getDirectiveMetadata(directiveType: any, throwIfNotFound = true): cpl.CompileDirectiveMetadata {
     directiveType = resolveForwardRef(directiveType);
     let meta = this._directiveCache.get(directiveType);
     if (!meta) {

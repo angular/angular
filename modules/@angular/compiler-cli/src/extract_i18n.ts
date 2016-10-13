@@ -113,7 +113,7 @@ export class Extractor {
               const url = fileMeta.fileUrl;
               return Promise.all(fileMeta.components.map(compType => {
                 const compMeta = this.metadataResolver.getDirectiveMetadata(<any>compType);
-                const ngModule = analyzedNgModules.ngModuleByComponent.get(compType);
+                const ngModule = analyzedNgModules.ngModuleByDirective.get(compType);
                 if (!ngModule) {
                   throw new Error(
                       `Cannot determine the module for component ${compMeta.type.name}!`);
