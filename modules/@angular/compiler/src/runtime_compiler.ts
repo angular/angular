@@ -7,11 +7,13 @@
  */
 
 import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, SchemaMetadata, Type} from '@angular/core';
+
 import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
+import {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
 import {stringify} from './facade/lang';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
@@ -22,7 +24,8 @@ import {ComponentStillLoadingError} from './private_import_core';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';
-import {ComponentFactoryDependency, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
+
 
 /**
  * An internal module of the Angular compiler that begins with component types,
@@ -37,6 +40,7 @@ import {ComponentFactoryDependency, ViewCompiler, ViewFactoryDependency} from '.
 export class RuntimeCompiler implements Compiler {
   private _compiledTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
+  private _compiledDirectiveWrapperCache = new Map<Type<any>, Type<any>>();
   private _compiledNgModuleCache = new Map<Type<any>, NgModuleFactory<any>>();
   private _animationParser = new AnimationParser();
   private _animationCompiler = new AnimationCompiler();
@@ -45,7 +49,9 @@ export class RuntimeCompiler implements Compiler {
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
       private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _compilerConfig: CompilerConfig) {}
+      private _ngModuleCompiler: NgModuleCompiler,
+      private _directiveWrapperCompiler: DirectiveWrapperCompiler,
+      private _compilerConfig: CompilerConfig) {}
 
   get injector(): Injector { return this._injector; }
 
@@ -80,10 +86,11 @@ export class RuntimeCompiler implements Compiler {
     const moduleMeta = this._metadataResolver.getNgModuleMetadata(moduleType);
     const componentFactories: ComponentFactory<any>[] = [];
     const templates = new Set<CompiledTemplate>();
-    moduleMeta.transitiveModule.modules.forEach((moduleMeta) => {
-      moduleMeta.declaredDirectives.forEach((dirMeta) => {
+    moduleMeta.transitiveModule.modules.forEach((localModuleMeta) => {
+      localModuleMeta.declaredDirectives.forEach((dirMeta) => {
         if (dirMeta.isComponent) {
-          const template = this._createCompiledHostTemplate(dirMeta.type.reference);
+          const template =
+              this._createCompiledHostTemplate(dirMeta.type.reference, localModuleMeta);
           templates.add(template);
           componentFactories.push(template.proxyComponentFactory);
         }
@@ -119,7 +126,7 @@ export class RuntimeCompiler implements Compiler {
             interpretStatements(compileResult.statements, compileResult.ngModuleFactoryVar);
       } else {
         ngModuleFactory = jitStatements(
-            `${moduleMeta.type.name}.ngfactory.js`, compileResult.statements,
+            `/${moduleMeta.type.name}/module.ngfactory.js`, compileResult.statements,
             compileResult.ngModuleFactoryVar);
       }
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
@@ -135,22 +142,32 @@ export class RuntimeCompiler implements Compiler {
     var loadingPromises: Promise<any>[] = [];
 
     const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule);
+    const moduleByDirective = new Map<any, CompileNgModuleMetadata>();
+    ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
+      localModuleMeta.declaredDirectives.forEach((dirMeta) => {
+        moduleByDirective.set(dirMeta.type.reference, localModuleMeta);
+        this._compileDirectiveWrapper(dirMeta, localModuleMeta);
+        if (dirMeta.isComponent) {
+          templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
+        }
+      });
+    });
     ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
       localModuleMeta.declaredDirectives.forEach((dirMeta) => {
         if (dirMeta.isComponent) {
-          templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
           dirMeta.entryComponents.forEach((entryComponentType) => {
-            templates.add(this._createCompiledHostTemplate(entryComponentType.reference));
+            const moduleMeta = moduleByDirective.get(entryComponentType.reference);
+            templates.add(
+                this._createCompiledHostTemplate(entryComponentType.reference, moduleMeta));
           });
-          // TODO: what about entryComponents of entryComponents? maybe skip here and just do the
-          // below?
         }
       });
       localModuleMeta.entryComponents.forEach((entryComponentType) => {
-        templates.add(this._createCompiledHostTemplate(entryComponentType.reference));
-        // TODO: what about entryComponents of entryComponents?
+        const moduleMeta = moduleByDirective.get(entryComponentType.reference);
+        templates.add(this._createCompiledHostTemplate(entryComponentType.reference, moduleMeta));
       });
     });
+
     templates.forEach((template) => {
       if (template.loading) {
         if (isSync) {
@@ -189,14 +206,19 @@ export class RuntimeCompiler implements Compiler {
     this._compiledNgModuleCache.clear();
   }
 
-  private _createCompiledHostTemplate(compType: Type<any>): CompiledTemplate {
+  private _createCompiledHostTemplate(compType: Type<any>, ngModule: CompileNgModuleMetadata):
+      CompiledTemplate {
+    if (!ngModule) {
+      throw new Error(
+          `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
+    }
     var compiledTemplate = this._compiledHostTemplateCache.get(compType);
     if (!compiledTemplate) {
       var compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
       var hostMeta = createHostComponentMeta(compMeta);
       compiledTemplate = new CompiledTemplate(
-          true, compMeta.selector, compMeta.type, [compMeta], [], [],
+          true, compMeta.selector, compMeta.type, ngModule, [compMeta],
           this._templateNormalizer.normalizeDirective(hostMeta));
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
     }
@@ -209,8 +231,7 @@ export class RuntimeCompiler implements Compiler {
     if (!compiledTemplate) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
-          false, compMeta.selector, compMeta.type, ngModule.transitiveModule.directives,
-          ngModule.transitiveModule.pipes, ngModule.schemas,
+          false, compMeta.selector, compMeta.type, ngModule, ngModule.transitiveModule.directives,
           this._templateNormalizer.normalizeDirective(compMeta));
       this._compiledTemplateCache.set(compMeta.type.reference, compiledTemplate);
     }
@@ -221,13 +242,8 @@ export class RuntimeCompiler implements Compiler {
     const compiledTemplate = isHost ? this._compiledHostTemplateCache.get(compType) :
                                       this._compiledTemplateCache.get(compType);
     if (!compiledTemplate) {
-      if (isHost) {
-        throw new Error(
-            `Illegal state: Compiled view for component ${stringify(compType)} does not exist!`);
-      } else {
-        throw new Error(
-            `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
-      }
+      throw new Error(
+          `Illegal state: Compiled view for component ${stringify(compType)} does not exist!`);
     }
     return compiledTemplate;
   }
@@ -239,6 +255,30 @@ export class RuntimeCompiler implements Compiler {
           `Illegal state: CompiledTemplate for ${stringify(compType)} (isHost: ${isHost}) is still loading!`);
     }
     return compiledTemplate;
+  }
+
+  private _assertDirectiveWrapper(dirType: any): Type<any> {
+    const dirWrapper = this._compiledDirectiveWrapperCache.get(dirType);
+    if (!dirWrapper) {
+      throw new Error(
+          `Illegal state: Directive wrapper for ${stringify(dirType)} has not been compiled!`);
+    }
+    return dirWrapper;
+  }
+
+  private _compileDirectiveWrapper(
+      dirMeta: CompileDirectiveMetadata, moduleMeta: CompileNgModuleMetadata): void {
+    const compileResult = this._directiveWrapperCompiler.compile(dirMeta);
+    const statements = compileResult.statements;
+    let directiveWrapperClass: any;
+    if (!this._compilerConfig.useJit) {
+      directiveWrapperClass = interpretStatements(statements, compileResult.dirWrapperClassVar);
+    } else {
+      directiveWrapperClass = jitStatements(
+          `/${moduleMeta.type.name}/${dirMeta.type.name}/wrapper.ngfactory.js`, statements,
+          compileResult.dirWrapperClassVar);
+    }
+    this._compiledDirectiveWrapperCache.set(dirMeta.type.reference, directiveWrapperClass);
   }
 
   private _compileTemplate(template: CompiledTemplate) {
@@ -275,6 +315,9 @@ export class RuntimeCompiler implements Compiler {
         depTemplate = this._assertComponentLoaded(cfd.comp.reference, true);
         cfd.placeholder.reference = depTemplate.proxyComponentFactory;
         cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
+      } else if (dep instanceof DirectiveWrapperDependency) {
+        let dwd = <DirectiveWrapperDependency>dep;
+        dwd.placeholder.reference = this._assertDirectiveWrapper(dwd.dir.reference);
       }
     });
     const statements =
@@ -286,8 +329,8 @@ export class RuntimeCompiler implements Compiler {
       factory = interpretStatements(statements, compileResult.viewFactoryVar);
     } else {
       factory = jitStatements(
-          `${template.compType.name}${template.isHost?'_Host':''}.ngfactory.js`, statements,
-          compileResult.viewFactoryVar);
+          `/${template.ngModule.type.name}/${template.compType.name}/${template.isHost?'host':'component'}.ngfactory.js`,
+          statements, compileResult.viewFactoryVar);
     }
     template.compiled(factory);
   }
@@ -310,7 +353,7 @@ export class RuntimeCompiler implements Compiler {
     if (!this._compilerConfig.useJit) {
       return interpretStatements(result.statements, result.stylesVar);
     } else {
-      return jitStatements(`${result.meta.moduleUrl}.css.js`, result.statements, result.stylesVar);
+      return jitStatements(`/${result.meta.moduleUrl}.css.js`, result.statements, result.stylesVar);
     }
   }
 }
@@ -325,13 +368,17 @@ class CompiledTemplate {
   isCompiledWithDeps = false;
   viewComponentTypes: Type<any>[] = [];
   viewDirectives: CompileDirectiveMetadata[] = [];
+  viewPipes: CompilePipeMetadata[];
+  schemas: SchemaMetadata[];
 
   constructor(
       public isHost: boolean, selector: string, public compType: CompileIdentifierMetadata,
-      viewDirectivesAndComponents: CompileDirectiveMetadata[],
-      public viewPipes: CompilePipeMetadata[], public schemas: SchemaMetadata[],
+      public ngModule: CompileNgModuleMetadata,
+      viewDirectiveAndComponents: CompileDirectiveMetadata[],
       _normalizeResult: SyncAsyncResult<CompileDirectiveMetadata>) {
-    viewDirectivesAndComponents.forEach((dirMeta) => {
+    this.viewPipes = ngModule.transitiveModule.pipes;
+    this.schemas = ngModule.schemas;
+    viewDirectiveAndComponents.forEach((dirMeta) => {
       if (dirMeta.isComponent) {
         this.viewComponentTypes.push(dirMeta.type.reference);
       } else {
