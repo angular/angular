@@ -11,6 +11,7 @@ import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, In
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
+import {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
 import {Lexer} from './expression_parser/lexer';
 import {Parser} from './expression_parser/parser';
 import * as i18n from './i18n/index';
@@ -64,6 +65,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   StyleCompiler,
   ViewCompiler,
   NgModuleCompiler,
+  DirectiveWrapperCompiler,
   {provide: CompilerConfig, useValue: new CompilerConfig()},
   RuntimeCompiler,
   {provide: Compiler, useExisting: RuntimeCompiler},

@@ -7,7 +7,7 @@
  */
 
 
-import {CompileDirectiveMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -30,15 +30,28 @@ export function getPropertyInView(
       throw new Error(
           `Internal error: Could not calculate a property in a parent view: ${property}`);
     }
-    if (property instanceof o.ReadPropExpr) {
-      let readPropExpr: o.ReadPropExpr = property;
+    return property.visitExpression(new _ReplaceViewTransformer(viewProp, definedView), null);
+  }
+}
+
+class _ReplaceViewTransformer extends o.ExpressionTransformer {
+  constructor(private _viewExpr: o.Expression, private _view: CompileView) { super(); }
+  private _isThis(expr: o.Expression): boolean {
+    return expr instanceof o.ReadVarExpr && expr.builtin === o.BuiltinVar.This;
+  }
+
+  visitReadVarExpr(ast: o.ReadVarExpr, context: any): any {
+    return this._isThis(ast) ? this._viewExpr : ast;
+  }
+  visitReadPropExpr(ast: o.ReadPropExpr, context: any): any {
+    if (this._isThis(ast.receiver)) {
       // Note: Don't cast for members of the AppView base class...
-      if (definedView.fields.some((field) => field.name == readPropExpr.name) ||
-          definedView.getters.some((field) => field.name == readPropExpr.name)) {
-        viewProp = viewProp.cast(definedView.classType);
+      if (this._view.fields.some((field) => field.name == ast.name) ||
+          this._view.getters.some((field) => field.name == ast.name)) {
+        return this._viewExpr.cast(this._view.classType).prop(ast.name);
       }
     }
-    return o.replaceVarInExpression(o.THIS_EXPR.name, viewProp, property);
+    return super.visitReadPropExpr(ast, context);
   }
 }
 
