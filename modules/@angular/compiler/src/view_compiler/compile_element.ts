@@ -8,6 +8,7 @@
 
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {ListWrapper, MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
@@ -19,7 +20,8 @@ import {createDiTokenExpression} from '../util';
 import {CompileMethod} from './compile_method';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView} from './compile_view';
-import {InjectMethodVars} from './constants';
+import {InjectMethodVars, ViewProperties} from './constants';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
 
 export class CompileNode {
@@ -34,7 +36,7 @@ export class CompileNode {
 
 export class CompileElement extends CompileNode {
   static createNull(): CompileElement {
-    return new CompileElement(null, null, null, null, null, null, [], [], false, false, []);
+    return new CompileElement(null, null, null, null, null, null, [], [], false, false, [], []);
   }
 
   private _compViewExpr: o.Expression = null;
@@ -42,6 +44,7 @@ export class CompileElement extends CompileNode {
   public elementRef: o.Expression;
   public injector: o.Expression;
   public instances = new Map<any, o.Expression>();
+  public directiveWrapperInstance = new Map<any, o.Expression>();
   private _resolvedProviders: Map<any, ProviderAst>;
 
   private _queryCount = 0;
@@ -57,7 +60,9 @@ export class CompileElement extends CompileNode {
       sourceAst: TemplateAst, public component: CompileDirectiveMetadata,
       private _directives: CompileDirectiveMetadata[],
       private _resolvedProvidersArray: ProviderAst[], public hasViewContainer: boolean,
-      public hasEmbeddedView: boolean, references: ReferenceAst[]) {
+      public hasEmbeddedView: boolean, references: ReferenceAst[],
+      private _targetDependencies:
+          Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
     super(parent, view, nodeIndex, renderNode, sourceAst);
     this.referenceTokens = {};
     references.forEach(ref => this.referenceTokens[ref.name] = ref.value);
@@ -71,6 +76,9 @@ export class CompileElement extends CompileNode {
         resolveIdentifierToken(Identifiers.Renderer).reference, o.THIS_EXPR.prop('renderer'));
     if (this.hasViewContainer || this.hasEmbeddedView || isPresent(this.component)) {
       this._createAppElement();
+    }
+    if (this.component) {
+      this._createComponentFactoryResolver();
     }
   }
 
@@ -92,7 +100,13 @@ export class CompileElement extends CompileNode {
     this.instances.set(resolveIdentifierToken(Identifiers.AppElement).reference, this.appElement);
   }
 
-  public createComponentFactoryResolver(entryComponents: CompileIdentifierMetadata[]) {
+  private _createComponentFactoryResolver() {
+    let entryComponents =
+        this.component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
+          var id = new CompileIdentifierMetadata({name: entryComponent.name});
+          this._targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
+          return id;
+        });
     if (!entryComponents || entryComponents.length === 0) {
       return;
     }
@@ -155,6 +169,8 @@ export class CompileElement extends CompileNode {
     // create all the provider instances, some in the view constructor,
     // some as getters. We rely on the fact that they are already sorted topologically.
     MapWrapper.values(this._resolvedProviders).forEach((resolvedProvider) => {
+      const isDirectiveWrapper = resolvedProvider.providerType === ProviderAstType.Component ||
+          resolvedProvider.providerType === ProviderAstType.Directive;
       var providerValueExpressions = resolvedProvider.providers.map((provider) => {
         if (isPresent(provider.useExisting)) {
           return this._getDependency(
@@ -167,8 +183,17 @@ export class CompileElement extends CompileNode {
         } else if (isPresent(provider.useClass)) {
           var deps = provider.deps || provider.useClass.diDeps;
           var depsExpr = deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
-          return o.importExpr(provider.useClass)
-              .instantiate(depsExpr, o.importType(provider.useClass));
+          if (isDirectiveWrapper) {
+            const directiveWrapperIdentifier = new CompileIdentifierMetadata(
+                {name: DirectiveWrapperCompiler.dirWrapperClassName(provider.useClass)});
+            this._targetDependencies.push(
+                new DirectiveWrapperDependency(provider.useClass, directiveWrapperIdentifier));
+            return o.importExpr(directiveWrapperIdentifier)
+                .instantiate(depsExpr, o.importType(directiveWrapperIdentifier));
+          } else {
+            return o.importExpr(provider.useClass)
+                .instantiate(depsExpr, o.importType(provider.useClass));
+          }
         } else {
           return convertValueToOutputAst(provider.useValue);
         }
@@ -177,7 +202,12 @@ export class CompileElement extends CompileNode {
       var instance = createProviderProperty(
           propName, resolvedProvider, providerValueExpressions, resolvedProvider.multiProvider,
           resolvedProvider.eager, this);
-      this.instances.set(resolvedProvider.token.reference, instance);
+      if (isDirectiveWrapper) {
+        this.directiveWrapperInstance.set(resolvedProvider.token.reference, instance);
+        this.instances.set(resolvedProvider.token.reference, instance.prop('context'));
+      } else {
+        this.instances.set(resolvedProvider.token.reference, instance);
+      }
     });
 
     for (var i = 0; i < this._directives.length; i++) {

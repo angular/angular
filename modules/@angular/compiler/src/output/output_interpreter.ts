@@ -81,7 +81,7 @@ function createDynamicClass(
     _executeFunctionStatements(
         ctorParamNames, args, _classStmt.constructorMethod.body, instanceCtx, _visitor);
   };
-  var superClass = _classStmt.parent.visitExpression(_visitor, _ctx);
+  var superClass = _classStmt.parent ? _classStmt.parent.visitExpression(_visitor, _ctx) : Object;
   ctor.prototype = Object.create(superClass.prototype, propertyDescriptors);
   return ctor;
 }

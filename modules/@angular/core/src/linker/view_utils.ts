@@ -7,13 +7,14 @@
  */
 
 import {APP_ID} from '../application_tokens';
-import {devModeEqual} from '../change_detection/change_detection';
+import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
 import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
+
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 
@@ -351,4 +352,28 @@ export function pureProxy10<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(
     }
     return result;
   };
+}
+
+export function setBindingDebugInfoForChanges(
+    renderer: Renderer, el: any, changes: {[key: string]: SimpleChange}) {
+  Object.keys(changes).forEach((propName) => {
+    setBindingDebugInfo(renderer, el, propName, changes[propName].currentValue);
+  });
+}
+
+export function setBindingDebugInfo(renderer: Renderer, el: any, propName: string, value: any) {
+  try {
+    renderer.setBindingDebugInfo(
+        el, `ng-reflect-${camelCaseToDashCase(propName)}`, value ? value.toString() : null);
+  } catch (e) {
+    renderer.setBindingDebugInfo(
+        el, `ng-reflect-${camelCaseToDashCase(propName)}`,
+        '[ERROR] Exception while trying to serialize the value');
+  }
+}
+
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+
+function camelCaseToDashCase(input: string): string {
+  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
 }

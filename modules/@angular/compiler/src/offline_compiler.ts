@@ -12,6 +12,7 @@ import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
+import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from './directive_wrapper_compiler';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';
@@ -19,7 +20,7 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
-import {ComponentFactoryDependency, ViewCompileResult, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewCompileResult, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
 
 export class SourceModule {
   constructor(public moduleUrl: string, public source: string) {}
@@ -27,25 +28,23 @@ export class SourceModule {
 
 export class NgModulesSummary {
   constructor(
-      public ngModuleByComponent: Map<StaticSymbol, CompileNgModuleMetadata>,
+      public ngModuleByDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       public ngModules: CompileNgModuleMetadata[]) {}
 }
 
 export function analyzeModules(
     ngModules: StaticSymbol[], metadataResolver: CompileMetadataResolver) {
-  const ngModuleByComponent = new Map<StaticSymbol, CompileNgModuleMetadata>();
+  const ngModuleByDirective = new Map<StaticSymbol, CompileNgModuleMetadata>();
   const modules: CompileNgModuleMetadata[] = [];
 
   ngModules.forEach((ngModule) => {
     const ngModuleMeta = metadataResolver.getNgModuleMetadata(<any>ngModule);
     modules.push(ngModuleMeta);
     ngModuleMeta.declaredDirectives.forEach((dirMeta: CompileDirectiveMetadata) => {
-      if (dirMeta.isComponent) {
-        ngModuleByComponent.set(dirMeta.type.reference, ngModuleMeta);
-      }
+      ngModuleByDirective.set(dirMeta.type.reference, ngModuleMeta);
     });
   });
-  return new NgModulesSummary(ngModuleByComponent, modules);
+  return new NgModulesSummary(ngModuleByDirective, modules);
 }
 
 export class OfflineCompiler {
@@ -56,6 +55,7 @@ export class OfflineCompiler {
       private _metadataResolver: CompileMetadataResolver,
       private _directiveNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
+      private _dirWrapperCompiler: DirectiveWrapperCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
       private _localeId: string, private _translationFormat: string) {}
 
@@ -69,7 +69,7 @@ export class OfflineCompiler {
   }
 
   compile(
-      moduleUrl: string, ngModulesSummary: NgModulesSummary, components: StaticSymbol[],
+      moduleUrl: string, ngModulesSummary: NgModulesSummary, directives: StaticSymbol[],
       ngModules: StaticSymbol[]): Promise<SourceModule[]> {
     const fileSuffix = _splitTypescriptSuffix(moduleUrl)[1];
     const statements: o.Statement[] = [];
@@ -80,11 +80,18 @@ export class OfflineCompiler {
     exportedVars.push(
         ...ngModules.map((ngModuleType) => this._compileModule(ngModuleType, statements)));
 
+    // compile directive wrappers
+    exportedVars.push(...directives.map(
+        (directiveType) => this._compileDirectiveWrapper(directiveType, statements)));
+
     // compile components
     return Promise
-        .all(components.map((compType) => {
-          const compMeta = this._metadataResolver.getDirectiveMetadata(<any>compType);
-          const ngModule = ngModulesSummary.ngModuleByComponent.get(compType);
+        .all(directives.map((dirType) => {
+          const compMeta = this._metadataResolver.getDirectiveMetadata(<any>dirType);
+          if (!compMeta.isComponent) {
+            return Promise.resolve(null);
+          }
+          const ngModule = ngModulesSummary.ngModuleByDirective.get(dirType);
           if (!ngModule) {
             throw new Error(`Cannot determine the module for component ${compMeta.type.name}!`);
           }
@@ -146,6 +153,15 @@ export class OfflineCompiler {
 
     targetStatements.push(...appCompileResult.statements);
     return appCompileResult.ngModuleFactoryVar;
+  }
+
+  private _compileDirectiveWrapper(directiveType: StaticSymbol, targetStatements: o.Statement[]):
+      string {
+    const dirMeta = this._metadataResolver.getDirectiveMetadata(directiveType);
+    const dirCompileResult = this._dirWrapperCompiler.compile(dirMeta);
+
+    targetStatements.push(...dirCompileResult.statements);
+    return dirCompileResult.dirWrapperClassVar;
   }
 
   private _compileComponentFactory(
@@ -217,6 +233,9 @@ function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[]
       const cfd = <ComponentFactoryDependency>dep;
       cfd.placeholder.name = _componentFactoryName(cfd.comp);
       cfd.placeholder.moduleUrl = _ngfactoryModuleUrl(cfd.comp.moduleUrl);
+    } else if (dep instanceof DirectiveWrapperDependency) {
+      const dwd = <DirectiveWrapperDependency>dep;
+      dwd.placeholder.moduleUrl = _ngfactoryModuleUrl(dwd.dir.moduleUrl);
     }
   });
   return compileResult.statements;
@@ -231,8 +250,8 @@ function _resolveStyleStatements(
   return compileResult.statements;
 }
 
-function _ngfactoryModuleUrl(compUrl: string): string {
-  const urlWithSuffix = _splitTypescriptSuffix(compUrl);
+function _ngfactoryModuleUrl(dirUrl: string): string {
+  const urlWithSuffix = _splitTypescriptSuffix(dirUrl);
   return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
 }
 

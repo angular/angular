@@ -44,6 +44,7 @@ export * from './src/metadata_resolver';
 export * from './src/ml_parser/html_parser';
 export * from './src/ml_parser/interpolation_config';
 export {NgModuleCompiler} from './src/ng_module_compiler';
+export {DirectiveWrapperCompiler} from './src/directive_wrapper_compiler';
 export * from './src/output/path_util';
 export * from './src/output/ts_emitter';
 export * from './src/parse_util';
