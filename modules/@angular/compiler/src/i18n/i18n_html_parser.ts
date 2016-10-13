@@ -14,6 +14,7 @@ import {mergeTranslations} from './extractor_merger';
 import {MessageBundle} from './message_bundle';
 import {Serializer} from './serializers/serializer';
 import {Xliff} from './serializers/xliff';
+import {Xliff2} from './serializers/xliff2';
 import {Xmb} from './serializers/xmb';
 import {Xtb} from './serializers/xtb';
 import {TranslationBundle} from './translation_bundle';
@@ -63,6 +64,8 @@ export class I18NHtmlParser implements HtmlParser {
         return new Xmb();
       case 'xtb':
         return new Xtb(this._htmlParser, interpolationConfig);
+      case 'xliff2':
+        return new Xliff2(this._htmlParser, interpolationConfig);
       case 'xliff':
       case 'xlf':
       default:
