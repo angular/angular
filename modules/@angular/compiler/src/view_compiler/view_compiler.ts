@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {AnimationCompiler, AnimationEntryCompileResult} from '../animation/animation_compiler';
+import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import * as o from '../output/output_ast';
@@ -29,7 +29,6 @@ export class ViewCompileResult {
 
 @Injectable()
 export class ViewCompiler {
-  private _animationCompiler = new AnimationCompiler();
   constructor(private _genConfig: CompilerConfig) {}
 
   compileComponent(
