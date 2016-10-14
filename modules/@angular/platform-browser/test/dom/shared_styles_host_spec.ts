@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('DomSharedStylesHost', () => {
-    var doc: any /** TODO #9100 */;
+    var doc: HTMLDocument;
     var ssh: DomSharedStylesHost;
     var someHost: Element;
     beforeEach(() => {
