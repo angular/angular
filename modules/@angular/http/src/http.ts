@@ -21,6 +21,22 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
   return backend.createConnection(request).response;
 }
 
+function objectAssign(out: any, objA: any, objB: any) {
+  out = out || {};
+
+  var objects = [objA, objB];
+
+  for (var i = 0; i < objects.length; i++) {
+    if (!objects[i]) continue;
+
+    for (var key in objects[i]) {
+      if (objects[i].hasOwnProperty(key)) out[key] = objects[i][key];
+    }
+  }
+
+  return out;
+};
+
 function mergeOptions(
     defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs, method: RequestMethod,
     url: string): RequestOptions {
@@ -141,20 +157,28 @@ export class Http {
    * Performs a request with `post` http method.
    */
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    var mergedOptions = this._defaultOptions.merge(new RequestOptions({body: body}));
+
+    if (isPresent(options)) {
+      options.body = objectAssign({}, body, isPresent(options) ? options.body : {});
+    }
+
     return httpRequest(
-        this._backend, new Request(mergeOptions(
-                           this._defaultOptions.merge(new RequestOptions({body: body})), options,
-                           RequestMethod.Post, url)));
+        this._backend, new Request(mergeOptions(mergedOptions, options, RequestMethod.Post, url)));
   }
 
   /**
    * Performs a request with `put` http method.
    */
   put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    var mergedOptions = this._defaultOptions.merge(new RequestOptions({body: body}));
+
+    if (isPresent(options)) {
+      options.body = objectAssign({}, body, isPresent(options) ? options.body : {});
+    }
+
     return httpRequest(
-        this._backend, new Request(mergeOptions(
-                           this._defaultOptions.merge(new RequestOptions({body: body})), options,
-                           RequestMethod.Put, url)));
+        this._backend, new Request(mergeOptions(mergedOptions, options, RequestMethod.Put, url)));
   }
 
   /**
@@ -170,10 +194,14 @@ export class Http {
    * Performs a request with `patch` http method.
    */
   patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    var mergedOptions = this._defaultOptions.merge(new RequestOptions({body: body}));
+
+    if (isPresent(options)) {
+      options.body = objectAssign({}, body, isPresent(options) ? options.body : {});
+    }
+
     return httpRequest(
-        this._backend, new Request(mergeOptions(
-                           this._defaultOptions.merge(new RequestOptions({body: body})), options,
-                           RequestMethod.Patch, url)));
+        this._backend, new Request(mergeOptions(mergedOptions, options, RequestMethod.Patch, url)));
   }
 
   /**
