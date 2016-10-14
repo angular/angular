@@ -12,6 +12,7 @@ import {ParseTreeResult} from '../ml_parser/parser';
 
 import {mergeTranslations} from './extractor_merger';
 import {MessageBundle} from './message_bundle';
+import {Gettext} from './serializers/gettext';
 import {Serializer} from './serializers/serializer';
 import {Xliff} from './serializers/xliff';
 import {Xmb} from './serializers/xmb';
@@ -59,6 +60,10 @@ export class I18NHtmlParser implements HtmlParser {
     const format = (this._translationsFormat || 'xlf').toLowerCase();
 
     switch (format) {
+      case 'gettext':
+      case 'pot':
+      case 'po':
+        return new Gettext(this._htmlParser, interpolationConfig);
       case 'xmb':
         return new Xmb();
       case 'xtb':

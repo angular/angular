@@ -40,6 +40,12 @@ function extract(
     const format = (cliOptions.i18nFormat || 'xlf').toLowerCase();
 
     switch (format) {
+      case 'gettext':
+      case 'pot':
+      case 'po':
+        ext = 'pot';
+        serializer = new compiler.Gettext(htmlParser, compiler.DEFAULT_INTERPOLATION_CONFIG);
+        break;
       case 'xmb':
         ext = 'xmb';
         serializer = new compiler.Xmb();

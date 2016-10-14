@@ -58,6 +58,23 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 </xliff>
 `;
 
+const EXPECTED_GETTEXT = `msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Transfer-Encoding: 8bit\\n"
+"Project-Id-Version: \\n"
+
+#. desc
+#: 76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4
+msgctxt "meaning"
+msgid "translate me"
+msgstr ""
+
+#: 65cc4ab3b4c438e07c89be2b677d08369fb62da2
+msgid "Welcome"
+msgstr ""
+`;
+
 describe('template i18n extraction output', () => {
   const outDir = '';
 
@@ -73,6 +90,13 @@ describe('template i18n extraction output', () => {
     expect(fs.existsSync(xlfOutput)).toBeTruthy();
     const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
     expect(xlf).toEqual(EXPECTED_XLIFF);
+  });
+
+  it('should extract i18n messages as gettext', () => {
+    const potOutput = path.join(outDir, 'messages.pot');
+    expect(fs.existsSync(potOutput)).toBeTruthy();
+    const pot = fs.readFileSync(potOutput, {encoding: 'utf-8'});
+    expect(pot).toEqual(EXPECTED_GETTEXT);
   });
 
 });
