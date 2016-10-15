@@ -11,14 +11,14 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
  *
- * If the expression assigned to `ngIf` evaluates to a false value then the element
+ * If the expression assigned to `ngIf` evaluates to a falsy value then the element
  * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
  *
  * ### Example ([live demo](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)):
  *
  * ```
  * <div *ngIf="errorCount > 0" class="error">
- *   <!-- Error message displayed when the errorCount property on the current context is greater
+ *   <!-- Error message displayed when the errorCount property in the current context is greater
  * than 0. -->
  *   {{errorCount}} errors detected
  * </div>
