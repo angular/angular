@@ -7,6 +7,7 @@
  */
 
 export {BrowserModule, platformBrowser} from './browser';
+export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {AnimationDriver} from './dom/animation_driver';
