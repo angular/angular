@@ -1552,6 +1552,24 @@ export function main() {
         expect(form.valid).toEqual(false);
       });
 
+      it('should merge sync validators defined in the model with existing ones', () => {
+        const fixture = TestBed.createComponent(FormGroupComp);
+        const login = new FormControl('login', Validators.required);
+        const form = new FormGroup({login});
+        login.addValidators(expectedValueValidator('login'));
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
+        expect(form.valid).toEqual(true);
+
+        const input = fixture.debugElement.query(By.css('input'));
+        input.nativeElement.value = '';
+        dispatchEvent(input.nativeElement, 'input');
+
+        expect(form.valid).toEqual(false);
+        expect(form.hasError('required', ['login'])).toEqual(true);
+        expect(form.hasError('expectedValue', ['login'])).toEqual(true);
+      });
+
       it('should use async validators defined in the model', fakeAsync(() => {
            const fixture = TestBed.createComponent(FormGroupComp);
            const control =
@@ -1579,10 +1597,33 @@ export function main() {
            expect(form.valid).toEqual(true);
          }));
 
+      it('should merge async validators defined in the model with existing ones', fakeAsync(() => {
+           const fixture = TestBed.createComponent(FormGroupComp);
+           const login =
+               new FormControl('login', Validators.required, uniqLoginAsyncValidator('login'));
+           const form = new FormGroup({login});
+           login.addAsyncValidators(expectedValueAsyncValidator('login'));
+           fixture.componentInstance.form = form;
+           fixture.detectChanges();
+           tick();
+
+           expect(form.valid).toEqual(true);
+
+           const input = fixture.debugElement.query(By.css('input'));
+           input.nativeElement.value = 'wrong value';
+           dispatchEvent(input.nativeElement, 'input');
+
+           expect(form.pending).toEqual(true);
+           tick();
+
+           expect(form.valid).toEqual(false);
+           expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
+           expect(form.hasError('expectedValueAsync', ['login'])).toEqual(true);
+         }));
+
     });
 
     describe('errors', () => {
-
       it('should throw if a form isn\'t passed into formGroup', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
 
@@ -1826,11 +1867,27 @@ class MyInput implements ControlValueAccessor {
   dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
 }
 
+function expectedValueValidator(expectedValue: string) {
+  return (c: AbstractControl) => {
+    return (c.value === expectedValue) ? null : {'expectedValue': true};
+  };
+}
+
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: AbstractControl) => {
-    var resolve: (result: any) => void;
-    var promise = new Promise(res => { resolve = res; });
-    var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    let resolve: (result: any) => void;
+    const promise = new Promise(res => { resolve = res; });
+    let res = (c.value === expectedValue) ? null : {'uniqLogin': true};
+    resolve(res);
+    return promise;
+  };
+}
+
+function expectedValueAsyncValidator(expectedValue: string) {
+  return (c: AbstractControl) => {
+    let resolve: (result: any) => void;
+    const promise = new Promise(res => { resolve = res; });
+    let res = (c.value === expectedValue) ? null : {'expectedValueAsync': true};
     resolve(res);
     return promise;
   };

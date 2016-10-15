@@ -21,6 +21,8 @@ export declare abstract class AbstractControl {
     value: any;
     valueChanges: Observable<any>;
     constructor(validator: ValidatorFn, asyncValidator: AsyncValidatorFn);
+    addAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[]): void;
+    addValidators(newValidator: ValidatorFn | ValidatorFn[]): void;
     clearAsyncValidators(): void;
     clearValidators(): void;
     disable({onlySelf, emitEvent}?: {
