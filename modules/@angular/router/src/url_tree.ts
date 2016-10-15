@@ -15,10 +15,17 @@ export function createEmptyUrlTree() {
 
 export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
   if (exact) {
-    return equalSegmentGroups(container.root, containee.root);
+    return equalQueryParams(container.queryParams, containee.queryParams) &&
+        equalSegmentGroups(container.root, containee.root);
   } else {
-    return containsSegmentGroup(container.root, containee.root);
+    return containsQueryParams(container.queryParams, containee.queryParams) &&
+        containsSegmentGroup(container.root, containee.root);
   }
+}
+
+function equalQueryParams(
+    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+  return shallowEqual(container, containee);
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -29,6 +36,12 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
     if (!equalSegmentGroups(container.children[c], containee.children[c])) return false;
   }
   return true;
+}
+
+function containsQueryParams(
+    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+  return Object.keys(containee) <= Object.keys(container) &&
+      Object.keys(containee).every(key => containee[key] === container[key]);
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
