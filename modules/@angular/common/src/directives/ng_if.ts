@@ -34,7 +34,7 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
  */
 @Directive({selector: '[ngIf]'})
 export class NgIf {
-  private _hasView: boolean = false;
+  private _hasView = false;
 
   constructor(private _viewContainer: ViewContainerRef, private _template: TemplateRef<Object>) {}
 
