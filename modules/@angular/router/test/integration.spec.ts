@@ -467,6 +467,18 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
      })));
 
+  it('should ignore null and undefined query params',
+     fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
+
+       router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined}});
+       advance(fixture);
+       const cmp = fixture.debugElement.children[1].componentInstance;
+       expect(cmp.recordedParams).toEqual([{name: '1'}]);
+     })));
+
   it('should push params only when they change', fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
@@ -2416,6 +2428,15 @@ class QueryParamsAndFragmentCmp {
   }
 }
 
+@Component({selector: 'empty-query-cmp', template: ``})
+class EmptyQueryParamsCmp {
+  recordedParams: Params[] = [];
+
+  constructor(route: ActivatedRoute) {
+    route.queryParams.forEach(_ => this.recordedParams.push(_));
+  }
+}
+
 @Component({selector: 'route-cmp', template: `route`})
 class RouteCmp {
   constructor(public route: ActivatedRoute) {}
@@ -2509,7 +2530,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RouteCmp,
     RootCmp,
     RelativeLinkInIfCmp,
-    RootCmpWithTwoOutlets
+    RootCmpWithTwoOutlets,
+    EmptyQueryParamsCmp
   ],
 
 
@@ -2534,7 +2556,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RouteCmp,
     RootCmp,
     RelativeLinkInIfCmp,
-    RootCmpWithTwoOutlets
+    RootCmpWithTwoOutlets,
+    EmptyQueryParamsCmp
   ],
 
 
@@ -2560,7 +2583,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RouteCmp,
     RootCmp,
     RelativeLinkInIfCmp,
-    RootCmpWithTwoOutlets
+    RootCmpWithTwoOutlets,
+    EmptyQueryParamsCmp
   ]
 })
 class TestModule {

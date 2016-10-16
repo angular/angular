@@ -524,6 +524,9 @@ export class Router {
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
+    if (typeof extras.queryParams === 'object' && extras.queryParams !== null) {
+      extras.queryParams = this.removeEmptyProps(extras.queryParams);
+    }
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
@@ -547,6 +550,16 @@ export class Router {
       const urlTree = this.urlSerializer.parse(url);
       return containsTree(this.currentUrlTree, urlTree, exact);
     }
+  }
+
+  private removeEmptyProps(params: Params): Params {
+    return Object.keys(params).reduce((result: Params, key: string) => {
+      const value: any = params[key];
+      if (value !== null && value !== undefined) {
+        result[key] = value;
+      }
+      return result;
+    }, {});
   }
 
   private processNavigations(): void {
