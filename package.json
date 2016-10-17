@@ -20,7 +20,7 @@
   "version": "2.0.0-alpha.9-3",
   "license": "MIT",
   "engines": {
-    "node": ">= 4.2.1 < 5"
+    "node": ">= 5.4.1 < 7"
   },
   "dependencies": {
     "@angular/common": "^2.0.0",
