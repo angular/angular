@@ -36,8 +36,8 @@ export class ViewUtils {
       templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
       styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
     return new RenderComponentType(
-        `${this._appId}-${ViewUtils._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles,
-        animations);
+        `${this._appId}-${ViewUtils._nextCompTypeId++}`, templateUrl, slotCount, encapsulation,
+      styles, animations);
   }
 
   /** @internal */
