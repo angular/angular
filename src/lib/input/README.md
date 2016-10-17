@@ -86,7 +86,25 @@ The divider (line under the `<md-input>` content) color can be changed by using 
 
 You can label the `<md-input>` as you would a regular `<input>`.
 
+## Focus
 
+You can put the focus on an input component using the `focus()` method.
+
+### Example
+
+```html
+<md-input #nameInput placeholder="name"></md-input>
+```
+
+```ts
+export class MyComponent implements OnInit {
+  @ViewChild('nameInput') nameInput: MdInput;
+
+  ngOnInit() {
+    this.nameInput.focus();
+  }
+}
+```
 
 ## Full Forms
 
