@@ -77,16 +77,30 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   invoke(el: Node, methodName: string, args: any[]): any { (<any>el)[methodName](...args); }
 
   // TODO(tbosch): move this into a separate environment class once we have it
-  logError(error: string) { (window.console.error || window.console.log)(error); }
-
-  log(error: string) { window.console.log(error); }
-
-  logGroup(error: string) {
-    window.console.group && window.console.group(error);
-    this.logError(error);
+  logError(error: string): void {
+    if (window.console) {
+      (window.console.error || window.console.log)(error);
+    }
   }
 
-  logGroupEnd() { window.console.groupEnd && window.console.groupEnd(); }
+  log(error: string): void {
+    if (window.console) {
+      window.console.log && window.console.log(error);
+    }
+  }
+
+  logGroup(error: string): void {
+    if (window.console) {
+      window.console.group && window.console.group(error);
+      this.logError(error);
+    }
+  }
+
+  logGroupEnd(): void {
+    if (window.console) {
+      window.console.groupEnd && window.console.groupEnd();
+    }
+  }
 
   get attrToPropMap(): any { return _attrToPropMap; }
 
