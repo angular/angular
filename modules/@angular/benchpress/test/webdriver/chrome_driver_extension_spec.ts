@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {Json, isBlank} from '../../src/facade/lang';
+import {isBlank} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -398,8 +398,8 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (type === 'performance') {
       return Promise.resolve(this._events.map(
           (event) => ({
-            'message':
-                Json.stringify({'message': {'method': this._messageMethod, 'params': event}})
+            'message': JSON.stringify(
+                {'message': {'method': this._messageMethod, 'params': event}}, null, 2)
           })));
     } else {
       return null;

@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, escapeRegExp, hasConstructor} from '../src/lang';
-
-class MySuperclass {}
-class MySubclass extends MySuperclass {}
+import {NumberWrapper, escapeRegExp} from '../src/lang';
 
 export function main() {
   describe('RegExp', () => {
@@ -20,13 +17,6 @@ export function main() {
       expect(new RegExp(escapeRegExp('a.b')).exec('axb')).toBeFalsy();
     });
 
-  });
-
-  describe('const', () => {
-    it('should support const expressions both in TS and Dart', () => {
-      const numbers = [1, 2, 3];
-      expect(numbers).toEqual([1, 2, 3]);
-    });
   });
 
   describe('Number', () => {

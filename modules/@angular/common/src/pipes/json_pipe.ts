@@ -8,10 +8,6 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 
-import {Json} from '../facade/lang';
-
-
-
 /**
  * @ngModule CommonModule
  * @whatItDoes Converts value into JSON string.
@@ -27,5 +23,5 @@ import {Json} from '../facade/lang';
  */
 @Pipe({name: 'json', pure: false})
 export class JsonPipe implements PipeTransform {
-  transform(value: any): string { return Json.stringify(value); }
+  transform(value: any): string { return JSON.stringify(value, null, 2); }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isArray, isPresent, isString} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 
 /**
  * @experimental Animation support is experimental.
@@ -328,10 +328,10 @@ export function style(
     Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
   var input: Array<{[key: string]: string | number}|string>;
   var offset: number = null;
-  if (isString(tokens)) {
+  if (typeof tokens === 'string') {
     input = [<string>tokens];
   } else {
-    if (isArray(tokens)) {
+    if (Array.isArray(tokens)) {
       input = <Array<{[key: string]: string | number}>>tokens;
     } else {
       input = [<{[key: string]: string | number}>tokens];
@@ -564,8 +564,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  */
 export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
     AnimationStateTransitionMetadata {
-  var animationData = isArray(steps) ? new AnimationSequenceMetadata(<AnimationMetadata[]>steps) :
-                                       <AnimationMetadata>steps;
+  var animationData = Array.isArray(steps) ? new AnimationSequenceMetadata(steps) : steps;
   return new AnimationStateTransitionMetadata(stateChangeExpr, animationData);
 }
 

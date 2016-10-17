@@ -7,7 +7,7 @@
  */
 
 
-import {global, isString} from './facade/lang';
+import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 
@@ -187,7 +187,7 @@ _global.beforeEach(function() {
       return {
         compare: function(actual: any, styles: {[k: string]: string}|string) {
           let allPassed: boolean;
-          if (isString(styles)) {
+          if (typeof styles === 'string') {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
             allPassed = Object.keys(styles).length !== 0;
@@ -199,9 +199,9 @@ _global.beforeEach(function() {
           return {
             pass: allPassed,
             get message() {
-              const expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
+              const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
             }
           };
         }

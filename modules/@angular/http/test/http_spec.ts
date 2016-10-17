@@ -14,7 +14,6 @@ import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
 import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
-import {Json} from '../src/facade/lang';
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
 
@@ -460,7 +459,7 @@ export function main() {
                    c.mockRespond(new Response(new ResponseOptions({body: simpleObject}))));
            http.get('https://www.google.com').subscribe((res: Response) => {
              expect(res.arrayBuffer()).toBeAnInstanceOf(ArrayBuffer);
-             expect(res.text()).toEqual(Json.stringify(simpleObject));
+             expect(res.text()).toEqual(JSON.stringify(simpleObject, null, 2));
              expect(res.json()).toBe(simpleObject);
              async.done();
            });
@@ -500,11 +499,11 @@ export function main() {
              let body = (): any => {
                switch (c.request.responseType) {
                  case ResponseContentType.Text:
-                   return Json.stringify(message);
+                   return JSON.stringify(message, null, 2);
                  case ResponseContentType.Json:
                    return message;
                  case ResponseContentType.ArrayBuffer:
-                   return stringToArrayBuffer(Json.stringify(message));
+                   return stringToArrayBuffer(JSON.stringify(message, null, 2));
                }
              };
              c.mockRespond(new Response(new ResponseOptions({body: body()})));

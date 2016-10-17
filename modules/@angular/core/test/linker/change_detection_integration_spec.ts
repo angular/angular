@@ -17,7 +17,6 @@ import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 import {EventEmitter} from '../../src/facade/async';
-import {NumberWrapper} from '../../src/facade/lang';
 
 export function main() {
   let elSchema: MockSchemaRegistry;
@@ -338,7 +337,7 @@ export function main() {
 
       it('should support NaN', fakeAsync(() => {
            var ctx = _bindSimpleValue('age', Person);
-           ctx.componentInstance.age = NumberWrapper.NaN;
+           ctx.componentInstance.age = NaN;
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual(['someProp=NaN']);
