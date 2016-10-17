@@ -135,12 +135,12 @@ export class SelectorMatcher {
     return notMatcher;
   }
 
-  private _elementMap: {[k: string]: SelectorContext[]} = {};
-  private _elementPartialMap: {[k: string]: SelectorMatcher} = {};
-  private _classMap: {[k: string]: SelectorContext[]} = {};
-  private _classPartialMap: {[k: string]: SelectorMatcher} = {};
-  private _attrValueMap: {[k: string]: {[k: string]: SelectorContext[]}} = {};
-  private _attrValuePartialMap: {[k: string]: {[k: string]: SelectorMatcher}} = {};
+  private _elementMap = new Map<string, SelectorContext[]>();
+  private _elementPartialMap = new Map<string, SelectorMatcher>();
+  private _classMap = new Map<string, SelectorContext[]>();
+  private _classPartialMap = new Map<string, SelectorMatcher>();
+  private _attrValueMap = new Map<string, Map<string, SelectorContext[]>>();
+  private _attrValuePartialMap = new Map<string, Map<string, SelectorMatcher>>();
   private _listContexts: SelectorListContext[] = [];
 
   addSelectables(cssSelectors: CssSelector[], callbackCtxt?: any) {
@@ -195,18 +195,18 @@ export class SelectorMatcher {
         const value = attrs[i + 1];
         if (isTerminal) {
           const terminalMap = matcher._attrValueMap;
-          let terminalValuesMap = terminalMap[name];
+          let terminalValuesMap = terminalMap.get(name);
           if (!terminalValuesMap) {
-            terminalValuesMap = {};
-            terminalMap[name] = terminalValuesMap;
+            terminalValuesMap = new Map<string, SelectorContext[]>();
+            terminalMap.set(name, terminalValuesMap);
           }
           this._addTerminal(terminalValuesMap, value, selectable);
         } else {
           let partialMap = matcher._attrValuePartialMap;
-          let partialValuesMap = partialMap[name];
+          let partialValuesMap = partialMap.get(name);
           if (!partialValuesMap) {
-            partialValuesMap = {};
-            partialMap[name] = partialValuesMap;
+            partialValuesMap = new Map<string, SelectorMatcher>();
+            partialMap.set(name, partialValuesMap);
           }
           matcher = this._addPartial(partialValuesMap, value);
         }
@@ -215,20 +215,20 @@ export class SelectorMatcher {
   }
 
   private _addTerminal(
-      map: {[k: string]: SelectorContext[]}, name: string, selectable: SelectorContext) {
-    let terminalList = map[name];
+      map: Map<string, SelectorContext[]>, name: string, selectable: SelectorContext) {
+    let terminalList = map.get(name);
     if (!terminalList) {
       terminalList = [];
-      map[name] = terminalList;
+      map.set(name, terminalList);
     }
     terminalList.push(selectable);
   }
 
-  private _addPartial(map: {[k: string]: SelectorMatcher}, name: string): SelectorMatcher {
-    let matcher = map[name];
+  private _addPartial(map: Map<string, SelectorMatcher>, name: string): SelectorMatcher {
+    let matcher = map.get(name);
     if (!matcher) {
       matcher = new SelectorMatcher();
-      map[name] = matcher;
+      map.set(name, matcher);
     }
     return matcher;
   }
@@ -270,7 +270,7 @@ export class SelectorMatcher {
         const name = attrs[i];
         const value = attrs[i + 1];
 
-        const terminalValuesMap = this._attrValueMap[name];
+        const terminalValuesMap = this._attrValueMap.get(name);
         if (value) {
           result =
               this._matchTerminal(terminalValuesMap, '', cssSelector, matchedCallback) || result;
@@ -278,7 +278,7 @@ export class SelectorMatcher {
         result =
             this._matchTerminal(terminalValuesMap, value, cssSelector, matchedCallback) || result;
 
-        const partialValuesMap = this._attrValuePartialMap[name];
+        const partialValuesMap = this._attrValuePartialMap.get(name);
         if (value) {
           result = this._matchPartial(partialValuesMap, '', cssSelector, matchedCallback) || result;
         }
@@ -291,14 +291,14 @@ export class SelectorMatcher {
 
   /** @internal */
   _matchTerminal(
-      map: {[k: string]: SelectorContext[]}, name: string, cssSelector: CssSelector,
+      map: Map<string, SelectorContext[]>, name: string, cssSelector: CssSelector,
       matchedCallback: (c: CssSelector, a: any) => void): boolean {
     if (!map || typeof name !== 'string') {
       return false;
     }
 
-    let selectables = map[name];
-    const starSelectables = map['*'];
+    let selectables = map.get(name);
+    const starSelectables = map.get('*');
     if (starSelectables) {
       selectables = selectables.concat(starSelectables);
     }
@@ -316,13 +316,13 @@ export class SelectorMatcher {
 
   /** @internal */
   _matchPartial(
-      map: {[k: string]: SelectorMatcher}, name: string, cssSelector: CssSelector,
+      map: Map<string, SelectorMatcher>, name: string, cssSelector: CssSelector,
       matchedCallback: (c: CssSelector, a: any) => void): boolean {
     if (!map || typeof name !== 'string') {
       return false;
     }
 
-    const nestedSelector = map[name];
+    const nestedSelector = map.get(name);
     if (!nestedSelector) {
       return false;
     }
