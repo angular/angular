@@ -150,7 +150,7 @@ export const customLaunchers: { [name: string]: BrowserLauncherInfo } = {
     base: 'SauceLabs',
     browserName: 'microsoftedge',
     platform: 'Windows 10',
-    version: '20.10240'
+    version: '14'
   },
   'SL_ANDROID4.1': {
     base: 'SauceLabs',
