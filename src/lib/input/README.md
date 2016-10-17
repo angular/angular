@@ -16,6 +16,14 @@ At the time of writing this README, the `[type]` attribute is copied to the actu
 The valid `type` attribute values are any supported by your browser, with the exception of `file`, `checkbox` and `radio`. File inputs aren't supported for now, while check boxes and radio buttons have their own components.
 
 
+## Placeholder
+
+A placeholder is an indicative text displayed in the input zone when the input does not contain text. When text is present, the indicative text will float above this input zone. 
+
+You can set the `floatingPlaceholder` attribute to `false` to hide the indicative text instead when text is present in the input.
+
+You can specify a placeholder for the input in one of two ways; either using the `placeholder` attribute, or using an `<md-placeholder>` directive in the `<md-input>`. Using both will raise an error.
+
 
 ## Prefix and Suffix
 
