@@ -5,8 +5,8 @@
 
 | Name |  Description |
 | --- | --- |
-| `open(message: string,<br>  actionLabel: string, config: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar>` | Creates and opens a simple snack bar noticiation matching material spec. |
-| `openFromComponent(component: ComponentType<T>, config: MdSnackBarConfig): MdSnackBarRef<T>` | Creates and opens a snack bar noticiation with a custom component as content. |
+| `open(message: string,<br>  actionLabel: string, config: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar>` | Creates and opens a simple snack bar notification matching material spec. |
+| `openFromComponent(component: ComponentType<T>, config: MdSnackBarConfig): MdSnackBarRef<T>` | Creates and opens a snack bar notification with a custom component as content. |
 
 ### Config
 
