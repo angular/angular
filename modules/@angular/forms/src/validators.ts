@@ -9,12 +9,10 @@
 import {OpaqueToken} from '@angular/core';
 import {toPromise} from 'rxjs/operator/toPromise';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {StringMapWrapper} from './facade/collection';
-import {isPresent} from './facade/lang';
 import {AbstractControl} from './model';
 import {isPromise} from './private_import_core';
 
-function isEmptyInputValue(value: any) {
+function isEmptyInputValue(value: any): boolean {
   return value == null || typeof value === 'string' && value.length === 0;
 }
 
@@ -124,23 +122,23 @@ export class Validators {
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps.
    */
-  static compose(validators: ValidatorFn[]): ValidatorFn {
+  static compose(...validators: Array<ValidatorFn|ValidatorFn[]>): ValidatorFn {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
-    if (presentValidators.length == 0) return null;
+    const presentValidators = flattenArray(validators);
+    if (presentValidators.length === 0) return null;
 
-    return function(control: AbstractControl) {
+    return (control: AbstractControl) => {
       return _mergeErrors(_executeValidators(control, presentValidators));
     };
   }
 
-  static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
+  static composeAsync(...validators: Array<AsyncValidatorFn|AsyncValidatorFn[]>): AsyncValidatorFn {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
-    if (presentValidators.length == 0) return null;
+    const presentValidators = flattenArray(validators);
+    if (presentValidators.length === 0) return null;
 
-    return function(control: AbstractControl) {
-      let promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
+    return (control: AbstractControl) => {
+      const promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
       return Promise.all(promises).then(_mergeErrors);
     };
   }
@@ -161,7 +159,21 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
   const res: {[key: string]: any} =
       arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
-        return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
+        return errors ? (<any>Object).assign({}, res, errors) : res;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
+}
+
+function flattenArray(input: any[], out: Array<any> = []): Array<any> {
+  if (input) {
+    for (let i = 0; i < input.length; i++) {
+      const item = input[i];
+      if (Array.isArray(item)) {
+        flattenArray(item, out);
+      } else if (item) {
+        out.push(item);
+      }
+    }
+  }
+  return out;
 }
