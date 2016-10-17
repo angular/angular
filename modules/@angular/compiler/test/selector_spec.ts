@@ -58,6 +58,12 @@ export function main() {
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
 
+    it('should not throw for class name "constructor"', () => {
+      expect(matcher.match(CssSelector.parse('.constructor')[0], selectableCollector))
+          .toEqual(false);
+      expect(matched).toEqual([]);
+    });
+
     it('should select by attr name case sensitive independent of the value', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr]'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('[someAttr][someAttr2]'), 2);
