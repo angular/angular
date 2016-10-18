@@ -43,12 +43,12 @@ export function main() {
          () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
 
       it('should support ISO string',
-         () => { expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow(); });
+         () => expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow());
 
-      it('should not support other objects', () => {
-        expect(() => pipe.transform({})).toThrow();
-        expect(() => pipe.transform('')).toThrow();
-      });
+      it('should return null for empty string', () => expect(pipe.transform('')).toEqual(null));
+
+      it('should not support other objects',
+         () => { expect(() => pipe.transform({})).toThrowError(); });
     });
 
     describe('transform', () => {
