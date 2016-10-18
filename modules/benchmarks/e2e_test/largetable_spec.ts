@@ -13,32 +13,32 @@ describe('largetable benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
   it('should work for ng2', () => {
-    testTreeBenchmark({
+    testTableBenchmark({
       url: 'all/benchmarks/src/largetable/ng2/index.html',
     });
   });
 
   it('should work for ng2 switch', () => {
-    testTreeBenchmark({
+    testTableBenchmark({
       url: 'all/benchmarks/src/largetable/ng2_switch/index.html',
     });
   });
 
   it('should work for the baseline', () => {
-    testTreeBenchmark({
+    testTableBenchmark({
       url: 'all/benchmarks/src/largetable/baseline/index.html',
       ignoreBrowserSynchronization: true,
     });
   });
 
   it('should work for the incremental-dom', () => {
-    testTreeBenchmark({
+    testTableBenchmark({
       url: 'all/benchmarks/src/largetable/incremental_dom/index.html',
       ignoreBrowserSynchronization: true,
     });
   });
 
-  function testTreeBenchmark(openConfig: {url: string, ignoreBrowserSynchronization?: boolean}) {
+  function testTableBenchmark(openConfig: {url: string, ignoreBrowserSynchronization?: boolean}) {
     openBrowser({
       url: openConfig.url,
       ignoreBrowserSynchronization: openConfig.ignoreBrowserSynchronization,
