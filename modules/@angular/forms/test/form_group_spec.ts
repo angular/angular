@@ -185,6 +185,13 @@ export function main() {
         expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
       });
 
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'parent': g});
+        g.setValue({'one': 'one', 'two': 'two'}, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: {'one': '', 'two': ''}});
+      });
+
       it('should throw if fields are missing from supplied value (subset)', () => {
         expect(() => g.setValue({
           'one': 'one'
@@ -281,6 +288,13 @@ export function main() {
         const form = new FormGroup({'parent': g});
         g.patchValue({'one': 'one', 'two': 'two'});
         expect(form.value).toEqual({'parent': {'one': 'one', 'two': 'two'}});
+      });
+
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'parent': g});
+        g.patchValue({'one': 'one', 'two': 'two'}, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: {'one': '', 'two': ''}});
       });
 
       it('should ignore fields that are missing from supplied value (subset)', () => {
@@ -399,6 +413,13 @@ export function main() {
 
         g.reset();
         expect(form.value).toEqual({'g': {'one': null, 'two': null}});
+      });
+
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'g': g});
+        g.reset({'one': 'new value', 'two': 'new value'}, {onlySelf: true});
+
+        expect(form.value).toEqual({g: {'one': 'initial value', 'two': ''}});
       });
 
       it('should mark itself as pristine', () => {
@@ -541,7 +562,6 @@ export function main() {
           g.reset({'one': {value: '', disabled: true}});
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
-
       });
 
     });

@@ -123,6 +123,13 @@ export function main() {
         expect(form.value).toEqual({'parent': ['one', 'two']});
       });
 
+      it('should not update the parent explicitly specified', () => {
+        const form = new FormGroup({'parent': a});
+        a.setValue(['one', 'two'], {onlySelf: true});
+
+        expect(form.value).toEqual({parent: ['', '']});
+      });
+
       it('should throw if fields are missing from supplied value (subset)', () => {
         expect(() => a.setValue([, 'two']))
             .toThrowError(new RegExp(`Must supply a value for form control at index: 0`));
@@ -219,6 +226,13 @@ export function main() {
         expect(form.value).toEqual({'parent': ['one', 'two']});
       });
 
+      it('should not update the parent explicitly specified', () => {
+        const form = new FormGroup({'parent': a});
+        a.patchValue(['one', 'two'], {onlySelf: true});
+
+        expect(form.value).toEqual({parent: ['', '']});
+      });
+
       it('should ignore fields that are missing from supplied value (subset)', () => {
         a.patchValue([, 'two']);
         expect(a.value).toEqual(['', 'two']);
@@ -289,6 +303,13 @@ export function main() {
 
         a.reset(['initial value', '']);
         expect(a.value).toEqual(['initial value', '']);
+      });
+
+      it('should not update the parent when explicitly specified', () => {
+        const form = new FormGroup({'a': a});
+        a.reset(['one', 'two'], {onlySelf: true});
+
+        expect(form.value).toEqual({a: ['initial value', '']});
       });
 
       it('should set its own value if boxed value passed', () => {
