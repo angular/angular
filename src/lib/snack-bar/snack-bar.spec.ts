@@ -16,6 +16,7 @@ import {OverlayContainer} from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';
 import {SimpleSnackBar} from './simple-snack-bar';
 
+// TODO(josephperrott): Update tests to mock waiting for time to complete for animations.
 
 describe('MdSnackBar', () => {
   let snackBar: MdSnackBar;
@@ -56,7 +57,6 @@ describe('MdSnackBar', () => {
     snackBar.open(simpleMessage, simpleActionLabel, config);
 
     let containerElement = overlayContainerElement.querySelector('snack-bar-container');
-
     expect(containerElement.getAttribute('role'))
         .toBe('alert', 'Expected snack bar container to have role="alert"');
    });
@@ -102,7 +102,6 @@ describe('MdSnackBar', () => {
     expect(messageElement.tagName).toBe('SPAN', 'Expected snack bar message element to be <span>');
     expect(messageElement.textContent)
         .toBe(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
-
     expect(overlayContainerElement.querySelector('button.md-simple-snackbar-action'))
         .toBeNull('Expected the query selection for action label to be null');
   });
@@ -120,10 +119,11 @@ describe('MdSnackBar', () => {
         .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
 
     snackBarRef.dismiss();
-
-    expect(dismissed).toBeTruthy('Expected the snack bar to be dismissed');
-    expect(overlayContainerElement.childElementCount)
-        .toBe(0, 'Expected the overlay container element to have no child elements');
+    snackBarRef.afterDismissed().subscribe(null, null, () => {
+      expect(dismissed).toBeTruthy('Expected the snack bar to be dismissed');
+      expect(overlayContainerElement.childElementCount)
+          .toBe(0, 'Expected the overlay container element to have no child elements');
+    });
   });
 
   it('should open a custom component', () => {
@@ -136,7 +136,46 @@ describe('MdSnackBar', () => {
     expect(overlayContainerElement.textContent)
         .toBe('Burritos are on the way.',
               `Expected the overlay text content to be 'Burritos are on the way'`);
+  });
 
+  it('should set the animation state to visible on entry', () => {
+    let config = new MdSnackBarConfig(testViewContainerRef);
+    let snackBarRef = snackBar.open(simpleMessage, null, config);
+
+    viewContainerFixture.detectChanges();
+    expect(snackBarRef.containerInstance.animationState)
+        .toBe('visible', `Expected the animation state would be 'visible'.`);
+  });
+
+  it('should set the animation state to complete on exit', () => {
+    let config = new MdSnackBarConfig(testViewContainerRef);
+    let snackBarRef = snackBar.open(simpleMessage, null, config);
+    snackBarRef.dismiss();
+
+    viewContainerFixture.detectChanges();
+    expect(snackBarRef.containerInstance.animationState)
+        .toBe('complete', `Expected the animation state would be 'complete'.`);
+  });
+
+  it(`should set the old snack bar animation state to complete and the new snack bar animation
+      state to visible on entry of new snack bar`, () => {
+    let config = new MdSnackBarConfig(testViewContainerRef);
+    let snackBarRef = snackBar.open(simpleMessage, null, config);
+
+    viewContainerFixture.detectChanges();
+    expect(snackBarRef.containerInstance.animationState)
+        .toBe('visible', `Expected the animation state would be 'visible'.`);
+
+    let config2 = new MdSnackBarConfig(testViewContainerRef);
+    let snackBarRef2 = snackBar.open(simpleMessage, null, config2);
+
+    viewContainerFixture.detectChanges();
+    snackBarRef.afterDismissed().subscribe(null, null, () => {
+      expect(snackBarRef.containerInstance.animationState)
+          .toBe('complete', `Expected the animation state would be 'complete'.`);
+      expect(snackBarRef2.containerInstance.animationState)
+          .toBe('visible', `Expected the animation state would be 'visible'.`);
+    });
   });
 });
 

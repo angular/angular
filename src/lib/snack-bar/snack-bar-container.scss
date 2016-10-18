@@ -10,11 +10,13 @@ $md-snack-bar-max-width: 568px !default;
   @include md-elevation(24);
   background: #323232;
   border-radius: 2px;
+  box-sizing: content-box;
   display: block;
   height: $md-snack-bar-height;
   max-width: $md-snack-bar-max-width;
   min-width: $md-snack-bar-min-width;
   overflow: hidden;
   padding: $md-snack-bar-padding;
-  box-sizing: content-box;
+  // Initial transformation is applied to start snack bar out of view.
+  transform: translateY(100%);
 }

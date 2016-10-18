@@ -21,10 +21,6 @@ import {MdSnackBarRef} from './snack-bar-ref';
 import {MdSnackBarContainer} from './snack-bar-container';
 import {SimpleSnackBar} from './simple-snack-bar';
 
-export {MdSnackBarRef} from './snack-bar-ref';
-export {MdSnackBarConfig} from './snack-bar-config';
-
-// TODO(josephperrott): Animate entrance and exit of snack bars.
 // TODO(josephperrott): Automate dismiss after timeout.
 
 
@@ -45,14 +41,24 @@ export class MdSnackBar {
    */
   openFromComponent<T>(component: ComponentType<T>,
                        config: MdSnackBarConfig): MdSnackBarRef<T> {
-    if (this._snackBarRef) {
-      this._snackBarRef.dismiss();
-    }
     let overlayRef = this._createOverlay();
     let snackBarContainer = this._attachSnackBarContainer(overlayRef, config);
     let mdSnackBarRef = this._attachSnackbarContent(component, snackBarContainer, overlayRef);
+
+    // If a snack bar is already in view, dismiss it and enter the new snack bar after exit
+    // animation is complete.
+    if (this._snackBarRef) {
+      this._snackBarRef.afterDismissed().subscribe(() => {
+        mdSnackBarRef.containerInstance.enter();
+      });
+      this._snackBarRef.dismiss();
+    // If no snack bar is in view, enter the new snack bar.
+    } else {
+      mdSnackBarRef.containerInstance.enter();
+    }
     this._live.announce(config.announcementMessage, config.politeness);
-    return mdSnackBarRef;
+    this._snackBarRef = mdSnackBarRef;
+    return this._snackBarRef;
   }
 
   /**
@@ -88,10 +94,7 @@ export class MdSnackBar {
                                     overlayRef: OverlayRef): MdSnackBarRef<T> {
     let portal = new ComponentPortal(component);
     let contentRef = container.attachComponentPortal(portal);
-    let snackBarRef = <MdSnackBarRef<T>> new MdSnackBarRef(contentRef.instance, overlayRef);
-
-    this._snackBarRef = snackBarRef;
-    return snackBarRef;
+    return new MdSnackBarRef(contentRef.instance, container, overlayRef);
   }
 
   /**
