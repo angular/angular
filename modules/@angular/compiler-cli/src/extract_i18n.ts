@@ -21,7 +21,6 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
-import {CompileMetadataResolver, DirectiveNormalizer, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleCompiler, Parser, StyleCompiler, TemplateParser, TypeScriptEmitter, ViewCompiler, ParseError} from './private_import_compiler';
 import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
@@ -63,8 +62,8 @@ export class Extractor {
   constructor(
       private program: ts.Program, public host: ts.CompilerHost,
       private staticReflector: StaticReflector, private messageBundle: compiler.MessageBundle,
-      private reflectorHost: ReflectorHost, private metadataResolver: CompileMetadataResolver,
-      private directiveNormalizer: DirectiveNormalizer,
+      private reflectorHost: ReflectorHost, private metadataResolver: compiler.CompileMetadataResolver,
+      private directiveNormalizer: compiler.DirectiveNormalizer,
       private compiler: compiler.OfflineCompiler) {}
 
   private readFileMetadata(absSourcePath: string): FileMetadata {
@@ -106,7 +105,7 @@ export class Extractor {
       return ngModules;
     }, <StaticSymbol[]>[]);
     const analyzedNgModules = this.compiler.analyzeModules(ngModules);
-    const errors: ParseError[] = [];
+    const errors: compiler.ParseError[] = [];
 
     let bundlePromise =
         Promise
@@ -168,19 +167,19 @@ export class Extractor {
       useJit: false
     });
 
-    const normalizer = new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
-    const expressionParser = new Parser(new Lexer());
-    const elementSchemaRegistry = new DomElementSchemaRegistry();
+    const normalizer = new compiler.DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+    const expressionParser = new compiler.Parser(new compiler.Lexer());
+    const elementSchemaRegistry = new compiler.DomElementSchemaRegistry();
     const console = new Console();
     const tmplParser =
-        new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
-    const resolver = new CompileMetadataResolver(
+        new compiler.TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
+    const resolver = new compiler.CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         elementSchemaRegistry, staticReflector);
     const offlineCompiler = new compiler.OfflineCompiler(
-        resolver, normalizer, tmplParser, new StyleCompiler(urlResolver), new ViewCompiler(config),
-        new NgModuleCompiler(), new TypeScriptEmitter(reflectorHost), null, null);
+        resolver, normalizer, tmplParser, new compiler.StyleCompiler(urlResolver), new compiler.ViewCompiler(config),
+        new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(reflectorHost), null, null);
 
     // TODO(vicb): implicit tags & attributes
     let messageBundle = new compiler.MessageBundle(htmlParser, [], {});
