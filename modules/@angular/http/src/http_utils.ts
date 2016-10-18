@@ -11,17 +11,24 @@ import {isString} from '../src/facade/lang';
 import {RequestMethod} from './enums';
 
 export function normalizeMethodName(method: string | RequestMethod): RequestMethod {
-  if (isString(method)) {
-    var originalMethod = method;
-    method = (<string>method)
-                 .replace(
-                     /(\w)(\w*)/g,
-                     (g0: string, g1: string, g2: string) => g1.toUpperCase() + g2.toLowerCase());
-    method = <RequestMethod>(<{[key: string]: any}>RequestMethod)[method];
-    if (typeof method !== 'number')
-      throw new Error(`Invalid request method. The method "${originalMethod}" is not supported.`);
+  if (!isString(method)) return method;
+  switch (method.toUpperCase()) {
+    case 'GET':
+      return RequestMethod.Get;
+    case 'POST':
+      return RequestMethod.Post;
+    case 'PUT':
+      return RequestMethod.Put;
+    case 'DELETE':
+      return RequestMethod.Delete;
+    case 'OPTIONS':
+      return RequestMethod.Options;
+    case 'HEAD':
+      return RequestMethod.Head;
+    case 'PATCH':
+      return RequestMethod.Patch;
   }
-  return <RequestMethod>method;
+  throw new Error(`Invalid request method. The method "${method}" is not supported.`);
 }
 
 export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
