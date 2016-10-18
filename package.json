@@ -55,6 +55,7 @@
     "fs-extra": "^0.26.5",
     "glob": "^6.0.4",
     "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
     "gulp-clean": "^0.3.2",
     "gulp-sass": "^2.3.2",
     "gulp-server-livereload": "^1.8.2",

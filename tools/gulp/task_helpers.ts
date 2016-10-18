@@ -4,7 +4,7 @@ import * as gulp from 'gulp';
 import * as gulpTs from 'gulp-typescript';
 import * as path from 'path';
 
-import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT} from './constants';
+import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT, SASS_AUTOPREFIXER_OPTIONS} from './constants';
 
 
 /** Those imports lack typings. */
@@ -14,6 +14,7 @@ const gulpRunSequence = require('run-sequence');
 const gulpSass = require('gulp-sass');
 const gulpServer = require('gulp-server-livereload');
 const gulpSourcemaps = require('gulp-sourcemaps');
+const gulpAutoprefixer = require('gulp-autoprefixer');
 const resolveBin = require('resolve-bin');
 
 
@@ -73,6 +74,7 @@ export function sassBuildTask(dest: string, root: string, includePaths: string[]
     return gulp.src(_globify(root, '**/*.scss'))
       .pipe(gulpSourcemaps.init())
       .pipe(gulpSass(sassOptions).on('error', gulpSass.logError))
+      .pipe(gulpAutoprefixer(SASS_AUTOPREFIXER_OPTIONS))
       .pipe(gulpSourcemaps.write('.'))
       .pipe(gulp.dest(dest));
   };

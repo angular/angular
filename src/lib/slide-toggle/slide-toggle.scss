@@ -25,11 +25,8 @@ $md-slide-toggle-margin: 16px !default;
 
   white-space: nowrap;
 
-  // Disable user selection to ensure that dragging is smooth without grabbing some elements
-  // accidentally. Manually prefixing here, because the un-prefixed property is not supported yet.
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  // Disable user selection to ensure that dragging is smooth without grabbing
+  // some elements accidentally.
   user-select: none;
 
   outline: none;
