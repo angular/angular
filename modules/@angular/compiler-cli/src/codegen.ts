@@ -179,21 +179,22 @@ export class CodeGenerator {
       logBindingUpdate: false,
       useJit: false
     });
-    const normalizer = new compiler.DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+    const normalizer =
+        new compiler.DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
     const expressionParser = new compiler.Parser(new compiler.Lexer());
     const elementSchemaRegistry = new compiler.DomElementSchemaRegistry();
     const console = new Console();
-    const tmplParser =
-        new compiler.TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
+    const tmplParser = new compiler.TemplateParser(
+        expressionParser, elementSchemaRegistry, htmlParser, console, []);
     const resolver = new compiler.CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         elementSchemaRegistry, staticReflector);
     // TODO(vicb): do not pass cliOptions.i18nFormat here
     const offlineCompiler = new compiler.OfflineCompiler(
-        resolver, normalizer, tmplParser, new compiler.StyleCompiler(urlResolver), new compiler.ViewCompiler(config),
-        new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(reflectorHost), cliOptions.locale,
-        cliOptions.i18nFormat);
+        resolver, normalizer, tmplParser, new compiler.StyleCompiler(urlResolver),
+        new compiler.ViewCompiler(config), new compiler.NgModuleCompiler(),
+        new compiler.TypeScriptEmitter(reflectorHost), cliOptions.locale, cliOptions.i18nFormat);
 
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
