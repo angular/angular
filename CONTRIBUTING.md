@@ -61,7 +61,7 @@ A minimal reproduce scenario using http://plnkr.co/ allows us to quickly confirm
 
 We will be insisting on a minimal reproduce scenario in order to save maintainers time and ultimately be able to fix more bugs. Interestingly, from our experience users often find coding problems themselves while preparing a minimal plunk. We understand that sometimes it might be hard to extract essentials bits of code from a larger code-base but we really need to isolate the problem before we can fix it.
 
-Unfortunately we are not able to investigate / fix bugs without a minimal reproductions, so if we don't hear back from you we are going to close an issue that don't have enough info to be reproduced.
+Unfortunately we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you we are going to close an issue that don't have enough info to be reproduced.
 
 You can file new issues by filling out our [new issue form](https://github.com/angular/angular/issues/new).
 
