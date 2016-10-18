@@ -10,6 +10,7 @@ import {
   AfterContentInit,
   NgModule,
   ModuleWithProviders,
+  ViewEncapsulation,
 } from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {
@@ -50,6 +51,7 @@ let nextId = 0;
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
@@ -61,9 +63,11 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   private _uniqueId = `md-slide-toggle-${++nextId}`;
   private _checked: boolean = false;
   private _color: string;
-  _hasFocus: boolean = false;
   private _isMousedown: boolean = false;
   private _slideRenderer: SlideToggleRenderer = null;
+
+  // Needs to be public to support AOT compilation (as host binding).
+  _hasFocus: boolean = false;
 
   @Input() @BooleanFieldValue() disabled: boolean = false;
   @Input() @BooleanFieldValue() required: boolean = false;

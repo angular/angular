@@ -16,7 +16,7 @@ $md-slide-toggle-margin: 16px !default;
   @include md-temporary-ink-ripple(slide-toggle, true);
 }
 
-:host {
+md-slide-toggle {
   display: flex;
   height: $md-slide-toggle-height;
 
