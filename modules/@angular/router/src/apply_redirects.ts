@@ -159,7 +159,6 @@ class ApplyRedirects {
     if (getOutlet(route) !== outlet) return noMatch(segmentGroup);
     if (route.redirectTo !== undefined && !(allowRedirects && this.allowRedirects))
       return noMatch(segmentGroup);
-
     if (route.redirectTo === undefined) {
       return this.matchSegmentAgainstRoute(injector, segmentGroup, route, paths);
     } else {
@@ -172,20 +171,23 @@ class ApplyRedirects {
       injector: Injector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
-      return this.expandWildCardWithParamsAgainstRouteUsingRedirect(route);
+      return this.expandWildCardWithParamsAgainstRouteUsingRedirect(
+          injector, routes, route, outlet);
     } else {
       return this.expandRegularSegmentAgainstRouteUsingRedirect(
           injector, segmentGroup, routes, route, segments, outlet);
     }
   }
 
-  private expandWildCardWithParamsAgainstRouteUsingRedirect(route: Route):
-      Observable<UrlSegmentGroup> {
+  private expandWildCardWithParamsAgainstRouteUsingRedirect(
+      injector: Injector, routes: Route[], route: Route,
+      outlet: string): Observable<UrlSegmentGroup> {
     const newSegments = applyRedirectCommands([], route.redirectTo, {});
     if (route.redirectTo.startsWith('/')) {
       return absoluteRedirect(newSegments);
     } else {
-      return of (new UrlSegmentGroup(newSegments, {}));
+      const group = new UrlSegmentGroup(newSegments, {});
+      return this.expandSegment(injector, group, routes, newSegments, outlet, false);
     }
   }
 

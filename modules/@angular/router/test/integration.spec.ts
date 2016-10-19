@@ -1562,6 +1562,7 @@ describe('Integration', () => {
                  .toEqual(
                      `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
            })));
+
     it('should combine routes from multiple modules into a single configuration',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
@@ -1703,6 +1704,33 @@ describe('Integration', () => {
              expectEvents(
                  recordedEvents,
                  [[NavigationStart, '/lazy/loaded'], [NavigationError, '/lazy/loaded']]);
+           })));
+
+    it('should work with complex redirect rules',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({selector: 'lazy', template: 'lazy-loaded'})
+             class LazyLoadedComponent {
+             }
+
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               imports: [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {lazy: LoadedModule};
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig(
+                 [{path: 'lazy', loadChildren: 'lazy'}, {path: '**', redirectTo: 'lazy'}]);
+
+             router.navigateByUrl('/lazy/loaded');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/lazy/loaded');
            })));
 
     describe('preloading', () => {
