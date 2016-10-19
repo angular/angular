@@ -1326,23 +1326,22 @@ describe('Integration', () => {
       }
 
       beforeEach(() => {
+        let provideTokenLogger = (token: string) => {
+          return {
+            provide: token,
+            useFactory: (logger: Logger) => () => (logger.add(token), true),
+            deps: [Logger]
+          }
+        }
         TestBed.configureTestingModule({
           providers: [
-            Logger, {
-              provide: 'canActivateChild_parent',
-              useFactory: (logger: Logger) => () => (logger.add('canActivateChild_parent'), true),
-              deps: [Logger]
-            },
-            {
-              provide: 'canActivate_team',
-              useFactory: (logger: Logger) => () => (logger.add('canActivate_team'), true),
-              deps: [Logger]
-            },
-            {
-              provide: 'canDeactivate_team',
-              useFactory: (logger: Logger) => () => (logger.add('canDeactivate_team'), true),
-              deps: [Logger]
-            }
+            Logger,
+            provideTokenLogger('canActivateChild_parent'),
+            provideTokenLogger('canActivate_team'),
+            provideTokenLogger('canDeactivate_team'),
+            provideTokenLogger('canActivate_summary'),
+            provideTokenLogger('canDeactivate_summary'),
+            provideTokenLogger('canActivate_roster')
           ]
         });
       });
@@ -1373,6 +1372,43 @@ describe('Integration', () => {
                  'canActivateChild_parent', 'canActivate_team',
 
                  'canDeactivate_team', 'canActivateChild_parent', 'canActivate_team'
+               ]);
+             })));
+
+      it('should call guards in the right order for children of parameter changes',
+         fakeAsync(inject(
+             [Router, Location, Logger], (router: Router, location: Location, logger: Logger) => {
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{
+                 path: 'team/:id',
+                 canActivate: ['canActivate_team'],
+                 canDeactivate: ['canDeactivate_team'],
+                 component: TeamCmp,
+                 children: [{
+                     path: 'summary',
+                     canActivate: ['canActivate_summary'],
+                     canDeactivate: ['canDeactivate_summary'],
+                     component: BlankCmp
+                   },
+                   {
+                     path: 'roster',
+                     canActivate: ['canActivate_roster'],
+                     canDeactivate: ['canDeactivate_NEVER'],
+                     component: BlankCmp
+                   }]
+               }]);
+
+               router.navigateByUrl('/team/22/summary');
+               advance(fixture);
+
+               router.navigateByUrl('/team/33/roster');
+               advance(fixture);
+
+               expect(logger.logs).toEqual([
+                 'canActivate_team', 'canActivate_summary',
+
+                 'canDeactivate_summary', 'canDeactivate_team', 'canActivate_team', 'canActivate_roster'
                ]);
              })));
     });

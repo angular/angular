@@ -727,7 +727,9 @@ export class PreActivation {
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
       if (!shallowEqual(future.params, curr.params)) {
-        this.checks.push(new CanDeactivate(outlet.component, curr), new CanActivate(futurePath));
+        // we're moving top-down, so deactivations should always be added onto the front
+        this.checks.unshift(new CanDeactivate(outlet.component, curr));
+        this.checks.push(new CanActivate(futurePath));
       } else {
         // we need to set the data
         future.data = curr.data;
@@ -768,8 +770,8 @@ export class PreActivation {
 
   private deactivateOutletAndItChildren(route: ActivatedRouteSnapshot, outlet: RouterOutlet): void {
     if (outlet && outlet.isActivated) {
+      this.checks.unshift(new CanDeactivate(outlet.component, route));
       this.deactivateOutletMap(outlet.outletMap);
-      this.checks.push(new CanDeactivate(outlet.component, route));
     }
   }
 
