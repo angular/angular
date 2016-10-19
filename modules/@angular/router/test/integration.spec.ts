@@ -888,6 +888,9 @@ describe('Integration', () => {
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
 
+             const recordedEvents: any[] = [];
+             router.events.forEach(e => recordedEvents.push(e));
+
              router.resetConfig(
                  [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysFalse']}]);
 
@@ -895,6 +898,10 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/');
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/team/22'], [RoutesRecognized, '/team/22'],
+               [NavigationCancel, '/team/22']
+             ]);
            })));
       });
 
