@@ -16,6 +16,7 @@ import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
 import {NumberValueAccessor} from './directives/number_value_accessor';
 import {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
+import {RangeValueAccessor} from './directives/range_value_accessor';
 import {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 import {FormControlName} from './directives/reactive_directives/form_control_name';
 import {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -34,6 +35,7 @@ export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
+export {RangeValueAccessor} from './directives/range_value_accessor';
 export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
@@ -44,9 +46,9 @@ export {MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValida
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   NgSelectOption, NgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor,
-  CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor,
-  RadioControlValueAccessor, NgControlStatus, NgControlStatusGroup, RequiredValidator,
-  MinLengthValidator, MaxLengthValidator, PatternValidator
+  RangeValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor,
+  SelectMultipleControlValueAccessor, RadioControlValueAccessor, NgControlStatus,
+  NgControlStatusGroup, RequiredValidator, MinLengthValidator, MaxLengthValidator, PatternValidator
 ];
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];

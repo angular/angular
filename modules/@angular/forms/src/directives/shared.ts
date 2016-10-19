@@ -22,6 +22,7 @@ import {NgControl} from './ng_control';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
+import {RangeValueAccessor} from './range_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
@@ -130,6 +131,7 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
 export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
   return (
       hasConstructor(valueAccessor, CheckboxControlValueAccessor) ||
+      hasConstructor(valueAccessor, RangeValueAccessor) ||
       hasConstructor(valueAccessor, NumberValueAccessor) ||
       hasConstructor(valueAccessor, SelectControlValueAccessor) ||
       hasConstructor(valueAccessor, SelectMultipleControlValueAccessor) ||
