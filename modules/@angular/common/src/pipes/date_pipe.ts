@@ -33,21 +33,21 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  *   - `'shortTime'`: equivalent to `'jm'` (e.g. `12:05 PM` for `en-US`)
  *
  *
- *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
- *  |-----------|:------:|--------------|-------------------|-----------|-----------|
- *  | era       |   G    | G (AD)       | GGGG (Anno Domini)| -         | -         |
- *  | year      |   y    | -            | -                 | y (2015)  | yy (15)   |
- *  | month     |   M    | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
- *  | day       |   d    | -            | -                 | d (3)     | dd (03)   |
- *  | weekday   |   E    | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
- *  | hour      |   j    | -            | -                 | j (13)    | jj (13)   |
- *  | hour12    |   h    | -            | -                 | h (1 PM)  | hh (01 PM)|
- *  | hour24    |   H    | -            | -                 | H (13)    | HH (13)   |
- *  | minute    |   m    | -            | -                 | m (5)     | mm (05)   |
- *  | second    |   s    | -            | -                 | s (9)     | ss (09)   |
- *  | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
- *  | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
- *  | timezone  |   a    | a (PM)       | -                 | -         | -         |
+ *  | Component | Symbol | Narrow | Short Form   | Long Form         | Numeric   | 2-digit   |
+ *  |-----------|:------:|--------|--------------|-------------------|-----------|-----------|
+ *  | era       |   G    | G (A)  | GGG (AD)     | GGGG (Anno Domini)| -         | -         |
+ *  | year      |   y    | -      | -            | -                 | y (2015)  | yy (15)   |
+ *  | month     |   M    | L (S)  | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
+ *  | day       |   d    | -      | -            | -                 | d (3)     | dd (03)   |
+ *  | weekday   |   E    | E (S)  | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
+ *  | hour      |   j    | -      | -            | -                 | j (13)    | jj (13)   |
+ *  | hour12    |   h    | -      | -            | -                 | h (1 PM)  | hh (01 PM)|
+ *  | hour24    |   H    | -      | -            | -                 | H (13)    | HH (13)   |
+ *  | minute    |   m    | -      | -            | -                 | m (5)     | mm (05)   |
+ *  | second    |   s    | -      | -            | -                 | s (9)     | ss (09)   |
+ *  | timezone  |   z    | -      | -            | z (Pacific Standard Time)| -  | -         |
+ *  | timezone  |   Z    | -      | Z (GMT-8:00) | -                 | -         | -         |
+ *  | timezone  |   a    | -      | a (PM)       | -                 | -         | -         |
  *
  * In javascript, only the components specified will be respected (not the ordering,
  * punctuations, ...) and details of the formatting will be dependent on the locale.

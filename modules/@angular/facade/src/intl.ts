@@ -77,6 +77,7 @@ var DATE_FORMATS = {
   MM: datePartGetterFactory(digitCondition('month', 2)),
   M: datePartGetterFactory(digitCondition('month', 1)),
   LLLL: datePartGetterFactory(nameCondition('month', 4)),
+  L: datePartGetterFactory(nameCondition('month', 1)),
   dd: datePartGetterFactory(digitCondition('day', 2)),
   d: datePartGetterFactory(digitCondition('day', 1)),
   HH: digitModifier(
@@ -161,13 +162,19 @@ function hour12Modify(
 }
 
 function digitCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
-  var result: {[k: string]: string} = {};
-  result[prop] = len == 2 ? '2-digit' : 'numeric';
+  const result: {[k: string]: string} = {};
+  result[prop] = len === 2 ? '2-digit' : 'numeric';
   return result;
 }
+
 function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
-  var result: {[k: string]: string} = {};
-  result[prop] = len < 4 ? 'short' : 'long';
+  const result: {[k: string]: string} = {};
+  if (len < 4) {
+    result[prop] = len > 1 ? 'short' : 'narrow';
+  } else {
+    result[prop] = 'long';
+  }
+
   return result;
 }
 
