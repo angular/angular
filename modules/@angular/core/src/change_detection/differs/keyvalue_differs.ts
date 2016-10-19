@@ -41,7 +41,7 @@ export class KeyValueDiffers {
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (isPresent(parent)) {
-      var copied = ListWrapper.clone(parent.factories);
+      var copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new KeyValueDiffers(factories);
     } else {

@@ -13,8 +13,6 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 
-import {ListWrapper} from '../src/facade/collection';
-
 export function main() {
   describe('reactive forms integration tests', () => {
 
@@ -1862,17 +1860,10 @@ class UniqLoginValidator implements Validator {
 }
 
 function sortedClassList(el: HTMLElement) {
-  var l = getDOM().classList(el);
-  ListWrapper.sort(l);
-  return l;
+  return getDOM().classList(el).sort();
 }
 
-@Component({
-  selector: 'form-control-comp',
-  template: `
-    <input type="text" [formControl]="control">
-  `
-})
+@Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
   control: FormControl;
 }
@@ -1882,8 +1873,7 @@ class FormControlComp {
   template: `
     <form [formGroup]="form" (ngSubmit)="event=$event">
       <input type="text" formControlName="login">
-    </form>
-  `
+    </form>`
 })
 class FormGroupComp {
   control: FormControl;
@@ -1901,8 +1891,7 @@ class FormGroupComp {
         <input formControlName="password">
       </div>
       <input *ngIf="form.contains('email')" formControlName="email">
-    </form>
-  `
+    </form>`
 })
 class NestedFormGroupComp {
   form: FormGroup;
@@ -1910,9 +1899,7 @@ class NestedFormGroupComp {
 
 @Component({
   selector: 'form-control-number-input',
-  template: `
-    <input type="number" [formControl]="control">
-  `
+  template: `<input type="number" [formControl]="control">`
 })
 class FormControlNumberInput {
   control: FormControl;
@@ -1920,9 +1907,7 @@ class FormControlNumberInput {
 
 @Component({
   selector: 'form-control-range-input',
-  template: `
-    <input type="range" [formControl]="control">
-  `
+  template: `<input type="range" [formControl]="control">`
 })
 class FormControlRangeInput {
   control: FormControl;
@@ -1938,8 +1923,7 @@ class FormControlRangeInput {
     <input type="radio" formControlName="drink" value="sprite">
   </form>
   <input type="radio" [formControl]="showRadio" value="yes">
-  <input type="radio" [formControl]="showRadio" value="no">
-  `
+  <input type="radio" [formControl]="showRadio" value="no">`
 })
 class FormControlRadioButtons {
   form: FormGroup;
@@ -1955,8 +1939,7 @@ class FormControlRadioButtons {
           <input [formControlName]="i">
         </div>
       </div>
-     </div>
-  `
+     </div>`
 })
 class FormArrayComp {
   form: FormGroup;
@@ -1973,8 +1956,7 @@ class FormArrayComp {
           <input formControlName="state">
         </div>
       </div>
-     </div>
-  `
+     </div>`
 })
 class FormArrayNestedGroup {
   form: FormGroup;
@@ -1988,8 +1970,7 @@ class FormArrayNestedGroup {
       <select formControlName="city">
         <option *ngFor="let c of cities" [value]="c"></option>
       </select>
-    </div>
-  `
+    </div>`
 })
 class FormControlNameSelect {
   cities = ['SF', 'NY'];
@@ -2001,8 +1982,7 @@ class FormControlNameSelect {
   template: `
    <div [formGroup]="form">
     <input type="text" formControlName="login" wrapped-value>
-  </div>
-  `
+  </div>`
 })
 class WrappedValueForm {
   form: FormGroup;
@@ -2013,8 +1993,7 @@ class WrappedValueForm {
   template: `
    <div [formGroup]="form">
       <my-input formControlName="login"></my-input>
-   </div>
-  `
+   </div>`
 })
 class MyInputForm {
   form: FormGroup;
@@ -2025,8 +2004,7 @@ class MyInputForm {
   template: `
   <div [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login">
-   </div>
-  `
+   </div>`
 })
 class FormGroupNgModel {
   form: FormGroup;
@@ -2035,9 +2013,7 @@ class FormGroupNgModel {
 
 @Component({
   selector: 'form-control-ng-model',
-  template: `
-    <input type="text" [formControl]="control" [(ngModel)]="login">
-  `
+  template: `<input type="text" [formControl]="control" [(ngModel)]="login">`
 })
 class FormControlNgModel {
   control: FormControl;
@@ -2052,8 +2028,7 @@ class FormControlNgModel {
       <input type="text" formControlName="min" minlength="3">
       <input type="text" formControlName="max" maxlength="3">
       <input type="text" formControlName="pattern" pattern=".{3,}">
-   </div>
-  `
+   </div>`
 })
 class LoginIsEmptyWrapper {
   form: FormGroup;
@@ -2067,8 +2042,7 @@ class LoginIsEmptyWrapper {
       <input name="minlength" type="text" formControlName="min" [minlength]="minLen">
       <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen">
       <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern">
-   </div>
-  `
+   </div>`
 })
 class ValidationBindingsForm {
   form: FormGroup;
@@ -2083,8 +2057,7 @@ class ValidationBindingsForm {
   template: `
   <div [formGroup]="form">
     <input type="text" formControlName="login" uniq-login-validator="expected">
-  </div>
-  `
+  </div>`
 })
 class UniqLoginWrapper {
   form: FormGroup;

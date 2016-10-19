@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
 import {TemplateAst} from '../template_parser/template_ast';
@@ -73,7 +72,7 @@ export class CompileMethod {
 
   addStmts(stmts: o.Statement[]) {
     this._updateDebugContextIfNeeded();
-    ListWrapper.addAll(this._bodyStatements, stmts);
+    this._bodyStatements.push(...stmts);
   }
 
   finish(): o.Statement[] { return this._bodyStatements; }

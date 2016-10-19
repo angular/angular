@@ -11,7 +11,6 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {isBlank, isPresent, normalizeBool} from './facade/lang';
 import {isPromise} from './private_import_core';
 
 
@@ -42,7 +41,7 @@ export function isControl(control: Object): boolean {
 }
 
 function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
-  if (isBlank(path)) return null;
+  if (path == null) return null;
 
   if (!(path instanceof Array)) {
     path = (<string>path).split(delimiter);
@@ -249,10 +248,9 @@ export abstract class AbstractControl {
    * the model.
    */
   markAsTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = normalizeBool(onlySelf);
     this._touched = true;
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent.markAsTouched({onlySelf});
     }
   }
@@ -270,7 +268,7 @@ export abstract class AbstractControl {
     this._forEachChild(
         (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent._updateTouched({onlySelf});
     }
   }
@@ -282,10 +280,9 @@ export abstract class AbstractControl {
    * the model.
    */
   markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = normalizeBool(onlySelf);
     this._pristine = false;
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent.markAsDirty({onlySelf});
     }
   }
@@ -302,7 +299,7 @@ export abstract class AbstractControl {
 
     this._forEachChild((control: AbstractControl) => { control.markAsPristine({onlySelf: true}); });
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent._updatePristine({onlySelf});
     }
   }
@@ -311,10 +308,9 @@ export abstract class AbstractControl {
    * Marks the control as `pending`.
    */
   markAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = normalizeBool(onlySelf);
     this._status = PENDING;
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent.markAsPending({onlySelf});
     }
   }
@@ -326,14 +322,12 @@ export abstract class AbstractControl {
    * If the control has children, all children will be disabled to maintain the model.
    */
   disable({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    emitEvent = isPresent(emitEvent) ? emitEvent : true;
-
     this._status = DISABLED;
     this._errors = null;
     this._forEachChild((control: AbstractControl) => { control.disable({onlySelf: true}); });
     this._updateValue();
 
-    if (emitEvent) {
+    if (emitEvent !== false) {
       this._valueChanges.emit(this._value);
       this._statusChanges.emit(this._status);
     }
@@ -359,7 +353,7 @@ export abstract class AbstractControl {
   }
 
   private _updateAncestors(onlySelf: boolean) {
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent.updateValueAndValidity();
       this._parent._updatePristine();
       this._parent._updateTouched();
@@ -390,9 +384,6 @@ export abstract class AbstractControl {
    */
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
-    onlySelf = normalizeBool(onlySelf);
-    emitEvent = isPresent(emitEvent) ? emitEvent : true;
-
     this._setInitialStatus();
     this._updateValue();
 
@@ -405,12 +396,12 @@ export abstract class AbstractControl {
       }
     }
 
-    if (emitEvent) {
+    if (emitEvent !== false) {
       this._valueChanges.emit(this._value);
       this._statusChanges.emit(this._status);
     }
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf, emitEvent});
     }
   }
@@ -424,21 +415,21 @@ export abstract class AbstractControl {
   private _setInitialStatus() { this._status = this._allControlsDisabled() ? DISABLED : VALID; }
 
   private _runValidator(): {[key: string]: any} {
-    return isPresent(this.validator) ? this.validator(this) : null;
+    return this.validator ? this.validator(this) : null;
   }
 
   private _runAsyncValidator(emitEvent: boolean): void {
-    if (isPresent(this.asyncValidator)) {
+    if (this.asyncValidator) {
       this._status = PENDING;
       this._cancelExistingSubscription();
-      var obs = toObservable(this.asyncValidator(this));
+      const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription =
           obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
     }
   }
 
   private _cancelExistingSubscription(): void {
-    if (isPresent(this._asyncValidationSubscription)) {
+    if (this._asyncValidationSubscription) {
       this._asyncValidationSubscription.unsubscribe();
     }
   }
@@ -467,10 +458,8 @@ export abstract class AbstractControl {
    * ```
    */
   setErrors(errors: {[key: string]: any}, {emitEvent}: {emitEvent?: boolean} = {}): void {
-    emitEvent = isPresent(emitEvent) ? emitEvent : true;
-
     this._errors = errors;
-    this._updateControlsErrors(emitEvent);
+    this._updateControlsErrors(emitEvent !== false);
   }
 
   /**
@@ -495,12 +484,8 @@ export abstract class AbstractControl {
    * If no path is given, it checks for the error on the present control.
    */
   getError(errorCode: string, path: string[] = null): any {
-    const control = isPresent(path) && (path.length > 0) ? this.get(path) : this;
-    if (isPresent(control) && isPresent(control._errors)) {
-      return control._errors[errorCode];
-    } else {
-      return null;
-    }
+    const control = path ? this.get(path) : this;
+    return control && control._errors ? control._errors[errorCode] : null;
   }
 
   /**
@@ -510,7 +495,7 @@ export abstract class AbstractControl {
    * If no path is given, it checks for the error on the present control.
    */
   hasError(errorCode: string, path: string[] = null): boolean {
-    return isPresent(this.getError(errorCode, path));
+    return !!this.getError(errorCode, path);
   }
 
   /**
@@ -519,7 +504,7 @@ export abstract class AbstractControl {
   get root(): AbstractControl {
     let x: AbstractControl = this;
 
-    while (isPresent(x._parent)) {
+    while (x._parent) {
       x = x._parent;
     }
 
@@ -534,7 +519,7 @@ export abstract class AbstractControl {
       this._statusChanges.emit(this._status);
     }
 
-    if (isPresent(this._parent)) {
+    if (this._parent) {
       this._parent._updateControlsErrors(emitEvent);
     }
   }
@@ -548,7 +533,7 @@ export abstract class AbstractControl {
 
   private _calculateStatus(): string {
     if (this._allControlsDisabled()) return DISABLED;
-    if (isPresent(this._errors)) return INVALID;
+    if (this._errors) return INVALID;
     if (this._anyControlsHaveStatus(PENDING)) return PENDING;
     if (this._anyControlsHaveStatus(INVALID)) return INVALID;
     return VALID;
@@ -585,7 +570,7 @@ export abstract class AbstractControl {
   _updatePristine({onlySelf}: {onlySelf?: boolean} = {}): void {
     this._pristine = !this._anyControlsDirty();
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent._updatePristine({onlySelf});
     }
   }
@@ -594,7 +579,7 @@ export abstract class AbstractControl {
   _updateTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
     this._touched = this._anyControlsTouched();
 
-    if (isPresent(this._parent) && !onlySelf) {
+    if (this._parent && !onlySelf) {
       this._parent._updateTouched({onlySelf});
     }
   }
@@ -691,12 +676,9 @@ export class FormControl extends AbstractControl {
     emitModelToViewChange?: boolean,
     emitViewToModelChange?: boolean
   } = {}): void {
-    emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
-    emitViewToModelChange = isPresent(emitViewToModelChange) ? emitViewToModelChange : true;
-
     this._value = value;
-    if (this._onChange.length && emitModelToViewChange) {
-      this._onChange.forEach((changeFn) => changeFn(this._value, emitViewToModelChange));
+    if (this._onChange.length && emitModelToViewChange !== false) {
+      this._onChange.forEach((changeFn) => changeFn(this._value, emitViewToModelChange !== false));
     }
     this.updateValueAndValidity({onlySelf, emitEvent});
   }

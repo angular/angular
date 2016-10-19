@@ -62,7 +62,7 @@ export class IOsDriverExtension extends WebDriverExtension {
       var startTime = record['startTime'];
       var endTime = record['endTime'];
 
-      if (type === 'FunctionCall' && (isBlank(data) || data['scriptName'] !== 'InjectedScript')) {
+      if (type === 'FunctionCall' && (data == null || data['scriptName'] !== 'InjectedScript')) {
         events.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
       } else if (type === 'Time') {

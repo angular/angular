@@ -11,7 +11,7 @@ var testList = null;
 
 export function main() {
   var size = getIntParameter('size');
-  testList = ListWrapper.createFixedSize(size);
+  testList = new Array(size);
 
   platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
     var injector = ref.injector;

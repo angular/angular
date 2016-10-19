@@ -1,4 +1,3 @@
-import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
 import {Math} from '@angular/facade/src/math';
 
 export var ITEMS = 1000;
@@ -62,7 +61,7 @@ export class RawEntity {
       return this._data[key];
     }
     var pieces = key.split('.');
-    var last = ListWrapper.last(pieces);
+    var last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
     var target = this._resolve(pieces, this);
     if (target == null) {
@@ -77,7 +76,7 @@ export class RawEntity {
       return;
     }
     var pieces = key.split('.');
-    var last = ListWrapper.last(pieces);
+    var last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
     var target = this._resolve(pieces, this);
     target[last] = value;
@@ -88,7 +87,7 @@ export class RawEntity {
       return this._data.delete(key);
     }
     var pieces = key.split('.');
-    var last = ListWrapper.last(pieces);
+    var last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
     var target = this._resolve(pieces, this);
     return target.remove(last);

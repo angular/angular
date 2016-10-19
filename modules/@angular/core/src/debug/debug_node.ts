@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di';
-import {ListWrapper, MapWrapper, Predicate} from '../facade/collection';
+import {MapWrapper, Predicate} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {RenderDebugInfo} from '../render/api';
 
@@ -92,8 +92,7 @@ export class DebugElement extends DebugNode {
     if (siblingIndex !== -1) {
       var previousChildren = this.childNodes.slice(0, siblingIndex + 1);
       var nextChildren = this.childNodes.slice(siblingIndex + 1);
-      this.childNodes =
-          ListWrapper.concat(ListWrapper.concat(previousChildren, newChildren), nextChildren);
+      this.childNodes = previousChildren.concat(newChildren, nextChildren);
       for (var i = 0; i < newChildren.length; ++i) {
         var newChild = newChildren[i];
         if (isPresent(newChild.parent)) {

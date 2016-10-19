@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di/injector';
-import {ListWrapper} from '../facade/collection';
 import {unimplemented} from '../facade/errors';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
@@ -186,7 +185,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
   }
 
   indexOf(viewRef: ViewRef): number {
-    return ListWrapper.indexOf(this._element.nestedViews, (<ViewRef_<any>>viewRef).internalView);
+    return this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView);
   }
 
   /** @internal */
@@ -194,9 +193,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): rename to destroy
   remove(index: number = -1): void {
-    var s = this._removeScope();
+    const s = this._removeScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     view.destroy();
     // view is intentionally not returned to the client.
     wtfLeave(s);
@@ -207,14 +206,14 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   detach(index: number = -1): ViewRef {
-    var s = this._detachScope();
+    const s = this._detachScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     return wtfLeave(s, view.ref);
   }
 
   clear() {
-    for (var i = this.length - 1; i >= 0; i--) {
+    for (let i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }
   }

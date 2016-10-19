@@ -8,7 +8,6 @@
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
 import {HostListener, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {ListWrapper} from '@angular/facade/src/collection';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -474,7 +473,7 @@ class MockReflectorHost implements StaticReflectorHost {
 
     function resolvePath(pathParts: string[]): string {
       let result: string[] = [];
-      ListWrapper.forEachWithIndex(pathParts, (part, index) => {
+      pathParts.forEach((part, index) => {
         switch (part) {
           case '':
           case '.':

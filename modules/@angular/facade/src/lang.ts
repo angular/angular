@@ -53,10 +53,9 @@ export function scheduleMicroTask(fn: Function) {
 
 // Need to declare a new variable for global here since TypeScript
 // exports the original value of the symbol.
-var _global: BrowserNodeGlobal = globalScope;
+const _global: BrowserNodeGlobal = globalScope;
 
 export {_global as global};
-
 
 export function getTypeNameForDebugging(type: any): string {
   return type['name'] || typeof type;
@@ -70,11 +69,11 @@ _global.assert = function assert(condition) {
 };
 
 export function isPresent(obj: any): boolean {
-  return obj !== undefined && obj !== null;
+  return obj != null;
 }
 
 export function isBlank(obj: any): boolean {
-  return obj === undefined || obj === null;
+  return obj == null;
 }
 
 const STRING_MAP_PROTO = Object.getPrototypeOf({});
@@ -85,8 +84,6 @@ export function isStrictStringMap(obj: any): boolean {
 export function isDate(obj: any): obj is Date {
   return obj instanceof Date && !isNaN(obj.valueOf());
 }
-
-export function noop() {}
 
 export function stringify(token: any): string {
   if (typeof token === 'string') {
@@ -144,14 +141,6 @@ export function looseIdentical(a: any, b: any): boolean {
   return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
 }
 
-export function normalizeBlank(obj: Object): any {
-  return isBlank(obj) ? null : obj;
-}
-
-export function normalizeBool(obj: boolean): boolean {
-  return isBlank(obj) ? false : obj;
-}
-
 export function isJsObject(o: any): boolean {
   return o !== null && (typeof o === 'function' || typeof o === 'object');
 }
@@ -182,17 +171,17 @@ export function setValueOnPath(global: any, path: string, value: any) {
 }
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
-declare var Symbol: any;
-var _symbolIterator: any = null;
+declare let Symbol: any;
+let _symbolIterator: any = null;
 export function getSymbolIterator(): string|symbol {
-  if (isBlank(_symbolIterator)) {
-    if (isPresent((<any>globalScope).Symbol) && isPresent(Symbol.iterator)) {
+  if (!_symbolIterator) {
+    if ((<any>globalScope).Symbol && Symbol.iterator) {
       _symbolIterator = Symbol.iterator;
     } else {
       // es6-shim specific logic
-      var keys = Object.getOwnPropertyNames(Map.prototype);
-      for (var i = 0; i < keys.length; ++i) {
-        var key = keys[i];
+      const keys = Object.getOwnPropertyNames(Map.prototype);
+      for (let i = 0; i < keys.length; ++i) {
+        let key = keys[i];
         if (key !== 'entries' && key !== 'size' &&
             (Map as any).prototype[key] === Map.prototype['entries']) {
           _symbolIterator = key;
