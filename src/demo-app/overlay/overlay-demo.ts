@@ -74,6 +74,21 @@ export class OverlayDemo {
     let overlayRef = this.overlay.create(config);
     overlayRef.attach(new ComponentPortal(SpagettiPanel, this.viewContainerRef));
   }
+
+  openPanelWithBackdrop() {
+    let config = new OverlayState();
+
+    config.positionStrategy = this.overlay.position()
+      .global()
+      .centerHorizontally();
+    config.hasBackdrop = true;
+    config.backdropClass = 'md-overlay-transparent-backdrop';
+
+    let overlayRef = this.overlay.create(config);
+    overlayRef.attach(this.templatePortals.first);
+    overlayRef.backdropClick().subscribe(() => overlayRef.detach());
+  }
+
 }
 
 /** Simple component to load into an overlay */

@@ -12,6 +12,8 @@ export class OverlayState {
   /** Whether the overlay has a backdrop. */
   hasBackdrop: boolean = false;
 
+  backdropClass: string = 'md-overlay-dark-backdrop';
+
   // TODO(jelbourn): configuration still to add
   // - overlay size
   // - focus trap

@@ -99,17 +99,21 @@ describe('Overlay', () => {
   });
 
   describe('backdrop', () => {
-    it('should create and destroy an overlay backdrop', () => {
-      let config = new OverlayState();
-      config.hasBackdrop = true;
+    let config: OverlayState;
 
+    beforeEach(() => {
+      config = new OverlayState();
+      config.hasBackdrop = true;
+    });
+
+    it('should create and destroy an overlay backdrop', () => {
       let overlayRef = overlay.create(config);
       overlayRef.attach(componentPortal);
 
       viewContainerFixture.detectChanges();
       let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
       expect(backdrop).toBeTruthy();
-      expect(backdrop.classList).not.toContain('.md-overlay-backdrop-showing');
+      expect(backdrop.classList).not.toContain('md-overlay-backdrop-showing');
 
       let backdropClickHandler = jasmine.createSpy('backdropClickHander');
       overlayRef.backdropClick().subscribe(backdropClickHandler);
@@ -117,6 +121,27 @@ describe('Overlay', () => {
       backdrop.click();
       expect(backdropClickHandler).toHaveBeenCalled();
     });
+
+    it('should apply the default overlay backdrop class', () => {
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      expect(backdrop.classList).toContain('md-overlay-dark-backdrop');
+    });
+
+    it('should apply a custom overlay backdrop class', () => {
+      config.backdropClass = 'md-overlay-transparent-backdrop';
+
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      expect(backdrop.classList).toContain('md-overlay-transparent-backdrop');
+    });
+
   });
 });
 

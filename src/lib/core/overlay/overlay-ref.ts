@@ -62,6 +62,8 @@ export class OverlayRef implements PortalHost {
   private _attachBackdrop() {
     this._backdropElement = document.createElement('div');
     this._backdropElement.classList.add('md-overlay-backdrop');
+    this._backdropElement.classList.add(this._state.backdropClass);
+
     this._pane.parentElement.appendChild(this._backdropElement);
 
     // Forward backdrop clicks such that the consumer of the overlay can perform whatever
@@ -82,6 +84,7 @@ export class OverlayRef implements PortalHost {
 
     if (backdropToDetach) {
       backdropToDetach.classList.remove('md-overlay-backdrop-showing');
+      backdropToDetach.classList.remove(this._state.backdropClass);
       backdropToDetach.addEventListener('transitionend', () => {
         backdropToDetach.parentNode.removeChild(backdropToDetach);
 

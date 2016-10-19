@@ -4,7 +4,7 @@
 
 
 @mixin md-overlay() {
-  $md-backdrop-color: md-color($md-grey, 900);
+  $md-dark-backdrop-color: md-color($md-grey, 900);
 
   // TODO(jelbourn): change from the `md` prefix to something else for everything in the toolkit.
 
@@ -45,11 +45,18 @@
     // TODO(jelbourn): figure out if there are actually spec'ed colors for both light and dark
     // themes here. Currently using the values from Angular Material 1.
     transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
-    background: $md-backdrop-color;
     opacity: 0;
   }
 
   .md-overlay-backdrop.md-overlay-backdrop-showing {
     opacity: 0.48;
+  }
+
+  .md-overlay-dark-backdrop {
+    background: $md-dark-backdrop-color;
+  }
+
+  .md-overlay-transparent-backdrop {
+    background: none;
   }
 }
