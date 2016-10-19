@@ -236,6 +236,15 @@ export function main() {
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
 
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.setValue({'one': 'one', 'two': 'two'}, {emitEvent: false});
+             tick();
+           }));
+
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           g.statusChanges.subscribe(() => logger.push('group'));
@@ -340,6 +349,15 @@ export function main() {
           g.patchValue({'one': 'one'});
           expect(logger).toEqual(['control1', 'group', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.patchValue({'one': 'one', 'two': 'two'}, {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
@@ -540,6 +558,15 @@ export function main() {
           g.reset();
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             g.reset({}, {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per reset control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
