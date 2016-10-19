@@ -9,6 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
+import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import * as o from './output/output_ast';
@@ -17,7 +18,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {LifecycleHooks} from './private_import_core';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {ProviderAst} from './template_parser/template_ast';
-import {createDiTokenExpression} from './util';
 
 export class ComponentFactoryDependency {
   constructor(
