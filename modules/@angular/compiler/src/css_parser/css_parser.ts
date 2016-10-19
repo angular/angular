@@ -330,7 +330,7 @@ export class CssParser {
     var span: ParseSourceSpan;
     var startSelector = selectors[0];
     if (isPresent(block)) {
-      var span = this._generateSourceSpan(startSelector, block);
+      span = this._generateSourceSpan(startSelector, block);
       ruleAst = new CssSelectorRuleAst(span, selectors, block);
     } else {
       var name = this._extractSourceContent(start, this._getScannerIndex() - 1);
