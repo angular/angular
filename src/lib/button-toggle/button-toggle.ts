@@ -52,6 +52,7 @@ export class MdButtonToggleChange {
   host: {
     'role': 'radiogroup',
   },
+  exportAs: 'mdButtonToggleGroup',
 })
 export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor {
   /** The value for the button toggle group. Should match currently selected button toggle. */
@@ -207,6 +208,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
 /** Multiple selection button-toggle group. */
 @Directive({
   selector: 'md-button-toggle-group[multiple]',
+  exportAs: 'mdButtonToggleGroup',
 })
 export class MdButtonToggleGroupMultiple {
   /** Disables all toggles in the group. */
