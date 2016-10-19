@@ -40,10 +40,10 @@ task(':watch:components:spec', () => {
 
 
 /** Builds component typescript only (ESM output). */
-task(':build:components:ts', tsBuildTask(componentsDir));
+task(':build:components:ts', tsBuildTask(componentsDir, 'tsconfig-srcs.json'));
 
 /** Builds components typescript for tests (CJS output). */
-task(':build:components:spec', tsBuildTask(path.join(componentsDir, 'tsconfig-spec.json')));
+task(':build:components:spec', tsBuildTask(componentsDir));
 
 /** Copies assets (html, markdown) to build output. */
 task(':build:components:assets', copyTask([

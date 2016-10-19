@@ -34,11 +34,11 @@ function _globify(maybeGlob: string, suffix = '**/*') {
 
 
 /** Create a TS Build Task, based on the options. */
-export function tsBuildTask(tsConfigPath: string) {
+export function tsBuildTask(tsConfigPath: string, tsConfigName = 'tsconfig.json') {
   let tsConfigDir = tsConfigPath;
-  if (fs.existsSync(path.join(tsConfigDir, 'tsconfig.json'))) {
+  if (fs.existsSync(path.join(tsConfigDir, tsConfigName))) {
     // Append tsconfig.json
-    tsConfigPath = path.join(tsConfigDir, 'tsconfig.json');
+    tsConfigPath = path.join(tsConfigDir, tsConfigName);
   } else {
     tsConfigDir = path.dirname(tsConfigDir);
   }

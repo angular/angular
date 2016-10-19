@@ -5,7 +5,7 @@
     "experimentalDecorators": true,
     "lib": ["es6", "es2015", "dom"],
     "mapRoot": "",
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
@@ -15,18 +15,18 @@
     "target": "es5",
     "inlineSources": true,
     "stripInternal": true,
-    "baseUrl": "",
-    "paths": {
-    },
     "typeRoots": [
       "../../node_modules/@types"
     ],
     "types": [
-      "jasmine"
     ]
   },
+  "exclude": [
+    "**/*.spec.*",
+    "system-config-spec.ts"
+  ],
   "angularCompilerOptions": {
-    "genDir": "../../dist",
+    "genDir": "../../dist/@angular/material",
     "skipTemplateCodegen": true,
     "debug": true
   }
