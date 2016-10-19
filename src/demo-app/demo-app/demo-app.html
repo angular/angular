@@ -1,34 +1,20 @@
 <md-sidenav-layout class="demo-root" fullscreen>
   <md-sidenav #start>
     <md-nav-list>
-      <a md-list-item [routerLink]="['button']">Button</a>
-      <a md-list-item [routerLink]="['button-toggle']">Button Toggle</a>
-      <a md-list-item [routerLink]="['card']">Card</a>
-      <a md-list-item [routerLink]="['checkbox']">Checkbox</a>
-      <a md-list-item [routerLink]="['dialog']">Dialog</a>
-      <a md-list-item [routerLink]="['gestures']">Gestures</a>
-      <a md-list-item [routerLink]="['grid-list']">Grid List</a>
-      <a md-list-item [routerLink]="['icon']">Icon</a>
-      <a md-list-item [routerLink]="['input']">Input</a>
-      <a md-list-item [routerLink]="['list']">List</a>
-      <a md-list-item [routerLink]="['menu']">Menu</a>
-      <a md-list-item [routerLink]="['live-announcer']">Live Announcer</a>
-      <a md-list-item [routerLink]="['overlay']">Overlay</a>
-      <a md-list-item [routerLink]="['portal']">Portal</a>
-      <a md-list-item [routerLink]="['progress-bar']">Progress Bar</a>
-      <a md-list-item [routerLink]="['progress-circle']">Progress Circle</a>
-      <a md-list-item [routerLink]="['radio']">Radio</a>
-      <a md-list-item [routerLink]="['ripple']">Ripple</a>
-      <a md-list-item [routerLink]="['select']">Select</a>
-      <a md-list-item [routerLink]="['sidenav']">Sidenav</a>
-      <a md-list-item [routerLink]="['slider']">Slider</a>
-      <a md-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
-      <a md-list-item [routerLink]="['snack-bar']">Snack Bar</a>
-      <a md-list-item [routerLink]="['tabs']">Tabs</a>
-      <a md-list-item [routerLink]="['toolbar']">Toolbar</a>
-      <a md-list-item [routerLink]="['tooltip']">Tooltip</a>
+      <a *ngFor="let navItem of navItems"
+         md-list-item
+         (click)="start.close()"
+         [routerLink]="[navItem.route]">
+        {{navItem.name}}
+      </a>
+
       <hr>
-      <a md-list-item [routerLink]="['baseline']">Baseline</a>
+
+      <a md-list-item
+         (click)="start.close()"
+         [routerLink]="['baseline']">
+        Baseline
+      </a>
     </md-nav-list>
     <button md-button (click)="start.close()">CLOSE</button>
   </md-sidenav>
