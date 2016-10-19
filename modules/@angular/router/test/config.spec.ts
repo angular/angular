@@ -15,6 +15,12 @@ describe('config', () => {
       validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
     });
 
+    it('should throw for undefined route', () => {
+      expect(() => {
+        validateConfig([{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}]);
+      }).toThrowError();
+    });
+
     it('should throw when Array is passed', () => {
       expect(() => {
         validateConfig([
