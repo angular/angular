@@ -27,8 +27,8 @@ export interface AttrProp {
 export interface ComponentInfo {
   type: Type<any>;
   selector: string;
-  inputs: AttrProp[];
-  outputs: AttrProp[];
+  inputs?: AttrProp[];
+  outputs?: AttrProp[];
 }
 
 export function getComponentInfo(type: Type<any>): ComponentInfo {

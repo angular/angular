@@ -23,7 +23,7 @@ module.exports = function(config) {
 
       'node_modules/core-js/client/core.js',
       // include Angular v1 for upgrade module testing
-      'node_modules/angular/angular.min.js',
+      'node_modules/angular/angular.js',
 
       'node_modules/zone.js/dist/zone.js', 'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/proxy.js', 'node_modules/zone.js/dist/sync-test.js',
