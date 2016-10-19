@@ -158,6 +158,15 @@ export function main() {
         expect(form.valueChanges).toBe(formModel.valueChanges);
       });
 
+      it('should reexport control methods', () => {
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+      });
+
       describe('addControl', () => {
         it('should throw when no control found', () => {
           const dir = new FormControlName(form, null, null, [defaultAccessor]);
@@ -329,6 +338,15 @@ export function main() {
         expect(form.enabled).toBe(formModel.enabled);
       });
 
+      it('should reexport control methods', () => {
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(form.hasError('required')).toBe(formModel.hasError('required'));
+        expect(form.getError('required')).toBe(formModel.getError('required'));
+      });
+
       describe('addControl & addFormGroup', () => {
         it('should create a control with the given name', fakeAsync(() => {
              form.addFormGroup(personControlGroupDir);
@@ -406,6 +424,15 @@ export function main() {
         expect(controlGroupDir.disabled).toBe(formModel.disabled);
         expect(controlGroupDir.enabled).toBe(formModel.enabled);
       });
+
+      it('should reexport control methods', () => {
+        expect(controlGroupDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlGroupDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(controlGroupDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlGroupDir.getError('required')).toBe(formModel.getError('required'));
+      });
     });
 
     describe('FormArrayName', () => {
@@ -433,6 +460,15 @@ export function main() {
         expect(formArrayDir.untouched).toBe(formModel.untouched);
         expect(formArrayDir.disabled).toBe(formModel.disabled);
         expect(formArrayDir.enabled).toBe(formModel.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(formArrayDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(formArrayDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(formArrayDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(formArrayDir.getError('required')).toBe(formModel.getError('required'));
       });
     });
 
@@ -466,6 +502,15 @@ export function main() {
 
       it('should reexport control properties', () => { checkProperties(control); });
 
+      it('should reexport control methods', () => {
+        expect(controlDir.hasError('required')).toBe(control.hasError('required'));
+        expect(controlDir.getError('required')).toBe(control.getError('required'));
+
+        control.setErrors({required: true});
+        expect(controlDir.hasError('required')).toBe(control.hasError('required'));
+        expect(controlDir.getError('required')).toBe(control.getError('required'));
+      });
+
       it('should reexport new control properties', () => {
         var newControl = new FormControl(null);
         controlDir.form = newControl;
@@ -486,15 +531,16 @@ export function main() {
 
     describe('NgModel', () => {
       let ngModel: NgModel;
+      let control: FormControl;
 
       beforeEach(() => {
         ngModel = new NgModel(
             null, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
+        control = ngModel.control;
       });
 
       it('should reexport control properties', () => {
-        var control = ngModel.control;
         expect(ngModel.control).toBe(control);
         expect(ngModel.value).toBe(control.value);
         expect(ngModel.valid).toBe(control.valid);
@@ -509,6 +555,15 @@ export function main() {
         expect(ngModel.valueChanges).toBe(control.valueChanges);
         expect(ngModel.disabled).toBe(control.disabled);
         expect(ngModel.enabled).toBe(control.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(ngModel.hasError('required')).toBe(control.hasError('required'));
+        expect(ngModel.getError('required')).toBe(control.getError('required'));
+
+        control.setErrors({required: true});
+        expect(ngModel.hasError('required')).toBe(control.hasError('required'));
+        expect(ngModel.getError('required')).toBe(control.getError('required'));
       });
 
       it('should throw when no value accessor with named control', () => {
@@ -609,6 +664,15 @@ export function main() {
         expect(controlNameDir.valueChanges).toBe(formModel.valueChanges);
         expect(controlNameDir.disabled).toBe(formModel.disabled);
         expect(controlNameDir.enabled).toBe(formModel.enabled);
+      });
+
+      it('should reexport control methods', () => {
+        expect(controlNameDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlNameDir.getError('required')).toBe(formModel.getError('required'));
+
+        formModel.setErrors({required: true});
+        expect(controlNameDir.hasError('required')).toBe(formModel.hasError('required'));
+        expect(controlNameDir.getError('required')).toBe(formModel.getError('required'));
       });
     });
   });
