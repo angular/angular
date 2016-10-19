@@ -248,7 +248,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this.element.removeChild(childNode);
       childNodes.push(childNode);
     }
-    this.linkFn(this.componentScope, (clonedElement: Node[], scope: angular.IScope) => {
+    this.linkFn(this.componentScope, (clonedElement, scope) => {
       for (var i = 0, ii = clonedElement.length; i < ii; i++) {
         this.element.appendChild(clonedElement[i]);
       }
@@ -302,7 +302,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     return controller;
   }
 
-  private resolveRequired($element: angular.IAugmentedJQuery, require: string|string[]): any {
+  private resolveRequired(
+      $element: angular.IAugmentedJQuery, require: angular.DirectiveRequireProperty): any {
     if (!require) {
       return undefined;
     } else if (typeof require == 'string') {

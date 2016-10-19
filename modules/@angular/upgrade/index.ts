@@ -12,5 +12,5 @@
  * Entry point for all public APIs of the upgrade package.
  */
 export * from './src/upgrade';
-
+export * from './src/aot';
 // This file only reexports content of the `src` folder. Keep it that way.

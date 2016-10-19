@@ -10,7 +10,7 @@ import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModul
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
-import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
+import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_ZONE, REQUIRE_INJECTOR, NG2_INJECTOR} from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {ComponentInfo, getComponentInfo} from './metadata';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
