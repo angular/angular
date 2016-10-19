@@ -37,6 +37,9 @@ export class AbstractControlStatus {
   get ngClassInvalid(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.invalid : false;
   }
+  get ngClassPending(): boolean {
+    return isPresent(this._cd.control) ? this._cd.control.pending : false;
+  }
 }
 
 export const ngControlStatusHost = {
@@ -45,7 +48,8 @@ export const ngControlStatusHost = {
   '[class.ng-pristine]': 'ngClassPristine',
   '[class.ng-dirty]': 'ngClassDirty',
   '[class.ng-valid]': 'ngClassValid',
-  '[class.ng-invalid]': 'ngClassInvalid'
+  '[class.ng-invalid]': 'ngClassInvalid',
+  '[class.ng-pending]': 'ngClassPending'
 };
 
 /**
