@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Directive, Input, forwardRef} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgForm} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -22,7 +22,8 @@ export function main() {
           StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
           NgModelRadioForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
-          NgModelValidationBindings, NgModelMultipleValidators
+          NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
+          NgModelAsyncValidation
         ],
         imports: [FormsModule]
       });
@@ -139,7 +140,6 @@ export function main() {
              fixture.detectChanges();
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
-             const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, 'blur');
@@ -150,6 +150,29 @@ export function main() {
              input.value = 'updatedValue';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
+             expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+           });
+         }));
+
+      it('should set status classes with ngModel and async validators', fakeAsync(() => {
+
+           const fixture = TestBed.createComponent(NgModelAsyncValidation);
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
+
+             dispatchEvent(input, 'blur');
+             fixture.detectChanges();
+
+             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+
+             input.value = 'updatedValue';
+             dispatchEvent(input, 'input');
+             tick();
+             fixture.detectChanges();
+
              expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
            });
          }));
@@ -883,7 +906,7 @@ export function main() {
     });
 
   });
-};
+}
 
 @Component({
   selector: 'standalone-ng-model',
@@ -1094,6 +1117,23 @@ class NgModelMultipleValidators {
   required: boolean;
   minLen: number;
   pattern: string;
+}
+
+@Directive({
+  selector: '[ng-async-validator]',
+  providers: [
+    {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true}
+  ]
+})
+class NgAsyncValidator implements Validator {
+  validate(c: AbstractControl) { return Promise.resolve(null); }
+}
+
+@Component({
+  selector: 'ng-model-async-validation',
+  template: `<input name="async" ngModel ng-async-validator>`
+})
+class NgModelAsyncValidation {
 }
 
 function sortedClassList(el: HTMLElement) {
