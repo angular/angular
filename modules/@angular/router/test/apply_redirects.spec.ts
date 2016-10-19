@@ -305,6 +305,34 @@ describe('applyRedirects', () => {
         expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
       });
     });
+
+    it('should load the configuration after a local redirect from a wildcard route', () => {
+      const loadedConfig = new LoadedRouterConfig(
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      const config =
+          [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
+
+      applyRedirects(<any>'providedInjector', <any>loader, tree('xyz'), config).forEach(r => {
+        expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+      });
+    });
+
+    it('should load the configuration after an absolute redirect from a wildcard route', () => {
+      const loadedConfig = new LoadedRouterConfig(
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      const config =
+          [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
+
+      applyRedirects(<any>'providedInjector', <any>loader, tree('xyz'), config).forEach(r => {
+        expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
+      });
+    });
   });
 
   describe('empty paths', () => {
