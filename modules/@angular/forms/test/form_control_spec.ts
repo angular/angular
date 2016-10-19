@@ -555,6 +555,16 @@ export function main() {
           expect(logger).toEqual(['control1', 'group']);
         });
 
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c2.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             c.reset(null, {emitEvent: false});
+
+             tick();
+           }));
+
         it('should emit one statusChange event per reset control', () => {
           g.statusChanges.subscribe(() => logger.push('group'));
           c.statusChanges.subscribe(() => logger.push('control1'));

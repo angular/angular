@@ -172,6 +172,16 @@ export function main() {
           expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
         });
 
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c2.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             a.setValue(['one', 'two'], {emitEvent: false});
+             tick();
+           }));
+
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           a.statusChanges.subscribe(() => logger.push('array'));
@@ -276,6 +286,16 @@ export function main() {
           a.patchValue(['one']);
           expect(logger).toEqual(['control1', 'array', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c2.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             a.patchValue(['one', 'two'], {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
@@ -477,6 +497,17 @@ export function main() {
           a.reset();
           expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
         });
+
+        it('should not fire an event when explicitly specified', fakeAsync(() => {
+             form.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c2.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+             c3.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+
+             a.reset([], {emitEvent: false});
+             tick();
+           }));
 
         it('should emit one statusChange event per reset control', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
