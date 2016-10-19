@@ -65,6 +65,8 @@ export class CompileMethod {
     this._newState = new _DebugState(nodeIndex, templateAst);
   }
 
+  push(...stmts: o.Statement[]) { this.addStmts(stmts); }
+
   addStmt(stmt: o.Statement) {
     this._updateDebugContextIfNeeded();
     this._bodyStatements.push(stmt);
