@@ -91,16 +91,3 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
   }
   return result;
 }
-
-export function createPureProxy(
-    fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr, view: CompileView) {
-  view.fields.push(new o.ClassField(pureProxyProp.name, null));
-  var pureProxyId =
-      argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
-  if (!pureProxyId) {
-    throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);
-  }
-  view.createMethod.addStmt(o.THIS_EXPR.prop(pureProxyProp.name)
-                                .set(o.importExpr(resolveIdentifier(pureProxyId)).callFn([fn]))
-                                .toStmt());
-}
