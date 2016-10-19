@@ -517,7 +517,7 @@ export declare class Validators {
     static nullValidator(c: AbstractControl): {
         [key: string]: boolean;
     };
-    static pattern(pattern: string): ValidatorFn;
+    static pattern(pattern: string | RegExp): ValidatorFn;
     static required(control: AbstractControl): {
         [key: string]: boolean;
     };

@@ -8,7 +8,6 @@
 
 import {OpaqueToken} from '@angular/core';
 import {toPromise} from 'rxjs/operator/toPromise';
-
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
 import {isPresent} from './facade/lang';
@@ -95,16 +94,24 @@ export class Validators {
   /**
    * Validator that requires a control to match a regex to its value.
    */
-  static pattern(pattern: string): ValidatorFn {
+  static pattern(pattern: string|RegExp): ValidatorFn {
+    if (!pattern) return Validators.nullValidator;
+    let regex: RegExp;
+    let regexStr: string;
+    if (typeof pattern === 'string') {
+      regexStr = `^${pattern}$`;
+      regex = new RegExp(regexStr);
+    } else {
+      regexStr = pattern.toString();
+      regex = pattern;
+    }
     return (control: AbstractControl): {[key: string]: any} => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
-      const regex = new RegExp(`^${pattern}$`);
       const value: string = control.value;
-      return regex.test(value) ?
-          null :
-          {'pattern': {'requiredPattern': `^${pattern}$`, 'actualValue': value}};
+      return regex.test(value) ? null :
+                                 {'pattern': {'requiredPattern': regexStr, 'actualValue': value}};
     };
   }
 
@@ -119,7 +126,7 @@ export class Validators {
    */
   static compose(validators: ValidatorFn[]): ValidatorFn {
     if (!validators) return null;
-    var presentValidators = validators.filter(isPresent);
+    const presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -129,7 +136,7 @@ export class Validators {
 
   static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
     if (!validators) return null;
-    var presentValidators = validators.filter(isPresent);
+    const presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -152,7 +159,7 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 }
 
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
-  var res: {[key: string]: any} =
+  const res: {[key: string]: any} =
       arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
         return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
       }, {});
