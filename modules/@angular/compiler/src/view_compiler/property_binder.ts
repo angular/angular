@@ -22,7 +22,7 @@ import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
 import {DetectChangesVars, ViewProperties} from './constants';
 import {CompileEventListener} from './event_binder';
-import {convertCdExpressionToIr, temporaryDeclaration} from './expression_converter';
+import {NameResolver, NoLocalsNameResolver, convertCdExpressionToIr, temporaryDeclaration} from './expression_converter';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
   return o.THIS_EXPR.prop(`_expr_${exprIndex}`);
@@ -38,9 +38,10 @@ class EvalResult {
 
 function evalCdAst(
     view: CompileView, currValExpr: o.ReadVarExpr, parsedExpression: cdAst.AST,
-    context: o.Expression, method: CompileMethod, bindingIndex: number): EvalResult {
+    context: o.Expression, nameResolver: NameResolver, method: CompileMethod,
+    bindingIndex: number): EvalResult {
   var checkExpression = convertCdExpressionToIr(
-      view, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex);
+      nameResolver, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex);
   if (!checkExpression.expression) {
     // e.g. an empty expression was given
     return null;
@@ -67,9 +68,10 @@ function evalCdAst(
 
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
-    parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
-    method: CompileMethod, bindingIndex: number) {
-  const evalResult = evalCdAst(view, currValExpr, parsedExpression, context, method, bindingIndex);
+    parsedExpression: cdAst.AST, context: o.Expression, nameResolver: NameResolver,
+    actions: o.Statement[], method: CompileMethod, bindingIndex: number) {
+  const evalResult =
+      evalCdAst(view, currValExpr, parsedExpression, context, nameResolver, method, bindingIndex);
   if (!evalResult) {
     return;
   }
@@ -100,7 +102,7 @@ export function bindRenderText(
   view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
 
   bind(
-      view, currValExpr, valueField, boundText.value, view.componentContext,
+      view, currValExpr, valueField, boundText.value, view.componentContext, view,
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, currValExpr])
            .toStmt()],
@@ -205,7 +207,8 @@ function bindAndWriteToRenderer(
     }
 
     bind(
-        view, currValExpr, fieldExpr, boundProp.value, context, updateStmts, compileMethod,
+        view, currValExpr, fieldExpr, boundProp.value, context,
+        isHostProp ? new NoLocalsNameResolver(view) : view, updateStmts, compileMethod,
         view.bindings.length);
   });
 }
@@ -267,7 +270,7 @@ export function bindDirectiveInputs(
     detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, input);
     var currValExpr = createCurrValueExpr(bindingIndex);
     const evalResult = evalCdAst(
-        view, currValExpr, input.value, view.componentContext, detectChangesInInputsMethod,
+        view, currValExpr, input.value, view.componentContext, view, detectChangesInInputsMethod,
         bindingIndex);
     if (!evalResult) {
       return;

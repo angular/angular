@@ -826,6 +826,73 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(tc.nativeElement.id).toEqual('newId');
       });
 
+      it('should not use template variables for expressions in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+        class DirectiveWithHostProps {
+          id = 'one';
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}})
+                .createComponent(MyComp);
+        fixture.detectChanges();
+
+        var tc = fixture.debugElement.children[0];
+        expect(tc.properties['id']).toBe('one');
+        expect(tc.properties['title']).toBe(undefined);
+      });
+
+      it('should not allow pipes in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
+        class DirectiveWithHostProps {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
+        const template = '<div host-properties></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Host binding expression cannot contain pipes/);
+      });
+
+      it('should not use template variables for expressions in hostListeners', () => {
+        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
+        class DirectiveWithHostListener {
+          id = 'one';
+          receivedArgs: any[];
+
+          doIt(...args: any[]) { this.receivedArgs = args; }
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<div *ngFor="let id of ['forId']" host-listener></div>`}})
+                .createComponent(MyComp);
+        fixture.detectChanges();
+        var tc = fixture.debugElement.children[0];
+        tc.triggerEventHandler('click', {});
+        var dir: DirectiveWithHostListener = tc.injector.get(DirectiveWithHostListener);
+        expect(dir.receivedArgs).toEqual(['one', undefined]);
+      });
+
+      it('should not allow pipes in hostListeners', () => {
+        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
+        class DirectiveWithHostListener {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
+        const template = '<div host-listener></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Cannot have a pipe in an action expression/);
+      });
+
+
+
       if (getDOM().supportsDOMEvents()) {
         it('should support preventing default on render events', () => {
           TestBed.configureTestingModule({
