@@ -6,20 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export type Ng1Token = string;
+
+export interface IAnnotatedFunction extends Function { $inject?: Ng1Token[]; }
+
+export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
+
 export interface IModule {
-  config(fn: any): IModule;
-  directive(selector: string, factory: any): IModule;
+  name: string;
+  requires: (string|IInjectable)[];
+  config(fn: IInjectable): IModule;
+  directive(selector: string, factory: IInjectable): IModule;
   component(selector: string, component: IComponent): IModule;
-  controller(name: string, type: any): IModule;
-  factory(key: string, factoryFn: any): IModule;
-  value(key: string, value: any): IModule;
-  run(a: any): void;
+  controller(name: string, type: IInjectable): IModule;
+  factory(key: Ng1Token, factoryFn: IInjectable): IModule;
+  value(key: Ng1Token, value: any): IModule;
+  run(a: IInjectable): IModule;
 }
 export interface ICompileService {
   (element: Element|NodeList|string, transclude?: Function): ILinkFn;
 }
 export interface ILinkFn {
-  (scope: IScope, cloneAttachFn?: Function, options?: ILinkFnOptions): void;
+  (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;
 }
 export interface ILinkFnOptions {
   parentBoundTranscludeFn?: Function;
@@ -29,35 +37,42 @@ export interface ILinkFnOptions {
 export interface IRootScopeService {
   $new(isolate?: boolean): IScope;
   $id: string;
+  $parent: IScope;
+  $root: IScope;
   $watch(expr: any, fn?: (a1?: any, a2?: any) => void): Function;
   $destroy(): any;
   $apply(): any;
   $apply(exp: string): any;
   $apply(exp: Function): any;
   $evalAsync(): any;
+  $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
   $$childTail: IScope;
   $$childHead: IScope;
   $$nextSibling: IScope;
+  [key: string]: any;
 }
 export interface IScope extends IRootScopeService {}
-export interface IAngularBootstrapConfig {}
+;
+export interface IAngularBootstrapConfig { strictDi?: boolean; }
 export interface IDirective {
   compile?: IDirectiveCompileFn;
-  controller?: any;
+  controller?: IController;
   controllerAs?: string;
-  bindToController?: boolean|Object;
+  bindToController?: boolean|{[key: string]: string};
   link?: IDirectiveLinkFn|IDirectivePrePost;
   name?: string;
   priority?: number;
   replace?: boolean;
-  require?: any;
+  require?: DirectiveRequireProperty;
   restrict?: string;
-  scope?: any;
-  template?: any;
-  templateUrl?: any;
+  scope?: boolean|{[key: string]: string};
+  template?: string|Function;
+  templateUrl?: string|Function;
+  templateNamespace?: string;
   terminal?: boolean;
-  transclude?: any;
+  transclude?: boolean|'element'|{[key: string]: string};
 }
+export type DirectiveRequireProperty = Ng1Token[] | Ng1Token | {[key: string]: Ng1Token};
 export interface IDirectiveCompileFn {
   (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
    transclude: ITranscludeFunction): IDirectivePrePost;
@@ -71,13 +86,13 @@ export interface IDirectiveLinkFn {
    controller: any, transclude: ITranscludeFunction): void;
 }
 export interface IComponent {
-  bindings?: Object;
-  controller?: any;
+  bindings?: {[key: string]: string};
+  controller?: string|IInjectable;
   controllerAs?: string;
-  require?: any;
-  template?: any;
-  templateUrl?: any;
-  transclude?: any;
+  require?: DirectiveRequireProperty;
+  template?: string|Function;
+  templateUrl?: string|Function;
+  transclude?: boolean;
 }
 export interface IAttributes { $observe(attr: string, fn: (v: string) => void): void; }
 export interface ITranscludeFunction {
@@ -90,14 +105,25 @@ export interface ICloneAttachFunction {
   // Let's hint but not force cloneAttachFn's signature
   (clonedElement?: IAugmentedJQuery, scope?: IScope): any;
 }
-export interface IAugmentedJQuery {
-  bind(name: string, fn: () => void): void;
-  data(name: string, value?: any): any;
-  inheritedData(name: string, value?: any): any;
-  contents(): IAugmentedJQuery;
-  parent(): IAugmentedJQuery;
-  length: number;
-  [index: number]: Node;
+export type IAugmentedJQuery = Node[] & {
+  bind?: (name: string, fn: () => void) => void;
+  data?: (name: string, value?: any) => any;
+  inheritedData?: (name: string, value?: any) => any;
+  contents?: () => IAugmentedJQuery;
+  parent?: () => IAugmentedJQuery;
+  empty?: () => void;
+  append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
+  controller?: (name: string) => any;
+  isolateScope?: () => IScope;
+};
+export interface IProvider { $get: IInjectable; }
+export interface IProvideService {
+  provider(token: Ng1Token, provider: IProvider): IProvider;
+  factory(token: Ng1Token, factory: IInjectable): IProvider;
+  service(token: Ng1Token, type: IInjectable): IProvider;
+  value(token: Ng1Token, value: any): IProvider;
+  constant(token: Ng1Token, value: any): void;
+  decorator(token: Ng1Token, factory: IInjectable): void;
 }
 export interface IParseService { (expression: string): ICompiledExpression; }
 export interface ICompiledExpression { assign(context: any, value: any): any; }
@@ -110,8 +136,9 @@ export interface ICacheObject {
   get(key: string): any;
 }
 export interface ITemplateCacheService extends ICacheObject {}
+export type IController = string | IInjectable;
 export interface IControllerService {
-  (controllerConstructor: Function, locals?: any, later?: any, ident?: any): any;
+  (controllerConstructor: IController, locals?: any, later?: any, ident?: any): any;
   (controllerName: string, locals?: any): any;
 }
 
@@ -133,7 +160,8 @@ function noNg() {
 }
 
 var angular: {
-  bootstrap: (e: Element, modules: string[], config: IAngularBootstrapConfig) => void,
+  bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
+                 void,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: (e: Element) => IAugmentedJQuery,
   version: {major: number}, resumeBootstrap?: () => void,

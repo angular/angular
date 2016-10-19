@@ -11,6 +11,7 @@ export const NG2_INJECTOR = 'ng2.Injector';
 export const NG2_COMPONENT_FACTORY_REF_MAP = 'ng2.ComponentFactoryRefMap';
 export const NG2_ZONE = 'ng2.NgZone';
 
+export const NG1_PROVIDE = '$provide';
 export const NG1_CONTROLLER = '$controller';
 export const NG1_SCOPE = '$scope';
 export const NG1_ROOT_SCOPE = '$rootScope';
