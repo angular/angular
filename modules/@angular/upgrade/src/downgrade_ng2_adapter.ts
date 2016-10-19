@@ -7,8 +7,8 @@
  */
 
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
+import {IAttributes, IAugmentedJQuery, IParseService, IScope} from '@types/angular';
 
-import * as angular from './angular_js';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
 
@@ -22,15 +22,14 @@ export class DowngradeNg2ComponentAdapter {
   inputChanges: SimpleChanges = null;
   componentRef: ComponentRef<any> = null;
   changeDetector: ChangeDetectorRef = null;
-  componentScope: angular.IScope;
+  componentScope: IScope;
   childNodes: Node[];
   contentInsertionPoint: Node = null;
 
   constructor(
-      private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
-      private attrs: angular.IAttributes, private scope: angular.IScope,
-      private parentInjector: Injector, private parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>) {
+      private id: string, private info: ComponentInfo, private element: IAugmentedJQuery,
+      private attrs: IAttributes, private scope: IScope, private parentInjector: Injector,
+      private parse: IParseService, private componentFactory: ComponentFactory<any>) {
     (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
     this.childNodes = <Node[]><any>element.contents();

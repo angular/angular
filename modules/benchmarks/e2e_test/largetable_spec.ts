@@ -44,11 +44,11 @@ describe('largetable benchmark spec', () => {
       ignoreBrowserSynchronization: openConfig.ignoreBrowserSynchronization,
       params: [{name: 'cols', value: 5}, {name: 'rows', value: 5}],
     });
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('0/0');
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A/A');
-    $('#destroyDom').click();
-    expect($('#root').getText()).toEqual('');
+    element(by.css('#createDom')).click();
+    expect(element(by.css('#root')).getText()).toContain('0/0');
+    element(by.css('#createDom')).click();
+    expect(element(by.css('#root')).getText()).toContain('A/A');
+    element(by.css('#destroyDom')).click();
+    expect(element(by.css('#root')).getText()).toEqual('');
   }
 });

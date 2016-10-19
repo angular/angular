@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@types/angularjs": {
-      "version": "1.5.13-alpha"
+    "@types/angular": {
+      "version": "1.5.14"
     },
     "@types/fs-extra": {
       "version": "0.0.22-alpha"

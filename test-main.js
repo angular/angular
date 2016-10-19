@@ -84,7 +84,7 @@ System.import('@angular/core/testing')
     })
     .then(
         function() { __karma__.start(); },
-        function(error) { __karma__.error(error.stack || error); });
+        function(error) { console.error(error.stack || error); });
 
 
 function onlySpecFiles(path) {

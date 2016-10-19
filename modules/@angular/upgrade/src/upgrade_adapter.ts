@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, ComponentFactory, ErrorHandler, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import * as angular from './angular_js';
+import {IScope, auto, IRootScopeService, IAngularBootstrapConfig, IDirectiveFactory, IAngularStatic, IParseService, IDirective, IAugmentedJQuery, IAttributes, ITranscludeFunction} from '@types/angular';
 import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {ComponentInfo, getComponentInfo} from './metadata';
@@ -17,83 +17,53 @@ import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 import {controllerKey, onError} from './util';
 
 var upgradeCount: number = 0;
+declare var angular: IAngularStatic;
 
 /**
- * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.
+ * @whatItDoes Allows AngularJS v1 and Angular v2 to coexist in a single application.
  *
- * The `UpgradeAdapter` allows:
- * 1. creation of Angular v2 component from AngularJS v1 component directive
- *    (See [UpgradeAdapter#upgradeNg1Component()])
- * 2. creation of AngularJS v1 directive from Angular v2 component.
- *    (See [UpgradeAdapter#downgradeNg2Component()])
- * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
- *    coexisting in a single application.
+ * @description
+ *
+ * The `UpgradeAdapter` allows boostraping an Angular v2 application inside an AngularJS v1
+ * application. Specifically one can
+ * 1. Import an Angular v2 component into AngularJS v1 module so that it can be used in an
+ *    AngularJS v1 template (See [UpgradeAdapter#upgradeNg1Component()])
+ * 2. Import an AngularJS v1 component into an Angular v2 NgModule so that it can be used in
+ *    Angular v2 template. (See [UpgradeAdapter#downgradeNg2Component()])
+ * 3. Bootstrap a hybrid Angular application which contains both of the frameworks coexisting in a
+ *    single application.
  *
  * ## Mental Model
  *
  * When reasoning about how a hybrid application works it is useful to have a mental model which
- * describes what is happening and explains what is happening at the lowest level.
+ * describes how the hybrid application operates
  *
  * 1. There are two independent frameworks running in a single application, each framework treats
  *    the other as a black box.
- * 2. Each DOM element on the page is owned exactly by one framework. Whichever framework
- *    instantiated the element is the owner. Each framework only updates/interacts with its own
- *    DOM elements and ignores others.
- * 3. AngularJS v1 directives always execute inside AngularJS v1 framework codebase regardless of
- *    where they are instantiated.
- * 4. Angular v2 components always execute inside Angular v2 framework codebase regardless of
- *    where they are instantiated.
- * 5. An AngularJS v1 component can be upgraded to an Angular v2 component. This creates an
- *    Angular v2 directive, which bootstraps the AngularJS v1 component directive in that location.
- * 6. An Angular v2 component can be downgraded to an AngularJS v1 component directive. This creates
+ * 2. Each DOM element on the page is owned by exactly one framework. Whichever framework
+ *    instantiated the element is the owner of the element. Each framework only updates/interacts
+ *    with its own DOM elements and ignores the elements of the other framework.
+ *    - AngularJS v1 components always execute inside AngularJS v1 framework codebase regardless of
+ *      where they are instantiated.
+ *    - Angular v2 components always execute inside Angular v2 framework codebase regardless of
+ *      where they are instantiated.
+ * 3. An AngularJS v1 component can be upgraded to an Angular v2 component. This creates an
+ *    Angular v2 component facade, which instantiates the  AngularJS v1 component in that location.
+ * 4. An Angular v2 component can be downgraded to an AngularJS v1 component directive. This creates
  *    an AngularJS v1 directive, which bootstraps the Angular v2 component in that location.
- * 7. Whenever an adapter component is instantiated the host element is owned by the framework
+ * 5. Whenever an adapter component is instantiated the host element is owned by the framework
  *    doing the instantiation. The other framework then instantiates and owns the view for that
  *    component. This implies that component bindings will always follow the semantics of the
  *    instantiation framework. The syntax is always that of Angular v2 syntax.
- * 8. AngularJS v1 is always bootstrapped first and owns the bottom most view.
- * 9. The new application is running in Angular v2 zone, and therefore it no longer needs calls to
- *    `$apply()`.
+ * 6. AngularJS v1 is always bootstrapped first and owns the bottom most view.
+ * 7. The new application is running in Angular v2 zone, and therefore it no longer needs calls to
+ *    `$apply()`. The change detection starts at root componnent and recurses into children. This
+ *    interleaves the components in expected way. Because of AngularJS v1, change detection can
+ *    run multiple times per `$apply()`.
  *
  * ### Example
  *
- * ```
- * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module), myCompilerOptions);
- * var module = angular.module('myExample', []);
- * module.directive('ng2Comp', adapter.downgradeNg2Component(Ng2Component));
- *
- * module.directive('ng1Hello', function() {
- *   return {
- *      scope: { title: '=' },
- *      template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
- *   };
- * });
- *
- *
- * @Component({
- *   selector: 'ng2-comp',
- *   inputs: ['name'],
- *   template: 'ng2[<ng1-hello [title]="name">transclude</ng1-hello>](<ng-content></ng-content>)',
- *   directives:
- * })
- * class Ng2Component {
- * }
- *
- * @NgModule({
- *   declarations: [Ng2Component, adapter.upgradeNg1Component('ng1Hello')],
- *   imports: [BrowserModule]
- * })
- * class MyNg2Module {}
- *
- *
- * document.body.innerHTML = '<ng2-comp name="World">project</ng2-comp>';
- *
- * adapter.bootstrap(document.body, ['myExample']).ready(function() {
- *   expect(document.body.textContent).toEqual(
- *       "ng2[ng1[Hello World!](transclude)](project)");
- * });
- *
- * ```
+ * {@example upgrade/ts/overview/ts/module.ts region='Overview'}
  *
  * @stable
  */
@@ -122,8 +92,8 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows Angular v2 Component to be used from AngularJS v1.
-   *
+   * @whatItDoes Allows Angular v2 Component to be used from AngularJS v1 template.
+   * @description
    * Use `downgradeNg2Component` to create an AngularJS v1 Directive Definition Factory from
    * Angular v2 Component. The adapter will bootstrap Angular v2 component from within the
    * AngularJS v1 template.
@@ -134,8 +104,8 @@ export class UpgradeAdapter {
    *    host element is controlled by AngularJS v1, but the component's view will be controlled by
    *    Angular v2.
    * 2. Even thought the component is instantiated in AngularJS v1, it will be using Angular v2
-   *    syntax. This has to be done, this way because we must follow Angular v2 components do not
-   *    declare how the attributes should be interpreted.
+   *    syntax. This is because Angular v2 components do not declare how the attributes are
+   *    interpreted.
    *
    * ## Supported Features
    *
@@ -148,43 +118,17 @@ export class UpgradeAdapter {
    *
    * ### Example
    *
-   * ```
-   * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
-   * var module = angular.module('myExample', []);
-   * module.directive('greet', adapter.downgradeNg2Component(Greeter));
-   *
-   * @Component({
-   *   selector: 'greet',
-   *   template: '{{salutation}} {{name}}! - <ng-content></ng-content>'
-   * })
-   * class Greeter {
-   *   @Input() salutation: string;
-   *   @Input() name: string;
-   * }
-   *
-   * @NgModule({
-   *   declarations: [Greeter],
-   *   imports: [BrowserModule]
-   * })
-   * class MyNg2Module {}
-   *
-   * document.body.innerHTML =
-   *   'ng1 template: <greet salutation="Hello" [name]="world">text</greet>';
-   *
-   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
-   *   expect(document.body.textContent).toEqual("ng1 template: Hello world! - text");
-   * });
-   * ```
+   * {@example upgrade/ts/downgradeNg2Component/ts/module.ts region='downgradeNg2Component'}
    */
-  downgradeNg2Component(type: Type<any>): Function {
+  downgradeNg2Component(type: Type<any>): any {
     this.upgradedComponents.push(type);
     var info: ComponentInfo = getComponentInfo(type);
     return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
   }
 
   /**
-   * Allows AngularJS v1 Component to be used from Angular v2.
-   *
+   * @whatItDoes Allows AngularJS v1 Component to be used from Angular v2 template.
+   * @description
    * Use `upgradeNg1Component` to create an Angular v2 component from AngularJS v1 Component
    * directive. The adapter will bootstrap AngularJS v1 component from within the Angular v2
    * template.
@@ -225,39 +169,7 @@ export class UpgradeAdapter {
    *
    *
    * ### Example
-   *
-   * ```
-   * var adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
-   * var module = angular.module('myExample', []);
-   *
-   * module.directive('greet', function() {
-   *   return {
-   *     scope: {salutation: '=', name: '=' },
-   *     template: '{{salutation}} {{name}}! - <span ng-transclude></span>'
-   *   };
-   * });
-   *
-   * module.directive('ng2', adapter.downgradeNg2Component(Ng2Component));
-   *
-   * @Component({
-   *   selector: 'ng2',
-   *   template: 'ng2 template: <greet salutation="Hello" [name]="world">text</greet>'
-   * })
-   * class Ng2Component {
-   * }
-   *
-   * @NgModule({
-   *   declarations: [Ng2Component, adapter.upgradeNg1Component('greet')],
-   *   imports: [BrowserModule]
-   * })
-   * class MyNg2Module {}
-   *
-   * document.body.innerHTML = '<ng2></ng2>';
-   *
-   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
-   *   expect(document.body.textContent).toEqual("ng2 template: Hello world! - text");
-   * });
-   * ```
+   * {@example upgrade/ts/upgradeNg1Component/ts/module.ts region='upgradeNg1Component'}
    */
   upgradeNg1Component(name: string): Type<any> {
     if ((<any>this.ng1ComponentsToBeUpgraded).hasOwnProperty(name)) {
@@ -269,60 +181,33 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Bootstrap a hybrid AngularJS v1 / Angular v2 application.
-   *
+   * @whatItDoes Bootstrap a hybrid AngularJS v1 / Angular v2 application.
+   * @description
    * This `bootstrap` method is a direct replacement (takes same arguments) for AngularJS v1
    * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
    * AngularJS v1, this bootstrap is asynchronous.
    *
    * ### Example
    *
-   * ```
-   * var adapter = new UpgradeAdapter();
-   * var module = angular.module('myExample', []);
-   * module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-   *
-   * module.directive('ng1', function() {
-   *   return {
-   *      scope: { title: '=' },
-   *      template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
-   *   };
-   * });
-   *
-   *
-   * @Component({
-   *   selector: 'ng2',
-   *   inputs: ['name'],
-   *   template: 'ng2[<ng1 [title]="name">transclude</ng1>](<ng-content></ng-content>)'
-   * })
-   * class Ng2 {
-   * }
-   *
-   * @NgModule({
-   *   declarations: [Ng2, adapter.upgradeNg1Component('ng1')],
-   *   imports: [BrowserModule]
-   * })
-   * class MyNg2Module {}
-   *
-   * document.body.innerHTML = '<ng2 name="World">project</ng2>';
-   *
-   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
-   *   expect(document.body.textContent).toEqual(
-   *       "ng2[ng1[Hello World!](transclude)](project)");
-   * });
-   * ```
+   * {@example upgrade/ts/overview/ts/module.ts region='Overview'}
    */
-  bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig):
-      UpgradeAdapterRef {
+  bootstrap(element: Element, modules?: any[], config?: {strictDi?: boolean;}): UpgradeAdapterRef {
     const ngZone =
         new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
+    ngZone.onError.subscribe((error: any) => {
+      if (moduleRef) {
+        (moduleRef.injector.get(ErrorHandler) as ErrorHandler).handleError(error);
+      } else {
+        console.error(error);
+      }
+    });
     var upgrade = new UpgradeAdapterRef();
-    var ng1Injector: angular.IInjectorService = null;
+    var ng1Injector: auto.IInjectorService = null;
     var moduleRef: NgModuleRef<any> = null;
-    var delayApplyExps: Function[] = [];
+    var delayApplyExps: ((scope: IScope) => any)[] = [];
     var original$applyFn: Function;
     var rootScopePrototype: any;
-    var rootScope: angular.IRootScopeService;
+    var rootScope: IRootScopeService;
     var componentFactoryRefMap: ComponentFactoryRefMap = {};
     var ng1Module = angular.module(this.idPrefix, modules);
     var ng1BootstrapPromise: Promise<any>;
@@ -333,10 +218,10 @@ export class UpgradeAdapter {
         .value(NG2_COMPONENT_FACTORY_REF_MAP, componentFactoryRefMap)
         .config([
           '$provide', '$injector',
-          (provide: any /** TODO #???? */, ng1Injector: angular.IInjectorService) => {
+          (provide: any /** TODO #???? */, ng1Injector: auto.IInjectorService) => {
             provide.decorator(NG1_ROOT_SCOPE, [
               '$delegate',
-              function(rootScopeDelegate: angular.IRootScopeService) {
+              function(rootScopeDelegate: IRootScopeService) {
                 // Capture the root apply so that we can delay first call to $apply until we
                 // bootstrap Angular 2 and then we replay and restore the $apply.
                 rootScopePrototype = rootScopeDelegate.constructor.prototype;
@@ -352,7 +237,7 @@ export class UpgradeAdapter {
             if (ng1Injector.has(NG1_TESTABILITY)) {
               provide.decorator(NG1_TESTABILITY, [
                 '$delegate',
-                function(testabilityDelegate: angular.ITestabilityService) {
+                function(testabilityDelegate: {whenStable: (cb: Function) => void}) {
 
                   var originalWhenStable: Function = testabilityDelegate.whenStable;
                   var newWhenStable = (callback: Function): void => {
@@ -378,7 +263,7 @@ export class UpgradeAdapter {
     ng1compilePromise = new Promise((resolve, reject) => {
       ng1Module.run([
         '$injector', '$rootScope',
-        (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
+        (injector: auto.IInjectorService, rootScope: IRootScopeService) => {
           ng1Injector = injector;
           UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, injector)
               .then(() => {
@@ -457,65 +342,35 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows AngularJS v1 service to be accessible from Angular v2.
+   * @whatItDoes Allows AngularJS v1 service to be accessible from Angular v2 injector.
    *
+   * Create a factory in Angular 2 root injector which will retrieve an instance from AngularJS v1
+   * injector lazily.
+   *
+   * @param `name` AngularJS v1 token name
+   * @param `asToken` (optional) The token to be used for Angular 2 injection. (Defaults to the
+   *        `name` string.)
    *
    * ### Example
    *
-   * ```
-   * class Login { ... }
-   * class Server { ... }
-   *
-   * @Injectable()
-   * class Example {
-   *   constructor(@Inject('server') server, login: Login) {
-   *     ...
-   *   }
-   * }
-   *
-   * var module = angular.module('myExample', []);
-   * module.service('server', Server);
-   * module.service('login', Login);
-   *
-   * var adapter = new UpgradeAdapter();
-   * adapter.upgradeNg1Provider('server');
-   * adapter.upgradeNg1Provider('login', {asToken: Login});
-   *
-   * adapter.bootstrap(document.body, ['myExample']).ready((ref) => {
-   *   var example: Example = ref.ng2Injector.get(Example);
-   * });
-   *
-   * ```
+   * {@example upgrade/ts/upgradeNg1Provider/ts/module.ts region='upgradeNg1Provider'}
    */
   public upgradeNg1Provider(name: string, options?: {asToken: any}) {
     var token = options && options.asToken || name;
     this.providers.push({
       provide: token,
-      useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
+      useFactory: (ng1Injector: auto.IInjectorService) => ng1Injector.get(name),
       deps: [NG1_INJECTOR]
     });
   }
 
   /**
-   * Allows Angular v2 service to be accessible from AngularJS v1.
+   * @whatItDoes Allows Angular v2 service to be accessible from AngularJS v1.
    *
    *
    * ### Example
    *
-   * ```
-   * class Example {
-   * }
-   *
-   * var adapter = new UpgradeAdapter();
-   *
-   * var module = angular.module('myExample', []);
-   * module.factory('example', adapter.downgradeNg2Provider(Example));
-   *
-   * adapter.bootstrap(document.body, ['myExample']).ready((ref) => {
-   *   var example: Example = ref.ng1Injector.get('example');
-   * });
-   *
-   * ```
+   * {@example upgrade/ts/downgradeNg2Provider/ts/module.ts region='downgradeNg2Provider'}
    */
   public downgradeNg2Provider(token: any): Function {
     var factory = function(injector: Injector) { return injector.get(token); };
@@ -528,18 +383,18 @@ interface ComponentFactoryRefMap {
   [selector: string]: ComponentFactory<any>;
 }
 
-function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
+function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): IDirectiveFactory {
   (<any>directiveFactory).$inject = [NG1_INJECTOR, NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
   function directiveFactory(
-      ng1Injector: angular.IInjectorService, componentFactoryRefMap: ComponentFactoryRefMap,
-      parse: angular.IParseService): angular.IDirective {
+      ng1Injector: auto.IInjectorService, componentFactoryRefMap: ComponentFactoryRefMap,
+      parse: IParseService): IDirective {
     var idCount = 0;
     return {
       restrict: 'E',
       require: REQUIRE_INJECTOR,
       link: {
-        post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-               parentInjector: any, transclude: angular.ITranscludeFunction): void => {
+        post: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, parentInjector: any,
+               transclude: ITranscludeFunction): void => {
           var componentFactory: ComponentFactory<any> = componentFactoryRefMap[info.selector];
           if (!componentFactory)
             throw new Error('Expecting ComponentFactory for: ' + info.selector);
@@ -571,17 +426,17 @@ export class UpgradeAdapterRef {
   /* @internal */
   private _readyFn: (upgradeAdapterRef?: UpgradeAdapterRef) => void = null;
 
-  public ng1RootScope: angular.IRootScopeService = null;
-  public ng1Injector: angular.IInjectorService = null;
+  public ng1RootScope: any = null;
+  public ng1Injector: any = null;
   public ng2ModuleRef: NgModuleRef<any> = null;
   public ng2Injector: Injector = null;
 
   /* @internal */
-  private _bootstrapDone(ngModuleRef: NgModuleRef<any>, ng1Injector: angular.IInjectorService) {
+  private _bootstrapDone(ngModuleRef: NgModuleRef<any>, ng1Injector: auto.IInjectorService) {
     this.ng2ModuleRef = ngModuleRef;
     this.ng2Injector = ngModuleRef.injector;
     this.ng1Injector = ng1Injector;
-    this.ng1RootScope = ng1Injector.get(NG1_ROOT_SCOPE);
+    this.ng1RootScope = ng1Injector.get<IRootScopeService>(NG1_ROOT_SCOPE);
     this._readyFn && this._readyFn(this);
   }
 
@@ -598,7 +453,7 @@ export class UpgradeAdapterRef {
    * Dispose of running hybrid AngularJS v1 / Angular v2 application.
    */
   public dispose() {
-    this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
+    (this.ng1Injector as auto.IInjectorService).get<IRootScopeService>(NG1_ROOT_SCOPE).$destroy();
     this.ng2ModuleRef.destroy();
   }
 }

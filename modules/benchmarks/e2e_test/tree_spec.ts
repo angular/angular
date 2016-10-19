@@ -90,11 +90,11 @@ describe('tree benchmark spec', () => {
       ignoreBrowserSynchronization: openConfig.ignoreBrowserSynchronization,
       params: params,
     });
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('0');
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A');
-    $('#destroyDom').click();
-    expect($('#root').getText()).toEqual('');
+    element(by.css('#createDom')).click();
+    expect(element(by.css('#root')).getText()).toContain('0');
+    element(by.css('#createDom')).click();
+    expect(element(by.css('#root')).getText()).toContain('A');
+    element(by.css('#destroyDom')).click();
+    expect(element(by.css('#root')).getText()).toEqual('');
   }
 });
