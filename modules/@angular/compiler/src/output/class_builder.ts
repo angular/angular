@@ -27,10 +27,10 @@ export function createClassStmt(config: {
 
   return new o.ClassStmt(
       config.name, config.parent, builder.fields, builder.getters, ctor, builder.methods,
-      config.modifiers || [])
+      config.modifiers || []);
 }
 
-function concatClassBuilderParts(builders: ClassBuilderPart[]): ClassBuilder {
+function concatClassBuilderParts(builders: ClassBuilderPart[]) {
   return {
     fields: [].concat(...builders.map(builder => builder.fields || [])),
     methods: [].concat(...builders.map(builder => builder.methods || [])),
@@ -52,7 +52,7 @@ export interface ClassBuilderPart {
 /**
  * Collects data for a generated class.
  */
-export interface ClassBuilder extends ClassBuilderPart {
+export interface ClassBuilder {
   fields: o.ClassField[];
   methods: o.ClassMethod[];
   getters: o.ClassGetter[];

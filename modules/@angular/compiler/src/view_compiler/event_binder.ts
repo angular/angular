@@ -7,6 +7,7 @@
  */
 
 import {CompileDirectiveMetadata} from '../compile_metadata';
+import {EventHandlerVars, convertActionBinding} from '../compiler_util/expression_converter';
 import {isPresent} from '../facade/lang';
 import {identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -15,8 +16,7 @@ import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 import {CompileBinding} from './compile_binding';
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
-import {EventHandlerVars, ViewProperties} from './constants';
-import {NoLocalsNameResolver, convertCdStatementToIr} from './expression_converter';
+import {ViewProperties} from './constants';
 
 export class CompileEventListener {
   private _method: CompileMethod;
@@ -61,24 +61,14 @@ export class CompileEventListener {
     }
     this._method.resetDebugInfo(this.compileElement.nodeIndex, hostEvent);
     var context = directiveInstance || this.compileElement.view.componentContext;
-    var actionStmts = convertCdStatementToIr(
-        directive ? new NoLocalsNameResolver(this.compileElement.view) : this.compileElement.view,
-        context, hostEvent.handler, this.compileElement.nodeIndex);
-    var lastIndex = actionStmts.length - 1;
-    if (lastIndex >= 0) {
-      var lastStatement = actionStmts[lastIndex];
-      var returnExpr = convertStmtIntoExpression(lastStatement);
-      var preventDefaultVar = o.variable(`pd_${this._actionResultExprs.length}`);
-      this._actionResultExprs.push(preventDefaultVar);
-      if (isPresent(returnExpr)) {
-        // Note: We need to cast the result of the method call to dynamic,
-        // as it might be a void method!
-        actionStmts[lastIndex] =
-            preventDefaultVar.set(returnExpr.cast(o.DYNAMIC_TYPE).notIdentical(o.literal(false)))
-                .toDeclStmt(null, [o.StmtModifier.Final]);
-      }
+    const view = this.compileElement.view;
+    const evalResult = convertActionBinding(
+        view, directive ? null : view, context, hostEvent.handler,
+        `${this.compileElement.nodeIndex}_${this._actionResultExprs.length}`);
+    if (evalResult.preventDefault) {
+      this._actionResultExprs.push(evalResult.preventDefault);
     }
-    this._method.addStmts(actionStmts);
+    this._method.addStmts(evalResult.stmts);
   }
 
   finishMethod() {

@@ -9,6 +9,7 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
 import {createDiTokenExpression, createFastArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
@@ -586,12 +587,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
         DetectChangesVars.changes.set(o.NULL_EXPR)
             .toDeclStmt(new o.MapType(o.importType(resolveIdentifier(Identifiers.SimpleChange)))));
   }
-  if (readVars.has(DetectChangesVars.valUnwrapper.name)) {
-    varStmts.push(
-        DetectChangesVars.valUnwrapper
-            .set(o.importExpr(resolveIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
-            .toDeclStmt(null, [o.StmtModifier.Final]));
-  }
+  varStmts.push(...createSharedBindingVariablesIfNeeded(stmts));
   return varStmts.concat(stmts);
 }
 

@@ -8,11 +8,12 @@
 
 
 import {CompilePipeMetadata} from '../compile_metadata';
+import {createPureProxy} from '../compiler_util/identifier_util';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 
 import {CompileView} from './compile_view';
-import {createPureProxy, getPropertyInView, injectFromViewParentInjector} from './util';
+import {getPropertyInView, injectFromViewParentInjector} from './util';
 
 export class CompilePipe {
   static call(view: CompileView, name: string, args: o.Expression[]): o.Expression {
@@ -65,7 +66,8 @@ export class CompilePipe {
       createPureProxy(
           pipeInstanceSeenFromPureProxy.prop('transform')
               .callMethod(o.BuiltinMethod.Bind, [pipeInstanceSeenFromPureProxy]),
-          args.length, purePipeProxyInstance, callingView);
+          args.length, purePipeProxyInstance,
+          {fields: callingView.fields, ctorStmts: callingView.createMethod});
       return o.importExpr(resolveIdentifier(Identifiers.castByValue))
           .callFn([purePipeProxyInstance, pipeInstanceSeenFromPureProxy.prop('transform')])
           .callFn(args);

@@ -98,8 +98,6 @@ export class ViewProperties {
   static viewUtils = o.THIS_EXPR.prop('viewUtils');
 }
 
-export class EventHandlerVars { static event = o.variable('$event'); }
-
 export class InjectMethodVars {
   static token = o.variable('token');
   static requestNodeIndex = o.variable('requestNodeIndex');
@@ -110,5 +108,4 @@ export class DetectChangesVars {
   static throwOnChange = o.variable(`throwOnChange`);
   static changes = o.variable(`changes`);
   static changed = o.variable(`changed`);
-  static valUnwrapper = o.variable(`valUnwrapper`);
 }
