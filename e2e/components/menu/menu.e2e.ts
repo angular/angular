@@ -62,7 +62,7 @@ describe('menu', () => {
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
     page.menu().getAttribute('class').then((classes) => {
-      expect(classes).toEqual('md-menu custom');
+      expect(classes).toEqual('md-menu-panel custom');
     });
   });
 

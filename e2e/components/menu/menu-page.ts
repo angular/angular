@@ -6,7 +6,7 @@ export class MenuPage {
     browser.get('/menu');
   }
 
-  menu() { return element(by.css('.md-menu')); }
+  menu() { return element(by.css('.md-menu-panel')); }
 
   start() { return element(by.id('start')); }
 
@@ -28,11 +28,11 @@ export class MenuPage {
 
   combinedTrigger() { return element(by.id('combined-t')); }
 
-  beforeMenu() { return element(by.css('.md-menu.before')); }
+  beforeMenu() { return element(by.css('.md-menu-panel.before')); }
 
-  aboveMenu() { return element(by.css('.md-menu.above')); }
+  aboveMenu() { return element(by.css('.md-menu-panel.above')); }
 
-  combinedMenu() { return element(by.css('.md-menu.combined')); }
+  combinedMenu() { return element(by.css('.md-menu-panel.combined')); }
 
   // TODO(kara): move to common testing utility
   pressKey(key: any): void {
@@ -46,7 +46,7 @@ export class MenuPage {
   }
 
   expectMenuPresent(expected: boolean) {
-    return browser.isElementPresent(by.css('.md-menu')).then((isPresent) => {
+    return browser.isElementPresent(by.css('.md-menu-panel')).then(isPresent => {
       expect(isPresent).toBe(expected);
     });
   }

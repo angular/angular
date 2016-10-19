@@ -18,13 +18,13 @@ describe('MdMenu', () => {
   it('should open the menu as an idempotent operation', () => {
     let fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
-    let menu = fixture.debugElement.query(By.css('.md-menu'));
+    let menu = fixture.debugElement.query(By.css('.md-menu-panel'));
     expect(menu).toBe(null);
     expect(() => {
       fixture.componentInstance.trigger.openMenu();
       fixture.componentInstance.trigger.openMenu();
 
-      menu = fixture.debugElement.query(By.css('.md-menu'));
+      menu = fixture.debugElement.query(By.css('.md-menu-panel'));
       expect(menu.nativeElement.innerHTML.trim()).toEqual('Content');
     }).not.toThrowError();
   });

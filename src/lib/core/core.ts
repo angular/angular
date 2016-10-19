@@ -79,6 +79,8 @@ export {ComponentType} from './overlay/generic-component-type';
 // Keybindings
 export * from './keyboard/keycodes';
 
+export * from './compatibility/style-compatibility';
+
 // Animation
 export * from './animation/animation';
 

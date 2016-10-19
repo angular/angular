@@ -16,7 +16,7 @@ $md-menu-font-size: 16px !default;
 $md-menu-side-padding: 16px !default;
 $md-menu-vertical-padding: 8px !default;
 
-.md-menu {
+.md-menu-panel {
   @include md-elevation(2);
   min-width: $md-menu-overlay-min-width;
   max-width: $md-menu-overlay-max-width;

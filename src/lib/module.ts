@@ -6,6 +6,7 @@ import {
   PortalModule,
   OverlayModule,
   A11yModule,
+  StyleCompatibilityModule,
 } from './core/index';
 
 import {MdButtonToggleModule} from './button-toggle/index';
@@ -58,6 +59,7 @@ const MATERIAL_MODULES = [
   PortalModule,
   RtlModule,
   A11yModule,
+  StyleCompatibilityModule,
 ];
 
 @NgModule({
@@ -90,6 +92,7 @@ const MATERIAL_MODULES = [
     MdSnackBarModule.forRoot(),
     MdTooltipModule.forRoot(),
     OverlayModule.forRoot(),
+    StyleCompatibilityModule.forRoot(),
   ],
   exports: MATERIAL_MODULES,
 })

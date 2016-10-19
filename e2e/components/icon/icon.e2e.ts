@@ -15,7 +15,8 @@ describe('icon', () => {
 
     it('should have the correct class when used', () => {
       testIcon.getAttribute('class').then((attr: string) => {
-        expect(attr).toEqual('md-24 material-icons');
+        expect(attr).toContain('md-24');
+        expect(attr).toContain('material-icons');
       });
     });
 
