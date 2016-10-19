@@ -7,12 +7,12 @@
  */
 
 import {CompileTokenMetadata} from './compile_metadata';
-import {isArray, isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
+import {isBlank, isPresent, isPrimitive, isStrictStringMap} from './facade/lang';
 import * as o from './output/output_ast';
 
 export const MODULE_SUFFIX = '';
 
-var CAMEL_CASE_REGEXP = /([A-Z])/g;
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
@@ -37,15 +37,19 @@ export function sanitizeIdentifier(name: string): string {
 }
 
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
-  if (isArray(value)) {
+  if (Array.isArray(value)) {
     return visitor.visitArray(<any[]>value, context);
-  } else if (isStrictStringMap(value)) {
-    return visitor.visitStringMap(<{[key: string]: any}>value, context);
-  } else if (isBlank(value) || isPrimitive(value)) {
-    return visitor.visitPrimitive(value, context);
-  } else {
-    return visitor.visitOther(value, context);
   }
+
+  if (isStrictStringMap(value)) {
+    return visitor.visitStringMap(<{[key: string]: any}>value, context);
+  }
+
+  if (isBlank(value) || isPrimitive(value)) {
+    return visitor.visitPrimitive(value, context);
+  }
+
+  return visitor.visitOther(value, context);
 }
 
 export interface ValueVisitor {

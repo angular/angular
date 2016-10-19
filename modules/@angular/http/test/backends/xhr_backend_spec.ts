@@ -15,7 +15,6 @@ import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ResponseContentType, ResponseType} from '../../src/enums';
-import {Json} from '../../src/facade/lang';
 import {Headers} from '../../src/headers';
 import {XSRFStrategy} from '../../src/interfaces';
 import {Request} from '../../src/static_request';
@@ -257,7 +256,7 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({body: body}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(sendSpy).toHaveBeenCalledWith(Json.stringify(body));
+        expect(sendSpy).toHaveBeenCalledWith(JSON.stringify(body, null, 2));
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'application/json');
       });
 

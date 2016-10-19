@@ -9,7 +9,7 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
 import {ListWrapper, MapWrapper} from './facade/collection';
-import {isArray, isBlank, isPresent, normalizeBlank} from './facade/lang';
+import {isBlank, isPresent, normalizeBlank} from './facade/lang';
 import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
@@ -418,7 +418,7 @@ function _normalizeProviders(
   }
   if (isPresent(providers)) {
     providers.forEach((provider) => {
-      if (isArray(provider)) {
+      if (Array.isArray(provider)) {
         _normalizeProviders(<any[]>provider, sourceSpan, targetErrors, targetProviders);
       } else {
         let normalizeProvider: CompileProviderMetadata;

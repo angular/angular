@@ -8,8 +8,7 @@
 
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
 import {ListWrapper, StringMapWrapper} from '../facade/collection';
-import {isArray, isBlank, isPresent, isString, isStringMap} from '../facade/lang';
-import {Math} from '../facade/math';
+import {isBlank, isPresent} from '../facade/lang';
 import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 
@@ -97,7 +96,7 @@ function _parseAnimationDeclarationStates(
   var styleValues: Styles[] = [];
   stateMetadata.styles.styles.forEach(stylesEntry => {
     // TODO (matsko): change this when we get CSS class integration support
-    if (isStringMap(stylesEntry)) {
+    if (typeof stylesEntry === 'object' && stylesEntry !== null) {
       styleValues.push(stylesEntry as Styles);
     } else {
       errors.push(new AnimationParseError(
@@ -172,8 +171,7 @@ function _parseAnimationTransitionExpr(
 
 function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnimationMetadata[]):
     CompileAnimationMetadata {
-  return isArray(entry) ? new CompileAnimationSequenceMetadata(<CompileAnimationMetadata[]>entry) :
-                          <CompileAnimationMetadata>entry;
+  return Array.isArray(entry) ? new CompileAnimationSequenceMetadata(entry) : entry;
 }
 
 function _normalizeStyleMetadata(
@@ -181,7 +179,7 @@ function _normalizeStyleMetadata(
     errors: AnimationParseError[]): {[key: string]: string | number}[] {
   var normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
-    if (isString(styleEntry)) {
+    if (typeof styleEntry === 'string') {
       ListWrapper.addAll(
           normalizedStyles, _resolveStylesFromState(<string>styleEntry, stateStyles, errors));
     } else {
@@ -202,10 +200,10 @@ function _normalizeStyleSteps(
 
 function _mergeAnimationStyles(
     stylesList: any[], newItem: {[key: string]: string | number} | string) {
-  if (isStringMap(newItem) && stylesList.length > 0) {
+  if (typeof newItem === 'object' && newItem !== null && stylesList.length > 0) {
     var lastIndex = stylesList.length - 1;
     var lastItem = stylesList[lastIndex];
-    if (isStringMap(lastItem)) {
+    if (typeof lastItem === 'object' && lastItem !== null) {
       stylesList[lastIndex] = StringMapWrapper.merge(
           <{[key: string]: string | number}>lastItem, <{[key: string]: string | number}>newItem);
       return;
@@ -292,7 +290,7 @@ function _resolveStylesFromState(
           `Unable to apply styles due to missing a state: "${normalizedStateName}"`));
     } else {
       value.styles.forEach(stylesEntry => {
-        if (isStringMap(stylesEntry)) {
+        if (typeof stylesEntry === 'object' && stylesEntry !== null) {
           styles.push(stylesEntry as Styles);
         }
       });
@@ -504,7 +502,7 @@ function _parseTimeExpression(
   var duration: number;
   var delay: number = 0;
   var easing: string = null;
-  if (isString(exp)) {
+  if (typeof exp === 'string') {
     const matches = exp.match(regex);
     if (matches === null) {
       errors.push(new AnimationParseError(`The provided timing value "${exp}" is invalid.`));

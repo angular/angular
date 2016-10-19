@@ -8,9 +8,7 @@
 
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isPresent, isString} from '../facade/lang';
-
-
+import {isPresent} from '../facade/lang';
 
 //// Types
 export enum TypeModifier {
@@ -196,7 +194,7 @@ export class ReadVarExpr extends Expression {
 
   constructor(name: string|BuiltinVar, type: Type = null) {
     super(type);
-    if (isString(name)) {
+    if (typeof name === 'string') {
       this.name = name;
       this.builtin = null;
     } else {
@@ -267,7 +265,7 @@ export class InvokeMethodExpr extends Expression {
       public receiver: Expression, method: string|BuiltinMethod, public args: Expression[],
       type: Type = null) {
     super(type);
-    if (isString(method)) {
+    if (typeof method === 'string') {
       this.name = method;
       this.builtin = null;
     } else {

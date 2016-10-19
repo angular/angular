@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, isPresent, isString} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 
 import * as o from './output_ast';
 
-var _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
-var _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
-export var CATCH_ERROR_VAR = o.variable('error');
-export var CATCH_STACK_VAR = o.variable('stack');
+const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
+export const CATCH_ERROR_VAR = o.variable('error');
+export const CATCH_STACK_VAR = o.variable('stack');
 
 export abstract class OutputEmitter {
   abstract emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string;
@@ -253,7 +253,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext, absentValue: string = 'null'):
       any {
     var value = ast.value;
-    if (isString(value)) {
+    if (typeof value === 'string') {
       ctx.print(escapeIdentifier(value, this._escapeDollarInStrings));
     } else if (isBlank(value)) {
       ctx.print(absentValue);

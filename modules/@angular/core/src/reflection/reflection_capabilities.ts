@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global, isFunction, isPresent, stringify} from '../facade/lang';
+import {global, isPresent, stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -81,7 +81,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // Prefer the direct API.
     if ((<any>typeOrFunc).annotations) {
       let annotations = (<any>typeOrFunc).annotations;
-      if (isFunction(annotations) && annotations.annotations) {
+      if (typeof annotations === 'function' && annotations.annotations) {
         annotations = annotations.annotations;
       }
       return annotations;
@@ -104,7 +104,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // Prefer the direct API.
     if ((<any>typeOrFunc).propMetadata) {
       let propMetadata = (<any>typeOrFunc).propMetadata;
-      if (isFunction(propMetadata) && propMetadata.propMetadata) {
+      if (typeof propMetadata === 'function' && propMetadata.propMetadata) {
         propMetadata = propMetadata.propMetadata;
       }
       return propMetadata;

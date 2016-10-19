@@ -92,7 +92,7 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
   // Override this method to actually get hold of the child routes
   RouteRegistry.prototype.configFromComponent = function (component) {
     var that = this;
-    if (isString(component)) {
+    if (typeof component === 'string') {
       // Don't read the annotations component a type more than once –
       // this prevents an infinite loop if a component routes recursively.
       if (this._rules.has(component)) {

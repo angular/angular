@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper, MapWrapper} from './facade/collection';
-import {isPresent, isStringMap, normalizeBlank, normalizeBool} from './facade/lang';
+import {isPresent, normalizeBlank, normalizeBool} from './facade/lang';
 import {LifecycleHooks} from './private_import_core';
 import {CssSelector} from './selector';
 import {sanitizeIdentifier, splitAtColon} from './util';
@@ -594,7 +594,7 @@ function _normalizeArray(obj: any[]): any[] {
 }
 
 export function isStaticSymbol(value: any): value is StaticSymbol {
-  return isStringMap(value) && isPresent(value['name']) && isPresent(value['filePath']);
+  return typeof value === 'object' && value !== null && value['name'] && value['filePath'];
 }
 
 export interface StaticSymbol {

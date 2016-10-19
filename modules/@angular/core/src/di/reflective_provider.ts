@@ -7,7 +7,7 @@
  */
 
 import {ListWrapper, MapWrapper} from '../facade/collection';
-import {isArray, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
 import {Type} from '../type';
 
@@ -225,7 +225,7 @@ function _extractToken(
   var token: any /** TODO #9100 */ = null;
   var optional = false;
 
-  if (!isArray(metadata)) {
+  if (!Array.isArray(metadata)) {
     if (metadata instanceof Inject) {
       return _createDependency(metadata.token, optional, null, null, depProps);
     } else {
