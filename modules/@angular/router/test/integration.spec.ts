@@ -627,6 +627,33 @@ describe('Integration', () => {
            {one: 1, five: 5, two: 2, six: 6}, {one: 1, five: 5, two: 2, six: 6}
          ]);
        })));
+
+    it('should inherit resolved data',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmpWithTwoOutlets);
+
+         router.resetConfig([{
+           path: 'parent/:id',
+           data: {one: 1},
+           resolve: {two: 'resolveTwo'},
+           children: [
+             {path: 'a', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp}, {
+               path: 'b',
+               data: {five: 5},
+               resolve: {six: 'resolveSix'},
+               component: RouteCmp,
+             }
+           ]
+         }]);
+
+         router.navigateByUrl('/parent/1/a');
+         advance(fixture);
+         router.navigateByUrl('/parent/1/b');
+         advance(fixture);
+
+         const primaryCmp = fixture.debugElement.children[1].componentInstance;
+         expect(primaryCmp.route.data.getValue()).toEqual({one: 1, two: 2, five: 5, six: 6});
+       })));
   });
 
   describe('router links', () => {
