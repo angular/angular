@@ -11,7 +11,7 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {ListWrapper, StringMapWrapper} from './facade/collection';
+import {StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, isStringMap, normalizeBool} from './facade/lang';
 import {isPromise} from './private_import_core';
 
@@ -48,7 +48,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   if (!(path instanceof Array)) {
     path = (<string>path).split(delimiter);
   }
-  if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
+  if (path instanceof Array && (path.length === 0)) return null;
 
   return (<Array<string|number>>path).reduce((v, name) => {
     if (v instanceof FormGroup) {
@@ -491,7 +491,7 @@ export abstract class AbstractControl {
    * If no path is given, it checks for the error on the present control.
    */
   getError(errorCode: string, path: string[] = null): any {
-    var control = isPresent(path) && !ListWrapper.isEmpty(path) ? this.get(path) : this;
+    const control = isPresent(path) && (path.length > 0) ? this.get(path) : this;
     if (isPresent(control) && isPresent(control._errors)) {
       return control._errors[errorCode];
     } else {
@@ -564,7 +564,7 @@ export abstract class AbstractControl {
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
-    return this._anyControls((control: AbstractControl) => control.status == status);
+    return this._anyControls((control: AbstractControl) => control.status === status);
   }
 
   /** @internal */
@@ -1051,7 +1051,7 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _setUpControls() {
+  _setUpControls(): void {
     this._forEachChild((control: AbstractControl) => {
       control.setParent(this);
       control._registerOnCollectionChange(this._onCollectionChange);
@@ -1059,11 +1059,11 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _updateValue() { this._value = this._reduceValue(); }
+  _updateValue(): void { this._value = this._reduceValue(); }
 
   /** @internal */
   _anyControls(condition: Function): boolean {
-    var res = false;
+    let res = false;
     this._forEachChild((control: AbstractControl, name: string) => {
       res = res || (this.contains(name) && condition(control));
     });
@@ -1083,7 +1083,7 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
-    var res = initValue;
+    let res = initValue;
     this._forEachChild(
         (control: AbstractControl, name: string) => { res = fn(res, control, name); });
     return res;
@@ -1182,7 +1182,8 @@ export class FormArray extends AbstractControl {
    * Insert a new {@link AbstractControl} at the given `index` in the array.
    */
   insert(index: number, control: AbstractControl): void {
-    ListWrapper.insert(this.controls, index, control);
+    this.controls.splice(index, 0, control);
+
     this._registerControl(control);
     this.updateValueAndValidity();
     this._onCollectionChange();
@@ -1193,7 +1194,7 @@ export class FormArray extends AbstractControl {
    */
   removeAt(index: number): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    ListWrapper.removeAt(this.controls, index);
+    this.controls.splice(index, 1);
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -1203,10 +1204,10 @@ export class FormArray extends AbstractControl {
    */
   setControl(index: number, control: AbstractControl): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
-    ListWrapper.removeAt(this.controls, index);
+    this.controls.splice(index, 1);
 
     if (control) {
-      ListWrapper.insert(this.controls, index, control);
+      this.controls.splice(index, 0, control);
       this._registerControl(control);
     }
 
