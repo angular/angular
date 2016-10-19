@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isString} from '../src/facade/lang';
-
 import {RequestMethod} from './enums';
 
 export function normalizeMethodName(method: string | RequestMethod): RequestMethod {
-  if (!isString(method)) return method;
+  if (typeof method !== 'string') return method;
+
   switch (method.toUpperCase()) {
     case 'GET':
       return RequestMethod.Get;

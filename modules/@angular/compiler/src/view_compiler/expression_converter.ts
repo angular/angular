@@ -8,7 +8,7 @@
 
 
 import * as cdAst from '../expression_parser/ast';
-import {isArray, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
@@ -471,7 +471,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 }
 
 function flattenStatements(arg: any, output: o.Statement[]) {
-  if (isArray(arg)) {
+  if (Array.isArray(arg)) {
     (<any[]>arg).forEach((entry) => flattenStatements(entry, output));
   } else {
     output.push(arg);

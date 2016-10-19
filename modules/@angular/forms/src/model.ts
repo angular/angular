@@ -11,8 +11,7 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
-import {StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, isStringMap, normalizeBool} from './facade/lang';
+import {isBlank, isPresent, normalizeBool} from './facade/lang';
 import {isPromise} from './private_import_core';
 
 
@@ -600,8 +599,8 @@ export abstract class AbstractControl {
 
   /** @internal */
   _isBoxedValue(formState: any): boolean {
-    return isStringMap(formState) && Object.keys(formState).length === 2 && 'value' in formState &&
-        'disabled' in formState;
+    return typeof formState === 'object' && formState !== null &&
+        Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
   }
 
   /** @internal */

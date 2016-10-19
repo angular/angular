@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {isPresent, isString} from '../src/facade/lang';
+import {isPresent} from '../src/facade/lang';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
 import {ConnectionBackend, RequestOptionsArgs} from './interfaces';
@@ -114,7 +114,7 @@ export class Http {
    */
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
-    if (isString(url)) {
+    if (typeof url === 'string') {
       responseObservable = httpRequest(
           this._backend,
           new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url)));
@@ -212,7 +212,7 @@ export class Jsonp extends Http {
    */
   request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
-    if (isString(url)) {
+    if (typeof url === 'string') {
       url =
           new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
     }

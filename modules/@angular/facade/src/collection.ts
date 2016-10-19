@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, isArray, isBlank, isJsObject, isPresent} from './lang';
+import {getSymbolIterator, isBlank, isJsObject, isPresent} from './lang';
 
 // Safari doesn't implement MapIterator.next(), which is used is Traceur's polyfill of Array.from
 // TODO(mlaval): remove the work around once we have a working polyfill of Array.from
@@ -193,9 +193,9 @@ export class ListWrapper {
 
 function _flattenArray(source: any[], target: any[]): any[] {
   if (isPresent(source)) {
-    for (var i = 0; i < source.length; i++) {
-      var item = source[i];
-      if (isArray(item)) {
+    for (let i = 0; i < source.length; i++) {
+      const item = source[i];
+      if (Array.isArray(item)) {
         _flattenArray(item, target);
       } else {
         target.push(item);
@@ -208,14 +208,14 @@ function _flattenArray(source: any[], target: any[]): any[] {
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
-  return isArray(obj) ||
+  return Array.isArray(obj) ||
       (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
        getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {
-  var iterator1 = a[getSymbolIterator()]();
-  var iterator2 = b[getSymbolIterator()]();
+  const iterator1 = a[getSymbolIterator()]();
+  const iterator2 = b[getSymbolIterator()]();
 
   while (true) {
     let item1 = iterator1.next();
@@ -227,13 +227,13 @@ export function areIterablesEqual(a: any, b: any, comparator: Function): boolean
 }
 
 export function iterateListLike(obj: any, fn: Function) {
-  if (isArray(obj)) {
+  if (Array.isArray(obj)) {
     for (var i = 0; i < obj.length; i++) {
       fn(obj[i]);
     }
   } else {
-    var iterator = obj[getSymbolIterator()]();
-    var item: any /** TODO #???? */;
+    const iterator = obj[getSymbolIterator()]();
+    let item: any;
     while (!((item = iterator.next()).done)) {
       fn(item.value);
     }

@@ -7,7 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {isBlank, isStringMap} from '../facade/lang';
+import {isBlank} from '../facade/lang';
 import {NgLocalization, getPluralCategory} from '../localization';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -37,7 +37,7 @@ export class I18nPluralPipe implements PipeTransform {
   transform(value: number, pluralMap: {[count: string]: string}): string {
     if (isBlank(value)) return '';
 
-    if (!isStringMap(pluralMap)) {
+    if (typeof pluralMap !== 'object' || pluralMap === null) {
       throw new InvalidPipeArgumentError(I18nPluralPipe, pluralMap);
     }
 

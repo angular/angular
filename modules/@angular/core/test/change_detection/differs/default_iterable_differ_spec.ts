@@ -10,7 +10,6 @@ import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {ListWrapper} from '../../../src/facade/collection';
-import {NumberWrapper} from '../../../src/facade/lang';
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';
 
@@ -207,17 +206,15 @@ export function main() {
       });
 
       it('should ignore [NaN] != [NaN] (JS)', () => {
-        let l = [NumberWrapper.NaN];
+        let l = [NaN];
         differ.check(l);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
-          collection: [NumberWrapper.NaN],
-          previous: [NumberWrapper.NaN]
-        }));
+        expect(differ.toString())
+            .toEqual(iterableChangesAsString({collection: [NaN], previous: [NaN]}));
       });
 
       it('should detect [NaN] moves', () => {
-        let l = [NumberWrapper.NaN, NumberWrapper.NaN];
+        let l = [NaN, NaN];
         differ.check(l);
 
         ListWrapper.insert<any>(l, 0, 'foo');

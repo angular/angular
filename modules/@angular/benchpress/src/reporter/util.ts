@@ -6,20 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {NumberWrapper} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Statistic} from '../statistic';
 
 export function formatNum(n: number) {
-  return NumberWrapper.toFixed(n, 2);
+  return n.toFixed(2);
 }
 
 export function sortedProps(obj: {[key: string]: any}) {
-  var props: string[] = [];
-  props.push(...Object.keys(obj));
-  props.sort();
-  return props;
+  return Object.keys(obj).sort();
 }
 
 export function formatStats(validSamples: MeasureValues[], metricName: string): string {
@@ -29,5 +24,5 @@ export function formatStats(validSamples: MeasureValues[], metricName: string): 
   var formattedMean = formatNum(mean);
   // Note: Don't use the unicode character for +- as it might cause
   // hickups for consoles...
-  return NumberWrapper.isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
+  return isNaN(cv) ? formattedMean : `${formattedMean}+-${Math.floor(cv)}%`;
 }
