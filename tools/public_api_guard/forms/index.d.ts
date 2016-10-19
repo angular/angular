@@ -8,6 +8,7 @@ export declare abstract class AbstractControl {
         [key: string]: any;
     };
     invalid: boolean;
+    parent: FormGroup | FormArray;
     pending: boolean;
     pristine: boolean;
     root: AbstractControl;
