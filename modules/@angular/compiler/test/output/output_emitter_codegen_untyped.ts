@@ -10,7 +10,7 @@
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 
 import {print} from '../../src/facade/lang';
-import {assetUrl} from '../../src/util';
+import {assetUrl} from '../../src/identifiers';
 
 import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
 
