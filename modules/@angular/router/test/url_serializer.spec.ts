@@ -130,6 +130,11 @@ describe('url serializer', () => {
     expect(tree.queryParams).toEqual({a: '1', b: '2'});
   });
 
+  it('should parse multiple query params with the same name into array', () => {
+    const tree = url.parse('/one?a=1&b=2&a=constructor');
+    expect(tree.queryParams).toEqual({a: ['1', 'constructor'], b: '2'});
+  });
+
   it('should parse query params when with parenthesis', () => {
     const tree = url.parse('/one?a=(11)&b=(22)');
     expect(tree.queryParams).toEqual({a: '(11)', b: '(22)'});
