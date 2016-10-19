@@ -8,8 +8,6 @@ export class MdGestureConfig extends HammerGestureConfig {
   /* List of new event names to add to the gesture support list */
   events: string[] = [
     'drag',
-    'dragstart',
-    'dragend',
     'dragright',
     'dragleft',
     'longpress',
