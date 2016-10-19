@@ -13,6 +13,7 @@ import {AnimationPlayer as AnimationPlayer_, NoOpAnimationPlayer as NoOpAnimatio
 import {AnimationSequencePlayer as AnimationSequencePlayer_} from './animation/animation_sequence_player';
 import * as animationUtils from './animation/animation_style_util';
 import {AnimationStyles as AnimationStyles_} from './animation/animation_styles';
+import {AnimationTransition} from './animation/animation_transition';
 import * as change_detection_util from './change_detection/change_detection_util';
 import * as constants from './change_detection/constants';
 import * as console from './console';
@@ -118,7 +119,8 @@ export var __core_private__: {
   FILL_STYLE_FLAG: typeof FILL_STYLE_FLAG_,
   _ComponentStillLoadingError?: ComponentStillLoadingError,
   ComponentStillLoadingError: typeof ComponentStillLoadingError,
-  isPromise: typeof isPromise
+  isPromise: typeof isPromise,
+  AnimationTransition: typeof AnimationTransition
 } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
@@ -182,5 +184,6 @@ export var __core_private__: {
   EMPTY_STATE: EMPTY_STATE_,
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
   ComponentStillLoadingError: ComponentStillLoadingError,
-  isPromise: isPromise
+  isPromise: isPromise,
+  AnimationTransition: AnimationTransition
 };

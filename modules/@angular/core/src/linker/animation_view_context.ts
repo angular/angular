@@ -13,7 +13,6 @@ import {ViewAnimationMap} from '../animation/view_animation_map';
 
 export class AnimationViewContext {
   private _players = new ViewAnimationMap();
-  private _listeners = new Map<any, _AnimationOutputHandler[]>();
 
   onAllActiveAnimationsDone(callback: () => any): void {
     var activeAnimationPlayers = this._players.getAllPlayers();
@@ -26,19 +25,9 @@ export class AnimationViewContext {
     }
   }
 
-  queueAnimation(
-      element: any, animationName: string, player: AnimationPlayer,
-      event: AnimationTransitionEvent): void {
+  queueAnimation(element: any, animationName: string, player: AnimationPlayer): void {
     queueAnimationGlobally(player);
-
     this._players.set(element, animationName, player);
-    player.onDone(() => {
-      // TODO: add codegen to remove the need to store these values
-      this._triggerOutputHandler(element, animationName, 'done', event);
-      this._players.remove(element, animationName);
-    });
-
-    player.onStart(() => this._triggerOutputHandler(element, animationName, 'start', event));
   }
 
   cancelActiveAnimation(element: any, animationName: string, removeAllAnimations: boolean = false):
@@ -52,33 +41,4 @@ export class AnimationViewContext {
       }
     }
   }
-
-  registerOutputHandler(
-      element: any, eventName: string, eventPhase: string, eventHandler: Function): void {
-    var animations = this._listeners.get(element);
-    if (!animations) {
-      this._listeners.set(element, animations = []);
-    }
-    animations.push(new _AnimationOutputHandler(eventName, eventPhase, eventHandler));
-  }
-
-  private _triggerOutputHandler(
-      element: any, animationName: string, phase: string, event: AnimationTransitionEvent): void {
-    const listeners = this._listeners.get(element);
-    if (listeners && listeners.length) {
-      for (let i = 0; i < listeners.length; i++) {
-        let listener = listeners[i];
-        // we check for both the name in addition to the phase in the event
-        // that there may be more than one @trigger on the same element
-        if (listener.eventName === animationName && listener.eventPhase === phase) {
-          listener.handler(event);
-          break;
-        }
-      }
-    }
-  }
-}
-
-class _AnimationOutputHandler {
-  constructor(public eventName: string, public eventPhase: string, public handler: Function) {}
 }

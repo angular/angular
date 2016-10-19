@@ -40,6 +40,7 @@ export class CompileEventListener {
   }
 
   get methodName() { return this._methodName; }
+  get isAnimation() { return !!this.eventPhase; }
 
   constructor(
       public compileElement: CompileElement, public eventTarget: string, public eventName: string,
@@ -113,21 +114,13 @@ export class CompileEventListener {
         disposable.set(listenExpr).toDeclStmt(o.FUNCTION_TYPE, [o.StmtModifier.Private]));
   }
 
-  listenToAnimation() {
-    var outputListener = o.THIS_EXPR.callMethod(
-        'eventHandler',
-        [o.THIS_EXPR.prop(this._methodName).callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR])]);
-
-    // tie the property callback method to the view animations map
-    var stmt = o.THIS_EXPR.prop('animationContext')
-                   .callMethod(
-                       'registerOutputHandler',
-                       [
-                         this.compileElement.renderNode, o.literal(this.eventName),
-                         o.literal(this.eventPhase), outputListener
-                       ])
-                   .toStmt();
-    this.compileElement.view.createMethod.addStmt(stmt);
+  listenToAnimation(animationTransitionVar: o.ReadVarExpr): o.Statement {
+    const callbackMethod = this.eventPhase == 'start' ? 'onStart' : 'onDone';
+    return animationTransitionVar
+        .callMethod(
+            callbackMethod,
+            [o.THIS_EXPR.prop(this.methodName).callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR])])
+        .toStmt();
   }
 
   listenToDirective(directiveInstance: o.Expression, observablePropName: string) {
@@ -185,9 +178,9 @@ export function bindDirectiveOutputs(
 
 export function bindRenderOutputs(eventListeners: CompileEventListener[]) {
   eventListeners.forEach(listener => {
-    if (listener.eventPhase) {
-      listener.listenToAnimation();
-    } else {
+    // the animation listeners are handled within property_binder.ts to
+    // allow them to be placed next to the animation factory statements
+    if (!listener.isAnimation) {
       listener.listenToRenderer();
     }
   });
