@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import * as chars from '../chars';
-import {NumberWrapper, StringJoiner, isPresent} from '../facade/lang';
+import {NumberWrapper, isPresent} from '../facade/lang';
 
 export enum TokenType {
   Character,
@@ -274,42 +274,41 @@ class _Scanner {
       }
       this.advance();
     }
-    var str: string = this.input.substring(start, this.index);
-    var value: number = simple ? NumberWrapper.parseIntAutoRadix(str) : parseFloat(str);
+    const str: string = this.input.substring(start, this.index);
+    const value: number = simple ? NumberWrapper.parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, value);
   }
 
   scanString(): Token {
-    var start: number = this.index;
-    var quote: number = this.peek;
+    const start: number = this.index;
+    const quote: number = this.peek;
     this.advance();  // Skip initial quote.
 
-    var buffer: StringJoiner;
-    var marker: number = this.index;
-    var input: string = this.input;
+    let buffer: string = '';
+    let marker: number = this.index;
+    let input: string = this.input;
 
     while (this.peek != quote) {
       if (this.peek == chars.$BACKSLASH) {
-        if (buffer == null) buffer = new StringJoiner();
-        buffer.add(input.substring(marker, this.index));
+        buffer += input.substring(marker, this.index);
         this.advance();
-        var unescapedCode: number;
+        let unescapedCode: number;
         if (this.peek == chars.$u) {
           // 4 character hex code for unicode character.
-          var hex: string = input.substring(this.index + 1, this.index + 5);
+          const hex: string = input.substring(this.index + 1, this.index + 5);
           try {
             unescapedCode = NumberWrapper.parseInt(hex, 16);
           } catch (e) {
             return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
           }
-          for (var i: number = 0; i < 5; i++) {
+          for (let i: number = 0; i < 5; i++) {
             this.advance();
           }
         } else {
           unescapedCode = unescape(this.peek);
           this.advance();
         }
-        buffer.add(String.fromCharCode(unescapedCode));
+        buffer += String.fromCharCode(unescapedCode);
         marker = this.index;
       } else if (this.peek == chars.$EOF) {
         return this.error('Unterminated quote', 0);
@@ -318,16 +317,10 @@ class _Scanner {
       }
     }
 
-    var last: string = input.substring(marker, this.index);
+    const last: string = input.substring(marker, this.index);
     this.advance();  // Skip terminating quote.
 
-    // Compute the unescaped string value.
-    var unescaped: string = last;
-    if (buffer != null) {
-      buffer.add(last);
-      unescaped = buffer.toString();
-    }
-    return newStringToken(start, unescaped);
+    return newStringToken(start, buffer + last);
   }
 
   error(message: string, offset: number): Token {

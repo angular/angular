@@ -7,7 +7,6 @@
  */
 
 import {isPresent, scheduleMicroTask} from '../facade/lang';
-import {Math} from '../facade/math';
 
 import {AnimationPlayer} from './animation_player';
 

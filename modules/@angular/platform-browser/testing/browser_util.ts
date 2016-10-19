@@ -9,7 +9,7 @@
 import {NgZone} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
-import {global, isPresent, isString} from './facade/lang';
+import {global, isPresent} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {
@@ -108,7 +108,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];
       var attValue = attributeMap.get(key);
-      if (!isString(attValue)) {
+      if (typeof attValue !== 'string') {
         result += ` ${key}`;
       } else {
         result += ` ${key}="${attValue}"`;

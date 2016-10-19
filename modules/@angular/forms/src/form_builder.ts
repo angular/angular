@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {isArray, isPresent} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 
 /**
@@ -86,10 +86,10 @@ export class FormBuilder {
         controlConfig instanceof FormArray) {
       return controlConfig;
 
-    } else if (isArray(controlConfig)) {
-      var value = controlConfig[0];
-      var validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
-      var asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
+    } else if (Array.isArray(controlConfig)) {
+      const value = controlConfig[0];
+      const validator: ValidatorFn = controlConfig.length > 1 ? controlConfig[1] : null;
+      const asyncValidator: AsyncValidatorFn = controlConfig.length > 2 ? controlConfig[2] : null;
       return this.control(value, validator, asyncValidator);
 
     } else {

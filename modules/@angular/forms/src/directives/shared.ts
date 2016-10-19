@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {ListWrapper} from '../facade/collection';
-import {hasConstructor, isBlank, isPresent, looseIdentical} from '../facade/lang';
+import {isBlank, isPresent, looseIdentical} from '../facade/lang';
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
 
@@ -30,9 +28,7 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
-  var p = ListWrapper.clone(parent.path);
-  p.push(name);
-  return p;
+  return [...parent.path, name];
 }
 
 export function setUpControl(control: FormControl, dir: NgControl): void {
@@ -128,14 +124,17 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !looseIdentical(viewModel, change.currentValue);
 }
 
+const BUILTIN_ACCESSORS = [
+  CheckboxControlValueAccessor,
+  RangeValueAccessor,
+  NumberValueAccessor,
+  SelectControlValueAccessor,
+  SelectMultipleControlValueAccessor,
+  RadioControlValueAccessor,
+];
+
 export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
-  return (
-      hasConstructor(valueAccessor, CheckboxControlValueAccessor) ||
-      hasConstructor(valueAccessor, RangeValueAccessor) ||
-      hasConstructor(valueAccessor, NumberValueAccessor) ||
-      hasConstructor(valueAccessor, SelectControlValueAccessor) ||
-      hasConstructor(valueAccessor, SelectMultipleControlValueAccessor) ||
-      hasConstructor(valueAccessor, RadioControlValueAccessor));
+  return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
 }
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
@@ -147,24 +146,24 @@ export function selectValueAccessor(
   var builtinAccessor: ControlValueAccessor;
   var customAccessor: ControlValueAccessor;
   valueAccessors.forEach((v: ControlValueAccessor) => {
-    if (hasConstructor(v, DefaultValueAccessor)) {
+    if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;
 
     } else if (isBuiltInAccessor(v)) {
-      if (isPresent(builtinAccessor))
+      if (builtinAccessor)
         _throwError(dir, 'More than one built-in value accessor matches form control with');
       builtinAccessor = v;
 
     } else {
-      if (isPresent(customAccessor))
+      if (customAccessor)
         _throwError(dir, 'More than one custom value accessor matches form control with');
       customAccessor = v;
     }
   });
 
-  if (isPresent(customAccessor)) return customAccessor;
-  if (isPresent(builtinAccessor)) return builtinAccessor;
-  if (isPresent(defaultAccessor)) return defaultAccessor;
+  if (customAccessor) return customAccessor;
+  if (builtinAccessor) return builtinAccessor;
+  if (defaultAccessor) return defaultAccessor;
 
   _throwError(dir, 'No valid value accessor for form control with');
   return null;

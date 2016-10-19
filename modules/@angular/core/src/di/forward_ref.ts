@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isFunction, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 import {Type} from '../type';
 
 
@@ -51,7 +51,7 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * @experimental
  */
 export function resolveForwardRef(type: any): any {
-  if (isFunction(type) && type.hasOwnProperty('__forward_ref__') &&
+  if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__') &&
       type.__forward_ref__ === forwardRef) {
     return (<ForwardRefFn>type)();
   } else {

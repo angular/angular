@@ -6,12 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {evalExpression, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {sanitizeIdentifier} from '../util';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
+
+function evalExpression(
+    sourceUrl: string, expr: string, declarations: string, vars: {[key: string]: any}): any {
+  const fnBody = `${declarations}\nreturn ${expr}\n//# sourceURL=${sourceUrl}`;
+  const fnArgNames: string[] = [];
+  const fnArgValues: any[] = [];
+  for (const argName in vars) {
+    fnArgNames.push(argName);
+    fnArgValues.push(vars[argName]);
+  }
+  return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
+}
+
 
 export function jitStatements(
     sourceUrl: string, statements: o.Statement[], resultVar: string): any {

@@ -9,7 +9,6 @@
 import {Inject, Injectable} from '@angular/core';
 
 import {Options} from '../common_options';
-import {isNumber} from '../facade/lang';
 import {Metric} from '../metric';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
@@ -44,7 +43,7 @@ export class UserMetric extends Metric {
     function getAndClearValues() {
       Promise.all(names.map(name => adapter.executeScript(`return window.${name}`)))
           .then((values: any[]) => {
-            if (values.every(isNumber)) {
+            if (values.every(v => typeof v === 'number')) {
               Promise.all(names.map(name => adapter.executeScript(`delete window.${name}`)))
                   .then((_: any[]) => {
                     let map: {[k: string]: any} = {};

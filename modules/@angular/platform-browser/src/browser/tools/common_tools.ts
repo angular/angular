@@ -53,20 +53,20 @@ export class AngularProfiler {
    * ```
    */
   timeChangeDetection(config: any): ChangeDetectionPerfRecord {
-    var record = isPresent(config) && config['record'];
+    var record = config && config['record'];
     var profileName = 'Change Detection';
     // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
     var isProfilerAvailable = isPresent(window.console.profile);
     if (record && isProfilerAvailable) {
       window.console.profile(profileName);
     }
-    var start = getDOM().performanceNow();
+    const start = getDOM().performanceNow();
     var numTicks = 0;
     while (numTicks < 5 || (getDOM().performanceNow() - start) < 500) {
       this.appRef.tick();
       numTicks++;
     }
-    var end = getDOM().performanceNow();
+    const end = getDOM().performanceNow();
     if (record && isProfilerAvailable) {
       // need to cast to <any> because type checker thinks there's no argument
       // while in fact there is:
@@ -74,9 +74,9 @@ export class AngularProfiler {
       // https://developer.mozilla.org/en-US/docs/Web/API/Console/profileEnd
       (<any>window.console.profileEnd)(profileName);
     }
-    var msPerTick = (end - start) / numTicks;
+    const msPerTick = (end - start) / numTicks;
     window.console.log(`ran ${numTicks} change detection cycles`);
-    window.console.log(`${NumberWrapper.toFixed(msPerTick, 2)} ms per check`);
+    window.console.log(`${msPerTick.toFixed(2)} ms per check`);
 
     return new ChangeDetectionPerfRecord(msPerTick, numTicks);
   }

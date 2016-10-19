@@ -11,8 +11,6 @@ import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {Json} from '../../src/facade/lang';
-
 export function main() {
   describe('JsonPipe', () => {
     var regNewLine = '\n';
@@ -48,7 +46,7 @@ export function main() {
 
       it('should return JSON-formatted string similar to Json.stringify', () => {
         var dream1 = normalize(pipe.transform(inceptionObj));
-        var dream2 = normalize(Json.stringify(inceptionObj));
+        var dream2 = normalize(JSON.stringify(inceptionObj, null, 2));
         expect(dream1).toEqual(dream2);
       });
     });
@@ -74,7 +72,6 @@ export function main() {
            mutable.push(2);
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
-
          }));
     });
   });

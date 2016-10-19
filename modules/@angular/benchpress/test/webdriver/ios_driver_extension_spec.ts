@@ -9,7 +9,6 @@
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 import {IOsDriverExtension, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {Json} from '../../src/facade/lang';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -184,8 +183,9 @@ class MockDriverAdapter extends WebDriverAdapter {
     if (type === 'performance') {
       return Promise.resolve(this._perfRecords.map(function(record) {
         return {
-          'message': Json.stringify(
-              {'message': {'method': 'Timeline.eventRecorded', 'params': {'record': record}}})
+          'message': JSON.stringify(
+              {'message': {'method': 'Timeline.eventRecorded', 'params': {'record': record}}}, null,
+              2)
         };
       }));
     } else {

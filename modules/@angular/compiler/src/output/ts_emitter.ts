@@ -8,24 +8,20 @@
 
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isArray, isBlank, isPresent} from '../facade/lang';
+import {isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import * as o from './output_ast';
 import {ImportGenerator} from './path_util';
 
-var _debugModuleUrl = 'asset://debug/lib';
+const _debugModuleUrl = 'asset://debug/lib';
 
 export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
     string {
-  var converter = new _TsEmitterVisitor(_debugModuleUrl);
-  var ctx = EmitterVisitorContext.createRoot([]);
-  var asts: any[];
-  if (isArray(ast)) {
-    asts = <any[]>ast;
-  } else {
-    asts = [ast];
-  }
+  const converter = new _TsEmitterVisitor(_debugModuleUrl);
+  const ctx = EmitterVisitorContext.createRoot([]);
+  const asts: any[] = Array.isArray(ast) ? ast : [ast];
+
   asts.forEach((ast) => {
     if (ast instanceof o.Statement) {
       ast.visitStatement(converter, ctx);
