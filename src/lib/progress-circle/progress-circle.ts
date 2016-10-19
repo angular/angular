@@ -108,7 +108,7 @@ export class MdProgressCircle implements OnDestroy {
     }
   }
   set value(v: number) {
-    if (v && this.mode == 'determinate') {
+    if (v != null && this.mode == 'determinate') {
       let newValue = clamp(v);
       this._animateCircle((this.value || 0), newValue, linearEase, DURATION_DETERMINATE, 0);
       this._value = newValue;

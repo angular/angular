@@ -66,6 +66,12 @@ describe('MdProgressCircular', () => {
     progressComponent.value = 50;
     expect(progressComponent.value).toBe(50);
 
+    progressComponent.value = 0;
+    expect(progressComponent.value).toBe(0);
+
+    progressComponent.value = 100;
+    expect(progressComponent.value).toBe(100);
+
     progressComponent.value = 999;
     expect(progressComponent.value).toBe(100);
 
