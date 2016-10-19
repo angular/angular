@@ -41,11 +41,13 @@ export class AnimationTransitionEvent {
   public fromState: string;
   public toState: string;
   public totalTime: number;
+  public phaseName: string;
 
-  constructor({fromState, toState,
-               totalTime}: {fromState: string, toState: string, totalTime: number}) {
+  constructor({fromState, toState, totalTime, phaseName}:
+                  {fromState: string, toState: string, totalTime: number, phaseName: string}) {
     this.fromState = fromState;
     this.toState = toState;
     this.totalTime = totalTime;
+    this.phaseName = phaseName;
   }
 }

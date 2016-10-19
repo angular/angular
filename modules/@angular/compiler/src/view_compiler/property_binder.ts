@@ -21,6 +21,7 @@ import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
 import {DetectChangesVars, ViewProperties} from './constants';
+import {CompileEventListener} from './event_binder';
 import {convertCdExpressionToIr, temporaryDeclaration} from './expression_converter';
 
 function createBindFieldExpr(exprIndex: number): o.ReadPropExpr {
@@ -90,7 +91,7 @@ export function bindRenderText(
 
 function bindAndWriteToRenderer(
     boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement,
-    isHostProp: boolean) {
+    isHostProp: boolean, eventListeners: CompileEventListener[]) {
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
@@ -142,41 +143,45 @@ function bindAndWriteToRenderer(
                 .toStmt());
         break;
       case PropertyBindingType.Animation:
-        var animationName = boundProp.name;
-        var targetViewExpr: o.Expression = o.THIS_EXPR;
-        if (isHostProp) {
-          targetViewExpr = compileElement.appElement.prop('componentView');
-        }
-
         compileMethod = view.animationBindingsMethod;
+        const detachStmts: o.Statement[] = [];
 
-        var animationFnExpr =
+        const animationName = boundProp.name;
+        const targetViewExpr: o.Expression =
+            isHostProp ? compileElement.appElement.prop('componentView') : o.THIS_EXPR;
+
+        const animationFnExpr =
             targetViewExpr.prop('componentType').prop('animations').key(o.literal(animationName));
 
         // it's important to normalize the void value as `void` explicitly
         // so that the styles data can be obtained from the stringmap
-        var emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
-
-        // void => ...
-        var oldRenderVar = o.variable('oldRenderVar');
-        updateStmts.push(oldRenderVar.set(oldRenderValue).toDeclStmt());
-        updateStmts.push(new o.IfStmt(
-            oldRenderVar.equals(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED))),
-            [oldRenderVar.set(emptyStateValue).toStmt()]));
-
-        // ... => void
-        var newRenderVar = o.variable('newRenderVar');
-        updateStmts.push(newRenderVar.set(renderValue).toDeclStmt());
-        updateStmts.push(new o.IfStmt(
-            newRenderVar.equals(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED))),
-            [newRenderVar.set(emptyStateValue).toStmt()]));
+        const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
+        const unitializedValue = o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED));
+        const animationTransitionVar = o.variable('animationTransition_' + animationName);
 
         updateStmts.push(
-            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderVar, newRenderVar]).toStmt());
+            animationTransitionVar
+                .set(animationFnExpr.callFn([
+                  o.THIS_EXPR, renderNode, oldRenderValue.equals(unitializedValue)
+                                               .conditional(emptyStateValue, oldRenderValue),
+                  renderValue.equals(unitializedValue).conditional(emptyStateValue, renderValue)
+                ]))
+                .toDeclStmt());
 
-        view.detachMethod.addStmt(
-            animationFnExpr.callFn([o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue])
-                .toStmt());
+        detachStmts.push(animationTransitionVar
+                             .set(animationFnExpr.callFn(
+                                 [o.THIS_EXPR, renderNode, oldRenderValue, emptyStateValue]))
+                             .toDeclStmt());
+
+        eventListeners.forEach(listener => {
+          if (listener.isAnimation && listener.eventName === animationName) {
+            let animationStmt = listener.listenToAnimation(animationTransitionVar);
+            updateStmts.push(animationStmt);
+            detachStmts.push(animationStmt);
+          }
+        });
+
+        view.detachMethod.addStmts(detachStmts);
 
         break;
     }
@@ -218,14 +223,17 @@ function sanitizedValue(
 }
 
 export function bindRenderInputs(
-    boundProps: BoundElementPropertyAst[], compileElement: CompileElement): void {
-  bindAndWriteToRenderer(boundProps, compileElement.view.componentContext, compileElement, false);
+    boundProps: BoundElementPropertyAst[], compileElement: CompileElement,
+    eventListeners: CompileEventListener[]): void {
+  bindAndWriteToRenderer(
+      boundProps, compileElement.view.componentContext, compileElement, false, eventListeners);
 }
 
 export function bindDirectiveHostProps(
-    directiveAst: DirectiveAst, directiveInstance: o.Expression,
-    compileElement: CompileElement): void {
-  bindAndWriteToRenderer(directiveAst.hostProperties, directiveInstance, compileElement, true);
+    directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement,
+    eventListeners: CompileEventListener[]): void {
+  bindAndWriteToRenderer(
+      directiveAst.hostProperties, directiveInstance, compileElement, true, eventListeners);
 }
 
 export function bindDirectiveInputs(

@@ -109,12 +109,14 @@ export declare class AnimationStyleMetadata extends AnimationMetadata {
 /** @experimental */
 export declare class AnimationTransitionEvent {
     fromState: string;
+    phaseName: string;
     toState: string;
     totalTime: number;
-    constructor({fromState, toState, totalTime}: {
+    constructor({fromState, toState, totalTime, phaseName}: {
         fromState: string;
         toState: string;
         totalTime: number;
+        phaseName: string;
     });
 }
 

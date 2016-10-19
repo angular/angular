@@ -44,14 +44,14 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     collectEventListeners(ast.outputs, ast.directives, compileElement).forEach(entry => {
       eventListeners.push(entry);
     });
-    bindRenderInputs(ast.inputs, compileElement);
+    bindRenderInputs(ast.inputs, compileElement, eventListeners);
     bindRenderOutputs(eventListeners);
     ast.directives.forEach((directiveAst) => {
       var directiveInstance = compileElement.instances.get(directiveAst.directive.type.reference);
       bindDirectiveInputs(directiveAst, directiveInstance, compileElement);
       bindDirectiveDetectChangesLifecycleCallbacks(directiveAst, directiveInstance, compileElement);
 
-      bindDirectiveHostProps(directiveAst, directiveInstance, compileElement);
+      bindDirectiveHostProps(directiveAst, directiveInstance, compileElement, eventListeners);
       bindDirectiveOutputs(directiveAst, directiveInstance, eventListeners);
     });
     templateVisitAll(this, ast.children, compileElement);

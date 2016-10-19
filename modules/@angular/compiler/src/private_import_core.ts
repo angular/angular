@@ -90,3 +90,4 @@ export const ViewMetadata: typeof r.ViewMetadata = r.ViewMetadata;
 export type ComponentStillLoadingError = typeof r._ComponentStillLoadingError;
 export const ComponentStillLoadingError: typeof r.ComponentStillLoadingError =
     r.ComponentStillLoadingError;
+export const AnimationTransition: typeof r.AnimationTransition = r.AnimationTransition;
