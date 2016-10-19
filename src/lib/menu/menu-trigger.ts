@@ -14,6 +14,7 @@ import {MdMenu} from './menu-directive';
 import {MdMenuMissingError} from './menu-errors';
 import {
     ENTER,
+    SPACE,
     Overlay,
     OverlayState,
     OverlayRef,
@@ -172,7 +173,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   // TODO: internal
   _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ENTER) {
+    if (event.keyCode === ENTER || event.keyCode === SPACE) {
       this._openedFromKeyboard = true;
     }
   }

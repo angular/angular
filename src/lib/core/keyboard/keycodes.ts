@@ -10,4 +10,5 @@ export const RIGHT_ARROW = 39;
 export const LEFT_ARROW = 37;
 
 export const ENTER = 13;
+export const SPACE = 32;
 export const TAB = 9;

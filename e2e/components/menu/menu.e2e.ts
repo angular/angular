@@ -73,8 +73,13 @@ describe('menu', () => {
       page.pressKey(protractor.Key.TAB);
     });
 
-    it('should auto-focus the first item when opened with keyboard', () => {
+    it('should auto-focus the first item when opened with ENTER', () => {
       page.pressKey(protractor.Key.ENTER);
+      page.expectFocusOn(page.items(0));
+    });
+
+    it('should auto-focus the first item when opened with SPACE', () => {
+      page.pressKey(protractor.Key.SPACE);
       page.expectFocusOn(page.items(0));
     });
 
