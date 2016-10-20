@@ -11,6 +11,7 @@ export const INJECTOR_KEY = '$$angularInjector';
 
 export const $INJECTOR = '$injector';
 export const $PARSE = '$parse';
+export const $ROOT_SCOPE = '$rootScope';
 export const $SCOPE = '$scope';
 
 export const $COMPILE = '$compile';

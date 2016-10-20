@@ -7,6 +7,7 @@
  */
 import {PlatformRef, Type} from '@angular/core';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {$ROOT_SCOPE} from '@angular/upgrade/src/aot/constants';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 export function bootstrap(
@@ -18,6 +19,11 @@ export function bootstrap(
     upgrade.bootstrap(element, [ng1Module.name]);
     return upgrade;
   });
+}
+
+export function digest(adapter: UpgradeModule) {
+  const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+  $rootScope.$digest();
 }
 
 export function html(html: string): Element {

@@ -14,6 +14,7 @@ import {controllerKey} from '../util';
 
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $SCOPE, $TEMPLATE_CACHE} from './constants';
 
+const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -101,7 +102,16 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   ngOnInit() {
     const attrs: angular.IAttributes = NOT_SUPPORTED;
     const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
-    const linkController = this.resolveRequired(this.$element, this.directive.require);
+    const directiveRequire = this.getDirectiveRequire(this.directive);
+    let requiredControllers =
+        this.resolveRequire(this.directive.name, this.$element, directiveRequire);
+
+    if (this.directive.bindToController && isMap(directiveRequire)) {
+      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
+      Object.keys(requiredControllersMap).forEach(key => {
+        this.controllerInstance[key] = requiredControllersMap[key];
+      });
+    }
 
     this.callLifecycleHook('$onInit', this.controllerInstance);
 
@@ -109,7 +119,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     const preLink = (typeof link == 'object') && (link as angular.IDirectivePrePost).pre;
     const postLink = (typeof link == 'object') ? (link as angular.IDirectivePrePost).post : link;
     if (preLink) {
-      preLink(this.$componentScope, this.$element, attrs, linkController, transcludeFn);
+      preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
     var childNodes: Node[] = [];
@@ -126,7 +136,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.linkFn(this.$componentScope, attachElement, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
-      postLink(this.$componentScope, this.$element, attrs, linkController, transcludeFn);
+      postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
     this.callLifecycleHook('$postLink', this.controllerInstance);
@@ -185,6 +195,24 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       if ((<angular.IDirectivePrePost>link).post) this.notSupported('link.post');
     }
     return directive;
+  }
+
+  private getDirectiveRequire(directive: angular.IDirective): angular.DirectiveRequireProperty {
+    const require = directive.require || (directive.controller && directive.name);
+
+    if (isMap(require)) {
+      Object.keys(require).forEach(key => {
+        const value = require[key];
+        const match = value.match(REQUIRE_PREFIX_RE);
+        const name = value.substring(match[0].length);
+
+        if (!name) {
+          require[key] = match[0] + key;
+        }
+      });
+    }
+
+    return require;
   }
 
   private initializeBindings(directive: angular.IDirective) {
@@ -266,9 +294,47 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     return controller;
   }
 
-  private resolveRequired(
-      $element: angular.IAugmentedJQuery, require: angular.DirectiveRequireProperty) {
-    // TODO
+  private resolveRequire(
+      directiveName: string, $element: angular.IAugmentedJQuery,
+      require: angular.DirectiveRequireProperty): angular.SingleOrListOrMap<IControllerInstance> {
+    if (!require) {
+      return null;
+    } else if (Array.isArray(require)) {
+      return require.map(req => this.resolveRequire(directiveName, $element, req));
+    } else if (typeof require === 'object') {
+      const value: {[key: string]: IControllerInstance} = {};
+
+      Object.keys(require).forEach(
+          key => value[key] = this.resolveRequire(directiveName, $element, require[key]));
+
+      return value;
+    } else if (typeof require === 'string') {
+      const match = require.match(REQUIRE_PREFIX_RE);
+      const inheritType = match[1] || match[3];
+
+      const name = require.substring(match[0].length);
+      const isOptional = !!match[2];
+      const searchParents = !!inheritType;
+      const startOnParent = inheritType === '^^';
+
+      const ctrlKey = controllerKey(name);
+
+      if (startOnParent) {
+        $element = $element.parent();
+      }
+
+      const value = searchParents ? $element.inheritedData(ctrlKey) : $element.data(ctrlKey);
+
+      if (!value && !isOptional) {
+        throw new Error(
+            `Unable to find required '${require}' in upgraded directive '${directiveName}'.`);
+      }
+
+      return value;
+    } else {
+      throw new Error(
+          `Unrecognized require syntax on upgraded directive '${directiveName}': ${require}`);
+    }
   }
 
   private setupOutputs() {
@@ -304,4 +370,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
 function getOrCall<T>(property: Function | T): T {
   return typeof(property) === 'function' ? property() : property;
+}
+
+// NOTE: Only works for `typeof T !== 'object'`.
+function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
+  return value && !Array.isArray(value) && typeof value === 'object';
 }
