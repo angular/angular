@@ -190,4 +190,6 @@ export abstract class ChangeDetectorRef {
    * ```
    */
   abstract reattach(): void;
+
+  abstract isDetached(): boolean;
 }
