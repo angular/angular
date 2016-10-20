@@ -12,8 +12,6 @@ import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
-
-
 /**
  * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
  * state.
@@ -79,6 +77,10 @@ export class RouterOutlet implements OnDestroy {
       activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver,
       loadedInjector: Injector, providers: ResolvedReflectiveProvider[],
       outletMap: RouterOutletMap): void {
+    if (this.isActivated) {
+      throw new Error('Cannot activate an already activated outlet');
+    }
+
     this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
 

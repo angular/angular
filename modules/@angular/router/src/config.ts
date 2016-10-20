@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-
+import {PRIMARY_OUTLET} from './shared';
 
 /**
  * @whatItDoes Represents router configuration.
@@ -319,6 +319,10 @@ export function validateConfig(config: Routes): void {
 function validateNode(route: Route): void {
   if (Array.isArray(route)) {
     throw new Error(`Invalid route configuration: Array cannot be specified`);
+  }
+  if (route.component === undefined && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+    throw new Error(
+        `Invalid route configuration of route '${route.path}': a componentless route cannot have a named outlet set`);
   }
   if (!!route.redirectTo && !!route.children) {
     throw new Error(
