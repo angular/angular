@@ -29,7 +29,8 @@
     }
   }
 
-  .md-radio-focused .md-radio-ripple .md-ripple-foreground {
+  // TODO(jelbourn): remove style for temporary ripple once the real ripple is applied.
+  .md-radio-focused .md-ink-ripple {
     background-color: md-color($accent, 0.26);
   }
 }
