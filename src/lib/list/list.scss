@@ -157,7 +157,8 @@ md-list[dense], md-nav-list[dense] {
 
 md-divider {
   display: block;
-  border-top: 1px solid;
+  border-top-style: solid;
+  border-top-width: 1px;
   margin: 0;
 }
 
