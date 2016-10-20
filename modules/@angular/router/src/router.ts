@@ -30,6 +30,7 @@ import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {NavigationCancelingError, PRIMARY_OUTLET, Params} from './shared';
+import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
@@ -285,6 +286,9 @@ function defaultErrorHandler(error: any): any {
  */
 export class Router {
   private currentUrlTree: UrlTree;
+  private rawUrlTree: UrlTree;
+  private lastNavigation: UrlTree;
+
   private currentRouterState: RouterState;
   private locationSubscription: Subscription;
   private routerEvents: Subject<Event>;
@@ -304,6 +308,11 @@ export class Router {
   navigated: boolean = false;
 
   /**
+   * Extracts and merges URLs. Used for Angular 1 to Angular 2 migrations.
+   */
+  urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -314,6 +323,7 @@ export class Router {
     this.resetConfig(config);
     this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
+    this.rawUrlTree = this.currentUrlTree;
     this.configLoader = new RouterConfigLoader(loader, compiler);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
   }
@@ -344,12 +354,20 @@ export class Router {
     // Zone.current.wrap is needed because of the issue with RxJS scheduler,
     // which does not work properly with zone.js in IE and Safari
     this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
-      const tree = this.urlSerializer.parse(change['url']);
-      // we fire multiple events for a single URL change
-      // we should navigate only once
-      return this.currentUrlTree.toString() !== tree.toString() ?
-          this.scheduleNavigation(tree, {skipLocationChange: change['pop'], replaceUrl: true}) :
-          null;
+      const rawUrlTree = this.urlSerializer.parse(change['url']);
+      const tree = this.urlHandlingStrategy.extract(rawUrlTree);
+
+
+      setTimeout(() => {
+        // we fire multiple events for a single URL change
+        // we should navigate only once
+        if (!this.lastNavigation || this.lastNavigation.toString() !== tree.toString()) {
+          this.scheduleNavigation(
+              rawUrlTree, tree, {skipLocationChange: change['pop'], replaceUrl: true});
+        } else {
+          this.rawUrlTree = rawUrlTree;
+        }
+      }, 0);
     }));
   }
 
@@ -470,10 +488,10 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
     if (url instanceof UrlTree) {
-      return this.scheduleNavigation(url, extras);
+      return this.scheduleNavigation(this.rawUrlTree, url, extras);
     } else {
       const urlTree = this.urlSerializer.parse(url);
-      return this.scheduleNavigation(urlTree, extras);
+      return this.scheduleNavigation(this.rawUrlTree, urlTree, extras);
     }
   }
 
@@ -500,7 +518,7 @@ export class Router {
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    return this.scheduleNavigation(this.createUrlTree(commands, extras), extras);
+    return this.scheduleNavigation(this.rawUrlTree, this.createUrlTree(commands, extras), extras);
   }
 
   /**
@@ -525,16 +543,34 @@ export class Router {
     }
   }
 
-  private scheduleNavigation(url: UrlTree, extras: NavigationExtras): Promise<boolean> {
-    const id = ++this.navigationId;
-    this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
-    return Promise.resolve().then(
-        (_) => this.runNavigate(url, extras.skipLocationChange, extras.replaceUrl, id));
+  private scheduleNavigation(rawUrl: UrlTree, url: UrlTree, extras: NavigationExtras):
+      Promise<boolean> {
+    if (this.urlHandlingStrategy.shouldProcessUrl(url)) {
+      const id = ++this.navigationId;
+      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+
+      return Promise.resolve().then(
+          (_) => this.runNavigate(
+              rawUrl, url, extras.skipLocationChange, extras.replaceUrl, id, null));
+
+      // we cannot process the current URL, but we could process the previous one =>
+      // we need to do some cleanup
+    } else if (this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
+      const id = ++this.navigationId;
+      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+
+      return Promise.resolve().then(
+          (_) => this.runNavigate(
+              rawUrl, url, false, false, id, createEmptyState(url, this.rootComponentType)));
+    } else {
+      this.rawUrlTree = rawUrl;
+      return Promise.resolve(null);
+    }
   }
 
   private runNavigate(
-      url: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
-      id: number): Promise<boolean> {
+      rawUrl: UrlTree, url: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
+      id: number, precreatedState: RouterState): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       this.routerEvents.next(new NavigationCancel(
@@ -553,23 +589,33 @@ export class Router {
       const storedState = this.currentRouterState;
       const storedUrl = this.currentUrlTree;
 
-      const redirectsApplied$ = applyRedirects(this.injector, this.configLoader, url, this.config);
+      let routerState$: any;
 
-      const snapshot$ = mergeMap.call(redirectsApplied$, (u: UrlTree) => {
-        appliedUrl = u;
-        return recognize(
-            this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl));
-      });
+      if (!precreatedState) {
+        const redirectsApplied$ =
+            applyRedirects(this.injector, this.configLoader, url, this.config);
 
-      const emitRecognzied$ = map.call(snapshot$, (newRouterStateSnapshot: RouterStateSnapshot) => {
-        this.routerEvents.next(new RoutesRecognized(
-            id, this.serializeUrl(url), this.serializeUrl(appliedUrl), newRouterStateSnapshot));
-        return newRouterStateSnapshot;
-      });
+        const snapshot$ = mergeMap.call(redirectsApplied$, (u: UrlTree) => {
+          appliedUrl = u;
+          return recognize(
+              this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl));
+        });
 
-      const routerState$ = map.call(emitRecognzied$, (routerStateSnapshot: RouterStateSnapshot) => {
-        return createRouterState(routerStateSnapshot, this.currentRouterState);
-      });
+        const emitRecognzied$ =
+            map.call(snapshot$, (newRouterStateSnapshot: RouterStateSnapshot) => {
+              this.routerEvents.next(new RoutesRecognized(
+                  id, this.serializeUrl(url), this.serializeUrl(appliedUrl),
+                  newRouterStateSnapshot));
+              return newRouterStateSnapshot;
+            });
+
+        routerState$ = map.call(emitRecognzied$, (routerStateSnapshot: RouterStateSnapshot) => {
+          return createRouterState(routerStateSnapshot, this.currentRouterState);
+        });
+      } else {
+        appliedUrl = url;
+        routerState$ = of (precreatedState);
+      }
 
       const preactivation$ = map.call(routerState$, (newState: RouterState) => {
         state = newState;
@@ -595,11 +641,14 @@ export class Router {
               return;
             }
 
+            this.lastNavigation = appliedUrl;
             this.currentUrlTree = appliedUrl;
+            this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+
             this.currentRouterState = state;
 
             if (!shouldPreventPushState) {
-              let path = this.urlSerializer.serialize(appliedUrl);
+              let path = this.urlSerializer.serialize(this.rawUrlTree);
               if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
                 this.location.replaceState(path);
               } else {
@@ -641,7 +690,8 @@ export class Router {
                 if (id === this.navigationId) {
                   this.currentRouterState = storedState;
                   this.currentUrlTree = storedUrl;
-                  this.location.replaceState(this.serializeUrl(storedUrl));
+                  this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+                  this.location.replaceState(this.serializeUrl(this.rawUrlTree));
                 }
               });
     });
