@@ -66,10 +66,10 @@ Here's a simple example of using the sidenav:
 ```html
 <app>
   <md-sidenav-layout>
-    <md-sidenav #start (open)="mybutton.focus()">
+    <md-sidenav #start (open)="closeStartButton.focus()">
       Start Sidenav.
       <br>
-      <button md-button #mybutton (click)="start.close()">Close</button>
+      <button md-button #closeStartButton (click)="start.close()">Close</button>
     </md-sidenav>
     <md-sidenav #end align="end">
       End Sidenav.
@@ -77,6 +77,9 @@ Here's a simple example of using the sidenav:
     </md-sidenav>
 
     My regular content. This will be moved into the proper DOM at runtime.
+    <button md-button (click)="start.open()">Open start sidenav</button>
+    <button md-button (click)="end.open()">Open end sidenav</button>
+
   </md-sidenav-layout>
 </app>
 ```
