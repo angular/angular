@@ -1,6 +1,4 @@
-<a name="2.2.0-beta.0"></a>
-# [2.2.0-beta.0](https://github.com/angular/angular/compare/2.1.0...2.2.0-beta.0) (2016-10-20)
-
+# [2.1.1](https://github.com/angular/angular/compare/2.1.0...2.1.1) (2016-10-20)
 
 ### Bug Fixes
 
@@ -15,6 +13,15 @@
 * **router:** module loader should start compiling modules when stubbedModules are set ([#11742](https://github.com/angular/angular/issues/11742)) ([b44b6ef](https://github.com/angular/angular/commit/b44b6ef))
 
 
+### Performance Improvements
+
+* **common:** optimize NgSwitch default case ([fdf4309](https://github.com/angular/angular/commit/fdf4309))
+
+
+
+<a name="2.2.0-beta.0"></a>
+# [2.2.0-beta.0](https://github.com/angular/angular/compare/2.1.0...2.2.0-beta.0) (2016-10-20)
+
 ### Features
 
 * **common:** support narrow forms for month and weekdays in DatePipe ([#12297](https://github.com/angular/angular/issues/12297)) ([f77ab6a](https://github.com/angular/angular/commit/f77ab6a)), closes [#12294](https://github.com/angular/angular/issues/12294)
@@ -26,10 +33,7 @@
 * **upgrade:** add support for AoT compiled upgrade applications ([d6791ff](https://github.com/angular/angular/commit/d6791ff)), closes [#12239](https://github.com/angular/angular/issues/12239)
 * **router:** add support for ng1/ng2 migration ([#12160](https://github.com/angular/angular/issues/12160)) ([8b9ab44](https://github.com/angular/angular/commit/8b9ab44))
 
-
-### Performance Improvements
-
-* **common:** optimize NgSwitch default case ([fdf4309](https://github.com/angular/angular/commit/fdf4309))
+Note: The 2.2.0-beta.0 release also contains all the changes present in the 2.1.1 release.
 
 
 
