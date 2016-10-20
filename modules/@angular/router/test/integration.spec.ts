@@ -1054,7 +1054,11 @@ describe('Integration', () => {
 
     describe('CanDeactivate', () => {
       describe('should not deactivate a route when CanDeactivate returns false', () => {
+        let log: any;
+
         beforeEach(() => {
+          log = [];
+
           TestBed.configureTestingModule({
             providers: [
               {
@@ -1073,6 +1077,13 @@ describe('Integration', () => {
                 provide: 'CanDeactivateUser',
                 useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
                   return a.params['name'] === 'victor';
+                }
+              },
+              {
+                provide: 'RecordingDeactivate',
+                useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                  log.push(['Deactivate', a.routeConfig.path]);
+                  return true;
                 }
               },
             ]
@@ -1102,27 +1113,37 @@ describe('Integration', () => {
              expect(canceledStatus).toEqual(false);
            })));
 
-        it('works (componentless route)',
+        it('works with componentless routes',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig([{
-               path: 'parent/:id',
-               canDeactivate: ['CanDeactivateParent'],
-               children: [{path: 'simple', component: SimpleCmp}]
-             }]);
+             router.resetConfig([
+               {
+                 path: 'grandparent',
+                 canDeactivate: ['RecordingDeactivate'],
+                 children: [{
+                   path: 'parent',
+                   canDeactivate: ['RecordingDeactivate'],
+                   children: [{
+                     path: 'child',
+                     canDeactivate: ['RecordingDeactivate'],
+                     children: [{path: 'simple', component: SimpleCmp}]
+                   }]
+                 }]
+               },
+               {path: 'simple', component: SimpleCmp}
+             ]);
 
-             router.navigateByUrl('/parent/22/simple');
+             router.navigateByUrl('/grandparent/parent/child/simple');
              advance(fixture);
-             expect(location.path()).toEqual('/parent/22/simple');
+             expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
-             router.navigateByUrl('/parent/33/simple');
+             router.navigateByUrl('/simple');
              advance(fixture);
-             expect(location.path()).toEqual('/parent/33/simple');
 
-             router.navigateByUrl('/parent/44/simple');
-             advance(fixture);
-             expect(location.path()).toEqual('/parent/33/simple');
+             expect(log).toEqual([
+               ['Deactivate', 'child'], ['Deactivate', 'parent'], ['Deactivate', 'grandparent']
+             ]);
            })));
 
         it('works with a nested route',
