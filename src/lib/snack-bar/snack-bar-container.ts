@@ -15,8 +15,6 @@ import {
   ComponentPortal,
   TemplatePortal,
   PortalHostDirective,
-  AnimationCurves,
-  AnimationDurations,
 } from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';
 import {MdSnackBarContentAlreadyAttached} from './snack-bar-errors';
@@ -26,6 +24,11 @@ import {Subject} from 'rxjs/Subject';
 
 
 export type SnackBarState = 'initial' | 'visible' | 'complete' | 'void';
+
+// TODO(jelbourn): we can't use constants from animation.ts here because you can't use
+// a text interpolation in anything that is analyzed statically with ngc (for AoT compile).
+export const SHOW_ANIMATION = '225ms cubic-bezier(0.4,0.0,1,1)';
+export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
 
 /**
  * Internal component that wraps user-provided snack bar content.
@@ -45,10 +48,8 @@ export type SnackBarState = 'initial' | 'visible' | 'complete' | 'void';
       state('initial', style({transform: 'translateY(100%)'})),
       state('visible', style({transform: 'translateY(0%)'})),
       state('complete', style({transform: 'translateY(100%)'})),
-      transition('visible => complete',
-                 animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`)),
-      transition('initial => visible, void => visible',
-                 animate(`${AnimationDurations.ENTERING} ${AnimationCurves.ACCELERATION_CURVE}`)),
+      transition('visible => complete', animate(HIDE_ANIMATION)),
+      transition('initial => visible, void => visible', animate(SHOW_ANIMATION)),
     ])
   ],
 })

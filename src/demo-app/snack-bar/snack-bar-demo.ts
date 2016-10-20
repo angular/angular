@@ -20,12 +20,3 @@ export class SnackBarDemo {
     this.snackBar.open(this.message, this.action && this.actionButtonLabel, config);
   }
 }
-
-
-@Component({
-  moduleId: module.id,
-  selector: 'demo-snack',
-  templateUrl: 'snack-bar-demo.html',
-  styleUrls: ['./snack-bar-demo.css'],
-})
-export class DemoSnack {}
