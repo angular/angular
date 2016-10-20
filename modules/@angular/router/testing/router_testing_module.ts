@@ -49,13 +49,29 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  public stubbedModules: {[path: string]: any} = {};
+  private _stubbedModules: {[path: string]: Promise<NgModuleFactory<any>>} = {};
+
+  /**
+   * @docsNotRequired
+   */
+  set stubbedModules(modules: {[path: string]: any}) {
+    const res: {[path: string]: any} = {};
+    for (let t of Object.keys(modules)) {
+      res[t] = this.compiler.compileModuleAsync(modules[t]);
+    }
+    this._stubbedModules = res;
+  }
+
+  /**
+   * @docsNotRequired
+   */
+  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
 
   constructor(private compiler: Compiler) {}
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    if (this.stubbedModules[path]) {
-      return this.compiler.compileModuleAsync(this.stubbedModules[path]);
+    if (this._stubbedModules[path]) {
+      return this._stubbedModules[path];
     } else {
       return <any>Promise.reject(new Error(`Cannot find module ${path}`));
     }
