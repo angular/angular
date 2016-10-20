@@ -216,6 +216,21 @@ describe('MdRadio', () => {
 
       expect(radioInstances.every(radio => !radio.checked)).toBe(true);
     });
+
+    it('should remove ripple if md-ripple-disabled input is set', async(() => {
+      fixture.detectChanges();
+      for (let radioNativeElement of radioNativeElements)
+      {
+        expect(radioNativeElement.querySelectorAll('[md-ripple]').length).toBe(1);
+      }
+
+      testComponent.disableRipple = true;
+      fixture.detectChanges();
+      for (let radioNativeElement of radioNativeElements)
+      {
+        expect(radioNativeElement.querySelectorAll('[md-ripple]').length).toBe(0);
+      }
+    }));
   });
 
   describe('group with ngModel', () => {
@@ -426,25 +441,24 @@ describe('MdRadio', () => {
   });
 });
 
-
 @Component({
   template: `
   <md-radio-group [disabled]="isGroupDisabled"
                   [align]="alignment"
                   [value]="groupValue"
                   name="test-name">
-    <md-radio-button value="fire">Charmander</md-radio-button>
-    <md-radio-button value="water">Squirtle</md-radio-button>
-    <md-radio-button value="leaf">Bulbasaur</md-radio-button>
+    <md-radio-button value="fire" [disableRipple]="disableRipple">Charmander</md-radio-button>
+    <md-radio-button value="water" [disableRipple]="disableRipple">Squirtle</md-radio-button>
+    <md-radio-button value="leaf" [disableRipple]="disableRipple">Bulbasaur</md-radio-button>
   </md-radio-group>
   `
 })
 class RadiosInsideRadioGroup {
+  disableRipple: boolean = false;
   alignment: string;
   isGroupDisabled: boolean = false;
   groupValue: string = null;
 }
-
 
 @Component({
   template: `
@@ -463,7 +477,6 @@ class RadiosInsideRadioGroup {
   `
 })
 class StandaloneRadioButtons { }
-
 
 @Component({
   template: `

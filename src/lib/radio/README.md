@@ -57,6 +57,7 @@ The `md-radio-group` component has no button initially selected.
 | `aria-label` | `string` | Used to set the `aria-label` attribute of the underlying input element. |
 | `aria-labelledby` | `string` | Used to set the `aria-labelledby` attribute of the underlying input element.
                                  If provided, this attribute takes precedence as the element's text alternative. |
+| `disableRipple` | boolean | Whether the ripple effect when the radio button is clicked should be disabled
 
 When checked, an event is emitted from the `change` EventEmitter property.
 
