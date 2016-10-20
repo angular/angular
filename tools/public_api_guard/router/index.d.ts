@@ -202,6 +202,7 @@ export declare class Router {
     navigated: boolean;
     routerState: RouterState;
     url: string;
+    urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
@@ -322,6 +323,13 @@ export declare class RoutesRecognized {
     toString(): string;
 }
 
+/** @experimental */
+export declare abstract class UrlHandlingStrategy {
+    abstract extract(url: UrlTree): UrlTree;
+    abstract merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree;
+    abstract shouldProcessUrl(url: UrlTree): boolean;
+}
+
 /** @stable */
 export declare class UrlSegment {
     parameters: {
@@ -333,6 +341,23 @@ export declare class UrlSegment {
         parameters: {
         [key: string]: string;
     });
+    toString(): string;
+}
+
+/** @stable */
+export declare class UrlSegmentGroup {
+    children: {
+        [key: string]: UrlSegmentGroup;
+    };
+    numberOfChildren: number;
+    parent: UrlSegmentGroup;
+    segments: UrlSegment[];
+    constructor(
+        segments: UrlSegment[],
+        children: {
+        [key: string]: UrlSegmentGroup;
+    });
+    hasChildren(): boolean;
     toString(): string;
 }
 

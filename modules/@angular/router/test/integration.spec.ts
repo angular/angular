@@ -14,8 +14,9 @@ import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
+import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
@@ -58,7 +59,6 @@ describe('Integration', () => {
      })));
 
   it('should work when an outlet is in an ngIf (and is removed)', fakeAsync(() => {
-
        @Component({
          selector: 'someRoot',
          template: `<div *ngIf="cond"><router-outlet></router-outlet></div>`
@@ -87,6 +87,7 @@ describe('Integration', () => {
        let recordedError: any = null;
        router.navigateByUrl('/blank').catch(e => recordedError = e);
        advance(fixture);
+
        expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
      }));
 
@@ -1757,10 +1758,146 @@ describe('Integration', () => {
              })));
 
     });
+
+    describe('custom url handling strategies', () => {
+      class CustomUrlHandlingStrategy implements UrlHandlingStrategy {
+        shouldProcessUrl(url: UrlTree): boolean {
+          return url.toString().startsWith('/include') || url.toString() === '/';
+        }
+
+        extract(url: UrlTree): UrlTree {
+          const oldRoot = url.root;
+          const root = new UrlSegmentGroup(
+              oldRoot.segments, {[PRIMARY_OUTLET]: oldRoot.children[PRIMARY_OUTLET]});
+          return new UrlTree(root, url.queryParams, url.fragment);
+        }
+
+        merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
+          const oldRoot = newUrlPart.root;
+
+          const children: any = {};
+          if (oldRoot.children[PRIMARY_OUTLET]) {
+            children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
+          }
+
+          forEach(wholeUrl.root.children, (v: any, k: any) => {
+            if (k !== PRIMARY_OUTLET) {
+              children[k] = v;
+            }
+            v.parent = this;
+          });
+          const root = new UrlSegmentGroup(oldRoot.segments, children);
+          return new UrlTree(root, newUrlPart.queryParams, newUrlPart.fragment);
+        }
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule(
+            {providers: [{provide: UrlHandlingStrategy, useClass: CustomUrlHandlingStrategy}]});
+      });
+
+      it('should work',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'include',
+             component: TeamCmp,
+             children: [
+               {path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}
+             ]
+           }]);
+
+           let events: any[] = [];
+           router.events.subscribe(e => events.push(e));
+
+           // supported URL
+           router.navigateByUrl('/include/user/kate');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/include/user/kate');
+           expectEvents(events, [
+             [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [NavigationEnd, '/include/user/kate']
+           ]);
+           expect(fixture.nativeElement).toHaveText('team  [ user kate, right:  ]');
+           events.splice(0);
+
+           // unsupported URL
+           router.navigateByUrl('/exclude/one');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/exclude/one');
+           expect(Object.keys(router.routerState.root.children).length).toEqual(0);
+           expect(fixture.nativeElement).toHaveText('');
+           expectEvents(
+               events, [[NavigationStart, '/exclude/one'], [NavigationEnd, '/exclude/one']]);
+           events.splice(0);
+
+           // another unsupported URL
+           location.go('/exclude/two');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/exclude/two');
+           expectEvents(events, []);
+
+           // back to a supported URL
+           location.go('/include/simple');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/include/simple');
+           expect(fixture.nativeElement).toHaveText('team  [ simple, right:  ]');
+
+           expectEvents(events, [
+             [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [NavigationEnd, '/include/simple']
+           ]);
+         })));
+
+      it('should handle the case when the router takes only the primary url',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'include',
+             component: TeamCmp,
+             children: [
+               {path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}
+             ]
+           }]);
+
+           let events: any[] = [];
+           router.events.subscribe(e => events.push(e));
+
+           location.go('/include/user/kate(aux:excluded)');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
+           expectEvents(events, [
+             [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [NavigationEnd, '/include/user/kate']
+           ]);
+           events.splice(0);
+
+           location.go('/include/user/kate(aux:excluded2)');
+           advance(fixture);
+           expectEvents(events, []);
+
+           router.navigateByUrl('/include/simple');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/include/simple(aux:excluded2)');
+           expectEvents(events, [
+             [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [NavigationEnd, '/include/simple']
+           ]);
+         })));
+    });
   });
 });
 
 function expectEvents(events: Event[], pairs: any[]) {
+  expect(events.length).toEqual(pairs.length);
   for (let i = 0; i < events.length; ++i) {
     expect((<any>events[i].constructor).name).toBe(pairs[i][0].name);
     expect((<any>events[i]).url).toBe(pairs[i][1]);
@@ -1771,11 +1908,7 @@ function expectEvents(events: Event[], pairs: any[]) {
 class StringLinkCmp {
 }
 
-@Component({
-  selector: 'link-cmp',
-  template: `<button routerLink
-="/team/33/simple">link</button>`
-})
+@Component({selector: 'link-cmp', template: `<button routerLink="/team/33/simple">link</button>`})
 class StringLinkButtonCmp {
 }
 

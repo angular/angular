@@ -8,10 +8,11 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
-import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlSerializer, provideRoutes} from '@angular/router';
+import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
+import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes} from '@angular/router';
 
 import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
+
 
 
 /**
@@ -68,9 +69,14 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
-    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][]) {
-  return new Router(
+    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
+    urlHandlingStrategy?: UrlHandlingStrategy) {
+  const router = new Router(
       null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
+  if (urlHandlingStrategy) {
+    router.urlHandlingStrategy = urlHandlingStrategy;
+  }
+  return router;
 }
 
 /**
@@ -107,7 +113,8 @@ export function setupTestingRouter(
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
-        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES
+        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES,
+        [UrlHandlingStrategy, new Optional()]
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])
