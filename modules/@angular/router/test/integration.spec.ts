@@ -1147,6 +1147,34 @@ describe('Integration', () => {
              ]);
            })));
 
+        it('works with aux routes',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'two-outlets',
+               component: TwoOutletsCmp,
+               children: [
+                 {path: 'a', component: BlankCmp}, {
+                   path: 'b',
+                   canDeactivate: ['RecordingDeactivate'],
+                   component: SimpleCmp,
+                   outlet: 'aux'
+                 }
+               ]
+             }]);
+
+             router.navigateByUrl('/two-outlets/(a//aux:b)');
+             advance(fixture);
+             expect(location.path()).toEqual('/two-outlets/(a//aux:b)');
+
+             router.navigate(['two-outlets', {outlets: {aux: null}}]);
+             advance(fixture);
+
+             expect(log).toEqual([['Deactivate', 'b']]);
+             expect(location.path()).toEqual('/two-outlets/(a)');
+           })));
+
         it('works with a nested route',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -2057,6 +2085,14 @@ class TeamCmp {
   }
 }
 
+@Component({
+  selector: 'two-outlets-cmp',
+  template: `[ <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> ]`
+})
+class TwoOutletsCmp {
+}
+
+
 @Component({selector: 'user-cmp', template: `user {{name | async}}`})
 class UserCmp {
   name: Observable<string>;
@@ -2159,6 +2195,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
   entryComponents: [
     BlankCmp,
     SimpleCmp,
+    TwoOutletsCmp,
     TeamCmp,
     UserCmp,
     StringLinkCmp,
@@ -2183,6 +2220,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
   exports: [
     BlankCmp,
     SimpleCmp,
+    TwoOutletsCmp,
     TeamCmp,
     UserCmp,
     StringLinkCmp,
@@ -2209,6 +2247,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     BlankCmp,
     SimpleCmp,
     TeamCmp,
+    TwoOutletsCmp,
     UserCmp,
     StringLinkCmp,
     DummyLinkCmp,
