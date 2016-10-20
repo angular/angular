@@ -74,7 +74,10 @@ export function main() {
         return;
       }
     }
-    throw Error(`Expected an error containing "${message}" to be reported`);
+    const errMsgs = ast.errors.map(err => err.message).join('\n');
+    throw Error(
+        `Expected an error containing "${message}" to be reported, but got the errors:\n` +
+        errMsgs);
   }
 
   function expectActionError(text: string, message: string) {
@@ -504,22 +507,20 @@ export function main() {
         validate(p);
       });
 
-      it('should parse a constant', () => {
-        var p = parseSimpleBinding('[1, 2]');
-        expect(unparse(p)).toEqual('[1, 2]');
-        validate(p);
-      });
-
-      it('should report when the given expression is not just a field name', () => {
+      it('should report when encountering pipes', () => {
         expectError(
-            validate(parseSimpleBinding('name + 1')),
-            'Host binding expression can only contain field access and constants');
+            validate(parseSimpleBinding('a | somePipe')),
+            'Host binding expression cannot contain pipes');
       });
 
       it('should report when encountering interpolation', () => {
         expectError(
             validate(parseSimpleBinding('{{exp}}')),
             'Got interpolation ({{}}) where expression was expected');
+      });
+
+      it('should report when encountering field write', () => {
+        expectError(validate(parseSimpleBinding('a = b')), 'Bindings cannot contain assignments');
       });
     });
 
