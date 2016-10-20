@@ -277,11 +277,14 @@ class TemplateParseVisitor implements html.Visitor {
     }
   }
 
-  private _parseBinding(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
+  private _parseBinding(value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan):
+      ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const ast = this._exprParser.parseBinding(value, sourceInfo, this._interpolationConfig);
+      const ast = isHostBinding ?
+          this._exprParser.parseSimpleBinding(value, sourceInfo, this._interpolationConfig) :
+          this._exprParser.parseBinding(value, sourceInfo, this._interpolationConfig);
       if (ast) this._reportParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -668,7 +671,7 @@ class TemplateParseVisitor implements html.Visitor {
           targetAnimationProps);
     } else {
       this._parsePropertyAst(
-          name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs,
+          name, this._parseBinding(expression, false, sourceSpan), sourceSpan, targetMatchableAttrs,
           targetProps);
     }
   }
@@ -683,7 +686,7 @@ class TemplateParseVisitor implements html.Visitor {
       expression = 'null';
     }
 
-    const ast = this._parseBinding(expression, sourceSpan);
+    const ast = this._parseBinding(expression, false, sourceSpan);
     targetMatchableAttrs.push([name, ast.source]);
     targetAnimationProps.push(new BoundElementPropertyAst(
         name, PropertyBindingType.Animation, SecurityContext.NONE, ast, null, sourceSpan));
@@ -846,7 +849,7 @@ class TemplateParseVisitor implements html.Visitor {
       Object.keys(hostProps).forEach(propName => {
         const expression = hostProps[propName];
         if (typeof expression === 'string') {
-          const exprAst = this._parseBinding(expression, sourceSpan);
+          const exprAst = this._parseBinding(expression, true, sourceSpan);
           targetPropertyAsts.push(
               this._createElementPropertyAst(elementName, propName, exprAst, sourceSpan));
         } else {

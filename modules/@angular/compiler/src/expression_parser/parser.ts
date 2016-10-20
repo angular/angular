@@ -60,10 +60,11 @@ export class Parser {
   parseSimpleBinding(
       input: string, location: string,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
-    var ast = this._parseBindingAst(input, location, interpolationConfig);
-    if (!SimpleExpressionChecker.check(ast)) {
+    const ast = this._parseBindingAst(input, location, interpolationConfig);
+    const errors = SimpleExpressionChecker.check(ast);
+    if (errors.length > 0) {
       this._reportError(
-          'Host binding expression can only contain field access and constants', input, location);
+          `Host binding expression cannot contain ${errors.join(' ')}`, input, location);
     }
     return new ASTWithSource(ast, input, location, this.errors);
   }
@@ -751,51 +752,51 @@ export class _ParseAST {
 }
 
 class SimpleExpressionChecker implements AstVisitor {
-  static check(ast: AST): boolean {
+  static check(ast: AST): string[] {
     var s = new SimpleExpressionChecker();
     ast.visit(s);
-    return s.simple;
+    return s.errors;
   }
 
-  simple = true;
+  errors: string[] = [];
 
   visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
 
-  visitInterpolation(ast: Interpolation, context: any) { this.simple = false; }
+  visitInterpolation(ast: Interpolation, context: any) {}
 
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {}
 
   visitPropertyRead(ast: PropertyRead, context: any) {}
 
-  visitPropertyWrite(ast: PropertyWrite, context: any) { this.simple = false; }
+  visitPropertyWrite(ast: PropertyWrite, context: any) {}
 
-  visitSafePropertyRead(ast: SafePropertyRead, context: any) { this.simple = false; }
+  visitSafePropertyRead(ast: SafePropertyRead, context: any) {}
 
-  visitMethodCall(ast: MethodCall, context: any) { this.simple = false; }
+  visitMethodCall(ast: MethodCall, context: any) {}
 
-  visitSafeMethodCall(ast: SafeMethodCall, context: any) { this.simple = false; }
+  visitSafeMethodCall(ast: SafeMethodCall, context: any) {}
 
-  visitFunctionCall(ast: FunctionCall, context: any) { this.simple = false; }
+  visitFunctionCall(ast: FunctionCall, context: any) {}
 
   visitLiteralArray(ast: LiteralArray, context: any) { this.visitAll(ast.expressions); }
 
   visitLiteralMap(ast: LiteralMap, context: any) { this.visitAll(ast.values); }
 
-  visitBinary(ast: Binary, context: any) { this.simple = false; }
+  visitBinary(ast: Binary, context: any) {}
 
-  visitPrefixNot(ast: PrefixNot, context: any) { this.simple = false; }
+  visitPrefixNot(ast: PrefixNot, context: any) {}
 
-  visitConditional(ast: Conditional, context: any) { this.simple = false; }
+  visitConditional(ast: Conditional, context: any) {}
 
-  visitPipe(ast: BindingPipe, context: any) { this.simple = false; }
+  visitPipe(ast: BindingPipe, context: any) { this.errors.push('pipes'); }
 
-  visitKeyedRead(ast: KeyedRead, context: any) { this.simple = false; }
+  visitKeyedRead(ast: KeyedRead, context: any) {}
 
-  visitKeyedWrite(ast: KeyedWrite, context: any) { this.simple = false; }
+  visitKeyedWrite(ast: KeyedWrite, context: any) {}
 
   visitAll(asts: any[]): any[] { return asts.map(node => node.visit(this)); }
 
-  visitChain(ast: Chain, context: any) { this.simple = false; }
+  visitChain(ast: Chain, context: any) {}
 
-  visitQuote(ast: Quote, context: any) { this.simple = false; }
+  visitQuote(ast: Quote, context: any) {}
 }
