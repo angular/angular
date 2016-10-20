@@ -59,7 +59,7 @@ export class UpgradeModule {
               }
             ]);
 
-    // Bootstrap the angular 1 application inside our zone
-    this.ngZone.run(() => { angular.bootstrap(element, [upgradeModule.name], config); });
+    // Bootstrap the angular 1 application inside our zone - and return the injector
+    return this.ngZone.run(() => angular.bootstrap(element, [upgradeModule.name], config));
   }
 }
