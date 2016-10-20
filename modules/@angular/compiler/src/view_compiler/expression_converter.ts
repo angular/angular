@@ -11,12 +11,33 @@ import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {EventHandlerVars} from './constants';
 
 export interface NameResolver {
   callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
   getLocal(name: string): o.Expression;
   createLiteralArray(values: o.Expression[]): o.Expression;
   createLiteralMap(values: Array<Array<string|o.Expression>>): o.Expression;
+}
+
+/**
+ * A wrapper around another NameResolver that removes all locals and pipes.
+ */
+export class NoLocalsNameResolver implements NameResolver {
+  constructor(private _delegate: NameResolver) {}
+  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression { return null; }
+  getLocal(name: string): o.Expression {
+    if (name == EventHandlerVars.event.name) {
+      return EventHandlerVars.event;
+    }
+    return null;
+  }
+  createLiteralArray(values: o.Expression[]): o.Expression {
+    return this._delegate.createLiteralArray(values);
+  }
+  createLiteralMap(values: Array<Array<string|o.Expression>>): o.Expression {
+    return this._delegate.createLiteralMap(values);
+  }
 }
 
 export class ExpressionWithWrappedValueInfo {
@@ -170,6 +191,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     const input = this.visit(ast.exp, _Mode.Expression);
     const args = this.visitAll(ast.args, _Mode.Expression);
     const value = this._nameResolver.callPipe(ast.name, input, args);
+    if (!value) {
+      throw new Error(`Illegal state: Pipe ${ast.name} is not allowed here!`);
+    }
     this.needsValueUnwrapper = true;
     return convertToStatementIfNeeded(mode, this._valueUnwrapper.callMethod('unwrap', [value]));
   }
