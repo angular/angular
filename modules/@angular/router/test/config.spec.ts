@@ -7,6 +7,7 @@
  */
 
 import {validateConfig} from '../src/config';
+import {PRIMARY_OUTLET} from '../src/shared';
 
 describe('config', () => {
   describe('validateConfig', () => {
@@ -79,6 +80,16 @@ describe('config', () => {
       expect(() => { validateConfig([{path: 'a', pathMatch: 'invalid', component: ComponentB}]); })
           .toThrowError(
               /Invalid configuration of route 'a': pathMatch can only be set to 'prefix' or 'full'/);
+    });
+
+    it('should throw when pathPatch is invalid', () => {
+      expect(() => { validateConfig([{path: 'a', outlet: 'aux', children: []}]); })
+          .toThrowError(
+              /Invalid route configuration of route 'a': a componentless route cannot have a named outlet set/);
+
+      expect(() => validateConfig([{path: 'a', outlet: '', children: []}])).not.toThrow();
+      expect(() => validateConfig([{path: 'a', outlet: PRIMARY_OUTLET, children: []}]))
+          .not.toThrow();
     });
   });
 });
