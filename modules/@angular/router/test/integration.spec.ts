@@ -1331,16 +1331,13 @@ describe('Integration', () => {
             provide: token,
             useFactory: (logger: Logger) => () => (logger.add(token), true),
             deps: [Logger]
-          }
-        }
+          };
+        };
         TestBed.configureTestingModule({
           providers: [
-            Logger,
-            provideTokenLogger('canActivateChild_parent'),
-            provideTokenLogger('canActivate_team'),
-            provideTokenLogger('canDeactivate_team'),
-            provideTokenLogger('canActivate_summary'),
-            provideTokenLogger('canDeactivate_summary'),
+            Logger, provideTokenLogger('canActivateChild_parent'),
+            provideTokenLogger('canActivate_team'), provideTokenLogger('canDeactivate_team'),
+            provideTokenLogger('canActivate_summary'), provideTokenLogger('canDeactivate_summary'),
             provideTokenLogger('canActivate_roster')
           ]
         });
@@ -1385,7 +1382,8 @@ describe('Integration', () => {
                  canActivate: ['canActivate_team'],
                  canDeactivate: ['canDeactivate_team'],
                  component: TeamCmp,
-                 children: [{
+                 children: [
+                   {
                      path: 'summary',
                      canActivate: ['canActivate_summary'],
                      canDeactivate: ['canDeactivate_summary'],
@@ -1396,7 +1394,8 @@ describe('Integration', () => {
                      canActivate: ['canActivate_roster'],
                      canDeactivate: ['canDeactivate_NEVER'],
                      component: BlankCmp
-                   }]
+                   }
+                 ]
                }]);
 
                router.navigateByUrl('/team/22/summary');
@@ -1408,7 +1407,8 @@ describe('Integration', () => {
                expect(logger.logs).toEqual([
                  'canActivate_team', 'canActivate_summary',
 
-                 'canDeactivate_summary', 'canDeactivate_team', 'canActivate_team', 'canActivate_roster'
+                 'canDeactivate_summary', 'canDeactivate_team', 'canActivate_team',
+                 'canActivate_roster'
                ]);
              })));
     });
