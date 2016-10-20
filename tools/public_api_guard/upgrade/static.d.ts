@@ -5,10 +5,11 @@ export declare function downgradeComponent(info: ComponentInfo): angular.IInject
 export declare function downgradeInjectable(token: any): (string | ((i: Injector) => any))[];
 
 /** @experimental */
-export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck {
+export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     constructor(name: string, elementRef: ElementRef, injector: Injector);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     ngOnInit(): void;
 }
 
