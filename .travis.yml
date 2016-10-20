@@ -40,8 +40,6 @@ matrix:
   allow_failures:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
-    # Remove when browserstack un-expires our account.
-    - env: "CI_MODE=browserstack_required"
 
 install:
   - ./scripts/ci-lite/install.sh
