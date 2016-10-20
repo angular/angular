@@ -764,7 +764,7 @@ export class PreActivation {
     });
     forEach(
         prevChildren,
-        (v: any, k: string) => this.deactivateOutletAndItChildren(v, outletMap._outlets[k]));
+        (v: any, k: string) => this.deactiveRouteAndItsChildren(v, outletMap._outlets[k]));
   }
 
   traverseRoutes(
@@ -794,14 +794,7 @@ export class PreActivation {
       }
     } else {
       if (curr) {
-        // if we had a normal route, we need to deactivate only that outlet.
-        if (curr.component) {
-          this.deactivateOutletAndItChildren(curr, outlet);
-
-          // if we had a componentless route, we need to deactivate everything!
-        } else {
-          this.deactivateOutletMap(parentOutletMap);
-        }
+        this.deactiveRouteAndItsChildren(currNode, outlet);
       }
 
       this.checks.push(new CanActivate(futurePath));
@@ -816,19 +809,17 @@ export class PreActivation {
     }
   }
 
-  private deactivateOutletAndItChildren(route: ActivatedRouteSnapshot, outlet: RouterOutlet): void {
-    if (outlet && outlet.isActivated) {
-      this.deactivateOutletMap(outlet.outletMap);
-      this.checks.push(new CanDeactivate(outlet.component, route));
-    }
-  }
+  private deactiveRouteAndItsChildren(
+      route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet): void {
+    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
 
-  private deactivateOutletMap(outletMap: RouterOutletMap): void {
-    forEach(outletMap._outlets, (v: RouterOutlet) => {
-      if (v.isActivated) {
-        this.deactivateOutletAndItChildren(v.activatedRoute.snapshot, v);
-      }
+    forEach(prevChildren, (v: any, k: string) => {
+      const childOutlet = outlet ? outlet.outletMap._outlets[k] : null;
+      this.deactiveRouteAndItsChildren(v, childOutlet);
     });
+
+    const component = outlet && outlet.isActivated ? outlet.component : null;
+    this.checks.push(new CanDeactivate(component, route.value));
   }
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
