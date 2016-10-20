@@ -25,7 +25,6 @@ export class MdLineSetter {
     });
   }
 
-
   private _setLineClass(count: number): void {
     this._resetClasses();
     if (count === 2 || count === 3) {

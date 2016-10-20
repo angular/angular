@@ -122,11 +122,11 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     if (changedInputs.indexOf('svgIcon') != -1 || changedInputs.indexOf('svgSrc') != -1) {
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
-        this._mdIconRegistry.getNamedSvgIcon(iconName, namespace).subscribe(
+        this._mdIconRegistry.getNamedSvgIcon(iconName, namespace).first().subscribe(
             svg => this._setSvgElement(svg),
             (err: any) => console.log(`Error retrieving icon: ${err}`));
       } else if (this.svgSrc) {
-        this._mdIconRegistry.getSvgIconFromUrl(this.svgSrc).subscribe(
+        this._mdIconRegistry.getSvgIconFromUrl(this.svgSrc).first().subscribe(
             svg => this._setSvgElement(svg),
             (err: any) => console.log(`Error retrieving icon: ${err}`));
       }

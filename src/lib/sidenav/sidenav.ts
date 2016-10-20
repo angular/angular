@@ -66,7 +66,6 @@ export class MdSidenav {
   /** Event emitted when the sidenav is fully closed. */
   @Output('close') onClose = new EventEmitter<void>();
 
-
   /**
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
    *     If not available we do not hook on transitions.

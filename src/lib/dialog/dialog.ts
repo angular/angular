@@ -88,7 +88,7 @@ export class MdDialog {
     let dialogRef = <MdDialogRef<T>> new MdDialogRef(overlayRef);
 
     // When the dialog backdrop is clicked, we want to close it.
-    overlayRef.backdropClick().subscribe(() => dialogRef.close());
+    overlayRef.backdropClick().first().subscribe(() => dialogRef.close());
 
     // Set the dialogRef to the container so that it can use the ref to close the dialog.
     dialogContainer.dialogRef = dialogRef;
