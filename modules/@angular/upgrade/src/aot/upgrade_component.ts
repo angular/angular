@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 
 import * as angular from '../angular_js';
 import {looseIdentical} from '../facade/lang';
@@ -34,13 +34,17 @@ interface IBindingDestination {
 }
 
 interface IControllerInstance extends IBindingDestination {
+  $onDestroy?: () => void;
   $onInit?: () => void;
+  $postLink?: () => void;
 }
+
+type LifecycleHook = '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
 
 /**
  * @experimental
  */
-export class UpgradeComponent implements OnInit, OnChanges, DoCheck {
+export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private $injector: angular.IInjectorService;
   private $compile: angular.ICompileService;
   private $templateCache: angular.ITemplateCacheService;
@@ -80,32 +84,26 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck {
     this.$componentScope = $parentScope.$new(!!this.directive.scope);
 
     const controllerType = this.directive.controller;
-    // QUESTION: shouldn't we be building the controller in any case?
-    if (this.directive.bindToController) {
-      if (controllerType) {
-        this.bindingDestination = this.controllerInstance = this.buildController(
-            controllerType, this.$componentScope, this.$element, this.directive.controllerAs);
-      } else {
-        throw new Error(
-            `Upgraded directive '${name}' specifies 'bindToController' but no controller.`);
-      }
-    } else {
-      this.bindingDestination = this.$componentScope;
+    const bindToController = this.directive.bindToController;
+    if (controllerType) {
+      this.controllerInstance = this.buildController(
+          controllerType, this.$componentScope, this.$element, this.directive.controllerAs);
+    } else if (bindToController) {
+      throw new Error(
+          `Upgraded directive '${name}' specifies 'bindToController' but no controller.`);
     }
+
+    this.bindingDestination = bindToController ? this.controllerInstance : this.$componentScope;
 
     this.setupOutputs();
   }
 
   ngOnInit() {
-    // QUESTION: why not just use $compile instead of reproducing parts of it
-    if (!this.directive.bindToController && this.directive.controller) {
-      this.controllerInstance = this.buildController(
-          this.directive.controller, this.$componentScope, this.$element,
-          this.directive.controllerAs);
-    }
     const attrs: angular.IAttributes = NOT_SUPPORTED;
     const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
     const linkController = this.resolveRequired(this.$element, this.directive.require);
+
+    this.callLifecycleHook('$onInit', this.controllerInstance);
 
     const link = this.directive.link;
     const preLink = (typeof link == 'object') && (link as angular.IDirectivePrePost).pre;
@@ -131,19 +129,15 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck {
       postLink(this.$componentScope, this.$element, attrs, linkController, transcludeFn);
     }
 
-    if (this.controllerInstance && this.controllerInstance.$onInit) {
-      this.controllerInstance.$onInit();
-    }
+    this.callLifecycleHook('$postLink', this.controllerInstance);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // Forward input changes to `bindingDestination`
     Object.keys(changes).forEach(
-        propName => { this.bindingDestination[propName] = changes[propName].currentValue; });
+        propName => this.bindingDestination[propName] = changes[propName].currentValue);
 
-    if (this.bindingDestination.$onChanges) {
-      this.bindingDestination.$onChanges(changes);
-    }
+    this.callLifecycleHook('$onChanges', this.bindingDestination, changes);
   }
 
   ngDoCheck() {
@@ -163,6 +157,17 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck {
         twoWayBoundLastValues[idx] = newValue;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.callLifecycleHook('$onDestroy', this.controllerInstance);
+    this.$componentScope.$destroy();
+  }
+
+  private callLifecycleHook(method: LifecycleHook, context: IBindingDestination, arg?: any) {
+    if (context && typeof context[method] === 'function') {
+      context[method](arg);
+    }
   }
 
   private getDirective(name: string): angular.IDirective {
@@ -254,6 +259,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck {
   private buildController(
       controllerType: angular.IController, $scope: angular.IScope,
       $element: angular.IAugmentedJQuery, controllerAs: string) {
+    // TODO: Document that we do not pre-assign bindings on the controller instance
     var locals = {$scope, $element};
     var controller = this.$controller(controllerType, locals, null, controllerAs);
     $element.data(controllerKey(this.directive.name), controller);
