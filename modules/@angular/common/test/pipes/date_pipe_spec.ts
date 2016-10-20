@@ -8,13 +8,12 @@
 
 import {DatePipe} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
   describe('DatePipe', () => {
-    var date: Date;
-    var pipe: DatePipe;
+    let date: Date;
+    let pipe: DatePipe;
 
     // TODO: reactivate the disabled expectations once emulators are fixed in SauceLabs
     // In some old versions of Chrome in Android emulators, time formatting returns dates in the
@@ -34,7 +33,9 @@ export function main() {
 
     describe('supports', () => {
       it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
+
       it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+
       it('should support numeric strings',
          () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
 

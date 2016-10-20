@@ -9,7 +9,7 @@
 export enum NumberFormatStyle {
   Decimal,
   Percent,
-  Currency
+  Currency,
 }
 
 export class NumberFormatter {
@@ -37,10 +37,13 @@ export class NumberFormatter {
     return new Intl.NumberFormat(locale, options).format(num);
   }
 }
-var DATE_FORMATS_SPLIT =
+
+type DateFormatterFn = (date: Date, locale: string) => string;
+
+const DATE_FORMATS_SPLIT =
     /((?:[^yMLdHhmsazZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|z|Z|G+|w+))(.*)/;
 
-var PATTERN_ALIASES = {
+const PATTERN_ALIASES: {[format: string]: DateFormatterFn} = {
   yMMMdjms: datePartGetterFactory(combine([
     digitCondition('year', 1),
     nameCondition('month', 3),
@@ -68,7 +71,7 @@ var PATTERN_ALIASES = {
   jm: datePartGetterFactory(combine([digitCondition('hour', 1), digitCondition('minute', 1)]))
 };
 
-var DATE_FORMATS = {
+const DATE_FORMATS: {[format: string]: DateFormatterFn} = {
   yyyy: datePartGetterFactory(digitCondition('year', 4)),
   yy: datePartGetterFactory(digitCondition('year', 2)),
   y: datePartGetterFactory(digitCondition('year', 1)),
@@ -81,11 +84,11 @@ var DATE_FORMATS = {
   dd: datePartGetterFactory(digitCondition('day', 2)),
   d: datePartGetterFactory(digitCondition('day', 1)),
   HH: digitModifier(
-      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false)))),
-  H: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), false))),
+      hourExtractor(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), false)))),
+  H: hourExtractor(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), false))),
   hh: digitModifier(
-      hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true)))),
-  h: hourExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
+      hourExtractor(datePartGetterFactory(hour12Modify(digitCondition('hour', 2), true)))),
+  h: hourExtractor(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
   jj: datePartGetterFactory(digitCondition('hour', 2)),
   j: datePartGetterFactory(digitCondition('hour', 1)),
   mm: digitModifier(datePartGetterFactory(digitCondition('minute', 2))),
@@ -100,7 +103,7 @@ var DATE_FORMATS = {
   EEE: datePartGetterFactory(nameCondition('weekday', 3)),
   EE: datePartGetterFactory(nameCondition('weekday', 2)),
   E: datePartGetterFactory(nameCondition('weekday', 1)),
-  a: hourClockExtracter(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
+  a: hourClockExtractor(datePartGetterFactory(hour12Modify(digitCondition('hour', 1), true))),
   Z: timeZoneGetter('short'),
   z: timeZoneGetter('long'),
   ww: datePartGetterFactory({}),  // Week of year, padded (00-53). Week 01 is the week with the
@@ -114,38 +117,26 @@ var DATE_FORMATS = {
 };
 
 
-function digitModifier(inner: (date: Date, locale: string) => string): (
-    date: Date, locale: string) => string {
+function digitModifier(inner: DateFormatterFn): DateFormatterFn {
   return function(date: Date, locale: string): string {
-    var result = inner(date, locale);
-
+    const result = inner(date, locale);
     return result.length == 1 ? '0' + result : result;
   };
 }
 
-function hourClockExtracter(inner: (date: Date, locale: string) => string): (
-    date: Date, locale: string) => string {
-  return function(date: Date, locale: string): string {
-    var result = inner(date, locale);
-
-    return result.split(' ')[1];
-  };
+function hourClockExtractor(inner: DateFormatterFn): DateFormatterFn {
+  return function(date: Date, locale: string): string { return inner(date, locale).split(' ')[1]; };
 }
 
-function hourExtracter(inner: (date: Date, locale: string) => string): (
-    date: Date, locale: string) => string {
-  return function(date: Date, locale: string): string {
-    var result = inner(date, locale);
-
-    return result.split(' ')[0];
-  };
+function hourExtractor(inner: DateFormatterFn): DateFormatterFn {
+  return function(date: Date, locale: string): string { return inner(date, locale).split(' ')[0]; };
 }
 
 function intlDateFormat(date: Date, locale: string, options: Intl.DateTimeFormatOptions): string {
   return new Intl.DateTimeFormat(locale, options).format(date).replace(/[\u200e\u200f]/g, '');
 }
 
-function timeZoneGetter(timezone: string): (date: Date, locale: string) => string {
+function timeZoneGetter(timezone: string): DateFormatterFn {
   // To workaround `Intl` API restriction for single timezone let format with 24 hours
   const options = {hour: '2-digit', hour12: false, timeZoneName: timezone};
   return function(date: Date, locale: string): string {
@@ -179,40 +170,31 @@ function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
 }
 
 function combine(options: Intl.DateTimeFormatOptions[]): Intl.DateTimeFormatOptions {
-  var result = {};
-
-  options.forEach(option => { (<any>Object).assign(result, option); });
-
-  return result;
+  return (<any>Object).assign({}, ...options);
 }
 
-function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): (date: Date, locale: string) =>
-    string {
+function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): DateFormatterFn {
   return (date: Date, locale: string): string => intlDateFormat(date, locale, ret);
 }
 
-
-var datePartsFormatterCache: Map<string, string[]> = new Map<string, string[]>();
+const DATE_FORMATTER_CACHE = new Map<string, string[]>();
 
 function dateFormatter(format: string, date: Date, locale: string): string {
-  var text = '';
-  var match: any /** TODO #9100 */;
-  var fn: any /** TODO #9100 */;
-  var parts: string[] = [];
-  if ((PATTERN_ALIASES as any /** TODO #9100 */)[format]) {
-    return (PATTERN_ALIASES as any /** TODO #9100 */)[format](date, locale);
-  }
+  let fn = PATTERN_ALIASES[format];
 
+  if (fn) return fn(date, locale);
 
-  if (datePartsFormatterCache.has(format)) {
-    parts = datePartsFormatterCache.get(format);
-  } else {
-    const matches = DATE_FORMATS_SPLIT.exec(format);
+  let parts = DATE_FORMATTER_CACHE.get(format);
+
+  if (!parts) {
+    parts = [];
+    let match: RegExpExecArray;
+    DATE_FORMATS_SPLIT.exec(format);
 
     while (format) {
       match = DATE_FORMATS_SPLIT.exec(format);
       if (match) {
-        parts = concat(parts, match, 1);
+        parts = parts.concat(match.slice(1));
         format = parts.pop();
       } else {
         parts.push(format);
@@ -220,23 +202,17 @@ function dateFormatter(format: string, date: Date, locale: string): string {
       }
     }
 
-    datePartsFormatterCache.set(format, parts);
+    DATE_FORMATTER_CACHE.set(format, parts);
   }
 
-  parts.forEach(part => {
-    fn = (DATE_FORMATS as any /** TODO #9100 */)[part];
-    text += fn ? fn(date, locale) :
-                 part === '\'\'' ? '\'' : part.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
-  });
-
-  return text;
+  return parts.reduce((text, part) => {
+    let fn = DATE_FORMATS[part];
+    return text + (fn ? fn(date, locale) : partToTime(part));
+  }, '');
 }
 
-var slice = [].slice;
-function concat(
-    array1: any /** TODO #9100 */, array2: any /** TODO #9100 */,
-    index: any /** TODO #9100 */): string[] {
-  return array1.concat(slice.call(array2, index));
+function partToTime(part: string): string {
+  return part === '\'\'' ? '\'' : part.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
 }
 
 export class DateFormatter {
