@@ -35,9 +35,9 @@ function createCurrValueExpr(exprIndex: number): o.ReadVarExpr {
 function bind(
     view: CompileView, currValExpr: o.ReadVarExpr, fieldExpr: o.ReadPropExpr,
     parsedExpression: cdAst.AST, context: o.Expression, actions: o.Statement[],
-    method: CompileMethod, bindingIndex: number) {
+    method: CompileMethod, bindingIndex: number, inHost: boolean) {
   var checkExpression = convertCdExpressionToIr(
-      view, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex);
+      view, context, parsedExpression, DetectChangesVars.valUnwrapper, bindingIndex, !inHost);
   if (!checkExpression.expression) {
     // e.g. an empty expression was given
     return;
@@ -86,7 +86,7 @@ export function bindRenderText(
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, currValExpr])
            .toStmt()],
-      view.detectChangesRenderPropertiesMethod, bindingIndex);
+      view.detectChangesRenderPropertiesMethod, bindingIndex, false);
 }
 
 function bindAndWriteToRenderer(
@@ -188,7 +188,7 @@ function bindAndWriteToRenderer(
 
     bind(
         view, currValExpr, fieldExpr, boundProp.value, context, updateStmts, compileMethod,
-        view.bindings.length);
+        view.bindings.length, isHostProp);
   });
 }
 
@@ -284,7 +284,7 @@ export function bindDirectiveInputs(
     }
     bind(
         view, currValExpr, fieldExpr, input.value, view.componentContext, statements,
-        detectChangesInInputsMethod, bindingIndex);
+        detectChangesInInputsMethod, bindingIndex, false);
   });
   if (isOnPushComp) {
     detectChangesInInputsMethod.addStmt(new o.IfStmt(DetectChangesVars.changed, [
