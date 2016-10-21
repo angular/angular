@@ -50,6 +50,15 @@ cd angular
 # Add the main Angular repository as an upstream remote to your repository:
 git remote add upstream https://github.com/angular/angular.git
 ```
+## Building on non-Mac Systems
+
+The fsevents package is required when building on Mac, but will cause npm install to fail when building on Windows or Linux. Run this script to remove the dependency:
+```shell
+# Remove Mac specific dependencies
+node remove-mac-dependencies.js
+```
+This changes 2 files, package.json and npm-shrinkwrap.json. Be sure not to commit these changes. For details of Angular 2 package management, see the [shrinkwrap readme](https://github.com/angular/angular/blob/master/npm-shrinkwrap.readme.md).
+
 ## Installing NPM Modules
 
 Next, install the JavaScript modules needed to build and test Angular:
@@ -136,5 +145,3 @@ You can automatically format your code by running:
 ``` shell
 $ gulp format
 ```
-
-
