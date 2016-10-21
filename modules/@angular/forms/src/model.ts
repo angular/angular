@@ -245,7 +245,7 @@ export abstract class AbstractControl {
     if (!newValidator) return;
     this._obsValidator$ = new EventEmitter();
     newValidator(this._obsValidator$)
-          .subsctibe({next: (res: {[key: string]: any}) => this.setErrors(res)});
+          .subsctibe((err: Errors) => this.setErrors(err));
   }
 
   /**
@@ -450,7 +450,7 @@ export abstract class AbstractControl {
         this._cancelExistingSubscription();
         const obs = toObservable(this.asyncValidator(this));
         this._asyncValidationSubscription =
-            obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
+            obs.subscribe((res: Errors) => this.setErrors(res, {emitEvent}));
       }
       if (this._obsValidator$) {
         this._obsValidator$.emit(this);
