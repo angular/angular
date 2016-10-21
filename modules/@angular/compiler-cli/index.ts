@@ -7,6 +7,7 @@
  */
 
 export {CodeGenerator} from './src/codegen';
+export {Extractor} from './src/extractor';
 export {NodeReflectorHostContext, ReflectorHost, ReflectorHostContext} from './src/reflector_host';
 export {StaticReflector, StaticReflectorHost, StaticSymbol} from './src/static_reflector';
 
