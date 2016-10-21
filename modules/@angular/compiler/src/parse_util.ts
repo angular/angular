@@ -35,7 +35,7 @@ export enum ParseErrorLevel {
   FATAL
 }
 
-export abstract class ParseError {
+export class ParseError {
   constructor(
       public span: ParseSourceSpan, public msg: string,
       public level: ParseErrorLevel = ParseErrorLevel.FATAL) {}
