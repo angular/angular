@@ -7,7 +7,6 @@
  */
 
 
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 
 import * as o from './output_ast';
@@ -153,7 +152,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     if (isPresent(expr.builtin)) {
       switch (expr.builtin) {
         case o.BuiltinMethod.ConcatArray:
-          result = ListWrapper.concat(receiver, args[0]);
+          result = receiver.concat(args[0]);
           break;
         case o.BuiltinMethod.SubscribeObservable:
           result = receiver.subscribe({next: args[0]});

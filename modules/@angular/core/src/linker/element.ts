@@ -7,7 +7,6 @@
  */
 
 import {Injector} from '../di/injector';
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 
 import {ElementRef} from './element_ref';
@@ -69,8 +68,8 @@ export class AppElement {
       nestedViews = [];
       this.nestedViews = nestedViews;
     }
-    ListWrapper.removeAt(nestedViews, previousIndex);
-    ListWrapper.insert(nestedViews, currentIndex, view);
+    nestedViews.splice(previousIndex, 1);
+    nestedViews.splice(currentIndex, 0, view);
     var refRenderNode: any /** TODO #9100 */;
     if (currentIndex > 0) {
       var prevView = nestedViews[currentIndex - 1];
@@ -93,7 +92,7 @@ export class AppElement {
       nestedViews = [];
       this.nestedViews = nestedViews;
     }
-    ListWrapper.insert(nestedViews, viewIndex, view);
+    nestedViews.splice(viewIndex, 0, view);
     var refRenderNode: any /** TODO #9100 */;
     if (viewIndex > 0) {
       var prevView = nestedViews[viewIndex - 1];
@@ -108,7 +107,7 @@ export class AppElement {
   }
 
   detachView(viewIndex: number): AppView<any> {
-    var view = ListWrapper.removeAt(this.nestedViews, viewIndex);
+    const view = this.nestedViews.splice(viewIndex, 1)[0];
     if (view.type === ViewType.COMPONENT) {
       throw new Error(`Component views can't be moved!`);
     }

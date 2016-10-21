@@ -58,7 +58,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 
     var fullKey = '';
     modifierKeys.forEach(modifierName => {
-      if (ListWrapper.contains(parts, modifierName)) {
+      if (parts.indexOf(modifierName) > -1) {
         ListWrapper.remove(parts, modifierName);
         fullKey += modifierName + '.';
       }

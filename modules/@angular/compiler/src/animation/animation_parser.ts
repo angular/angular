@@ -7,7 +7,7 @@
  */
 
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
-import {ListWrapper, StringMapWrapper} from '../facade/collection';
+import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
@@ -180,8 +180,7 @@ function _normalizeStyleMetadata(
   var normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (typeof styleEntry === 'string') {
-      ListWrapper.addAll(
-          normalizedStyles, _resolveStylesFromState(<string>styleEntry, stateStyles, errors));
+      normalizedStyles.push(..._resolveStylesFromState(<string>styleEntry, stateStyles, errors));
     } else {
       normalizedStyles.push(<{[key: string]: string | number}>styleEntry);
     }
@@ -346,12 +345,12 @@ function _parseAnimationKeyframes(
   });
 
   if (doSortKeyframes) {
-    ListWrapper.sort(rawKeyframes, (a, b) => a[0] <= b[0] ? -1 : 1);
+    rawKeyframes.sort((a, b) => a[0] <= b[0] ? -1 : 1);
   }
 
   var firstKeyframe = rawKeyframes[0];
   if (firstKeyframe[0] != _INITIAL_KEYFRAME) {
-    ListWrapper.insert(rawKeyframes, 0, firstKeyframe = [_INITIAL_KEYFRAME, {}]);
+    rawKeyframes.splice(0, 0, firstKeyframe = [_INITIAL_KEYFRAME, {}]);
   }
 
   var firstKeyframeStyles = firstKeyframe[1];
@@ -421,7 +420,7 @@ function _parseTransitionAnimation(
           steps.push(new AnimationStepAst(startingStyles, [], 0, 0, ''));
         } else {
           var innerStep = <AnimationStepAst>innerAst;
-          ListWrapper.addAll(innerStep.startingStyles.styles, previousStyles);
+          innerStep.startingStyles.styles.push(...previousStyles);
         }
         previousStyles = null;
       }

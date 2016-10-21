@@ -641,8 +641,7 @@ class NeedsQueryAndProject {
 
 @Component({
   selector: 'needs-view-query',
-  template: '<div text="1"><div text="2"></div></div>' +
-      '<div text="3"></div><div text="4"></div>'
+  template: '<div text="1"><div text="2"></div></div><div text="3"></div><div text="4"></div>'
 })
 class NeedsViewQuery {
   @ViewChildren(TextDirective) query: QueryList<TextDirective>;

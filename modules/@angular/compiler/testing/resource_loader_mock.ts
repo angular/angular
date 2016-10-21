@@ -8,7 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {ListWrapper} from './facade/collection';
-import {isBlank, normalizeBlank} from './facade/lang';
+import {isBlank} from './facade/lang';
 
 /**
  * A mock implementation of {@link ResourceLoader} that allows outgoing requests to be mocked
@@ -20,7 +20,7 @@ export class MockResourceLoader extends ResourceLoader {
   private _requests: _PendingRequest[] = [];
 
   get(url: string): Promise<string> {
-    var request = new _PendingRequest(url);
+    const request = new _PendingRequest(url);
     this._requests.push(request);
     return request.getPromise();
   }
@@ -33,7 +33,7 @@ export class MockResourceLoader extends ResourceLoader {
    * The response given will be returned if the expectation matches.
    */
   expect(url: string, response: string) {
-    var expectation = new _Expectation(url, response);
+    const expectation = new _Expectation(url, response);
     this._expectations.push(expectation);
   }
 
@@ -90,7 +90,7 @@ export class MockResourceLoader extends ResourceLoader {
 
     if (this._definitions.has(url)) {
       var response = this._definitions.get(url);
-      request.complete(normalizeBlank(response));
+      request.complete(response == null ? null : response);
       return;
     }
 

@@ -8,7 +8,7 @@
 
 import {NgZone} from '@angular/core';
 
-import {ListWrapper} from './facade/collection';
+import {MapWrapper} from './facade/collection';
 import {global, isPresent} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
@@ -18,7 +18,7 @@ export class BrowserDetection {
     if (isPresent(this._overrideUa)) {
       return this._overrideUa;
     } else {
-      return isPresent(getDOM()) ? getDOM().getUserAgent() : '';
+      return getDOM() ? getDOM().getUserAgent() : '';
     }
   }
 
@@ -102,9 +102,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     var attributeMap = getDOM().attributeMap(el);
-    var keys: any[] /** TODO #9100 */ = [];
-    attributeMap.forEach((v, k) => keys.push(k));
-    ListWrapper.sort(keys);
+    var keys: string[] = MapWrapper.keys(attributeMap).sort();
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];
       var attValue = attributeMap.get(key);
@@ -124,7 +122,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     }
 
     // Closing tag
-    if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
+    if (_singleTagWhitelist.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
   } else if (getDOM().isCommentNode(el)) {

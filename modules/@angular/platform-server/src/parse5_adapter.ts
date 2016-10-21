@@ -382,7 +382,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
   }
   hasClass(element: any, className: string): boolean {
-    return ListWrapper.contains(this.classList(element), className);
+    return this.classList(element).indexOf(className) > -1;
   }
   hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
     const value = this.getStyle(element, styleName) || '';

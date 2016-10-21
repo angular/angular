@@ -8,8 +8,8 @@
 
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
-import {ListWrapper, MapWrapper} from './facade/collection';
-import {isBlank, isPresent, normalizeBlank} from './facade/lang';
+import {MapWrapper} from './facade/collection';
+import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
@@ -91,9 +91,9 @@ export class ProviderElementContext {
 
   get transformedDirectiveAsts(): DirectiveAst[] {
     var sortedProviderTypes = this.transformProviders.map(provider => provider.token.identifier);
-    var sortedDirectives = ListWrapper.clone(this._directiveAsts);
-    ListWrapper.sort(
-        sortedDirectives, (dir1, dir2) => sortedProviderTypes.indexOf(dir1.directive.type) -
+    var sortedDirectives = this._directiveAsts.slice();
+    sortedDirectives.sort(
+        (dir1, dir2) => sortedProviderTypes.indexOf(dir1.directive.type) -
             sortedProviderTypes.indexOf(dir2.directive.type));
     return sortedDirectives;
   }
@@ -117,7 +117,7 @@ export class ProviderElementContext {
     while (currentEl !== null) {
       queries = currentEl._contentQueries.get(token.reference);
       if (isPresent(queries)) {
-        ListWrapper.addAll(result, queries.filter((query) => query.descendants || distance <= 1));
+        result.push(...queries.filter((query) => query.descendants || distance <= 1));
       }
       if (currentEl._directiveAsts.length > 0) {
         distance++;
@@ -126,7 +126,7 @@ export class ProviderElementContext {
     }
     queries = this.viewContext.viewQueries.get(token.reference);
     if (isPresent(queries)) {
-      ListWrapper.addAll(result, queries);
+      result.push(...queries);
     }
     return result;
   }
@@ -194,7 +194,8 @@ export class ProviderElementContext {
       eager: boolean = null): CompileDiDependencyMetadata {
     if (dep.isAttribute) {
       var attrValue = this._attrs[dep.token.value];
-      return new CompileDiDependencyMetadata({isValue: true, value: normalizeBlank(attrValue)});
+      return new CompileDiDependencyMetadata(
+          {isValue: true, value: attrValue == null ? null : attrValue});
     }
     if (isPresent(dep.query) || isPresent(dep.viewQuery)) {
       return dep;
@@ -489,7 +490,7 @@ function _resolveProviders(
       targetProvidersByToken.set(provider.token.reference, resolvedProvider);
     } else {
       if (!provider.multi) {
-        ListWrapper.clear(resolvedProvider.providers);
+        resolvedProvider.providers.length = 0;
       }
       resolvedProvider.providers.push(provider);
     }
