@@ -7,12 +7,12 @@
  */
 
 import {fromPromise} from 'rxjs/observable/fromPromise';
-
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {isBlank, isPresent, normalizeBool} from './facade/lang';
 import {isPromise} from './private_import_core';
+export {Subject} from 'rxjs/Subject';
 
 
 /**
@@ -75,6 +75,9 @@ function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidato
   return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator;
 }
 
+export declare type Errors = {[key: string]: any};
+export declare type ObservableValidatorFn = (validator$: Observable<AbstractControl>) => Observable<Errors|null>;
+
 /**
  * @whatItDoes This is the base class for {@link FormControl}, {@link FormGroup}, and
  * {@link FormArray}.
@@ -94,6 +97,7 @@ export abstract class AbstractControl {
 
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
+  private _obsValidator$: EventEmitter<AbstractControl>;
   private _status: string;
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
@@ -101,7 +105,7 @@ export abstract class AbstractControl {
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
-  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn) {}
+  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn, public obsValidator: ObservableValidatorFn) {}
 
   /**
    * The value of the control.
@@ -428,18 +432,17 @@ export abstract class AbstractControl {
   }
 
   private _runAsyncValidator(emitEvent: boolean): void {
-    if (isPresent(this.asyncValidator)) {
+    if (this.asyncValidator || this.obsValidator) {
       this._status = PENDING;
-      this._cancelExistingSubscription();
-      var obs = toObservable(this.asyncValidator(this));
-      this._asyncValidationSubscription =
-          obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
-    }
-  }
-
-  private _cancelExistingSubscription(): void {
-    if (isPresent(this._asyncValidationSubscription)) {
-      this._asyncValidationSubscription.unsubscribe();
+      if (this.asyncValidator) {
+        this._cancelExistingSubscription();
+        const obs = toObservable(this.asyncValidator(this));
+        this._asyncValidationSubscription =
+            obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
+      }
+      if (this._obsValidator$) {
+        this._obsValidator$.emit(this);
+      }
     }
   }
 
@@ -543,6 +546,11 @@ export abstract class AbstractControl {
   _initObservables() {
     this._valueChanges = new EventEmitter();
     this._statusChanges = new EventEmitter();
+    this._obsValidator$ = new EventEmitter();
+    if (this.obsValidator) {
+      this.obsValidator(this._obsValidator$)
+          .subsctibe({next: (res: {[key: string]: any}) => this.setErrors(res)});
+    }
   }
 
 
@@ -661,8 +669,8 @@ export class FormControl extends AbstractControl {
 
   constructor(
       formState: any = null, validator: ValidatorFn|ValidatorFn[] = null,
-      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
-    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null, observableValidator: ObservableValidatorFn = null) {
+    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator), observableValidator);
     this._applyFormState(formState);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
@@ -860,8 +868,8 @@ export class FormControl extends AbstractControl {
 export class FormGroup extends AbstractControl {
   constructor(
       public controls: {[key: string]: AbstractControl}, validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      asyncValidator: AsyncValidatorFn = null, observableValidator: ObservableValidatorFn = null) {
+    super(validator, asyncValidator, observableValidator);
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -1166,8 +1174,8 @@ export class FormGroup extends AbstractControl {
 export class FormArray extends AbstractControl {
   constructor(
       public controls: AbstractControl[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      asyncValidator: AsyncValidatorFn = null, observableValidator: ObservableValidatorFn = null) {
+    super(validator, asyncValidator, observableValidator);
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
