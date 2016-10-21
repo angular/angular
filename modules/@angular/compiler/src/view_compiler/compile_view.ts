@@ -12,6 +12,7 @@ import {CompilerConfig} from '../config';
 import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
+import {ClassBuilder} from '../output/class_builder';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
@@ -24,7 +25,7 @@ import {EventHandlerVars} from './constants';
 import {NameResolver} from './expression_converter';
 import {createPureProxy, getPropertyInView, getViewFactoryName} from './util';
 
-export class CompileView implements NameResolver {
+export class CompileView implements NameResolver, ClassBuilder {
   public viewType: ViewType;
   public viewQueries: Map<any, CompileQuery[]>;
 
@@ -34,7 +35,6 @@ export class CompileView implements NameResolver {
 
   public bindings: CompileBinding[] = [];
 
-  public classStatements: o.Statement[] = [];
   public createMethod: CompileMethod;
   public animationBindingsMethod: CompileMethod;
   public injectorGetMethod: CompileMethod;
@@ -47,8 +47,9 @@ export class CompileView implements NameResolver {
   public afterViewLifecycleCallbacksMethod: CompileMethod;
   public destroyMethod: CompileMethod;
   public detachMethod: CompileMethod;
-  public eventHandlerMethods: o.ClassMethod[] = [];
+  public methods: o.ClassMethod[] = [];
 
+  public ctorStmts: o.Statement[] = [];
   public fields: o.ClassField[] = [];
   public getters: o.ClassGetter[] = [];
   public disposables: o.Expression[] = [];
