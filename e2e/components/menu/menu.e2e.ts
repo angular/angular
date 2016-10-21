@@ -15,12 +15,6 @@ describe('menu', () => {
     expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
   });
 
-  it('should close menu when area outside menu is clicked', () => {
-    page.trigger().click();
-    page.body().click();
-    page.expectMenuPresent(false);
-  });
-
   it('should close menu when menu item is clicked', () => {
     page.trigger().click();
     page.items(0).click();

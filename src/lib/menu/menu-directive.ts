@@ -27,7 +27,6 @@ import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
   exportAs: 'mdMenu'
 })
 export class MdMenu {
-  _showClickCatcher: boolean = false;
   private _focusedItemIndex: number = 0;
 
   // config object to be passed into the menu's ngClass
@@ -60,15 +59,6 @@ export class MdMenu {
   }
 
   @Output() close = new EventEmitter;
-
-  /**
-   * This function toggles the display of the menu's click catcher element.
-   * This element covers the viewport when the menu is open to detect clicks outside the menu.
-   * TODO: internal
-   */
-  _setClickCatcher(bool: boolean): void {
-    this._showClickCatcher = bool;
-  }
 
   /**
    * Focus the first item in the menu. This method is used by the menu trigger

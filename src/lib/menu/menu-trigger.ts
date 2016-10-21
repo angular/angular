@@ -23,6 +23,7 @@ import {
     HorizontalConnectionPos,
     VerticalConnectionPos
 } from '../core';
+import { Subscription } from 'rxjs/Subscription';
 
 /**
  * This directive is intended to be used in conjunction with an md-menu tag.  It is
@@ -40,6 +41,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _portal: TemplatePortal;
   private _overlayRef: OverlayRef;
   private _menuOpen: boolean = false;
+  private _backdropSubscription: Subscription;
 
   // tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
@@ -70,6 +72,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     if (!this._menuOpen) {
       this._createOverlay();
       this._overlayRef.attach(this._portal);
+      this._subscribeToBackdrop();
       this._initMenu();
     }
   }
@@ -77,6 +80,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   closeMenu(): void {
     if (this._overlayRef) {
       this._overlayRef.detach();
+      this._backdropSubscription.unsubscribe();
       this._resetMenu();
     }
   }
@@ -85,11 +89,27 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     if (this._overlayRef) {
       this._overlayRef.dispose();
       this._overlayRef = null;
+
+      if (this._backdropSubscription) {
+        this._backdropSubscription.unsubscribe();
+      }
     }
   }
 
   focus() {
     this._renderer.invokeElementMethod(this._element.nativeElement, 'focus');
+  }
+
+  /**
+   * This method ensures that the menu closes when the overlay backdrop is clicked.
+   * We do not use first() here because doing so would not catch clicks from within
+   * the menu, and it would fail to unsubscribe properly. Instead, we unsubscribe
+   * explicitly when the menu is closed or destroyed.
+   */
+  private _subscribeToBackdrop(): void {
+    this._backdropSubscription = this._overlayRef.backdropClick().subscribe(() => {
+      this.closeMenu();
+    });
   }
 
   /**
@@ -120,7 +140,6 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   // set state rather than toggle to support triggers sharing a menu
   private _setIsMenuOpen(isOpen: boolean): void {
     this._menuOpen = isOpen;
-    this.menu._setClickCatcher(isOpen);
     this._menuOpen ? this.onMenuOpen.emit(null) : this.onMenuClose.emit(null);
   }
 
@@ -152,6 +171,8 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _getOverlayConfig(): OverlayState {
     const overlayState = new OverlayState();
     overlayState.positionStrategy = this._getPosition();
+    overlayState.hasBackdrop = true;
+    overlayState.backdropClass = 'md-overlay-transparent-backdrop';
     return overlayState;
   }
 

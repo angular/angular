@@ -1,40 +1,58 @@
 import {TestBed, async} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {By} from '@angular/platform-browser';
 import {MdMenuModule, MdMenuTrigger} from './menu';
+import {OverlayContainer} from '../core/overlay/overlay-container';
 
 
 describe('MdMenu', () => {
+  let overlayContainerElement: HTMLElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdMenuModule.forRoot()],
       declarations: [SimpleMenu],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ]
     });
 
     TestBed.compileComponents();
   }));
 
   it('should open the menu as an idempotent operation', () => {
-    let fixture = TestBed.createComponent(SimpleMenu);
+    const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
-    let menu = fixture.debugElement.query(By.css('.md-menu-panel'));
-    expect(menu).toBe(null);
+    expect(overlayContainerElement.textContent).toBe('');
     expect(() => {
       fixture.componentInstance.trigger.openMenu();
       fixture.componentInstance.trigger.openMenu();
 
-      menu = fixture.debugElement.query(By.css('.md-menu-panel'));
-      expect(menu.nativeElement.innerHTML.trim()).toEqual('Content');
+      expect(overlayContainerElement.textContent.trim()).toBe('Content');
     }).not.toThrowError();
   });
+
+  it('should close the menu when a click occurs outside the menu', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+
+    const backdrop = <HTMLElement>overlayContainerElement.querySelector('.md-overlay-backdrop');
+    backdrop.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toBe('');
+  });
+
 });
 
 @Component({
   template: `
     <button [md-menu-trigger-for]="menu">Toggle menu</button>
     <md-menu #menu="mdMenu">
-      Content
+      <button md-menu-item> Content </button>
     </md-menu>
   `
 })
