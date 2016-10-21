@@ -1,3 +1,4 @@
+benchpress/src
 common/src
 compiler/src
 compiler/testing
