@@ -23,6 +23,7 @@
   },
   "files": [
     "index.ts",
+    "static.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

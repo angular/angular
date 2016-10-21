@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @module
- * @description
- * Entry point for all public APIs of the upgrade package.
- */
-export * from './src/upgrade';
+export {downgradeComponent} from './src/aot/downgrade_component';
+export {downgradeInjectable} from './src/aot/downgrade_injectable';
+export {UpgradeComponent} from './src/aot/upgrade_component';
+export {UpgradeModule} from './src/aot/upgrade_module';
 // This file only reexports content of the `src` folder. Keep it that way.

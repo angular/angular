@@ -10,8 +10,8 @@ import {Component, Directive, ElementRef, Injector, NgModule, destroyPlatform} f
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 

@@ -101,7 +101,9 @@ do
   DESTDIR=${PWD}/dist/packages-dist/${PACKAGE}
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_TESTING_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-testing.umd.js
+  UMD_STATIC_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.js
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
+  UMD_STATIC_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.min.js
   LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
 
   rm -rf ${DESTDIR}
@@ -156,6 +158,18 @@ do
         cat ${LICENSE_BANNER} > ${UMD_TESTING_ES5_PATH}.tmp
         cat ${UMD_TESTING_ES5_PATH} >> ${UMD_TESTING_ES5_PATH}.tmp
         mv ${UMD_TESTING_ES5_PATH}.tmp ${UMD_TESTING_ES5_PATH}
+      fi
+
+      if [[ -e rollup-static.config.js ]]; then
+        echo "======         Rollup ${PACKAGE} static"
+        ../../../node_modules/.bin/rollup -c rollup-static.config.js
+        # create dir because it doesn't exist yet, we should move the src code here and remove this line
+        mkdir ${DESTDIR}/static
+        echo "{\"main\": \"../bundles/${PACKAGE}-static.umd.js\"}" > ${DESTDIR}/static/package.json
+        cat ${LICENSE_BANNER} > ${UMD_STATIC_ES5_PATH}.tmp
+        cat ${UMD_STATIC_ES5_PATH} >> ${UMD_STATIC_ES5_PATH}.tmp
+        mv ${UMD_STATIC_ES5_PATH}.tmp ${UMD_STATIC_ES5_PATH}
+        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_STATIC_ES5_MIN_PATH} ${UMD_STATIC_ES5_PATH}
       fi
     ) 2>&1 | grep -v "as external dependency"
 
