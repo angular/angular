@@ -92,7 +92,7 @@ export class CompileEventListener {
             .concat(this._method.finish())
             .concat([new o.ReturnStatement(resultExpr)]);
     // private is fine here as no child view will reference the event handler...
-    this.compileElement.view.eventHandlerMethods.push(new o.ClassMethod(
+    this.compileElement.view.methods.push(new o.ClassMethod(
         this._methodName, [this._eventParam], stmts, o.BOOL_TYPE, [o.StmtModifier.Private]));
   }
 

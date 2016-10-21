@@ -12,6 +12,7 @@ import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadat
 import {createDiTokenExpression, createFastArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
+import {createClassStmt} from '../output/class_builder';
 import * as o from '../output/output_ast';
 import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
@@ -432,9 +433,6 @@ function createViewClass(
   if (view.genConfig.genDebugInfo) {
     superConstructorArgs.push(nodeDebugInfosVar);
   }
-  var viewConstructor = new o.ClassMethod(
-      null, viewConstructorArgs, [o.SUPER_EXPR.callFn(superConstructorArgs).toStmt()]);
-
   var viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
@@ -455,12 +453,16 @@ function createViewClass(
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish()),
     new o.ClassMethod('detachInternal', [], view.detachMethod.finish())
-  ].concat(view.eventHandlerMethods);
+  ].filter((method) => method.body.length > 0);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
-  var viewClass = new o.ClassStmt(
-      view.className, o.importExpr(resolveIdentifier(superClass), [getContextType(view)]),
-      view.fields, view.getters, viewConstructor,
-      viewMethods.filter((method) => method.body.length > 0));
+
+  var viewClass = createClassStmt({
+    name: view.className,
+    parent: o.importExpr(resolveIdentifier(superClass), [getContextType(view)]),
+    parentArgs: superConstructorArgs,
+    ctorParams: viewConstructorArgs,
+    builders: [{methods: viewMethods}, view]
+  });
   return viewClass;
 }
 

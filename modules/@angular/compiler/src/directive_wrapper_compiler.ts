@@ -11,6 +11,7 @@ import {Injectable} from '@angular/core';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {Identifiers, resolveIdentifier} from './identifiers';
+import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {LifecycleHooks, isDefaultChangeDetectionStrategy} from './private_import_core';
 
@@ -45,59 +46,68 @@ export class DirectiveWrapperCompiler {
   constructor(private compilerConfig: CompilerConfig) {}
 
   compile(dirMeta: CompileDirectiveMetadata): DirectiveWrapperCompileResult {
+    const builder = new DirectiveWrapperBuilder(this.compilerConfig, dirMeta);
+    Object.keys(dirMeta.inputs).forEach((inputFieldName) => {
+      createCheckInputMethod(inputFieldName, builder);
+    });
+    createDetectChangesInternalMethod(builder);
+    const classStmt = builder.build();
+    return new DirectiveWrapperCompileResult([classStmt], classStmt.name);
+  }
+}
+
+class DirectiveWrapperBuilder implements ClassBuilder {
+  fields: o.ClassField[] = [];
+  getters: o.ClassGetter[] = [];
+  methods: o.ClassMethod[] = [];
+  ctorStmts: o.Statement[] = [];
+
+  genChanges: boolean;
+  ngOnChanges: boolean;
+  ngOnInit: boolean;
+  ngDoCheck: boolean;
+
+  constructor(public compilerConfig: CompilerConfig, public dirMeta: CompileDirectiveMetadata) {
+    const dirLifecycleHooks = dirMeta.type.lifecycleHooks;
+    this.genChanges = dirLifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1 ||
+        this.compilerConfig.logBindingUpdate;
+    this.ngOnChanges = dirLifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
+    this.ngOnInit = dirLifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1;
+    this.ngDoCheck = dirLifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1;
+  }
+
+  build(): o.ClassStmt {
     const dirDepParamNames: string[] = [];
-    for (let i = 0; i < dirMeta.type.diDeps.length; i++) {
+    for (let i = 0; i < this.dirMeta.type.diDeps.length; i++) {
       dirDepParamNames.push(`p${i}`);
     }
-    const dirLifecycleHooks = dirMeta.type.lifecycleHooks;
-    let lifecycleHooks: GenConfig = {
-      genChanges: dirLifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1 ||
-          this.compilerConfig.logBindingUpdate,
-      ngOnChanges: dirLifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1,
-      ngOnInit: dirLifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1,
-      ngDoCheck: dirLifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1
-    };
 
     const fields: o.ClassField[] = [
-      new o.ClassField(CONTEXT_FIELD_NAME, o.importType(dirMeta.type)),
+      new o.ClassField(CONTEXT_FIELD_NAME, o.importType(this.dirMeta.type)),
       new o.ClassField(CHANGED_FIELD_NAME, o.BOOL_TYPE),
     ];
     const ctorStmts: o.Statement[] =
         [o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(false)).toStmt()];
-    if (lifecycleHooks.genChanges) {
+    if (this.genChanges) {
       fields.push(new o.ClassField(CHANGES_FIELD_NAME, new o.MapType(o.DYNAMIC_TYPE)));
       ctorStmts.push(RESET_CHANGES_STMT);
     }
 
-    const methods: o.ClassMethod[] = [];
-    Object.keys(dirMeta.inputs).forEach((inputFieldName, idx) => {
-      const fieldName = `_${inputFieldName}`;
-      // private is fine here as no child view will reference the cached value...
-      fields.push(new o.ClassField(fieldName, null, [o.StmtModifier.Private]));
-      ctorStmts.push(o.THIS_EXPR.prop(fieldName)
-                         .set(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED)))
-                         .toStmt());
-      methods.push(checkInputMethod(inputFieldName, o.THIS_EXPR.prop(fieldName), lifecycleHooks));
-    });
-    methods.push(detectChangesInternalMethod(lifecycleHooks, this.compilerConfig.genDebugInfo));
-
     ctorStmts.push(
         o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
-            .set(o.importExpr(dirMeta.type)
+            .set(o.importExpr(this.dirMeta.type)
                      .instantiate(dirDepParamNames.map((paramName) => o.variable(paramName))))
             .toStmt());
-    const ctor = new o.ClassMethod(
-        null, dirDepParamNames.map((paramName) => new o.FnParam(paramName, o.DYNAMIC_TYPE)),
-        ctorStmts);
 
-    const wrapperClassName = DirectiveWrapperCompiler.dirWrapperClassName(dirMeta.type);
-    const classStmt = new o.ClassStmt(wrapperClassName, null, fields, [], ctor, methods);
-    return new DirectiveWrapperCompileResult([classStmt], wrapperClassName);
+    return createClassStmt({
+      name: DirectiveWrapperCompiler.dirWrapperClassName(this.dirMeta.type),
+      ctorParams: dirDepParamNames.map((paramName) => new o.FnParam(paramName, o.DYNAMIC_TYPE)),
+      builders: [{fields: fields, ctorStmts: ctorStmts}, this]
+    })
   }
 }
 
-function detectChangesInternalMethod(
-    lifecycleHooks: GenConfig, logBindingUpdate: boolean): o.ClassMethod {
+function createDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
   const changedVar = o.variable('changed');
   const stmts: o.Statement[] = [
     changedVar.set(o.THIS_EXPR.prop(CHANGED_FIELD_NAME)).toDeclStmt(),
@@ -105,14 +115,14 @@ function detectChangesInternalMethod(
   ];
   const lifecycleStmts: o.Statement[] = [];
 
-  if (lifecycleHooks.genChanges) {
+  if (builder.genChanges) {
     const onChangesStmts: o.Statement[] = [];
-    if (lifecycleHooks.ngOnChanges) {
+    if (builder.ngOnChanges) {
       onChangesStmts.push(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
                               .callMethod('ngOnChanges', [o.THIS_EXPR.prop(CHANGES_FIELD_NAME)])
                               .toStmt());
     }
-    if (logBindingUpdate) {
+    if (builder.compilerConfig.logBindingUpdate) {
       onChangesStmts.push(
           o.importExpr(resolveIdentifier(Identifiers.setBindingDebugInfoForChanges))
               .callFn(
@@ -123,12 +133,12 @@ function detectChangesInternalMethod(
     lifecycleStmts.push(new o.IfStmt(changedVar, onChangesStmts));
   }
 
-  if (lifecycleHooks.ngOnInit) {
+  if (builder.ngOnInit) {
     lifecycleStmts.push(new o.IfStmt(
         VIEW_VAR.prop('numberOfChecks').identical(new o.LiteralExpr(0)),
         [o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).callMethod('ngOnInit', []).toStmt()]));
   }
-  if (lifecycleHooks.ngDoCheck) {
+  if (builder.ngDoCheck) {
     lifecycleStmts.push(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).callMethod('ngDoCheck', []).toStmt());
   }
   if (lifecycleStmts.length > 0) {
@@ -136,7 +146,7 @@ function detectChangesInternalMethod(
   }
   stmts.push(new o.ReturnStatement(changedVar));
 
-  return new o.ClassMethod(
+  builder.methods.push(new o.ClassMethod(
       'detectChangesInternal',
       [
         new o.FnParam(
@@ -144,16 +154,22 @@ function detectChangesInternalMethod(
         new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
         new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
       ],
-      stmts, o.BOOL_TYPE);
+      stmts, o.BOOL_TYPE));
 }
 
-function checkInputMethod(
-    input: string, fieldExpr: o.ReadPropExpr, lifecycleHooks: GenConfig): o.ClassMethod {
+function createCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
+  const fieldName = `_${input}`;
+  const fieldExpr = o.THIS_EXPR.prop(fieldName);
+  // private is fine here as no child view will reference the cached value...
+  builder.fields.push(new o.ClassField(fieldName, null, [o.StmtModifier.Private]));
+  builder.ctorStmts.push(o.THIS_EXPR.prop(fieldName)
+                             .set(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED)))
+                             .toStmt());
   var onChangeStatements: o.Statement[] = [
     o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(true)).toStmt(),
     o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).prop(input).set(CURR_VALUE_VAR).toStmt(),
   ];
-  if (lifecycleHooks.genChanges) {
+  if (builder.genChanges) {
     onChangeStatements.push(o.THIS_EXPR.prop(CHANGES_FIELD_NAME)
                                 .key(o.literal(input))
                                 .set(o.importExpr(resolveIdentifier(Identifiers.SimpleChange))
@@ -168,19 +184,12 @@ function checkInputMethod(
                                 .callFn([THROW_ON_CHANGE_VAR, fieldExpr, CURR_VALUE_VAR])),
         onChangeStatements),
   ];
-  return new o.ClassMethod(
+  builder.methods.push(new o.ClassMethod(
       `check_${input}`,
       [
         new o.FnParam(CURR_VALUE_VAR.name, o.DYNAMIC_TYPE),
         new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
         new o.FnParam(FORCE_UPDATE_VAR.name, o.BOOL_TYPE),
       ],
-      methodBody);
-}
-
-interface GenConfig {
-  genChanges: boolean;
-  ngOnChanges: boolean;
-  ngOnInit: boolean;
-  ngDoCheck: boolean;
+      methodBody));
 }
