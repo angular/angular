@@ -1,7 +1,5 @@
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
-import {ListWrapper} from '@angular/facade/src/collection';
-import {Math} from '@angular/facade/src/math';
 
 import {HEIGHT, ITEMS, ITEM_HEIGHT, Offering, ROW_WIDTH, VIEW_PORT_HEIGHT, VISIBLE_ITEMS} from './common';
 import {generateOfferings} from './random_data';
@@ -63,6 +61,6 @@ export class ScrollAreaComponent {
     if (this.paddingDiv != null) {
       this.paddingDiv.style.setProperty('height', `${padding}px`);
     }
-    this.visibleItems = ListWrapper.slice(this._fullList, iStart, iEnd);
+    this.visibleItems = this._fullList.slice(iStart, iEnd);
   }
 }

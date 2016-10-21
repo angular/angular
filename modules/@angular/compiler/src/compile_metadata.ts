@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
 import {ListWrapper, MapWrapper} from './facade/collection';
-import {isPresent, normalizeBlank, normalizeBool} from './facade/lang';
+import {isPresent} from './facade/lang';
 import {LifecycleHooks} from './private_import_core';
 import {CssSelector} from './selector';
 import {sanitizeIdentifier, splitAtColon} from './util';
@@ -23,7 +23,6 @@ function unimplemented(): any {
 // group 2: "event" from "(event)"
 // group 3: "@trigger" from "@trigger"
 const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
-const UNDEFINED = new Object();
 
 export abstract class CompileMetadataWithIdentifier {
   get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
@@ -125,12 +124,12 @@ export class CompileDiDependencyMetadata {
         token?: CompileTokenMetadata,
         value?: any
       } = {}) {
-    this.isAttribute = normalizeBool(isAttribute);
-    this.isSelf = normalizeBool(isSelf);
-    this.isHost = normalizeBool(isHost);
-    this.isSkipSelf = normalizeBool(isSkipSelf);
-    this.isOptional = normalizeBool(isOptional);
-    this.isValue = normalizeBool(isValue);
+    this.isAttribute = !!isAttribute;
+    this.isSelf = !!isSelf;
+    this.isHost = !!isHost;
+    this.isSkipSelf = !!isSkipSelf;
+    this.isOptional = !!isOptional;
+    this.isValue = !!isValue;
     this.query = query;
     this.viewQuery = viewQuery;
     this.token = token;
@@ -161,8 +160,8 @@ export class CompileProviderMetadata {
     this.useValue = useValue;
     this.useExisting = useExisting;
     this.useFactory = useFactory;
-    this.deps = normalizeBlank(deps);
-    this.multi = normalizeBool(multi);
+    this.deps = deps || null;
+    this.multi = !!multi;
   }
 }
 
@@ -192,7 +191,7 @@ export class CompileTokenMetadata implements CompileMetadataWithIdentifier {
           {value?: any, identifier?: CompileIdentifierMetadata, identifierIsInstance?: boolean}) {
     this.value = value;
     this.identifier = identifier;
-    this.identifierIsInstance = normalizeBool(identifierIsInstance);
+    this.identifierIsInstance = !!identifierIsInstance;
   }
 
   get reference(): any {
@@ -227,7 +226,7 @@ export class CompileTypeMetadata extends CompileIdentifierMetadata {
     lifecycleHooks?: LifecycleHooks[];
   } = {}) {
     super({reference: reference, name: name, moduleUrl: moduleUrl, prefix: prefix, value: value});
-    this.isHost = normalizeBool(isHost);
+    this.isHost = !!isHost;
     this.diDeps = _normalizeArray(diDeps);
     this.lifecycleHooks = _normalizeArray(lifecycleHooks);
   }
@@ -248,8 +247,8 @@ export class CompileQueryMetadata {
     read?: CompileTokenMetadata
   } = {}) {
     this.selectors = selectors;
-    this.descendants = normalizeBool(descendants);
-    this.first = normalizeBool(first);
+    this.descendants = !!descendants;
+    this.first = !!first;
     this.propertyName = propertyName;
     this.read = read;
   }
@@ -303,9 +302,9 @@ export class CompileTemplateMetadata {
     this.styles = _normalizeArray(styles);
     this.styleUrls = _normalizeArray(styleUrls);
     this.externalStylesheets = _normalizeArray(externalStylesheets);
-    this.animations = isPresent(animations) ? ListWrapper.flatten(animations) : [];
+    this.animations = animations ? ListWrapper.flatten(animations) : [];
     this.ngContentSelectors = ngContentSelectors || [];
-    if (isPresent(interpolation) && interpolation.length != 2) {
+    if (interpolation && interpolation.length != 2) {
       throw new Error(`'interpolation' should have a start and an end symbol.`);
     }
     this.interpolation = interpolation;
@@ -375,7 +374,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
 
     return new CompileDirectiveMetadata({
       type,
-      isComponent: normalizeBool(isComponent), selector, exportAs, changeDetection,
+      isComponent: !!isComponent, selector, exportAs, changeDetection,
       inputs: inputsMap,
       outputs: outputsMap,
       hostListeners,
@@ -503,7 +502,7 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
   } = {}) {
     this.type = type;
     this.name = name;
-    this.pure = normalizeBool(pure);
+    this.pure = !!pure;
   }
   get identifier(): CompileIdentifierMetadata { return this.type; }
 }

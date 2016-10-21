@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
@@ -231,7 +230,7 @@ class _TreeBuilder {
 
   private _closeVoidElement(): void {
     if (this._elementStack.length > 0) {
-      const el = ListWrapper.last(this._elementStack);
+      const el = this._elementStack[this._elementStack.length - 1];
 
       if (this.getTagDefinition(el.name).isVoid) {
         this._elementStack.pop();
@@ -275,7 +274,7 @@ class _TreeBuilder {
 
   private _pushElement(el: html.Element) {
     if (this._elementStack.length > 0) {
-      const parentEl = ListWrapper.last(this._elementStack);
+      const parentEl = this._elementStack[this._elementStack.length - 1];
       if (this.getTagDefinition(parentEl.name).isClosedByChild(el.name)) {
         this._elementStack.pop();
       }
@@ -316,7 +315,7 @@ class _TreeBuilder {
     for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       const el = this._elementStack[stackIndex];
       if (el.name == fullName) {
-        ListWrapper.splice(this._elementStack, stackIndex, this._elementStack.length - stackIndex);
+        this._elementStack.splice(stackIndex, this._elementStack.length - stackIndex);
         return true;
       }
 
@@ -343,7 +342,7 @@ class _TreeBuilder {
   }
 
   private _getParentElement(): html.Element {
-    return this._elementStack.length > 0 ? ListWrapper.last(this._elementStack) : null;
+    return this._elementStack.length > 0 ? this._elementStack[this._elementStack.length - 1] : null;
   }
 
   /**
@@ -361,7 +360,7 @@ class _TreeBuilder {
       container = this._elementStack[i];
     }
 
-    return {parent: ListWrapper.last(this._elementStack), container};
+    return {parent: this._elementStack[this._elementStack.length - 1], container};
   }
 
   private _addToParent(node: html.Node) {

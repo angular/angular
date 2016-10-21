@@ -1,6 +1,5 @@
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
-import {ListWrapper, Map} from '@angular/facade/src/collection';
 
 import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
@@ -81,17 +80,19 @@ export class StageButtonsComponent extends HasStyle {
 
   _computeStageButtons() {
     var disabled = true;
-    this.stages = ListWrapper.clone(STATUS_LIST.map((status) => {
-      var isCurrent = this._offering.status == status;
-      var stage = new Stage();
-      stage.name = status;
-      stage.isDisabled = disabled;
-      stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
-      if (isCurrent) {
-        disabled = false;
-      }
-      return stage;
-    }));
+    this.stages = STATUS_LIST
+                      .map((status) => {
+                        const isCurrent = this._offering.status == status;
+                        const stage = new Stage();
+                        stage.name = status;
+                        stage.isDisabled = disabled;
+                        stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
+                        if (isCurrent) {
+                          disabled = false;
+                        }
+                        return stage;
+                      })
+                      .slice();
   }
 }
 

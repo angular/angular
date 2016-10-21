@@ -9,7 +9,6 @@
 import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../facade/async';
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {AbstractControl, FormControl, FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -156,6 +155,6 @@ export class NgForm extends ControlContainer implements Form {
   /** @internal */
   _findContainer(path: string[]): FormGroup {
     path.pop();
-    return ListWrapper.isEmpty(path) ? this.form : <FormGroup>this.form.get(path);
+    return path.length ? <FormGroup>this.form.get(path) : this.form;
   }
 }

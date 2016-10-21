@@ -46,7 +46,7 @@ export class Store<T extends KeyModel> {
   private _spliceOut(record: T) {
     var i = this._indexFor(record);
     if (i > -1) {
-      return ListWrapper.splice(this.list, i, 1)[0];
+      return this.list.splice(i, 1)[0];
     }
     return null;
   }

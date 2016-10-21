@@ -9,7 +9,7 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
-import {ListWrapper, MapWrapper} from '../facade/collection';
+import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -218,9 +218,8 @@ export class CompileElement extends CompileNode {
     var queriesWithReads: _QueryWithRead[] = [];
     MapWrapper.values(this._resolvedProviders).forEach((resolvedProvider) => {
       var queriesForProvider = this._getQueriesFor(resolvedProvider.token);
-      ListWrapper.addAll(
-          queriesWithReads,
-          queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
+      queriesWithReads.push(
+          ...queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
     });
     Object.keys(this.referenceTokens).forEach(varName => {
       var token = this.referenceTokens[varName];
@@ -232,9 +231,8 @@ export class CompileElement extends CompileNode {
       }
       this.view.locals.set(varName, varValue);
       var varToken = new CompileTokenMetadata({value: varName});
-      ListWrapper.addAll(
-          queriesWithReads,
-          this._getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
+      queriesWithReads.push(
+          ...this._getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
     });
     queriesWithReads.forEach((queryWithRead) => {
       var value: o.Expression;
@@ -315,8 +313,7 @@ export class CompileElement extends CompileNode {
     while (!currentEl.isNull()) {
       queries = currentEl._queries.get(token.reference);
       if (isPresent(queries)) {
-        ListWrapper.addAll(
-            result, queries.filter((query) => query.meta.descendants || distance <= 1));
+        result.push(...queries.filter((query) => query.meta.descendants || distance <= 1));
       }
       if (currentEl._directives.length > 0) {
         distance++;
@@ -325,7 +322,7 @@ export class CompileElement extends CompileNode {
     }
     queries = this.view.componentView.viewQueries.get(token.reference);
     if (isPresent(queries)) {
-      ListWrapper.addAll(result, queries);
+      result.push(...queries);
     }
     return result;
   }

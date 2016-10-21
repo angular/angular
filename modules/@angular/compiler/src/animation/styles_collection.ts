@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 
 export class StylesCollectionEntry {
@@ -37,7 +36,7 @@ export class StylesCollection {
       }
     }
 
-    ListWrapper.insert(entries, insertionIndex, tuple);
+    entries.splice(insertionIndex, 0, tuple);
   }
 
   getByIndex(property: string, index: number): StylesCollectionEntry {

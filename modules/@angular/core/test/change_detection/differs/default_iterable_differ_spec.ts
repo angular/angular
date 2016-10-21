@@ -9,7 +9,6 @@
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {ListWrapper} from '../../../src/facade/collection';
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';
 
@@ -110,7 +109,7 @@ export function main() {
         let l = [1, 2];
         differ.check(l);
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push(2);
         l.push(1);
         differ.check(l);
@@ -125,8 +124,8 @@ export function main() {
         let l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 1);
-        ListWrapper.insert(l, 0, 'b');
+        l.splice(1, 1);
+        l.splice(0, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
@@ -134,7 +133,7 @@ export function main() {
           moves: ['b[1->0]', 'a[0->1]']
         }));
 
-        ListWrapper.removeAt(l, 1);
+        l.splice(1, 1);
         l.push('a');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
@@ -170,7 +169,7 @@ export function main() {
           additions: ['c[null->2]', 'd[null->3]']
         }));
 
-        ListWrapper.removeAt(l, 2);
+        l.splice(2, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'b', 'd[3->2]'],
@@ -179,7 +178,7 @@ export function main() {
           removals: ['c[2->null]']
         }));
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push('d');
         l.push('c');
         l.push('b');
@@ -214,10 +213,10 @@ export function main() {
       });
 
       it('should detect [NaN] moves', () => {
-        let l = [NaN, NaN];
+        let l: any[] = [NaN, NaN];
         differ.check(l);
 
-        ListWrapper.insert<any>(l, 0, 'foo');
+        l.unshift('foo');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
@@ -231,7 +230,7 @@ export function main() {
         let l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 1);
+        l.splice(1, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'c[2->1]'],
@@ -240,7 +239,7 @@ export function main() {
           removals: ['b[1->null]']
         }));
 
-        ListWrapper.insert(l, 1, 'b');
+        l.splice(1, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'b[null->1]', 'c[1->2]'],
@@ -255,7 +254,7 @@ export function main() {
         let l = ['a', 'a', 'a', 'b', 'b'];
         differ.check(l);
 
-        ListWrapper.removeAt(l, 0);
+        l.splice(0, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
@@ -269,7 +268,7 @@ export function main() {
         let l = ['a', 'a', 'b', 'b'];
         differ.check(l);
 
-        ListWrapper.insert(l, 0, 'b');
+        l.splice(0, 0, 'b');
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
@@ -283,7 +282,7 @@ export function main() {
         let l = ['a', 'b', 'c'];
         differ.check(l);
 
-        ListWrapper.clear(l);
+        l.length = 0;
         l.push('b');
         l.push('a');
         l.push('c');
@@ -557,7 +556,7 @@ export function main() {
         let l = buildItemList(['a', 'b', 'c']);
         differ.check(l);
 
-        ListWrapper.removeAt(l, 2);
+        l.splice(2, 1);
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({
           collection: ['{id: a}', '{id: b}'],

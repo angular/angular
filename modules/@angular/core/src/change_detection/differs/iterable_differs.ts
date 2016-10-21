@@ -7,7 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {ListWrapper} from '../../facade/collection';
 import {getTypeNameForDebugging, isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
@@ -51,7 +50,7 @@ export class IterableDiffers {
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (isPresent(parent)) {
-      var copied = ListWrapper.clone(parent.factories);
+      var copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new IterableDiffers(factories);
     } else {

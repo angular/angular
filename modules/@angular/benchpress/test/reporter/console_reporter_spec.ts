@@ -28,7 +28,7 @@ export function main() {
       if (!descriptions) {
         descriptions = [];
       }
-      if (isBlank(sampleId)) {
+      if (sampleId == null) {
         sampleId = 'null';
       }
       var providers: Provider[] = [

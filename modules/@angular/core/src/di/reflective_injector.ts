@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../facade/collection';
 import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
@@ -16,8 +15,6 @@ import {Provider} from './provider';
 import {AbstractProviderError, CyclicDependencyError, InstantiationError, NoProviderError, OutOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
-
-var __unused: Type<any>;  // avoid unused import when Type union types are erased
 
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
@@ -286,8 +283,7 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
   constructor(
       public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
       public injector: ReflectiveInjector_) {
-    this.objs = new Array(protoStrategy.providers.length);
-    ListWrapper.fill(this.objs, UNDEFINED);
+    this.objs = new Array(protoStrategy.providers.length).fill(UNDEFINED);
   }
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
@@ -297,9 +293,9 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
   }
 
   getObjByKeyId(keyId: number): any {
-    var p = this.protoStrategy;
+    const p = this.protoStrategy;
 
-    for (var i = 0; i < p.keyIds.length; i++) {
+    for (let i = 0; i < p.keyIds.length; i++) {
       if (p.keyIds[i] === keyId) {
         if (this.objs[i] === UNDEFINED) {
           this.objs[i] = this.injector._new(p.providers[i]);

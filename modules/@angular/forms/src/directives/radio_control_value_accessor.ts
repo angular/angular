@@ -8,8 +8,6 @@
 
 import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
 
-import {ListWrapper} from '../facade/collection';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
@@ -37,7 +35,7 @@ export class RadioControlRegistry {
         indexToRemove = i;
       }
     }
-    ListWrapper.removeAt(this._accessors, indexToRemove);
+    this._accessors.splice(indexToRemove, 1);
   }
 
   select(accessor: RadioControlValueAccessor) {

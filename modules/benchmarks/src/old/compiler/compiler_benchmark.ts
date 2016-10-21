@@ -1,6 +1,5 @@
 import {PromiseWrapper} from '@angular/facade/src/async';
-import {ListWrapper, Map, MapWrapper} from '@angular/facade/src/collection';
-import {Type, isPresent, print} from '@angular/facade/src/lang';
+import {Type, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -68,7 +67,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
 
   _fillCache(component: Type) {
     var view = super.resolve(component);
-    var multipliedTemplates = ListWrapper.createFixedSize(this._multiplyBy);
+    var multipliedTemplates = new Array(this._multiplyBy);
     for (var i = 0; i < this._multiplyBy; ++i) {
       multipliedTemplates[i] = view.template;
     }
