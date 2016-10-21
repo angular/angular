@@ -60,7 +60,7 @@ export class Request extends Body {
   /**
    * Http method with which to perform the request.
    */
-  method: RequestMethod;
+  method: number;
   /**
    * {@link Headers} instance
    */
