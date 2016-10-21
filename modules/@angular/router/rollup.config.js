@@ -37,7 +37,8 @@ export default {
     'rxjs/operator/first': 'Rx.Observable.prototype',
     'rxjs/operator/catch': 'Rx.Observable.prototype',
     'rxjs/operator/last': 'Rx.Observable.prototype',
-    'rxjs/operator/filter': 'Rx.Observable.prototype'
+    'rxjs/operator/filter': 'Rx.Observable.prototype',
+    'rxjs/operator/concatMap': 'Rx.Observable.prototype'
   },
   plugins: []
 };
