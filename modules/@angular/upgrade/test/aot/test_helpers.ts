@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {PlatformRef, Type} from '@angular/core';
-import {UpgradeModule} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeModule} from '@angular/upgrade/static';
 
 export function bootstrap(
     platform: PlatformRef, Ng2Module: Type<{}>, element: Element, ng1Module: angular.IModule) {

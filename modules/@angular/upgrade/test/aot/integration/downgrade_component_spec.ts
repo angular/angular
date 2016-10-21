@@ -10,8 +10,8 @@ import {Component, EventEmitter, NgModule, OnChanges, OnDestroy, SimpleChanges, 
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeModule, downgradeComponent} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
 import {bootstrap, html, multiTrim} from '../test_helpers';
 

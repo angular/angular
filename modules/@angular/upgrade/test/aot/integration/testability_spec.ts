@@ -10,8 +10,8 @@ import {NgModule, Testability, destroyPlatform} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeModule} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeModule} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
