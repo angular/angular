@@ -12,8 +12,6 @@ import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {isBlank, isPresent, normalizeBool} from './facade/lang';
 import {isPromise} from './private_import_core';
-export {Subject} from 'rxjs/Subject';
-
 
 /**
  * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
@@ -75,8 +73,10 @@ function coerceToAsyncValidator(asyncValidator: AsyncValidatorFn | AsyncValidato
   return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator;
 }
 
-export declare type Errors = {[key: string]: any};
-export declare type ObservableValidatorFn = (validator$: Observable<AbstractControl>) => Observable<Errors|null>;
+export declare type Errors = {[key: string]: any}|null;
+export interface ObservableValidatorFn {
+  (validator$: Observable<AbstractControl>): Observable<Errors>;
+}
 
 /**
  * @whatItDoes This is the base class for {@link FormControl}, {@link FormGroup}, and
@@ -99,13 +99,15 @@ export abstract class AbstractControl {
   private _statusChanges: EventEmitter<any>;
   private _obsValidator$: EventEmitter<AbstractControl>;
   private _status: string;
-  private _errors: {[key: string]: any};
+  private _errors: Errors = null;
   private _pristine: boolean = true;
   private _touched: boolean = false;
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
 
-  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn, public obsValidator: ObservableValidatorFn) {}
+  constructor(public validator: ValidatorFn, public asyncValidator: AsyncValidatorFn, public obsValidator: ObservableValidatorFn) {
+    this.setObservableValidator(obsValidator);
+  }
 
   /**
    * The value of the control.
@@ -153,7 +155,7 @@ export abstract class AbstractControl {
    * In order to have this status, the control must be in the
    * middle of conducting a validation check.
    */
-  get pending(): boolean { return this._status == PENDING; }
+  get pending(): boolean { return this._status === PENDING; }
 
   /**
    * A control is `disabled` when its `status === DISABLED`.
@@ -234,6 +236,16 @@ export abstract class AbstractControl {
    */
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]): void {
     this.asyncValidator = coerceToAsyncValidator(newValidator);
+  }
+
+  /**
+   * Sets the observable validator that is active on this control.
+   */
+  setObservableValidator(newValidator: ObservableValidatorFn): void {
+    if (!newValidator) return;
+    this._obsValidator$ = new EventEmitter();
+    newValidator(this._obsValidator$)
+          .subsctibe({next: (res: {[key: string]: any}) => this.setErrors(res)});
   }
 
   /**
@@ -469,7 +481,7 @@ export abstract class AbstractControl {
    * expect(login.valid).toEqual(true);
    * ```
    */
-  setErrors(errors: {[key: string]: any}, {emitEvent}: {emitEvent?: boolean} = {}): void {
+  setErrors(errors: Errors, {emitEvent}: {emitEvent?: boolean} = {}): void {
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
     this._errors = errors;
@@ -546,13 +558,7 @@ export abstract class AbstractControl {
   _initObservables() {
     this._valueChanges = new EventEmitter();
     this._statusChanges = new EventEmitter();
-    this._obsValidator$ = new EventEmitter();
-    if (this.obsValidator) {
-      this.obsValidator(this._obsValidator$)
-          .subsctibe({next: (res: {[key: string]: any}) => this.setErrors(res)});
-    }
   }
-
 
   private _calculateStatus(): string {
     if (this._allControlsDisabled()) return DISABLED;
