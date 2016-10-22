@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Route} from './config';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
-import {Route} from './config';
 
 export function createRouterState(curr: RouterStateSnapshot, prevState: RouterState): RouterState {
   const root = createNode(curr._root, prevState ? prevState._root : undefined);
@@ -51,8 +51,13 @@ function createActivatedRoute(c: ActivatedRouteSnapshot) {
 function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
   const r1: Route = a._routeConfig;
   const r2: Route = b._routeConfig;
+  console.log('/-------------------------/');
+  console.log(r1);
+  console.log(r2);
   if (r1 === r2) return true;
-  return r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
+  let res = r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
+  console.log(res);
+  return res;
 }
 
 function containsPath(pathA: string, pathB: string): boolean {
