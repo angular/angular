@@ -54,10 +54,10 @@ function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapsho
   console.log('/-------------------------/');
   console.log(r1);
   console.log(r2);
-  if (r1 === r2) return true;
-  let res = r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
-  console.log(res);
-  return res;
+  return r1 === r2;
+  // let res = r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
+  // console.log(res);
+  // return res;
 }
 
 function containsPath(pathA: string, pathB: string): boolean {
