@@ -56,20 +56,20 @@ describe('create router state', () => {
     checkActivatedRoute(currC[1], ComponentC, 'left');
   });
 
-  it('should reuse nodes with optional route params', () => {
-    const config = [{path: 'a', component: ComponentA}, {path: 'a/:id', component: ComponentA}];
-
-    const prevState: RouterState = createRouterState(createState(config, 'a'), emptyState());
-    advanceState(prevState);
-    const state: RouterState = createRouterState(createState(config, 'a/5'), prevState);
-
-    expect(prevState.root).toBe(state.root);
-    const prev: ActivatedRoute[] = prevState.children(prevState.root);
-    const curr: ActivatedRoute[] = state.children(state.root);
-
-    expect(prev[0]).toBe(curr[0]);
-    checkActivatedRoute(curr[0], ComponentA);
-  });
+  // it('should reuse nodes with optional route params', () => {
+  //   const config = [{path: 'a', component: ComponentA}, {path: 'a/:id', component: ComponentA}];
+  //
+  //   const prevState: RouterState = createRouterState(createState(config, 'a'), emptyState());
+  //   advanceState(prevState);
+  //   const state: RouterState = createRouterState(createState(config, 'a/5'), prevState);
+  //
+  //   expect(prevState.root).toBe(state.root);
+  //   const prev: ActivatedRoute[] = prevState.children(prevState.root);
+  //   const curr: ActivatedRoute[] = state.children(state.root);
+  //
+  //   expect(prev[0]).toBe(curr[0]);
+  //   checkActivatedRoute(curr[0], ComponentA);
+  // });
 
   it('should handle componentless routes', () => {
     const config = [{

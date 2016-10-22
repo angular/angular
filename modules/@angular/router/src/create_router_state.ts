@@ -54,7 +54,9 @@ function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapsho
   console.log('/-------------------------/');
   console.log(r1);
   console.log(r2);
-  return r1 === r2;
+  let res = r1 === r2;
+  console.log(res);
+  return res;
   // let res = r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
   // console.log(res);
   // return res;
