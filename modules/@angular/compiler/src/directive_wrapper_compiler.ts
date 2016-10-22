@@ -166,9 +166,13 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
   if (builder.genChanges) {
     const onChangesStmts: o.Statement[] = [];
     if (builder.ngOnChanges) {
-      onChangesStmts.push(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
-                              .callMethod('ngOnChanges', [o.THIS_EXPR.prop(CHANGES_FIELD_NAME)])
-                              .toStmt());
+      onChangesStmts.push(
+          o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
+              .prop('ngOnChanges')
+              .callMethod(
+                  'call',
+                  [o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), o.THIS_EXPR.prop(CHANGES_FIELD_NAME)])
+              .toStmt());
     }
     if (builder.compilerConfig.logBindingUpdate) {
       onChangesStmts.push(
