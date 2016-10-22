@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
+import {Route} from './config';
 
 export function createRouterState(curr: RouterStateSnapshot, prevState: RouterState): RouterState {
   const root = createNode(curr._root, prevState ? prevState._root : undefined);
@@ -50,5 +49,12 @@ function createActivatedRoute(c: ActivatedRouteSnapshot) {
 }
 
 function equalRouteSnapshots(a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
-  return a._routeConfig === b._routeConfig;
+  const r1: Route = a._routeConfig;
+  const r2: Route = b._routeConfig;
+  if (r1 === r2) return true;
+  return r1.outlet === r2.outlet && r1.component === r2.component && containsPath(r1.path, r2.path);
+}
+
+function containsPath(pathA: string, pathB: string): boolean {
+  return (pathA.length > pathB.length) ? pathA.indexOf(pathB) !== -1 : pathB.indexOf(pathA) !== -1;
 }
