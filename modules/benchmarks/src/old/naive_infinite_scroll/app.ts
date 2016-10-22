@@ -1,5 +1,12 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {NgFor, NgIf} from '@angular/common';
-import {Component, Directive} from '@angular/core';
+import {Component} from '@angular/core';
 import {TimerWrapper} from '@angular/facade/src/async';
 import {document} from '@angular/facade/src/browser';
 import {isPresent} from '@angular/facade/src/lang';
@@ -66,7 +73,7 @@ export class App {
   }
 
   // Puts a marker indicating that the test is finished.
-  _scheduleFinishedMarker() {
+  private _scheduleFinishedMarker() {
     var existingMarker = this._locateFinishedMarker();
     if (isPresent(existingMarker)) {
       // Nothing to do, the marker is already there
@@ -80,7 +87,7 @@ export class App {
     }, 0);
   }
 
-  _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
+  private _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
 
-  _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
+  private _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
 }

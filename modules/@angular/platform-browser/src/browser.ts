@@ -46,7 +46,7 @@ export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
 /**
  * @stable
  */
-export const platformBrowser =
+export const platformBrowser: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 export function initDomAdapter() {

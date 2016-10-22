@@ -74,7 +74,6 @@ describe('create router state', () => {
     const currP = state.firstChild(state.root);
     expect(prevP).toBe(currP);
 
-    const prevC = prevState.children(prevP);
     const currC = state.children(currP);
 
     expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});

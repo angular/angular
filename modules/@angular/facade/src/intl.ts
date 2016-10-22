@@ -207,8 +207,6 @@ function dateFormatter(format: string, date: Date, locale: string): string {
   if (datePartsFormatterCache.has(format)) {
     parts = datePartsFormatterCache.get(format);
   } else {
-    const matches = DATE_FORMATS_SPLIT.exec(format);
-
     while (format) {
       match = DATE_FORMATS_SPLIT.exec(format);
       if (match) {

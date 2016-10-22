@@ -254,7 +254,6 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
         const template = '<p my-dir></p>';
         TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
       });
 
       it('should execute a given directive once, even if specified multiple times', () => {
@@ -298,7 +297,6 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.configureTestingModule({declarations: [MyComp, PrivateImpl, NeedsPublicApi]});
         const template = '<div public-api><div needs-public-api></div></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
       });
 
       it('should support template directives via `<template>` elements.', () => {

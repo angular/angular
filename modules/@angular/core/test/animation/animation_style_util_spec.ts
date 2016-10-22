@@ -41,7 +41,6 @@ export function main() {
       it('should set all AUTO styles to the null value', () => {
         var styles = {opacity: 0};
         var newStyles = {color: '*', border: '*'};
-        var flag = '*';
         var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, null);
         expect(result).toEqual({opacity: null, color: null, border: null});
       });

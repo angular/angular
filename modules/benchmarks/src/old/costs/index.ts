@@ -1,8 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
-import {ListWrapper} from '@angular/facade/src/lang';
-import {bootstrap} from '@angular/platform-browser';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';

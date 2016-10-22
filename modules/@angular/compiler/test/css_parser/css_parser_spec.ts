@@ -68,7 +68,6 @@ export function main() {
 
       var classRule = rule.selectors[0];
       var idRule = rule.selectors[1];
-      var tagRule = rule.selectors[2];
       var attrRule = rule.selectors[3];
       var plusOpRule = rule.selectors[4];
       var starOpRule = rule.selectors[5];

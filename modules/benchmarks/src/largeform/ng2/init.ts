@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, getIntParameter, profile} from '../../util';
@@ -19,8 +26,6 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
     app.setCopies(copies);
     appRef.tick();
   }
-
-  function noop() {}
 
   const injector = moduleRef.injector;
   appRef = injector.get(ApplicationRef);

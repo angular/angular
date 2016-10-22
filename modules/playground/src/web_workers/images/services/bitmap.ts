@@ -6,13 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference path="../bitmap.d.ts" /> /// <reference path="../b64.d.ts" />
 import {Injectable} from '@angular/core';
-declare var base64js: any /** TODO #9100 */;
-
-// Temporary fix for Typescript issue #4220 (https://github.com/Microsoft/TypeScript/issues/4220)
-// var _ImageData: (width: number, height: number) => void = <any>postMessage;
-var _ImageData: {prototype: ImageData, new (width: number, height: number): ImageData;} = ImageData;
+import * as base64js from 'B64';
 
 // This class is based on the Bitmap examples at:
 // http://www.i-programmer.info/projects/36-web/6234-reading-a-bmp-file-in-javascript.html
@@ -101,7 +96,7 @@ export class BitmapService {
   private _BMPToImageData(bmp: BitmapFile): ImageData {
     var width = bmp.infoHeader.biWidth;
     var height = bmp.infoHeader.biHeight;
-    var imageData = new _ImageData(width, height);
+    var imageData = new ImageData(width, height);
 
     var data = imageData.data;
     var bmpData = bmp.pixels;

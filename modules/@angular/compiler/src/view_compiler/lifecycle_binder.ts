@@ -9,16 +9,14 @@
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import * as o from '../output/output_ast';
 import {LifecycleHooks} from '../private_import_core';
-import {DirectiveAst, ProviderAst} from '../template_parser/template_ast';
+import {ProviderAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {DetectChangesVars} from './constants';
 
 
 
 var STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.LiteralExpr(0));
-var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
 export function bindDirectiveAfterContentLifecycleCallbacks(
     directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,

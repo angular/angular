@@ -121,7 +121,6 @@ export function tick(millis: number = 0): void {
  */
 export function discardPeriodicTasks(): void {
   let zoneSpec = _getFakeAsyncZoneSpec();
-  let pendingTimers = zoneSpec.pendingPeriodicTimers;
   zoneSpec.pendingPeriodicTimers.length = 0;
 }
 

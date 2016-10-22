@@ -12,7 +12,7 @@ import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_met
 import {CompilerConfig} from './config';
 import {Identifiers, resolveIdentifier} from './identifiers';
 import * as o from './output/output_ast';
-import {LifecycleHooks, isDefaultChangeDetectionStrategy} from './private_import_core';
+import {LifecycleHooks} from './private_import_core';
 
 export class DirectiveWrapperCompileResult {
   constructor(public statements: o.Statement[], public dirWrapperClassVar: string) {}

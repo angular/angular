@@ -63,12 +63,12 @@ import {Component, animate, keyframes, state, style, transition, trigger} from '
   ]
 })
 export class AnimateApp {
-  public items: any[] /** TODO #9100 */ = [];
-  public _state: any /** TODO #9100 */;
+  public items: number[] = [];
+  private _state: ('start'|'active'|'void'|'default');
 
   public bgStatus = 'focus';
 
-  remove(item: any) {
+  remove(item: number) {
     var index = this.items.indexOf(item);
     if (index >= 0) {
       this.items.splice(index, 1);
@@ -76,7 +76,7 @@ export class AnimateApp {
   }
 
   reorderAndRemove() {
-    this.items = this.items.sort((a: any, b: any) => Math.random() - 0.5);
+    this.items = this.items.sort((a, b) => Math.random() - 0.5);
     this.items.splice(Math.floor(Math.random() * this.items.length), 1);
     this.items.splice(Math.floor(Math.random() * this.items.length), 1);
     this.items[Math.floor(Math.random() * this.items.length)] = 99;

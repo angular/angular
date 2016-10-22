@@ -217,7 +217,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              var message = '';
              try {
-               let fixture = TestBed.createComponent(DummyIfCmp);
+               TestBed.createComponent(DummyIfCmp);
              } catch (e) {
                message = e.message;
              }
@@ -916,7 +916,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              // -1, -2, ~3, ~4, ~0, +9
              var rm0 = driver.log.shift();
              var rm1 = driver.log.shift();
-             var in0 = driver.log.shift();
 
              // we want to assert that the DOM chain is still preserved
              // until the animations are closed
@@ -960,7 +959,6 @@ function declareTests({useJit}: {useJit: boolean}) {
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
@@ -1163,7 +1161,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var isAnimationRunning = false;
            var calls = 0;
@@ -1242,7 +1239,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var eventData: AnimationTransitionEvent = null;
            var cmp = fixture.componentInstance;
@@ -1278,7 +1274,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var eventData1: AnimationTransitionEvent = null;
            var eventData2: AnimationTransitionEvent = null;
@@ -1422,7 +1417,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
            var ifCalls = 0;
            var loadingCalls = 0;
            let fixture = TestBed.createComponent(DummyIfCmp);
@@ -1554,7 +1548,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var failureMessage = '';
            try {
-             let fixture = TestBed.createComponent(DummyLoadingCmp);
+             TestBed.createComponent(DummyLoadingCmp);
            } catch (e) {
              failureMessage = e.message;
            }
@@ -1569,7 +1563,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         var failureMessage = '';
         try {
-          const fixture = TestBed.createComponent(DummyLoadingCmp);
+          TestBed.createComponent(DummyLoadingCmp);
         } catch (e) {
           failureMessage = e.message;
         }
@@ -1611,7 +1605,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var failureMessage = '';
            try {
-             const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+             TestBed.get(AnimationDriver);
            } catch (e) {
              failureMessage = e.message;
            }
@@ -1671,7 +1665,6 @@ function declareTests({useJit}: {useJit: boolean}) {
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'green';
            fixture.detectChanges();
            flushMicrotasks();
@@ -1727,7 +1720,6 @@ function declareTests({useJit}: {useJit: boolean}) {
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'final';
            fixture.detectChanges();
            flushMicrotasks();
@@ -1781,7 +1773,6 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var cmp = fixture.componentInstance;
            var node = getDOM().querySelector(fixture.nativeElement, '.target');
@@ -1840,7 +1831,6 @@ function declareTests({useJit}: {useJit: boolean}) {
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
            let fixture = TestBed.createComponent(DummyIfCmp);
            var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
 
            cmp.exp = 'a';
            fixture.detectChanges();

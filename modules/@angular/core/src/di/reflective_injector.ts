@@ -7,7 +7,6 @@
  */
 
 import {unimplemented} from '../facade/errors';
-import {Type} from '../type';
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
 import {Self, SkipSelf} from './metadata';

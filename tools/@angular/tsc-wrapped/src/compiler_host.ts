@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {writeFileSync} from 'fs';
 import {convertDecorators} from 'tsickle';
 import * as ts from 'typescript';
@@ -69,8 +76,7 @@ const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
-  constructor(
-      delegate: ts.CompilerHost, private program: ts.Program, private ngOptions: NgOptions) {
+  constructor(delegate: ts.CompilerHost, program: ts.Program, private ngOptions: NgOptions) {
     super(delegate);
   }
 
@@ -96,8 +102,7 @@ export class MetadataWriterHost extends DelegatingHost {
           this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
 
           // TODO: remove this early return after https://github.com/Microsoft/TypeScript/pull/8412
-          // is
-          // released
+          // is released
           return;
         }
 

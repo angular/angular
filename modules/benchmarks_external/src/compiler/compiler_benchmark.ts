@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // compiler benchmark in AngularJS 1.x
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
@@ -31,7 +39,7 @@ angular.module('app', [])
                    return {
                      compile: function($element, $attrs) {
                        var expr = $parse($attrs.attr0);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       return function($scope) { $scope.$watch(expr, angular.noop); };
                      }
                    };
                  }
@@ -43,7 +51,7 @@ angular.module('app', [])
                    return {
                      compile: function($element, $attrs) {
                        var expr = $parse($attrs.attr1);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       return function($scope) { $scope.$watch(expr, angular.noop); };
                      }
                    };
                  }
@@ -55,7 +63,7 @@ angular.module('app', [])
                    return {
                      compile: function($element, $attrs) {
                        var expr = $parse($attrs.attr2);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       return function($scope) { $scope.$watch(expr, angular.noop); };
                      }
                    };
                  }
@@ -67,7 +75,7 @@ angular.module('app', [])
                    return {
                      compile: function($element, $attrs) {
                        var expr = $parse($attrs.attr3);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       return function($scope) { $scope.$watch(expr, angular.noop); };
                      }
                    };
                  }
@@ -79,7 +87,7 @@ angular.module('app', [])
                    return {
                      compile: function($element, $attrs) {
                        var expr = $parse($attrs.attr4);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       return function($scope) { $scope.$watch(expr, angular.noop); };
                      }
                    };
                  }

@@ -1,6 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import * as ts from 'typescript';
 
-import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
@@ -57,7 +64,7 @@ export interface ImportMetadata {
 
 function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
-    node = node.parent
+    node = node.parent;
   }
   return <ts.SourceFile>node;
 }
@@ -375,7 +382,7 @@ export class Evaluator {
                         module: left.module,
                         name: qualifiedName.right.text
                       },
-                      node)
+                      node);
                 }
                 // Record a type reference to a declared type as a select.
                 return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};

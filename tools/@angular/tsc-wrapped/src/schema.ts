@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // Metadata Schema
 
 // If you make a backwards incompatible change to the schema, increment the VERSION number.
@@ -88,7 +96,7 @@ export interface MetadataObject { [name: string]: MetadataValue; }
 export interface MetadataArray { [name: number]: MetadataValue; }
 
 export interface MetadataSymbolicExpression {
-  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if'
+  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if';
 }
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {

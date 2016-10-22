@@ -402,7 +402,6 @@ export function main() {
 
     describe('errors', () => {
       var originalJasmineIt: any;
-      var originalJasmineBeforeEach: any;
 
       var patchJasmineIt = () => {
         var resolve: (result: any) => void;
@@ -422,26 +421,6 @@ export function main() {
       };
 
       var restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
-
-      var patchJasmineBeforeEach = () => {
-        var resolve: (result: any) => void;
-        var reject: (error: any) => void;
-        var promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        originalJasmineBeforeEach = jasmine.getEnv().beforeEach;
-        jasmine.getEnv().beforeEach = (fn: any) => {
-          var done = () => { resolve(null); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
-          fn(done);
-          return null;
-        };
-        return promise;
-      };
-
-      var restoreJasmineBeforeEach =
-          () => { jasmine.getEnv().beforeEach = originalJasmineBeforeEach; };
 
       it('should fail when an asynchronous error is thrown', (done: any /** TODO #9100 */) => {
         var itPromise = patchJasmineIt();
@@ -491,7 +470,7 @@ export function main() {
 
         it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
            () => {
-             var itPromise = patchJasmineIt();
+             patchJasmineIt();
 
              expect(
                  () => it(
@@ -512,7 +491,7 @@ export function main() {
         class ComponentUsingInvalidProperty {
         }
 
-        var itPromise = patchJasmineIt();
+        patchJasmineIt();
 
         expect(
             () =>

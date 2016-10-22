@@ -366,7 +366,7 @@ export function main() {
         TestBed.configureTestingModule({declarations: [SimpleDirective]});
         TestBed.overrideDirective(SimpleDirective, {set: {providers: [SomeInjectable]}});
 
-        const el = createComponent('<div simpleDirective></div>');
+        createComponent('<div simpleDirective></div>');
 
         expect(created).toBe(true);
       });

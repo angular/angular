@@ -18,11 +18,9 @@ import 'reflect-metadata';
 import * as compiler from '@angular/compiler';
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
-import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Console} from './private_import_core';
-import {ReflectorHost, ReflectorHostContext} from './reflector_host';
+import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
 

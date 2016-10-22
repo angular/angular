@@ -25,7 +25,8 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 /**
  * @experimental
  */
-export const platformWorkerApp = createPlatformFactory(platformCore, 'workerApp');
+export const platformWorkerApp: (extraProviders?: Provider[]) => PlatformRef =
+    createPlatformFactory(platformCore, 'workerApp');
 
 export function errorHandler(): ErrorHandler {
   return new ErrorHandler();

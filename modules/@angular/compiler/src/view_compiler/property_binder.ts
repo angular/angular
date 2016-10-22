@@ -12,9 +12,8 @@ import * as cdAst from '../expression_parser/ast';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../private_import_core';
+import {EMPTY_STATE as EMPTY_ANIMATION_STATE, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
-import {camelCaseToDashCase} from '../util';
 
 import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';

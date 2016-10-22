@@ -48,7 +48,6 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.configureTestingModule(
           {declarations: [CompWithAnalyzeEntryComponentsProvider, NestedChildComp, ChildComp]});
       let compFixture = TestBed.createComponent(CompWithAnalyzeEntryComponentsProvider);
-      let mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
       let cfr: ComponentFactoryResolver =
           compFixture.componentRef.injector.get(ComponentFactoryResolver);
       expect(cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);

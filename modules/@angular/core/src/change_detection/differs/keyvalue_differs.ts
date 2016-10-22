@@ -7,7 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {ListWrapper} from '../../facade/collection';
 import {isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 

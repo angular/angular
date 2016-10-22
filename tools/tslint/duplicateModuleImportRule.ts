@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {RuleWalker} from 'tslint/lib/language/walker';
 import {RuleFailure} from 'tslint/lib/lint';
 import {AbstractRule} from 'tslint/lib/rules';
@@ -23,18 +30,6 @@ class ModuleImportWalker extends RuleWalker {
   protected visitImportEqualsDeclaration(node: ts.ImportEqualsDeclaration): void {
     this.visitModuleSpecifier(node.moduleReference);
     super.visitImportEqualsDeclaration(node);
-  }
-
-  private checkTypeAnnotation(location: number, typeAnnotation: ts.TypeNode, name?: ts.Node) {
-    if (typeAnnotation == null) {
-      let ns = '<name missing>';
-      if (name != null && name.kind === ts.SyntaxKind.Identifier) {
-        ns = (<ts.Identifier>name).text;
-      }
-      if (ns.charAt(0) === '_') return;
-      let failure = this.createFailure(location, 1, 'expected parameter ' + ns + ' to have a type');
-      this.addFailure(failure);
-    }
   }
 
   private visitModuleSpecifier(moduleSpecifier: ts.Node) {

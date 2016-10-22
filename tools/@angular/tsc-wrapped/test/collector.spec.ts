@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../src/collector';
@@ -542,7 +549,7 @@ describe('Collector', () => {
           arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
         }]
       }
-    })
+    });
   });
 
   it('should collect an error for a simple function that references a local variable', () => {
@@ -560,7 +567,7 @@ describe('Collector', () => {
           context: {name: 'localSymbol'}
         }
       }
-    })
+    });
   });
 
   describe('in strict mode', () => {
@@ -580,7 +587,7 @@ describe('Collector', () => {
       expect(() => collector.getMetadata(unsupported1, true))
           .toThrowError(/Reference to non-exported class/);
     });
-  })
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format

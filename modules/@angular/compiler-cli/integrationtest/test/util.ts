@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, NgModuleRef} from '@angular/core';
+import {NgModuleRef} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {platformServer} from '@angular/platform-server';
 

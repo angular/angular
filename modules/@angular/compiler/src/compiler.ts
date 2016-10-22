@@ -124,11 +124,12 @@ function _initReflector() {
  *
  * @experimental
  */
-export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
-  {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-  {provide: CompilerFactory, useClass: RuntimeCompilerFactory},
-  {provide: PLATFORM_INITIALIZER, useValue: _initReflector, multi: true},
-]);
+export const platformCoreDynamic: (extraProviders?: Provider[]) => PlatformRef =
+    createPlatformFactory(platformCore, 'coreDynamic', [
+      {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
+      {provide: CompilerFactory, useClass: RuntimeCompilerFactory},
+      {provide: PLATFORM_INITIALIZER, useValue: _initReflector, multi: true},
+    ]);
 
 function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {

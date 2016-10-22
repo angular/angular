@@ -7,12 +7,10 @@
  */
 
 import {AngularCompilerOptions, ModuleMetadata} from '@angular/tsc-wrapped';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
-import {StaticSymbol} from './static_reflector';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;

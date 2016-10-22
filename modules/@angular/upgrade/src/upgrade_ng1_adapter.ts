@@ -311,7 +311,6 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       var isOptional = false;
       var startParent = false;
       var searchParents = false;
-      var ch: string;
       if (name.charAt(0) == '?') {
         isOptional = true;
         name = name.substr(1);

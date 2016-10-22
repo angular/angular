@@ -1,5 +1,11 @@
-import {SelectorMatcher} from '@angular/compiler/src/selector';
-import {CssSelector} from '@angular/compiler/src/selector';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
 import {Math} from '@angular/facade/lang';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';

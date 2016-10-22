@@ -8,8 +8,6 @@
 import {ResourceLoader} from '@angular/compiler';
 import {Injectable} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
-
 @Injectable()
 export class ResourceLoaderImpl extends ResourceLoader {
   get(url: string): Promise<string> {

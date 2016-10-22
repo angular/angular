@@ -8,7 +8,7 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {of } from 'rxjs/observable/of';

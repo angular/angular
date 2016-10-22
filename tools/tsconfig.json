@@ -9,6 +9,7 @@
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
     "paths": {
     },
     "rootDir": ".",

@@ -468,7 +468,6 @@ export function main() {
       it('should call error and not complete on 300+ codes',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            var nextCalled = false;
-           var errorCalled = false;
            var statusCode = 301;
            var connection = new XHRConnection(
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));

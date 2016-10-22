@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {getIntParameter, getStringParameter, bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
 
@@ -108,4 +115,4 @@ angular.module('app', [])
           }
         }
       };
-    })
+    });

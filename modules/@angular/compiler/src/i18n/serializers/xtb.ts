@@ -179,8 +179,7 @@ class _Visitor implements ml.Visitor {
 
   visitExpansion(expansion: ml.Expansion, context: any): any {
     const strCases = expansion.cases.map(c => c.visit(this, null));
-
-    return `{${expansion.switchValue}, ${expansion.type}, strCases.join(' ')}`;
+    return `{${expansion.switchValue}, ${expansion.type}, ${strCases.join(' ')}}`;
   }
 
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {

@@ -187,10 +187,8 @@ export function main() {
          }));
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-           var cycles = 0;
-           var id: any /** TODO #9100 */;
-
-           id = setInterval(() => {
+           let cycles = 0;
+           const id = setInterval(() => {
              cycles++;
              clearInterval(id);
            }, 10);
@@ -203,8 +201,8 @@ export function main() {
          }));
 
       it('should clear periodic timers', fakeAsync(() => {
-           var cycles = 0;
-           var id = setInterval(() => { cycles++; }, 10);
+           let cycles = 0;
+           setInterval(() => cycles++, 10);
 
            tick(10);
            expect(cycles).toEqual(1);

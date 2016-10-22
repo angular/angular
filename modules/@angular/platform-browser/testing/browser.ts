@@ -24,7 +24,7 @@ const _TEST_BROWSER_PLATFORM_PROVIDERS: Provider[] =
  *
  * @stable
  */
-export const platformBrowserTesting =
+export const platformBrowserTesting: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
 
 /**

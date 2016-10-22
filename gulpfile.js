@@ -148,14 +148,15 @@ gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
       .src([
         // todo(vicb): add .js files when supported
         // see https://github.com/palantir/tslint/pull/1515
-        'modules/@angular/**/*.ts',
-        'modules/benchpress/**/*.ts',
+        'modules/**/*.ts',
+        'tools/**/*.ts',
         './*.ts',
+        '!**/*.d.ts',
+        '!**/*.ngfactory.ts',
       ])
       .pipe(tslint({
         tslint: require('tslint').default,
         configuration: tslintConfig,
-        rulesDirectory: 'dist/tools/tslint',
         formatter: 'prose',
       }))
       .pipe(tslint.report({emitError: true}));
