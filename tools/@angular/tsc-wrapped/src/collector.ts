@@ -1,7 +1,14 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -54,7 +61,6 @@ export class MetadataCollector {
                 value: evaluator.evaluateNode(returnStatement.expression)
               };
               if (functionDeclaration.parameters.some(p => p.initializer != null)) {
-                const defaults: MetadataValue[] = [];
                 func.defaults = functionDeclaration.parameters.map(
                     p => p.initializer && evaluator.evaluateNode(p.initializer));
               }
@@ -232,7 +238,7 @@ export class MetadataCollector {
               moduleExport.export = exportDeclaration.exportClause.elements.map(
                   element => element.propertyName ?
                       {name: element.propertyName.text, as: element.name.text} :
-                      element.name.text)
+                      element.name.text);
             }
             if (!exports) exports = [];
             exports.push(moduleExport);
@@ -292,7 +298,7 @@ export class MetadataCollector {
                     __symbolic: 'select',
                     expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
                   }
-                }
+                };
               } else {
                 nextDefaultValue =
                     recordEntry(errorSym('Unsuppported enum member name', member.name), node);
@@ -509,7 +515,7 @@ function validateMetadata(
     const entry = metadata[name];
     try {
       if (isClassMetadata(entry)) {
-        validateClass(entry)
+        validateClass(entry);
       }
     } catch (e) {
       const node = nodeMap.get(entry);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Injectable, Injector} from '@angular/core';
+import {Component, ComponentRef, Injectable} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
@@ -57,7 +57,6 @@ export function main() {
   }
 
   describe('Web Worker Renderer', () => {
-    var uiInjector: Injector;
     var uiRenderStore: RenderStore;
     var workerRenderStore: RenderStore;
 

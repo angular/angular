@@ -293,7 +293,6 @@ export function main() {
 
          var keyframesStep = <AnimationStepAst>ast.steps[0];
          var kf1 = keyframesStep.keyframes[0];
-         var kf2 = keyframesStep.keyframes[1];
 
          expect(flattenStyles(kf1.styles.styles))
              .toEqual({'color': 'red', 'background': FILL_STYLE_FLAG});
@@ -307,8 +306,6 @@ export function main() {
           ]))]);
 
       var keyframesStep = <AnimationStepAst>ast.steps[0];
-      var kf1 = keyframesStep.keyframes[0];
-      var kf2 = keyframesStep.keyframes[1];
       var kf3 = keyframesStep.keyframes[2];
 
       expect(flattenStyles(kf3.styles.styles))
@@ -330,8 +327,6 @@ export function main() {
          var keyframesStep = <AnimationStepAst>ast.steps[0];
          expect(keyframesStep.keyframes.length).toEqual(3);
          var kf1 = keyframesStep.keyframes[0];
-         var kf2 = keyframesStep.keyframes[1];
-         var kf3 = keyframesStep.keyframes[2];
 
          expect(kf1.offset).toEqual(0);
          expect(flattenStyles(kf1.styles.styles)).toEqual({
@@ -360,8 +355,6 @@ export function main() {
 
          var keyframesStep = <AnimationStepAst>ast.steps[0];
          expect(keyframesStep.keyframes.length).toEqual(3);
-         var kf1 = keyframesStep.keyframes[0];
-         var kf2 = keyframesStep.keyframes[1];
          var kf3 = keyframesStep.keyframes[2];
 
          expect(kf3.offset).toEqual(1);

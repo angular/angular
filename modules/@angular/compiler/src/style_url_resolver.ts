@@ -9,7 +9,7 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {isBlank, isPresent} from './facade/lang';
+import {isBlank} from './facade/lang';
 
 import {UrlResolver} from './url_resolver';
 

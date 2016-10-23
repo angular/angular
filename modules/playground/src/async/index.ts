@@ -39,9 +39,9 @@ class AsyncApplication {
   val2: number = 0;
   val3: number = 0;
   val4: number = 0;
-  timeoutId: any /** TODO #9100 */ = null;
-  multiTimeoutId: any /** TODO #9100 */ = null;
-  intervalId: any /** TODO #9100 */ = null;
+  timeoutId: NodeJS.Timer = null;
+  multiTimeoutId: NodeJS.Timer = null;
+  intervalId: NodeJS.Timer = null;
 
   increment(): void { this.val1++; };
 
@@ -57,7 +57,7 @@ class AsyncApplication {
     this.cancelMultiDelayedIncrements();
 
     var self = this;
-    function helper(_i: any /** TODO #9100 */) {
+    function helper(_i: number) {
       if (_i <= 0) {
         self.multiTimeoutId = null;
         return;
@@ -73,7 +73,7 @@ class AsyncApplication {
 
   periodicIncrement(): void {
     this.cancelPeriodicIncrement();
-    this.intervalId = setInterval(() => { this.val4++; }, 2000)
+    this.intervalId = setInterval(() => { this.val4++; }, 2000);
   };
 
   cancelDelayedIncrement(): void {

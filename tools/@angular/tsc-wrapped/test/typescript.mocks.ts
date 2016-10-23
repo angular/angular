@@ -1,5 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 export interface Directory { [name: string]: (Directory|string); }
@@ -48,7 +54,7 @@ export class MockNode implements ts.Node {
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
   getSourceFile(): ts.SourceFile { return null; }
-  getChildCount(sourceFile?: ts.SourceFile): number { return 0 }
+  getChildCount(sourceFile?: ts.SourceFile): number { return 0; }
   getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null; }
   getChildren(sourceFile?: ts.SourceFile): ts.Node[] { return []; }
   getStart(sourceFile?: ts.SourceFile): number { return 0; }
@@ -65,12 +71,12 @@ export class MockNode implements ts.Node {
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
   public text: string;
-  public _primaryExpressionBrand: any;
-  public _memberExpressionBrand: any;
-  public _leftHandSideExpressionBrand: any;
-  public _incrementExpressionBrand: any;
-  public _unaryExpressionBrand: any;
-  public _expressionBrand: any;
+  /* @internal */ public _primaryExpressionBrand: any;
+  /* @internal */ public _memberExpressionBrand: any;
+  /* @internal */ public _leftHandSideExpressionBrand: any;
+  /* @internal */ public _incrementExpressionBrand: any;
+  /* @internal */ public _unaryExpressionBrand: any;
+  /* @internal */ public _expressionBrand: any;
 
   constructor(
       public name: string, kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, flags: ts.NodeFlags = 0,
@@ -81,7 +87,7 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
 }
 
 export class MockVariableDeclaration extends MockNode implements ts.VariableDeclaration {
-  public _declarationBrand: any;
+  /* @internal */ public _declarationBrand: any;
 
   constructor(
       public name: ts.Identifier, kind: ts.SyntaxKind = ts.SyntaxKind.VariableDeclaration,
@@ -131,7 +137,7 @@ export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T): T {
       return result;
     }
     return allChildren(child, cb);
-  })
+  });
 }
 
 export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration {

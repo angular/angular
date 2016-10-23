@@ -20,7 +20,7 @@ import {createDiTokenExpression} from '../util';
 import {CompileMethod} from './compile_method';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView} from './compile_view';
-import {InjectMethodVars, ViewProperties} from './constants';
+import {InjectMethodVars} from './constants';
 import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
 

@@ -41,15 +41,6 @@ export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
  */
 export const ROUTER_FORROOT_GUARD = new OpaqueToken('ROUTER_FORROOT_GUARD');
 
-const pathLocationStrategy = {
-  provide: LocationStrategy,
-  useClass: PathLocationStrategy
-};
-const hashLocationStrategy = {
-  provide: LocationStrategy,
-  useClass: HashLocationStrategy
-};
-
 export const ROUTER_PROVIDERS: Provider[] = [
   Location, {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
     provide: Router,

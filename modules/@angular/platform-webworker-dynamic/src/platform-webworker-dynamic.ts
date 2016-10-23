@@ -14,9 +14,10 @@ import {ResourceLoaderImpl} from './private_import_platform-browser-dynamic';
 /**
  * @experimental API related to bootstrapping are still under review.
  */
-export const platformWorkerAppDynamic = createPlatformFactory(
-    platformCoreDynamic, 'workerAppDynamic', [{
-      provide: COMPILER_OPTIONS,
-      useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
-      multi: true
-    }]);
+export const platformWorkerAppDynamic: (extraProviders?: Provider[]) => PlatformRef =
+    createPlatformFactory(
+        platformCoreDynamic, 'workerAppDynamic', [{
+          provide: COMPILER_OPTIONS,
+          useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
+          multi: true
+        }]);

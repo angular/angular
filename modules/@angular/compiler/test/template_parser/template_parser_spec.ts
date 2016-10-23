@@ -1921,10 +1921,6 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
 }
 
-function sourceInfo(ast: TemplateAst): string {
-  return `${ast.sourceSpan}: ${ast.sourceSpan.start}`;
-}
-
 function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
   var humanizer = new TemplateContentProjectionHumanizer();
   templateVisitAll(humanizer, templateAsts);

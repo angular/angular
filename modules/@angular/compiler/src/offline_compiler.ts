@@ -12,7 +12,7 @@ import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from './directive_wrapper_compiler';
+import {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';
 import {NgModuleCompiler} from './ng_module_compiler';

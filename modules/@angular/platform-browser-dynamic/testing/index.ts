@@ -19,9 +19,10 @@ export * from './private_export_testing'
 /**
  * @stable
  */
-export const platformBrowserDynamicTesting = createPlatformFactory(
-    platformCoreDynamicTesting, 'browserDynamicTesting',
-    INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+export const platformBrowserDynamicTesting: (extraProviders?: Provider[]) => PlatformRef =
+    createPlatformFactory(
+        platformCoreDynamicTesting, 'browserDynamicTesting',
+        INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
 
 /**
  * NgModule for testing.

@@ -14,8 +14,8 @@ import {isBlank, isPresent, isPrimitive, looseIdentical} from '../facade/lang';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_MULTIPLE_VALUE_ACCESSOR = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
+  provide: <OpaqueToken>NG_VALUE_ACCESSOR,
+  useExisting: <Type<any>>forwardRef(() => SelectMultipleControlValueAccessor),
   multi: true
 };
 

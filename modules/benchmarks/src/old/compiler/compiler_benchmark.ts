@@ -1,16 +1,19 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
+import {Component, ComponentResolver, Directive} from '@angular/core';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {PromiseWrapper} from '@angular/facade/src/async';
 import {Type, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {ComponentResolver, Component, Directive, ViewContainerRef,} from '@angular/core';
-
-import {ViewMetadata} from '@angular/core/src/metadata/view';
-
-import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
-
-import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): any[] {
   var multiplyTemplatesBy = getIntParameter('elements');
@@ -56,8 +59,8 @@ function measureWrapper(func, desc) {
 
 
 class MultiplyDirectiveResolver extends DirectiveResolver {
-  _multiplyBy: number;
-  _cache = new Map<Type, ViewMetadata>();
+  private _multiplyBy: number;
+  private _cache = new Map<Type, ViewMetadata>();
 
   constructor(multiple: number, components: Type[]) {
     super();
@@ -65,7 +68,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
     components.forEach(c => this._fillCache(c));
   }
 
-  _fillCache(component: Type) {
+  private _fillCache(component: Type) {
     var view = super.resolve(component);
     var multipliedTemplates = new Array(this._multiplyBy);
     for (var i = 0; i < this._multiplyBy; ++i) {

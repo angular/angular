@@ -125,7 +125,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
 /**
  * @experimental WebWorker support is currently experimental.
  */
-export const platformWorkerUi =
+export const platformWorkerUi: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);
 
 function _exceptionHandler(): ErrorHandler {

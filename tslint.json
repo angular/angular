@@ -1,10 +1,19 @@
 {
-    "rules": {
-      "requireInternalWithUnderscore": true,
-      "duplicateModuleImport": true,
-      "enforce-copyright-header": true,
-      "no-duplicate-variable": true,
-      "semicolon": [true],
-      "variable-name": [true, "ban-keywords"]
-    }
+  "rulesDirectory": ["./dist/tools/tslint"],
+  "rules": {
+    "require-internal-with-underscore": true,
+    "duplicate-module-import": true,
+    "enforce-copyright-header": true,
+
+    "no-internal-module": true,
+    "no-namespace": true,
+    "no-reference": true,
+    "typedef-whitespace": [true],
+
+    "no-duplicate-variable": true,
+    "no-unused-variable": true,
+
+    "semicolon": [true],
+    "variable-name": [true, "ban-keywords"]
+  }
 }

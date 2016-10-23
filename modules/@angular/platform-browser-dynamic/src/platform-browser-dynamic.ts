@@ -23,5 +23,6 @@ export const RESOURCE_CACHE_PROVIDER: Provider[] =
 /**
  * @stable
  */
-export const platformBrowserDynamic = createPlatformFactory(
-    platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+export const platformBrowserDynamic: (extraProviders?: Provider[]) => PlatformRef =
+    createPlatformFactory(
+        platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);

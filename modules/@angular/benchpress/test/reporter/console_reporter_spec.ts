@@ -10,7 +10,7 @@ import {Provider} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
-import {isBlank, isPresent} from '../../src/facade/lang';
+import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {

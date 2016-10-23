@@ -51,7 +51,7 @@ export class ServerModule {
 /**
  * @experimental
  */
-export const platformServer =
+export const platformServer: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
 
 /**
@@ -59,5 +59,5 @@ export const platformServer =
  *
  * @experimental
  */
-export const platformDynamicServer =
+export const platformDynamicServer: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);

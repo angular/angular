@@ -48,7 +48,7 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   `
 })
 class ShowError {
-  formDir: any /** TODO #9100 */;
+  formDir: FormGroupDirective;
   controlPath: string;
   errorTypes: string[];
 
@@ -67,9 +67,12 @@ class ShowError {
     return null;
   }
 
-  _errorMessage(code: string): string {
-    var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
-    return (config as any /** TODO #9100 */)[code];
+  private _errorMessage(code: string): string {
+    var config: {[key: string]: string} = {
+      'required': 'is required',
+      'invalidCreditCard': 'is invalid credit card number',
+    };
+    return config[code];
   }
 }
 
@@ -134,7 +137,7 @@ class ShowError {
   `
 })
 class ReactiveForms {
-  form: any /** TODO #9100 */;
+  form: FormGroup;
   countries = ['US', 'Canada'];
 
   constructor(fb: FormBuilder) {

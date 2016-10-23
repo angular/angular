@@ -30,8 +30,9 @@ export class SampleDescription {
                 ],
                 metric.describe()),
     deps: [
-      Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT, Validator,
-      Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
+      Metric, <OpaqueToken>Options.SAMPLE_ID, <OpaqueToken>Options.FORCE_GC,
+      <OpaqueToken>Options.USER_AGENT, Validator, <OpaqueToken>Options.DEFAULT_DESCRIPTION,
+      <OpaqueToken>Options.SAMPLE_DESCRIPTION
     ]
   }];
   description: {[key: string]: any};

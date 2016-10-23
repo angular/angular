@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import * as ts from 'typescript';
 
 import {isMetadataGlobalReferenceExpression} from '../src/schema';
@@ -49,7 +56,7 @@ describe('Symbols', () => {
   it('should be able to find the source files', () => {
     expect(expressions).toBeDefined();
     expect(imports).toBeDefined();
-  })
+  });
 
   it('should be able to create symbols for a source file', () => {
     let symbols = new Symbols(expressions);

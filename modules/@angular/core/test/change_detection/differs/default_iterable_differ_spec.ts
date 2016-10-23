@@ -334,7 +334,7 @@ export function main() {
 
              var operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -357,7 +357,7 @@ export function main() {
 
              var operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -377,7 +377,7 @@ export function main() {
 
           var operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -398,7 +398,7 @@ export function main() {
 
           var operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -419,7 +419,7 @@ export function main() {
 
           var operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            var value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -445,7 +445,7 @@ export function main() {
 
              var operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               var value = modifyArrayUsingOperation(startData, endData, prev, next);
+               modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 

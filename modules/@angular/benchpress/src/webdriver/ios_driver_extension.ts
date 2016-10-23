@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {isBlank, isPresent} from '../facade/lang';
+import {isPresent} from '../facade/lang';
 import {WebDriverAdapter} from '../web_driver_adapter';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 

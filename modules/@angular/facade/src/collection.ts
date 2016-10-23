@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, isBlank, isJsObject, isPresent} from './lang';
+import {getSymbolIterator, isJsObject, isPresent} from './lang';
 
 // Safari doesn't implement MapIterator.next(), which is used is Traceur's polyfill of Array.from
 // TODO(mlaval): remove the work around once we have a working polyfill of Array.from

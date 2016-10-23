@@ -1,4 +1,11 @@
-import {Component, Directive} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import {Component} from '@angular/core';
 
 import {AccountCellComponent, CompanyNameComponent, FormattedCellComponent, OfferingNameComponent, OpportunityNameComponent, StageButtonsComponent} from './cells';
 import {AAT_STATUS_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH, BUNDLES_WIDTH, COMPANY_NAME_WIDTH, DUE_DATE_WIDTH, END_DATE_WIDTH, ITEM_HEIGHT, KICKER_POINTS_WIDTH, OFFERING_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH, Offering, STAGE_BUTTONS_WIDTH} from './common';

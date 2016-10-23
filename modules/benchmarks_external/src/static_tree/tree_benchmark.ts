@@ -1,5 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // static tree benchmark in AngularJS 1.x
-import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
 
 const MAX_DEPTH = 10;
@@ -11,7 +19,7 @@ export function main() {
 function addTreeDirective(module, level: number) {
   var template;
   if (level <= 0) {
-    template = `<span> {{data.value}}</span>`
+    template = `<span> {{data.value}}</span>`;
   } else {
     template = `<span> {{data.value}} <tree${level-1} data='data.right'></tree${level-1}><tree${level-1} data='data.left'></tree${level-1}></span>`;
   }

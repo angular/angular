@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // tree benchmark in AngularJS 1.x
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
@@ -24,7 +32,6 @@ angular.module('app', [])
                  '$compile',
                  '$parse',
                  function($compile, $parse) {
-                   var transcludeFn;
                    return {
                      compile: function(element, attrs) {
                        var expr = $parse('!!' + attrs.treeIf);
@@ -49,10 +56,9 @@ angular.module('app', [])
                                                        function(clone) { $element.append(clone); });
                            }
                          });
-                       }
-
+                       };
                      }
-                   }
+                   };
                  }
                ])
     .config([

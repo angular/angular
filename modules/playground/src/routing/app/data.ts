@@ -2121,4 +2121,4 @@ export var data = [
     'subject': 'Fwd: wedding photos',
     'draft': true
   }
-]
+];

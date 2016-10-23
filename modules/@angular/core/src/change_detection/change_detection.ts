@@ -7,7 +7,7 @@
  */
 
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
-import {DefaultKeyValueDifferFactory, KeyValueChangeRecord} from './differs/default_keyvalue_differ';
+import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
 import {IterableDifferFactory, IterableDiffers} from './differs/iterable_differs';
 import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 

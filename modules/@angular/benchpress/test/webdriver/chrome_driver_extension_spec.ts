@@ -21,8 +21,6 @@ export function main() {
     var extension: ChromeDriverExtension;
 
     var blinkEvents = new TraceEventFactory('blink.console', 'pid0');
-    var v8Events = new TraceEventFactory('v8', 'pid0');
-    var v8EventsOtherProcess = new TraceEventFactory('v8', 'pid1');
     var chromeTimelineEvents =
         new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
     var chrome45TimelineEvents = new TraceEventFactory('devtools.timeline', 'pid0');

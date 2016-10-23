@@ -1738,7 +1738,6 @@ export function main() {
           }
         });
         const fixture = TestBed.createComponent(FormGroupComp);
-        const myGroup = new FormGroup({person: new FormGroup({})});
         fixture.componentInstance.myGroup = new FormGroup({person: new FormGroup({})});
 
         expect(() => fixture.detectChanges())

@@ -255,7 +255,6 @@ export class StaticReflector implements ReflectorReader {
       }
 
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
-        let result: any = staticSymbol;
         let moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
         let declarationValue =
             moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
@@ -639,7 +638,6 @@ abstract class BindingScope {
 
   public static build(): BindingScopeBuilder {
     let current = new Map<string, any>();
-    let parent: BindingScope = undefined;
     return {
       define: function(name, value) {
         current.set(name, value);

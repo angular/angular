@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata} from '../compile_metadata';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';

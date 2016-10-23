@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgFor} from '@angular/common';
 import {Component, Directive, QueryList, ViewChild, ViewChildren} from '@angular/core';
 
 @Component({selector: 'comp-for-child-query', template: 'child'})

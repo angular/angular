@@ -577,6 +577,7 @@ export class UpgradeAdapterRef {
   public ng2Injector: Injector = null;
 
   /* @internal */
+  /* tslint:disable-next-line:no-unused-variable */
   private _bootstrapDone(ngModuleRef: NgModuleRef<any>, ng1Injector: angular.IInjectorService) {
     this.ng2ModuleRef = ngModuleRef;
     this.ng2Injector = ngModuleRef.injector;

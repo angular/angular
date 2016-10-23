@@ -419,7 +419,6 @@ export class CssParser {
 
   /** @internal */
   _parseKeyframeDefinition(delimiters: number): CssKeyframeDefinitionAst {
-    const start = this._getScannerIndex();
     var stepTokens: CssToken[] = [];
     delimiters |= LBRACE_DELIM_FLAG;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
