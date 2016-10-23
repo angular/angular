@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {PromiseWrapper} from '@angular/facade/src/async';
 import {Type, print} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';

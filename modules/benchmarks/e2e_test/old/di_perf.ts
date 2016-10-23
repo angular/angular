@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
 import {runClickBenchmark} from '@angular/testing/src/perf_util';
 
