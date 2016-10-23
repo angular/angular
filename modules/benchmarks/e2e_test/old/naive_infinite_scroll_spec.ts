@@ -49,9 +49,7 @@ describe('ng2 naive infinite scroll benchmark', function() {
     firstTextOf(`${ stageButtons }:enabled`).then(function(text) {
       expect(text).toEqual('Pitched');
       clickFirstOf(`${ stageButtons }:enabled`).then(function() {
-        firstTextOf(`${ stageButtons }:enabled`).then(function(text) {
-          expect(text).toEqual('Won');
-        })
+        firstTextOf(`${ stageButtons }:enabled`).then((text) => expect(text).toEqual('Won'));
       });
     });
 

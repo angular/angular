@@ -57,7 +57,7 @@ describe('Symbols', () => {
   it('should be able to find the source files', () => {
     expect(expressions).toBeDefined();
     expect(imports).toBeDefined();
-  })
+  });
 
   it('should be able to create symbols for a source file', () => {
     let symbols = new Symbols(expressions);

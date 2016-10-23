@@ -36,4 +36,4 @@ export default {
   router,
   routerTesting,
   upgrade
-}
+};
