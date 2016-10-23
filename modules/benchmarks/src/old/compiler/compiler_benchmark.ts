@@ -64,8 +64,8 @@ function measureWrapper(func, desc) {
 
 
 class MultiplyDirectiveResolver extends DirectiveResolver {
-  _multiplyBy: number;
-  _cache = new Map<Type, ViewMetadata>();
+  private _multiplyBy: number;
+  private _cache = new Map<Type, ViewMetadata>();
 
   constructor(multiple: number, components: Type[]) {
     super();
@@ -73,7 +73,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
     components.forEach(c => this._fillCache(c));
   }
 
-  _fillCache(component: Type) {
+  private _fillCache(component: Type) {
     var view = super.resolve(component);
     var multipliedTemplates = new Array(this._multiplyBy);
     for (var i = 0; i < this._multiplyBy; ++i) {

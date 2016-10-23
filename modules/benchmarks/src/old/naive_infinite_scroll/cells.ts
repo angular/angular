@@ -71,7 +71,7 @@ export class Stage {
       </div>`
 })
 export class StageButtonsComponent extends HasStyle {
-  _offering: Offering;
+  private _offering: Offering;
   stages: Stage[];
 
   get offering(): Offering { return this._offering; }
@@ -86,7 +86,7 @@ export class StageButtonsComponent extends HasStyle {
     this._computeStageButtons();
   }
 
-  _computeStageButtons() {
+  private _computeStageButtons() {
     var disabled = true;
     this.stages = STATUS_LIST
                       .map((status) => {
