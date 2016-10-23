@@ -240,7 +240,7 @@ export class MetadataCollector {
               moduleExport.export = exportDeclaration.exportClause.elements.map(
                   element => element.propertyName ?
                       {name: element.propertyName.text, as: element.name.text} :
-                      element.name.text)
+                      element.name.text);
             }
             if (!exports) exports = [];
             exports.push(moduleExport);
@@ -300,7 +300,7 @@ export class MetadataCollector {
                     __symbolic: 'select',
                     expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
                   }
-                }
+                };
               } else {
                 nextDefaultValue =
                     recordEntry(errorSym('Unsuppported enum member name', member.name), node);
@@ -517,7 +517,7 @@ function validateMetadata(
     const entry = metadata[name];
     try {
       if (isClassMetadata(entry)) {
-        validateClass(entry)
+        validateClass(entry);
       }
     } catch (e) {
       const node = nodeMap.get(entry);

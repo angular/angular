@@ -73,7 +73,7 @@ class AsyncApplication {
 
   periodicIncrement(): void {
     this.cancelPeriodicIncrement();
-    this.intervalId = setInterval(() => { this.val4++; }, 2000)
+    this.intervalId = setInterval(() => this.val4++, 2000);
   };
 
   cancelDelayedIncrement(): void {
