@@ -65,7 +65,7 @@ export interface ImportMetadata {
 
 function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
-    node = node.parent
+    node = node.parent;
   }
   return <ts.SourceFile>node;
 }
@@ -383,7 +383,7 @@ export class Evaluator {
                         module: left.module,
                         name: qualifiedName.right.text
                       },
-                      node)
+                      node);
                 }
                 // Record a type reference to a declared type as a select.
                 return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};

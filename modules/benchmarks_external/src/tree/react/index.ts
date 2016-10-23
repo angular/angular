@@ -19,13 +19,13 @@ var TreeComponent = React.createClass({
     var left = null;
     if (treeNode.left) {
       left = React.createElement(
-          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.left}, "")])
+          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.left}, "")]);
     }
 
     var right = null;
     if (treeNode.right) {
       right = React.createElement(
-          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.right}, "")])
+          "span", {}, [React.createElement(TreeComponent, {treeNode: treeNode.right}, "")]);
     }
 
     var span = React.createElement("span", {}, [" " + treeNode.value, left, right]);

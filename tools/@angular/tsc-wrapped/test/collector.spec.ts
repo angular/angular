@@ -550,7 +550,7 @@ describe('Collector', () => {
           arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
         }]
       }
-    })
+    });
   });
 
   it('should collect an error for a simple function that references a local variable', () => {
@@ -568,7 +568,7 @@ describe('Collector', () => {
           context: {name: 'localSymbol'}
         }
       }
-    })
+    });
   });
 
   describe('in strict mode', () => {
@@ -588,7 +588,7 @@ describe('Collector', () => {
       expect(() => collector.getMetadata(unsupported1, true))
           .toThrowError(/Reference to non-exported class/);
     });
-  })
+  });
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format

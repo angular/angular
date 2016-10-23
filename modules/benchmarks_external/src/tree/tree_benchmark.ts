@@ -57,10 +57,10 @@ angular.module('app', [])
                                                        function(clone) { $element.append(clone); });
                            }
                          });
-                       }
+                       };
 
                      }
-                   }
+                   };
                  }
                ])
     .config([

@@ -116,4 +116,4 @@ angular.module('app', [])
           }
         }
       };
-    })
+    });

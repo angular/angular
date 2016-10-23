@@ -19,7 +19,7 @@ export function main() {
 function addTreeDirective(module, level: number) {
   var template;
   if (level <= 0) {
-    template = `<span> {{data.value}}</span>`
+    template = `<span> {{data.value}}</span>`;
   } else {
     template = `<span> {{data.value}} <tree${level-1} data='data.right'></tree${level-1}><tree${level-1} data='data.left'></tree${level-1}></span>`;
   }
