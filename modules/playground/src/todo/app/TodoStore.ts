@@ -20,7 +20,7 @@ export class Todo extends KeyModel {
 
 @Injectable()
 export class TodoFactory {
-  _uid: number = 0;
+  private _uid: number = 0;
 
   nextUid(): number { return ++this._uid; }
 

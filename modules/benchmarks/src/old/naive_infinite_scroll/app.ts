@@ -74,7 +74,7 @@ export class App {
   }
 
   // Puts a marker indicating that the test is finished.
-  _scheduleFinishedMarker() {
+  private _scheduleFinishedMarker() {
     var existingMarker = this._locateFinishedMarker();
     if (isPresent(existingMarker)) {
       // Nothing to do, the marker is already there
@@ -88,7 +88,7 @@ export class App {
     }, 0);
   }
 
-  _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
+  private _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
 
-  _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
+  private _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
 }
