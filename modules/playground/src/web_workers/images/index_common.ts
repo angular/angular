@@ -8,20 +8,19 @@
 
 import {Component} from '@angular/core';
 
-import {FileReader, Uint8ArrayWrapper} from './file_api';
 import {BitmapService} from './services/bitmap';
 
 
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
 export class ImageDemo {
-  images: any[] /** TODO #9100 */ = [];
+  images: {src: string, buffer: ArrayBuffer, filtering: boolean}[] = [];
   fileInput: String;
 
   constructor(private _bitmapService: BitmapService) {}
 
-  uploadFiles(files: any /** TODO #9100 */) {
-    for (var i = 0; i < files.length; i++) {
-      var reader = new FileReader();
+  uploadFiles(files: FileList) {
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
       reader.addEventListener('load', this.handleReaderLoad(reader));
       reader.readAsArrayBuffer(files[i]);
     }
@@ -29,9 +28,9 @@ export class ImageDemo {
 
   handleReaderLoad(reader: FileReader): EventListener {
     return (e) => {
-      var buffer = reader.result;
+      const buffer = reader.result as ArrayBuffer;
       this.images.push({
-        src: this._bitmapService.arrayBufferToDataUri(Uint8ArrayWrapper.create(reader.result)),
+        src: this._bitmapService.arrayBufferToDataUri(new Uint8Array(buffer)),
         buffer: buffer,
         filtering: false
       });
@@ -39,16 +38,16 @@ export class ImageDemo {
   }
 
   applyFilters() {
-    for (var i = 0; i < this.images.length; i++) {
+    for (let i = 0; i < this.images.length; i++) {
       this.images[i].filtering = true;
 
       setTimeout(this._filter(i), 0);
     }
   }
 
-  private _filter(i: number): (...args: any[]) => void {
+  private _filter(i: number): () => void {
     return () => {
-      var imageData = this._bitmapService.convertToImageData(this.images[i].buffer);
+      let imageData = this._bitmapService.convertToImageData(this.images[i].buffer);
       imageData = this._bitmapService.applySepia(imageData);
       this.images[i].src = this._bitmapService.toDataUri(imageData);
       this.images[i].filtering = false;

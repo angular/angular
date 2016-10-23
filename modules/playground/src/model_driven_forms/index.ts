@@ -7,7 +7,6 @@
  */
 
 import {Component, Host, NgModule} from '@angular/core';
-import {isPresent, print} from '@angular/core/src/facade/lang';
 import {AbstractControl, FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -18,7 +17,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
  * Custom validator.
  */
 function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
-  if (isPresent(c.value) && /^\d{16}$/.test(c.value)) {
+  if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
     return {'invalidCreditCard': true};
@@ -48,17 +47,17 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
   `
 })
 class ShowError {
-  formDir: any /** TODO #9100 */;
+  formDir: FormGroupDirective;
   controlPath: string;
   errorTypes: string[];
 
   constructor(@Host() formDir: FormGroupDirective) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var form: FormGroup = this.formDir.form;
-    var control = form.get(this.controlPath);
-    if (isPresent(control) && control.touched) {
-      for (var i = 0; i < this.errorTypes.length; ++i) {
+    const form: FormGroup = this.formDir.form;
+    const control = form.get(this.controlPath);
+    if (control && control.touched) {
+      for (let i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
           return this._errorMessage(this.errorTypes[i]);
         }
@@ -68,8 +67,11 @@ class ShowError {
   }
 
   private _errorMessage(code: string): string {
-    var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
-    return (config as any /** TODO #9100 */)[code];
+    const config: {[key: string]: string} = {
+      'required': 'is required',
+      'invalidCreditCard': 'is invalid credit card number',
+    };
+    return config[code];
   }
 }
 
@@ -134,7 +136,7 @@ class ShowError {
   `
 })
 class ReactiveForms {
-  form: any /** TODO #9100 */;
+  form: FormGroup;
   countries = ['US', 'Canada'];
 
   constructor(fb: FormBuilder) {
@@ -151,8 +153,8 @@ class ReactiveForms {
   }
 
   onSubmit(): void {
-    print('Submitting:');
-    print(this.form.value);
+    console.log('Submitting:');
+    console.log(this.form.value);
   }
 }
 

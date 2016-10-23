@@ -18,16 +18,16 @@ class TodoApp {
 
   constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
 
-  enterTodo(inputElement: any /** TODO #9100 */): void {
+  enterTodo(inputElement: HTMLInputElement): void {
     this.addTodo(inputElement.value);
     inputElement.value = '';
   }
 
   editTodo(todo: Todo): void { this.todoEdit = todo; }
 
-  doneEditing($event: any /** TODO #9100 */, todo: Todo): void {
-    var which = $event.which;
-    var target = $event.target;
+  doneEditing($event: KeyboardEvent, todo: Todo): void {
+    const which = $event.which;
+    const target = $event.target as HTMLInputElement;
     if (which === 13) {
       todo.title = target.value;
       this.todoEdit = null;
@@ -43,8 +43,8 @@ class TodoApp {
 
   deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
 
-  toggleAll($event: any /** TODO #9100 */): void {
-    var isComplete = $event.target.checked;
+  toggleAll($event: MouseEvent): void {
+    const isComplete = ($event.target as HTMLInputElement).checked;
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = isComplete; });
   }
 
