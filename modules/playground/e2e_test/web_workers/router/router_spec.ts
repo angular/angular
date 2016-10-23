@@ -22,13 +22,13 @@ describe('WebWorker Router', () => {
 
   let contentSelector = 'app main h1';
   let navSelector = 'app nav ul';
-  var baseUrl = 'all/playground/src/web_workers/router/index.html';
+  const baseUrl = 'all/playground/src/web_workers/router/index.html';
 
   it('should route on click', () => {
     browser.get(baseUrl);
 
     waitForElement(contentSelector);
-    var content = element(by.css(contentSelector));
+    let content = element(by.css(contentSelector));
     expect(content.getText()).toEqual('Start');
 
     let aboutBtn = element(by.css(navSelector + ' .about'));
@@ -66,13 +66,13 @@ describe('WebWorker Router', () => {
   function waitForElementText(contentSelector: string, expected: string): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
-      var elem = element(by.css(contentSelector));
+      const elem = element(by.css(contentSelector));
       elem.getText().then((text) => deferred.fulfill(text === expected));
       return deferred.promise;
     }, 5000);
   }
 
-  function waitForUrl(regex: any /** TODO #9100 */): void {
+  function waitForUrl(regex: RegExp): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
       browser.getCurrentUrl().then((url) => deferred.fulfill(url.match(regex) !== null));

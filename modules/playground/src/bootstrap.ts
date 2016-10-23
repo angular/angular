@@ -41,15 +41,10 @@
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
           '@angular/upgrade/static': '/packages-dist/upgrade/bundles/upgrade-static.umd.js',
           'rxjs': '/all/playground/vendor/rxjs',
-
-          // TODO(i): remove once playground apps no longer use facades directly
-          '@angular/core/src/facade': '/all/@angular/core/src/facade'
         },
         packages: {
           'app': {defaultExtension: 'js'},
           'rxjs': {defaultExtension: 'js'},
-          // TODO(i): remove once playground apps no longer use facades directly
-          '@angular/core/src/facade': {defaultExtension: 'js'}
         }
       });
     } else {

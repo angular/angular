@@ -39,9 +39,9 @@ class AsyncApplication {
   val2: number = 0;
   val3: number = 0;
   val4: number = 0;
-  timeoutId: any /** TODO #9100 */ = null;
-  multiTimeoutId: any /** TODO #9100 */ = null;
-  intervalId: any /** TODO #9100 */ = null;
+  timeoutId: any = null;
+  multiTimeoutId: any = null;
+  intervalId: any = null;
 
   increment(): void { this.val1++; };
 
@@ -56,8 +56,8 @@ class AsyncApplication {
   multiDelayedIncrements(i: number): void {
     this.cancelMultiDelayedIncrements();
 
-    var self = this;
-    function helper(_i: any /** TODO #9100 */) {
+    const self = this;
+    function helper(_i: number) {
       if (_i <= 0) {
         self.multiTimeoutId = null;
         return;

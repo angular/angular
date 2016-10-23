@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {ListWrapper, Predicate} from '@angular/core/src/facade/collection';
 
 // base model for RecordStore
 export abstract class KeyModel {
@@ -36,20 +35,9 @@ export class Store<T extends KeyModel> {
 
   add(record: T): void { this.list.push(record); }
 
-  remove(record: T): void { this._spliceOut(record); }
+  remove(record: T): void { this.removeBy((item) => item === record); }
 
-  removeBy(callback: Predicate<T>): void {
-    var records = this.list.filter(callback);
-    ListWrapper.removeAll(this.list, records);
+  removeBy(callback: (record: T) => boolean): void {
+    this.list = this.list.filter((record) => !callback(record));
   }
-
-  private _spliceOut(record: T) {
-    var i = this._indexFor(record);
-    if (i > -1) {
-      return this.list.splice(i, 1)[0];
-    }
-    return null;
-  }
-
-  private _indexFor(record: T) { return this.list.indexOf(record); }
 }
