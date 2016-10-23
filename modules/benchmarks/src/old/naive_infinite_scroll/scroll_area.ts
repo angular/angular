@@ -33,7 +33,7 @@ import {ScrollItemComponent} from './scroll_item';
     </div>`
 })
 export class ScrollAreaComponent {
-  _fullList: Offering[];
+  private _fullList: Offering[];
   visibleItems: Offering[];
 
   viewPortHeight: number;

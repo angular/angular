@@ -60,7 +60,7 @@ export class CustomDate {
 }
 
 export class RawEntity {
-  _data: Map<any, any>;
+  private _data: Map<any, any>;
 
   constructor() { this._data = new Map(); }
 
@@ -101,7 +101,7 @@ export class RawEntity {
     return target.remove(last);
   }
 
-  _resolve(pieces, start) {
+  private _resolve(pieces, start) {
     var cur = start;
     for (var i = 0; i < pieces.length; i++) {
       cur = cur[pieces[i]];

@@ -93,7 +93,7 @@ class ShowError {
     return null;
   }
 
-  _errorMessage(code: string): string {
+  private _errorMessage(code: string): string {
     var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
     return (config as any /** TODO #9100 */)[code];
   }

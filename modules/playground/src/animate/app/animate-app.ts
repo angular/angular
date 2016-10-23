@@ -64,7 +64,7 @@ import {Component, animate, keyframes, state, style, transition, trigger} from '
 })
 export class AnimateApp {
   public items: any[] /** TODO #9100 */ = [];
-  public _state: any /** TODO #9100 */;
+  private _state: any /** TODO #9100 */;
 
   public bgStatus = 'focus';
 
