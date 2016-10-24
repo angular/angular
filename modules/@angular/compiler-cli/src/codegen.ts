@@ -133,7 +133,9 @@ export class CodeGenerator {
     // TODO(vicb): do not pass cliOptions.i18nFormat here
     const offlineCompiler = new compiler.OfflineCompiler(
         resolver, normalizer, tmplParser, new compiler.StyleCompiler(urlResolver),
-        new compiler.ViewCompiler(config), new compiler.DirectiveWrapperCompiler(config),
+        new compiler.ViewCompiler(config, elementSchemaRegistry),
+        new compiler.DirectiveWrapperCompiler(
+            config, expressionParser, elementSchemaRegistry, console),
         new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(reflectorHost),
         cliOptions.locale, cliOptions.i18nFormat);
 

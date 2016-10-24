@@ -12,6 +12,7 @@ import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import * as o from '../output/output_ast';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {TemplateAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
@@ -31,7 +32,7 @@ export class ViewCompileResult {
 
 @Injectable()
 export class ViewCompiler {
-  constructor(private _genConfig: CompilerConfig) {}
+  constructor(private _genConfig: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
 
   compileComponent(
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
@@ -47,7 +48,7 @@ export class ViewCompiler {
     buildView(view, template, dependencies);
     // Need to separate binding from creation to be able to refer to
     // variables that have been declared after usage.
-    bindView(view, template);
+    bindView(view, template, this._schemaRegistry);
     finishView(view, statements);
 
     return new ViewCompileResult(statements, view.viewFactory.name, dependencies);

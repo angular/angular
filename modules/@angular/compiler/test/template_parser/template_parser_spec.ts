@@ -124,7 +124,7 @@ export function main() {
           new class extends NullVisitor{
             visitElementProperty(ast: BoundElementPropertyAst, context: any): any{return ast;}
           },
-          new BoundElementPropertyAst('foo', null, null, null, 'bar', null));
+          new BoundElementPropertyAst('foo', null, null, false, null, 'bar', null));
     });
 
     it('should visit AttrAst', () => {
@@ -171,7 +171,7 @@ export function main() {
         new ElementAst('foo', [], [], [], [], [], [], false, [], 0, null, null),
         new ReferenceAst('foo', null, null), new VariableAst('foo', 'bar', null),
         new BoundEventAst('foo', 'bar', 'goo', null, null),
-        new BoundElementPropertyAst('foo', null, null, null, 'bar', null),
+        new BoundElementPropertyAst('foo', null, null, false, null, 'bar', null),
         new AttrAst('foo', 'bar', null), new BoundTextAst(null, 0, null),
         new TextAst('foo', 0, null), new DirectiveAst(null, [], [], [], null),
         new BoundDirectivePropertyAst('foo', 'bar', null, null)

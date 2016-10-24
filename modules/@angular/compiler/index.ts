@@ -34,7 +34,7 @@ export {DirectiveResolver} from './src/directive_resolver';
 export {PipeResolver} from './src/pipe_resolver';
 export {NgModuleResolver} from './src/ng_module_resolver';
 export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './src/ml_parser/interpolation_config';
-export {ElementSchemaRegistry} from './src/schema/element_schema_registry';
+export * from './src/schema/element_schema_registry';
 export * from './src/i18n/index';
 export * from './src/template_parser/template_ast';
 export * from './src/directive_normalizer';

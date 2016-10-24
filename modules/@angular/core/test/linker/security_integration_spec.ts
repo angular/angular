@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {afterEach, beforeEach, describe, expect, iit, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
@@ -133,22 +133,67 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('sanitizing', () => {
-      it('should escape unsafe attributes', () => {
-        const template = `<a [href]="ctxProp">Link Title</a>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
-        const fixture = TestBed.createComponent(SecuredComponent);
-
+      function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>, isAttribute: boolean) {
         let e = fixture.debugElement.children[0].nativeElement;
         let ci = fixture.componentInstance;
         ci.ctxProp = 'hello';
         fixture.detectChanges();
         // In the browser, reading href returns an absolute URL. On the server side,
         // it just echoes back the property.
-        expect(getDOM().getProperty(e, 'href')).toMatch(/.*\/?hello$/);
+        let value =
+            isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        expect(value).toMatch(/.*\/?hello$/);
 
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
-        expect(getDOM().getProperty(e, 'href')).toEqual('unsafe:javascript:alert(1)');
+        value = isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
+        expect(value).toEqual('unsafe:javascript:alert(1)');
+      }
+
+      it('should escape unsafe properties', () => {
+        const template = `<a [href]="ctxProp">Link Title</a>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
+
+        checkEscapeOfHrefProperty(fixture, false);
+      });
+
+      it('should escape unsafe attributes', () => {
+        const template = `<a [attr.href]="ctxProp">Link Title</a>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
+
+        checkEscapeOfHrefProperty(fixture, true);
+      });
+
+      it('should escape unsafe properties if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          @HostBinding('href') @Input()
+          dirHref: string;
+        }
+
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
+
+        checkEscapeOfHrefProperty(fixture, false);
+      });
+
+      it('should escape unsafe attributes if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          @HostBinding('attr.href') @Input()
+          dirHref: string;
+        }
+
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
+
+        checkEscapeOfHrefProperty(fixture, true);
       });
 
       it('should escape unsafe style values', () => {

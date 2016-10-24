@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
@@ -14,8 +15,9 @@ import {CompileEventListener, bindDirectiveOutputs, bindRenderOutputs, collectEv
 import {bindDirectiveAfterContentLifecycleCallbacks, bindDirectiveAfterViewLifecycleCallbacks, bindInjectableDestroyLifecycleCallbacks, bindPipeDestroyLifecycleCallbacks} from './lifecycle_binder';
 import {bindDirectiveHostProps, bindDirectiveInputs, bindRenderInputs, bindRenderText} from './property_binder';
 
-export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void {
-  var visitor = new ViewBinderVisitor(view);
+export function bindView(
+    view: CompileView, parsedTemplate: TemplateAst[], schemaRegistry: ElementSchemaRegistry): void {
+  var visitor = new ViewBinderVisitor(view, schemaRegistry);
   templateVisitAll(visitor, parsedTemplate);
   view.pipes.forEach(
       (pipe) => { bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view); });
@@ -24,7 +26,7 @@ export function bindView(view: CompileView, parsedTemplate: TemplateAst[]): void
 class ViewBinderVisitor implements TemplateAstVisitor {
   private _nodeIndex: number = 0;
 
-  constructor(public view: CompileView) {}
+  constructor(public view: CompileView, private _schemaRegistry: ElementSchemaRegistry) {}
 
   visitBoundText(ast: BoundTextAst, parent: CompileElement): any {
     var node = this.view.nodes[this._nodeIndex++];
@@ -52,7 +54,9 @@ class ViewBinderVisitor implements TemplateAstVisitor {
           compileElement.directiveWrapperInstance.get(directiveAst.directive.type.reference);
       bindDirectiveInputs(directiveAst, directiveWrapperInstance, dirIndex, compileElement);
 
-      bindDirectiveHostProps(directiveAst, directiveInstance, compileElement, eventListeners);
+      bindDirectiveHostProps(
+          directiveAst, directiveWrapperInstance, compileElement, eventListeners, ast.name,
+          this._schemaRegistry);
       bindDirectiveOutputs(directiveAst, directiveInstance, eventListeners);
     });
     templateVisitAll(this, ast.children, compileElement);
@@ -91,7 +95,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
       var providerInstance = compileElement.instances.get(providerAst.token.reference);
       bindInjectableDestroyLifecycleCallbacks(providerAst, providerInstance, compileElement);
     });
-    bindView(compileElement.embeddedView, ast.children);
+    bindView(compileElement.embeddedView, ast.children, this._schemaRegistry);
     return null;
   }
 
