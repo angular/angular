@@ -41,6 +41,7 @@ cp -v package.json $TMP
   ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
   ./node_modules/.bin/ng-xi18n --i18nFormat=xlf
   ./node_modules/.bin/ng-xi18n --i18nFormat=xmb
+  ./node_modules/.bin/ng-xi18n --i18nFormat=pot
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
