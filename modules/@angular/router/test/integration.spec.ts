@@ -531,6 +531,29 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
      })));
 
+  it('should not deactivate aux routes when navigating from a componentless routes',
+     fakeAsync(inject(
+         [Router, Location, NgModuleFactoryLoader],
+         (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+           const fixture = createRoot(router, TwoOutletsCmp);
+
+           router.resetConfig([
+             {path: 'simple', component: SimpleCmp},
+             {path: 'componentless', children: [{path: 'simple', component: SimpleCmp}]},
+             {path: 'user/:name', outlet: 'aux', component: UserCmp}
+           ]);
+
+           router.navigateByUrl('/componentless/simple(aux:user/victor)');
+           advance(fixture);
+           expect(location.path()).toEqual('/componentless/simple(aux:user/victor)');
+           expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
+
+           router.navigateByUrl('/simple(aux:user/victor)');
+           advance(fixture);
+           expect(location.path()).toEqual('/simple(aux:user/victor)');
+           expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
+         })));
+
   it('should emit an event when an outlet gets activated', fakeAsync(() => {
        @Component({
          selector: 'container',
