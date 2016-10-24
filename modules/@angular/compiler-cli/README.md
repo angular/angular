@@ -27,7 +27,7 @@ Then you can add an import statement in the `bootstrap` allowing you to bootstra
 generated code:
 
 ```typescript
-main_module.ts
+main.module.ts
 -------------
 import {BrowserModule} from '@angular/platform-browser';
 import {Component, NgModule, ApplicationRef} from '@angular/core';
@@ -49,7 +49,7 @@ export class MainModule {
 bootstrap.ts
 -------------
 
-import {MainModuleNgFactory} from './main_module.ngfactory';
+import {MainModuleNgFactory} from './main.module.ngfactory';
 import {platformBrowser} from '@angular/platform-browser';
 
 platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);
