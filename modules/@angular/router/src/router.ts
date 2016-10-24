@@ -871,9 +871,7 @@ class ActivateRoutes {
       this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
       delete prevChildren[c.value.outlet];
     });
-    forEach(
-        prevChildren,
-        (v: any, k: string) => this.deactivateOutletAndItChildren(outletMap._outlets[k]));
+    forEach(prevChildren, (v: any, k: string) => this.deactiveRouteAndItsChildren(v, outletMap));
   }
 
   activateRoutes(
@@ -889,7 +887,7 @@ class ActivateRoutes {
 
       // If we have a normal route, we need to go through an outlet.
       if (future.component) {
-        const outlet = getOutlet(parentOutletMap, futureNode.value);
+        const outlet = getOutlet(parentOutletMap, future);
         this.activateChildRoutes(futureNode, currNode, outlet.outletMap);
 
         // if we have a componentless route, we recurse but keep the same outlet map.
@@ -898,15 +896,7 @@ class ActivateRoutes {
       }
     } else {
       if (curr) {
-        // if we had a normal route, we need to deactivate only that outlet.
-        if (curr.component) {
-          const outlet = getOutlet(parentOutletMap, futureNode.value);
-          this.deactivateOutletAndItChildren(outlet);
-
-          // if we had a componentless route, we need to deactivate everything!
-        } else {
-          this.deactivateOutletMap(parentOutletMap);
-        }
+        this.deactiveRouteAndItsChildren(currNode, parentOutletMap);
       }
 
       // if we have a normal route, we need to advance the route
@@ -948,15 +938,31 @@ class ActivateRoutes {
         outletMap);
   }
 
-  private deactivateOutletAndItChildren(outlet: RouterOutlet): void {
+  private deactiveRouteAndItsChildren(
+      route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap): void {
+    const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
+    let outlet: RouterOutlet = null;
+
+    // getOutlet throws when cannot find the right outlet,
+    // which can happen if an outlet was in an NgIf and was removed
+    try {
+      outlet = getOutlet(parentOutletMap, route.value);
+    } catch (e) {
+      return;
+    }
+    const childOutletMap = outlet.outletMap;
+
+    forEach(prevChildren, (v: any, k: string) => {
+      if (route.value.component) {
+        this.deactiveRouteAndItsChildren(v, childOutletMap);
+      } else {
+        this.deactiveRouteAndItsChildren(v, parentOutletMap);
+      }
+    });
+
     if (outlet && outlet.isActivated) {
-      this.deactivateOutletMap(outlet.outletMap);
       outlet.deactivate();
     }
-  }
-
-  private deactivateOutletMap(outletMap: RouterOutletMap): void {
-    forEach(outletMap._outlets, (v: RouterOutlet) => this.deactivateOutletAndItChildren(v));
   }
 }
 
