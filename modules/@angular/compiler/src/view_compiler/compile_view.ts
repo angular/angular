@@ -17,7 +17,6 @@ import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
-import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
@@ -31,8 +30,6 @@ export class CompileView implements NameResolver {
   public nodes: CompileNode[] = [];
   // root nodes or AppElements for ViewContainers
   public rootNodesOrAppElements: o.Expression[] = [];
-
-  public bindings: CompileBinding[] = [];
 
   public createMethod: CompileMethod;
   public animationBindingsMethod: CompileMethod;

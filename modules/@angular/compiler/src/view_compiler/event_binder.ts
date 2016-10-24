@@ -13,7 +13,6 @@ import {identifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
-import {CompileBinding} from './compile_binding';
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {ViewProperties} from './constants';
@@ -134,7 +133,6 @@ export function collectEventListeners(
   const eventListeners: CompileEventListener[] = [];
 
   hostEvents.forEach((hostEvent) => {
-    compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
     var listener = CompileEventListener.getOrCreate(
         compileElement, hostEvent.target, hostEvent.name, hostEvent.phase, eventListeners);
     listener.addAction(hostEvent, null, null);
@@ -144,7 +142,6 @@ export function collectEventListeners(
     var directiveInstance =
         compileElement.instances.get(identifierToken(directiveAst.directive.type).reference);
     directiveAst.hostEvents.forEach((hostEvent) => {
-      compileElement.view.bindings.push(new CompileBinding(compileElement, hostEvent));
       var listener = CompileEventListener.getOrCreate(
           compileElement, hostEvent.target, hostEvent.name, hostEvent.phase, eventListeners);
       listener.addAction(hostEvent, directiveAst.directive, directiveInstance);

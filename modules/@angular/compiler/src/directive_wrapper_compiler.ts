@@ -9,6 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_metadata';
+import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
 import {CompilerConfig} from './config';
 import {Identifiers, resolveIdentifier} from './identifiers';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
@@ -158,13 +159,7 @@ function addDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
 }
 
 function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
-  const fieldName = `_${input}`;
-  const fieldExpr = o.THIS_EXPR.prop(fieldName);
-  // private is fine here as no child view will reference the cached value...
-  builder.fields.push(new o.ClassField(fieldName, null, [o.StmtModifier.Private]));
-  builder.ctorStmts.push(o.THIS_EXPR.prop(fieldName)
-                             .set(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED)))
-                             .toStmt());
+  const field = createCheckBindingField(builder);
   var onChangeStatements: o.Statement[] = [
     o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(true)).toStmt(),
     o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).prop(input).set(CURR_VALUE_VAR).toStmt(),
@@ -173,17 +168,13 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
     onChangeStatements.push(o.THIS_EXPR.prop(CHANGES_FIELD_NAME)
                                 .key(o.literal(input))
                                 .set(o.importExpr(resolveIdentifier(Identifiers.SimpleChange))
-                                         .instantiate([fieldExpr, CURR_VALUE_VAR]))
+                                         .instantiate([field.expression, CURR_VALUE_VAR]))
                                 .toStmt());
   }
-  onChangeStatements.push(fieldExpr.set(CURR_VALUE_VAR).toStmt());
 
-  var methodBody: o.Statement[] = [
-    new o.IfStmt(
-        FORCE_UPDATE_VAR.or(o.importExpr(resolveIdentifier(Identifiers.checkBinding))
-                                .callFn([THROW_ON_CHANGE_VAR, fieldExpr, CURR_VALUE_VAR])),
-        onChangeStatements),
-  ];
+  var methodBody: o.Statement[] = createCheckBindingStmt(
+      {currValExpr: CURR_VALUE_VAR, forceUpdate: FORCE_UPDATE_VAR, stmts: []}, field.expression,
+      THROW_ON_CHANGE_VAR, onChangeStatements);
   builder.methods.push(new o.ClassMethod(
       `check_${input}`,
       [
