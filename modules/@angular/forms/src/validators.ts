@@ -151,11 +151,11 @@ function _convertToPromise(obj: any): Promise<any> {
 }
 
 function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {
-  return validators.map(v => v(control));
+  return validators.map(v => v.call(v, control));
 }
 
 function _executeAsyncValidators(control: AbstractControl, validators: AsyncValidatorFn[]): any[] {
-  return validators.map(v => v(control));
+  return validators.map(v => v.call(v, control));
 }
 
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
