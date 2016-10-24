@@ -48,9 +48,9 @@ export class DirectiveWrapperCompiler {
   compile(dirMeta: CompileDirectiveMetadata): DirectiveWrapperCompileResult {
     const builder = new DirectiveWrapperBuilder(this.compilerConfig, dirMeta);
     Object.keys(dirMeta.inputs).forEach((inputFieldName) => {
-      createCheckInputMethod(inputFieldName, builder);
+      addCheckInputMethod(inputFieldName, builder);
     });
-    createDetectChangesInternalMethod(builder);
+    addDetectChangesInternalMethod(builder);
     const classStmt = builder.build();
     return new DirectiveWrapperCompileResult([classStmt], classStmt.name);
   }
@@ -102,12 +102,12 @@ class DirectiveWrapperBuilder implements ClassBuilder {
     return createClassStmt({
       name: DirectiveWrapperCompiler.dirWrapperClassName(this.dirMeta.type),
       ctorParams: dirDepParamNames.map((paramName) => new o.FnParam(paramName, o.DYNAMIC_TYPE)),
-      builders: [{fields: fields, ctorStmts: ctorStmts}, this]
-    })
+      builders: [{fields, ctorStmts}, this]
+    });
   }
 }
 
-function createDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
+function addDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
   const changedVar = o.variable('changed');
   const stmts: o.Statement[] = [
     changedVar.set(o.THIS_EXPR.prop(CHANGED_FIELD_NAME)).toDeclStmt(),
@@ -157,7 +157,7 @@ function createDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
       stmts, o.BOOL_TYPE));
 }
 
-function createCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
+function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
   const fieldName = `_${input}`;
   const fieldExpr = o.THIS_EXPR.prop(fieldName);
   // private is fine here as no child view will reference the cached value...

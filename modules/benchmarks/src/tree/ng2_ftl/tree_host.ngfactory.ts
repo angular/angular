@@ -34,7 +34,7 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
   }
   createInternal(rootSelector: string): import2.AppElement {
     this._el_0 = import4.selectOrCreateRenderHostElement(
-        this.renderer, 'tree', import4.EMPTY_FAST_ARRAY, rootSelector, (null as any));
+        this.renderer, 'tree', import4.EMPTY_INLINE_ARRAY, rootSelector, (null as any));
     this._vc_0 = new import2.AppElement(0, (null as any), this, this._el_0);
     this._TreeComponent_0_4 = new _View_TreeComponent0(this._el_0);
     this._vc_0.initComponent(this._TreeComponent_0_4.context, [], <any>this._TreeComponent_0_4);

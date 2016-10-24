@@ -84,14 +84,14 @@ export class NgModuleCompiler {
 }
 
 class _InjectorBuilder implements ClassBuilder {
-  private _tokens: CompileTokenMetadata[] = [];
-  private _instances = new Map<any, o.Expression>();
   fields: o.ClassField[] = [];
-  private _createStmts: o.Statement[] = [];
-  private _destroyStmts: o.Statement[] = [];
   getters: o.ClassGetter[] = [];
   methods: o.ClassMethod[] = [];
   ctorStmts: o.Statement[] = [];
+  private _tokens: CompileTokenMetadata[] = [];
+  private _instances = new Map<any, o.Expression>();
+  private _createStmts: o.Statement[] = [];
+  private _destroyStmts: o.Statement[] = [];
 
   constructor(
       private _ngModuleMeta: CompileNgModuleMetadata,
@@ -154,7 +154,7 @@ class _InjectorBuilder implements ClassBuilder {
       parent: o.importExpr(
           resolveIdentifier(Identifiers.NgModuleInjector), [o.importType(this._ngModuleMeta.type)]),
       parentArgs: parentArgs,
-      builders: [{methods: methods}, this]
+      builders: [{methods}, this]
     });
   }
 
