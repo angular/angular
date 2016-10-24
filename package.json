@@ -57,6 +57,7 @@
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-clean": "^0.3.2",
+    "gulp-cli": "^1.2.2",
     "gulp-sass": "^2.3.2",
     "gulp-server-livereload": "^1.8.2",
     "gulp-shell": "^0.5.2",
