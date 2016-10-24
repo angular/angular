@@ -250,6 +250,12 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     } else {
       const sf = this.program.getSourceFile(filePath);
       if (!sf) {
+        if (this.context.fileExists(filePath)) {
+          const sourceText = this.context.readFile(filePath);
+          return this.metadataCollector.getMetadata(
+              ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true));
+        }
+
         throw new Error(`Source file ${filePath} not present in program.`);
       }
       return this.metadataCollector.getMetadata(sf);

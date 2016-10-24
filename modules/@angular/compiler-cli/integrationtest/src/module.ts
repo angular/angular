@@ -11,9 +11,12 @@ import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {MdButtonModule} from '@angular2-material/button';
 
+import {ThirdpartyModule} from '../third_party_src/module';
+
 import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
 import {BasicComp} from './basic';
+import {ComponentUsingThirdParty} from './comp_using_3rdp';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
 import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
@@ -22,35 +25,47 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
 
 @NgModule({
   declarations: [
-    SomeDirectiveInRootModule,
-    SomePipeInRootModule,
     AnimateCmp,
     BasicComp,
+    CompConsumingEvents,
     CompForChildQuery,
-    CompWithEntryComponents,
+    CompUsingPipes,
+    CompUsingRootModuleDirectiveAndPipe,
     CompWithAnalyzeEntryComponentsProvider,
-    ProjectingComp,
     CompWithChildQuery,
     CompWithDirectiveChild,
+    CompWithEntryComponents,
     CompWithNgContent,
-    CompUsingRootModuleDirectiveAndPipe,
     CompWithProviders,
     CompWithReferences,
-    CompUsingPipes,
-    CompConsumingEvents,
+    DirectiveForQuery,
     DirPublishingEvents,
     MultipleComponentsMyComp,
-    DirectiveForQuery,
     NextComp,
+    ProjectingComp,
+    SomeDirectiveInRootModule,
+    SomePipeInRootModule,
+    ComponentUsingThirdParty,
   ],
   imports: [
-    BrowserModule, FormsModule, someLibModuleWithProviders(), ModuleUsingCustomElements,
-    MdButtonModule
+    BrowserModule,
+    FormsModule,
+    MdButtonModule,
+    ModuleUsingCustomElements,
+    someLibModuleWithProviders(),
+    ThirdpartyModule,
   ],
   providers: [SomeService],
   entryComponents: [
-    AnimateCmp, BasicComp, CompWithEntryComponents, CompWithAnalyzeEntryComponentsProvider,
-    ProjectingComp, CompWithChildQuery, CompUsingRootModuleDirectiveAndPipe, CompWithReferences
+    AnimateCmp,
+    BasicComp,
+    CompUsingRootModuleDirectiveAndPipe,
+    CompWithAnalyzeEntryComponentsProvider,
+    CompWithChildQuery,
+    CompWithEntryComponents,
+    CompWithReferences,
+    ProjectingComp,
+    ComponentUsingThirdParty,
   ]
 })
 export class MainModule {

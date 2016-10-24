@@ -508,7 +508,7 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
 }
 
 /**
- * Metadata regarding compilation of a directive.
+ * Metadata regarding compilation of a module.
  */
 export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   type: CompileTypeMetadata;
@@ -568,6 +568,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 export class TransitiveCompileNgModuleMetadata {
   directivesSet = new Set<Type<any>>();
   pipesSet = new Set<Type<any>>();
+
   constructor(
       public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
       public entryComponents: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],
@@ -580,11 +581,13 @@ export class TransitiveCompileNgModuleMetadata {
 export function removeIdentifierDuplicates<T extends CompileMetadataWithIdentifier>(items: T[]):
     T[] {
   const map = new Map<any, T>();
+
   items.forEach((item) => {
     if (!map.get(item.identifier.reference)) {
       map.set(item.identifier.reference, item);
     }
   });
+
   return MapWrapper.values(map);
 }
 

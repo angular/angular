@@ -9,8 +9,8 @@ LINKABLE_PKGS=(
 PKGS=(
   reflect-metadata@0.1.8
   typescript@2.0.2
-  zone.js@0.6.21
-  rxjs@5.0.0-beta.11
+  zone.js@0.6.25
+  rxjs@5.0.0-beta.12
   @types/{node@6.0.38,jasmine@2.2.33}
   jasmine@2.4.1
   webpack@2.1.0-beta.21
@@ -35,12 +35,20 @@ cp -v package.json $TMP
   npm install ${LINKABLE_PKGS[*]}
 
   ./node_modules/.bin/tsc --version
+  # Compile the compiler-cli third_party simulation.
+  # Use ngc-wrapped directly so we don't produce *.ngfactory.ts files!
+
   # Compile the compiler-cli integration tests
   # TODO(vicb): restore the test for .xtb
-  #./node_modules/.bin/ngc --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
-  ./node_modules/.bin/ngc --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
-  ./node_modules/.bin/ng-xi18n --i18nFormat=xlf
-  ./node_modules/.bin/ng-xi18n --i18nFormat=xmb
+  #./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
+
+  # Generate the metadata for the third-party modules
+  node ./node_modules/@angular/tsc-wrapped/src/main -p third_party_src/tsconfig-build.json
+
+  ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
+
+  ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xlf
+  ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xmb
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
@@ -48,6 +56,6 @@ cp -v package.json $TMP
   ./node_modules/.bin/jasmine ./all_spec.js
 
   # Compile again with a differently named tsconfig file
-  mv tsconfig.json othername.json
+  mv tsconfig-build.json othername.json
   ./node_modules/.bin/ngc -p othername.json
 )
