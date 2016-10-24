@@ -294,23 +294,24 @@ export class Identifiers {
   };
 
   // This is just the interface!
-  static FastArray:
-      IdentifierSpec = {name: 'FastArray', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: null};
-  static fastArrays: IdentifierSpec[] = [
-    {name: 'FastArray2', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.FastArray2},
-    {name: 'FastArray4', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.FastArray4},
-    {name: 'FastArray8', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.FastArray8},
-    {name: 'FastArray16', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.FastArray16},
+  static InlineArray:
+      IdentifierSpec = {name: 'InlineArray', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: null};
+  static inlineArrays: IdentifierSpec[] = [
+    {name: 'InlineArray2', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.InlineArray2},
+    {name: 'InlineArray2', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.InlineArray2},
+    {name: 'InlineArray4', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.InlineArray4},
+    {name: 'InlineArray8', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.InlineArray8},
+    {name: 'InlineArray16', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.InlineArray16},
   ];
-  static EMPTY_FAST_ARRAY: IdentifierSpec = {
-    name: 'EMPTY_FAST_ARRAY',
+  static EMPTY_INLINE_ARRAY: IdentifierSpec = {
+    name: 'EMPTY_INLINE_ARRAY',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: view_utils.EMPTY_FAST_ARRAY
+    runtime: view_utils.EMPTY_INLINE_ARRAY
   };
-  static FastArrayDynamic: IdentifierSpec = {
-    name: 'FastArrayDynamic',
+  static InlineArrayDynamic: IdentifierSpec = {
+    name: 'InlineArrayDynamic',
     moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: view_utils.FastArrayDynamic
+    runtime: view_utils.InlineArrayDynamic
   };
 }
 

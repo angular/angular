@@ -379,7 +379,7 @@ function camelCaseToDashCase(input: string): string {
 }
 
 export function createRenderElement(
-    renderer: Renderer, parentElement: any, name: string, attrs: FastArray<string>,
+    renderer: Renderer, parentElement: any, name: string, attrs: InlineArray<string>,
     debugInfo?: RenderDebugInfo): any {
   const el = renderer.createElement(parentElement, name, debugInfo);
   for (var i = 0; i < attrs.length; i += 2) {
@@ -389,8 +389,8 @@ export function createRenderElement(
 }
 
 export function selectOrCreateRenderHostElement(
-    renderer: Renderer, elementName: string, attrs: FastArray<string>,
-    rootSelectorOrNode: string | any, debugInfo: RenderDebugInfo): any {
+    renderer: Renderer, elementName: string, attrs: InlineArray<string>,
+    rootSelectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
   var hostElement: any;
   if (isPresent(rootSelectorOrNode)) {
     hostElement = renderer.selectRootElement(rootSelectorOrNode, debugInfo);
@@ -400,17 +400,17 @@ export function selectOrCreateRenderHostElement(
   return hostElement;
 }
 
-export interface FastArray<T> {
+export interface InlineArray<T> {
   length: number;
   get(index: number): T;
 }
 
-class FastArray0 implements FastArray<any> {
+class InlineArray0 implements InlineArray<any> {
   length = 0;
   get(index: number): any { return undefined; }
 }
 
-export class FastArray2<T> implements FastArray<T> {
+export class InlineArray2<T> implements InlineArray<T> {
   constructor(public length: number, private _v0: T, private _v1: T) {}
   get(index: number) {
     switch (index) {
@@ -424,7 +424,7 @@ export class FastArray2<T> implements FastArray<T> {
   }
 }
 
-export class FastArray4<T> implements FastArray<T> {
+export class InlineArray4<T> implements InlineArray<T> {
   constructor(
       public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T) {}
   get(index: number) {
@@ -443,7 +443,7 @@ export class FastArray4<T> implements FastArray<T> {
   }
 }
 
-export class FastArray8<T> implements FastArray<T> {
+export class InlineArray8<T> implements InlineArray<T> {
   constructor(
       public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T,
       private _v4: T, private _v5: T, private _v6: T, private _v7: T) {}
@@ -471,7 +471,7 @@ export class FastArray8<T> implements FastArray<T> {
   }
 }
 
-export class FastArray16<T> implements FastArray<T> {
+export class InlineArray16<T> implements InlineArray<T> {
   constructor(
       public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T,
       private _v4: T, private _v5: T, private _v6: T, private _v7: T, private _v8: T,
@@ -517,7 +517,7 @@ export class FastArray16<T> implements FastArray<T> {
   }
 }
 
-export class FastArrayDynamic<T> implements FastArray<T> {
+export class InlineArrayDynamic<T> implements InlineArray<T> {
   private _values: any[];
   // Note: We still take the length argument so this class can be created
   // in the same ways as the other classes!
@@ -526,4 +526,4 @@ export class FastArrayDynamic<T> implements FastArray<T> {
   get(index: number) { return this._values[index]; }
 }
 
-export const EMPTY_FAST_ARRAY: FastArray<any> = new FastArray0();
+export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();

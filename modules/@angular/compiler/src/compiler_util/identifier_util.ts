@@ -22,13 +22,14 @@ export function createDiTokenExpression(token: CompileTokenMetadata): o.Expressi
   }
 }
 
-export function createFastArray(values: o.Expression[]): o.Expression {
+export function createInlineArray(values: o.Expression[]): o.Expression {
   if (values.length === 0) {
-    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_FAST_ARRAY));
+    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_INLINE_ARRAY));
   }
-  const index = Math.ceil(values.length / 2) - 1;
-  const identifierSpec = index < Identifiers.fastArrays.length ? Identifiers.fastArrays[index] :
-                                                                 Identifiers.FastArrayDynamic;
+  const log2 = Math.log(values.length) / Math.log(2);
+  const index = Math.ceil(log2);
+  const identifierSpec = index < Identifiers.inlineArrays.length ? Identifiers.inlineArrays[index] :
+                                                                   Identifiers.InlineArrayDynamic;
   const identifier = resolveIdentifier(identifierSpec);
   return o.importExpr(identifier).instantiate([
     <o.Expression>o.literal(values.length)
