@@ -12,23 +12,27 @@ import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundElementPropertyAst, PropertyBindingType} from '../template_parser/template_ast';
 
+import {createEnumExpression} from './identifier_util';
+
 export function writeToRenderer(
-    view: o.Expression, boundProp: BoundElementPropertyAst, renderNode: o.Expression,
-    renderValue: o.Expression, logBindingUpdate: boolean): o.Statement[] {
+    view: o.Expression, boundProp: BoundElementPropertyAst, renderElement: o.Expression,
+    renderValue: o.Expression, logBindingUpdate: boolean,
+    securityContextExpression?: o.Expression): o.Statement[] {
   const updateStmts: o.Statement[] = [];
   const renderer = view.prop('renderer');
-  renderValue = sanitizedValue(view, boundProp, renderValue);
+  renderValue = sanitizedValue(view, boundProp, renderValue, securityContextExpression);
   switch (boundProp.type) {
     case PropertyBindingType.Property:
       if (logBindingUpdate) {
-        updateStmts.push(o.importExpr(resolveIdentifier(Identifiers.setBindingDebugInfo))
-                             .callFn([renderer, renderNode, o.literal(boundProp.name), renderValue])
-                             .toStmt());
+        updateStmts.push(
+            o.importExpr(resolveIdentifier(Identifiers.setBindingDebugInfo))
+                .callFn([renderer, renderElement, o.literal(boundProp.name), renderValue])
+                .toStmt());
       }
       updateStmts.push(
           renderer
               .callMethod(
-                  'setElementProperty', [renderNode, o.literal(boundProp.name), renderValue])
+                  'setElementProperty', [renderElement, o.literal(boundProp.name), renderValue])
               .toStmt());
       break;
     case PropertyBindingType.Attribute:
@@ -37,13 +41,14 @@ export function writeToRenderer(
       updateStmts.push(
           renderer
               .callMethod(
-                  'setElementAttribute', [renderNode, o.literal(boundProp.name), renderValue])
+                  'setElementAttribute', [renderElement, o.literal(boundProp.name), renderValue])
               .toStmt());
       break;
     case PropertyBindingType.Class:
       updateStmts.push(
           renderer
-              .callMethod('setElementClass', [renderNode, o.literal(boundProp.name), renderValue])
+              .callMethod(
+                  'setElementClass', [renderElement, o.literal(boundProp.name), renderValue])
               .toStmt());
       break;
     case PropertyBindingType.Style:
@@ -55,7 +60,8 @@ export function writeToRenderer(
       renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
       updateStmts.push(
           renderer
-              .callMethod('setElementStyle', [renderNode, o.literal(boundProp.name), renderValue])
+              .callMethod(
+                  'setElementStyle', [renderElement, o.literal(boundProp.name), renderValue])
               .toStmt());
       break;
     case PropertyBindingType.Animation:
@@ -65,32 +71,19 @@ export function writeToRenderer(
 }
 
 function sanitizedValue(
-    view: o.Expression, boundProp: BoundElementPropertyAst,
-    renderValue: o.Expression): o.Expression {
-  let enumValue: string;
-  switch (boundProp.securityContext) {
-    case SecurityContext.NONE:
-      return renderValue;  // No sanitization needed.
-    case SecurityContext.HTML:
-      enumValue = 'HTML';
-      break;
-    case SecurityContext.STYLE:
-      enumValue = 'STYLE';
-      break;
-    case SecurityContext.SCRIPT:
-      enumValue = 'SCRIPT';
-      break;
-    case SecurityContext.URL:
-      enumValue = 'URL';
-      break;
-    case SecurityContext.RESOURCE_URL:
-      enumValue = 'RESOURCE_URL';
-      break;
-    default:
-      throw new Error(`internal error, unexpected SecurityContext ${boundProp.securityContext}.`);
+    view: o.Expression, boundProp: BoundElementPropertyAst, renderValue: o.Expression,
+    securityContextExpression?: o.Expression): o.Expression {
+  if (boundProp.securityContext === SecurityContext.NONE) {
+    return renderValue;  // No sanitization needed.
+  }
+  if (!boundProp.needsRuntimeSecurityContext) {
+    securityContextExpression =
+        createEnumExpression(Identifiers.SecurityContext, boundProp.securityContext);
+  }
+  if (!securityContextExpression) {
+    throw new Error(`internal error, no SecurityContext given ${boundProp.name}`);
   }
   let ctx = view.prop('viewUtils').prop('sanitizer');
-  let args =
-      [o.importExpr(resolveIdentifier(Identifiers.SecurityContext)).prop(enumValue), renderValue];
+  let args = [securityContextExpression, renderValue];
   return ctx.callMethod('sanitize', args);
 }

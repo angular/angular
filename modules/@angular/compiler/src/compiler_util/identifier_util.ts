@@ -8,7 +8,7 @@
 
 import {CompileTokenMetadata} from '../compile_metadata';
 import {isPresent} from '../facade/lang';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {IdentifierSpec, Identifiers, resolveEnumIdentifier, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
 export function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {
@@ -48,4 +48,13 @@ export function createPureProxy(
   builder.ctorStmts.push(o.THIS_EXPR.prop(pureProxyProp.name)
                              .set(o.importExpr(resolveIdentifier(pureProxyId)).callFn([fn]))
                              .toStmt());
+}
+
+export function createEnumExpression(enumType: IdentifierSpec, enumValue: any): o.Expression {
+  const enumName =
+      Object.keys(enumType.runtime).find((propName) => enumType.runtime[propName] === enumValue);
+  if (!enumName) {
+    throw new Error(`Unknown enum value ${enumValue} in ${enumType.name}`);
+  }
+  return o.importExpr(resolveEnumIdentifier(resolveIdentifier(enumType), enumName));
 }

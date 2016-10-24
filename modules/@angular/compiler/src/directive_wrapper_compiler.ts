@@ -10,11 +10,19 @@ import {Injectable} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
+import {convertPropertyBinding} from './compiler_util/expression_converter';
+import {writeToRenderer} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
+import {Parser} from './expression_parser/parser';
 import {Identifiers, resolveIdentifier} from './identifiers';
+import {DEFAULT_INTERPOLATION_CONFIG} from './ml_parser/interpolation_config';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
-import {LifecycleHooks, isDefaultChangeDetectionStrategy} from './private_import_core';
+import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
+import {Console, LifecycleHooks, isDefaultChangeDetectionStrategy} from './private_import_core';
+import {ElementSchemaRegistry} from './schema/element_schema_registry';
+import {BindingParser} from './template_parser/binding_parser';
+import {BoundElementPropertyAst, BoundEventAst} from './template_parser/template_ast';
 
 export class DirectiveWrapperCompileResult {
   constructor(public statements: o.Statement[], public dirWrapperClassVar: string) {}
@@ -44,14 +52,28 @@ const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap
 export class DirectiveWrapperCompiler {
   static dirWrapperClassName(id: CompileIdentifierMetadata) { return `Wrapper_${id.name}`; }
 
-  constructor(private compilerConfig: CompilerConfig) {}
+  constructor(
+      private compilerConfig: CompilerConfig, private _exprParser: Parser,
+      private _schemaRegistry: ElementSchemaRegistry, private _console: Console) {}
 
   compile(dirMeta: CompileDirectiveMetadata): DirectiveWrapperCompileResult {
     const builder = new DirectiveWrapperBuilder(this.compilerConfig, dirMeta);
     Object.keys(dirMeta.inputs).forEach((inputFieldName) => {
       addCheckInputMethod(inputFieldName, builder);
     });
-    addDetectChangesInternalMethod(builder);
+    addDetectChangesInInputPropsMethod(builder);
+
+    const hostParseResult = parseHostBindings(dirMeta, this._exprParser, this._schemaRegistry);
+    reportParseErrors(hostParseResult.errors, this._console);
+    // host properties are change detected by the DirectiveWrappers,
+    // except for the animation properties as they need close integration with animation events
+    // and DirectiveWrappers don't support
+    // event listeners right now.
+    addDetectChangesInHostPropsMethod(
+        hostParseResult.hostProps.filter(hostProp => !hostProp.isAnimation), builder);
+
+    // TODO(tbosch): implement hostListeners via DirectiveWrapper as well!
+
     const classStmt = builder.build();
     return new DirectiveWrapperCompileResult([classStmt], classStmt.name);
   }
@@ -108,7 +130,7 @@ class DirectiveWrapperBuilder implements ClassBuilder {
   }
 }
 
-function addDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
+function addDetectChangesInInputPropsMethod(builder: DirectiveWrapperBuilder) {
   const changedVar = o.variable('changed');
   const stmts: o.Statement[] = [
     changedVar.set(o.THIS_EXPR.prop(CHANGED_FIELD_NAME)).toDeclStmt(),
@@ -148,7 +170,7 @@ function addDetectChangesInternalMethod(builder: DirectiveWrapperBuilder) {
   stmts.push(new o.ReturnStatement(changedVar));
 
   builder.methods.push(new o.ClassMethod(
-      'detectChangesInternal',
+      'detectChangesInInputProps',
       [
         new o.FnParam(
             VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
@@ -183,4 +205,73 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
         new o.FnParam(FORCE_UPDATE_VAR.name, o.BOOL_TYPE),
       ],
       methodBody));
+}
+
+function addDetectChangesInHostPropsMethod(
+    hostProps: BoundElementPropertyAst[], builder: DirectiveWrapperBuilder) {
+  const stmts: o.Statement[] = [];
+  const methodParams: o.FnParam[] = [
+    new o.FnParam(
+        VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+    new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
+    new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
+  ];
+  hostProps.forEach((hostProp) => {
+    const field = createCheckBindingField(builder);
+    const evalResult = convertPropertyBinding(
+        builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostProp.value, field.bindingId);
+    if (!evalResult) {
+      return;
+    }
+    let securityContextExpr: o.ReadVarExpr;
+    if (hostProp.needsRuntimeSecurityContext) {
+      securityContextExpr = o.variable(`secCtx_${methodParams.length}`);
+      methodParams.push(new o.FnParam(
+          securityContextExpr.name, o.importType(resolveIdentifier(Identifiers.SecurityContext))));
+    }
+    stmts.push(...createCheckBindingStmt(
+        evalResult, field.expression, THROW_ON_CHANGE_VAR,
+        writeToRenderer(
+            VIEW_VAR, hostProp, RENDER_EL_VAR, evalResult.currValExpr,
+            builder.compilerConfig.logBindingUpdate, securityContextExpr)));
+  });
+  builder.methods.push(new o.ClassMethod('detectChangesInHostProps', methodParams, stmts));
+}
+
+class ParseResult {
+  constructor(
+      public hostProps: BoundElementPropertyAst[], public hostListeners: BoundEventAst[],
+      public errors: ParseError[]) {}
+}
+
+function parseHostBindings(
+    dirMeta: CompileDirectiveMetadata, exprParser: Parser,
+    schemaRegistry: ElementSchemaRegistry): ParseResult {
+  const errors: ParseError[] = [];
+  const parser =
+      new BindingParser(exprParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, [], errors);
+  const sourceFileName = dirMeta.type.moduleUrl ?
+      `in Directive ${dirMeta.type.name} in ${dirMeta.type.moduleUrl}` :
+      `in Directive ${dirMeta.type.name}`;
+  const sourceFile = new ParseSourceFile('', sourceFileName);
+  const sourceSpan = new ParseSourceSpan(
+      new ParseLocation(sourceFile, null, null, null),
+      new ParseLocation(sourceFile, null, null, null));
+  const parsedHostProps = parser.createDirectiveHostPropertyAsts(dirMeta, sourceSpan);
+  const parsedHostListeners = parser.createDirectiveHostEventAsts(dirMeta, sourceSpan);
+
+  return new ParseResult(parsedHostProps, parsedHostListeners, errors);
+}
+
+function reportParseErrors(parseErrors: ParseError[], console: Console) {
+  const warnings = parseErrors.filter(error => error.level === ParseErrorLevel.WARNING);
+  const errors = parseErrors.filter(error => error.level === ParseErrorLevel.FATAL);
+
+  if (warnings.length > 0) {
+    this._console.warn(`Directive parse warnings:\n${warnings.join('\n')}`);
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Directive parse errors:\n${errors.join('\n')}`);
+  }
 }

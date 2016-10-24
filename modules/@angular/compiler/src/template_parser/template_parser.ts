@@ -137,7 +137,7 @@ export class TemplateParser {
         };
       }
       const bindingParser = new BindingParser(
-          this._exprParser, interpolationConfig, this._schemaRegistry, schemas, uniqPipes, errors);
+          this._exprParser, interpolationConfig, this._schemaRegistry, uniqPipes, errors);
       const parseVisitor = new TemplateParseVisitor(
           providerViewContext, uniqDirectives, bindingParser, this._schemaRegistry, schemas,
           errors);
@@ -549,10 +549,12 @@ class TemplateParseVisitor implements html.Visitor {
         component = directive;
       }
       const directiveProperties: BoundDirectivePropertyAst[] = [];
-      const hostProperties = this._bindingParser.createDirectiveHostPropertyAsts(
-          elementName, directive.hostProperties, sourceSpan);
-      const hostEvents =
-          this._bindingParser.createDirectiveHostEventAsts(directive.hostListeners, sourceSpan);
+      const hostProperties =
+          this._bindingParser.createDirectiveHostPropertyAsts(directive, sourceSpan);
+      // Note: We need to check the host properties here as well,
+      // as we don't know the element name in the DirectiveWrapperCompiler yet.
+      this._checkPropertiesInSchema(elementName, hostProperties);
+      const hostEvents = this._bindingParser.createDirectiveHostEventAsts(directive, sourceSpan);
       this._createDirectivePropertyAsts(directive.inputs, props, directiveProperties);
       elementOrDirectiveRefs.forEach((elOrDirRef) => {
         if ((elOrDirRef.value.length === 0 && directive.isComponent) ||
@@ -626,6 +628,7 @@ class TemplateParseVisitor implements html.Visitor {
         boundElementProps.push(this._bindingParser.createElementPropertyAst(elementName, prop));
       }
     });
+    this._checkPropertiesInSchema(elementName, boundElementProps);
     return boundElementProps;
   }
 
@@ -696,6 +699,22 @@ class TemplateParseVisitor implements html.Visitor {
         this._reportError(
             `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
             event.sourceSpan);
+      }
+    });
+  }
+
+  private _checkPropertiesInSchema(elementName: string, boundProps: BoundElementPropertyAst[]) {
+    boundProps.forEach((boundProp) => {
+      if (boundProp.type === PropertyBindingType.Property &&
+          !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
+        let errorMsg =
+            `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
+        if (elementName.indexOf('-') > -1) {
+          errorMsg +=
+              `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
+              `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
+        }
+        this._reportError(errorMsg, boundProp.sourceSpan);
       }
     });
   }

@@ -147,12 +147,12 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
        });
 
     it('should return security contexts for elements', () => {
-      expect(registry.securityContext('iframe', 'srcdoc')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('p', 'innerHTML')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('a', 'href')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('a', 'style')).toBe(SecurityContext.STYLE);
-      expect(registry.securityContext('ins', 'cite')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('base', 'href')).toBe(SecurityContext.RESOURCE_URL);
+      expect(registry.securityContext('iframe', 'srcdoc', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'innerHTML', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('a', 'href', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('a', 'style', false)).toBe(SecurityContext.STYLE);
+      expect(registry.securityContext('ins', 'cite', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('base', 'href', false)).toBe(SecurityContext.RESOURCE_URL);
     });
 
     it('should detect properties on namespaced elements', () => {
@@ -162,9 +162,14 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     });
 
     it('should check security contexts case insensitive', () => {
-      expect(registry.securityContext('p', 'iNnErHtMl')).toBe(SecurityContext.HTML);
-      expect(registry.securityContext('p', 'formaction')).toBe(SecurityContext.URL);
-      expect(registry.securityContext('p', 'formAction')).toBe(SecurityContext.URL);
+      expect(registry.securityContext('p', 'iNnErHtMl', false)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'formaction', false)).toBe(SecurityContext.URL);
+      expect(registry.securityContext('p', 'formAction', false)).toBe(SecurityContext.URL);
+    });
+
+    it('should check security contexts for attributes', () => {
+      expect(registry.securityContext('p', 'innerHtml', true)).toBe(SecurityContext.HTML);
+      expect(registry.securityContext('p', 'formaction', true)).toBe(SecurityContext.URL);
     });
 
     describe('Angular custom elements', () => {

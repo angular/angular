@@ -10,12 +10,14 @@ import {SecurityContext} from '@angular/core';
 
 import {createCheckBindingField, createCheckBindingStmt} from '../compiler_util/binding_util';
 import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
+import {createEnumExpression} from '../compiler_util/identifier_util';
 import {writeToRenderer} from '../compiler_util/render_util';
 import * as cdAst from '../expression_parser/ast';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../private_import_core';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {camelCaseToDashCase} from '../util';
 
@@ -121,10 +123,39 @@ export function bindRenderInputs(
 }
 
 export function bindDirectiveHostProps(
-    directiveAst: DirectiveAst, directiveInstance: o.Expression, compileElement: CompileElement,
-    eventListeners: CompileEventListener[]): void {
+    directiveAst: DirectiveAst, directiveWrapperInstance: o.Expression,
+    compileElement: CompileElement, eventListeners: CompileEventListener[], elementName: string,
+    schemaRegistry: ElementSchemaRegistry): void {
+  // host properties are change detected by the DirectiveWrappers,
+  // except for the animation properties as they need close integration with animation events
+  // and DirectiveWrappers don't support
+  // event listeners right now.
   bindAndWriteToRenderer(
-      directiveAst.hostProperties, directiveInstance, compileElement, true, eventListeners);
+      directiveAst.hostProperties.filter(boundProp => boundProp.isAnimation),
+      directiveWrapperInstance.prop('context'), compileElement, true, eventListeners);
+
+
+  const methodArgs: o.Expression[] =
+      [o.THIS_EXPR, compileElement.renderNode, DetectChangesVars.throwOnChange];
+  // We need to provide the SecurityContext for properties that could need sanitization.
+  directiveAst.hostProperties.filter(boundProp => boundProp.needsRuntimeSecurityContext)
+      .forEach((boundProp) => {
+        let ctx: SecurityContext;
+        switch (boundProp.type) {
+          case PropertyBindingType.Property:
+            ctx = schemaRegistry.securityContext(elementName, boundProp.name, false);
+            break;
+          case PropertyBindingType.Attribute:
+            ctx = schemaRegistry.securityContext(elementName, boundProp.name, true);
+            break;
+          default:
+            throw new Error(
+                `Illegal state: Only property / attribute bindings can have an unknown security context! Binding ${boundProp.name}`);
+        }
+        methodArgs.push(createEnumExpression(Identifiers.SecurityContext, ctx));
+      });
+  compileElement.view.detectChangesRenderPropertiesMethod.addStmt(
+      directiveWrapperInstance.callMethod('detectChangesInHostProps', methodArgs).toStmt());
 }
 
 export function bindDirectiveInputs(
@@ -157,7 +188,7 @@ export function bindDirectiveInputs(
   var isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
   let directiveDetectChangesExpr = directiveWrapperInstance.callMethod(
-      'detectChangesInternal',
+      'detectChangesInInputProps',
       [o.THIS_EXPR, compileElement.renderNode, DetectChangesVars.throwOnChange]);
   const directiveDetectChangesStmt = isOnPushComp ?
       new o.IfStmt(directiveDetectChangesExpr, [compileElement.appElement.prop('componentView')
