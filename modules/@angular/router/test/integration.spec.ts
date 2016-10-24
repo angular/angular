@@ -622,7 +622,8 @@ describe('Integration', () => {
         providers: [
           {provide: 'resolveTwo', useValue: (a: any, b: any) => 2},
           {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
-          {provide: 'resolveSix', useClass: ResolveSix}
+          {provide: 'resolveSix', useClass: ResolveSix},
+          {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
         ]
       });
     });
@@ -670,6 +671,28 @@ describe('Integration', () => {
          expect(rightRecorded).toEqual([
            {one: 1, five: 5, two: 2, six: 6}, {one: 1, five: 5, two: 2, six: 6}
          ]);
+       })));
+
+    it('should handle errors',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}}]);
+
+         let recordedEvents: any[] = [];
+         router.events.subscribe(e => recordedEvents.push(e));
+
+         let e: any = null;
+         router.navigateByUrl('/simple').catch(error => e = error);
+         advance(fixture);
+
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/simple'], [RoutesRecognized, '/simple'],
+           [NavigationError, '/simple']
+         ]);
+
+         expect(e).toEqual('error');
        })));
   });
 
