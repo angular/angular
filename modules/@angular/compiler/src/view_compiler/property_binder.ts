@@ -8,6 +8,7 @@
 
 import {SecurityContext} from '@angular/core';
 
+import {createCheckBindingField, createCheckBindingStmt} from '../compiler_util/binding_util';
 import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
 import {writeToRenderer} from '../compiler_util/render_util';
 import * as cdAst from '../expression_parser/ast';
@@ -18,57 +19,27 @@ import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDet
 import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {camelCaseToDashCase} from '../util';
 
-import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
 import {DetectChangesVars, ViewProperties} from './constants';
 import {CompileEventListener} from './event_binder';
 
-function createBindFieldExpr(bindingId: string): o.ReadPropExpr {
-  return o.THIS_EXPR.prop(`_expr_${bindingId}`);
-}
-
-function createCheckBindingStmt(
-    view: CompileView, evalResult: ConvertPropertyBindingResult, fieldExpr: o.ReadPropExpr,
-    actions: o.Statement[], method: CompileMethod) {
-  // private is fine here as no child view will reference the cached value...
-  view.fields.push(new o.ClassField(fieldExpr.name, null, [o.StmtModifier.Private]));
-  view.createMethod.addStmt(o.THIS_EXPR.prop(fieldExpr.name)
-                                .set(o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED)))
-                                .toStmt());
-
-  var condition: o.Expression = o.importExpr(resolveIdentifier(Identifiers.checkBinding)).callFn([
-    DetectChangesVars.throwOnChange, fieldExpr, evalResult.currValExpr
-  ]);
-  if (evalResult.forceUpdate) {
-    condition = evalResult.forceUpdate.or(condition);
-  }
-  method.addStmts(evalResult.stmts);
-  method.addStmt(new o.IfStmt(condition, actions.concat([
-    <o.Statement>o.THIS_EXPR.prop(fieldExpr.name).set(evalResult.currValExpr).toStmt()
-  ])));
-}
-
 export function bindRenderText(
     boundText: BoundTextAst, compileNode: CompileNode, view: CompileView): void {
-  var bindingId = `${view.bindings.length}`;
-  view.bindings.push(new CompileBinding(compileNode, boundText));
-  const evalResult =
-      convertPropertyBinding(view, view, view.componentContext, boundText.value, bindingId);
+  const valueField = createCheckBindingField(view);
+  const evalResult = convertPropertyBinding(
+      view, view, view.componentContext, boundText.value, valueField.bindingId);
   if (!evalResult) {
     return null;
   }
 
-  var valueField = createBindFieldExpr(bindingId);
   view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
-
-  createCheckBindingStmt(
-      view, evalResult, valueField,
+  view.detectChangesRenderPropertiesMethod.addStmts(createCheckBindingStmt(
+      evalResult, valueField.expression, DetectChangesVars.throwOnChange,
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, evalResult.currValExpr])
-           .toStmt()],
-      view.detectChangesRenderPropertiesMethod);
+           .toStmt()]));
 }
 
 function bindAndWriteToRenderer(
@@ -77,12 +48,10 @@ function bindAndWriteToRenderer(
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
-    const bindingId = `${view.bindings.length}`;
-    view.bindings.push(new CompileBinding(compileElement, boundProp));
+    const bindingField = createCheckBindingField(view);
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
-    var fieldExpr = createBindFieldExpr(bindingId);
-    const evalResult =
-        convertPropertyBinding(view, isHostProp ? null : view, context, boundProp.value, bindingId);
+    const evalResult = convertPropertyBinding(
+        view, isHostProp ? null : view, context, boundProp.value, bindingField.bindingId);
     var updateStmts: o.Statement[] = [];
     var compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
@@ -111,19 +80,20 @@ function bindAndWriteToRenderer(
         const unitializedValue = o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED));
         const animationTransitionVar = o.variable('animationTransition_' + animationName);
 
-        updateStmts.push(
-            animationTransitionVar
-                .set(animationFnExpr.callFn([
-                  o.THIS_EXPR, renderNode,
-                  fieldExpr.equals(unitializedValue).conditional(emptyStateValue, fieldExpr),
-                  evalResult.currValExpr.equals(unitializedValue)
-                      .conditional(emptyStateValue, evalResult.currValExpr)
-                ]))
-                .toDeclStmt());
+        updateStmts.push(animationTransitionVar
+                             .set(animationFnExpr.callFn([
+                               o.THIS_EXPR, renderNode,
+                               bindingField.expression.equals(unitializedValue)
+                                   .conditional(emptyStateValue, bindingField.expression),
+                               evalResult.currValExpr.equals(unitializedValue)
+                                   .conditional(emptyStateValue, evalResult.currValExpr)
+                             ]))
+                             .toDeclStmt());
 
         detachStmts.push(
             animationTransitionVar
-                .set(animationFnExpr.callFn([o.THIS_EXPR, renderNode, fieldExpr, emptyStateValue]))
+                .set(animationFnExpr.callFn(
+                    [o.THIS_EXPR, renderNode, bindingField.expression, emptyStateValue]))
                 .toDeclStmt());
 
         eventListeners.forEach(listener => {
@@ -138,8 +108,8 @@ function bindAndWriteToRenderer(
 
         break;
     }
-
-    createCheckBindingStmt(view, evalResult, fieldExpr, updateStmts, compileMethod);
+    compileMethod.addStmts(createCheckBindingStmt(
+        evalResult, bindingField.expression, DetectChangesVars.throwOnChange, updateStmts));
   });
 }
 
@@ -158,15 +128,15 @@ export function bindDirectiveHostProps(
 }
 
 export function bindDirectiveInputs(
-    directiveAst: DirectiveAst, directiveWrapperInstance: o.Expression,
+    directiveAst: DirectiveAst, directiveWrapperInstance: o.Expression, dirIndex: number,
     compileElement: CompileElement) {
   var view = compileElement.view;
   var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
   detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
 
-  directiveAst.inputs.forEach((input) => {
-    const bindingId = `${view.bindings.length}`;
-    view.bindings.push(new CompileBinding(compileElement, input));
+  directiveAst.inputs.forEach((input, inputIdx) => {
+    // Note: We can't use `fields.length` here, as we are not adding a field!
+    const bindingId = `${compileElement.nodeIndex}_${dirIndex}_${inputIdx}`;
     detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, input);
     const evalResult =
         convertPropertyBinding(view, view, view.componentContext, input.value, bindingId);
