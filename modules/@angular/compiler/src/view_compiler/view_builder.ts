@@ -10,7 +10,7 @@ import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
-import {createDiTokenExpression, createFastArray} from '../compiler_util/identifier_util';
+import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import {createClassStmt} from '../output/class_builder';
@@ -167,7 +167,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           'createTemplateAnchor', [this._getParentRenderNode(parent), debugContextExpr]);
     } else {
       const htmlAttrs = _readHtmlAttrs(ast.attrs);
-      const attrNameAndValues = createFastArray(
+      const attrNameAndValues = createInlineArray(
           _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives).map(v => o.literal(v)));
       if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
         createRenderNodeExpr =

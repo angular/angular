@@ -28,9 +28,6 @@ const STYLE_PREFIX = 'style';
 
 const ANIMATE_PROP_PREFIX = 'animate-';
 
-/**
- * Type of a parsed property
- */
 export enum BoundPropertyType {
   DEFAULT,
   LITERAL_ATTR,
@@ -55,18 +52,17 @@ export class BoundProperty {
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeMetadata> = new Map();
-  errors: ParseError[] = [];
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      protected _schemaRegistry: ElementSchemaRegistry, protected _schemas: SchemaMetadata[],
-      pipes: CompilePipeMetadata[]) {
+      private _schemaRegistry: ElementSchemaRegistry, private _schemas: SchemaMetadata[],
+      pipes: CompilePipeMetadata[], private _targetErrors: ParseError[]) {
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
 
   createDirectiveHostPropertyAsts(
-      elementName: string, hostProps: {[key: string]: string}, sourceSpan: ParseSourceSpan,
-      targetPropertyAsts: BoundElementPropertyAst[]) {
+      elementName: string, hostProps: {[key: string]: string},
+      sourceSpan: ParseSourceSpan): BoundElementPropertyAst[] {
     if (hostProps) {
       const boundProps: BoundProperty[] = [];
       Object.keys(hostProps).forEach(propName => {
@@ -74,30 +70,30 @@ export class BindingParser {
         if (typeof expression === 'string') {
           this.parsePropertyBinding(propName, expression, true, sourceSpan, [], boundProps);
         } else {
-          this.reportError(
+          this._reportError(
               `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
-      boundProps.forEach(
-          (prop) => { targetPropertyAsts.push(this.createElementPropertyAst(elementName, prop)); });
+      return boundProps.map((prop) => this.createElementPropertyAst(elementName, prop));
     }
   }
 
-  createDirectiveHostEventAsts(
-      hostListeners: {[key: string]: string}, sourceSpan: ParseSourceSpan,
-      targetEventAsts: BoundEventAst[]) {
+  createDirectiveHostEventAsts(hostListeners: {[key: string]: string}, sourceSpan: ParseSourceSpan):
+      BoundEventAst[] {
     if (hostListeners) {
+      const targetEventAsts: BoundEventAst[] = [];
       Object.keys(hostListeners).forEach(propName => {
         const expression = hostListeners[propName];
         if (typeof expression === 'string') {
           this.parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
         } else {
-          this.reportError(
+          this._reportError(
               `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
+      return targetEventAsts;
     }
   }
 
@@ -115,7 +111,7 @@ export class BindingParser {
       }
       return ast;
     } catch (e) {
-      this.reportError(`${e}`, sourceSpan);
+      this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
     }
   }
@@ -150,10 +146,10 @@ export class BindingParser {
         }
       });
       bindingsResult.warnings.forEach(
-          (warning) => { this.reportError(warning, sourceSpan, ParseErrorLevel.WARNING); });
+          (warning) => { this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING); });
       return bindingsResult.templateBindings;
     } catch (e) {
-      this.reportError(`${e}`, sourceSpan);
+      this._reportError(`${e}`, sourceSpan);
       return [];
     }
   }
@@ -163,8 +159,8 @@ export class BindingParser {
       targetProps: BoundProperty[]) {
     if (_isAnimationLabel(name)) {
       name = name.substring(1);
-      if (isPresent(value) && value.length > 0) {
-        this.reportError(
+      if (value) {
+        this._reportError(
             `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
                 ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
             sourceSpan, ParseErrorLevel.FATAL);
@@ -239,7 +235,7 @@ export class BindingParser {
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
-      this.reportError(`${e}`, sourceSpan);
+      this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
     }
   }
@@ -271,7 +267,7 @@ export class BindingParser {
               `\n1. If '${elementName}' is an Angular component and it has '${boundPropertyName}' input, then verify that it is part of this module.` +
               `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
         }
-        this.reportError(errorMsg, boundProp.sourceSpan);
+        this._reportError(errorMsg, boundProp.sourceSpan);
       }
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
@@ -299,7 +295,7 @@ export class BindingParser {
         bindingType = PropertyBindingType.Style;
         securityContext = SecurityContext.STYLE;
       } else {
-        this.reportError(`Invalid property name '${boundProp.name}'`, boundProp.sourceSpan);
+        this._reportError(`Invalid property name '${boundProp.name}'`, boundProp.sourceSpan);
         bindingType = null;
         securityContext = null;
       }
@@ -336,13 +332,13 @@ export class BindingParser {
           break;
 
         default:
-          this.reportError(
+          this._reportError(
               `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
               sourceSpan);
           break;
       }
     } else {
-      this.reportError(
+      this._reportError(
           `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
           sourceSpan);
     }
@@ -369,26 +365,26 @@ export class BindingParser {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
       if (!ast || ast.ast instanceof EmptyExpr) {
-        this.reportError(`Empty expressions are not allowed`, sourceSpan);
+        this._reportError(`Empty expressions are not allowed`, sourceSpan);
         return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
       }
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
-      this.reportError(`${e}`, sourceSpan);
+      this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
     }
   }
 
-  reportError(
+  private _reportError(
       message: string, sourceSpan: ParseSourceSpan,
       level: ParseErrorLevel = ParseErrorLevel.FATAL) {
-    this.errors.push(new ParseError(sourceSpan, message, level));
+    this._targetErrors.push(new ParseError(sourceSpan, message, level));
   }
 
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
     for (const error of errors) {
-      this.reportError(error.message, sourceSpan);
+      this._reportError(error.message, sourceSpan);
     }
   }
 
@@ -398,7 +394,7 @@ export class BindingParser {
       ast.visit(collector);
       collector.pipes.forEach((pipeName) => {
         if (!this.pipesByName.has(pipeName)) {
-          this.reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
+          this._reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
         }
       });
     }
@@ -415,13 +411,13 @@ export class BindingParser {
     const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
                             this._schemaRegistry.validateProperty(propName);
     if (report.error) {
-      this.reportError(report.msg, sourceSpan, ParseErrorLevel.FATAL);
+      this._reportError(report.msg, sourceSpan, ParseErrorLevel.FATAL);
     }
   }
 }
 
 export class PipeCollector extends RecursiveAstVisitor {
-  pipes: Set<string> = new Set<string>();
+  pipes = new Set<string>();
   visitPipe(ast: BindingPipe, context: any): any {
     this.pipes.add(ast.name);
     ast.exp.visit(this);

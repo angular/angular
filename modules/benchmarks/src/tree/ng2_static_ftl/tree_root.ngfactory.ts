@@ -36,7 +36,7 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
   }
   createInternal(rootSelector: string): import2.AppElement {
     this._el_0 = import4.selectOrCreateRenderHostElement(
-        this.renderer, 'tree', import4.EMPTY_FAST_ARRAY, rootSelector, (null as any));
+        this.renderer, 'tree', import4.EMPTY_INLINE_ARRAY, rootSelector, (null as any));
     this._appEl_0 = new import2.AppElement(0, (null as any), this, this._el_0);
     var compView_0: any =
         viewFactory_TreeRootComponent0(this.viewUtils, this.injector(0), this._appEl_0);
