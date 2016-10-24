@@ -411,7 +411,7 @@ class InlineArray0 implements InlineArray<any> {
 }
 
 export class InlineArray2<T> implements InlineArray<T> {
-  constructor(public length: number, private _v0: T, private _v1: T) {}
+  constructor(public length: number, private _v0?: T, private _v1?: T) {}
   get(index: number) {
     switch (index) {
       case 0:
@@ -426,7 +426,7 @@ export class InlineArray2<T> implements InlineArray<T> {
 
 export class InlineArray4<T> implements InlineArray<T> {
   constructor(
-      public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T) {}
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T) {}
   get(index: number) {
     switch (index) {
       case 0:
@@ -445,8 +445,8 @@ export class InlineArray4<T> implements InlineArray<T> {
 
 export class InlineArray8<T> implements InlineArray<T> {
   constructor(
-      public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T,
-      private _v4: T, private _v5: T, private _v6: T, private _v7: T) {}
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T) {}
   get(index: number) {
     switch (index) {
       case 0:
@@ -473,10 +473,10 @@ export class InlineArray8<T> implements InlineArray<T> {
 
 export class InlineArray16<T> implements InlineArray<T> {
   constructor(
-      public length: number, private _v0: T, private _v1: T, private _v2: T, private _v3: T,
-      private _v4: T, private _v5: T, private _v6: T, private _v7: T, private _v8: T,
-      private _v9: T, private _v10: T, private _v11: T, private _v12: T, private _v13: T,
-      private _v14: T, private _v15: T) {}
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T, private _v8?: T,
+      private _v9?: T, private _v10?: T, private _v11?: T, private _v12?: T, private _v13?: T,
+      private _v14?: T, private _v15?: T) {}
   get(index: number) {
     switch (index) {
       case 0:
