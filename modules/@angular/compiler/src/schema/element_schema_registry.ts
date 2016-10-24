@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchemaMetadata} from '@angular/core';
+import {SchemaMetadata, SecurityContext} from '@angular/core';
 
 export abstract class ElementSchemaRegistry {
   abstract hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean;
   abstract hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean;
-  abstract securityContext(tagName: string, propName: string): any;
+  abstract securityContext(elementName: string, propName: string, isAttribute: boolean):
+      SecurityContext;
+  abstract allKnownElementNames(): string[];
   abstract getMappedPropName(propName: string): string;
   abstract getDefaultComponentElementName(): string;
   abstract validateProperty(name: string): {error: boolean, msg?: string};

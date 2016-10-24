@@ -26,7 +26,9 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     return value === void 0 ? true : value;
   }
 
-  securityContext(tagName: string, property: string): SecurityContext {
+  allKnownElementNames(): string[] { return Object.keys(this.existingElements); }
+
+  securityContext(selector: string, property: string, isAttribute: boolean): SecurityContext {
     return SecurityContext.NONE;
   }
 

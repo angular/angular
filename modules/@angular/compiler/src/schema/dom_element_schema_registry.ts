@@ -328,7 +328,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * 'NONE' security context, i.e. that they are safe inert string values. Only specific well known
    * attack vectors are assigned their appropriate context.
    */
-  securityContext(tagName: string, propName: string): SecurityContext {
+  securityContext(tagName: string, propName: string, isAttribute: boolean): SecurityContext {
+    if (isAttribute) {
+      // NB: For security purposes, use the mapped property name, not the attribute name.
+      propName = this.getMappedPropName(propName);
+    }
+
     // Make sure comparisons are case insensitive, so that case differences between attribute and
     // property names do not have a security impact.
     tagName = tagName.toLowerCase();
@@ -366,4 +371,6 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       return {error: false};
     }
   }
+
+  allKnownElementNames(): string[] { return Object.keys(this._schema); }
 }

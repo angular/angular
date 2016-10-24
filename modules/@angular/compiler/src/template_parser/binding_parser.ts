@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchemaMetadata, SecurityContext} from '@angular/core';
+import {SecurityContext} from '@angular/core';
 
-import {CompilePipeMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, LiteralPrimitive, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {view_utils} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
+import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
 
 import {BoundElementPropertyAst, BoundEventAst, PropertyBindingType, VariableAst} from './template_ast';
@@ -55,18 +56,17 @@ export class BindingParser {
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, private _schemas: SchemaMetadata[],
-      pipes: CompilePipeMetadata[], private _targetErrors: ParseError[]) {
+      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeMetadata[],
+      private _targetErrors: ParseError[]) {
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
 
-  createDirectiveHostPropertyAsts(
-      elementName: string, hostProps: {[key: string]: string},
-      sourceSpan: ParseSourceSpan): BoundElementPropertyAst[] {
-    if (hostProps) {
+  createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveMetadata, sourceSpan: ParseSourceSpan):
+      BoundElementPropertyAst[] {
+    if (dirMeta.hostProperties) {
       const boundProps: BoundProperty[] = [];
-      Object.keys(hostProps).forEach(propName => {
-        const expression = hostProps[propName];
+      Object.keys(dirMeta.hostProperties).forEach(propName => {
+        const expression = dirMeta.hostProperties[propName];
         if (typeof expression === 'string') {
           this.parsePropertyBinding(propName, expression, true, sourceSpan, [], boundProps);
         } else {
@@ -75,16 +75,16 @@ export class BindingParser {
               sourceSpan);
         }
       });
-      return boundProps.map((prop) => this.createElementPropertyAst(elementName, prop));
+      return boundProps.map((prop) => this.createElementPropertyAst(dirMeta.selector, prop));
     }
   }
 
-  createDirectiveHostEventAsts(hostListeners: {[key: string]: string}, sourceSpan: ParseSourceSpan):
+  createDirectiveHostEventAsts(dirMeta: CompileDirectiveMetadata, sourceSpan: ParseSourceSpan):
       BoundEventAst[] {
-    if (hostListeners) {
+    if (dirMeta.hostListeners) {
       const targetEventAsts: BoundEventAst[] = [];
-      Object.keys(hostListeners).forEach(propName => {
-        const expression = hostListeners[propName];
+      Object.keys(dirMeta.hostListeners).forEach(propName => {
+        const expression = dirMeta.hostListeners[propName];
         if (typeof expression === 'string') {
           this.parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
         } else {
@@ -240,42 +240,33 @@ export class BindingParser {
     }
   }
 
-  createElementPropertyAst(elementName: string, boundProp: BoundProperty): BoundElementPropertyAst {
+  createElementPropertyAst(elementSelector: string, boundProp: BoundProperty):
+      BoundElementPropertyAst {
     if (boundProp.isAnimation) {
       return new BoundElementPropertyAst(
-          boundProp.name, PropertyBindingType.Animation, SecurityContext.NONE, boundProp.expression,
-          null, boundProp.sourceSpan);
+          boundProp.name, PropertyBindingType.Animation, SecurityContext.NONE, false,
+          boundProp.expression, null, boundProp.sourceSpan);
     }
 
     let unit: string = null;
     let bindingType: PropertyBindingType;
     let boundPropertyName: string;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
-    let securityContext: SecurityContext;
+    let securityContexts: SecurityContext[];
 
     if (parts.length === 1) {
       var partValue = parts[0];
       boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
-      securityContext = this._schemaRegistry.securityContext(elementName, boundPropertyName);
+      securityContexts = calcPossibleSecurityContexts(
+          this._schemaRegistry, elementSelector, boundPropertyName, false);
       bindingType = PropertyBindingType.Property;
       this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
-      if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName, this._schemas)) {
-        let errorMsg =
-            `Can't bind to '${boundPropertyName}' since it isn't a known property of '${elementName}'.`;
-        if (elementName.indexOf('-') > -1) {
-          errorMsg +=
-              `\n1. If '${elementName}' is an Angular component and it has '${boundPropertyName}' input, then verify that it is part of this module.` +
-              `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
-        }
-        this._reportError(errorMsg, boundProp.sourceSpan);
-      }
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
         this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
-        // NB: For security purposes, use the mapped property name, not the attribute name.
-        const mapPropName = this._schemaRegistry.getMappedPropName(boundPropertyName);
-        securityContext = this._schemaRegistry.securityContext(elementName, mapPropName);
+        securityContexts = calcPossibleSecurityContexts(
+            this._schemaRegistry, elementSelector, boundPropertyName, true);
 
         const nsSeparatorIdx = boundPropertyName.indexOf(':');
         if (nsSeparatorIdx > -1) {
@@ -288,22 +279,21 @@ export class BindingParser {
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Class;
-        securityContext = SecurityContext.NONE;
+        securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Style;
-        securityContext = SecurityContext.STYLE;
+        securityContexts = [SecurityContext.STYLE];
       } else {
         this._reportError(`Invalid property name '${boundProp.name}'`, boundProp.sourceSpan);
         bindingType = null;
-        securityContext = null;
+        securityContexts = [];
       }
     }
-
     return new BoundElementPropertyAst(
-        boundPropertyName, bindingType, securityContext, boundProp.expression, unit,
-        boundProp.sourceSpan);
+        boundPropertyName, bindingType, securityContexts.length === 1 ? securityContexts[0] : null,
+        securityContexts.length > 1, boundProp.expression, unit, boundProp.sourceSpan);
   }
 
   parseEvent(
@@ -428,4 +418,22 @@ export class PipeCollector extends RecursiveAstVisitor {
 
 function _isAnimationLabel(name: string): boolean {
   return name[0] == '@';
+}
+
+export function calcPossibleSecurityContexts(
+    registry: ElementSchemaRegistry, selector: string, propName: string,
+    isAttribute: boolean): SecurityContext[] {
+  const ctxs: SecurityContext[] = [];
+  CssSelector.parse(selector).forEach((selector) => {
+    const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
+    const notElementNames =
+        new Set(selector.notSelectors.filter(selector => selector.isElementSelector())
+                    .map((selector) => selector.element));
+    const possibleElementNames =
+        elementNames.filter(elementName => !notElementNames.has(elementName));
+
+    ctxs.push(...possibleElementNames.map(
+        elementName => registry.securityContext(elementName, propName, isAttribute)));
+  });
+  return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
 }
