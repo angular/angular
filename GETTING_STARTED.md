@@ -33,19 +33,20 @@ import { MaterialModule } from '@angular/material';
 export class PizzaPartyAppModule { }
 ```
 
-## Including core and theme styles:
-This is required to apply all of the core and theme styles to your application.
-See the [theming guide](docs/theming.md) for instructions.
+## Include the core and theme styles:
+This is **required** to apply all of the core and theme styles to your application. You can either
+use a pre-built theme, or define your own custom theme.
 
+:trident:  See the [theming guide](docs/theming.md) for instructions.
 
-## Additional setup for `md-slide-toggle` and `md-slider`:
+### Additional setup for `md-slide-toggle` and `md-slider`:
 The slide-toggle and slider components have a dependency on [HammerJS](http://hammerjs.github.io/).
 
 Add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerjs), a CDN 
 (such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served 
 directly from your app.
 
-## [Optional] Using Material Design icons with `md-icon`:
+### [Optional] Using Material Design icons with `md-icon`:
 
 - If you want to use Material Design icons in addition to Angular Material components, 
 load the Material Design font in your `index.html`.  
