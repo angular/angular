@@ -98,6 +98,57 @@ describe('Overlay', () => {
     });
   });
 
+  describe('size', () => {
+    let state: OverlayState;
+
+    beforeEach(() => {
+      state = new OverlayState();
+    });
+
+    it('should apply the width set in the config', () => {
+      state.width = 500;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.width).toEqual('500px');
+    });
+
+    it('should support using other units if a string width is provided', () => {
+      state.width = '200%';
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.width).toEqual('200%');
+    });
+
+    it('should apply the height set in the config', () => {
+      state.height = 500;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.height).toEqual('500px');
+    });
+
+    it('should support using other units if a string height is provided', () => {
+      state.height = '100vh';
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.height).toEqual('100vh');
+    });
+
+    it('should support zero widths and heights', () => {
+      state.width = 0;
+      state.height = 0;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.width).toEqual('0px');
+      expect(pane.style.height).toEqual('0px');
+    });
+
+  });
+
   describe('backdrop', () => {
     let config: OverlayState;
 

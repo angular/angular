@@ -23,6 +23,7 @@ export class OverlayRef implements PortalHost {
     }
 
     let attachResult = this._portalHost.attach(portal);
+    this.updateSize();
     this.updatePosition();
 
     return attachResult;
@@ -55,6 +56,17 @@ export class OverlayRef implements PortalHost {
   updatePosition() {
     if (this._state.positionStrategy) {
       this._state.positionStrategy.apply(this._pane);
+    }
+  }
+
+  /** Updates the size of the overlay based on the overlay config. */
+  updateSize() {
+    if (this._state.width || this._state.width === 0) {
+      this._pane.style.width = formatCssUnit(this._state.width);
+    }
+
+    if (this._state.height || this._state.height === 0) {
+      this._pane.style.height = formatCssUnit(this._state.height);
     }
   }
 
@@ -97,4 +109,8 @@ export class OverlayRef implements PortalHost {
       });
     }
   }
+}
+
+function formatCssUnit(value: number | string) {
+  return typeof value === 'string' ? value as string : `${value}px`;
 }
