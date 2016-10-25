@@ -13,6 +13,7 @@
 @import '../../progress-bar/progress-bar-theme';
 @import '../../progress-circle/progress-circle-theme';
 @import '../../radio/radio-theme';
+@import '../../select/select-theme';
 @import '../../sidenav/sidenav-theme';
 @import '../../slide-toggle/slide-toggle-theme';
 @import '../../slider/slider-theme';
@@ -37,6 +38,7 @@
   @include md-progress-bar-theme($theme);
   @include md-progress-circle-theme($theme);
   @include md-radio-theme($theme);
+  @include md-select-theme($theme);
   @include md-sidenav-theme($theme);
   @include md-slide-toggle-theme($theme);
   @include md-slider-theme($theme);

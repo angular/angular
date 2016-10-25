@@ -2,9 +2,9 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-select',
-  templateUrl: 'select.html',
+  selector: 'md-option',
+  template: ``,
   styleUrls: ['select.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class MdSelect {}
+export class MdOption {}
