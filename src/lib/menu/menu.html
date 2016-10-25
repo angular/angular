@@ -1,6 +1,6 @@
 <template>
   <div class="md-menu-panel" [ngClass]="_classList"
-      (click)="_emitCloseEvent()" (keydown)="_handleKeydown($event)">
+      (click)="_emitCloseEvent()" (keydown)="_keyManager.onKeydown($event)">
     <ng-content></ng-content>
   </div>
 </template>

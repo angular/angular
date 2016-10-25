@@ -15,7 +15,7 @@ import {
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
-import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
+import {ListKeyManager} from '../core/a11y/list-key-manager';
 
 @Component({
   moduleId: module.id,
@@ -27,7 +27,7 @@ import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
   exportAs: 'mdMenu'
 })
 export class MdMenu {
-  private _focusedItemIndex: number = 0;
+  private _keyManager: ListKeyManager;
 
   // config object to be passed into the menu's ngClass
   _classList: Object;
@@ -42,6 +42,11 @@ export class MdMenu {
               @Attribute('y-position') posY: MenuPositionY) {
     if (posX) { this._setPositionX(posX); }
     if (posY) { this._setPositionY(posY); }
+  }
+
+  ngAfterContentInit() {
+    this._keyManager = new ListKeyManager(this.items);
+    this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
   }
 
   /**
@@ -66,60 +71,16 @@ export class MdMenu {
    * TODO: internal
    */
   _focusFirstItem() {
+    // The menu always opens with the first item focused.
     this.items.first.focus();
+    this._keyManager.focusedItemIndex = 0;
   }
-
-  // TODO(kara): update this when (keydown.downArrow) testability is fixed
-  // TODO: internal
-  _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === DOWN_ARROW) {
-      this._focusNextItem();
-    } else if (event.keyCode === UP_ARROW) {
-      this._focusPreviousItem();
-    } else if (event.keyCode === TAB) {
-      this._emitCloseEvent();
-    }
-  }
-
   /**
    * This emits a close event to which the trigger is subscribed. When emitted, the
    * trigger will close the menu.
    */
   private _emitCloseEvent(): void {
-    this._focusedItemIndex = 0;
     this.close.emit(null);
-  }
-
-  private _focusNextItem(): void {
-    this._updateFocusedItemIndex(1);
-    this.items.toArray()[this._focusedItemIndex].focus();
-  }
-
-  private _focusPreviousItem(): void {
-    this._updateFocusedItemIndex(-1);
-    this.items.toArray()[this._focusedItemIndex].focus();
-  }
-
-  /**
-   * This method sets focus to the correct menu item, given a list of menu items and the delta
-   * between the currently focused menu item and the new menu item to be focused. It will
-   * continue to move down the list until it finds an item that is not disabled, and it will wrap
-   * if it encounters either end of the menu.
-   *
-   * @param delta the desired change in focus index
-   * @param menuItems the menu items that should be focused
-   * @private
-     */
-  private _updateFocusedItemIndex(delta: number, menuItems: MdMenuItem[] = this.items.toArray()) {
-    // when focus would leave menu, wrap to beginning or end
-    this._focusedItemIndex = (this._focusedItemIndex + delta + this.items.length)
-                              % this.items.length;
-
-    // skip all disabled menu items recursively until an active one
-    // is reached or the menu closes for overreaching bounds
-    while (menuItems[this._focusedItemIndex].disabled) {
-      this._updateFocusedItemIndex(delta, menuItems);
-    }
   }
 
   private _setPositionX(pos: MenuPositionX): void {
