@@ -1,0 +1,45 @@
+@import './variables';
+@import './elevation';
+@import './list-common';
+
+/** The mixins below are shared between md-menu and md-select */
+
+// menu width must be a multiple of 56px
+$md-menu-overlay-min-width: 112px !default;   // 56 * 2
+$md-menu-overlay-max-width: 280px !default;   // 56 * 5
+
+$md-menu-item-height: 48px !default;
+$md-menu-font-size: 16px !default;
+$md-menu-side-padding: 16px !default;
+$md-menu-vertical-padding: 8px !default;
+
+@mixin md-menu-base() {
+  @include md-elevation(2);
+  min-width: $md-menu-overlay-min-width;
+  max-width: $md-menu-overlay-max-width;
+
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
+
+  padding-top: $md-menu-vertical-padding;
+  padding-bottom: $md-menu-vertical-padding;
+}
+
+@mixin md-menu-item-base() {
+  @include md-truncate-line();
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: $md-menu-item-height;
+  padding: 0 $md-menu-side-padding;
+
+  font-size: $md-menu-font-size;
+  font-family: $md-font-family;
+  text-align: start;
+  text-decoration: none;   // necessary to reset anchor tags
+
+  &[disabled] {
+    cursor: default;
+  }
+}
