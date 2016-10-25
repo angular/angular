@@ -5,6 +5,7 @@ import {E2EApp, Home} from './e2e-app/e2e-app';
 import {IconE2E} from './icon/icon-e2e';
 import {ButtonE2E} from './button/button-e2e';
 import {MenuE2E} from './menu/menu-e2e';
+import {SimpleRadioButtons} from './radio/radio-e2e';
 import {BasicTabs} from './tabs/tabs-e2e';
 import {MaterialModule} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
@@ -22,6 +23,7 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     ButtonE2E,
     MenuE2E,
     BasicTabs,
+    SimpleRadioButtons,
     Home,
   ],
   bootstrap: [E2EApp],
