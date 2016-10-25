@@ -61,7 +61,7 @@ High level items planned for October 2016:
 | menu             | Initial version, needs enhancements | [README][17] |   [#119][0119] |
 | tooltip          | Initial version, needs enhancements | [README][18] |              - |
 | ripples          |  Available, but needs to be applied | [README][19] |   [#108][0108] |
-| dialog           |  Started, not yet ready for release |           -  |   [#114][0114] |
+| dialog           |  Started, not yet ready for release | [README][22] |   [#114][0114] |
 | snackbar / toast | Initial version, needs enhancements | [README][21] |   [#115][0115] |
 | select           |                      Design started |           -  |   [#118][0118] |
 | textarea         |                         Not started |           -  |   [#546][0546] |
@@ -102,6 +102,7 @@ High level items planned for October 2016:
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
 [20]: https://github.com/angular/material2/blob/master/docs/theming.md
 [21]: https://github.com/angular/material2/blob/master/src/lib/snack-bar/README.md
+[22]: https://github.com/angular/material2/blob/master/src/lib/dialog/README.md
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
