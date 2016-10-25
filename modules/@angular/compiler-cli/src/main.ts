@@ -19,7 +19,9 @@ import {CodeGenerator} from './codegen';
 function codegen(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
     host: ts.CompilerHost) {
-  return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
+  return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen({
+    transitiveModules: true
+  });
 }
 
 // CLI entry point

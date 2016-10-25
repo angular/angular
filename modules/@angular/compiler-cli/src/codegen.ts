@@ -11,7 +11,7 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {Directive, NgModule, ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -35,65 +35,11 @@ const PREAMBLE = `/**
 
 `;
 
-export class CodeGeneratorModuleCollector {
-  constructor(
-      private staticReflector: StaticReflector, private reflectorHost: StaticReflectorHost,
-      private program: ts.Program, private options: AngularCompilerOptions) {}
-
-  getModuleSymbols(): StaticSymbol[] {
-    // Compare with false since the default should be true
-    const skipFileNames =
-        this.options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
-
-    const ngModules: StaticSymbol[] = [];
-
-    this.program.getSourceFiles()
-        .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))
-        .forEach(sourceFile => {
-          const absSrcPath = this.reflectorHost.getCanonicalFileName(sourceFile.fileName);
-
-          const moduleMetadata = this.staticReflector.getModuleMetadata(absSrcPath);
-          if (!moduleMetadata) {
-            console.log(`WARNING: no metadata found for ${absSrcPath}`);
-            return;
-          }
-
-          const metadata = moduleMetadata['metadata'];
-
-          if (!metadata) {
-            return;
-          }
-
-          for (const symbol of Object.keys(metadata)) {
-            if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-              // Ignore symbols that are only included to record error information.
-              continue;
-            }
-            const staticType = this.reflectorHost.findDeclaration(absSrcPath, symbol, absSrcPath);
-            const annotations = this.staticReflector.annotations(staticType);
-            annotations.some((annotation) => {
-              if (annotation instanceof NgModule) {
-                ngModules.push(staticType);
-                return true;
-              }
-            });
-          }
-        });
-
-    return ngModules;
-  }
-}
-
 export class CodeGenerator {
-  private moduleCollector: CodeGeneratorModuleCollector;
-
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
-      private compiler: compiler.OfflineCompiler, private reflectorHost: StaticReflectorHost) {
-    this.moduleCollector =
-        new CodeGeneratorModuleCollector(staticReflector, reflectorHost, program, options);
-  }
+      private compiler: compiler.OfflineCompiler, private reflectorHost: StaticReflectorHost) {}
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -118,10 +64,11 @@ export class CodeGenerator {
     return path.join(this.options.genDir, relativePath);
   }
 
-  codegen(): Promise<any> {
-    const ngModules = this.moduleCollector.getModuleSymbols();
+  codegen(options: {transitiveModules: boolean}): Promise<any> {
+    const staticSymbols =
+        extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
 
-    return this.compiler.compileModules(ngModules).then(generatedModules => {
+    return this.compiler.compileModules(staticSymbols, options).then(generatedModules => {
       generatedModules.forEach(generatedModule => {
         const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
         const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
@@ -193,4 +140,42 @@ export class CodeGenerator {
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
   }
+}
+
+export function extractProgramSymbols(
+    program: ts.Program, staticReflector: StaticReflector, reflectorHost: StaticReflectorHost,
+    options: AngularCompilerOptions): StaticSymbol[] {
+  // Compare with false since the default should be true
+  const skipFileNames =
+      options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
+
+  const staticSymbols: StaticSymbol[] = [];
+
+  program.getSourceFiles()
+      .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))
+      .forEach(sourceFile => {
+        const absSrcPath = reflectorHost.getCanonicalFileName(sourceFile.fileName);
+
+        const moduleMetadata = staticReflector.getModuleMetadata(absSrcPath);
+        if (!moduleMetadata) {
+          console.log(`WARNING: no metadata found for ${absSrcPath}`);
+          return;
+        }
+
+        const metadata = moduleMetadata['metadata'];
+
+        if (!metadata) {
+          return;
+        }
+
+        for (const symbol of Object.keys(metadata)) {
+          if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
+            // Ignore symbols that are only included to record error information.
+            continue;
+          }
+          staticSymbols.push(reflectorHost.findDeclaration(absSrcPath, symbol, absSrcPath));
+        }
+      });
+
+  return staticSymbols;
 }
