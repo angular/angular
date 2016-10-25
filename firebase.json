@@ -1,23 +1,30 @@
 {
-  "firebase": "material2-test",
-  "public": "dist",
-  "ignore": [
-    "firebase.json",
-    "**/.*",
-    "**/node_modules/**",
-    "tmp",
-    "deploy",
-    "typings"
-  ],
-  "headers": [{
-    "source": "*",
-    "headers": [{
-      "key": "Cache-Control",
-      "value": "no-cache"
-    }]
-  }],
-  "rewrites": [{
-    "source": "/**/!(*.@(js|ts|html|css|json|svg|png|jpg|jpeg))",
-    "destination": "/index.html"
-  }]
+  "hosting": {
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "/**/!(*.@(js|ts|html|css|json|svg|png|jpg|jpeg))",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "*",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "tmp",
+      "deploy",
+      "typings"
+    ]
+  }
 }
