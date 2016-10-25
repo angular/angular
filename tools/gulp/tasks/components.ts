@@ -26,9 +26,9 @@ const tsconfigPath = path.relative(PROJECT_ROOT, path.join(componentsDir, 'tscon
 
 /** [Watch task] Rebuilds (ESM output) whenever ts, scss, or html sources change. */
 task(':watch:components', () => {
-  watch(path.join(componentsDir, '**/*.ts'), [':build:components:ts']);
-  watch(path.join(componentsDir, '**/*.scss'), [':build:components:scss']);
-  watch(path.join(componentsDir, '**/*.html'), [':build:components:assets']);
+  watch(path.join(componentsDir, '**/*.ts'), [':build:components:rollup']);
+  watch(path.join(componentsDir, '**/*.scss'), [':build:components:rollup']);
+  watch(path.join(componentsDir, '**/*.html'), [':build:components:rollup']);
 });
 
 /** [Watch task] Rebuilds for tests (CJS output) whenever ts, scss, or html sources change. */
