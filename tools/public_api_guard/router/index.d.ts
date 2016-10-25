@@ -233,6 +233,7 @@ export declare class RouterLink {
 
 /** @stable */
 export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+    isActive: boolean;
     links: QueryList<RouterLink>;
     linksWithHrefs: QueryList<RouterLinkWithHref>;
     routerLinkActive: string[] | string;

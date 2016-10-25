@@ -52,6 +52,14 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * true}">Bob</a>
  * ```
  *
+ * You can assign the RouterLinkActive instance to a template variable and directly check
+ * the `isActive` status.
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive #rla="routerLinkActive">
+ *   Bob {{ rla.isActive ? '(already open)' : ''}}
+ * </a>
+ * ```
+ *
  * Finally, you can apply the RouterLinkActive directive to an ancestor of a RouterLink.
  *
  * ```
@@ -69,8 +77,12 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * @stable
  */
-@Directive({selector: '[routerLinkActive]'})
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+@Directive({
+  selector: '[routerLinkActive]',
+  exportAs: 'routerLinkActive',
+})
+export class RouterLinkActive implements OnChanges,
+    OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs: QueryList<RouterLinkWithHref>;
@@ -87,6 +99,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
       }
     });
   }
+
+  get isActive(): boolean { return this.hasActiveLink(); }
 
   ngAfterContentInit(): void {
     this.links.changes.subscribe(s => this.update());
@@ -110,8 +124,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
     const isActive = this.hasActiveLink();
-    this.classes.forEach(
-        c => this.renderer.setElementClass(this.element.nativeElement, c, isActive));
+    this.classes.forEach(c => {
+      if (c) {
+        this.renderer.setElementClass(this.element.nativeElement, c, isActive);
+      }
+    });
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {

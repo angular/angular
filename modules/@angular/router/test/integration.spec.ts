@@ -1638,6 +1638,43 @@ describe('Integration', () => {
          expect(native.className).toEqual('active');
        })));
 
+
+    it('should expose an isActive property', fakeAsync(() => {
+         @Component({
+           template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
+              <p>{{rla.isActive}}</p>
+              <router-outlet></router-outlet>`
+         })
+         class ComponentWithRouterLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
+         const router: Router = TestBed.get(Router);
+
+         router.resetConfig([
+           {
+             path: 'team',
+             component: TeamCmp,
+           },
+           {
+             path: 'otherteam',
+             component: TeamCmp,
+           }
+         ]);
+
+         const f = TestBed.createComponent(ComponentWithRouterLink);
+         router.navigateByUrl('/team');
+         advance(f);
+
+         const paragraph = f.nativeElement.querySelector('p');
+         expect(paragraph.textContent).toEqual('true');
+
+         router.navigateByUrl('/otherteam');
+         advance(f);
+
+         expect(paragraph.textContent).toEqual('false');
+       }));
+
   });
 
   describe('lazy loading', () => {
