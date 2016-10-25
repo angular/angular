@@ -78,7 +78,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   private _isInitialized: boolean = false;
 
   /** The method to be called in order to update ngModel */
-  private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
+  _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
@@ -198,7 +198,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     let event = new MdRadioChange();
     event.source = this._selected;
     event.value = this._value;
-    this._controlValueAccessorChangeFn(event.value);
     this.change.emit(event);
   }
 
@@ -405,6 +404,7 @@ export class MdRadioButton implements OnInit {
     event.stopPropagation();
 
     this.checked = true;
+    this.radioGroup._controlValueAccessorChangeFn(this.value);
     this._emitChangeEvent();
 
     if (this.radioGroup) {

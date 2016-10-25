@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {NgControl, FormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -176,12 +176,12 @@ describe('MdRadio', () => {
 
       expect(nativeRadioInput.classList).not.toContain('md-radio-focused');
 
-      dispatchFocusChangeEvent('focus', nativeRadioInput);
+      dispatchEvent('focus', nativeRadioInput);
       fixture.detectChanges();
 
       expect(radioNativeElements[0].classList).toContain('md-radio-focused');
 
-      dispatchFocusChangeEvent('blur', nativeRadioInput);
+      dispatchEvent('blur', nativeRadioInput);
       fixture.detectChanges();
 
       expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
@@ -223,7 +223,7 @@ describe('MdRadio', () => {
     let groupDebugElement: DebugElement;
     let groupNativeElement: HTMLElement;
     let radioDebugElements: DebugElement[];
-    let radioNativeElements: HTMLElement[];
+    let innerRadios: DebugElement[];
     let radioLabelElements: HTMLLabelElement[];
     let groupInstance: MdRadioGroup;
     let radioInstances: MdRadioButton[];
@@ -242,8 +242,8 @@ describe('MdRadio', () => {
       groupNgControl = groupDebugElement.injector.get(NgControl);
 
       radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
-      radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+      innerRadios = fixture.debugElement.queryAll(By.css('input[type="radio"]'));
 
       radioLabelElements = radioDebugElements
         .map(debugEl => debugEl.query(By.css('label')).nativeElement);
@@ -280,16 +280,16 @@ describe('MdRadio', () => {
       expect(groupNgControl.pristine).toBe(true);
       expect(groupNgControl.touched).toBe(false);
 
-      // After changing the value programmatically, the control should become dirty (not pristine),
+      // After changing the value programmatically, the control should stay pristine
       // but remain untouched.
       radioInstances[1].checked = true;
       fixture.detectChanges();
 
       expect(groupNgControl.valid).toBe(true);
-      expect(groupNgControl.pristine).toBe(false);
+      expect(groupNgControl.pristine).toBe(true);
       expect(groupNgControl.touched).toBe(false);
 
-      // After a user interaction occurs (such as a click), the control should remain dirty and
+      // After a user interaction occurs (such as a click), the control should become dirty and
       // now also be touched.
       radioLabelElements[2].click();
       fixture.detectChanges();
@@ -299,10 +299,18 @@ describe('MdRadio', () => {
       expect(groupNgControl.touched).toBe(true);
     });
 
-    it('should update the ngModel value when selecting a radio button', () => {
-      radioInstances[1].checked = true;
+    it('should write to the radio button based on ngModel', fakeAsync(() => {
+      testComponent.modelValue = 'chocolate';
+      fixture.detectChanges();
+      tick();
       fixture.detectChanges();
 
+      expect(innerRadios[1].nativeElement.checked).toBe(true);
+    }));
+
+    it('should update the ngModel value when selecting a radio button', () => {
+      dispatchEvent('change', innerRadios[1].nativeElement);
+      fixture.detectChanges();
       expect(testComponent.modelValue).toBe('chocolate');
     });
 
@@ -310,16 +318,12 @@ describe('MdRadio', () => {
       expect(testComponent.modelValue).toBeUndefined();
       expect(testComponent.lastEvent).toBeUndefined();
 
-      groupInstance.value = 'chocolate';
+      dispatchEvent('change', innerRadios[1].nativeElement);
       fixture.detectChanges();
-
-      expect(testComponent.modelValue).toBe('chocolate');
       expect(testComponent.lastEvent.value).toBe('chocolate');
 
-      groupInstance.value = 'vanilla';
+      dispatchEvent('change', innerRadios[0].nativeElement);
       fixture.detectChanges();
-
-      expect(testComponent.modelValue).toBe('vanilla');
       expect(testComponent.lastEvent.value).toBe('vanilla');
     });
   });
@@ -484,14 +488,14 @@ class RadioGroupWithNgModel {
   lastEvent: MdRadioChange;
 }
 
-// TODO(jelbourn): remove eveything below when Angular supports faking events.
+// TODO(jelbourn): remove everything below when Angular supports faking events.
 
 /**
- * Dispatches a focus change event from an element.
- * @param eventName Name of the event, either 'focus' or 'blur'.
+ * Dispatches an event from an element.
+ * @param eventName Name of the event
  * @param element The element from which the event will be dispatched.
  */
-function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void {
+function dispatchEvent(eventName: string, element: HTMLElement): void {
   let event  = document.createEvent('Event');
   event.initEvent(eventName, true, true);
   element.dispatchEvent(event);
