@@ -23,10 +23,10 @@ CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
 if [ `uname -s` = "Darwin" ]; then
   # If the user is running Mac, download the OSX version
   # https://en.wikipedia.org/wiki/Darwin_(operating_system)
-  CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.11-osx.zip"
+  CONNECT_URL="https://saucelabs.com/downloads/sc-4.4.1-osx.zip"
 else
   # Otherwise, default to Linux for Travis-CI
-  CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.11-linux.tar.gz"
+  CONNECT_URL="https://saucelabs.com/downloads/sc-4.4.1-linux.tar.gz"
 fi
 mkdir -p $CONNECT_DIR
 cd $CONNECT_DIR
