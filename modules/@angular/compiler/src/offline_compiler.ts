@@ -29,56 +29,81 @@ export class SourceModule {
 
 // Returns all the source files and a mapping from modules to directives
 export function analyzeNgModules(
-    ngModules: StaticSymbol[], metadataResolver: CompileMetadataResolver): {
-  ngModuleByDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
+    programStaticSymbols: StaticSymbol[], options: {transitiveModules: boolean},
+    metadataResolver: CompileMetadataResolver): {
+  ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
   files: Array<{srcUrl: string, directives: StaticSymbol[], ngModules: StaticSymbol[]}>
 } {
+  const {
+    ngModules: programNgModules,
+    pipesAndDirectives: programPipesOrDirectives,
+  } = _extractModulesAndPipesOrDirectives(programStaticSymbols, metadataResolver);
+
   const moduleMetasByRef = new Map<any, CompileNgModuleMetadata>();
 
-  // For every input modules add the list of transitively included modules
-  ngModules.forEach(ngModule => {
-    const modMeta = metadataResolver.getNgModuleMetadata(ngModule);
-    modMeta.transitiveModule.modules.forEach(
-        modMeta => { moduleMetasByRef.set(modMeta.type.reference, modMeta); });
+  programNgModules.forEach(modMeta => {
+    if (options.transitiveModules) {
+      // For every input modules add the list of transitively included modules
+      modMeta.transitiveModule.modules.forEach(
+          modMeta => { moduleMetasByRef.set(modMeta.type.reference, modMeta); });
+    } else {
+      moduleMetasByRef.set(modMeta.type.reference, modMeta);
+    }
   });
 
   const ngModuleMetas = MapWrapper.values(moduleMetasByRef);
-  const ngModuleByDirective = new Map<StaticSymbol, CompileNgModuleMetadata>();
+  const ngModuleByPipeOrDirective = new Map<StaticSymbol, CompileNgModuleMetadata>();
   const ngModulesByFile = new Map<string, StaticSymbol[]>();
   const ngDirectivesByFile = new Map<string, StaticSymbol[]>();
-  const srcFileUrls = new Set<string>();
+  const filePaths = new Set<string>();
 
   // Looping over all modules to construct:
-  // - a map from files to modules `ngModulesByFile`,
-  // - a map from files to directives `ngDirectivesByFile`,
-  // - a map from modules to directives `ngModuleByDirective`.
+  // - a map from file to modules `ngModulesByFile`,
+  // - a map from file to directives `ngDirectivesByFile`,
+  // - a map from directive/pipe to module `ngModuleByPipeOrDirective`.
   ngModuleMetas.forEach((ngModuleMeta) => {
     const srcFileUrl = ngModuleMeta.type.reference.filePath;
-    srcFileUrls.add(srcFileUrl);
+    filePaths.add(srcFileUrl);
     ngModulesByFile.set(
         srcFileUrl, (ngModulesByFile.get(srcFileUrl) || []).concat(ngModuleMeta.type.reference));
 
     ngModuleMeta.declaredDirectives.forEach((dirMeta: CompileDirectiveMetadata) => {
       const fileUrl = dirMeta.type.reference.filePath;
-      srcFileUrls.add(fileUrl);
+      filePaths.add(fileUrl);
       ngDirectivesByFile.set(
           fileUrl, (ngDirectivesByFile.get(fileUrl) || []).concat(dirMeta.type.reference));
-      ngModuleByDirective.set(dirMeta.type.reference, ngModuleMeta);
+      ngModuleByPipeOrDirective.set(dirMeta.type.reference, ngModuleMeta);
+    });
+
+    ngModuleMeta.declaredPipes.forEach((pipeMeta: CompilePipeMetadata) => {
+      const fileUrl = pipeMeta.type.reference.filePath;
+      filePaths.add(fileUrl);
+      ngModuleByPipeOrDirective.set(pipeMeta.type.reference, ngModuleMeta);
     });
   });
 
+  // Throw an error if any of the program pipe or directives is not declared by a module
+  const symbolsMissingModule =
+      programPipesOrDirectives.filter(s => !ngModuleByPipeOrDirective.has(s));
+
+  if (symbolsMissingModule.length) {
+    const messages = symbolsMissingModule.map(
+        s => `Cannot determine the module for class ${s.name} in ${s.filePath}!`);
+    throw new Error(messages.join('\n'));
+  }
+
   const files: {srcUrl: string, directives: StaticSymbol[], ngModules: StaticSymbol[]}[] = [];
 
-  srcFileUrls.forEach((srcUrl) => {
+  filePaths.forEach((srcUrl) => {
     const directives = ngDirectivesByFile.get(srcUrl) || [];
     const ngModules = ngModulesByFile.get(srcUrl) || [];
     files.push({srcUrl, directives, ngModules});
   });
 
   return {
-      // map from modules to declared directives
-      ngModuleByDirective,
-      // list of modules and directives for every source file
+      // map directive/pipe to module
+      ngModuleByPipeOrDirective,
+      // list modules and directives for every source file
       files,
   };
 }
@@ -100,19 +125,21 @@ export class OfflineCompiler {
     this._metadataResolver.clearCache();
   }
 
-  compileModules(ngModules: StaticSymbol[]): Promise<SourceModule[]> {
-    const {ngModuleByDirective, files} = analyzeNgModules(ngModules, this._metadataResolver);
+  compileModules(staticSymbols: StaticSymbol[], options: {transitiveModules: boolean}):
+      Promise<SourceModule[]> {
+    const {ngModuleByPipeOrDirective, files} =
+        analyzeNgModules(staticSymbols, options, this._metadataResolver);
 
     const sourceModules = files.map(
         file => this._compileSrcFile(
-            file.srcUrl, ngModuleByDirective, file.directives, file.ngModules));
+            file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.ngModules));
 
     return Promise.all(sourceModules)
         .then((modules: SourceModule[][]) => ListWrapper.flatten(modules));
   }
 
   private _compileSrcFile(
-      srcFileUrl: string, ngModuleByDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
+      srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], ngModules: StaticSymbol[]): Promise<SourceModule[]> {
     const fileSuffix = _splitTypescriptSuffix(srcFileUrl)[1];
     const statements: o.Statement[] = [];
@@ -134,9 +161,10 @@ export class OfflineCompiler {
           if (!compMeta.isComponent) {
             return Promise.resolve(null);
           }
-          const ngModule = ngModuleByDirective.get(dirType);
+          const ngModule = ngModuleByPipeOrDirective.get(dirType);
           if (!ngModule) {
-            throw new Error(`Cannot determine the module for component ${compMeta.type.name}!`);
+            throw new Error(
+                `Internal Error: cannot determine the module for component ${compMeta.type.name}!`);
           }
 
           return Promise
@@ -329,4 +357,29 @@ function _splitTypescriptSuffix(path: string): string[] {
   }
 
   return [path, ''];
+}
+
+// Group the symbols by types:
+// - NgModules,
+// - Pipes and Directives.
+function _extractModulesAndPipesOrDirectives(
+    programStaticSymbols: StaticSymbol[], metadataResolver: CompileMetadataResolver) {
+  const ngModules: CompileNgModuleMetadata[] = [];
+  const pipesAndDirectives: StaticSymbol[] = [];
+
+  programStaticSymbols.forEach(staticSymbol => {
+    const ngModule = metadataResolver.getNgModuleMetadata(staticSymbol, false);
+    const directive = metadataResolver.getDirectiveMetadata(staticSymbol, false);
+    const pipe = metadataResolver.getPipeMetadata(<any>staticSymbol, false);
+
+    if (ngModule) {
+      ngModules.push(ngModule);
+    } else if (directive) {
+      pipesAndDirectives.push(staticSymbol);
+    } else if (pipe) {
+      pipesAndDirectives.push(staticSymbol);
+    }
+  });
+
+  return {ngModules, pipesAndDirectives};
 }

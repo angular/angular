@@ -9,22 +9,19 @@
 
 /**
  * Extract i18n messages from source code
- *
- * TODO(vicb): factorize code with the CodeGenerator
  */
 // Must be imported first, because angular2 decorators throws on load.
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
-import {Component, NgModule, ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {ReflectorHost, ReflectorHostContext} from './reflector_host';
+import {extractProgramSymbols} from './codegen';
+import {ReflectorHost} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticSymbol} from './static_reflector';
-
-const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 export class Extractor {
   constructor(
@@ -34,48 +31,13 @@ export class Extractor {
       private metadataResolver: compiler.CompileMetadataResolver,
       private directiveNormalizer: compiler.DirectiveNormalizer) {}
 
-  private readModuleSymbols(absSourcePath: string): StaticSymbol[] {
-    const moduleMetadata = this.staticReflector.getModuleMetadata(absSourcePath);
-    const modSymbols: StaticSymbol[] = [];
-    if (!moduleMetadata) {
-      console.log(`WARNING: no metadata found for ${absSourcePath}`);
-      return modSymbols;
-    }
-
-    const metadata = moduleMetadata['metadata'];
-    const symbols = metadata && Object.keys(metadata);
-    if (!symbols || !symbols.length) {
-      return modSymbols;
-    }
-
-    for (const symbol of symbols) {
-      if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-        // Ignore symbols that are only included to record error information.
-        continue;
-      }
-
-      const staticType = this.reflectorHost.findDeclaration(absSourcePath, symbol, absSourcePath);
-      const annotations = this.staticReflector.annotations(staticType);
-
-      annotations.some(a => {
-        if (a instanceof NgModule) {
-          modSymbols.push(staticType);
-          return true;
-        }
-      });
-    }
-
-    return modSymbols;
-  }
-
   extract(): Promise<compiler.MessageBundle> {
-    const filePaths =
-        this.program.getSourceFiles().map(sf => sf.fileName).filter(f => !GENERATED_FILES.test(f));
-    const ngModules: StaticSymbol[] = [];
+    const programSymbols: StaticSymbol[] =
+        extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
 
-    filePaths.forEach((filePath) => ngModules.push(...this.readModuleSymbols(filePath)));
-
-    const files = compiler.analyzeNgModules(ngModules, this.metadataResolver).files;
+    const files =
+        compiler.analyzeNgModules(programSymbols, {transitiveModules: true}, this.metadataResolver)
+            .files;
     const errors: compiler.ParseError[] = [];
     const filePromises: Promise<any>[] = [];
 
