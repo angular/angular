@@ -128,11 +128,15 @@ export class MdCheckbox implements ControlValueAccessor {
 
   private _indeterminate: boolean = false;
 
+  private _color: string;
+
   private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
   hasFocus: boolean = false;
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {
+    this.color = 'accent';
+  }
 
   /**
    * Whether the checkbox is checked. Note that setting `checked` will immediately set
@@ -171,6 +175,28 @@ export class MdCheckbox implements ControlValueAccessor {
     } else {
       this._transitionCheckState(
           this.checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+    }
+  }
+
+  /** Sets the color of the checkbox */
+  @Input()
+  get color(): string {
+    return this._color;
+  }
+
+  set color(value: string) {
+    this._updateColor(value);
+  }
+
+  _updateColor(newColor: string) {
+    this._setElementColor(this._color, false);
+    this._setElementColor(newColor, true);
+    this._color = newColor;
+  }
+
+  _setElementColor(color: string, isAdd: boolean) {
+    if (color != null && color != '') {
+      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
     }
   }
 

@@ -267,6 +267,36 @@ describe('MdCheckbox', () => {
       expect(inputElement.required).toBe(false);
     });
 
+    describe('color behaviour', () => {
+      it('should apply class based on color attribute', () => {
+        testComponent.checkboxColor = 'primary';
+        fixture.detectChanges();
+        expect(checkboxDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+
+        testComponent.checkboxColor = 'accent';
+        fixture.detectChanges();
+        expect(checkboxDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+      });
+
+      it('should should not clear previous defined classes', () => {
+        checkboxDebugElement.nativeElement.classList.add('custom-class');
+
+        testComponent.checkboxColor = 'primary';
+        fixture.detectChanges();
+
+        expect(checkboxDebugElement.nativeElement.classList.contains('md-primary')).toBe(true);
+        expect(checkboxDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+
+        testComponent.checkboxColor = 'accent';
+        fixture.detectChanges();
+
+        expect(checkboxDebugElement.nativeElement.classList.contains('md-primary')).toBe(false);
+        expect(checkboxDebugElement.nativeElement.classList.contains('md-accent')).toBe(true);
+        expect(checkboxDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+
+      });
+    });
+
     describe('state transition css classes', () => {
       it('should transition unchecked -> checked -> unchecked', () => {
         testComponent.isChecked = true;
@@ -519,6 +549,7 @@ describe('MdCheckbox', () => {
         [checked]="isChecked" 
         [indeterminate]="isIndeterminate" 
         [disabled]="isDisabled"
+        [color]="checkboxColor"
         (change)="changeCount = changeCount + 1"
         (click)="onCheckboxClick($event)"
         (change)="onCheckboxChange($event)">
@@ -536,6 +567,7 @@ class SingleCheckbox {
   parentElementKeyedUp: boolean = false;
   lastKeydownEvent: Event = null;
   changeCount: number = 0;
+  checkboxColor: string = 'primary';
 
   onCheckboxClick(event: Event) {}
   onCheckboxChange(event: MdCheckboxChange) {}

@@ -77,3 +77,17 @@ checkbox if you do not wish to have any label text.
 ```html
 <md-checkbox [checked]="false" aria-label="My standalone checkbox"></md-checkbox>
 ```
+
+### Theming
+
+The color of a `md-checkbox` can be changed by using the `color` attribute.
+The value `accent` is default and will correspond to your theme accent color.
+Alternatively, you can specify `primary` or `warn`.
+
+Example:
+
+ ```html
+<md-checkbox [checked]="true" color="primary">
+  I come after my label.
+</md-checkbox>
+ ```

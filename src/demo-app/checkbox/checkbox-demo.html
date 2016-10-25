@@ -2,6 +2,7 @@
 <form>
 <md-checkbox [(ngModel)]="isChecked"
               name="cb"
+             [color]="checkboxColor()"
              (change)="isIndeterminate = false"
              [indeterminate]="isIndeterminate"
              [disabled]="isDisabled"
@@ -18,6 +19,8 @@
 <label for="indeterminate-toggle">Toggle Indeterminate</label>
 <input id="disabled-toggle" type="checkbox" [(ngModel)]="isDisabled">
 <label for="disabled-toggle">Toggle Disabled</label>
+<input id="color-toggle" type="checkbox" [(ngModel)]="useAlternativeColor">
+<label for="color-toggle">Toggle Color</label>
 </div>
 <div>
   <p>Alignment:</p>

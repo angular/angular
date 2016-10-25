@@ -1,4 +1,5 @@
 @import '../core/theming/theming';
+@import '../core/style/elevation';
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
 
@@ -189,6 +190,10 @@ $_md-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1)
 
 md-checkbox {
   cursor: pointer;
+
+  // Animation
+  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
+              md-elevation-transition-property-value();
 }
 
 .md-checkbox-layout {
