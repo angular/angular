@@ -219,26 +219,7 @@ describe('recognize', () => {
           [{path: 'a', resolve: {one: 'some-token'}, component: ComponentA}], 'a',
           (s: RouterStateSnapshot) => {
             const r: ActivatedRouteSnapshot = s.firstChild(s.root);
-            expect(r._resolve.current).toEqual({one: 'some-token'});
-          });
-    });
-
-    it('should reuse componentless route\'s resolve', () => {
-      checkRecognize(
-          [{
-            path: 'a',
-            resolve: {one: 'one'},
-            children: [
-              {path: '', resolve: {two: 'two'}, component: ComponentB},
-              {path: '', resolve: {three: 'three'}, component: ComponentC, outlet: 'aux'}
-            ]
-          }],
-          'a', (s: RouterStateSnapshot) => {
-            const a: ActivatedRouteSnapshot = s.firstChild(s.root);
-            const c: ActivatedRouteSnapshot[] = s.children(<any>a);
-
-            expect(c[0]._resolve.parent).toBe(a._resolve);
-            expect(c[1]._resolve.parent).toBe(a._resolve);
+            expect(r._resolve).toEqual({one: 'some-token'});
           });
     });
   });

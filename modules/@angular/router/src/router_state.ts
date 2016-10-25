@@ -83,7 +83,7 @@ export function createEmptyStateSnapshot(
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
-      urlTree.root, -1, InheritedResolve.empty);
+      urlTree.root, -1, {});
   return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
 
@@ -207,24 +207,43 @@ export class ActivatedRoute {
 /**
  * @internal
  */
-export class InheritedResolve {
-  /**
-   * @internal
-   */
-  resolvedData = {};
-
-  constructor(public parent: InheritedResolve, public current: ResolveData) {}
-
-  /**
-   * @internal
-   */
-  get flattenedResolvedData(): Data {
-    return this.parent ? merge(this.parent.flattenedResolvedData, this.resolvedData) :
-                         this.resolvedData;
-  }
-
-  static get empty(): InheritedResolve { return new InheritedResolve(null, {}); }
+export type Inherited = {
+  params: Params; data: Data; resolve: Data;
 }
+
+/**
+ * @internal
+ */
+export function
+inheritedParamsDataResolve(route: ActivatedRouteSnapshot):
+    Inherited {
+      const pathToRoot = route.pathFromRoot;
+
+      let inhertingStartingFrom = pathToRoot.length - 1;
+
+      while (inhertingStartingFrom >= 1) {
+        const current = pathToRoot[inhertingStartingFrom];
+        const parent = pathToRoot[inhertingStartingFrom - 1];
+        // current route is an empty path => inherits its parent's params and data
+        if (current.routeConfig && current.routeConfig.path === '') {
+          inhertingStartingFrom--;
+
+          // parent is componentless => current route should inherit its params and data
+        } else if (!parent.component) {
+          inhertingStartingFrom--;
+
+        } else {
+          break;
+        }
+      }
+
+      return pathToRoot.slice(inhertingStartingFrom).reduce((res, curr) => {
+        const params = merge(res.params, curr.params);
+        const data = merge(res.data, curr.data);
+        const resolve = merge(res.resolve, curr._resolvedData);
+        return {params, data, resolve};
+      }, <any>{params: {}, data: {}, resolve: {}});
+    }
 
 /**
  * @whatItDoes Contains the information about a route associated with a component loaded in an
@@ -258,7 +277,10 @@ export class ActivatedRouteSnapshot {
   _lastPathIndex: number;
 
   /** @internal */
-  _resolve: InheritedResolve;
+  _resolve: ResolveData;
+
+  /** @internal */
+  _resolvedData: Data;
 
   /** @internal */
   _routerState: RouterStateSnapshot;
@@ -301,7 +323,7 @@ export class ActivatedRouteSnapshot {
        * The component of the route.
        */
       public component: Type<any>|string, routeConfig: Route, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: InheritedResolve) {
+      lastPathIndex: number, resolve: ResolveData) {
     this._routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;

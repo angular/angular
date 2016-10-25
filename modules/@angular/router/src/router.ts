@@ -21,14 +21,14 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {Data, ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, inheritedParamsDataResolve} from './router_state';
 import {NavigationCancelingError, PRIMARY_OUTLET, Params} from './shared';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {andObservables, forEach, merge, shallowEqual, waitForMap, wrapIntoObservable} from './utils/collection';
@@ -731,6 +731,7 @@ export class PreActivation {
       } else {
         // we need to set the data
         future.data = curr.data;
+        future._resolvedData = curr._resolvedData;
       }
 
       // If we have a component, we need to go through an outlet.
@@ -831,9 +832,9 @@ export class PreActivation {
 
   private runResolve(future: ActivatedRouteSnapshot): Observable<any> {
     const resolve = future._resolve;
-    return map.call(this.resolveNode(resolve.current, future), (resolvedData: any): any => {
-      resolve.resolvedData = resolvedData;
-      future.data = merge(future.data, resolve.flattenedResolvedData);
+    return map.call(this.resolveNode(resolve, future), (resolvedData: any): any => {
+      future._resolvedData = resolvedData;
+      future.data = merge(future.data, inheritedParamsDataResolve(future).resolve);
       return null;
     });
   }

@@ -8,9 +8,10 @@
 
 import {TestBed} from '@angular/core/testing';
 
+import {ResolveData} from '../src/config';
 import {PreActivation, Router} from '../src/router';
 import {RouterOutletMap} from '../src/router_outlet_map';
-import {ActivatedRouteSnapshot, InheritedResolve, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/router_testing_module';
@@ -39,7 +40,7 @@ describe('Router', () => {
     beforeEach(() => { empty = createEmptyStateSnapshot(serializer.parse('/'), null); });
 
     it('should resolve data', () => {
-      const r = new InheritedResolve(InheritedResolve.empty, {data: 'resolver'});
+      const r = {data: 'resolver'};
       const n = createActivatedRouteSnapshot('a', {resolve: r});
       const s = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n, [])]));
 
@@ -49,10 +50,10 @@ describe('Router', () => {
     });
 
     it('should wait for the parent resolve to complete', () => {
-      const parentResolve = new InheritedResolve(InheritedResolve.empty, {data: 'resolver'});
-      const childResolve = new InheritedResolve(parentResolve, {});
+      const parentResolve = {data: 'resolver'};
+      const childResolve = {};
 
-      const parent = createActivatedRouteSnapshot('a', {resolve: parentResolve});
+      const parent = createActivatedRouteSnapshot(null, {resolve: parentResolve});
       const child = createActivatedRouteSnapshot('b', {resolve: childResolve});
 
       const s = new RouterStateSnapshot(
@@ -66,8 +67,8 @@ describe('Router', () => {
     });
 
     it('should copy over data when creating a snapshot', () => {
-      const r1 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver1'});
-      const r2 = new InheritedResolve(InheritedResolve.empty, {data: 'resolver2'});
+      const r1 = {data: 'resolver1'};
+      const r2 = {data: 'resolver2'};
 
       const n1 = createActivatedRouteSnapshot('a', {resolve: r1});
       const s1 = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n1, [])]));
