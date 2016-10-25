@@ -51,7 +51,7 @@ export class RouterOutlet implements OnDestroy {
 
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string)) {
+      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
     parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
 
