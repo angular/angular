@@ -45,7 +45,6 @@ export class RouterOutlet implements OnDestroy {
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
-  @Input() name: string;
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
