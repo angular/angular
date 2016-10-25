@@ -35,6 +35,13 @@ export function main() {
     }
   }
 
+  class PerfectLengthValidator {
+    private perfectLength: number = 5;
+    hasPerfectLength(control: AbstractControl) {
+      return control.value.length === this.perfectLength ? null : {'hasPerfectLength': true};
+    }
+  }
+
   describe('Validators', () => {
     describe('required', () => {
       it('should error on an empty string',
@@ -153,12 +160,6 @@ export function main() {
       });
 
       it('should access to private properties when using a class instance method', () => {
-        class PerfectLengthValidator {
-          private perfectLength: number = 5;
-          hasPerfectLength(control: AbstractControl) {
-            return control.value.length === this.perfectLength ? null : {'hasPerfectLength': true};
-          }
-        }
         const c = Validators.compose([new PerfectLengthValidator().hasPerfectLength]);
         expect(c(new FormControl('1234'))).toEqual({'hasPerfectLength': true});
       });
