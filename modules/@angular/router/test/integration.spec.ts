@@ -695,6 +695,30 @@ describe('Integration', () => {
 
          expect(e).toEqual('error');
        })));
+
+    it('should preserve resolved data',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'parent',
+           resolve: {two: 'resolveTwo'},
+           children: [
+             {path: 'child1', component: CollectParamsCmp},
+             {path: 'child2', component: CollectParamsCmp}
+           ]
+         }]);
+
+         let e: any = null;
+         router.navigateByUrl('/parent/child1');
+         advance(fixture);
+
+         router.navigateByUrl('/parent/child2');
+         advance(fixture);
+
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.data).toEqual({two: 2});
+       })));
   });
 
   describe('router links', () => {
@@ -2102,9 +2126,9 @@ class CollectParamsCmp {
   private params: any = [];
   private urls: any = [];
 
-  constructor(a: ActivatedRoute) {
-    a.params.forEach(p => this.params.push(p));
-    a.url.forEach(u => this.urls.push(u));
+  constructor(private route: ActivatedRoute) {
+    route.params.forEach(p => this.params.push(p));
+    route.url.forEach(u => this.urls.push(u));
   }
 
   recordedUrls(): string[] {
