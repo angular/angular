@@ -15,8 +15,9 @@
   Open menu
 </button>
 
-<template connected-overlay [origin]="trigger">
-  <div style="background-color: mediumpurple" *ngIf="isMenuOpen">
+<template connected-overlay [origin]="trigger" [width]="500" hasBackdrop [open]="isMenuOpen"
+  (backdropClick)="isMenuOpen=false">
+  <div style="background-color: mediumpurple" >
     This is the menu panel.
   </div>
 </template>
