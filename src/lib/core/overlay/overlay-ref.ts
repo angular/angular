@@ -24,6 +24,7 @@ export class OverlayRef implements PortalHost {
 
     let attachResult = this._portalHost.attach(portal);
     this.updateSize();
+    this.updateDirection();
     this.updatePosition();
 
     return attachResult;
@@ -57,6 +58,11 @@ export class OverlayRef implements PortalHost {
     if (this._state.positionStrategy) {
       this._state.positionStrategy.apply(this._pane);
     }
+  }
+
+  /** Updates the text direction of the overlay panel. **/
+  private updateDirection() {
+    this._pane.setAttribute('dir', this._state.direction);
   }
 
   /** Updates the size of the overlay based on the overlay config. */

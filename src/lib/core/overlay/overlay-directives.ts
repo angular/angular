@@ -5,6 +5,7 @@ import {
     EventEmitter,
     TemplateRef,
     ViewContainerRef,
+    Optional,
     Input,
     OnDestroy,
     Output,
@@ -18,6 +19,7 @@ import {ConnectionPositionPair} from './position/connected-position';
 import {PortalModule} from '../portal/portal-directives';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Subscription} from 'rxjs/Subscription';
+import {Dir, LayoutDirection} from '../rtl/dir';
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
 let defaultPositionList = [
@@ -103,12 +105,17 @@ export class ConnectedOverlayDirective implements OnDestroy {
   constructor(
       private _overlay: Overlay,
       templateRef: TemplateRef<any>,
-      viewContainerRef: ViewContainerRef) {
+      viewContainerRef: ViewContainerRef,
+      @Optional() private _dir: Dir) {
     this._templatePortal = new TemplatePortal(templateRef, viewContainerRef);
   }
 
   get overlayRef(): OverlayRef {
     return this._overlayRef;
+  }
+
+  get dir(): LayoutDirection {
+    return this._dir ? this._dir.value : 'ltr';
   }
 
   /** TODO: internal */
@@ -145,6 +152,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     overlayConfig.positionStrategy = this._getPosition();
 
+    overlayConfig.direction = this.dir;
+
     return overlayConfig;
   }
 
@@ -153,7 +162,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
     return this._overlay.position().connectedTo(
       this.origin.elementRef,
       {originX: this.positions[0].overlayX, originY: this.positions[0].originY},
-      {overlayX: this.positions[0].overlayX, overlayY: this.positions[0].overlayY});
+      {overlayX: this.positions[0].overlayX, overlayY: this.positions[0].overlayY})
+      .setDirection(this.dir);
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */

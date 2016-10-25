@@ -206,6 +206,23 @@ describe('ConnectedPositionStrategy', () => {
       expect(overlayRect.top).toBe(originRect.bottom);
       expect(overlayRect.right).toBe(originRect.left);
     });
+
+    it('should position a panel properly when rtl', () => {
+      // must make the overlay longer than the origin to properly test attachment
+      overlayElement.style.width = `500px`;
+      originRect = originElement.getBoundingClientRect();
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'start', originY: 'bottom'},
+        {overlayX: 'start', overlayY: 'top'})
+        .setDirection('rtl');
+
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originRect.bottom);
+      expect(overlayRect.right).toBe(originRect.right);
+    });
   });
 
 

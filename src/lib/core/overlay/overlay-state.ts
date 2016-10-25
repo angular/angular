@@ -1,4 +1,5 @@
 import {PositionStrategy} from './position/position-strategy';
+import {LayoutDirection} from '../rtl/dir';
 
 
 /**
@@ -20,6 +21,9 @@ export class OverlayState {
 
   /** The height of the overlay panel. If a number is provided, pixel units are assumed. **/
   height: number | string;
+
+  /** The direction of the text in the overlay panel. */
+  direction: LayoutDirection = 'ltr';
 
   // TODO(jelbourn): configuration still to add
   // - focus trap

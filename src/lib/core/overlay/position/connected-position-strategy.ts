@@ -17,9 +17,12 @@ import {
  * of the overlay.
  */
 export class ConnectedPositionStrategy implements PositionStrategy {
-  // TODO(jelbourn): set RTL to the actual value from the app.
+  private _dir = 'ltr';
+
   /** Whether the we're dealing with an RTL context */
-  _isRtl: boolean = false;
+  get _isRtl() {
+    return this._dir === 'rtl';
+  }
 
   /** Ordered list of preferred positions, from most to least desirable. */
   _preferredPositions: ConnectionPositionPair[] = [];
@@ -85,6 +88,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     return this;
   }
 
+  /** Sets the layout direction so the overlay's position can be adjusted to match. */
+  setDirection(dir: 'ltr' | 'rtl') {
+    this._dir = dir;
+    return this;
+  }
 
   /**
    * Gets the horizontal (x) "start" dimension based on whether the overlay is in an RTL context.
@@ -146,8 +154,10 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     let overlayStartX: number;
     if (pos.overlayX == 'center') {
       overlayStartX = -overlayRect.width / 2;
+    } else if (pos.overlayX === 'start') {
+      overlayStartX = this._isRtl ? -overlayRect.width : 0;
     } else {
-      overlayStartX = pos.overlayX == 'start' ? 0 : -overlayRect.width;
+      overlayStartX = this._isRtl ? 0 : -overlayRect.width;
     }
 
     let overlayStartY: number;

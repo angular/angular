@@ -82,6 +82,16 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
+  it('should set the direction', () => {
+    const state = new OverlayState();
+    state.direction = 'rtl';
+
+    overlay.create(state).attach(componentPortal);
+
+    const pane = overlayContainerElement.children[0] as HTMLElement;
+    expect(pane.getAttribute('dir')).toEqual('rtl');
+  });
+
   describe('positioning', () => {
     let state: OverlayState;
 
