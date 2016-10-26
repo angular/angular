@@ -71,7 +71,7 @@ export function convertPropertyBinding(
 }
 
 export class ConvertActionBindingResult {
-  constructor(public stmts: o.Statement[], public preventDefault: o.Expression) {}
+  constructor(public stmts: o.Statement[], public preventDefault: o.ReadVarExpr) {}
 }
 
 /**

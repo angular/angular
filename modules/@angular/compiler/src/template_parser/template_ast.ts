@@ -76,19 +76,23 @@ export class BoundElementPropertyAst implements TemplateAst {
  * `(@trigger.phase)="callback($event)"`).
  */
 export class BoundEventAst implements TemplateAst {
+  static calcFullName(name: string, target: string, phase: string): string {
+    if (target) {
+      return `${target}:${name}`;
+    } else if (phase) {
+      return `@${name}.${phase}`;
+    } else {
+      return name;
+    }
+  }
+
   constructor(
       public name: string, public target: string, public phase: string, public handler: AST,
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
-  get fullName() {
-    if (this.target) {
-      return `${this.target}:${this.name}`;
-    } else {
-      return this.name;
-    }
-  }
+  get fullName() { return BoundEventAst.calcFullName(this.name, this.target, this.phase); }
   get isAnimation(): boolean { return !!this.phase; }
 }
 

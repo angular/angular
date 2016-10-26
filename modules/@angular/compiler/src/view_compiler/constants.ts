@@ -8,15 +8,10 @@
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
 import {createEnumExpression} from '../compiler_util/identifier_util';
-import {Identifiers, resolveEnumIdentifier} from '../identifiers';
+import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ChangeDetectorStatus, ViewType} from '../private_import_core';
-
-function _enumExpression(classIdentifier: CompileIdentifierMetadata, name: string): o.Expression {
-  return o.importExpr(resolveEnumIdentifier(classIdentifier, name));
-}
 
 export class ViewTypeEnum {
   static fromValue(value: ViewType): o.Expression {

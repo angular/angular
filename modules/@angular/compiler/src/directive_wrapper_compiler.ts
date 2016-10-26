@@ -10,8 +10,8 @@ import {Injectable} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
-import {convertPropertyBinding} from './compiler_util/expression_converter';
-import {writeToRenderer} from './compiler_util/render_util';
+import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
+import {triggerAnimation, writeToRenderer} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
 import {Parser} from './expression_parser/parser';
 import {Identifiers, resolveIdentifier} from './identifiers';
@@ -31,12 +31,15 @@ export class DirectiveWrapperCompileResult {
 const CONTEXT_FIELD_NAME = 'context';
 const CHANGES_FIELD_NAME = 'changes';
 const CHANGED_FIELD_NAME = 'changed';
+const EVENT_HANDLER_FIELD_NAME = 'eventHandler';
 
 const CURR_VALUE_VAR = o.variable('currValue');
 const THROW_ON_CHANGE_VAR = o.variable('throwOnChange');
 const FORCE_UPDATE_VAR = o.variable('forceUpdate');
 const VIEW_VAR = o.variable('view');
+const COMPONENT_VIEW_VAR = o.variable('componentView');
 const RENDER_EL_VAR = o.variable('el');
+const EVENT_NAME_VAR = o.variable('eventName');
 
 const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap([])).toStmt();
 
@@ -57,22 +60,17 @@ export class DirectiveWrapperCompiler {
       private _schemaRegistry: ElementSchemaRegistry, private _console: Console) {}
 
   compile(dirMeta: CompileDirectiveMetadata): DirectiveWrapperCompileResult {
+    const hostParseResult = parseHostBindings(dirMeta, this._exprParser, this._schemaRegistry);
+    reportParseErrors(hostParseResult.errors, this._console);
+
     const builder = new DirectiveWrapperBuilder(this.compilerConfig, dirMeta);
     Object.keys(dirMeta.inputs).forEach((inputFieldName) => {
       addCheckInputMethod(inputFieldName, builder);
     });
-    addDetectChangesInInputPropsMethod(builder);
-
-    const hostParseResult = parseHostBindings(dirMeta, this._exprParser, this._schemaRegistry);
-    reportParseErrors(hostParseResult.errors, this._console);
-    // host properties are change detected by the DirectiveWrappers,
-    // except for the animation properties as they need close integration with animation events
-    // and DirectiveWrappers don't support
-    // event listeners right now.
-    addDetectChangesInHostPropsMethod(
-        hostParseResult.hostProps.filter(hostProp => !hostProp.isAnimation), builder);
-
-    // TODO(tbosch): implement hostListeners via DirectiveWrapper as well!
+    addNgDoCheckMethod(builder);
+    addCheckHostMethod(hostParseResult.hostProps, builder);
+    addHandleEventMethod(hostParseResult.hostListeners, builder);
+    addSubscribeMethod(dirMeta, builder);
 
     const classStmt = builder.build();
     return new DirectiveWrapperCompileResult([classStmt], classStmt.name);
@@ -84,11 +82,14 @@ class DirectiveWrapperBuilder implements ClassBuilder {
   getters: o.ClassGetter[] = [];
   methods: o.ClassMethod[] = [];
   ctorStmts: o.Statement[] = [];
+  detachStmts: o.Statement[] = [];
+  destroyStmts: o.Statement[] = [];
 
   genChanges: boolean;
   ngOnChanges: boolean;
   ngOnInit: boolean;
   ngDoCheck: boolean;
+  ngOnDestroy: boolean;
 
   constructor(public compilerConfig: CompilerConfig, public dirMeta: CompileDirectiveMetadata) {
     const dirLifecycleHooks = dirMeta.type.lifecycleHooks;
@@ -97,6 +98,11 @@ class DirectiveWrapperBuilder implements ClassBuilder {
     this.ngOnChanges = dirLifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1;
     this.ngOnInit = dirLifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1;
     this.ngDoCheck = dirLifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1;
+    this.ngOnDestroy = dirLifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1;
+    if (this.ngOnDestroy) {
+      this.destroyStmts.push(
+          o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).callMethod('ngOnDestroy', []).toStmt());
+    }
   }
 
   build(): o.ClassStmt {
@@ -105,7 +111,25 @@ class DirectiveWrapperBuilder implements ClassBuilder {
       dirDepParamNames.push(`p${i}`);
     }
 
+    const methods = [
+      new o.ClassMethod(
+          'ngOnDetach',
+          [
+            new o.FnParam(
+                VIEW_VAR.name,
+                o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+            new o.FnParam(
+                COMPONENT_VIEW_VAR.name,
+                o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+            new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
+          ],
+          this.detachStmts),
+      new o.ClassMethod('ngOnDestroy', [], this.destroyStmts),
+    ];
+
+
     const fields: o.ClassField[] = [
+      new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE),
       new o.ClassField(CONTEXT_FIELD_NAME, o.importType(this.dirMeta.type)),
       new o.ClassField(CHANGED_FIELD_NAME, o.BOOL_TYPE),
     ];
@@ -125,12 +149,12 @@ class DirectiveWrapperBuilder implements ClassBuilder {
     return createClassStmt({
       name: DirectiveWrapperCompiler.dirWrapperClassName(this.dirMeta.type),
       ctorParams: dirDepParamNames.map((paramName) => new o.FnParam(paramName, o.DYNAMIC_TYPE)),
-      builders: [{fields, ctorStmts}, this]
+      builders: [{fields, ctorStmts, methods}, this]
     });
   }
 }
 
-function addDetectChangesInInputPropsMethod(builder: DirectiveWrapperBuilder) {
+function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
   const changedVar = o.variable('changed');
   const stmts: o.Statement[] = [
     changedVar.set(o.THIS_EXPR.prop(CHANGED_FIELD_NAME)).toDeclStmt(),
@@ -170,7 +194,7 @@ function addDetectChangesInInputPropsMethod(builder: DirectiveWrapperBuilder) {
   stmts.push(new o.ReturnStatement(changedVar));
 
   builder.methods.push(new o.ClassMethod(
-      'detectChangesInInputProps',
+      'ngDoCheck',
       [
         new o.FnParam(
             VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
@@ -207,16 +231,19 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
       methodBody));
 }
 
-function addDetectChangesInHostPropsMethod(
+function addCheckHostMethod(
     hostProps: BoundElementPropertyAst[], builder: DirectiveWrapperBuilder) {
   const stmts: o.Statement[] = [];
   const methodParams: o.FnParam[] = [
     new o.FnParam(
         VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+    new o.FnParam(
+        COMPONENT_VIEW_VAR.name,
+        o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
     new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
     new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
   ];
-  hostProps.forEach((hostProp) => {
+  hostProps.forEach((hostProp, hostPropIdx) => {
     const field = createCheckBindingField(builder);
     const evalResult = convertPropertyBinding(
         builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostProp.value, field.bindingId);
@@ -229,13 +256,80 @@ function addDetectChangesInHostPropsMethod(
       methodParams.push(new o.FnParam(
           securityContextExpr.name, o.importType(resolveIdentifier(Identifiers.SecurityContext))));
     }
+    let checkBindingStmts: o.Statement[];
+    if (hostProp.isAnimation) {
+      const {updateStmts, detachStmts} = triggerAnimation(
+          VIEW_VAR, COMPONENT_VIEW_VAR, hostProp,
+          o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME)
+              .or(o.importExpr(resolveIdentifier(Identifiers.noop))),
+          RENDER_EL_VAR, evalResult.currValExpr, field.expression);
+      checkBindingStmts = updateStmts;
+      builder.detachStmts.push(...detachStmts);
+    } else {
+      checkBindingStmts = writeToRenderer(
+          VIEW_VAR, hostProp, RENDER_EL_VAR, evalResult.currValExpr,
+          builder.compilerConfig.logBindingUpdate, securityContextExpr);
+    }
+
     stmts.push(...createCheckBindingStmt(
-        evalResult, field.expression, THROW_ON_CHANGE_VAR,
-        writeToRenderer(
-            VIEW_VAR, hostProp, RENDER_EL_VAR, evalResult.currValExpr,
-            builder.compilerConfig.logBindingUpdate, securityContextExpr)));
+        evalResult, field.expression, THROW_ON_CHANGE_VAR, checkBindingStmts));
   });
-  builder.methods.push(new o.ClassMethod('detectChangesInHostProps', methodParams, stmts));
+  builder.methods.push(new o.ClassMethod('checkHost', methodParams, stmts));
+}
+
+function addHandleEventMethod(hostListeners: BoundEventAst[], builder: DirectiveWrapperBuilder) {
+  const resultVar = o.variable(`result`);
+  const actionStmts: o.Statement[] = [resultVar.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE)];
+  hostListeners.forEach((hostListener, eventIdx) => {
+    const evalResult = convertActionBinding(
+        builder, null, o.THIS_EXPR.prop(CONTEXT_FIELD_NAME), hostListener.handler,
+        `sub_${eventIdx}`);
+    const trueStmts = evalResult.stmts;
+    if (evalResult.preventDefault) {
+      trueStmts.push(resultVar.set(evalResult.preventDefault.and(resultVar)).toStmt());
+    }
+    // TODO(tbosch): convert this into a `switch` once our OutputAst supports it.
+    actionStmts.push(
+        new o.IfStmt(EVENT_NAME_VAR.equals(o.literal(hostListener.fullName)), trueStmts));
+  });
+  actionStmts.push(new o.ReturnStatement(resultVar));
+  builder.methods.push(new o.ClassMethod(
+      'handleEvent',
+      [
+        new o.FnParam(EVENT_NAME_VAR.name, o.STRING_TYPE),
+        new o.FnParam(EventHandlerVars.event.name, o.DYNAMIC_TYPE)
+      ],
+      actionStmts, o.BOOL_TYPE));
+}
+
+function addSubscribeMethod(dirMeta: CompileDirectiveMetadata, builder: DirectiveWrapperBuilder) {
+  const methodParams: o.FnParam[] = [new o.FnParam(EVENT_HANDLER_FIELD_NAME, o.DYNAMIC_TYPE)];
+  const stmts: o.Statement[] = [
+    o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME).set(o.variable(EVENT_HANDLER_FIELD_NAME)).toStmt()
+  ];
+  Object.keys(dirMeta.outputs).forEach((emitterPropName, emitterIdx) => {
+    const eventName = dirMeta.outputs[emitterPropName];
+    const paramName = `emit${emitterIdx}`;
+    methodParams.push(new o.FnParam(paramName, o.BOOL_TYPE));
+    const subscriptionFieldName = `subscription${emitterIdx}`;
+    builder.fields.push(new o.ClassField(subscriptionFieldName, o.DYNAMIC_TYPE));
+    stmts.push(new o.IfStmt(
+        o.variable(paramName),
+        [o.THIS_EXPR.prop(subscriptionFieldName)
+             .set(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
+                      .prop(emitterPropName)
+                      .callMethod(
+                          o.BuiltinMethod.SubscribeObservable,
+                          [o.variable(EVENT_HANDLER_FIELD_NAME)
+                               .callMethod(
+                                   o.BuiltinMethod.Bind, [o.NULL_EXPR, o.literal(eventName)])]))
+             .toStmt()]));
+    builder.destroyStmts.push(
+        o.THIS_EXPR.prop(subscriptionFieldName)
+            .and(o.THIS_EXPR.prop(subscriptionFieldName).callMethod('unsubscribe', []))
+            .toStmt());
+  });
+  builder.methods.push(new o.ClassMethod('subscribe', methodParams, stmts));
 }
 
 class ParseResult {
@@ -273,5 +367,86 @@ function reportParseErrors(parseErrors: ParseError[], console: Console) {
 
   if (errors.length > 0) {
     throw new Error(`Directive parse errors:\n${errors.join('\n')}`);
+  }
+}
+
+export class DirectiveWrapperExpressions {
+  static create(dir: CompileIdentifierMetadata, depsExpr: o.Expression[]): o.Expression {
+    return o.importExpr(dir).instantiate(depsExpr, o.importType(dir));
+  }
+  static context(dirWrapper: o.Expression): o.ReadPropExpr {
+    return dirWrapper.prop(CONTEXT_FIELD_NAME);
+  }
+
+  static ngDoCheck(
+      dirWrapper: o.Expression, view: o.Expression, renderElement: o.Expression,
+      throwOnChange: o.Expression): o.Expression {
+    return dirWrapper.callMethod('ngDoCheck', [view, renderElement, throwOnChange]);
+  }
+  static checkHost(
+      hostProps: BoundElementPropertyAst[], dirWrapper: o.Expression, view: o.Expression,
+      componentView: o.Expression, renderElement: o.Expression, throwOnChange: o.Expression,
+      runtimeSecurityContexts: o.Expression[]): o.Statement[] {
+    if (hostProps.length) {
+      return [dirWrapper
+                  .callMethod(
+                      'checkHost', [view, componentView, renderElement, throwOnChange].concat(
+                                       runtimeSecurityContexts))
+                  .toStmt()];
+    } else {
+      return [];
+    }
+  }
+  static ngOnDetach(
+      hostProps: BoundElementPropertyAst[], dirWrapper: o.Expression, view: o.Expression,
+      componentView: o.Expression, renderEl: o.Expression): o.Statement[] {
+    if (hostProps.some(prop => prop.isAnimation)) {
+      return [dirWrapper
+                  .callMethod(
+                      'ngOnDetach',
+                      [
+                        view,
+                        componentView,
+                        renderEl,
+                      ])
+                  .toStmt()];
+    } else {
+      return [];
+    }
+  }
+  static ngOnDestroy(dir: CompileDirectiveMetadata, dirWrapper: o.Expression): o.Statement[] {
+    if (dir.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1 ||
+        Object.keys(dir.outputs).length > 0) {
+      return [dirWrapper.callMethod('ngOnDestroy', []).toStmt()];
+    } else {
+      return [];
+    }
+  }
+  static subscribe(
+      dirMeta: CompileDirectiveMetadata, hostProps: BoundElementPropertyAst[], usedEvents: string[],
+      dirWrapper: o.Expression, eventListener: o.Expression): o.Statement[] {
+    let needsSubscribe = false;
+    let eventFlags: o.Expression[] = [];
+    Object.keys(dirMeta.outputs).forEach((propName) => {
+      const eventName = dirMeta.outputs[propName];
+      const eventUsed = usedEvents.indexOf(eventName) > -1;
+      needsSubscribe = needsSubscribe || eventUsed;
+      eventFlags.push(o.literal(eventUsed));
+    });
+    hostProps.forEach((hostProp) => {
+      if (hostProp.isAnimation && usedEvents.length > 0) {
+        needsSubscribe = true;
+      }
+    });
+    if (needsSubscribe) {
+      return [dirWrapper.callMethod('subscribe', [eventListener].concat(eventFlags)).toStmt()];
+    } else {
+      return [];
+    }
+  }
+  static handleEvent(
+      hostEvents: BoundEventAst[], dirWrapper: o.Expression, eventName: o.Expression,
+      event: o.Expression): o.Expression {
+    return dirWrapper.callMethod('handleEvent', [eventName, event]);
   }
 }
