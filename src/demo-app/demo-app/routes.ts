@@ -3,7 +3,7 @@ import {Home} from './demo-app';
 import {ButtonDemo} from '../button/button-demo';
 import {BaselineDemo} from '../baseline/baseline-demo';
 import {ButtonToggleDemo} from '../button-toggle/button-toggle-demo';
-import {TabsDemo} from '../tabs/tab-group-demo';
+import {TabsDemo} from '../tabs/tabs-demo';
 import {GridListDemo} from '../grid-list/grid-list-demo';
 import {GesturesDemo} from '../gestures/gestures-demo';
 import {LiveAnnouncerDemo} from '../live-announcer/live-announcer-demo';
@@ -27,7 +27,7 @@ import {RippleDemo} from '../ripple/ripple-demo';
 import {DialogDemo} from '../dialog/dialog-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
 import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
-
+import {TABS_DEMO_ROUTES} from '../tabs/routes';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -51,7 +51,7 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'live-announcer', component: LiveAnnouncerDemo},
   {path: 'gestures', component: GesturesDemo},
   {path: 'grid-list', component: GridListDemo},
-  {path: 'tabs', component: TabsDemo},
+  {path: 'tabs', component: TabsDemo, children: TABS_DEMO_ROUTES},
   {path: 'button-toggle', component: ButtonToggleDemo},
   {path: 'baseline', component: BaselineDemo},
   {path: 'ripple', component: RippleDemo},

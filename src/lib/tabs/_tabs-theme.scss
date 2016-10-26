@@ -8,7 +8,8 @@
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
-  
+
+  [md-tab-nav-bar],
   .md-tab-header {
     border-bottom: 1px solid md-color($background, status-bar);
   }

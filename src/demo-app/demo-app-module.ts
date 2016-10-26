@@ -32,9 +32,7 @@ import {SidenavDemo} from './sidenav/sidenav-demo';
 import {SnackBarDemo} from './snack-bar/snack-bar-demo';
 import {PortalDemo, ScienceJoke} from './portal/portal-demo';
 import {MenuDemo} from './menu/menu-demo';
-import {TabsDemo} from './tabs/tab-group-demo';
-
-
+import {TabsDemoModule} from './tabs/tabs-demo.module';
 
 @NgModule({
   imports: [
@@ -43,6 +41,7 @@ import {TabsDemo} from './tabs/tab-group-demo';
     HttpModule,
     RouterModule.forRoot(DEMO_APP_ROUTES),
     MaterialModule.forRoot(),
+    TabsDemoModule,
   ],
   declarations: [
     BaselineDemo,
@@ -76,7 +75,6 @@ import {TabsDemo} from './tabs/tab-group-demo';
     SliderDemo,
     SlideToggleDemo,
     SpagettiPanel,
-    TabsDemo,
     ToolbarDemo,
     TooltipDemo,
   ],

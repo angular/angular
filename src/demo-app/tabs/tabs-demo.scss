@@ -1,0 +1,22 @@
+.demo-nav-bar {
+  border: 1px solid #e0e0e0;
+  [md-tab-nav-bar] {
+    background: #f9f9f9;
+  }
+  sunny-routed-content,
+  rainy-routed-content,
+  foggy-routed-content {
+    display: block;
+    padding: 12px;
+  }
+}
+
+.demo-tab-group {
+  border: 1px solid #e0e0e0;
+  .md-tab-header {
+    background: #f9f9f9;
+  }
+  .md-tab-body {
+    padding: 12px;
+  }
+}

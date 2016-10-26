@@ -1,3 +1,19 @@
+<h1>Tab Nav Bar</h1>
+
+<div class="demo-nav-bar">
+  <nav md-tab-nav-bar aria-label="weather navigation links">
+    <a md-tab-link
+       *ngFor="let tabLink of tabLinks; let i = index"
+       [routerLink]="tabLink.link"
+       [active]="activeLinkIndex === i"
+       (click)="activeLinkIndex = i">
+      {{tabLink.label}}
+    </a>
+  </nav>
+  <router-outlet></router-outlet>
+</div>
+
+
 <h1>Tab Group Demo</h1>
 
 <md-tab-group class="demo-tab-group">
@@ -12,6 +28,7 @@
     </template>
   </md-tab>
 </md-tab-group>
+
 
 <h1>Async Tabs</h1>
 
