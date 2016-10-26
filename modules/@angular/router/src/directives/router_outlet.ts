@@ -52,7 +52,6 @@ export class RouterOutlet implements OnDestroy {
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
       private resolver: ComponentFactoryResolver) {
-    this.name = getName();
     parentOutletMap.registerOutlet(this.name ? this.name : PRIMARY_OUTLET, this);
   }
 
@@ -100,9 +99,5 @@ export class RouterOutlet implements OnDestroy {
     this.activated.changeDetectorRef.detectChanges();
 
     this.activateEvents.emit(this.activated.instance);
-  }
-  
-  getName(): void {
-    return this.name;
   }
 }
