@@ -697,6 +697,7 @@ export declare class QueryList<T> {
     last: T;
     length: number;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
+    find(fn: (item: T, index: number, array: T[]) => boolean): T;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
