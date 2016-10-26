@@ -45,6 +45,10 @@ describe('MdSnackBar', () => {
     snackBar = sb;
   }));
 
+  afterEach(() => {
+    overlayContainerElement.innerHTML = '';
+  });
+
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
 
