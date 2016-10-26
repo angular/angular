@@ -138,8 +138,11 @@ gulp.task('check-tests', function() {
       .pipe(ddescribeIit({allowDisabledTests: true}));
 });
 
-// Check the coding standards and programming errors
-gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
+// Check the coding standards and programming errors. Also check for presence
+// of certain jasmine calls (fit, fdescribe). To configure the files scanned by
+// this rule or turn on checks for excluded tests (disabled for now as some have
+// already been comitted) see the docs in ./tslint/prohibitJasmineCallsRule.ts.
+gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   const tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
