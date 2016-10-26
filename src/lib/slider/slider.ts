@@ -154,6 +154,7 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
     this._value = Number(v);
     this._isInitialized = true;
     this._controlValueAccessorChangeFn(this._value);
+    this.snapThumbToValue();
   }
 
   constructor(elementRef: ElementRef) {
@@ -265,7 +266,9 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
    */
   snapThumbToValue() {
     this.updatePercentFromValue();
-    this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
+    if (this._sliderDimensions) {
+      this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
+    }
   }
 
   /**

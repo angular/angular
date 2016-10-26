@@ -24,6 +24,10 @@ Label <md-slider #slidey></md-slider>
 <h1>Slider with Thumb Label</h1>
 <md-slider thumb-label></md-slider>
 
+<h1>Slider with one-way binding</h1>
+<md-slider [value]="val" step="40"></md-slider>
+<input [(ngModel)]="val">
+
 <h1>Slider with two-way binding</h1>
 <md-slider [(ngModel)]="demo" step="40"></md-slider>
 <input [(ngModel)]="demo">

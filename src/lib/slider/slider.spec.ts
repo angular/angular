@@ -22,6 +22,7 @@ describe('MdSlider', () => {
         SliderWithAutoTickInterval,
         SliderWithSetTickInterval,
         SliderWithThumbLabel,
+        SliderWithOneWayBinding,
         SliderWithTwoWayBinding,
       ],
       providers: [
@@ -621,6 +622,54 @@ describe('MdSlider', () => {
 
     // TODO: Add tests for ng-pristine, ng-touched, ng-invalid.
   });
+
+  describe('slider with value property binding', () => {
+    let fixture: ComponentFixture<SliderWithOneWayBinding>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderTrackElement: HTMLElement;
+    let testComponent: SliderWithOneWayBinding;
+    let trackFillElement: HTMLElement;
+    let thumbElement: HTMLElement;
+    let sliderDimensions: ClientRect;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithOneWayBinding);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
+    });
+
+    it('should initialize based on bound value', () => {
+      let trackFillDimensions = trackFillElement.getBoundingClientRect();
+      let thumbDimensions = thumbElement.getBoundingClientRect();
+      let thumbPosition = thumbDimensions.left - trackFillDimensions.left;
+
+      expect(sliderInstance.value).toBe(50);
+      expect(thumbPosition).toBe(sliderDimensions.width / 2);
+    });
+
+    it('should update when bound value changes', () => {
+      testComponent.val = 75;
+      fixture.detectChanges();
+
+      let trackFillDimensions = trackFillElement.getBoundingClientRect();
+      let thumbDimensions = thumbElement.getBoundingClientRect();
+      let thumbPosition = thumbDimensions.left - trackFillDimensions.left;
+
+      expect(sliderInstance.value).toBe(75);
+      expect(thumbPosition).toBe(sliderDimensions.width * 3 / 4);
+    });
+  });
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
@@ -670,6 +719,13 @@ class SliderWithSetTickInterval { }
   encapsulation: ViewEncapsulation.None
 })
 class SliderWithThumbLabel { }
+
+@Component({
+  template: `<md-slider [value]="val"></md-slider>`
+})
+class SliderWithOneWayBinding {
+  val = 50;
+}
 
 @Component({
   template: `<md-slider [formControl]="control"></md-slider>`

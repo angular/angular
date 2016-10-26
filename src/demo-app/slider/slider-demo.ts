@@ -8,4 +8,5 @@ import {Component} from '@angular/core';
 })
 export class SliderDemo {
   demo: number;
+  val: number = 50;
 }
