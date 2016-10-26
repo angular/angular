@@ -70,6 +70,16 @@ export function main() {
       expect(queryList.filter((x: string, i: number) => i == 0)).toEqual(['one']);
     });
 
+    it('should support find', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.find((x: string) => x == 'two')).toEqual('two');
+    });
+
+    it('should support find with index', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.find((x: string, i: number) => i == 1)).toEqual('two');
+    });
+
     it('should support reduce', () => {
       queryList.reset(['one', 'two']);
       expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
