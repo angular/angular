@@ -102,7 +102,7 @@ export class RouterOutlet implements OnDestroy {
     this.activateEvents.emit(this.activated.instance);
   }
   
-  getName() {
+  getName(): void {
     return this.name;
   }
 }
