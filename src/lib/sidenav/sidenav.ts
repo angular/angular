@@ -16,7 +16,8 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, MdError} from '../core';
+import {Dir, MdError, coerceBooleanProperty} from '../core';
+
 
 /** Exception thrown when two MdSidenav are matching the same side. */
 export class MdDuplicatedSidenavError extends MdError {
@@ -79,9 +80,7 @@ export class MdSidenav {
   @Input()
   get opened(): boolean { return this._opened; }
   set opened(v: boolean) {
-    // TODO(jelbourn): this coercion goes away when BooleanFieldValue is removed.
-    let booleanValue = v != null && `${v}` !== 'false';
-    this.toggle(booleanValue);
+    this.toggle(coerceBooleanProperty(v));
   }
 
 

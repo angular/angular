@@ -33,3 +33,4 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
+/.chrome

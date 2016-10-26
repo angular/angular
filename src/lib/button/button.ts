@@ -10,7 +10,7 @@ import {
   ModuleWithProviders,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {BooleanFieldValue, MdRippleModule} from '../core';
+import {MdRippleModule, coerceBooleanProperty} from '../core';
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
@@ -41,7 +41,11 @@ export class MdButton {
   _isMouseDown: boolean = false;
 
   /** Whether the ripple effect on click should be disabled. */
-  @Input() @BooleanFieldValue() disableRipple: boolean = false;
+  private _disableRipple: boolean = false;
+
+  @Input()
+  get disableRipple() { return this._disableRipple; }
+  set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
   constructor(private _elementRef: ElementRef, private _renderer: Renderer) { }
 

@@ -13,14 +13,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {
-  FormsModule,
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
-import {BooleanFieldValue, applyCssTransform} from '../core';
+import {FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {applyCssTransform, coerceBooleanProperty, MdGestureConfig} from '../core';
 import {Observable} from 'rxjs/Observable';
-import {MdGestureConfig} from '../core';
 
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -65,17 +60,25 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   private _color: string;
   private _isMousedown: boolean = false;
   private _slideRenderer: SlideToggleRenderer = null;
+  private _disabled: boolean = false;
+  private _required: boolean = false;
 
   // Needs to be public to support AOT compilation (as host binding).
   _hasFocus: boolean = false;
 
-  @Input() @BooleanFieldValue() disabled: boolean = false;
-  @Input() @BooleanFieldValue() required: boolean = false;
   @Input() name: string = null;
   @Input() id: string = this._uniqueId;
   @Input() tabIndex: number = 0;
   @Input() ariaLabel: string = null;
   @Input() ariaLabelledby: string = null;
+
+  @Input()
+  get disabled(): boolean { return this._disabled; }
+  set disabled(value) { this._disabled = coerceBooleanProperty(value); }
+
+  @Input()
+  get required(): boolean { return this._required; }
+  set required(value) { this._required = coerceBooleanProperty(value); }
 
   private _change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
   @Output() change: Observable<MdSlideToggleChange> = this._change.asObservable();

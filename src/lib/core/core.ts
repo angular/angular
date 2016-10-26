@@ -70,9 +70,6 @@ export {applyCssTransform} from './style/apply-transform';
 // Error
 export {MdError} from './errors/error';
 
-// Annotations.
-export {BooleanFieldValue} from './annotations/field-value';
-
 // Misc
 export {ComponentType} from './overlay/generic-component-type';
 
@@ -83,6 +80,9 @@ export * from './compatibility/style-compatibility';
 
 // Animation
 export * from './animation/animation';
+
+// Coersion
+export {coerceBooleanProperty} from './coersion/boolean-property';
 
 
 @NgModule({
