@@ -24,6 +24,8 @@ describe('MdSlider', () => {
         SliderWithThumbLabel,
         SliderWithOneWayBinding,
         SliderWithTwoWayBinding,
+        SliderWithValueSmallerThanMin,
+        SliderWithValueGreaterThanMax,
       ],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
@@ -670,6 +672,82 @@ describe('MdSlider', () => {
       expect(thumbPosition).toBe(sliderDimensions.width * 3 / 4);
     });
   });
+
+  describe('slider with set min and max and a value smaller than min', () => {
+    let fixture: ComponentFixture<SliderWithValueSmallerThanMin>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderTrackElement: HTMLElement;
+    let sliderDimensions: ClientRect;
+    let thumbElement: HTMLElement;
+    let thumbDimensions: ClientRect;
+
+    beforeEach(() => {
+
+      fixture = TestBed.createComponent(SliderWithValueSmallerThanMin);
+      fixture.detectChanges();
+
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
+
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+      thumbDimensions = thumbElement.getBoundingClientRect();
+    });
+
+    it('should set the value smaller than the min value', () => {
+      expect(sliderInstance.value).toBe(3);
+      expect(sliderInstance.min).toBe(4);
+      expect(sliderInstance.max).toBe(6);
+    });
+
+    it('should place the thumb on the min value', () => {
+      thumbDimensions = thumbElement.getBoundingClientRect();
+      expect(thumbDimensions.left).toBe(sliderDimensions.left);
+    });
+  });
+
+  describe('slider with set min and max and a value greater than max', () => {
+    let fixture: ComponentFixture<SliderWithValueSmallerThanMin>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let sliderTrackElement: HTMLElement;
+    let sliderDimensions: ClientRect;
+    let thumbElement: HTMLElement;
+    let thumbDimensions: ClientRect;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithValueGreaterThanMax);
+      fixture.detectChanges();
+
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderDimensions = sliderTrackElement.getBoundingClientRect();
+
+      thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+      thumbDimensions = thumbElement.getBoundingClientRect();
+
+    });
+
+    it('should set the value greater than the max value', () => {
+      expect(sliderInstance.value).toBe(7);
+      expect(sliderInstance.min).toBe(4);
+      expect(sliderInstance.max).toBe(6);
+    });
+
+    it('should place the thumb on the max value', () => {
+      thumbDimensions = thumbElement.getBoundingClientRect();
+      expect(thumbDimensions.left).toBe(sliderDimensions.right);
+    });
+  });
 });
 
 // The transition has to be removed in order to test the updated positions without setTimeout.
@@ -733,6 +811,20 @@ class SliderWithOneWayBinding {
 class SliderWithTwoWayBinding {
   control = new FormControl('');
 }
+
+@Component({
+  template: `<md-slider value="3" min="4" max="6"></md-slider>`,
+  styles: [noTransitionStyle],
+  encapsulation: ViewEncapsulation.None
+})
+class SliderWithValueSmallerThanMin { }
+
+@Component({
+  template: `<md-slider value="7" min="4" max="6"></md-slider>`,
+  styles: [noTransitionStyle],
+  encapsulation: ViewEncapsulation.None
+})
+class SliderWithValueGreaterThanMax { }
 
 /**
  * Dispatches a click event from an element.

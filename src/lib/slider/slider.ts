@@ -267,7 +267,8 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
   snapThumbToValue() {
     this.updatePercentFromValue();
     if (this._sliderDimensions) {
-      this._renderer.updateThumbAndFillPosition(this._percent, this._sliderDimensions.width);
+      let renderedPercent = this.clamp(this._percent);
+      this._renderer.updateThumbAndFillPosition(renderedPercent, this._sliderDimensions.width);
     }
   }
 
