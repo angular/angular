@@ -51,8 +51,9 @@ export class RouterOutlet implements OnDestroy {
 
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, name: string) {
-    parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
+      private resolver: ComponentFactoryResolver) {
+    this.name = getName();
+    parentOutletMap.registerOutlet(this.name ? this.name : PRIMARY_OUTLET, this);
   }
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
@@ -99,5 +100,9 @@ export class RouterOutlet implements OnDestroy {
     this.activated.changeDetectorRef.detectChanges();
 
     this.activateEvents.emit(this.activated.instance);
+  }
+  
+  getName() {
+    return this.name;
   }
 }
