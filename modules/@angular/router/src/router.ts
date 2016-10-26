@@ -893,6 +893,13 @@ export class PreActivation {
     return map.call(this.resolveNode(resolve.current, future), (resolvedData: any): any => {
       resolve.resolvedData = resolvedData;
       future.data = merge(future.data, resolve.flattenedResolvedData);
+      if (future.parent && future.parent.data) {
+        resolve.flattenedAttributes
+            .filter(
+                attrib =>
+                    future.data[attrib] === undefined && future.parent.data[attrib] !== undefined)
+            .forEach(attrib => future.data[attrib] = future.parent.data[attrib]);
+      }
       return null;
     });
   }
