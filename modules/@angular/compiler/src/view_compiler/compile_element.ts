@@ -9,7 +9,7 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
-import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
+import {DirectiveWrapperCompiler, DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
@@ -188,8 +188,7 @@ export class CompileElement extends CompileNode {
                 {name: DirectiveWrapperCompiler.dirWrapperClassName(provider.useClass)});
             this._targetDependencies.push(
                 new DirectiveWrapperDependency(provider.useClass, directiveWrapperIdentifier));
-            return o.importExpr(directiveWrapperIdentifier)
-                .instantiate(depsExpr, o.importType(directiveWrapperIdentifier));
+            return DirectiveWrapperExpressions.create(directiveWrapperIdentifier, depsExpr);
           } else {
             return o.importExpr(provider.useClass)
                 .instantiate(depsExpr, o.importType(provider.useClass));
@@ -204,7 +203,8 @@ export class CompileElement extends CompileNode {
           resolvedProvider.eager, this);
       if (isDirectiveWrapper) {
         this.directiveWrapperInstance.set(resolvedProvider.token.reference, instance);
-        this.instances.set(resolvedProvider.token.reference, instance.prop('context'));
+        this.instances.set(
+            resolvedProvider.token.reference, DirectiveWrapperExpressions.context(instance));
       } else {
         this.instances.set(resolvedProvider.token.reference, instance);
       }

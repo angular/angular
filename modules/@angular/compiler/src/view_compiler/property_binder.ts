@@ -11,21 +11,22 @@ import {SecurityContext} from '@angular/core';
 import {createCheckBindingField, createCheckBindingStmt} from '../compiler_util/binding_util';
 import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
-import {writeToRenderer} from '../compiler_util/render_util';
+import {triggerAnimation, writeToRenderer} from '../compiler_util/render_util';
+import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import * as cdAst from '../expression_parser/ast';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
+import {BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {camelCaseToDashCase} from '../util';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
 import {DetectChangesVars, ViewProperties} from './constants';
-import {CompileEventListener} from './event_binder';
+import {getHandleEventMethodName} from './util';
 
 export function bindRenderText(
     boundText: BoundTextAst, compileNode: CompileNode, view: CompileView): void {
@@ -44,118 +45,70 @@ export function bindRenderText(
            .toStmt()]));
 }
 
-function bindAndWriteToRenderer(
-    boundProps: BoundElementPropertyAst[], context: o.Expression, compileElement: CompileElement,
-    isHostProp: boolean, eventListeners: CompileEventListener[]) {
+export function bindRenderInputs(
+    boundProps: BoundElementPropertyAst[], hasEvents: boolean, compileElement: CompileElement) {
   var view = compileElement.view;
   var renderNode = compileElement.renderNode;
   boundProps.forEach((boundProp) => {
     const bindingField = createCheckBindingField(view);
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     const evalResult = convertPropertyBinding(
-        view, isHostProp ? null : view, context, boundProp.value, bindingField.bindingId);
-    var updateStmts: o.Statement[] = [];
+        view, view, compileElement.view.componentContext, boundProp.value, bindingField.bindingId);
+    var checkBindingStmts: o.Statement[] = [];
     var compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
       case PropertyBindingType.Property:
       case PropertyBindingType.Attribute:
       case PropertyBindingType.Class:
       case PropertyBindingType.Style:
-        updateStmts.push(...writeToRenderer(
+        checkBindingStmts.push(...writeToRenderer(
             o.THIS_EXPR, boundProp, renderNode, evalResult.currValExpr,
             view.genConfig.logBindingUpdate));
         break;
       case PropertyBindingType.Animation:
         compileMethod = view.animationBindingsMethod;
-        const detachStmts: o.Statement[] = [];
-
-        const animationName = boundProp.name;
-        const targetViewExpr: o.Expression =
-            isHostProp ? compileElement.appElement.prop('componentView') : o.THIS_EXPR;
-
-        const animationFnExpr =
-            targetViewExpr.prop('componentType').prop('animations').key(o.literal(animationName));
-
-        // it's important to normalize the void value as `void` explicitly
-        // so that the styles data can be obtained from the stringmap
-        const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
-        const unitializedValue = o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED));
-        const animationTransitionVar = o.variable('animationTransition_' + animationName);
-
-        updateStmts.push(animationTransitionVar
-                             .set(animationFnExpr.callFn([
-                               o.THIS_EXPR, renderNode,
-                               bindingField.expression.equals(unitializedValue)
-                                   .conditional(emptyStateValue, bindingField.expression),
-                               evalResult.currValExpr.equals(unitializedValue)
-                                   .conditional(emptyStateValue, evalResult.currValExpr)
-                             ]))
-                             .toDeclStmt());
-
-        detachStmts.push(
-            animationTransitionVar
-                .set(animationFnExpr.callFn(
-                    [o.THIS_EXPR, renderNode, bindingField.expression, emptyStateValue]))
-                .toDeclStmt());
-
-        eventListeners.forEach(listener => {
-          if (listener.isAnimation && listener.eventName === animationName) {
-            let animationStmt = listener.listenToAnimation(animationTransitionVar);
-            updateStmts.push(animationStmt);
-            detachStmts.push(animationStmt);
-          }
-        });
-
+        const {updateStmts, detachStmts} = triggerAnimation(
+            o.THIS_EXPR, o.THIS_EXPR, boundProp,
+            (hasEvents ? o.THIS_EXPR.prop(getHandleEventMethodName(compileElement.nodeIndex)) :
+                         o.importExpr(resolveIdentifier(Identifiers.noop)))
+                .callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR]),
+            compileElement.renderNode, evalResult.currValExpr, bindingField.expression);
+        checkBindingStmts.push(...updateStmts);
         view.detachMethod.addStmts(detachStmts);
-
         break;
     }
     compileMethod.addStmts(createCheckBindingStmt(
-        evalResult, bindingField.expression, DetectChangesVars.throwOnChange, updateStmts));
+        evalResult, bindingField.expression, DetectChangesVars.throwOnChange, checkBindingStmts));
   });
-}
-
-export function bindRenderInputs(
-    boundProps: BoundElementPropertyAst[], compileElement: CompileElement,
-    eventListeners: CompileEventListener[]): void {
-  bindAndWriteToRenderer(
-      boundProps, compileElement.view.componentContext, compileElement, false, eventListeners);
 }
 
 export function bindDirectiveHostProps(
     directiveAst: DirectiveAst, directiveWrapperInstance: o.Expression,
-    compileElement: CompileElement, eventListeners: CompileEventListener[], elementName: string,
+    compileElement: CompileElement, elementName: string,
     schemaRegistry: ElementSchemaRegistry): void {
-  // host properties are change detected by the DirectiveWrappers,
-  // except for the animation properties as they need close integration with animation events
-  // and DirectiveWrappers don't support
-  // event listeners right now.
-  bindAndWriteToRenderer(
-      directiveAst.hostProperties.filter(boundProp => boundProp.isAnimation),
-      directiveWrapperInstance.prop('context'), compileElement, true, eventListeners);
-
-
-  const methodArgs: o.Expression[] =
-      [o.THIS_EXPR, compileElement.renderNode, DetectChangesVars.throwOnChange];
   // We need to provide the SecurityContext for properties that could need sanitization.
-  directiveAst.hostProperties.filter(boundProp => boundProp.needsRuntimeSecurityContext)
-      .forEach((boundProp) => {
-        let ctx: SecurityContext;
-        switch (boundProp.type) {
-          case PropertyBindingType.Property:
-            ctx = schemaRegistry.securityContext(elementName, boundProp.name, false);
-            break;
-          case PropertyBindingType.Attribute:
-            ctx = schemaRegistry.securityContext(elementName, boundProp.name, true);
-            break;
-          default:
-            throw new Error(
-                `Illegal state: Only property / attribute bindings can have an unknown security context! Binding ${boundProp.name}`);
-        }
-        methodArgs.push(createEnumExpression(Identifiers.SecurityContext, ctx));
-      });
-  compileElement.view.detectChangesRenderPropertiesMethod.addStmt(
-      directiveWrapperInstance.callMethod('detectChangesInHostProps', methodArgs).toStmt());
+  const runtimeSecurityCtxExprs =
+      directiveAst.hostProperties.filter(boundProp => boundProp.needsRuntimeSecurityContext)
+          .map((boundProp) => {
+            let ctx: SecurityContext;
+            switch (boundProp.type) {
+              case PropertyBindingType.Property:
+                ctx = schemaRegistry.securityContext(elementName, boundProp.name, false);
+                break;
+              case PropertyBindingType.Attribute:
+                ctx = schemaRegistry.securityContext(elementName, boundProp.name, true);
+                break;
+              default:
+                throw new Error(
+                    `Illegal state: Only property / attribute bindings can have an unknown security context! Binding ${boundProp.name}`);
+            }
+            return createEnumExpression(Identifiers.SecurityContext, ctx);
+          });
+  compileElement.view.detectChangesRenderPropertiesMethod.addStmts(
+      DirectiveWrapperExpressions.checkHost(
+          directiveAst.hostProperties, directiveWrapperInstance, o.THIS_EXPR,
+          compileElement.component ? compileElement.appElement.prop('componentView') : o.THIS_EXPR,
+          compileElement.renderNode, DetectChangesVars.throwOnChange, runtimeSecurityCtxExprs));
 }
 
 export function bindDirectiveInputs(
@@ -187,9 +140,9 @@ export function bindDirectiveInputs(
   });
   var isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
-  let directiveDetectChangesExpr = directiveWrapperInstance.callMethod(
-      'detectChangesInInputProps',
-      [o.THIS_EXPR, compileElement.renderNode, DetectChangesVars.throwOnChange]);
+  let directiveDetectChangesExpr = DirectiveWrapperExpressions.ngDoCheck(
+      directiveWrapperInstance, o.THIS_EXPR, compileElement.renderNode,
+      DetectChangesVars.throwOnChange);
   const directiveDetectChangesStmt = isOnPushComp ?
       new o.IfStmt(directiveDetectChangesExpr, [compileElement.appElement.prop('componentView')
                                                     .callMethod('markAsCheckOnce', [])

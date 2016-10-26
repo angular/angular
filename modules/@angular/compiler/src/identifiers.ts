@@ -313,6 +313,13 @@ export class Identifiers {
     moduleUrl: VIEW_UTILS_MODULE_URL,
     runtime: view_utils.InlineArrayDynamic
   };
+  static subscribeToRenderElement: IdentifierSpec = {
+    name: 'subscribeToRenderElement',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.subscribeToRenderElement
+  };
+  static noop:
+      IdentifierSpec = {name: 'noop', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.noop};
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {

@@ -91,3 +91,7 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
   }
   return result;
 }
+
+export function getHandleEventMethodName(elementIndex: number): string {
+  return `handleEvent_${elementIndex}`;
+}
