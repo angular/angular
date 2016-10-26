@@ -400,14 +400,59 @@ export function selectOrCreateRenderHostElement(
   return hostElement;
 }
 
+export function subscribeToRenderElement(
+    renderer: Renderer, element: any, eventNamesAndTargets: InlineArray<string>,
+    listener: (eventName: string, event: any) => any) {
+  const disposables = createEmptyInlineArray(eventNamesAndTargets.length / 2);
+  for (var i = 0; i < eventNamesAndTargets.length; i += 2) {
+    const eventName = eventNamesAndTargets.get(i);
+    const eventTarget = eventNamesAndTargets.get(i + 1);
+    let disposable: Function;
+    if (eventTarget) {
+      disposable = renderer.listenGlobal(
+          eventTarget, eventName, listener.bind(null, `${eventTarget}:${eventName}`));
+    } else {
+      disposable = renderer.listen(element, eventName, listener.bind(null, eventName));
+    }
+    disposables.set(i / 2, disposable);
+  }
+  return disposeInlineArray.bind(null, disposables);
+}
+
+function disposeInlineArray(disposables: InlineArray<Function>) {
+  for (var i = 0; i < disposables.length; i++) {
+    disposables.get(i)();
+  }
+}
+
+export function noop() {}
+
 export interface InlineArray<T> {
   length: number;
   get(index: number): T;
+  set(index: number, value: T): void;
+}
+
+function createEmptyInlineArray<T>(length: number): InlineArray<T> {
+  let ctor: any;
+  if (length <= 2) {
+    ctor = InlineArray2;
+  } else if (length <= 4) {
+    ctor = InlineArray4;
+  } else if (length <= 8) {
+    ctor = InlineArray8;
+  } else if (length <= 16) {
+    ctor = InlineArray16;
+  } else {
+    ctor = InlineArrayDynamic;
+  }
+  return new ctor(length);
 }
 
 class InlineArray0 implements InlineArray<any> {
   length = 0;
   get(index: number): any { return undefined; }
+  set(index: number, value: any): void {}
 }
 
 export class InlineArray2<T> implements InlineArray<T> {
@@ -420,6 +465,16 @@ export class InlineArray2<T> implements InlineArray<T> {
         return this._v1;
       default:
         return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
     }
   }
 }
@@ -439,6 +494,22 @@ export class InlineArray4<T> implements InlineArray<T> {
         return this._v3;
       default:
         return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
     }
   }
 }
@@ -467,6 +538,34 @@ export class InlineArray8<T> implements InlineArray<T> {
         return this._v7;
       default:
         return undefined;
+    }
+  }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
+      case 4:
+        this._v4 = value;
+        break;
+      case 5:
+        this._v5 = value;
+        break;
+      case 6:
+        this._v6 = value;
+        break;
+      case 7:
+        this._v7 = value;
+        break;
     }
   }
 }
@@ -515,6 +614,58 @@ export class InlineArray16<T> implements InlineArray<T> {
         return undefined;
     }
   }
+  set(index: number, value: T) {
+    switch (index) {
+      case 0:
+        this._v0 = value;
+        break;
+      case 1:
+        this._v1 = value;
+        break;
+      case 2:
+        this._v2 = value;
+        break;
+      case 3:
+        this._v3 = value;
+        break;
+      case 4:
+        this._v4 = value;
+        break;
+      case 5:
+        this._v5 = value;
+        break;
+      case 6:
+        this._v6 = value;
+        break;
+      case 7:
+        this._v7 = value;
+        break;
+      case 8:
+        this._v8 = value;
+        break;
+      case 9:
+        this._v9 = value;
+        break;
+      case 10:
+        this._v10 = value;
+        break;
+      case 11:
+        this._v11 = value;
+        break;
+      case 12:
+        this._v12 = value;
+        break;
+      case 13:
+        this._v13 = value;
+        break;
+      case 14:
+        this._v14 = value;
+        break;
+      case 15:
+        this._v15 = value;
+        break;
+    }
+  }
 }
 
 export class InlineArrayDynamic<T> implements InlineArray<T> {
@@ -524,6 +675,7 @@ export class InlineArrayDynamic<T> implements InlineArray<T> {
   constructor(public length: number, ...values: any[]) { this._values = values; }
 
   get(index: number) { return this._values[index]; }
+  set(index: number, value: T) { this._values[index] = value; }
 }
 
 export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();
