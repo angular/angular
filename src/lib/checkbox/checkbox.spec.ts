@@ -483,6 +483,20 @@ describe('MdCheckbox', () => {
 
       expect(inputElement.tabIndex).toBe(13);
     });
+
+    it('should remove ripple if md-ripple-disabled input is set', async(() => {
+      testComponent.disableRipple = true;
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
+        .toBe(0, 'Expect no [md-ripple] in checkbox');
+
+      testComponent.disableRipple = false;
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.querySelectorAll('[md-ripple]').length)
+        .toBe(1, 'Expect [md-ripple] in checkbox');
+    }));
   });
 
   describe('with multiple checkboxes', () => {
@@ -598,12 +612,16 @@ class MultipleCheckboxes { }
 /** Simple test component with tabIndex */
 @Component({
   template: `
-    <md-checkbox [tabindex]="customTabIndex" [disabled]="isDisabled">
+    <md-checkbox 
+        [tabindex]="customTabIndex" 
+        [disabled]="isDisabled" 
+        [disableRipple]="disableRipple">
     </md-checkbox>`,
 })
 class CheckboxWithTabIndex {
   customTabIndex: number = 7;
   isDisabled: boolean = false;
+  disableRipple: boolean = false;
 }
 
 /** Simple test component with an aria-label set. */

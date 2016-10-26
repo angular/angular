@@ -11,9 +11,10 @@ import {
     NgModule,
     ModuleWithProviders,
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coersion/boolean-property';
-
+import {MdRippleModule} from '../core';
 
 /**
  * Monotonically increasing integer used to auto-generate unique ids for checkbox components.
@@ -88,6 +89,13 @@ export class MdCheckbox implements ControlValueAccessor {
 
   /** A unique id for the checkbox. If one is not supplied, it is auto-generated. */
   @Input() id: string = `md-checkbox-${++nextId}`;
+
+  /** Whether the ripple effect on click should be disabled. */
+  private _disableRipple: boolean;
+
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   /** ID to be applied to the `input` element */
   get inputId(): string {
@@ -338,10 +346,15 @@ export class MdCheckbox implements ControlValueAccessor {
 
     return `md-checkbox-anim-${animSuffix}`;
   }
+
+  getHostElement() {
+    return this._elementRef.nativeElement;
+  }
 }
 
 
 @NgModule({
+  imports: [CommonModule, MdRippleModule],
   exports: [MdCheckbox],
   declarations: [MdCheckbox],
 })

@@ -68,17 +68,16 @@
     }
   }
 
-  // TODO(jelbourn): remove style for temporary ripple once the real ripple is applied.
   .md-checkbox-focused {
-    &.md-primary .md-ink-ripple {
+    &.md-primary .md-checkbox-ripple .md-ripple-foreground {
       background-color: md-color($primary, 0.26);
     }
 
-    &.md-accent .md-ink-ripple {
+    &.md-accent .md-checkbox-ripple .md-ripple-foreground {
       background-color: md-color($accent, 0.26);
     }
 
-    &.md-warn .md-ink-ripple {
+    &.md-warn .md-checkbox-ripple .md-ripple-foreground {
       background-color: md-color($warn, 0.26);
     }
   }
