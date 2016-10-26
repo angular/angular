@@ -77,6 +77,22 @@ describe('ListKeyManager', () => {
     expect(items[2].focus).toHaveBeenCalledTimes(1);
   });
 
+  it('should work normally when disabled property does not exist', () => {
+    items[0].disabled = undefined;
+    items[1].disabled = undefined;
+    items[2].disabled = undefined;
+
+    keyManager.onKeydown(DOWN_ARROW_EVENT);
+    expect(items[0].focus).not.toHaveBeenCalled();
+    expect(items[1].focus).toHaveBeenCalledTimes(1);
+    expect(items[2].focus).not.toHaveBeenCalled();
+
+    keyManager.onKeydown(DOWN_ARROW_EVENT);
+    expect(items[0].focus).not.toHaveBeenCalled();
+    expect(items[1].focus).toHaveBeenCalledTimes(1);
+    expect(items[2].focus).toHaveBeenCalledTimes(1);
+  });
+
   it('should wrap back to menu when arrow keying past items', () => {
     keyManager.onKeydown(DOWN_ARROW_EVENT);
     keyManager.onKeydown(DOWN_ARROW_EVENT);

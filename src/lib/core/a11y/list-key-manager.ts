@@ -7,7 +7,7 @@ import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
  */
 export interface MdFocusable {
   focus(): void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 /**
