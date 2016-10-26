@@ -24,7 +24,7 @@ describe('MdLiveAnnouncer', () => {
     afterEach(() => {
       // In our tests we always remove the current live element, because otherwise we would have
       // multiple live elements due multiple service instantiations.
-      ariaLiveElement.parentNode.removeChild(ariaLiveElement);
+      announcer._removeLiveElement();
     });
 
     it('should correctly update the announce text', fakeAsync(() => {
@@ -55,6 +55,18 @@ describe('MdLiveAnnouncer', () => {
 
       expect(ariaLiveElement.textContent).toBe('Hey Google');
       expect(ariaLiveElement.getAttribute('aria-live')).toBe('polite');
+    }));
+
+    it('should remove the aria-live element from the DOM', fakeAsync(() => {
+      announcer.announce('Hey Google');
+
+      // This flushes our 100ms timeout for the screenreaders.
+      tick(100);
+
+      announcer._removeLiveElement();
+
+      expect(document.body.querySelector('[aria-live]'))
+          .toBeFalsy('Expected that the aria-live element was remove from the DOM.');
     }));
   });
 

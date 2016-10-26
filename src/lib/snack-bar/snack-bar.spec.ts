@@ -12,14 +12,16 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
-import {OverlayContainer} from '../core';
+import {OverlayContainer, MdLiveAnnouncer} from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';
 import {SimpleSnackBar} from './simple-snack-bar';
+
 
 // TODO(josephperrott): Update tests to mock waiting for time to complete for animations.
 
 describe('MdSnackBar', () => {
   let snackBar: MdSnackBar;
+  let liveAnnouncer: MdLiveAnnouncer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -41,12 +43,14 @@ describe('MdSnackBar', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar], (sb: MdSnackBar) => {
+  beforeEach(inject([MdSnackBar, MdLiveAnnouncer], (sb: MdSnackBar, la: MdLiveAnnouncer) => {
     snackBar = sb;
+    liveAnnouncer = la;
   }));
 
   afterEach(() => {
     overlayContainerElement.innerHTML = '';
+    liveAnnouncer._removeLiveElement();
   });
 
   beforeEach(() => {

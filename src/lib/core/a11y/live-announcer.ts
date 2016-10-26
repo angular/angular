@@ -40,6 +40,13 @@ export class MdLiveAnnouncer {
     setTimeout(() => this._liveElement.textContent = message, 100);
   }
 
+  /** Removes the aria-live element from the DOM. */
+  _removeLiveElement() {
+    if (this._liveElement && this._liveElement.parentNode) {
+      this._liveElement.parentNode.removeChild(this._liveElement);
+    }
+  }
+
   private _createLiveElement(): Element {
     let liveEl = document.createElement('div');
 
