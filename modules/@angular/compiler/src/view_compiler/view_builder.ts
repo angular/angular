@@ -9,12 +9,14 @@
 import {ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
+import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
+import {createClassStmt} from '../output/class_builder';
 import * as o from '../output/output_ast';
 import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
-import {createDiTokenExpression} from '../util';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
@@ -156,19 +158,29 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
   visitElement(ast: ElementAst, parent: CompileElement): any {
     var nodeIndex = this.view.nodes.length;
-    var createRenderNodeExpr: o.InvokeMethodExpr;
+    var createRenderNodeExpr: o.Expression;
     var debugContextExpr = this.view.createMethod.resetDebugInfoExpr(nodeIndex, ast);
-    if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
-      createRenderNodeExpr = o.THIS_EXPR.callMethod(
-          'selectOrCreateHostElement', [o.literal(ast.name), rootSelectorVar, debugContextExpr]);
+    var directives = ast.directives.map(directiveAst => directiveAst.directive);
+    var component = directives.find(directive => directive.isComponent);
+    if (ast.name === NG_CONTAINER_TAG) {
+      createRenderNodeExpr = ViewProperties.renderer.callMethod(
+          'createTemplateAnchor', [this._getParentRenderNode(parent), debugContextExpr]);
     } else {
-      if (ast.name === NG_CONTAINER_TAG) {
-        createRenderNodeExpr = ViewProperties.renderer.callMethod(
-            'createTemplateAnchor', [this._getParentRenderNode(parent), debugContextExpr]);
+      const htmlAttrs = _readHtmlAttrs(ast.attrs);
+      const attrNameAndValues = createInlineArray(
+          _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives).map(v => o.literal(v)));
+      if (nodeIndex === 0 && this.view.viewType === ViewType.HOST) {
+        createRenderNodeExpr =
+            o.importExpr(resolveIdentifier(Identifiers.selectOrCreateRenderHostElement)).callFn([
+              ViewProperties.renderer, o.literal(ast.name), attrNameAndValues, rootSelectorVar,
+              debugContextExpr
+            ]);
       } else {
-        createRenderNodeExpr = ViewProperties.renderer.callMethod(
-            'createElement',
-            [this._getParentRenderNode(parent), o.literal(ast.name), debugContextExpr]);
+        createRenderNodeExpr =
+            o.importExpr(resolveIdentifier(Identifiers.createRenderElement)).callFn([
+              ViewProperties.renderer, this._getParentRenderNode(parent), o.literal(ast.name),
+              attrNameAndValues, debugContextExpr
+            ]);
       }
     }
     var fieldName = `_el_${nodeIndex}`;
@@ -178,22 +190,6 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
     var renderNode = o.THIS_EXPR.prop(fieldName);
 
-    var directives = ast.directives.map(directiveAst => directiveAst.directive);
-    var component = directives.find(directive => directive.isComponent);
-    var htmlAttrs = _readHtmlAttrs(ast.attrs);
-    var attrNameAndValues = _mergeHtmlAndDirectiveAttrs(htmlAttrs, directives);
-    for (var i = 0; i < attrNameAndValues.length; i++) {
-      const attrName = attrNameAndValues[i][0];
-      if (ast.name !== NG_CONTAINER_TAG) {
-        // <ng-container> are not rendered in the DOM
-        const attrValue = attrNameAndValues[i][1];
-        this.view.createMethod.addStmt(
-            ViewProperties.renderer
-                .callMethod(
-                    'setElementAttribute', [renderNode, o.literal(attrName), o.literal(attrValue)])
-                .toStmt());
-      }
-    }
     var compileElement = new CompileElement(
         parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.providers,
         ast.hasViewContainer, false, ast.references, this.targetDependencies);
@@ -328,18 +324,22 @@ function _isNgContainer(node: CompileNode, view: CompileView): boolean {
 
 
 function _mergeHtmlAndDirectiveAttrs(
-    declaredHtmlAttrs: {[key: string]: string},
-    directives: CompileDirectiveMetadata[]): string[][] {
-  var result: {[key: string]: string} = {};
-  Object.keys(declaredHtmlAttrs).forEach(key => { result[key] = declaredHtmlAttrs[key]; });
+    declaredHtmlAttrs: {[key: string]: string}, directives: CompileDirectiveMetadata[]): string[] {
+  const mapResult: {[key: string]: string} = {};
+  Object.keys(declaredHtmlAttrs).forEach(key => { mapResult[key] = declaredHtmlAttrs[key]; });
   directives.forEach(directiveMeta => {
     Object.keys(directiveMeta.hostAttributes).forEach(name => {
       const value = directiveMeta.hostAttributes[name];
-      var prevValue = result[name];
-      result[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
+      const prevValue = mapResult[name];
+      mapResult[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
     });
   });
-  return mapToKeyValueArray(result);
+  const arrResult: string[] = [];
+  // Note: We need to sort to get a defined output order
+  // for tests and for caching generated artifacts...
+  Object.keys(mapResult).sort().forEach(
+      (attrName) => { arrResult.push(attrName, mapResult[attrName]); });
+  return arrResult;
 }
 
 function _readHtmlAttrs(attrs: AttrAst[]): {[key: string]: string} {
@@ -354,14 +354,6 @@ function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: s
   } else {
     return attrValue2;
   }
-}
-
-function mapToKeyValueArray(data: {[key: string]: string}): string[][] {
-  var entryArray: string[][] = [];
-  Object.keys(data).forEach(name => { entryArray.push([name, data[name]]); });
-  // We need to sort to get a defined output order
-  // for tests and for caching generated artifacts...
-  return entryArray.sort();
 }
 
 function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statement[]) {
@@ -442,9 +434,6 @@ function createViewClass(
   if (view.genConfig.genDebugInfo) {
     superConstructorArgs.push(nodeDebugInfosVar);
   }
-  var viewConstructor = new o.ClassMethod(
-      null, viewConstructorArgs, [o.SUPER_EXPR.callFn(superConstructorArgs).toStmt()]);
-
   var viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
@@ -465,12 +454,16 @@ function createViewClass(
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish()),
     new o.ClassMethod('detachInternal', [], view.detachMethod.finish())
-  ].concat(view.eventHandlerMethods);
+  ].filter((method) => method.body.length > 0);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
-  var viewClass = new o.ClassStmt(
-      view.className, o.importExpr(resolveIdentifier(superClass), [getContextType(view)]),
-      view.fields, view.getters, viewConstructor,
-      viewMethods.filter((method) => method.body.length > 0));
+
+  var viewClass = createClassStmt({
+    name: view.className,
+    parent: o.importExpr(resolveIdentifier(superClass), [getContextType(view)]),
+    parentArgs: superConstructorArgs,
+    ctorParams: viewConstructorArgs,
+    builders: [{methods: viewMethods}, view]
+  });
   return viewClass;
 }
 
@@ -594,12 +587,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
         DetectChangesVars.changes.set(o.NULL_EXPR)
             .toDeclStmt(new o.MapType(o.importType(resolveIdentifier(Identifiers.SimpleChange)))));
   }
-  if (readVars.has(DetectChangesVars.valUnwrapper.name)) {
-    varStmts.push(
-        DetectChangesVars.valUnwrapper
-            .set(o.importExpr(resolveIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
-            .toDeclStmt(null, [o.StmtModifier.Final]));
-  }
+  varStmts.push(...createSharedBindingVariablesIfNeeded(stmts));
   return varStmts.concat(stmts);
 }
 

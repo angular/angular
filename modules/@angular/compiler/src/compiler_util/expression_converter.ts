@@ -10,73 +10,130 @@
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
+import {ClassBuilder} from '../output/class_builder';
 import * as o from '../output/output_ast';
-import {EventHandlerVars} from './constants';
+
+import {createPureProxy} from './identifier_util';
+
+const VAL_UNWRAPPER_VAR = o.variable(`valUnwrapper`);
 
 export interface NameResolver {
   callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression;
   getLocal(name: string): o.Expression;
-  createLiteralArray(values: o.Expression[]): o.Expression;
-  createLiteralMap(values: Array<Array<string|o.Expression>>): o.Expression;
+}
+
+export class EventHandlerVars { static event = o.variable('$event'); }
+
+export class ConvertPropertyBindingResult {
+  constructor(
+      public stmts: o.Statement[], public currValExpr: o.Expression,
+      public forceUpdate: o.Expression) {}
 }
 
 /**
- * A wrapper around another NameResolver that removes all locals and pipes.
+ * Converts the given expression AST into an executable output AST, assuming the expression is
+ * used in a property binding.
  */
-export class NoLocalsNameResolver implements NameResolver {
-  constructor(private _delegate: NameResolver) {}
-  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression { return null; }
-  getLocal(name: string): o.Expression {
-    if (name == EventHandlerVars.event.name) {
-      return EventHandlerVars.event;
-    }
+export function convertPropertyBinding(
+    builder: ClassBuilder, nameResolver: NameResolver, implicitReceiver: o.Expression,
+    expression: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
+  const currValExpr = createCurrValueExpr(bindingId);
+  const stmts: o.Statement[] = [];
+  if (!nameResolver) {
+    nameResolver = new DefaultNameResolver();
+  }
+  const visitor = new _AstToIrVisitor(
+      builder, nameResolver, implicitReceiver, VAL_UNWRAPPER_VAR, bindingId, false);
+  const outputExpr: o.Expression = expression.visit(visitor, _Mode.Expression);
+
+  if (!outputExpr) {
+    // e.g. an empty expression was given
     return null;
   }
-  createLiteralArray(values: o.Expression[]): o.Expression {
-    return this._delegate.createLiteralArray(values);
+
+  if (visitor.temporaryCount) {
+    for (let i = 0; i < visitor.temporaryCount; i++) {
+      stmts.push(temporaryDeclaration(bindingId, i));
+    }
   }
-  createLiteralMap(values: Array<Array<string|o.Expression>>): o.Expression {
-    return this._delegate.createLiteralMap(values);
+
+  if (visitor.needsValueUnwrapper) {
+    var initValueUnwrapperStmt = VAL_UNWRAPPER_VAR.callMethod('reset', []).toStmt();
+    stmts.push(initValueUnwrapperStmt);
+  }
+  stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
+  if (visitor.needsValueUnwrapper) {
+    return new ConvertPropertyBindingResult(
+        stmts, currValExpr, VAL_UNWRAPPER_VAR.prop('hasWrappedValue'));
+  } else {
+    return new ConvertPropertyBindingResult(stmts, currValExpr, null);
   }
 }
 
-export class ExpressionWithWrappedValueInfo {
-  constructor(
-      public expression: o.Expression, public needsValueUnwrapper: boolean,
-      public temporaryCount: number) {}
+export class ConvertActionBindingResult {
+  constructor(public stmts: o.Statement[], public preventDefault: o.Expression) {}
 }
 
-export function convertCdExpressionToIr(
-    nameResolver: NameResolver, implicitReceiver: o.Expression, expression: cdAst.AST,
-    valueUnwrapper: o.ReadVarExpr, bindingIndex: number): ExpressionWithWrappedValueInfo {
-  const visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, valueUnwrapper, bindingIndex);
-  const irAst: o.Expression = expression.visit(visitor, _Mode.Expression);
-  return new ExpressionWithWrappedValueInfo(
-      irAst, visitor.needsValueUnwrapper, visitor.temporaryCount);
+/**
+ * Converts the given expression AST into an executable output AST, assuming the expression is
+ * used in an action binding (e.g. an event handler).
+ */
+export function convertActionBinding(
+    builder: ClassBuilder, nameResolver: NameResolver, implicitReceiver: o.Expression,
+    action: cdAst.AST, bindingId: string): ConvertActionBindingResult {
+  if (!nameResolver) {
+    nameResolver = new DefaultNameResolver();
+  }
+  const visitor =
+      new _AstToIrVisitor(builder, nameResolver, implicitReceiver, null, bindingId, true);
+  let actionStmts: o.Statement[] = [];
+  flattenStatements(action.visit(visitor, _Mode.Statement), actionStmts);
+  prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
+  var lastIndex = actionStmts.length - 1;
+  var preventDefaultVar: o.ReadVarExpr = null;
+  if (lastIndex >= 0) {
+    var lastStatement = actionStmts[lastIndex];
+    var returnExpr = convertStmtIntoExpression(lastStatement);
+    if (returnExpr) {
+      // Note: We need to cast the result of the method call to dynamic,
+      // as it might be a void method!
+      preventDefaultVar = createPreventDefaultVar(bindingId);
+      actionStmts[lastIndex] =
+          preventDefaultVar.set(returnExpr.cast(o.DYNAMIC_TYPE).notIdentical(o.literal(false)))
+              .toDeclStmt(null, [o.StmtModifier.Final]);
+    }
+  }
+  return new ConvertActionBindingResult(actionStmts, preventDefaultVar);
 }
 
-export function convertCdStatementToIr(
-    nameResolver: NameResolver, implicitReceiver: o.Expression, stmt: cdAst.AST,
-    bindingIndex: number): o.Statement[] {
-  const visitor = new _AstToIrVisitor(nameResolver, implicitReceiver, null, bindingIndex);
-  let statements: o.Statement[] = [];
-  flattenStatements(stmt.visit(visitor, _Mode.Statement), statements);
-  prependTemporaryDecls(visitor.temporaryCount, bindingIndex, statements);
-  return statements;
+/**
+ * Creates variables that are shared by multiple calls to `convertActionBinding` /
+ * `convertPropertyBinding`
+ */
+export function createSharedBindingVariablesIfNeeded(stmts: o.Statement[]): o.Statement[] {
+  const unwrapperStmts: o.Statement[] = [];
+  var readVars = o.findReadVarNames(stmts);
+  if (readVars.has(VAL_UNWRAPPER_VAR.name)) {
+    unwrapperStmts.push(
+        VAL_UNWRAPPER_VAR
+            .set(o.importExpr(resolveIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
+            .toDeclStmt(null, [o.StmtModifier.Final]));
+  }
+  return unwrapperStmts;
 }
 
-function temporaryName(bindingIndex: number, temporaryNumber: number): string {
-  return `tmp_${bindingIndex}_${temporaryNumber}`;
+function temporaryName(bindingId: string, temporaryNumber: number): string {
+  return `tmp_${bindingId}_${temporaryNumber}`;
 }
 
-export function temporaryDeclaration(bindingIndex: number, temporaryNumber: number): o.Statement {
-  return new o.DeclareVarStmt(temporaryName(bindingIndex, temporaryNumber), o.NULL_EXPR);
+export function temporaryDeclaration(bindingId: string, temporaryNumber: number): o.Statement {
+  return new o.DeclareVarStmt(temporaryName(bindingId, temporaryNumber), o.NULL_EXPR);
 }
 
 function prependTemporaryDecls(
-    temporaryCount: number, bindingIndex: number, statements: o.Statement[]) {
+    temporaryCount: number, bindingId: string, statements: o.Statement[]) {
   for (let i = temporaryCount - 1; i >= 0; i--) {
-    statements.unshift(temporaryDeclaration(bindingIndex, i));
+    statements.unshift(temporaryDeclaration(bindingId, i));
   }
 }
 
@@ -113,8 +170,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   public temporaryCount: number = 0;
 
   constructor(
-      private _nameResolver: NameResolver, private _implicitReceiver: o.Expression,
-      private _valueUnwrapper: o.ReadVarExpr, private bindingIndex: number) {}
+      private _builder: ClassBuilder, private _nameResolver: NameResolver,
+      private _implicitReceiver: o.Expression, private _valueUnwrapper: o.ReadVarExpr,
+      private bindingId: string, private isAction: boolean) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     var op: o.BinaryOperator;
@@ -233,8 +291,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralArray(ast: cdAst.LiteralArray, mode: _Mode): any {
-    return convertToStatementIfNeeded(
-        mode, this._nameResolver.createLiteralArray(this.visitAll(ast.expressions, mode)));
+    const parts = this.visitAll(ast.expressions, mode);
+    const literalArr =
+        this.isAction ? o.literalArr(parts) : createCachedLiteralArray(this._builder, parts);
+    return convertToStatementIfNeeded(mode, literalArr);
   }
 
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
@@ -242,11 +302,20 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     for (let i = 0; i < ast.keys.length; i++) {
       parts.push([ast.keys[i], this.visit(ast.values[i], _Mode.Expression)]);
     }
-    return convertToStatementIfNeeded(mode, this._nameResolver.createLiteralMap(parts));
+    const literalMap =
+        this.isAction ? o.literalMap(parts) : createCachedLiteralMap(this._builder, parts);
+    return convertToStatementIfNeeded(mode, literalMap);
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
     return convertToStatementIfNeeded(mode, o.literal(ast.value));
+  }
+
+  private _getLocal(name: string): o.Expression {
+    if (this.isAction && name == EventHandlerVars.event.name) {
+      return EventHandlerVars.event;
+    }
+    return this._nameResolver.getLocal(name);
   }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
@@ -258,7 +327,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       let result: any = null;
       let receiver = this.visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
-        var varExpr = this._nameResolver.getLocal(ast.name);
+        var varExpr = this._getLocal(ast.name);
         if (isPresent(varExpr)) {
           result = varExpr.callFn(args);
         }
@@ -282,7 +351,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       let result: any = null;
       var receiver = this.visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
-        result = this._nameResolver.getLocal(ast.name);
+        result = this._getLocal(ast.name);
       }
       if (isBlank(result)) {
         result = receiver.prop(ast.name);
@@ -294,7 +363,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
     let receiver: o.Expression = this.visit(ast.receiver, _Mode.Expression);
     if (receiver === this._implicitReceiver) {
-      var varExpr = this._nameResolver.getLocal(ast.name);
+      var varExpr = this._getLocal(ast.name);
       if (isPresent(varExpr)) {
         throw new Error('Cannot assign to a reference or variable!');
       }
@@ -483,12 +552,12 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   private allocateTemporary(): o.ReadVarExpr {
     const tempNumber = this._currentTemporary++;
     this.temporaryCount = Math.max(this._currentTemporary, this.temporaryCount);
-    return new o.ReadVarExpr(temporaryName(this.bindingIndex, tempNumber));
+    return new o.ReadVarExpr(temporaryName(this.bindingId, tempNumber));
   }
 
   private releaseTemporary(temporary: o.ReadVarExpr) {
     this._currentTemporary--;
-    if (temporary.name != temporaryName(this.bindingIndex, this._currentTemporary)) {
+    if (temporary.name != temporaryName(this.bindingId, this._currentTemporary)) {
       throw new Error(`Temporary ${temporary.name} released out of order`);
     }
   }
@@ -500,4 +569,70 @@ function flattenStatements(arg: any, output: o.Statement[]) {
   } else {
     output.push(arg);
   }
+}
+
+function createCachedLiteralArray(builder: ClassBuilder, values: o.Expression[]): o.Expression {
+  if (values.length === 0) {
+    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
+  }
+  var proxyExpr = o.THIS_EXPR.prop(`_arr_${builder.fields.length}`);
+  var proxyParams: o.FnParam[] = [];
+  var proxyReturnEntries: o.Expression[] = [];
+  for (var i = 0; i < values.length; i++) {
+    var paramName = `p${i}`;
+    proxyParams.push(new o.FnParam(paramName));
+    proxyReturnEntries.push(o.variable(paramName));
+  }
+  createPureProxy(
+      o.fn(
+          proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))],
+          new o.ArrayType(o.DYNAMIC_TYPE)),
+      values.length, proxyExpr, builder);
+  return proxyExpr.callFn(values);
+}
+
+function createCachedLiteralMap(
+    builder: ClassBuilder, entries: [string, o.Expression][]): o.Expression {
+  if (entries.length === 0) {
+    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
+  }
+  const proxyExpr = o.THIS_EXPR.prop(`_map_${builder.fields.length}`);
+  const proxyParams: o.FnParam[] = [];
+  const proxyReturnEntries: [string, o.Expression][] = [];
+  const values: o.Expression[] = [];
+  for (var i = 0; i < entries.length; i++) {
+    const paramName = `p${i}`;
+    proxyParams.push(new o.FnParam(paramName));
+    proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
+    values.push(<o.Expression>entries[i][1]);
+  }
+  createPureProxy(
+      o.fn(
+          proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))],
+          new o.MapType(o.DYNAMIC_TYPE)),
+      entries.length, proxyExpr, builder);
+  return proxyExpr.callFn(values);
+}
+
+
+class DefaultNameResolver implements NameResolver {
+  callPipe(name: string, input: o.Expression, args: o.Expression[]): o.Expression { return null; }
+  getLocal(name: string): o.Expression { return null; }
+}
+
+function createCurrValueExpr(bindingId: string): o.ReadVarExpr {
+  return o.variable(`currVal_${bindingId}`);  // fix syntax highlighting: `
+}
+
+function createPreventDefaultVar(bindingId: string): o.ReadVarExpr {
+  return o.variable(`pd_${bindingId}`);
+}
+
+function convertStmtIntoExpression(stmt: o.Statement): o.Expression {
+  if (stmt instanceof o.ExpressionStatement) {
+    return stmt.expr;
+  } else if (stmt instanceof o.ReturnStatement) {
+    return stmt.value;
+  }
+  return null;
 }

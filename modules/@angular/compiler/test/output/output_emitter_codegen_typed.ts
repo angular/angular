@@ -11,7 +11,7 @@
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
 import {print} from '../../src/facade/lang';
-import {assetUrl} from '../../src/util';
+import {assetUrl} from '../../src/identifiers';
 
 function unimplemented(): any {
   throw new Error('unimplemented');

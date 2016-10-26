@@ -8,10 +8,10 @@
 
 
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {createDiTokenExpression} from '../util';
 
 import {CompileView} from './compile_view';
 
@@ -90,17 +90,4 @@ export function createFlatArray(expressions: o.Expression[]): o.Expression {
         result.callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr(lastNonArrayExpressions)]);
   }
   return result;
-}
-
-export function createPureProxy(
-    fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr, view: CompileView) {
-  view.fields.push(new o.ClassField(pureProxyProp.name, null));
-  var pureProxyId =
-      argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
-  if (!pureProxyId) {
-    throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);
-  }
-  view.createMethod.addStmt(o.THIS_EXPR.prop(pureProxyProp.name)
-                                .set(o.importExpr(resolveIdentifier(pureProxyId)).callFn([fn]))
-                                .toStmt());
 }

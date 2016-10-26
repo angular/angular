@@ -12,7 +12,7 @@ import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
 import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
-import {RenderComponentType, Renderer, RootRenderer} from '../render/api';
+import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
 
 import {AppElement} from './element';
@@ -377,3 +377,153 @@ const CAMEL_CASE_REGEXP = /([A-Z])/g;
 function camelCaseToDashCase(input: string): string {
   return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
 }
+
+export function createRenderElement(
+    renderer: Renderer, parentElement: any, name: string, attrs: InlineArray<string>,
+    debugInfo?: RenderDebugInfo): any {
+  const el = renderer.createElement(parentElement, name, debugInfo);
+  for (var i = 0; i < attrs.length; i += 2) {
+    renderer.setElementAttribute(el, attrs.get(i), attrs.get(i + 1));
+  }
+  return el;
+}
+
+export function selectOrCreateRenderHostElement(
+    renderer: Renderer, elementName: string, attrs: InlineArray<string>,
+    rootSelectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
+  var hostElement: any;
+  if (isPresent(rootSelectorOrNode)) {
+    hostElement = renderer.selectRootElement(rootSelectorOrNode, debugInfo);
+  } else {
+    hostElement = createRenderElement(renderer, null, elementName, attrs, debugInfo);
+  }
+  return hostElement;
+}
+
+export interface InlineArray<T> {
+  length: number;
+  get(index: number): T;
+}
+
+class InlineArray0 implements InlineArray<any> {
+  length = 0;
+  get(index: number): any { return undefined; }
+}
+
+export class InlineArray2<T> implements InlineArray<T> {
+  constructor(public length: number, private _v0?: T, private _v1?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      default:
+        return undefined;
+    }
+  }
+}
+
+export class InlineArray4<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      default:
+        return undefined;
+    }
+  }
+}
+
+export class InlineArray8<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      case 4:
+        return this._v4;
+      case 5:
+        return this._v5;
+      case 6:
+        return this._v6;
+      case 7:
+        return this._v7;
+      default:
+        return undefined;
+    }
+  }
+}
+
+export class InlineArray16<T> implements InlineArray<T> {
+  constructor(
+      public length: number, private _v0?: T, private _v1?: T, private _v2?: T, private _v3?: T,
+      private _v4?: T, private _v5?: T, private _v6?: T, private _v7?: T, private _v8?: T,
+      private _v9?: T, private _v10?: T, private _v11?: T, private _v12?: T, private _v13?: T,
+      private _v14?: T, private _v15?: T) {}
+  get(index: number) {
+    switch (index) {
+      case 0:
+        return this._v0;
+      case 1:
+        return this._v1;
+      case 2:
+        return this._v2;
+      case 3:
+        return this._v3;
+      case 4:
+        return this._v4;
+      case 5:
+        return this._v5;
+      case 6:
+        return this._v6;
+      case 7:
+        return this._v7;
+      case 8:
+        return this._v8;
+      case 9:
+        return this._v9;
+      case 10:
+        return this._v10;
+      case 11:
+        return this._v11;
+      case 12:
+        return this._v12;
+      case 13:
+        return this._v13;
+      case 14:
+        return this._v14;
+      case 15:
+        return this._v15;
+      default:
+        return undefined;
+    }
+  }
+}
+
+export class InlineArrayDynamic<T> implements InlineArray<T> {
+  private _values: any[];
+  // Note: We still take the length argument so this class can be created
+  // in the same ways as the other classes!
+  constructor(public length: number, ...values: any[]) { this._values = values; }
+
+  get(index: number) { return this._values[index]; }
+}
+
+export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();

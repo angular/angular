@@ -9,15 +9,16 @@
 import {Injectable} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata} from './compile_metadata';
+import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
+import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {LifecycleHooks} from './private_import_core';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {ProviderAst} from './template_parser/template_ast';
-import {createDiTokenExpression} from './util';
 
 export class ComponentFactoryDependency {
   constructor(
@@ -82,13 +83,15 @@ export class NgModuleCompiler {
   }
 }
 
-class _InjectorBuilder {
+class _InjectorBuilder implements ClassBuilder {
+  fields: o.ClassField[] = [];
+  getters: o.ClassGetter[] = [];
+  methods: o.ClassMethod[] = [];
+  ctorStmts: o.Statement[] = [];
   private _tokens: CompileTokenMetadata[] = [];
   private _instances = new Map<any, o.Expression>();
-  private _fields: o.ClassField[] = [];
   private _createStmts: o.Statement[] = [];
   private _destroyStmts: o.Statement[] = [];
-  private _getters: o.ClassGetter[] = [];
 
   constructor(
       private _ngModuleMeta: CompileNgModuleMetadata,
@@ -136,26 +139,23 @@ class _InjectorBuilder {
       ),
     ];
 
-    var ctor = new o.ClassMethod(
-        null,
-        [new o.FnParam(
-            InjectorProps.parent.name, o.importType(resolveIdentifier(Identifiers.Injector)))],
-        [o.SUPER_EXPR
-             .callFn([
-               o.variable(InjectorProps.parent.name),
-               o.literalArr(this._entryComponentFactories.map(
-                   (componentFactory) => o.importExpr(componentFactory))),
-               o.literalArr(this._bootstrapComponentFactories.map(
-                   (componentFactory) => o.importExpr(componentFactory)))
-             ])
-             .toStmt()]);
-
+    var parentArgs = [
+      o.variable(InjectorProps.parent.name),
+      o.literalArr(
+          this._entryComponentFactories.map((componentFactory) => o.importExpr(componentFactory))),
+      o.literalArr(this._bootstrapComponentFactories.map(
+          (componentFactory) => o.importExpr(componentFactory)))
+    ];
     var injClassName = `${this._ngModuleMeta.type.name}Injector`;
-    return new o.ClassStmt(
-        injClassName, o.importExpr(
-                          resolveIdentifier(Identifiers.NgModuleInjector),
-                          [o.importType(this._ngModuleMeta.type)]),
-        this._fields, this._getters, ctor, methods);
+    return createClassStmt({
+      name: injClassName,
+      ctorParams: [new o.FnParam(
+          InjectorProps.parent.name, o.importType(resolveIdentifier(Identifiers.Injector)))],
+      parent: o.importExpr(
+          resolveIdentifier(Identifiers.NgModuleInjector), [o.importType(this._ngModuleMeta.type)]),
+      parentArgs: parentArgs,
+      builders: [{methods}, this]
+    });
   }
 
   private _getProviderValue(provider: CompileProviderMetadata): o.Expression {
@@ -194,11 +194,11 @@ class _InjectorBuilder {
       type = o.DYNAMIC_TYPE;
     }
     if (isEager) {
-      this._fields.push(new o.ClassField(propName, type));
+      this.fields.push(new o.ClassField(propName, type));
       this._createStmts.push(o.THIS_EXPR.prop(propName).set(resolvedProviderValueExpr).toStmt());
     } else {
       var internalField = `_${propName}`;
-      this._fields.push(new o.ClassField(internalField, type));
+      this.fields.push(new o.ClassField(internalField, type));
       // Note: Equals is important for JS so that it also checks the undefined case!
       var getterStmts = [
         new o.IfStmt(
@@ -206,7 +206,7 @@ class _InjectorBuilder {
             [o.THIS_EXPR.prop(internalField).set(resolvedProviderValueExpr).toStmt()]),
         new o.ReturnStatement(o.THIS_EXPR.prop(internalField))
       ];
-      this._getters.push(new o.ClassGetter(propName, getterStmts, type));
+      this.getters.push(new o.ClassGetter(propName, getterStmts, type));
     }
     return o.THIS_EXPR.prop(propName);
   }

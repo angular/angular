@@ -46,11 +46,11 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     });
     bindRenderInputs(ast.inputs, compileElement, eventListeners);
     bindRenderOutputs(eventListeners);
-    ast.directives.forEach((directiveAst) => {
+    ast.directives.forEach((directiveAst, dirIndex) => {
       var directiveInstance = compileElement.instances.get(directiveAst.directive.type.reference);
       var directiveWrapperInstance =
           compileElement.directiveWrapperInstance.get(directiveAst.directive.type.reference);
-      bindDirectiveInputs(directiveAst, directiveWrapperInstance, compileElement);
+      bindDirectiveInputs(directiveAst, directiveWrapperInstance, dirIndex, compileElement);
 
       bindDirectiveHostProps(directiveAst, directiveInstance, compileElement, eventListeners);
       bindDirectiveOutputs(directiveAst, directiveInstance, eventListeners);
@@ -75,11 +75,11 @@ class ViewBinderVisitor implements TemplateAstVisitor {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, parent: CompileElement): any {
     var compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
     var eventListeners = collectEventListeners(ast.outputs, ast.directives, compileElement);
-    ast.directives.forEach((directiveAst) => {
+    ast.directives.forEach((directiveAst, dirIndex) => {
       var directiveInstance = compileElement.instances.get(directiveAst.directive.type.reference);
       var directiveWrapperInstance =
           compileElement.directiveWrapperInstance.get(directiveAst.directive.type.reference);
-      bindDirectiveInputs(directiveAst, directiveWrapperInstance, compileElement);
+      bindDirectiveInputs(directiveAst, directiveWrapperInstance, dirIndex, compileElement);
 
       bindDirectiveOutputs(directiveAst, directiveInstance, eventListeners);
       bindDirectiveAfterContentLifecycleCallbacks(

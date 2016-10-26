@@ -8,6 +8,8 @@
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata} from '../compile_metadata';
+import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
+import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
 import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
@@ -15,14 +17,11 @@ import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
-import {CompileBinding} from './compile_binding';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
-import {EventHandlerVars} from './constants';
-import {NameResolver} from './expression_converter';
-import {createPureProxy, getPropertyInView, getViewFactoryName} from './util';
+import {getPropertyInView, getViewFactoryName} from './util';
 
 export class CompileView implements NameResolver {
   public viewType: ViewType;
@@ -32,9 +31,6 @@ export class CompileView implements NameResolver {
   // root nodes or AppElements for ViewContainers
   public rootNodesOrAppElements: o.Expression[] = [];
 
-  public bindings: CompileBinding[] = [];
-
-  public classStatements: o.Statement[] = [];
   public createMethod: CompileMethod;
   public animationBindingsMethod: CompileMethod;
   public injectorGetMethod: CompileMethod;
@@ -47,8 +43,9 @@ export class CompileView implements NameResolver {
   public afterViewLifecycleCallbacksMethod: CompileMethod;
   public destroyMethod: CompileMethod;
   public detachMethod: CompileMethod;
-  public eventHandlerMethods: o.ClassMethod[] = [];
+  public methods: o.ClassMethod[] = [];
 
+  public ctorStmts: o.Statement[] = [];
   public fields: o.ClassField[] = [];
   public getters: o.ClassGetter[] = [];
   public disposables: o.Expression[] = [];
@@ -147,48 +144,6 @@ export class CompileView implements NameResolver {
     } else {
       return null;
     }
-  }
-
-  createLiteralArray(values: o.Expression[]): o.Expression {
-    if (values.length === 0) {
-      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
-    }
-    var proxyExpr = o.THIS_EXPR.prop(`_arr_${this.literalArrayCount++}`);
-    var proxyParams: o.FnParam[] = [];
-    var proxyReturnEntries: o.Expression[] = [];
-    for (var i = 0; i < values.length; i++) {
-      var paramName = `p${i}`;
-      proxyParams.push(new o.FnParam(paramName));
-      proxyReturnEntries.push(o.variable(paramName));
-    }
-    createPureProxy(
-        o.fn(
-            proxyParams, [new o.ReturnStatement(o.literalArr(proxyReturnEntries))],
-            new o.ArrayType(o.DYNAMIC_TYPE)),
-        values.length, proxyExpr, this);
-    return proxyExpr.callFn(values);
-  }
-
-  createLiteralMap(entries: [string, o.Expression][]): o.Expression {
-    if (entries.length === 0) {
-      return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
-    }
-    const proxyExpr = o.THIS_EXPR.prop(`_map_${this.literalMapCount++}`);
-    const proxyParams: o.FnParam[] = [];
-    const proxyReturnEntries: [string, o.Expression][] = [];
-    const values: o.Expression[] = [];
-    for (var i = 0; i < entries.length; i++) {
-      const paramName = `p${i}`;
-      proxyParams.push(new o.FnParam(paramName));
-      proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);
-      values.push(<o.Expression>entries[i][1]);
-    }
-    createPureProxy(
-        o.fn(
-            proxyParams, [new o.ReturnStatement(o.literalMap(proxyReturnEntries))],
-            new o.MapType(o.DYNAMIC_TYPE)),
-        entries.length, proxyExpr, this);
-    return proxyExpr.callFn(values);
   }
 
   afterNodes() {

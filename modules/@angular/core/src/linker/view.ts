@@ -113,17 +113,6 @@ export abstract class AppView<T> {
     }
   }
 
-  selectOrCreateHostElement(
-      elementName: string, rootSelectorOrNode: string|any, debugInfo: RenderDebugInfo): any {
-    var hostElement: any;
-    if (isPresent(rootSelectorOrNode)) {
-      hostElement = this.renderer.selectRootElement(rootSelectorOrNode, debugInfo);
-    } else {
-      hostElement = this.renderer.createElement(null, elementName, debugInfo);
-    }
-    return hostElement;
-  }
-
   injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
     return this.injectorGetInternal(token, nodeIndex, notFoundResult);
   }
