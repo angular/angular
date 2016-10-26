@@ -387,6 +387,13 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
+
+  /**
+  * Implemented as part of ControlValueAccessor
+  */
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
+  }
 }
 
 /**

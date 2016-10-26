@@ -659,6 +659,24 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(7);
     });
 
+    it('should update the disabled state when control is disabled', () => {
+      expect(sliderInstance.disabled).toBe(false);
+
+      testComponent.control.disable();
+      fixture.detectChanges();
+
+      expect(sliderInstance.disabled).toBe(true);
+    });
+
+    it('should update the disabled state when the control is enabled', () => {
+      sliderInstance.disabled = true;
+
+      testComponent.control.enable();
+      fixture.detectChanges();
+
+      expect(sliderInstance.disabled).toBe(false);
+    });
+
     // TODO: Add tests for ng-pristine, ng-touched, ng-invalid.
   });
 
