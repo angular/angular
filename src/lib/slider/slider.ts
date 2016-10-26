@@ -126,6 +126,8 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
     if (!this._isInitialized) {
       this.value = this._min;
     }
+    this.snapThumbToValue();
+    this._updateTickSeparation();
   }
 
   @Input()
@@ -136,6 +138,8 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
 
   set max(v: number) {
     this._max = Number(v);
+    this.snapThumbToValue();
+    this._updateTickSeparation();
   }
 
   @Input()
@@ -277,6 +281,9 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
    * is set to something other than a number or 'auto', nothing happens.
    */
   private _updateTickSeparation() {
+    if (!this._sliderDimensions) {
+      return;
+    }
     if (this._tickInterval == 'auto') {
       this._updateAutoTickSeparation();
     } else if (Number(this._tickInterval)) {
@@ -429,8 +436,10 @@ export class SliderRenderer {
    * Draws ticks onto the tick container.
    */
   drawTicks(tickSeparation: number) {
+    let sliderTrackContainer =
+        <HTMLElement>this._sliderElement.querySelector('.md-slider-track-container');
+    let tickContainerWidth = sliderTrackContainer.getBoundingClientRect().width;
     let tickContainer = <HTMLElement>this._sliderElement.querySelector('.md-slider-tick-container');
-    let tickContainerWidth = tickContainer.getBoundingClientRect().width;
     // An extra element for the last tick is needed because the linear gradient cannot be told to
     // always draw a tick at the end of the gradient. To get around this, there is a second
     // container for ticks that has a single tick mark on the very right edge.
@@ -444,10 +453,14 @@ export class SliderRenderer {
     lastTickContainer.style.background = `linear-gradient(to left, black, black 2px, transparent ` +
         `2px, transparent)`;
 
-    // If the second to last tick is too close (a separation of less than half the normal
-    // separation), don't show it by decreasing the width of the tick container element.
     if (tickContainerWidth % tickSeparation < (tickSeparation / 2)) {
+      // If the second to last tick is too close (a separation of less than half the normal
+      // separation), don't show it by decreasing the width of the tick container element.
       tickContainer.style.width = tickContainerWidth - tickSeparation + 'px';
+    } else {
+      // If there is enough space for the second-to-last tick, restore the default width of the
+      // tick container.
+      tickContainer.style.width = '';
     }
   }
 }

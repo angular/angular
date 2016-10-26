@@ -251,18 +251,23 @@ describe('MdSlider', () => {
     let sliderDimensions: ClientRect;
     let trackFillElement: HTMLElement;
     let thumbElement: HTMLElement;
+    let tickContainerElement: HTMLElement;
+    let testComponent: SliderWithMinAndMax;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SliderWithMinAndMax);
       fixture.detectChanges();
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      testComponent = fixture.debugElement.componentInstance;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
       sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
       sliderDimensions = sliderTrackElement.getBoundingClientRect();
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
       thumbElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-thumb-position');
+      tickContainerElement =
+          <HTMLElement>sliderNativeElement.querySelector('.md-slider-tick-container');
     });
 
     it('should set the default values from the attributes', () => {
@@ -314,7 +319,39 @@ describe('MdSlider', () => {
       // The closest snap is at the halfway point on the slider.
       expect(thumbDimensions.left).toBe(sliderDimensions.left + sliderDimensions.width * 0.5);
       expect(trackFillDimensions.width).toBe(thumbPosition);
+    });
 
+    it('should adjust thumb and ticks when min changes', () => {
+      testComponent.min = -2;
+      fixture.detectChanges();
+
+      let trackFillDimensions = trackFillElement.getBoundingClientRect();
+      let tickContainerDimensions = tickContainerElement.getBoundingClientRect();
+
+      expect(trackFillDimensions.width).toBe(sliderDimensions.width * 6 / 8);
+      expect(tickContainerDimensions.width)
+          .toBe(sliderDimensions.width - sliderDimensions.width * 6 / 8);
+      expect(tickContainerElement.style.background)
+          .toContain(`repeating-linear-gradient(to right, black, black 2px, transparent 2px, ` +
+              `transparent ${sliderDimensions.width * 6 / 8 - 1}px)`);
+    });
+
+    it('should adjust thumb and ticks when max changes', () => {
+      testComponent.min = -2;
+      fixture.detectChanges();
+
+      testComponent.max = 10;
+      fixture.detectChanges();
+
+      let trackFillDimensions = trackFillElement.getBoundingClientRect();
+      let tickContainerDimensions = tickContainerElement.getBoundingClientRect();
+
+      expect(trackFillDimensions.width).toBe(sliderDimensions.width * 6 / 12);
+      expect(tickContainerDimensions.width)
+          .toBe(sliderDimensions.width - sliderDimensions.width * 6 / 12);
+      expect(tickContainerElement.style.background)
+          .toContain(`repeating-linear-gradient(to right, black, black 2px, transparent 2px, ` +
+              `transparent ${sliderDimensions.width * 6 / 12 - 1}px)`);
     });
   });
 
@@ -767,11 +804,14 @@ class StandardSlider { }
 class DisabledSlider { }
 
 @Component({
-  template: `<md-slider min="4" max="6"></md-slider>`,
+  template: `<md-slider [min]="min" [max]="max" tick-interval="6"></md-slider>`,
   styles: [noTransitionStyle],
   encapsulation: ViewEncapsulation.None
 })
-class SliderWithMinAndMax { }
+class SliderWithMinAndMax {
+  min = 4;
+  max = 6;
+}
 
 @Component({
   template: `<md-slider value="26"></md-slider>`

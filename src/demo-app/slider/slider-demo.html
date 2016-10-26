@@ -3,8 +3,10 @@ Label <md-slider #slidey></md-slider>
 {{slidey.value}}
 
 <h1>Slider with Min and Max</h1>
-<md-slider min="5" max="7" #slider2></md-slider>
+<input [(ngModel)]="min">
+<md-slider [min]="min" [max]="max" tick-interval="5" #slider2></md-slider>
 {{slider2.value}}
+<input [(ngModel)]="max">
 
 <h1>Disabled Slider</h1>
 <md-slider disabled #slider3></md-slider>

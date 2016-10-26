@@ -9,4 +9,6 @@ import {Component} from '@angular/core';
 export class SliderDemo {
   demo: number;
   val: number = 50;
+  min: number = 0;
+  max: number = 100;
 }
