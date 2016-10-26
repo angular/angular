@@ -21,6 +21,22 @@ export function main() {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
+    it('should return the $injector from the bootstrap function', async(() => {
+         // Sample ng1 NgModule for tests
+         @NgModule({imports: [BrowserModule, UpgradeModule]})
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1Module', []);
+
+         platformBrowserDynamic().bootstrapModule(Ng2Module).then(ref => {
+           const upgrade = ref.injector.get(UpgradeModule) as UpgradeModule;
+           const $injector = upgrade.bootstrap(html('<div>'), [ng1Module.name]);
+           expect($injector).toBe(upgrade.$injector);
+         });
+       }));
+
     it('should downgrade ng2 service to ng1', async(() => {
          // Tokens used in ng2 to identify services
          const Ng2Service = new OpaqueToken('ng2-service');
