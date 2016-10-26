@@ -13,8 +13,8 @@ export class CliOptions {
 export class I18nExtractionCliOptions extends CliOptions {
   public i18nFormat: string;
 
-  constructor({i18nFormat = null}: {i18nFormat?: string}) {
-    super({});
+  constructor({i18nFormat = null, basePath = null}: {i18nFormat?: string, basePath?: string}) {
+    super({basePath: basePath});
     this.i18nFormat = i18nFormat;
   }
 }
