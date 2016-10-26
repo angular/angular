@@ -2,55 +2,67 @@
 @import '../core/theming/theming';
 
 
-@mixin _md-slide-toggle-checked($palette) {
+@mixin _md-slide-toggle-checked($palette, $thumb-checked-hue) {
   // Do not apply the checked colors if the toggle is disabled, because the specificity would be to high for
   // the disabled styles.
   &.md-checked:not(.md-disabled) {
     .md-slide-toggle-thumb {
-      background-color: md-color($palette);
+      background-color: md-color($palette, $thumb-checked-hue);
     }
 
     .md-slide-toggle-bar {
-      background-color: md-color($palette, 0.5);
+      background-color: md-color($palette, $thumb-checked-hue, 0.5);
     }
   }
 }
 
 // TODO(jelbourn): remove this when the real ripple has been applied to slide-toggle.
-@mixin _md-slide-toggle-ripple($palette, $foreground) {
+@mixin _md-slide-toggle-ripple($palette, $foreground, $thumb-checked-hue) {
+
   &.md-slide-toggle-focused {
     &:not(.md-checked) .md-ink-ripple {
       // When the slide-toggle is not checked and it shows its focus indicator, it should use a 12% opacity
       // of black in light themes and 12% of white in dark themes.
       background-color: md-color($foreground, divider);
     }
+
+    .md-ink-ripple {
+      background-color: md-color($palette, $thumb-checked-hue, 0.26);
+    }
   }
 
-  &.md-slide-toggle-focused .md-ink-ripple {
-    background-color: md-color($palette, 0.26);
-  }
 }
 
 @mixin md-slide-toggle-theme($theme) {
+  $is-dark: map_get($theme, is-dark);
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
+  // Color hues based on the specs, which prescribe different hues for dark and light themes
+  // https://material.google.com/components/selection-controls.html#selection-controls-switch
+  $thumb-normal-hue: if($is-dark, 400, 50);
+  $thumb-checked-hue: if($is-dark, 200, 500);
+  $thumb-disabled-hue: if($is-dark, 800, 400);
+
+  $bar-normal-color: md-color($foreground, disabled);
+  $bar-disabled-color: if($is-dark, rgba(white, 0.12), rgba(black, 0.1));
+
   md-slide-toggle {
-    @include _md-slide-toggle-checked($accent);
-    @include _md-slide-toggle-ripple($accent, $foreground);
+    @include _md-slide-toggle-checked($accent, $thumb-checked-hue);
+    @include _md-slide-toggle-ripple($accent, $foreground, $thumb-checked-hue);
     
 
     &.md-primary {
-      @include _md-slide-toggle-checked($primary);
-      @include _md-slide-toggle-ripple($primary, $foreground);
+      @include _md-slide-toggle-checked($primary, $thumb-checked-hue);
+      @include _md-slide-toggle-ripple($primary, $foreground, $thumb-checked-hue);
     }
   
     &.md-warn {
-      @include _md-slide-toggle-checked($warn);
-      @include _md-slide-toggle-ripple($warn, $foreground);
+      @include _md-slide-toggle-checked($warn, $thumb-checked-hue);
+      @include _md-slide-toggle-ripple($warn, $foreground, $thumb-checked-hue);
     }
 
   }
@@ -60,20 +72,18 @@
       // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark or light themes.
       // Since this is very specific to the slide-toggle component, we're not providing
       // it in the background palette.
-      background-color: md-color($md-grey, 400);
+      background-color: md-color($md-grey, $thumb-disabled-hue);
     }
     .md-slide-toggle-bar {
-      background-color: md-color($foreground, divider);
+      background-color: $bar-disabled-color;
     }
   }
 
   .md-slide-toggle-thumb {
-    background-color: md-color($background, background);
+    background-color: md-color($md-grey, $thumb-normal-hue);
   }
 
   .md-slide-toggle-bar {
-    // The slide-toggle bar always uses grey-500 for both dark and light themes.
-    // Since this is very specific to slide-toggle, it's not part of the common background palette.
-    background-color: md-color($md-grey, 500);
+    background-color: $bar-normal-color;
   }
 }
