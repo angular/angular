@@ -47,6 +47,13 @@
   }
 }
 
+// The text and icon should be vertical aligned inside a button
+[md-button], [md-raised-button] {
+  .md-button-wrapper > * {
+    vertical-align: middle;
+  }
+}
+
 // The ripple container should match the bounds of the entire button.
 .md-button-ripple {
   position: absolute;
