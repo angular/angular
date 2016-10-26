@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
+import {SimpleCheckboxes} from './checkbox/checkbox-e2e';
 import {E2EApp, Home} from './e2e-app/e2e-app';
 import {IconE2E} from './icon/icon-e2e';
 import {ButtonE2E} from './button/button-e2e';
@@ -24,6 +25,7 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     MenuE2E,
     BasicTabs,
     SimpleRadioButtons,
+    SimpleCheckboxes,
     Home,
   ],
   bootstrap: [E2EApp],
