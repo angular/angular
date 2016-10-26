@@ -167,7 +167,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() type: string = 'text';
   @Input() name: string = null;
 
-  private _floatingPlaceholder: boolean = false;
+  private _floatingPlaceholder: boolean = true;
   private _autofocus: boolean = false;
   private _disabled: boolean = false;
   private _readonly: boolean = false;

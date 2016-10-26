@@ -70,6 +70,15 @@ describe('MdInput', function () {
     expect(fixture.debugElement.query(By.css('input'))).toBeTruthy();
   });
 
+  it('should default to flating placeholders', () => {
+    let fixture = TestBed.createComponent(MdInputBaseTestController);
+    fixture.detectChanges();
+
+    let mdInput = fixture.debugElement.query(By.directive(MdInput)).componentInstance as MdInput;
+    expect(mdInput.floatingPlaceholder)
+        .toBe(true, 'Expected MdInput to default to having floating placeholders turned on');
+  });
+
   it('should not be treated as empty if type is date', () => {
     if (isInternetExplorer11()) {
       return;
