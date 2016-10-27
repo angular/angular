@@ -418,7 +418,8 @@ export class UpgradeAdapter {
                       });
                     })
                     .then(resolve, reject);
-              });
+              })
+              .catch(reject);
         }
       ]);
     });
