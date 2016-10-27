@@ -7,8 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {ListWrapper} from '../../facade/collection';
-import {isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 
@@ -17,9 +15,83 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *
  * @stable
  */
-export interface KeyValueDiffer {
-  diff(object: any): any /** TODO #9100 */;
-  onDestroy(): any /** TODO #9100 */;
+export interface KeyValueDiffer<K, V> {
+  /**
+   * Compute a difference between the previous state and the new `object` state.
+   *
+   * @param object containing the new value.
+   * @returns an object describing the difference. The return value is only valid until the next
+   * `diff()` invocation.
+   */
+  diff(object: Map<K, V>): KeyValueChanges<K, V>;
+
+  /**
+   * Compute a difference between the previous state and the new `object` state.
+   *
+   * @param object containing the new value.
+   * @returns an object describing the difference. The return value is only valid until the next
+   * `diff()` invocation.
+   */
+  diff(object: {[key: string]: V}): KeyValueChanges<string, V>;
+  // TODO(TS2.1): diff<KP extends string>(this: KeyValueDiffer<KP, V>, object: Record<KP, V>):
+  // KeyValueDiffer<KP, V>;
+}
+
+/**
+ * An object describing the changes in the `Map` or `{[k:string]: string}` since last time
+ * `KeyValueDiffer#diff()` was invoked.
+ *
+ * @stable
+ */
+export interface KeyValueChanges<K, V> {
+  /**
+   * Iterate over all changes. `KeyValueChangeRecord` will contain information about changes
+   * to each item.
+   */
+  forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+
+  /**
+   * Iterate over changes in the order of original Map showing where the original items
+   * have moved.
+   */
+  forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+
+  /**
+   * Iterate over all keys for which values have changed.
+   */
+  forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+
+  /**
+   * Iterate over all added items.
+   */
+  forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+
+  /**
+   * Iterate over all removed items.
+   */
+  forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+}
+
+/**
+ * Record representing the item change information.
+ *
+ * @stable
+ */
+export interface KeyValueChangeRecord<K, V> {
+  /**
+   * Current key in the Map.
+   */
+  /* readonly */ key: K;
+
+  /**
+   * Current value for the key or `undefined` if removed.
+   */
+  /* readonly */ currentValue: V;
+
+  /**
+   * Previous value for the key or `undefined` if added.
+   */
+  /* readonly */ previousValue: V;
 }
 
 /**
@@ -28,8 +100,15 @@ export interface KeyValueDiffer {
  * @stable
  */
 export interface KeyValueDifferFactory {
+  /**
+   * Test to see if the differ knows how to diff this kind of object.
+   */
   supports(objects: any): boolean;
-  create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+
+  /**
+   * Create a `KeyValueDiffer`.
+   */
+  create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V>;
 }
 
 /**
@@ -37,16 +116,19 @@ export interface KeyValueDifferFactory {
  * @stable
  */
 export class KeyValueDiffers {
-  constructor(public factories: KeyValueDifferFactory[]) {}
+  /**
+   * @deprecated v4.0.0 - Should be private.
+   */
+  factories: KeyValueDifferFactory[];
 
-  static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
-    if (isPresent(parent)) {
+  constructor(factories: KeyValueDifferFactory[]) { this.factories = factories; }
+
+  static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
+    if (parent) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
-      return new KeyValueDiffers(factories);
-    } else {
-      return new KeyValueDiffers(factories);
     }
+    return new KeyValueDiffers(factories);
   }
 
   /**
@@ -68,14 +150,13 @@ export class KeyValueDiffers {
    * })
    * ```
    */
-  static extend(factories: KeyValueDifferFactory[]): Provider {
+  static extend<S>(factories: KeyValueDifferFactory[]): Provider {
     return {
       provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
         if (!parent) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
-          // to
-          // bootstrap(), which would override default pipes instead of extending them.
+          // to bootstrap(), which would override default pipes instead of extending them.
           throw new Error('Cannot extend KeyValueDiffers without a parent injector');
         }
         return KeyValueDiffers.create(factories, parent);
@@ -85,12 +166,11 @@ export class KeyValueDiffers {
     };
   }
 
-  find(kv: Object): KeyValueDifferFactory {
+  find(kv: any): KeyValueDifferFactory {
     const factory = this.factories.find(f => f.supports(kv));
-    if (isPresent(factory)) {
+    if (factory) {
       return factory;
-    } else {
-      throw new Error(`Cannot find a differ supporting object '${kv}'`);
     }
+    throw new Error(`Cannot find a differ supporting object '${kv}'`);
   }
 }
