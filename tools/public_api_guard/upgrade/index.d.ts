@@ -40,5 +40,5 @@ export declare class UpgradeModule {
     injector: Injector;
     ngZone: NgZone;
     constructor(injector: Injector, ngZone: NgZone);
-    bootstrap(element: Element, modules?: string[], config?: angular.IAngularBootstrapConfig): void;
+    bootstrap(element: Element, modules?: string[], config?: angular.IAngularBootstrapConfig): any;
 }
