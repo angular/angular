@@ -21,7 +21,7 @@ export class ListKeyManager {
    * This event is emitted any time the TAB key is pressed, so components can react
    * when focus is shifted off of the list.
    */
-  @Output() tabOut: EventEmitter<null> = new EventEmitter();
+  @Output() tabOut = new EventEmitter<void>();
 
   constructor(private _items: QueryList<MdFocusable>) {}
 
@@ -35,7 +35,7 @@ export class ListKeyManager {
     } else if (event.keyCode === UP_ARROW) {
       this._focusPreviousItem();
     } else if (event.keyCode === TAB) {
-      this.tabOut.emit(null);
+      this.tabOut.emit();
     }
   }
 

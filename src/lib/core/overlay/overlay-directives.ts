@@ -98,7 +98,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
   }
 
   /** Event emitted when the backdrop is clicked. */
-  @Output() backdropClick: EventEmitter<null> = new EventEmitter();
+  @Output() backdropClick = new EventEmitter<void>();
 
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 
@@ -178,7 +178,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     if (this.hasBackdrop) {
       this._backdropSubscription = this._overlayRef.backdropClick().subscribe(() => {
-        this.backdropClick.emit(null);
+        this.backdropClick.emit();
       });
     }
   }

@@ -48,8 +48,8 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _openedFromKeyboard: boolean = false;
 
   @Input('md-menu-trigger-for') menu: MdMenu;
-  @Output() onMenuOpen = new EventEmitter();
-  @Output() onMenuClose = new EventEmitter();
+  @Output() onMenuOpen = new EventEmitter<void>();
+  @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
               private _viewContainerRef: ViewContainerRef, private _renderer: Renderer) {}
@@ -140,7 +140,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   // set state rather than toggle to support triggers sharing a menu
   private _setIsMenuOpen(isOpen: boolean): void {
     this._menuOpen = isOpen;
-    this._menuOpen ? this.onMenuOpen.emit(null) : this.onMenuClose.emit(null);
+    this._menuOpen ? this.onMenuOpen.emit() : this.onMenuClose.emit();
   }
 
   /**

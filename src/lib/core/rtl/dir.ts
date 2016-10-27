@@ -34,7 +34,7 @@ export class Dir {
     let old = this._dir;
     this._dir = v;
     if (old != this._dir) {
-      this.dirChange.emit(null);
+      this.dirChange.emit();
     }
   }
 

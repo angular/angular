@@ -117,9 +117,9 @@ export class MdSidenav {
     this._transition = true;
 
     if (isOpen) {
-      this.onOpenStart.emit(null);
+      this.onOpenStart.emit();
     } else {
-      this.onCloseStart.emit(null);
+      this.onCloseStart.emit();
     }
 
     if (isOpen) {
@@ -160,7 +160,7 @@ export class MdSidenav {
           this._closePromiseReject();
         }
 
-        this.onOpen.emit(null);
+        this.onOpen.emit();
       } else {
         if (this._closePromise != null) {
           this._closePromiseResolve();
@@ -169,7 +169,7 @@ export class MdSidenav {
           this._openPromiseReject();
         }
 
-        this.onClose.emit(null);
+        this.onClose.emit();
       }
 
       this._openPromise = null;

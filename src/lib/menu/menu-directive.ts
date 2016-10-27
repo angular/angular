@@ -63,7 +63,7 @@ export class MdMenu {
     }, {});
   }
 
-  @Output() close = new EventEmitter;
+  @Output() close = new EventEmitter<void>();
 
   /**
    * Focus the first item in the menu. This method is used by the menu trigger
@@ -80,7 +80,7 @@ export class MdMenu {
    * trigger will close the menu.
    */
   private _emitCloseEvent(): void {
-    this.close.emit(null);
+    this.close.emit();
   }
 
   private _setPositionX(pos: MenuPositionX): void {
