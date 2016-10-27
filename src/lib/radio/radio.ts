@@ -415,10 +415,10 @@ export class MdRadioButton implements OnInit {
     event.stopPropagation();
 
     this.checked = true;
-    this.radioGroup._controlValueAccessorChangeFn(this.value);
     this._emitChangeEvent();
 
     if (this.radioGroup) {
+      this.radioGroup._controlValueAccessorChangeFn(this.value);
       this.radioGroup._touch();
     }
   }
