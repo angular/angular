@@ -24,6 +24,7 @@ import {URLSearchParams} from '../../src/url_search_params';
 var abortSpy: any;
 var sendSpy: any;
 var openSpy: any;
+var responseTypeSpy: any;
 var setRequestHeaderSpy: any;
 var existingXHRs: MockBrowserXHR[] = [];
 
@@ -48,6 +49,7 @@ class MockBrowserXHR extends BrowserXhr {
     this.abort = abortSpy = spy.spy('abort');
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
+    this.responseType = responseTypeSpy = spy.spy('responseType');
     this.setRequestHeader = setRequestHeaderSpy = spy.spy('setRequestHeader');
     // If responseType is supported by the browser, then it should be set to an empty string.
     // (https://www.w3.org/TR/XMLHttpRequest/#the-responsetype-attribute)
