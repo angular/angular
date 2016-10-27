@@ -125,22 +125,8 @@ gulp.task('public-api:update', ['build.sh'], (done) => {
       .on('close', done);
 });
 
-// Checks tests for presence of ddescribe, fdescribe, fit, iit and fails the build if one of the
-// focused tests is found.
-// Currently xdescribe and xit are _not_ reported as errors since there are a couple of excluded
-// tests in our code base.
-gulp.task('check-tests', function() {
-  const ddescribeIit = require('gulp-ddescribe-iit');
-  return gulp
-      .src([
-        'modules/**/*.spec.ts',
-        'modules/**/*_spec.ts',
-      ])
-      .pipe(ddescribeIit({allowDisabledTests: true}));
-});
-
 // Check the coding standards and programming errors
-gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
+gulp.task('lint', ['format:enforce', 'tools:build'], () => {
   const tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules

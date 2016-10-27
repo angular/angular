@@ -3416,24 +3416,6 @@
         }
       }
     },
-    "gulp-ddescribe-iit": {
-      "version": "1.3.0",
-      "dev": true,
-      "dependencies": {
-        "isarray": {
-          "version": "1.0.0",
-          "dev": true
-        },
-        "readable-stream": {
-          "version": "2.0.6",
-          "dev": true
-        },
-        "through2": {
-          "version": "2.0.1",
-          "dev": true
-        }
-      }
-    },
     "gulp-diff": {
       "version": "1.0.0",
       "dev": true,
