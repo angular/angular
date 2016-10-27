@@ -229,6 +229,7 @@ export class CompileMetadataResolver {
 
       if (meta.imports) {
         flattenArray(meta.imports).forEach((importedType) => {
+          importedType = resolveForwardRef(importedType);
           let importedModuleType: Type<any>;
           if (isValidType(importedType)) {
             importedModuleType = importedType;
@@ -258,6 +259,7 @@ export class CompileMetadataResolver {
 
       if (meta.exports) {
         flattenArray(meta.exports).forEach((exportedType) => {
+          exportedType = resolveForwardRef(exportedType);
           if (!isValidType(exportedType)) {
             throw new Error(
                 `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
