@@ -21,6 +21,7 @@ describe('some component', () => {
 // #enddocregion
 
 // #docregion fdescribe
+/* tslint:disable-next-line:no-jasmine-focus */
 fdescribe('some component', () => {
   it('has a test', () => {
                        // This test will run.
@@ -43,6 +44,7 @@ describe('another component', () => {
 
 // #docregion fit
 describe('some component', () => {
+  /* tslint:disable-next-line:no-jasmine-focus */
   fit('has a test', () => {
                         // This test will run.
                     });

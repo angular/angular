@@ -47,5 +47,5 @@ To Remove an existing dependency do the following:
 3. ensure that your `node_modules` directory is not stale by running `npm install`
 4. run `npm uninstall --save-dev <packagename>@<version|latest>`
 5. run `./tools/npm/reshrinkwrap`
-6. these steps should change 3 files: `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`.
+6. these steps should change 3 files: `package.json`, `npm-shrinkwrap.json` and `npm-shrinkwrap.clean.json`.
 7. commit changes to these three files and you are done
