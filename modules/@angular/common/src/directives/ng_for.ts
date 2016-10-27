@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
-
 import {getTypeNameForDebugging} from '../facade/lang';
 
 export class NgForRow {
@@ -88,7 +87,13 @@ export class NgForRow {
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgFor implements DoCheck, OnChanges {
-  @Input() ngForOf: any;
+  private _ngForOf: any;
+
+  @Input()
+  set ngForOf(value: any) { this._ngForOf = isInteger(value) ? range(value) : value; };
+
+  get ngForOf(): any { return this._ngForOf; }
+
   @Input() ngForTrackBy: TrackByFn;
 
   private _differ: IterableDiffer = null;
@@ -130,12 +135,12 @@ export class NgFor implements DoCheck, OnChanges {
     const insertTuples: RecordViewTuple[] = [];
     changes.forEachOperation(
         (item: CollectionChangeRecord, adjustedPreviousIndex: number, currentIndex: number) => {
-          if (item.previousIndex == null) {
+          if (item.previousIndex === null) {
             const view = this._viewContainer.createEmbeddedView(
                 this._template, new NgForRow(null, null, null), currentIndex);
             const tuple = new RecordViewTuple(item, view);
             insertTuples.push(tuple);
-          } else if (currentIndex == null) {
+          } else if (currentIndex === null) {
             this._viewContainer.remove(adjustedPreviousIndex);
           } else {
             const view = this._viewContainer.get(adjustedPreviousIndex);
@@ -168,4 +173,16 @@ export class NgFor implements DoCheck, OnChanges {
 
 class RecordViewTuple {
   constructor(public record: any, public view: EmbeddedViewRef<NgForRow>) {}
+}
+
+function isInteger(x: any): boolean {
+  return (typeof x === 'number') && (x % 1 === 0);
+}
+
+function range(end: number): number[] {
+  const result: number[] = [];
+  for (let i = 0; i < end; i++) {
+    result.push(i);
+  }
+  return result;
 }
