@@ -7,7 +7,7 @@
  */
 
 import {Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, Testability, destroyPlatform, forwardRef} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeAdapter} from '@angular/upgrade';
@@ -19,6 +19,49 @@ export function main() {
     afterEach(() => destroyPlatform());
 
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
+
+    describe('bootstrap errors', () => {
+      let adapter: UpgradeAdapter;
+
+      beforeEach(() => {
+        const ng1Module = angular.module('ng1', []);
+
+        const ng2Component =
+            Component({selector: 'ng2', template: `<BAD TEMPLATE div></div>`}).Class({
+              constructor: function() {}
+            });
+
+        const Ng2Module = NgModule({declarations: [ng2Component], imports: [BrowserModule]}).Class({
+          constructor: function() {}
+        });
+
+        adapter = new UpgradeAdapter(Ng2Module);
+      });
+
+      it('should throw an uncaught error', fakeAsync(() => {
+           const element = html('<ng2></ng2>');
+           const resolveSpy = jasmine.createSpy('resolveSpy');
+           spyOn(console, 'log');
+
+           expect(() => {
+             adapter.bootstrap(element, ['ng1']).ready(resolveSpy);
+             flushMicrotasks();
+           }).toThrowError();
+           expect(resolveSpy).not.toHaveBeenCalled();
+         }));
+
+      it('should properly log to the console and re throw', fakeAsync(() => {
+           const element = html('<ng2></ng2>');
+           spyOn(console, 'log');
+
+           expect(() => {
+             adapter.bootstrap(element, ['ng1']);
+             flushMicrotasks();
+           }).toThrowError();
+           expect(console.log).toHaveBeenCalled();
+           expect(console.log).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
+         }));
+    });
 
     it('should instantiate ng2 in ng1 template and project content', async(() => {
          const ng1Module = angular.module('ng1', []);
