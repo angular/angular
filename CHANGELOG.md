@@ -1,6 +1,5 @@
-<a name="2.2.0-beta.1"></a>
-# [2.2.0-beta.1](https://github.com/angular/angular/compare/2.2.0-beta.0...2.2.0-beta.1) (2016-10-27)
-
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/angular/angular/compare/2.1.1...2.1.2) (2016-10-27)
 
 ### Bug Fixes
 
@@ -18,6 +17,10 @@
 * **router:** preserve resolve data ([6ccbfd4](https://github.com/angular/angular/commit/6ccbfd4)), closes [#12306](https://github.com/angular/angular/issues/12306)
 
 
+
+<a name="2.2.0-beta.1"></a>
+# [2.2.0-beta.1](https://github.com/angular/angular/compare/2.2.0-beta.0...2.2.0-beta.1) (2016-10-27)
+
 ### Code Refactoring
 
 * **upgrade:** re-export the new static upgrade APIs on new entry ([a26dd28](https://github.com/angular/angular/commit/a26dd28))
@@ -33,6 +36,9 @@
 * upgrade: Four newly added APIs in 2.2.0-beta:
 downgradeComponent, downgradeInjectable, UpgradeComponent, and UpgradeModule are no longer exported by @angular/upgrade.
 Import these from @angular/upgrade/static instead.
+
+
+Note: The 2.2.0-beta.1 release also contains all the changes present in the 2.1.2 release.
 
 
 
