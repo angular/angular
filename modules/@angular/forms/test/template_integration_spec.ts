@@ -771,10 +771,32 @@ export function main() {
            expect(form.valid).toEqual(true);
          }));
 
-      it('should support optional fields with pattern validator', fakeAsync(() => {
+      it('should support optional fields with string pattern validator', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelMultipleValidators);
            fixture.componentInstance.required = false;
            fixture.componentInstance.pattern = '[a-z]+';
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           const input = fixture.debugElement.query(By.css('input'));
+
+           input.nativeElement.value = '';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeTruthy();
+
+           input.nativeElement.value = '1';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBeFalsy();
+           expect(form.control.hasError('pattern', ['tovalidate'])).toBeTruthy();
+         }));
+
+      it('should support optional fields with RegExp pattern validator', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           fixture.componentInstance.required = false;
+           fixture.componentInstance.pattern = /^[a-z]+$/;
            fixture.detectChanges();
            tick();
 
@@ -1141,7 +1163,7 @@ class NgModelValidationBindings {
 class NgModelMultipleValidators {
   required: boolean;
   minLen: number;
-  pattern: string;
+  pattern: string|RegExp;
 }
 
 @Directive({
