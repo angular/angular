@@ -13,12 +13,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {iterateListLike} from '../../src/facade/collection';
 
-interface _JsQueryList {
-  filter(c: any): any;
-  reduce(a: any, b: any): any;
-  toArray(): any;
-}
-
 export function main() {
   describe('QueryList', () => {
     var queryList: QueryList<string>;
@@ -68,36 +62,33 @@ export function main() {
 
     it('should support filter', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).filter((x: string) => x == 'one')).toEqual(['one']);
+      expect(queryList.filter((x: string) => x == 'one')).toEqual(['one']);
     });
 
     it('should support filter with index', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).filter((x: string, i: number) => i == 0)).toEqual(['one']);
+      expect(queryList.filter((x: string, i: number) => i == 0)).toEqual(['one']);
     });
 
     it('should support reduce', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-          .toEqual('start:onetwo');
+      expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
     });
 
     it('should support reduce with index', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList)
-                 .reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
+      expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
           .toEqual('start:one0two1');
     });
 
     it('should support toArray', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).reduce((a: string, x: string) => a + x, 'start:'))
-          .toEqual('start:onetwo');
+      expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
     });
 
     it('should support toArray', () => {
       queryList.reset(['one', 'two']);
-      expect((<_JsQueryList>queryList).toArray()).toEqual(['one', 'two']);
+      expect(queryList.toArray()).toEqual(['one', 'two']);
     });
 
     it('should support toString', () => {
