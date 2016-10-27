@@ -201,14 +201,8 @@ export interface ClassProvider {
     useClass: Type<any>;
 }
 
-/** @stable */
-export declare class CollectionChangeRecord {
-    currentIndex: number;
-    item: any;
-    previousIndex: number;
-    trackById: any;
-    constructor(item: any, trackById: any);
-    toString(): string;
+/** @deprecated */
+export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 /** @stable */
@@ -354,21 +348,21 @@ export declare class DebugNode {
     constructor(nativeNode: any, parent: DebugNode, _debugInfo: RenderDebugInfo);
 }
 
-/** @stable */
-export declare class DefaultIterableDiffer implements IterableDiffer {
+/** @deprecated */
+export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
     collection: any;
     isDirty: boolean;
     length: number;
     constructor(_trackByFn?: TrackByFn);
-    check(collection: any): boolean;
-    diff(collection: any): DefaultIterableDiffer;
-    forEachAddedItem(fn: Function): void;
-    forEachIdentityChange(fn: Function): void;
-    forEachItem(fn: Function): void;
-    forEachMovedItem(fn: Function): void;
-    forEachOperation(fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void): void;
-    forEachPreviousItem(fn: Function): void;
-    forEachRemovedItem(fn: Function): void;
+    check(collection: V[] | Set<V>[] | any): boolean;
+    diff(collection: V[] | Set<V>[] | any): DefaultIterableDiffer<V>;
+    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachOperation(fn: (item: IterableChangeRecord_<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
     toString(): string;
 }
@@ -507,20 +501,38 @@ export declare const Input: InputDecorator;
 export declare function isDevMode(): boolean;
 
 /** @stable */
-export interface IterableDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface IterableChangeRecord<V> {
+    currentIndex: number;
+    item: V;
+    previousIndex: number;
+    trackById: any;
+}
+
+/** @stable */
+export interface IterableChanges<V> {
+    forEachAddedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
+    forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+}
+
+/** @stable */
+export interface IterableDiffer<V> {
+    diff(object: V[] | Set<V> | any): IterableChanges<V>;
 }
 
 /** @stable */
 export interface IterableDifferFactory {
-    create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+    create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class IterableDiffers {
-    factories: IterableDifferFactory[];
+    /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
@@ -531,33 +543,42 @@ export declare class IterableDiffers {
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
 /** @stable */
-export declare class KeyValueChangeRecord {
-    currentValue: any;
-    key: any;
-    previousValue: any;
-    constructor(key: any);
-    toString(): string;
+export interface KeyValueChangeRecord<K, V> {
+    currentValue: V;
+    key: K;
+    previousValue: V;
 }
 
 /** @stable */
-export interface KeyValueDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface KeyValueChanges<K, V> {
+    forEachAddedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachChangedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachPreviousItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+    forEachRemovedItem(fn: (r: KeyValueChangeRecord<K, V>) => void): void;
+}
+
+/** @stable */
+export interface KeyValueDiffer<K, V> {
+    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: {
+        [key: string]: V;
+    }): KeyValueChanges<string, V>;
 }
 
 /** @stable */
 export interface KeyValueDifferFactory {
-    create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+    create<K, V>(cdRef: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class KeyValueDiffers {
-    factories: KeyValueDifferFactory[];
+    /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
-    find(kv: Object): KeyValueDifferFactory;
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): Provider;
+    find(kv: any): KeyValueDifferFactory;
+    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
 }
 
 /** @experimental */

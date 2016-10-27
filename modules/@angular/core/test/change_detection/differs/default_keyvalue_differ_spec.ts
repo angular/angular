@@ -14,11 +14,11 @@ import {kvChangesAsString} from '../../change_detection/util';
 export function main() {
   describe('keyvalue differ', function() {
     describe('DefaultKeyValueDiffer', function() {
-      let differ: DefaultKeyValueDiffer;
+      let differ: DefaultKeyValueDiffer<any, any>;
       let m: Map<any, any>;
 
       beforeEach(() => {
-        differ = new DefaultKeyValueDiffer();
+        differ = new DefaultKeyValueDiffer<string, any>();
         m = new Map();
       });
 
