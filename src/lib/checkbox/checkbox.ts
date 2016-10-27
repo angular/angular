@@ -112,11 +112,15 @@ export class MdCheckbox implements ControlValueAccessor {
   /** Whether or not the checkbox should come before or after the label. */
   @Input() align: 'start' | 'end' = 'start';
 
+  private _disabled: boolean;
+
   /**
    * Whether the checkbox is disabled. When the checkbox is disabled it cannot be interacted with.
    * The correct ARIA attributes are applied to denote this to assistive technology.
    */
-  @Input() disabled: boolean = false;
+  @Input()
+  get disabled(): boolean { return this._disabled; }
+  set disabled(value) { this._disabled = coerceBooleanProperty(value); }
 
   /**
    * The tabindex attribute for the checkbox. Note that when the checkbox is disabled, the attribute
