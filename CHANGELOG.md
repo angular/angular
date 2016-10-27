@@ -1,5 +1,5 @@
 <a name="2.1.2"></a>
-## [2.1.2](https://github.com/angular/angular/compare/2.1.1...2.1.2) (2016-10-27)
+# [2.1.2](https://github.com/angular/angular/compare/2.1.1...2.1.2) (2016-10-27)
 
 ### Bug Fixes
 
