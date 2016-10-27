@@ -537,24 +537,24 @@ export declare class KeyValueChangeRecord {
 }
 
 /** @stable */
-export interface KeyValueDiffer {
-    diff(object: any): any;
-    onDestroy(): any;
+export interface KeyValueDiffer<T> {
+    diff(object: T): KeyValueDiffer<T>;
+    onDestroy(): void;
 }
 
 /** @stable */
-export interface KeyValueDifferFactory {
-    create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+export interface KeyValueDifferFactory<T> {
+    create(cdRef: ChangeDetectorRef): KeyValueDiffer<T>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
-export declare class KeyValueDiffers {
-    factories: KeyValueDifferFactory[];
-    constructor(factories: KeyValueDifferFactory[]);
-    find(kv: Object): KeyValueDifferFactory;
-    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend(factories: KeyValueDifferFactory[]): Provider;
+export declare class KeyValueDiffers<T> {
+    factories: KeyValueDifferFactory<T>[];
+    constructor(factories: KeyValueDifferFactory<T>[]);
+    find(kv: T): KeyValueDifferFactory<T>;
+    static create<S>(factories: KeyValueDifferFactory<S>[], parent?: KeyValueDiffers<S>): KeyValueDiffers<S>;
+    static extend<S>(factories: KeyValueDifferFactory<S>[]): Provider;
 }
 
 /** @experimental */

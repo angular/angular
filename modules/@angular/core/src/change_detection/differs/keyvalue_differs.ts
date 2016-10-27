@@ -7,8 +7,6 @@
  */
 
 import {Optional, Provider, SkipSelf} from '../../di';
-import {ListWrapper} from '../../facade/collection';
-import {isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 
@@ -17,9 +15,9 @@ import {ChangeDetectorRef} from '../change_detector_ref';
  *
  * @stable
  */
-export interface KeyValueDiffer {
-  diff(object: any): any /** TODO #9100 */;
-  onDestroy(): any /** TODO #9100 */;
+export interface KeyValueDiffer<T> {
+  diff(object: T): KeyValueDiffer<T>;
+  onDestroy(): void;
 }
 
 /**
@@ -27,26 +25,25 @@ export interface KeyValueDiffer {
  *
  * @stable
  */
-export interface KeyValueDifferFactory {
+export interface KeyValueDifferFactory<T> {
   supports(objects: any): boolean;
-  create(cdRef: ChangeDetectorRef): KeyValueDiffer;
+  create(cdRef: ChangeDetectorRef): KeyValueDiffer<T>;
 }
 
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  * @stable
  */
-export class KeyValueDiffers {
-  constructor(public factories: KeyValueDifferFactory[]) {}
+export class KeyValueDiffers<T> {
+  constructor(public factories: KeyValueDifferFactory<T>[]) {}
 
-  static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
-    if (isPresent(parent)) {
+  static create<S>(factories: KeyValueDifferFactory<S>[], parent?: KeyValueDiffers<S>):
+      KeyValueDiffers<S> {
+    if (parent) {
       var copied = parent.factories.slice();
       factories = factories.concat(copied);
-      return new KeyValueDiffers(factories);
-    } else {
-      return new KeyValueDiffers(factories);
     }
+    return new KeyValueDiffers(factories);
   }
 
   /**
@@ -68,14 +65,13 @@ export class KeyValueDiffers {
    * })
    * ```
    */
-  static extend(factories: KeyValueDifferFactory[]): Provider {
+  static extend<S>(factories: KeyValueDifferFactory<S>[]): Provider {
     return {
       provide: KeyValueDiffers,
-      useFactory: (parent: KeyValueDiffers) => {
+      useFactory: (parent: KeyValueDiffers<S>) => {
         if (!parent) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
-          // to
-          // bootstrap(), which would override default pipes instead of extending them.
+          // to bootstrap(), which would override default pipes instead of extending them.
           throw new Error('Cannot extend KeyValueDiffers without a parent injector');
         }
         return KeyValueDiffers.create(factories, parent);
@@ -85,12 +81,11 @@ export class KeyValueDiffers {
     };
   }
 
-  find(kv: Object): KeyValueDifferFactory {
+  find(kv: T): KeyValueDifferFactory<T> {
     var factory = this.factories.find(f => f.supports(kv));
-    if (isPresent(factory)) {
+    if (factory) {
       return factory;
-    } else {
-      throw new Error(`Cannot find a differ supporting object '${kv}'`);
     }
+    throw new Error(`Cannot find a differ supporting object '${kv}'`);
   }
 }
