@@ -155,7 +155,6 @@ gulp.task('lint', ['check-tests', 'format:enforce', 'tools:build'], () => {
       .pipe(tslint({
         tslint: require('tslint').default,
         configuration: tslintConfig,
-        rulesDirectory: 'dist/tools/tslint',
         formatter: 'prose',
       }))
       .pipe(tslint.report({emitError: true}));
