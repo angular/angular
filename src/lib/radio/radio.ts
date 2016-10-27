@@ -3,6 +3,7 @@ import {
   Component,
   ContentChildren,
   Directive,
+  ElementRef,
   EventEmitter,
   HostBinding,
   Input,
@@ -15,11 +16,13 @@ import {
   NgModule,
   ModuleWithProviders,
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   NG_VALUE_ACCESSOR,
   ControlValueAccessor
 } from '@angular/forms';
-import {MdUniqueSelectionDispatcher} from '../core';
+import {MdRippleModule, MdUniqueSelectionDispatcher} from '../core';
+import {coerceBooleanProperty} from '../core/coersion/boolean-property';
 
 
 
@@ -263,14 +266,22 @@ export class MdRadioButton implements OnInit {
   /** Value assigned to this radio.*/
   private _value: any = null;
 
+  /** Whether the ripple effect on click should be disabled. */
+  private _disableRipple: boolean;
+
   /** The parent radio group. May or may not be present. */
   radioGroup: MdRadioGroup;
+
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   /** Event emitted when the group value changes. */
   @Output()
   change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
   constructor(@Optional() radioGroup: MdRadioGroup,
+              private _elementRef: ElementRef,
               public radioDispatcher: MdUniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
@@ -411,10 +422,15 @@ export class MdRadioButton implements OnInit {
       this.radioGroup._touch();
     }
   }
+
+  getHostElement() {
+    return this._elementRef.nativeElement;
+  }
 }
 
 
 @NgModule({
+  imports: [CommonModule, MdRippleModule],
   exports: [MdRadioGroup, MdRadioButton],
   declarations: [MdRadioGroup, MdRadioButton],
 })
