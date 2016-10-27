@@ -164,10 +164,10 @@ export abstract class AppView<T> {
     for (var i = 0; i < this.disposables.length; i++) {
       this.disposables[i]();
     }
+    this.destroyInternal();
     for (var i = 0; i < this.subscriptions.length; i++) {
       this.subscriptions[i].unsubscribe();
     }
-    this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
     if (this._animationContext) {
