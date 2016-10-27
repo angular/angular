@@ -26,6 +26,7 @@ import {Observable} from 'rxjs/Observable';
 
 const noop = () => {};
 
+
 export const MD_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MdInput),
@@ -86,14 +87,13 @@ export class MdHint {
   @Input() align: 'start' | 'end' = 'start';
 }
 
-
 /**
  * Component that represents a text input. It encapsulates the <input> HTMLElement and
  * improve on its behaviour, along with styling it according to the Material Design.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-input',
+  selector: 'md-input, md-textarea',
   templateUrl: 'input.html',
   styleUrls: ['input.css'],
   providers: [MD_INPUT_CONTROL_VALUE_ACCESSOR],
@@ -167,6 +167,11 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @Input() type: string = 'text';
   @Input() name: string = null;
 
+  // textarea-specific
+  @Input() rows: number = null;
+  @Input() cols: number = null;
+  @Input() wrap: 'soft' | 'hard' = null;
+
   private _floatingPlaceholder: boolean = true;
   private _autofocus: boolean = false;
   private _disabled: boolean = false;
@@ -228,6 +233,15 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
 
   @ViewChild('input') _inputElement: ElementRef;
+
+  _elementType: 'input' | 'textarea';
+
+  constructor(elementRef: ElementRef) {
+    // Set the element type depending on normalized selector used(md-input / md-textarea)
+    this._elementType = elementRef.nativeElement.nodeName.toLowerCase() === 'md-input' ?
+        'input' :
+        'textarea';
+  }
 
   /** Set focus on input */
   focus() {

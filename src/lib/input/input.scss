@@ -15,7 +15,7 @@ $md-input-underline-disabled-background-image:
   width: 100% / $md-input-floating-placeholder-scale-factor;
 }
 
-md-input {
+md-input, md-textarea {
   display: inline-block;
   position: relative;
   font-family: $md-font-family;

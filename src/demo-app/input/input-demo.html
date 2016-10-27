@@ -10,8 +10,8 @@
         <td><md-input placeholder="Long Last Name That Will Be Truncated" style="width: 100%"></md-input></td>
       </tr></table>
       <p>
-        <md-input class="demo-full-width" placeholder="Address" value="1600 Amphitheatre Pkway"></md-input>
-        <md-input class="demo-full-width" placeholder="Address 2"></md-input>
+        <md-textarea class="demo-full-width" placeholder="Address" value="1600 Amphitheatre Pkway"></md-textarea>
+        <md-textarea class="demo-full-width" placeholder="Address 2"></md-textarea>
       </p>
       <table style="width: 100%" cellspacing="0"><tr>
         <td><md-input class="demo-full-width" placeholder="City" value="Mountain View"></md-input></td>
@@ -39,21 +39,38 @@
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">Divider Colors</md-toolbar>
   <md-card-content>
+    <h4>Input</h4>
     <md-input dividerColor="primary" placeholder="Default Color" value="example"></md-input>
     <md-input dividerColor="accent" placeholder="Accent Color" value="example"></md-input>
     <md-input dividerColor="warn" placeholder="Warn Color" value="example"></md-input>
+
+    <h4>Textarea</h4>
+    <md-textarea dividerColor="primary" placeholder="Default Color" value="example"></md-textarea>
+    <md-textarea dividerColor="accent" placeholder="Accent Color" value="example"></md-textarea>
+    <md-textarea dividerColor="warn" placeholder="Warn Color" value="example"></md-textarea>
+
   </md-card-content>
 </md-card>
 
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">Hints</md-toolbar>
   <md-card-content>
+    <h4>Input</h4>
     <p>
       <md-input placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
                 value="Hello world. How are you?"
                 #characterCountHintExample>
         <md-hint align="end">{{characterCountHintExample.characterCount}} / 100</md-hint>
       </md-input>
+    </p>
+
+    <h4>Textarea</h4>
+    <p>
+      <md-textarea placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
+                value="Hello world. How are you?"
+                #characterCountHintExample>
+        <md-hint align="end">{{characterCountHintExample.characterCount}} / 100</md-hint>
+      </md-textarea>
     </p>
   </md-card-content>
 </md-card>

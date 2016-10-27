@@ -21,6 +21,7 @@ export class InputDemo {
     { value: 40 },
     { value: 50 },
   ];
+  rows = 8;
 
   addABunch(n: number) {
     for (let x = 0; x < n; x++) {

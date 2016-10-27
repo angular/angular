@@ -1,11 +1,11 @@
-# mdInput
+# mdInput / mdTextarea
 
 Inputs are the basic input component of Material 2. The spec can be found [here](https://www.google.com/design/spec/components/text-fields.html).
 
 
 
 ## Notes
-* The `<md-input>` component fully support two-way binding of `ngModel`, as if it was a normal `<input>`.
+* The `<md-input>` / `<md-textara>` component fully support two-way binding of `ngModel`, as if it was a normal `<input>` and `<textarea>`.
 
 
 
@@ -18,7 +18,7 @@ The valid `type` attribute values are any supported by your browser, with the ex
 
 ## Placeholder
 
-A placeholder is an indicative text displayed in the input zone when the input does not contain text. When text is present, the indicative text will float above this input zone. 
+A placeholder is an indicative text displayed in the input zone when the input does not contain text. When text is present, the indicative text will float above this input zone.
 
 You can set the `floatingPlaceholder` attribute to `false` to hide the indicative text instead when text is present in the input.
 
@@ -106,6 +106,14 @@ export class MyComponent implements OnInit {
 }
 ```
 
+## Textareas
+
+```html
+<md-textarea placeholder="Textarea with autosize"></md-textarea>
+```
+
+### Example
+
 ## Full Forms
 
 You can make a full form using inputs, and it will support autofill natively.
@@ -125,8 +133,8 @@ You can make a full form using inputs, and it will support autofill natively.
         <td><md-input placeholder="Long Last Name That Will Be Truncated" style="width: 100%"></md-input></td>
       </tr></table>
       <p>
-        <md-input class="demo-full-width" placeholder="Address" value="1600 Amphitheatre Pkway"></md-input>
-        <md-input class="demo-full-width" placeholder="Address 2"></md-input>
+        <md-textarea class="demo-full-width" placeholder="Address" value="1600 Amphitheatre Pkway"></md-textarea>
+        <md-textarea class="demo-full-width" placeholder="Address 2"></md-textarea>
       </p>
       <table style="width: 100%" cellspacing="0"><tr>
         <td><md-input class="demo-full-width" placeholder="City"></md-input></td>
