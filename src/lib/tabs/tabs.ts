@@ -97,17 +97,17 @@ export class MdTabGroup {
   }
 
   /** Output to enable support for two-way binding on `selectedIndex`. */
-  @Output('selectedIndexChange') private get _selectedIndexChange(): Observable<number> {
+  @Output() get selectedIndexChange(): Observable<number> {
     return this.selectChange.map(event => event.index);
   }
 
   private _onFocusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
-  @Output('focusChange') get focusChange(): Observable<MdTabChangeEvent> {
+  @Output() get focusChange(): Observable<MdTabChangeEvent> {
     return this._onFocusChange.asObservable();
   }
 
   private _onSelectChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
-  @Output('selectChange') get selectChange(): Observable<MdTabChangeEvent> {
+  @Output() get selectChange(): Observable<MdTabChangeEvent> {
     return this._onSelectChange.asObservable();
   }
 
