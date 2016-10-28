@@ -1016,7 +1016,7 @@ export class FormGroup extends AbstractControl {
    * If you'd like to include all values regardless of disabled status, use this method.
    * Otherwise, the `value` property is the best way to get the value of the group.
    */
-  getRawValue(): Object {
+  getRawValue(): any {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
           acc[name] = control.value;

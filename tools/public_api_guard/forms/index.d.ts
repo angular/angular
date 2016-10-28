@@ -269,7 +269,7 @@ export declare class FormGroup extends AbstractControl {
     }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     addControl(name: string, control: AbstractControl): void;
     contains(controlName: string): boolean;
-    getRawValue(): Object;
+    getRawValue(): any;
     patchValue(value: {
         [key: string]: any;
     }, {onlySelf, emitEvent}?: {
