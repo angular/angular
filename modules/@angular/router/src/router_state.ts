@@ -12,7 +12,7 @@ import {Observable} from 'rxjs/Observable';
 
 import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, Params} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {merge, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -447,4 +447,10 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     // this is for resolved data
     (<any>route.data).next(route._futureSnapshot.data);
   }
+}
+
+
+export function equalParamsAndUrlSegments(
+    a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
+  return shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
 }

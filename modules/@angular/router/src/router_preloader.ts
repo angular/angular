@@ -83,8 +83,7 @@ export class RouterPreloader {
 
   setUpPreloading(): void {
     const navigations = filter.call(this.router.events, (e: any) => e instanceof NavigationEnd);
-    this.subscription =
-        concatMap.call(navigations, () => this.preload()).subscribe((v: any) => {});
+    this.subscription = concatMap.call(navigations, () => this.preload()).subscribe((v: any) => {});
   }
 
   preload(): Observable<any> { return this.processRoutes(this.injector, this.router.config); }

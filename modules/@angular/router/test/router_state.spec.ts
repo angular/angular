@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, equalParamsAndUrlSegments} from '../src/router_state';
+import {Params} from '../src/shared';
+import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('RouterState & Snapshot', () => {
@@ -91,6 +93,33 @@ describe('RouterState & Snapshot', () => {
       const p = b.pathFromRoot;
       expect(p[0]).toBe(state.root);
       expect(p[1]).toBe(b);
+    });
+  });
+
+  describe('equalParamsAndUrlSegments', () => {
+    function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
+      return new ActivatedRouteSnapshot(
+          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
+          -1, null);
+    }
+
+    it('should return false when params are different', () => {
+      expect(equalParamsAndUrlSegments(createSnapshot({a: 1}, []), createSnapshot({a: 2}, [])))
+          .toEqual(false);
+    });
+
+    it('should return false when urls are different', () => {
+      expect(equalParamsAndUrlSegments(
+                 createSnapshot({a: 1}, [new UrlSegment('a', {})]),
+                 createSnapshot({a: 1}, [new UrlSegment('b', {})])))
+          .toEqual(false);
+    });
+
+    it('should return true othewise', () => {
+      expect(equalParamsAndUrlSegments(
+                 createSnapshot({a: 1}, [new UrlSegment('a', {})]),
+                 createSnapshot({a: 1}, [new UrlSegment('a', {})])))
+          .toEqual(true);
     });
   });
 });
