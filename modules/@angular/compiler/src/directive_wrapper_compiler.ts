@@ -29,9 +29,9 @@ export class DirectiveWrapperCompileResult {
 }
 
 const CONTEXT_FIELD_NAME = 'context';
-const CHANGES_FIELD_NAME = 'changes';
-const CHANGED_FIELD_NAME = 'changed';
-const EVENT_HANDLER_FIELD_NAME = 'eventHandler';
+const CHANGES_FIELD_NAME = '_changes';
+const CHANGED_FIELD_NAME = '_changed';
+const EVENT_HANDLER_FIELD_NAME = '_eventHandler';
 
 const CURR_VALUE_VAR = o.variable('currValue');
 const THROW_ON_CHANGE_VAR = o.variable('throwOnChange');
@@ -129,14 +129,15 @@ class DirectiveWrapperBuilder implements ClassBuilder {
 
 
     const fields: o.ClassField[] = [
-      new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE),
+      new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE, [o.StmtModifier.Private]),
       new o.ClassField(CONTEXT_FIELD_NAME, o.importType(this.dirMeta.type)),
-      new o.ClassField(CHANGED_FIELD_NAME, o.BOOL_TYPE),
+      new o.ClassField(CHANGED_FIELD_NAME, o.BOOL_TYPE, [o.StmtModifier.Private]),
     ];
     const ctorStmts: o.Statement[] =
         [o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(false)).toStmt()];
     if (this.genChanges) {
-      fields.push(new o.ClassField(CHANGES_FIELD_NAME, new o.MapType(o.DYNAMIC_TYPE)));
+      fields.push(new o.ClassField(
+          CHANGES_FIELD_NAME, new o.MapType(o.DYNAMIC_TYPE), [o.StmtModifier.Private]));
       ctorStmts.push(RESET_CHANGES_STMT);
     }
 
@@ -303,7 +304,11 @@ function addHandleEventMethod(hostListeners: BoundEventAst[], builder: Directive
 }
 
 function addSubscribeMethod(dirMeta: CompileDirectiveMetadata, builder: DirectiveWrapperBuilder) {
-  const methodParams: o.FnParam[] = [new o.FnParam(EVENT_HANDLER_FIELD_NAME, o.DYNAMIC_TYPE)];
+  const methodParams: o.FnParam[] = [
+    new o.FnParam(
+        VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+    new o.FnParam(EVENT_HANDLER_FIELD_NAME, o.DYNAMIC_TYPE)
+  ];
   const stmts: o.Statement[] = [
     o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME).set(o.variable(EVENT_HANDLER_FIELD_NAME)).toStmt()
   ];
@@ -313,17 +318,16 @@ function addSubscribeMethod(dirMeta: CompileDirectiveMetadata, builder: Directiv
     methodParams.push(new o.FnParam(paramName, o.BOOL_TYPE));
     const subscriptionFieldName = `subscription${emitterIdx}`;
     builder.fields.push(new o.ClassField(subscriptionFieldName, o.DYNAMIC_TYPE));
-    stmts.push(new o.IfStmt(
-        o.variable(paramName),
-        [o.THIS_EXPR.prop(subscriptionFieldName)
-             .set(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
-                      .prop(emitterPropName)
-                      .callMethod(
-                          o.BuiltinMethod.SubscribeObservable,
-                          [o.variable(EVENT_HANDLER_FIELD_NAME)
-                               .callMethod(
-                                   o.BuiltinMethod.Bind, [o.NULL_EXPR, o.literal(eventName)])]))
-             .toStmt()]));
+    stmts.push(new o.IfStmt(o.variable(paramName), [
+      o.THIS_EXPR.prop(subscriptionFieldName)
+          .set(o.THIS_EXPR.prop(CONTEXT_FIELD_NAME)
+                   .prop(emitterPropName)
+                   .callMethod(
+                       o.BuiltinMethod.SubscribeObservable,
+                       [o.variable(EVENT_HANDLER_FIELD_NAME)
+                            .callMethod(o.BuiltinMethod.Bind, [VIEW_VAR, o.literal(eventName)])]))
+          .toStmt()
+    ]));
     builder.destroyStmts.push(
         o.THIS_EXPR.prop(subscriptionFieldName)
             .and(o.THIS_EXPR.prop(subscriptionFieldName).callMethod('unsubscribe', []))
@@ -424,7 +428,7 @@ export class DirectiveWrapperExpressions {
   }
   static subscribe(
       dirMeta: CompileDirectiveMetadata, hostProps: BoundElementPropertyAst[], usedEvents: string[],
-      dirWrapper: o.Expression, eventListener: o.Expression): o.Statement[] {
+      dirWrapper: o.Expression, view: o.Expression, eventListener: o.Expression): o.Statement[] {
     let needsSubscribe = false;
     let eventFlags: o.Expression[] = [];
     Object.keys(dirMeta.outputs).forEach((propName) => {
@@ -439,7 +443,9 @@ export class DirectiveWrapperExpressions {
       }
     });
     if (needsSubscribe) {
-      return [dirWrapper.callMethod('subscribe', [eventListener].concat(eventFlags)).toStmt()];
+      return [
+        dirWrapper.callMethod('subscribe', [view, eventListener].concat(eventFlags)).toStmt()
+      ];
     } else {
       return [];
     }

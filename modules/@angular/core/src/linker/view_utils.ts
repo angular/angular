@@ -17,6 +17,7 @@ import {Sanitizer} from '../security';
 
 import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
+import {AppView} from './view';
 
 @Injectable()
 export class ViewUtils {
@@ -401,7 +402,7 @@ export function selectOrCreateRenderHostElement(
 }
 
 export function subscribeToRenderElement(
-    renderer: Renderer, element: any, eventNamesAndTargets: InlineArray<string>,
+    view: AppView<any>, element: any, eventNamesAndTargets: InlineArray<string>,
     listener: (eventName: string, event: any) => any) {
   const disposables = createEmptyInlineArray(eventNamesAndTargets.length / 2);
   for (var i = 0; i < eventNamesAndTargets.length; i += 2) {
@@ -409,10 +410,10 @@ export function subscribeToRenderElement(
     const eventTarget = eventNamesAndTargets.get(i + 1);
     let disposable: Function;
     if (eventTarget) {
-      disposable = renderer.listenGlobal(
-          eventTarget, eventName, listener.bind(null, `${eventTarget}:${eventName}`));
+      disposable = view.renderer.listenGlobal(
+          eventTarget, eventName, listener.bind(view, `${eventTarget}:${eventName}`));
     } else {
-      disposable = renderer.listen(element, eventName, listener.bind(null, eventName));
+      disposable = view.renderer.listen(element, eventName, listener.bind(view, eventName));
     }
     disposables.set(i / 2, disposable);
   }

@@ -375,7 +375,7 @@ export class DebugAppView<T> extends AppView<T> {
     return (eventName: string, event?: any) => {
       this._resetDebug();
       try {
-        return superHandler(eventName, event);
+        return superHandler.call(this, eventName, event);
       } catch (e) {
         this._rethrowWithContext(e);
         throw e;
