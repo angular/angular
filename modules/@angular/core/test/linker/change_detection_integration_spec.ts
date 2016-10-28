@@ -427,6 +427,14 @@ export function main() {
          }));
 
 
+      it('should ignore empty bindings', fakeAsync(() => {
+           var ctx = _bindSimpleProp('[someProp]', TestData);
+           ctx.componentInstance.a = 'value';
+           ctx.detectChanges(false);
+
+           expect(renderLog.log).toEqual([]);
+         }));
+
       it('should support interpolation', fakeAsync(() => {
            var ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
            ctx.componentInstance.a = 'value';

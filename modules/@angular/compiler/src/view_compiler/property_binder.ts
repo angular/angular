@@ -54,6 +54,9 @@ export function bindRenderInputs(
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
     const evalResult = convertPropertyBinding(
         view, view, compileElement.view.componentContext, boundProp.value, bindingField.bindingId);
+    if (!evalResult) {
+      return;
+    }
     var checkBindingStmts: o.Statement[] = [];
     var compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
