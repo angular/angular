@@ -160,7 +160,7 @@ export class CompileMetadataResolver {
         moduleUrl = componentModuleUrl(this._reflector, directiveType, dirMeta);
         if (dirMeta.entryComponents) {
           entryComponentMetadata =
-              flattenArray(dirMeta.entryComponents)
+              flattenAndDedupeArray(dirMeta.entryComponents)
                   .map((type) => this.getTypeMetadata(type, staticTypeModuleUrl(type)))
                   .concat(entryComponentMetadata);
         }
@@ -228,7 +228,7 @@ export class CompileMetadataResolver {
       const schemas: SchemaMetadata[] = [];
 
       if (meta.imports) {
-        flattenArray(meta.imports).forEach((importedType) => {
+        flattenAndDedupeArray(meta.imports).forEach((importedType) => {
           let importedModuleType: Type<any>;
           if (isValidType(importedType)) {
             importedModuleType = importedType;
@@ -257,7 +257,7 @@ export class CompileMetadataResolver {
       }
 
       if (meta.exports) {
-        flattenArray(meta.exports).forEach((exportedType) => {
+        flattenAndDedupeArray(meta.exports).forEach((exportedType) => {
           if (!isValidType(exportedType)) {
             throw new Error(
                 `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
@@ -283,7 +283,7 @@ export class CompileMetadataResolver {
       const transitiveModule =
           this._getTransitiveNgModuleMetadata(importedModules, exportedModules);
       if (meta.declarations) {
-        flattenArray(meta.declarations).forEach((declaredType) => {
+        flattenAndDedupeArray(meta.declarations).forEach((declaredType) => {
           if (!isValidType(declaredType)) {
             throw new Error(
                 `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
@@ -313,12 +313,12 @@ export class CompileMetadataResolver {
 
       if (meta.entryComponents) {
         entryComponents.push(
-            ...flattenArray(meta.entryComponents)
+            ...flattenAndDedupeArray(meta.entryComponents)
                 .map(type => this.getTypeMetadata(type, staticTypeModuleUrl(type))));
       }
 
       if (meta.bootstrap) {
-        const typeMetadata = flattenArray(meta.bootstrap).map(type => {
+        const typeMetadata = flattenAndDedupeArray(meta.bootstrap).map(type => {
           if (!isValidType(type)) {
             throw new Error(
                 `Unexpected value '${stringify(type)}' used in the bootstrap property of module '${stringify(moduleType)}'`);
@@ -331,7 +331,7 @@ export class CompileMetadataResolver {
       entryComponents.push(...bootstrapComponents);
 
       if (meta.schemas) {
-        schemas.push(...flattenArray(meta.schemas));
+        schemas.push(...flattenAndDedupeArray(meta.schemas));
       }
 
       transitiveModule.entryComponents.push(...entryComponents);
@@ -736,7 +736,6 @@ function getTransitiveModules(
   return targetModules;
 }
 
-
 function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
   if (tree) {
     for (let i = 0; i < tree.length; i++) {
@@ -749,6 +748,17 @@ function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
     }
   }
   return out;
+}
+
+function dedupeArray(array: any[]): Array<any> {
+  if (array) {
+    return Array.from(new Set(array));
+  }
+  return [];
+}
+
+function flattenAndDedupeArray(tree: any[]): Array<any> {
+  return dedupeArray(flattenArray(tree));
 }
 
 function isValidType(value: any): boolean {

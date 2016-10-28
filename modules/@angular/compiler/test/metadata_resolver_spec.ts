@@ -183,6 +183,22 @@ export function main() {
          }));
     });
 
+    it('should dedupe declarations in NgModule',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         @Component({template: ''})
+         class MyComp {
+         }
+
+         @NgModule({declarations: [MyComp, MyComp]})
+         class MyModule {
+         }
+
+         const modMeta = resolver.getNgModuleMetadata(MyModule);
+         expect(modMeta.declaredDirectives.length).toBe(1);
+         expect(modMeta.declaredDirectives[0].type.reference).toBe(MyComp);
+       }));
+
   });
 }
 
