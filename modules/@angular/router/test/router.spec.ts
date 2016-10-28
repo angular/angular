@@ -95,6 +95,6 @@ function checkResolveData(
 
 function createActivatedRouteSnapshot(cmp: string, extra: any = {}): ActivatedRouteSnapshot {
   return new ActivatedRouteSnapshot(
-      <any>null, {}, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, <any>null, -1,
+      <any>[], {}, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null, <any>null, -1,
       extra.resolve);
 }

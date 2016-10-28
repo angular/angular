@@ -624,6 +624,7 @@ describe('Integration', () => {
           {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
+          {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length}
         ]
       });
     });
@@ -717,6 +718,29 @@ describe('Integration', () => {
 
          const cmp = fixture.debugElement.children[1].componentInstance;
          expect(cmp.route.snapshot.data).toEqual({two: 2});
+       })));
+
+    it('should rerun resolvers when the urls segments of a wildcard route change',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: '**',
+           component: CollectParamsCmp,
+           resolve: {numberOfUrlSegments: 'numberOfUrlSegments'}
+         }]);
+
+         let e: any = null;
+         router.navigateByUrl('/one/two');
+         advance(fixture);
+         const cmp = fixture.debugElement.children[1].componentInstance;
+
+         expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 2});
+
+         router.navigateByUrl('/one/two/three');
+         advance(fixture);
+
+         expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
        })));
   });
 
