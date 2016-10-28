@@ -8,10 +8,12 @@
 
 import {Location} from '@angular/common';
 import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
+import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
@@ -275,6 +277,16 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
+type NavigationParams = {
+  id: number,
+  rawUrl: UrlTree,
+  prevRawUrl: UrlTree,
+  extras: NavigationExtras,
+  resolve: any,
+  reject: any,
+  promise: Promise<boolean>
+};
+
 /**
  * @whatItDoes Provides the navigation and url manipulation capabilities.
  *
@@ -287,11 +299,13 @@ function defaultErrorHandler(error: any): any {
 export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
-  private lastNavigation: UrlTree;
+
+  private navigations: BehaviorSubject<NavigationParams> =
+      new BehaviorSubject<NavigationParams>(null);
+  private routerEvents: Subject<Event> = new Subject<Event>();
 
   private currentRouterState: RouterState;
   private locationSubscription: Subscription;
-  private routerEvents: Subject<Event>;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
 
@@ -321,11 +335,12 @@ export class Router {
       private outletMap: RouterOutletMap, private location: Location, private injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     this.resetConfig(config);
-    this.routerEvents = new Subject<Event>();
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
     this.configLoader = new RouterConfigLoader(loader, compiler);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+
+    this.processNavigations();
   }
 
   /**
@@ -355,18 +370,8 @@ export class Router {
     // which does not work properly with zone.js in IE and Safari
     this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
       const rawUrlTree = this.urlSerializer.parse(change['url']);
-      const tree = this.urlHandlingStrategy.extract(rawUrlTree);
-
-
       setTimeout(() => {
-        // we fire multiple events for a single URL change
-        // we should navigate only once
-        if (!this.lastNavigation || this.lastNavigation.toString() !== tree.toString()) {
-          this.scheduleNavigation(
-              rawUrlTree, tree, {skipLocationChange: change['pop'], replaceUrl: true});
-        } else {
-          this.rawUrlTree = rawUrlTree;
-        }
+        this.scheduleNavigation(rawUrlTree, {skipLocationChange: change['pop'], replaceUrl: true});
       }, 0);
     }));
   }
@@ -488,10 +493,11 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
     if (url instanceof UrlTree) {
-      return this.scheduleNavigation(this.rawUrlTree, url, extras);
+      return this.scheduleNavigation(this.urlHandlingStrategy.merge(url, this.rawUrlTree), extras);
     } else {
       const urlTree = this.urlSerializer.parse(url);
-      return this.scheduleNavigation(this.rawUrlTree, urlTree, extras);
+      return this.scheduleNavigation(
+          this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), extras);
     }
   }
 
@@ -518,7 +524,7 @@ export class Router {
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    return this.scheduleNavigation(this.rawUrlTree, this.createUrlTree(commands, extras), extras);
+    return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
   /**
@@ -543,33 +549,76 @@ export class Router {
     }
   }
 
-  private scheduleNavigation(rawUrl: UrlTree, url: UrlTree, extras: NavigationExtras):
-      Promise<boolean> {
-    if (this.urlHandlingStrategy.shouldProcessUrl(url)) {
-      const id = ++this.navigationId;
-      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+  private processNavigations(): void {
+    concatMap
+        .call(
+            this.navigations,
+            (nav: NavigationParams) => {
+              if (nav) {
+                this.executeScheduledNavigation(nav);
+                // a failed navigation should not stop the router from processing
+                // further navigations => the catch
+                return nav.promise.catch(() => {});
+              } else {
+                return <any>of (null);
+              }
+            })
+        .subscribe(() => {});
+  }
 
-      return Promise.resolve().then(
-          (_) => this.runNavigate(
-              rawUrl, url, extras.skipLocationChange, extras.replaceUrl, id, null));
+  private scheduleNavigation(rawUrl: UrlTree, extras: NavigationExtras): Promise<boolean> {
+    const prevRawUrl = this.navigations.value ? this.navigations.value.rawUrl : null;
+    if (prevRawUrl && prevRawUrl.toString() === rawUrl.toString()) {
+      return this.navigations.value.promise;
+    }
+
+    let resolve: any = null;
+    let reject: any = null;
+
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+
+    const id = ++this.navigationId;
+    this.navigations.next({id, rawUrl, prevRawUrl, extras, resolve, reject, promise});
+
+    return promise;
+  }
+
+  private executeScheduledNavigation({id, rawUrl, prevRawUrl, extras, resolve,
+                                      reject}: NavigationParams): void {
+    const url = this.urlHandlingStrategy.extract(rawUrl);
+    const prevUrl = prevRawUrl ? this.urlHandlingStrategy.extract(prevRawUrl) : null;
+    const urlTransition = !prevUrl || url.toString() !== prevUrl.toString();
+
+    if (urlTransition && this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
+      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+      Promise.resolve()
+          .then(
+              (_) => this.runNavigate(
+                  url, rawUrl, extras.skipLocationChange, extras.replaceUrl, id, null))
+          .then(resolve, reject);
 
       // we cannot process the current URL, but we could process the previous one =>
       // we need to do some cleanup
-    } else if (this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
-      const id = ++this.navigationId;
+    } else if (
+        urlTransition && prevRawUrl && this.urlHandlingStrategy.shouldProcessUrl(prevRawUrl)) {
       this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+      Promise.resolve()
+          .then(
+              (_) => this.runNavigate(
+                  url, rawUrl, false, false, id, createEmptyState(url, this.rootComponentType)))
+          .then(resolve, reject);
 
-      return Promise.resolve().then(
-          (_) => this.runNavigate(
-              rawUrl, url, false, false, id, createEmptyState(url, this.rootComponentType)));
     } else {
       this.rawUrlTree = rawUrl;
-      return Promise.resolve(null);
+      resolve(null);
     }
   }
 
   private runNavigate(
-      rawUrl: UrlTree, url: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
+      url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
       id: number, precreatedState: RouterState): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
@@ -624,9 +673,15 @@ export class Router {
         preActivation.traverse(this.outletMap);
       });
 
-      const preactivation2$ = mergeMap.call(preactivation$, () => preActivation.checkGuards());
+      const preactivation2$ = mergeMap.call(preactivation$, () => {
+        if (this.navigationId !== id) return of (false);
+
+        return preActivation.checkGuards();
+      });
 
       const resolveData$ = mergeMap.call(preactivation2$, (shouldActivate: boolean) => {
+        if (this.navigationId !== id) return of (false);
+
         if (shouldActivate) {
           return map.call(preActivation.resolveData(), () => shouldActivate);
         } else {
@@ -641,7 +696,6 @@ export class Router {
               return;
             }
 
-            this.lastNavigation = appliedUrl;
             this.currentUrlTree = appliedUrl;
             this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
 

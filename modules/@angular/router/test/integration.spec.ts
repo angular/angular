@@ -20,7 +20,6 @@ import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 
-
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,6 +40,75 @@ describe('Integration', () => {
 
        expect(location.path()).toEqual('/simple');
      })));
+
+  describe('should execute navigations serialy', () => {
+    let log: any[] = [];
+
+    beforeEach(() => {
+      log = [];
+
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: 'trueRightAway',
+            useValue: () => {
+              log.push('trueRightAway');
+              return true;
+            }
+          },
+          {
+            provide: 'trueIn2Seconds',
+            useValue: () => {
+              log.push('trueIn2Seconds-start');
+              let res: any = null;
+              const p = new Promise(r => res = r);
+              setTimeout(() => {
+                log.push('trueIn2Seconds-end');
+                res(true);
+              }, 2000);
+              return p;
+            }
+          }
+        ]
+      });
+    });
+
+    it('should execute navigations serialy',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'a', component: SimpleCmp, canActivate: ['trueRightAway', 'trueIn2Seconds']},
+           {path: 'b', component: SimpleCmp, canActivate: ['trueRightAway', 'trueIn2Seconds']}
+         ]);
+
+         router.navigateByUrl('/a');
+         tick(100);
+         fixture.detectChanges();
+
+         router.navigateByUrl('/b');
+         tick(100);  // 200
+         fixture.detectChanges();
+
+         expect(log).toEqual(['trueRightAway', 'trueIn2Seconds-start']);
+
+         tick(2000);  // 2200
+         fixture.detectChanges();
+
+         expect(log).toEqual([
+           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
+           'trueIn2Seconds-start'
+         ]);
+
+         tick(2000);  // 4200
+         fixture.detectChanges();
+
+         expect(log).toEqual([
+           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
+           'trueIn2Seconds-start', 'trueIn2Seconds-end'
+         ]);
+       })));
+  });
 
   it('should work when an outlet is in an ngIf',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -415,9 +483,9 @@ describe('Integration', () => {
          [NavigationStart, '/user/init'], [RoutesRecognized, '/user/init'],
          [NavigationEnd, '/user/init'],
 
-         [NavigationStart, '/user/victor'], [NavigationStart, '/user/fedor'],
+         [NavigationStart, '/user/victor'], [NavigationCancel, '/user/victor'],
 
-         [NavigationCancel, '/user/victor'], [RoutesRecognized, '/user/fedor'],
+         [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -1458,8 +1526,8 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/blank');
 
              expectEvents(recordedEvents, [
-               [NavigationStart, '/lazyFalse/loaded'], [NavigationStart, '/blank'],
-               [RoutesRecognized, '/blank'], [NavigationCancel, '/lazyFalse/loaded'],
+               [NavigationStart, '/lazyFalse/loaded'], [NavigationCancel, '/lazyFalse/loaded'],
+               [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
                [NavigationEnd, '/blank']
              ]);
            })));
@@ -1961,6 +2029,7 @@ describe('Integration', () => {
 
                const config: any = router.config;
                const firstConfig = config[1]._loadedConfig;
+
                expect(firstConfig).toBeDefined();
                expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
 
@@ -1979,8 +2048,11 @@ describe('Integration', () => {
 
         extract(url: UrlTree): UrlTree {
           const oldRoot = url.root;
-          const root = new UrlSegmentGroup(
-              oldRoot.segments, {[PRIMARY_OUTLET]: oldRoot.children[PRIMARY_OUTLET]});
+          const children: any = {};
+          if (oldRoot.children[PRIMARY_OUTLET]) {
+            children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
+          }
+          const root = new UrlSegmentGroup(oldRoot.segments, children);
           return new UrlTree(root, url.queryParams, url.fragment);
         }
 
