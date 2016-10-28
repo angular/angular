@@ -7,6 +7,7 @@ export declare class ActivatedRoute {
     fragment: Observable<string>;
     outlet: string;
     params: Observable<Params>;
+    paramsFromRoot: Observable<Params>;
     parent: ActivatedRoute;
     pathFromRoot: ActivatedRoute[];
     queryParams: Observable<Params>;
