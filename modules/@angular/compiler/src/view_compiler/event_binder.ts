@@ -59,8 +59,8 @@ function subscribeToRenderEvents(
     compileElement.view.createMethod.addStmt(
         disposableVar
             .set(o.importExpr(resolveIdentifier(Identifiers.subscribeToRenderElement)).callFn([
-              ViewProperties.renderer, compileElement.renderNode,
-              createInlineArray(eventAndTargetExprs), handleEventClosure(compileElement)
+              o.THIS_EXPR, compileElement.renderNode, createInlineArray(eventAndTargetExprs),
+              handleEventExpr(compileElement)
             ]))
             .toDeclStmt(o.FUNCTION_TYPE, [o.StmtModifier.Private]));
   }
@@ -73,8 +73,8 @@ function subscribeToDirectiveEvents(
   directives.forEach((dirAst) => {
     const dirWrapper = compileElement.directiveWrapperInstance.get(dirAst.directive.type.reference);
     compileElement.view.createMethod.addStmts(DirectiveWrapperExpressions.subscribe(
-        dirAst.directive, dirAst.hostProperties, usedEventNames, dirWrapper,
-        handleEventClosure(compileElement)));
+        dirAst.directive, dirAst.hostProperties, usedEventNames, dirWrapper, o.THIS_EXPR,
+        handleEventExpr(compileElement)));
   });
 }
 
@@ -127,11 +127,9 @@ function generateHandleEventMethod(
       handleEventStmts.finish(), o.BOOL_TYPE));
 }
 
-function handleEventClosure(compileElement: CompileElement) {
+function handleEventExpr(compileElement: CompileElement) {
   const handleEventMethodName = getHandleEventMethodName(compileElement.nodeIndex);
-  return o.THIS_EXPR.callMethod(
-      'eventHandler',
-      [o.THIS_EXPR.prop(handleEventMethodName).callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR])]);
+  return o.THIS_EXPR.callMethod('eventHandler', [o.THIS_EXPR.prop(handleEventMethodName)]);
 }
 
 type EventSummary = {
