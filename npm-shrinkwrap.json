@@ -5814,7 +5814,7 @@
     },
     "lodash": {
       "version": "3.10.1",
-      "from": "lodash@3.10.1",
+      "from": "lodash@>=3.8.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz",
       "dev": true
     },
@@ -7601,12 +7601,6 @@
           "dev": true
         }
       }
-    },
-    "sorted-object": {
-      "version": "1.0.0",
-      "from": "sorted-object@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/sorted-object/-/sorted-object-1.0.0.tgz",
-      "dev": true
     },
     "source-list-map": {
       "version": "0.1.5",
