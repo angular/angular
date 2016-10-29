@@ -13,7 +13,8 @@ describe('MdTabGroup', () => {
       declarations: [
         SimpleTabsTestApp,
         AsyncTabsTestApp,
-        DisabledTabsTestApp
+        DisabledTabsTestApp,
+        TabGroupWithSimpleApi,
       ],
     });
 
@@ -241,6 +242,37 @@ describe('MdTabGroup', () => {
     }));
   });
 
+  describe('with simple api', () => {
+    let fixture: ComponentFixture<TabGroupWithSimpleApi>;
+    let tabGroup: MdTabGroup;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(TabGroupWithSimpleApi);
+      fixture.detectChanges();
+
+      tabGroup =
+          fixture.debugElement.query(By.directive(MdTabGroup)).componentInstance as MdTabGroup;
+    });
+
+    it('should support a tab-group with the simple api', () => {
+      expect(getSelectedLabel(fixture).textContent).toMatch('Junk food');
+      expect(getSelectedContent(fixture).textContent).toMatch('Pizza, fries');
+
+      tabGroup.selectedIndex = 2;
+      fixture.detectChanges();
+
+      expect(getSelectedLabel(fixture).textContent).toMatch('Fruit');
+      expect(getSelectedContent(fixture).textContent).toMatch('Apples, grapes');
+
+      fixture.componentInstance.otherLabel = 'Chips';
+      fixture.componentInstance.otherContent = 'Salt, vinegar';
+      fixture.detectChanges();
+
+      expect(getSelectedLabel(fixture).textContent).toMatch('Chips');
+      expect(getSelectedContent(fixture).textContent).toMatch('Salt, vinegar');
+    });
+  });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have the
    * `md-tab-active` class
@@ -260,10 +292,17 @@ describe('MdTabGroup', () => {
         .query(By.css(`#${tabLabelElement.id}`)).nativeElement;
     expect(tabContentElement.classList.contains('md-tab-active')).toBe(true);
   }
+
+  function getSelectedLabel(fixture: ComponentFixture<any>): HTMLElement {
+    return fixture.nativeElement.querySelector('.md-tab-label.md-tab-active');
+  }
+
+  function getSelectedContent(fixture: ComponentFixture<any>): HTMLElement {
+    return fixture.nativeElement.querySelector('.md-tab-body.md-tab-active');
+  }
 });
 
 @Component({
-  selector: 'test-app',
   template: `
     <md-tab-group class="tab-group"
         [(selectedIndex)]="selectedIndex"
@@ -271,15 +310,15 @@ describe('MdTabGroup', () => {
         (selectChange)="handleSelection($event)">
       <md-tab>
         <template md-tab-label>Tab One</template>
-        <template md-tab-content>Tab one content</template>
+        Tab one content
       </md-tab>
       <md-tab>
         <template md-tab-label>Tab Two</template>
-        <template md-tab-content>Tab two content</template>
+        Tab two content
       </md-tab>
       <md-tab>
         <template md-tab-label>Tab Three</template>
-        <template md-tab-content>Tab three content</template>
+        Tab three content
       </md-tab>
     </md-tab-group>
   `
@@ -302,15 +341,15 @@ class SimpleTabsTestApp {
     <md-tab-group class="tab-group">
       <md-tab>
         <template md-tab-label>Tab One</template>
-        <template md-tab-content>Tab one content</template>
+        Tab one content
       </md-tab>
       <md-tab disabled>
         <template md-tab-label>Tab Two</template>
-        <template md-tab-content>Tab two content</template>
+        Tab two content
       </md-tab>
       <md-tab>
         <template md-tab-label>Tab Three</template>
-        <template md-tab-content>Tab three content</template>
+        Tab three content
       </md-tab>
     </md-tab-group>
   `,
@@ -318,12 +357,11 @@ class SimpleTabsTestApp {
 class DisabledTabsTestApp {}
 
 @Component({
-  selector: 'test-app',
   template: `
     <md-tab-group class="tab-group">
       <md-tab *ngFor="let tab of tabs | async">
         <template md-tab-label>{{ tab.label }}</template>
-        <template md-tab-content>{{ tab.content }}</template>
+        {{ tab.content }}
       </md-tab>
    </md-tab-group>
   `
@@ -342,4 +380,19 @@ class AsyncTabsTestApp {
       requestAnimationFrame(() => observer.next(this._tabs));
     });
   }
+}
+
+
+@Component({
+  template: `
+  <md-tab-group>
+    <md-tab label="Junk food"> Pizza, fries </md-tab>
+    <md-tab label="Vegetables"> Broccoli, spinach </md-tab>
+    <md-tab [label]="otherLabel"> {{otherContent}} </md-tab>
+  </md-tab-group>
+  `
+})
+class TabGroupWithSimpleApi {
+  otherLabel = 'Fruit';
+  otherContent = 'Apples, grapes';
 }

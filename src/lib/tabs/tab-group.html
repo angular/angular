@@ -9,7 +9,14 @@
        [class.md-tab-active]="selectedIndex == i"
        [class.md-tab-disabled]="tab.disabled"
        (click)="focusIndex = selectedIndex = i">
-    <template [portalHost]="tab.label"></template>
+
+    <!-- If there is a label template, use it. -->
+    <template [ngIf]="tab.templateLabel">
+      <template [portalHost]="tab.templateLabel"></template>
+    </template>
+
+    <!-- If there is not a label template, fall back to the text label. -->
+    <template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</template>
   </div>
   <md-ink-bar></md-ink-bar>
 </div>

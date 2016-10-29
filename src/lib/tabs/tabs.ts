@@ -2,7 +2,7 @@ import {
     NgModule,
     ModuleWithProviders,
     ContentChild,
-    Directive,
+    ViewChild,
     Component,
     Input,
     Output,
@@ -10,12 +10,21 @@ import {
     NgZone,
     EventEmitter,
     QueryList,
-    ContentChildren
+    ContentChildren,
+    TemplateRef,
+    ViewContainerRef,
+    OnInit,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {PortalModule, RIGHT_ARROW, LEFT_ARROW, ENTER, coerceBooleanProperty} from '../core';
+import {
+    PortalModule,
+    TemplatePortal,
+    RIGHT_ARROW,
+    LEFT_ARROW,
+    ENTER,
+    coerceBooleanProperty,
+} from '../core';
 import {MdTabLabel} from './tab-label';
-import {MdTabContent} from './tab-content';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdTabNavBar, MdTabLink} from './tab-nav-bar/tab-nav-bar';
 import {MdInkBar} from './ink-bar';
@@ -32,20 +41,35 @@ export class MdTabChangeEvent {
   tab: MdTab;
 }
 
-@Directive({
-  selector: 'md-tab'
+@Component({
+  moduleId: module.id,
+  selector: 'md-tab',
+  templateUrl: 'tab.html',
 })
-export class MdTab {
-  @ContentChild(MdTabLabel) label: MdTabLabel;
-  @ContentChild(MdTabContent) content: MdTabContent;
+export class MdTab implements OnInit {
+  /** Content for the tab label given by <template md-tab-label>. */
+  @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
+
+  /** Template inside the MdTab view that contains an <ng-content>. */
+  @ViewChild(TemplateRef) _content: TemplateRef<any>;
+
+  /** The plain text label for the tab, used when there is no template label. */
+  @Input('label') textLabel: string = '';
+
+  private _contentPortal: TemplatePortal = null;
+
+  constructor(private _viewContainerRef: ViewContainerRef) { }
+
+  ngOnInit() {
+    this._contentPortal = new TemplatePortal(this._content, this._viewContainerRef);
+  }
 
   private _disabled = false;
-  @Input('disabled')
-  set disabled(value: boolean) {
-    this._disabled = coerceBooleanProperty(value);
-  }
-  get disabled(): boolean {
-    return this._disabled;
+  @Input() set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
+  get disabled(): boolean { return this._disabled; }
+
+  get content(): TemplatePortal {
+    return this._contentPortal;
   }
 }
 
@@ -230,8 +254,8 @@ export class MdTabGroup {
 @NgModule({
   imports: [CommonModule, PortalModule],
   // Don't export MdInkBar or MdTabLabelWrapper, as they are internal implementation details.
-  exports: [MdTabGroup, MdTabLabel, MdTabContent, MdTab, MdTabNavBar, MdTabLink],
-  declarations: [MdTabGroup, MdTabLabel, MdTabContent, MdTab, MdInkBar, MdTabLabelWrapper,
+  exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink],
+  declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
     MdTabNavBar, MdTabLink],
 })
 export class MdTabsModule {

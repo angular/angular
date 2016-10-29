@@ -19,13 +19,11 @@
 <md-tab-group class="demo-tab-group">
   <md-tab *ngFor="let tab of tabs; let i = index" [disabled]="i == 1">
     <template md-tab-label>{{tab.label}}</template>
-    <template md-tab-content>
-      {{tab.content}}
-      <br>
-      <br>
-      <br>
-      <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
-    </template>
+    {{tab.content}}
+    <br>
+    <br>
+    <br>
+    <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
   </md-tab>
 </md-tab-group>
 
@@ -35,12 +33,21 @@
 <md-tab-group class="demo-tab-group">
   <md-tab *ngFor="let tab of asyncTabs | async; let i = index" [disabled]="i == 1">
     <template md-tab-label>{{tab.label}}</template>
-    <template md-tab-content>
-      {{tab.content}}
-      <br>
-      <br>
-      <br>
-      <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
-    </template>
+    {{tab.content}}
+    <br>
+    <br>
+    <br>
+    <md-input placeholder="Tab Label" [(ngModel)]="tab.label"></md-input>
+  </md-tab>
+</md-tab-group>
+
+<!-- Simple tabs api -->
+<h1>Tabs with simplified api</h1>
+<md-tab-group class="demo-tab-group">
+  <md-tab label="Earth">
+    This tab is about the Earth!
+  </md-tab>
+  <md-tab label="Fire">
+    This tab is about combustion!
   </md-tab>
 </md-tab-group>

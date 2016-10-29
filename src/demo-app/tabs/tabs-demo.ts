@@ -11,16 +11,16 @@ import {Observable} from 'rxjs/Observable';
 })
 export class TabsDemo {
   tabLinks = [
-    { label: 'Sun', link: 'sunny-tab'},
-    { label: 'Rain', link: 'rainy-tab'},
-    { label: 'Fog', link: 'foggy-tab'},
+    {label: 'Sun', link: 'sunny-tab'},
+    {label: 'Rain', link: 'rainy-tab'},
+    {label: 'Fog', link: 'foggy-tab'},
   ];
   activeLinkIndex = 0;
 
   tabs = [
-    { label: 'Tab One', content: 'This is the body of the first tab' },
-    { label: 'Tab Two', content: 'This is the body of the second tab' },
-    { label: 'Tab Three', content: 'This is the body of the third tab' },
+    {label: 'Tab One', content: 'This is the body of the first tab'},
+    {label: 'Tab Two', content: 'This is the body of the second tab'},
+    {label: 'Tab Three', content: 'This is the body of the third tab'},
   ];
 
   asyncTabs: Observable<any>;
