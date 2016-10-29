@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {digestMessage, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
+import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
 
 export function main() {
@@ -403,12 +402,12 @@ function fakeTranslate(
   const i18nMsgMap: {[id: string]: html.Node[]} = {};
 
   messages.forEach(message => {
-    const id = digestMessage(message);
+    const id = digest(message);
     const text = serializeI18nNodes(message.nodes).join('');
     i18nMsgMap[id] = [new html.Text(`**${text}**`, null)];
   });
 
-  const translations = new TranslationBundle(i18nMsgMap);
+  const translations = new TranslationBundle(i18nMsgMap, digest);
 
   const translatedNodes =
       mergeTranslations(

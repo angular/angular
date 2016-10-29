@@ -12,14 +12,13 @@ export class Message {
   /**
    * @param nodes message AST
    * @param placeholders maps placeholder names to static content
-   * @param placeholderToMsgIds maps placeholder names to translatable message IDs (used for ICU
-   *                            messages)
+   * @param placeholderToMessage maps placeholder names to messages (used for nested ICU messages)
    * @param meaning
    * @param description
    */
   constructor(
-      public nodes: Node[], public placeholders: {[name: string]: string},
-      public placeholderToMsgIds: {[name: string]: string}, public meaning: string,
+      public nodes: Node[], public placeholders: {[phName: string]: string},
+      public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string) {}
 }
 

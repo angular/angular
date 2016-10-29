@@ -12,7 +12,7 @@ import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
-import {digestMessage} from './digest';
+import {digest} from './digest';
 
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
@@ -35,7 +35,7 @@ class _I18nVisitor implements html.Visitor {
   private _icuDepth: number;
   private _placeholderRegistry: PlaceholderRegistry;
   private _placeholderToContent: {[name: string]: string};
-  private _placeholderToIds: {[name: string]: string};
+  private _placeholderToMessage: {[name: string]: i18n.Message};
 
   constructor(
       private _expressionParser: ExpressionParser,
@@ -46,12 +46,12 @@ class _I18nVisitor implements html.Visitor {
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
-    this._placeholderToIds = {};
+    this._placeholderToMessage = {};
 
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
 
     return new i18n.Message(
-        i18nodes, this._placeholderToContent, this._placeholderToIds, meaning, description);
+        i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description);
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
@@ -110,7 +110,7 @@ class _I18nVisitor implements html.Visitor {
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
     const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
-    this._placeholderToIds[phName] = digestMessage(visitor.toI18nMessage([icu], '', ''));
+    this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '');
     return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
   }
 

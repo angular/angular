@@ -303,6 +303,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   importIntoDoc(node: Node): any { return document.importNode(this.templateAwareRoot(node), true); }
   adoptNode(node: Node): any { return document.adoptNode(node); }
   getHref(el: Element): string { return (<any>el).href; }
+
   getEventKey(event: any): string {
     let key = event.key;
     if (isBlank(key)) {

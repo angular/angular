@@ -15,7 +15,8 @@ import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToIds, extractPlaceholders} from './serializer';
+import {Serializer, extractPlaceholderToMessage, extractPlaceholders} from './serializer';
+import {digest} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
@@ -24,7 +25,7 @@ const _PLACEHOLDER_TAG = 'ph';
 export class Xtb implements Serializer {
   constructor(private _htmlParser: HtmlParser, private _interpolationConfig: InterpolationConfig) {}
 
-  write(messageMap: {[id: string]: i18n.Message}): string { throw new Error('Unsupported'); }
+  write(messages: i18n.Message[]): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: ml.Node[]} {
     // Parse the xtb file into xml nodes
@@ -35,7 +36,7 @@ export class Xtb implements Serializer {
     }
 
     // Replace the placeholders, messages are now string
-    const {messages, errors} = new _Visitor().parse(result.rootNodes, messageBundle);
+    const {messages, errors} = new _Visitor(this).parse(result.rootNodes, messageBundle);
 
     if (errors.length) {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
@@ -46,10 +47,10 @@ export class Xtb implements Serializer {
     const messageMap: {[id: string]: ml.Node[]} = {};
     const parseErrors: ParseError[] = [];
 
-    Object.keys(messages).forEach((id) => {
-      const res = this._htmlParser.parse(messages[id], url, true, this._interpolationConfig);
+    Object.keys(messages).forEach((msgId) => {
+      const res = this._htmlParser.parse(messages[msgId], url, true, this._interpolationConfig);
       parseErrors.push(...res.errors);
-      messageMap[id] = res.rootNodes;
+      messageMap[msgId] = res.rootNodes;
     });
 
     if (parseErrors.length) {
@@ -57,6 +58,11 @@ export class Xtb implements Serializer {
     }
 
     return messageMap;
+  }
+
+  digest(message: i18n.Message): string {
+    // we must use the same digest as xmb
+    return digest(message);
   }
 }
 
@@ -66,11 +72,14 @@ class _Visitor implements ml.Visitor {
   private _bundleDepth: number;
   private _translationDepth: number;
   private _errors: I18nError[];
-  private _placeholders: {[name: string]: string};
-  private _placeholderToIds: {[name: string]: string};
+  private _placeholders: {[phName: string]: string};
+  private _placeholderToMessage: {[phName: string]: i18n.Message};
+
+  constructor(private _serializer: Serializer) {}
 
   parse(nodes: ml.Node[], messageBundle: MessageBundle):
       {messages: {[k: string]: string}, errors: I18nError[]} {
+    // Tuple [<message id>, [ml nodes]]
     this._messageNodes = [];
     this._translatedMessages = {};
     this._bundleDepth = 0;
@@ -80,9 +89,10 @@ class _Visitor implements ml.Visitor {
     // Find all messages
     ml.visitAll(this, nodes, null);
 
-    const messageMap = messageBundle.getMessageMap();
-    const placeholders = extractPlaceholders(messageBundle);
-    const placeholderToIds = extractPlaceholderToIds(messageBundle);
+    const messageMap: {[msgId: string]: i18n.Message} = {};
+    messageBundle.getMessages().forEach(m => messageMap[this._serializer.digest(m)] = m);
+    const placeholdersByMsgId = extractPlaceholders(messageMap);
+    const placeholderToMessageByMsgId = extractPlaceholderToMessage(messageMap);
 
     this._messageNodes
         .filter(message => {
@@ -94,22 +104,23 @@ class _Visitor implements ml.Visitor {
           // we do not need to take into account the `placeholderToMsgIds` of the referenced
           // messages, those would always be empty
           // TODO(vicb): overkill - create 2 buckets and [...woDeps, ...wDeps].process()
-          if (Object.keys(messageMap[a[0]].placeholderToMsgIds).length == 0) {
+          if (Object.keys(messageMap[a[0]].placeholderToMessage).length == 0) {
             return -1;
           }
 
-          if (Object.keys(messageMap[b[0]].placeholderToMsgIds).length == 0) {
+          if (Object.keys(messageMap[b[0]].placeholderToMessage).length == 0) {
             return 1;
           }
 
           return 0;
         })
         .forEach(message => {
-          const id = message[0];
-          this._placeholders = placeholders[id] || {};
-          this._placeholderToIds = placeholderToIds[id] || {};
+          const msgId = message[0];
+          this._placeholders = placeholdersByMsgId[msgId] || {};
+          this._placeholderToMessage = placeholderToMessageByMsgId[msgId] || {};
+
           // TODO(vicb): make sure there is no `_TRANSLATIONS_TAG` nor `_TRANSLATION_TAG`
-          this._translatedMessages[id] = ml.visitAll(this, message[1]).join('');
+          this._translatedMessages[msgId] = ml.visitAll(this, message[1]).join('');
         });
 
     return {messages: this._translatedMessages, errors: this._errors};
@@ -149,18 +160,20 @@ class _Visitor implements ml.Visitor {
         if (!nameAttr) {
           this._addError(element, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
         } else {
-          const name = nameAttr.value;
-          if (this._placeholders.hasOwnProperty(name)) {
-            return this._placeholders[name];
+          const phName = nameAttr.value;
+          if (this._placeholders.hasOwnProperty(phName)) {
+            return this._placeholders[phName];
           }
-          if (this._placeholderToIds.hasOwnProperty(name) &&
-              this._translatedMessages.hasOwnProperty(this._placeholderToIds[name])) {
-            return this._translatedMessages[this._placeholderToIds[name]];
+          if (this._placeholderToMessage.hasOwnProperty(phName)) {
+            const refMessageId = this._serializer.digest(this._placeholderToMessage[phName]);
+            if (this._translatedMessages.hasOwnProperty(refMessageId)) {
+              return this._translatedMessages[refMessageId];
+            }
           }
           // TODO(vicb): better error message for when
-          // !this._translatedMessages.hasOwnProperty(this._placeholderToIds[name])
+          // !this._translatedMessages.hasOwnProperty(refMessageId)
           this._addError(
-              element, `The placeholder "${name}" does not exists in the source message`);
+              element, `The placeholder "${phName}" does not exists in the source message`);
         }
         break;
 

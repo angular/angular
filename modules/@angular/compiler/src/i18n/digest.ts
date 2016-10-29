@@ -8,8 +8,12 @@
 
 import * as i18n from './i18n_ast';
 
-export function digestMessage(message: i18n.Message): string {
+export function digest(message: i18n.Message): string {
   return sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+}
+
+export function decimalDigest(message: i18n.Message): string {
+  return fingerprint(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
 }
 
 /**
