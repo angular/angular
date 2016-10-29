@@ -8050,49 +8050,27 @@
       }
     },
     "tslint": {
-      "version": "3.15.0-dev.0",
-      "from": "tslint@next",
-      "resolved": "https://registry.npmjs.org/tslint/-/tslint-3.15.0-dev.0.tgz",
+      "version": "3.15.1",
+      "from": "tslint@>=3.6.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/tslint/-/tslint-3.15.1.tgz",
       "dev": true,
       "dependencies": {
-        "findup-sync": {
-          "version": "0.3.0",
-          "from": "findup-sync@>=0.3.0 <0.4.0",
-          "resolved": "https://registry.npmjs.org/findup-sync/-/findup-sync-0.3.0.tgz",
-          "dev": true,
-          "dependencies": {
-            "glob": {
-              "version": "5.0.15",
-              "from": "glob@>=5.0.0 <5.1.0",
-              "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz",
-              "dev": true
-            }
-          }
-        },
         "glob": {
-          "version": "7.0.6",
+          "version": "7.1.1",
           "from": "glob@>=7.0.3 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.6.tgz",
-          "dev": true,
-          "dependencies": {
-            "minimatch": {
-              "version": "3.0.3",
-              "from": "minimatch@>=3.0.2 <4.0.0",
-              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
-              "dev": true
-            }
-          }
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
+          "dev": true
+        },
+        "minimatch": {
+          "version": "3.0.3",
+          "from": "minimatch@>=3.0.2 <4.0.0",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
+          "dev": true
         },
         "resolve": {
           "version": "1.1.7",
           "from": "resolve@>=1.1.7 <2.0.0",
           "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.7.tgz",
-          "dev": true
-        },
-        "underscore.string": {
-          "version": "3.3.4",
-          "from": "underscore.string@>=3.3.4 <4.0.0",
-          "resolved": "https://registry.npmjs.org/underscore.string/-/underscore.string-3.3.4.tgz",
           "dev": true
         }
       }
@@ -8409,33 +8387,7 @@
       "version": "0.14.1",
       "from": "vrsource-tslint-rules@latest",
       "resolved": "https://registry.npmjs.org/vrsource-tslint-rules/-/vrsource-tslint-rules-0.14.1.tgz",
-      "dev": true,
-      "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "from": "glob@>=7.0.3 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.3",
-          "from": "minimatch@>=3.0.2 <4.0.0",
-          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz",
-          "dev": true
-        },
-        "resolve": {
-          "version": "1.1.7",
-          "from": "resolve@>=1.1.7 <2.0.0",
-          "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.7.tgz",
-          "dev": true
-        },
-        "tslint": {
-          "version": "3.15.1",
-          "from": "tslint@>=3.6.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/tslint/-/tslint-3.15.1.tgz",
-          "dev": true
-        }
-      }
+      "dev": true
     },
     "watchpack": {
       "version": "0.2.9",
