@@ -5522,35 +5522,19 @@
       }
     },
     "tslint": {
-      "version": "3.15.0-dev.0",
+      "version": "3.15.1",
       "dev": true,
       "dependencies": {
-        "findup-sync": {
-          "version": "0.3.0",
-          "dev": true,
-          "dependencies": {
-            "glob": {
-              "version": "5.0.15",
-              "dev": true
-            }
-          }
-        },
         "glob": {
-          "version": "7.0.6",
-          "dev": true,
-          "dependencies": {
-            "minimatch": {
-              "version": "3.0.3",
-              "dev": true
-            }
-          }
+          "version": "7.1.1",
+          "dev": true
+        },
+        "minimatch": {
+          "version": "3.0.3",
+          "dev": true
         },
         "resolve": {
           "version": "1.1.7",
-          "dev": true
-        },
-        "underscore.string": {
-          "version": "3.3.4",
           "dev": true
         }
       }
@@ -5769,25 +5753,7 @@
     },
     "vrsource-tslint-rules": {
       "version": "0.14.1",
-      "dev": true,
-      "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.3",
-          "dev": true
-        },
-        "resolve": {
-          "version": "1.1.7",
-          "dev": true
-        },
-        "tslint": {
-          "version": "3.15.1",
-          "dev": true
-        }
-      }
+      "dev": true
     },
     "watchpack": {
       "version": "0.2.9",

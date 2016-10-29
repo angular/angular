@@ -78,7 +78,7 @@
     "systemjs": "0.18.10",
     "ts-api-guardian": "0.1.4",
     "tsickle": "^0.1.7",
-    "tslint": "^3.15.0-dev.0",
+    "tslint": "^3.15.1",
     "typescript": "^2.0.2",
     "universal-analytics": "^0.3.9",
     "vrsource-tslint-rules": "^0.14.1",
