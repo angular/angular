@@ -1495,8 +1495,12 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
                   {moduleUrl: someModuleUrl, name: 'DirB', reference: {} as Type<any>}),
               template: new CompileTemplateMetadata({ngContentSelectors: []})
             });
-            expect(() => parse('<div>', [dirB, dirA])).toThrowError(`Template parse errors:
-More than one component: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
+            expect(() => parse('<div>', [dirB, dirA]))
+                .toThrowError(
+                    `Template parse errors:\n` +
+                    `More than one component matched on this element.\n` +
+                    `Make sure that only one component's selector can match a given element.\n` +
+                    `Conflicting components: DirB,DirA ("[ERROR ->]<div>"): TestComp@0:0`);
           });
 
           it('should not allow components or element bindings nor dom events on explicit embedded templates',
