@@ -10,7 +10,6 @@ import {HtmlParser} from '../ml_parser/html_parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
 
-import {digestMessage} from './digest';
 import {extractMessages} from './extractor_merger';
 import {Message} from './i18n_ast';
 import {Serializer} from './serializers/serializer';
@@ -19,7 +18,7 @@ import {Serializer} from './serializers/serializer';
  * A container for message extracted from the templates.
  */
 export class MessageBundle {
-  private _messageMap: {[id: string]: Message} = {};
+  private _messages: Message[] = [];
 
   constructor(
       private _htmlParser: HtmlParser, private _implicitTags: string[],
@@ -40,11 +39,10 @@ export class MessageBundle {
       return i18nParserResult.errors;
     }
 
-    i18nParserResult.messages.forEach(
-        (message) => { this._messageMap[digestMessage(message)] = message; });
+    this._messages.push(...i18nParserResult.messages);
   }
 
-  getMessageMap(): {[id: string]: Message} { return this._messageMap; }
+  getMessages(): Message[] { return this._messages; }
 
-  write(serializer: Serializer): string { return serializer.write(this._messageMap); }
+  write(serializer: Serializer): string { return serializer.write(this._messages); }
 }

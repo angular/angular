@@ -50,10 +50,10 @@ export function main(): void {
 <!ATTLIST ph name CDATA #REQUIRED>
 ]>
 <translationbundle>
-  <translation id="28a86c8a00ae573b2bac698d6609316dc7b4a226">rab</translation>
+  <translation id="8841459487341224498">rab</translation>
 </translationbundle>`;
 
-        expect(loadAsText(HTML, XTB)).toEqual({'28a86c8a00ae573b2bac698d6609316dc7b4a226': 'rab'});
+        expect(loadAsText(HTML, XTB)).toEqual({'8841459487341224498': 'rab'});
       });
 
       it('should load XTB files without placeholders', () => {
@@ -61,23 +61,22 @@ export function main(): void {
 
         const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
-  <translation id="28a86c8a00ae573b2bac698d6609316dc7b4a226">rab</translation>
+  <translation id="8841459487341224498">rab</translation>
 </translationbundle>`;
 
-        expect(loadAsText(HTML, XTB)).toEqual({'28a86c8a00ae573b2bac698d6609316dc7b4a226': 'rab'});
+        expect(loadAsText(HTML, XTB)).toEqual({'8841459487341224498': 'rab'});
       });
+
 
       it('should load XTB files with placeholders', () => {
         const HTML = `<div i18n><p>bar</p></div>`;
 
         const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
-  <translation id="7de4d8ff1e42b7b31da6204074818236a9a5317f"><ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/></translation>
+  <translation id="8877975308926375834"><ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/></translation>
 </translationbundle>`;
 
-        expect(loadAsText(HTML, XTB)).toEqual({
-          '7de4d8ff1e42b7b31da6204074818236a9a5317f': '<p>rab</p>'
-        });
+        expect(loadAsText(HTML, XTB)).toEqual({'8877975308926375834': '<p>rab</p>'});
       });
 
       it('should replace ICU placeholders with their translations', () => {
@@ -85,13 +84,13 @@ export function main(): void {
 
         const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
-  <translation id="eb404e202fed4846e25e7d9ac1fcb719fe4da257">*<ph name="ICU"/>*</translation>
-  <translation id="fc92b9b781194a02ab773129c8c5a7fc0735efd7">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
+  <translation id="1430521728694081603">*<ph name="ICU"/>*</translation>
+  <translation id="4004755025589356097">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
 </translationbundle>`;
 
         expect(loadAsText(HTML, XTB)).toEqual({
-          'eb404e202fed4846e25e7d9ac1fcb719fe4da257': `*{ count, plural, =1 {<p>rab</p>}}*`,
-          'fc92b9b781194a02ab773129c8c5a7fc0735efd7': `{ count, plural, =1 {<p>rab</p>}}`,
+          '1430521728694081603': `*{ count, plural, =1 {<p>rab</p>}}*`,
+          '4004755025589356097': `{ count, plural, =1 {<p>rab</p>}}`,
         });
       });
 
@@ -104,21 +103,19 @@ export function main(): void {
 
         const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
-  <translation id="7103b4b13b616270a0044efade97d8b4f96f2ca6"><ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof</translation>
-  <translation id="fc92b9b781194a02ab773129c8c5a7fc0735efd7">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
-  <translation id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23">oof</translation>
-  <translation id="8fb569d3dd83e92eff2551b24f5290d3035ce61b">{ count, plural, =1 {{ sex, select, other {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}} }}</translation>
+  <translation id="8281795707202401639"><ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof</translation>
+  <translation id="4004755025589356097">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
+  <translation id="130772889486467622">oof</translation>
+  <translation id="4244993204427636474">{ count, plural, =1 {{ sex, gender, male {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}} }}</translation>
 </translationbundle>`;
 
         expect(loadAsText(HTML, XTB)).toEqual({
-          '7103b4b13b616270a0044efade97d8b4f96f2ca6': `{{ a + b }}<b>rab</b> oof`,
-          'fc92b9b781194a02ab773129c8c5a7fc0735efd7': `{ count, plural, =1 {<p>rab</p>}}`,
-          'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': `oof`,
-          '8fb569d3dd83e92eff2551b24f5290d3035ce61b':
-              `{ count, plural, =1 {{ sex, select, other {<p>rab</p>}} }}`,
+          '8281795707202401639': `{{ a + b }}<b>rab</b> oof`,
+          '4004755025589356097': `{ count, plural, =1 {<p>rab</p>}}`,
+          '130772889486467622': `oof`,
+          '4244993204427636474': `{ count, plural, =1 {{ sex, gender, male {<p>rab</p>}} }}`,
         });
       });
-
     });
 
     describe('errors', () => {
@@ -145,7 +142,7 @@ export function main(): void {
         const HTML = '<div i18n>give me a message</div>';
 
         const XTB = `<translationbundle>
-  <translation id="8de97c6a35252d9409dcaca0b8171c952740b28c"><ph /></translation>
+  <translation id="1186013544048295927"><ph /></translation>
 </translationbundle>`;
 
         expect(() => { loadAsText(HTML, XTB); }).toThrowError(/<ph> misses the "name" attribute/);
@@ -156,7 +153,7 @@ export function main(): void {
 
         const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
-  <translation id="28a86c8a00ae573b2bac698d6609316dc7b4a226"><ph name="UNKNOWN"/></translation>
+  <translation id="8841459487341224498"><ph name="UNKNOWN"/></translation>
 </translationbundle>`;
 
         expect(() => {
@@ -170,7 +167,7 @@ export function main(): void {
 
       const XTB = `<?xml version="1.0" encoding="UTF-8"?>
 <translationbundle>
-  <translation id="7de4d8ff1e42b7b31da6204074818236a9a5317f">rab<ph name="CLOSE_PARAGRAPH"/></translation>
+  <translation id="8877975308926375834">rab<ph name="CLOSE_PARAGRAPH"/></translation>
 </translationbundle>`;
 
       expect(() => {
@@ -188,6 +185,6 @@ export function main(): void {
     });
 
     it('should throw when trying to save an xtb file',
-       () => { expect(() => { serializer.write({}); }).toThrowError(/Unsupported/); });
+       () => { expect(() => { serializer.write([]); }).toThrowError(/Unsupported/); });
   });
 }

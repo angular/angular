@@ -40,7 +40,9 @@ const TAG_TO_PLACEHOLDER_NAMES: {[k: string]: string} = {
 };
 
 /**
- * Creates unique names for placeholder with different content
+ * Creates unique names for placeholder with different content.
+ *
+ * Returns the same placeholder name when the content is identical.
  *
  * @internal
  */
@@ -105,18 +107,8 @@ export class PlaceholderRegistry {
   private _hashClosingTag(tag: string): string { return this._hashTag(`/${tag}`, {}, false); }
 
   private _generateUniqueName(base: string): string {
-    let name = base;
-    let next = this._placeHolderNameCounts[name];
-
-    if (!next) {
-      next = 1;
-    } else {
-      name += `_${next}`;
-      next++;
-    }
-
-    this._placeHolderNameCounts[base] = next;
-
-    return name;
+    const next = this._placeHolderNameCounts[base];
+    this._placeHolderNameCounts[base] = next ? next + 1 : 1;
+    return next ? `${base}_${next}` : base;
   }
 }

@@ -12,11 +12,12 @@ import {HtmlParser} from '../../ml_parser/html_parser';
 import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import {XmlParser} from '../../ml_parser/xml_parser';
 import {ParseError} from '../../parse_util';
+import {digest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToIds, extractPlaceholders} from './serializer';
+import {Serializer, extractPlaceholderToMessage, extractPlaceholders} from './serializer';
 import * as xml from './xml_helper';
 
 const _VERSION = '1.2';
@@ -33,15 +34,14 @@ const _UNIT_TAG = 'trans-unit';
 export class Xliff implements Serializer {
   constructor(private _htmlParser: HtmlParser, private _interpolationConfig: InterpolationConfig) {}
 
-  write(messageMap: {[id: string]: i18n.Message}): string {
+  write(messages: i18n.Message[]): string {
     const visitor = new _WriteVisitor();
 
     const transUnits: xml.Node[] = [];
 
-    Object.keys(messageMap).forEach((id) => {
-      const message = messageMap[id];
+    messages.forEach(message => {
 
-      const transUnit = new xml.Tag(_UNIT_TAG, {id: id, datatype: 'html'});
+      const transUnit = new xml.Tag(_UNIT_TAG, {id: this.digest(message), datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
           new xml.CR(8), new xml.Tag(_TARGET_TAG));
@@ -85,7 +85,7 @@ export class Xliff implements Serializer {
     }
 
     // Replace the placeholders, messages are now string
-    const {messages, errors} = new _LoadVisitor().parse(result.rootNodes, messageBundle);
+    const {messages, errors} = new _LoadVisitor(this).parse(result.rootNodes, messageBundle);
 
     if (errors.length) {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
@@ -108,6 +108,8 @@ export class Xliff implements Serializer {
 
     return messageMap;
   }
+
+  digest(message: i18n.Message): string { return digest(message); }
 }
 
 class _WriteVisitor implements i18n.Visitor {
@@ -174,8 +176,10 @@ class _LoadVisitor implements ml.Visitor {
   private _msgId: string;
   private _target: ml.Node[];
   private _errors: I18nError[];
-  private _placeholders: {[name: string]: string};
-  private _placeholderToIds: {[name: string]: string};
+  private _placeholders: {[phName: string]: string};
+  private _placeholderToMessage: {[phName: string]: i18n.Message};
+
+  constructor(private _serializer: Serializer) {}
 
   parse(nodes: ml.Node[], messageBundle: MessageBundle):
       {messages: {[k: string]: string}, errors: I18nError[]} {
@@ -188,9 +192,10 @@ class _LoadVisitor implements ml.Visitor {
     // Find all messages
     ml.visitAll(this, nodes, null);
 
-    const messageMap = messageBundle.getMessageMap();
-    const placeholders = extractPlaceholders(messageBundle);
-    const placeholderToIds = extractPlaceholderToIds(messageBundle);
+    const messageMap: {[msgId: string]: i18n.Message} = {};
+    messageBundle.getMessages().forEach(m => messageMap[this._serializer.digest(m)] = m);
+    const placeholdersByMsgId = extractPlaceholders(messageMap);
+    const placeholderToMessageByMsgId = extractPlaceholderToMessage(messageMap);
 
     this._messageNodes
         .filter(message => {
@@ -198,26 +203,26 @@ class _LoadVisitor implements ml.Visitor {
           return messageMap.hasOwnProperty(message[0]);
         })
         .sort((a, b) => {
-          // Because there could be no ICU placeholders inside an ICU message,
+          // Because there could be no ICU placeholdersByMsgId inside an ICU message,
           // we do not need to take into account the `placeholderToMsgIds` of the referenced
           // messages, those would always be empty
           // TODO(vicb): overkill - create 2 buckets and [...woDeps, ...wDeps].process()
-          if (Object.keys(messageMap[a[0]].placeholderToMsgIds).length == 0) {
+          if (Object.keys(messageMap[a[0]].placeholderToMessage).length == 0) {
             return -1;
           }
 
-          if (Object.keys(messageMap[b[0]].placeholderToMsgIds).length == 0) {
+          if (Object.keys(messageMap[b[0]].placeholderToMessage).length == 0) {
             return 1;
           }
 
           return 0;
         })
         .forEach(message => {
-          const id = message[0];
-          this._placeholders = placeholders[id] || {};
-          this._placeholderToIds = placeholderToIds[id] || {};
+          const msgId = message[0];
+          this._placeholders = placeholdersByMsgId[msgId] || {};
+          this._placeholderToMessage = placeholderToMessageByMsgId[msgId] || {};
           // TODO(vicb): make sure there is no `_TRANSLATIONS_TAG` nor `_TRANSLATION_TAG`
-          this._translatedMessages[id] = ml.visitAll(this, message[1]).join('');
+          this._translatedMessages[msgId] = ml.visitAll(this, message[1]).join('');
         });
 
     return {messages: this._translatedMessages, errors: this._errors};
@@ -252,17 +257,20 @@ class _LoadVisitor implements ml.Visitor {
         if (!idAttr) {
           this._addError(element, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
         } else {
-          const id = idAttr.value;
-          if (this._placeholders.hasOwnProperty(id)) {
-            return this._placeholders[id];
+          const phName = idAttr.value;
+          if (this._placeholders.hasOwnProperty(phName)) {
+            return this._placeholders[phName];
           }
-          if (this._placeholderToIds.hasOwnProperty(id) &&
-              this._translatedMessages.hasOwnProperty(this._placeholderToIds[id])) {
-            return this._translatedMessages[this._placeholderToIds[id]];
+          if (this._placeholderToMessage.hasOwnProperty(phName)) {
+            const refMsgId = this._serializer.digest(this._placeholderToMessage[phName]);
+            if (this._translatedMessages.hasOwnProperty(refMsgId)) {
+              return this._translatedMessages[refMsgId];
+            }
           }
           // TODO(vicb): better error message for when
           // !this._translatedMessages.hasOwnProperty(this._placeholderToIds[id])
-          this._addError(element, `The placeholder "${id}" does not exists in the source message`);
+          this._addError(
+              element, `The placeholder "${phName}" does not exists in the source message`);
         }
         break;
 

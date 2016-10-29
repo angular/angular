@@ -10,7 +10,7 @@ import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
 
-import {digestMessage} from './digest';
+import {digest} from './digest';
 import * as i18n from './i18n_ast';
 import {createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
@@ -214,8 +214,8 @@ class _Visitor implements html.Visitor {
     // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
     // message
     const i18nAttr = _getI18nAttr(el);
-    const isImplicit = this._implicitTags.some((tag: string): boolean => el.name === tag) &&
-        !this._inIcu && !this._isInTranslatableSection;
+    const isImplicit = this._implicitTags.some(tag => el.name === tag) && !this._inIcu &&
+        !this._isInTranslatableSection;
     const isTopLevelImplicit = !wasInImplicitNode && isImplicit;
     this._inImplicitNode = this._inImplicitNode || isImplicit;
 
@@ -348,14 +348,14 @@ class _Visitor implements html.Visitor {
   // no-op when called in extraction mode (returns [])
   private _translateMessage(el: html.Node, message: i18n.Message): html.Node[] {
     if (message && this._mode === _VisitorMode.Merge) {
-      const id = digestMessage(message);
-      const nodes = this._translations.get(id);
+      const nodes = this._translations.get(message);
 
       if (nodes) {
         return nodes;
       }
 
-      this._reportError(el, `Translation unavailable for message id="${id}"`);
+      this._reportError(
+          el, `Translation unavailable for message id="${this._translations.digest(message)}"`);
     }
 
     return [];
@@ -384,19 +384,20 @@ class _Visitor implements html.Visitor {
       if (attr.value && attr.value != '' && i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
-        const id = digestMessage(message);
-        const nodes = this._translations.get(id);
+        const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes[0] instanceof html.Text) {
             const value = (nodes[0] as html.Text).value;
             translatedAttributes.push(new html.Attribute(attr.name, value, attr.sourceSpan));
           } else {
             this._reportError(
-                el, `Unexpected translation for attribute "${attr.name}" (id="${id}")`);
+                el,
+                `Unexpected translation for attribute "${attr.name}" (id="${this._translations.digest(message)}")`);
           }
         } else {
           this._reportError(
-              el, `Translation unavailable for attribute "${attr.name}" (id="${id}")`);
+              el,
+              `Translation unavailable for attribute "${attr.name}" (id="${this._translations.digest(message)}")`);
         }
       } else {
         translatedAttributes.push(attr);

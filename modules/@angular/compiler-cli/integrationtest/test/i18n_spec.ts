@@ -34,9 +34,9 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="63a85808f03b8181e36a952e0fa38202c2304862">other-3rdP-component</msg>
-  <msg id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" desc="desc" meaning="meaning">translate me</msg>
-  <msg id="65cc4ab3b4c438e07c89be2b677d08369fb62da2">Welcome</msg>
+  <msg id="252798779920123642">other-3rdP-component</msg>
+  <msg id="7281825156779575080" desc="desc" meaning="meaning">translate me</msg>
+  <msg id="1325493959242906696">Welcome</msg>
 </messagebundle>
 `;
 
@@ -79,5 +79,4 @@ describe('template i18n extraction output', () => {
     const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
     expect(xlf).toEqual(EXPECTED_XLIFF);
   });
-
 });

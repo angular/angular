@@ -8,6 +8,7 @@
 
 import {ListWrapper} from '../../facade/collection';
 import * as html from '../../ml_parser/ast';
+import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 
@@ -40,13 +41,12 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb implements Serializer {
-  write(messageMap: {[k: string]: i18n.Message}): string {
+  write(messages: i18n.Message[]): string {
     const visitor = new _Visitor();
     const rootNode = new xml.Tag(_MESSAGES_TAG);
 
-    Object.keys(messageMap).forEach((id) => {
-      const message = messageMap[id];
-      const attrs: {[k: string]: string} = {id};
+    messages.forEach(message => {
+      const attrs: {[k: string]: string} = {id: this.digest(message)};
 
       if (message.description) {
         attrs['desc'] = message.description;
@@ -75,6 +75,8 @@ export class Xmb implements Serializer {
   load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: html.Node[]} {
     throw new Error('Unsupported');
   }
+
+  digest(message: i18n.Message): string { return digest(message); }
 }
 
 class _Visitor implements i18n.Visitor {
@@ -123,4 +125,8 @@ class _Visitor implements i18n.Visitor {
   serialize(nodes: i18n.Node[]): xml.Node[] {
     return ListWrapper.flatten(nodes.map(node => node.visit(this)));
   }
+}
+
+export function digest(message: i18n.Message): string {
+  return decimalDigest(message);
 }
