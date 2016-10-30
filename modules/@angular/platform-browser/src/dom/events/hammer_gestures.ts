@@ -8,8 +8,6 @@
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
 
-import {isPresent} from '../../facade/lang';
-
 import {HammerGesturesPluginCommon} from './hammer_common';
 
 /**
@@ -35,7 +33,7 @@ export class HammerGestureConfig {
   overrides: {[key: string]: Object} = {};
 
   buildHammer(element: HTMLElement): HammerInstance {
-    var mc = new Hammer(element);
+    const mc = new Hammer(element);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -55,7 +53,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   supports(eventName: string): boolean {
     if (!super.supports(eventName) && !this.isCustomEvent(eventName)) return false;
 
-    if (!isPresent((window as any /** TODO #???? */)['Hammer'])) {
+    if (!(window as any).Hammer) {
       throw new Error(`Hammer.js is not loaded, can not bind ${eventName} event`);
     }
 
@@ -63,17 +61,17 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var zone = this.manager.getZone();
+    const zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
-      var mc = this._config.buildHammer(element);
-      var callback = function(eventObj: any /** TODO #???? */) {
+      const mc = this._config.buildHammer(element);
+      const callback = function(eventObj: HammerInput) {
         zone.runGuarded(function() { handler(eventObj); });
       };
       mc.on(eventName, callback);
-      return () => { mc.off(eventName, callback); };
+      return () => mc.off(eventName, callback);
     });
   }
 
