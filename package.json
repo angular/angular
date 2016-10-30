@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/angularjs": "^1.5.13-alpha",
     "@types/fs-extra": "0.0.22-alpha",
-    "@types/hammerjs": "^2.0.22-alpha",
+    "@types/hammerjs": "^2.0.33",
     "@types/jasmine": "^2.2.22-alpha",
     "@types/node": "^4.0.22-alpha",
     "@types/protractor": "^1.5.11-alpha",
@@ -51,6 +51,7 @@
     "gulp-connect": "^2.3.1",
     "gulp-conventional-changelog": "^1.1.0",
     "gulp-tslint": "^6.1.1",
+    "hammerjs": "^2.0.8",
     "incremental-dom": "^0.4.1",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.3.4",
