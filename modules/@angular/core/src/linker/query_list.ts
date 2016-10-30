@@ -8,7 +8,6 @@
 
 import {EventEmitter, Observable} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
-import {getSymbolIterator} from '../facade/lang';
 
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state
@@ -33,66 +32,19 @@ import {getSymbolIterator} from '../facade/lang';
  * ```
  * @stable
  */
-export class QueryList<T>/* implements Iterable<T> */ {
+export class QueryList<T> extends Array<T> {
   private _dirty = true;
-  private _results: Array<T> = [];
   private _emitter = new EventEmitter();
 
   get changes(): Observable<any> { return this._emitter; }
-  get length(): number { return this._results.length; }
-  get first(): T { return this._results[0]; }
-  get last(): T { return this._results[this.length - 1]; }
+  get first(): T { return this[0]; }
+  get last(): T { return this[this.length - 1]; }
 
-  /**
-   * See
-   * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
-   */
-  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] { return this._results.map(fn); }
-
-  /**
-   * See
-   * [Array.filter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
-   */
-  filter(fn: (item: T, index: number, array: T[]) => boolean): T[] {
-    return this._results.filter(fn);
-  }
-
-  /**
-   * See
-   * [Array.find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
-   */
-  find(fn: (item: T, index: number, array: T[]) => boolean): T { return this._results.find(fn); }
-
-  /**
-   * See
-   * [Array.reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
-   */
-  reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U {
-    return this._results.reduce(fn, init);
-  }
-
-  /**
-   * See
-   * [Array.forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
-   */
-  forEach(fn: (item: T, index: number, array: T[]) => void): void { this._results.forEach(fn); }
-
-  /**
-   * See
-   * [Array.some](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
-   */
-  some(fn: (value: T, index: number, array: T[]) => boolean): boolean {
-    return this._results.some(fn);
-  }
-
-  toArray(): T[] { return this._results.slice(); }
-
-  [getSymbolIterator()](): Iterator<T> { return (this._results as any)[getSymbolIterator()](); }
-
-  toString(): string { return this._results.toString(); }
+  toArray(): T[] { return this.slice(); }
 
   reset(res: Array<T|any[]>): void {
-    this._results = ListWrapper.flatten(res);
+    this.length = 0;
+    this.push(...ListWrapper.flatten(res));
     this._dirty = false;
   }
 
