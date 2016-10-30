@@ -15,9 +15,9 @@
       "dev": true
     },
     "@types/hammerjs": {
-      "version": "2.0.22-alpha",
+      "version": "2.0.33",
       "from": "@types/hammerjs@latest",
-      "resolved": "https://registry.npmjs.org/@types/hammerjs/-/hammerjs-2.0.22-alpha.tgz",
+      "resolved": "https://registry.npmjs.org/@types/hammerjs/-/hammerjs-2.0.33.tgz",
       "dev": true
     },
     "@types/jasmine": {
@@ -5064,6 +5064,12 @@
       "version": "1.0.0",
       "from": "gulplog@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/gulplog/-/gulplog-1.0.0.tgz",
+      "dev": true
+    },
+    "hammerjs": {
+      "version": "2.0.8",
+      "from": "hammerjs@latest",
+      "resolved": "https://registry.npmjs.org/hammerjs/-/hammerjs-2.0.8.tgz",
       "dev": true
     },
     "handlebars": {
