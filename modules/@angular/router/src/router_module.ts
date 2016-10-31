@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -267,7 +267,12 @@ export function rootRoute(router: Router): ActivatedRoute {
 
 export function initialRouterNavigation(
     router: Router, ref: ApplicationRef, preloader: RouterPreloader, opts: ExtraOptions) {
-  return () => {
+  return (bootstrappedComponentRef: ComponentRef<any>) => {
+
+    if (bootstrappedComponentRef !== ref.components[0]) {
+      return;
+    }
+
     router.resetRootComponentType(ref.componentTypes[0]);
     preloader.setUpPreloading();
     if (opts.initialNavigation === false) {
