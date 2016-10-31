@@ -7,9 +7,8 @@
  */
 
 import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {getAllDebugNodes} from '@angular/core/src/debug/debug_node';
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, ddescribe, describe, iit, it} from '@angular/core/testing/testing_internal';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -236,6 +235,13 @@ export function main() {
     });
 
     it('should support moving non projected light dom around', () => {
+      let sourceDirective: ManualViewportDirective;
+
+      @Directive({selector: '[manual]'})
+      class ManualViewportDirective {
+        constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
+      }
+
       TestBed.configureTestingModule(
           {declarations: [Empty, ProjectDirective, ManualViewportDirective]});
       TestBed.overrideComponent(MainComp, {
@@ -247,17 +253,6 @@ export function main() {
         }
       });
       const main = TestBed.createComponent(MainComp);
-
-      var sourceDirective: any;
-
-      // We can't use the child nodes to get a hold of this because it's not in the dom
-      // at
-      // all.
-      getAllDebugNodes().forEach((debug) => {
-        if (debug.providerTokens.indexOf(ManualViewportDirective) !== -1) {
-          sourceDirective = debug.injector.get(ManualViewportDirective);
-        }
-      });
 
       var projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(

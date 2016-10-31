@@ -69,29 +69,6 @@ export function getViewFactoryName(
   return `viewFactory_${component.type.name}${embeddedTemplateIndex}`;
 }
 
-export function createFlatArray(expressions: o.Expression[]): o.Expression {
-  var lastNonArrayExpressions: o.Expression[] = [];
-  var result: o.Expression = o.literalArr([]);
-  for (var i = 0; i < expressions.length; i++) {
-    var expr = expressions[i];
-    if (expr.type instanceof o.ArrayType) {
-      if (lastNonArrayExpressions.length > 0) {
-        result =
-            result.callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr(lastNonArrayExpressions)]);
-        lastNonArrayExpressions = [];
-      }
-      result = result.callMethod(o.BuiltinMethod.ConcatArray, [expr]);
-    } else {
-      lastNonArrayExpressions.push(expr);
-    }
-  }
-  if (lastNonArrayExpressions.length > 0) {
-    result =
-        result.callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr(lastNonArrayExpressions)]);
-  }
-  return result;
-}
-
 export function getHandleEventMethodName(elementIndex: number): string {
   return `handleEvent_${elementIndex}`;
 }

@@ -45,7 +45,6 @@ export class ViewConstructorVars {
 
 export class ViewProperties {
   static renderer = o.THIS_EXPR.prop('renderer');
-  static projectableNodes = o.THIS_EXPR.prop('projectableNodes');
   static viewUtils = o.THIS_EXPR.prop('viewUtils');
 }
 
