@@ -573,7 +573,7 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
             [
               view.lastRenderNode,
               o.literalArr(view.nodes.map(node => node.renderNode)),
-              o.literalArr(view.disposables),
+              view.disposables.length ? o.literalArr(view.disposables) : o.NULL_EXPR,
             ])
         .toStmt(),
     new o.ReturnStatement(resultExpr)
