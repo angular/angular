@@ -33,7 +33,6 @@ export abstract class AppView<T> {
   rootNodesOrAppElements: any[];
   allNodes: any[];
   disposables: Function[];
-  subscriptions: any[];
   contentChildren: AppView<any>[] = [];
   viewChildren: AppView<any>[] = [];
   viewContainerElement: AppElement = null;
@@ -98,13 +97,10 @@ export abstract class AppView<T> {
    */
   createInternal(rootSelectorOrNode: string|any): AppElement { return null; }
 
-  init(
-      rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[],
-      subscriptions: any[]) {
+  init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[]) {
     this.rootNodesOrAppElements = rootNodesOrAppElements;
     this.allNodes = allNodes;
     this.disposables = disposables;
-    this.subscriptions = subscriptions;
     if (this.type === ViewType.COMPONENT) {
       // Note: the render nodes have been attached to their host element
       // in the ViewFactory already.
@@ -163,9 +159,6 @@ export abstract class AppView<T> {
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
     for (var i = 0; i < this.disposables.length; i++) {
       this.disposables[i]();
-    }
-    for (var i = 0; i < this.subscriptions.length; i++) {
-      this.subscriptions[i].unsubscribe();
     }
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
