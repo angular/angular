@@ -34,7 +34,6 @@ export abstract class AppView<T> {
   allNodes: any[];
   disposables: Function[];
   contentChildren: AppView<any>[] = [];
-  viewChildren: AppView<any>[] = [];
   viewContainerElement: AppElement = null;
 
   numberOfChecks: number = 0;
@@ -102,9 +101,6 @@ export abstract class AppView<T> {
     this.allNodes = allNodes;
     this.disposables = disposables;
     if (this.type === ViewType.COMPONENT) {
-      // Note: the render nodes have been attached to their host element
-      // in the ViewFactory already.
-      this.declarationAppElement.parentView.viewChildren.push(this);
       this.dirtyParentQueriesInternal();
     }
   }
@@ -142,10 +138,6 @@ export abstract class AppView<T> {
       return;
     }
     var children = this.contentChildren;
-    for (var i = 0; i < children.length; i++) {
-      children[i]._destroyRecurse();
-    }
-    children = this.viewChildren;
     for (var i = 0; i < children.length; i++) {
       children[i]._destroyRecurse();
     }
@@ -214,7 +206,8 @@ export abstract class AppView<T> {
   detectChanges(throwOnChange: boolean): void {
     var s = _scope_check(this.clazz);
     if (this.cdMode === ChangeDetectorStatus.Checked ||
-        this.cdMode === ChangeDetectorStatus.Errored)
+        this.cdMode === ChangeDetectorStatus.Errored ||
+        this.cdMode === ChangeDetectorStatus.Detached)
       return;
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       this.throwDestroyedError('detectChanges');
@@ -231,20 +224,11 @@ export abstract class AppView<T> {
    */
   detectChangesInternal(throwOnChange: boolean): void {
     this.detectContentChildrenChanges(throwOnChange);
-    this.detectViewChildrenChanges(throwOnChange);
   }
 
   detectContentChildrenChanges(throwOnChange: boolean) {
     for (var i = 0; i < this.contentChildren.length; ++i) {
       var child = this.contentChildren[i];
-      if (child.cdMode === ChangeDetectorStatus.Detached) continue;
-      child.detectChanges(throwOnChange);
-    }
-  }
-
-  detectViewChildrenChanges(throwOnChange: boolean) {
-    for (var i = 0; i < this.viewChildren.length; ++i) {
-      var child = this.viewChildren[i];
       if (child.cdMode === ChangeDetectorStatus.Detached) continue;
       child.detectChanges(throwOnChange);
     }

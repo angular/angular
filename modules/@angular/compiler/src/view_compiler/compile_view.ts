@@ -27,6 +27,8 @@ export class CompileView implements NameResolver {
   public viewType: ViewType;
   public viewQueries: Map<any, CompileQuery[]>;
 
+  public viewChildren: o.Expression[] = [];
+
   public nodes: CompileNode[] = [];
   // root nodes or AppElements for ViewContainers
   public rootNodesOrAppElements: o.Expression[] = [];
