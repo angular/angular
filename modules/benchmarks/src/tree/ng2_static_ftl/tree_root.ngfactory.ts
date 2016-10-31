@@ -113,7 +113,7 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
       this._NgIf_0_6.ngIf = currVal_0;
       this._expr_0 = currVal_0;
     }
-    this.detectContentChildrenChanges(throwOnChange);
+    this._appEl_0.detectChangesInNestedViews(throwOnChange);
   }
 }
 export function viewFactory_TreeRootComponent0(
@@ -145,7 +145,6 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
   destroyInternal() { this._TreeComponent0_0_4View.destroyInternal(); }
   detectChangesInternal(throwOnChange: boolean): void {
     this._TreeComponent0_0_4View.updateData(this.parent.context.data);
-    this.detectContentChildrenChanges(throwOnChange);
     this._TreeComponent0_0_4View.detectChangesInternal(throwOnChange);
   }
 }

@@ -473,6 +473,8 @@ function createViewClass(
 
 function generateDestroyMethod(view: CompileView): o.Statement[] {
   const stmts: o.Statement[] = [];
+  view.viewContainerAppElements.forEach(
+      (appElement) => { stmts.push(appElement.callMethod('destroyNestedViews', []).toStmt()); });
   view.viewChildren.forEach(
       (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
   stmts.push(...view.destroyMethod.finish());
@@ -572,9 +574,11 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   }
   stmts.push(...view.animationBindingsMethod.finish());
   stmts.push(...view.detectChangesInInputsMethod.finish());
-  stmts.push(
-      o.THIS_EXPR.callMethod('detectContentChildrenChanges', [DetectChangesVars.throwOnChange])
-          .toStmt());
+  view.viewContainerAppElements.forEach((appElement) => {
+    stmts.push(
+        appElement.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
+            .toStmt());
+  });
   var afterContentStmts = view.updateContentQueriesMethod.finish().concat(
       view.afterContentLifecycleCallbacksMethod.finish());
   if (afterContentStmts.length > 0) {
