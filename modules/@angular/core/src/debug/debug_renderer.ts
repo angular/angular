@@ -60,7 +60,9 @@ export class DebugDomRenderer implements Renderer {
     var debugParent = getDebugNode(parentElement);
     if (isPresent(debugParent) && debugParent instanceof DebugElement) {
       let debugElement = debugParent;
-      nodes.forEach((node) => { debugElement.addChild(getDebugNode(node)); });
+      for (var i = 0; i < nodes.length; i++) {
+        debugElement.addChild(getDebugNode(nodes[i]));
+      }
     }
     this._delegate.projectNodes(parentElement, nodes);
   }
@@ -71,7 +73,9 @@ export class DebugDomRenderer implements Renderer {
       var debugParent = debugNode.parent;
       if (viewRootNodes.length > 0 && isPresent(debugParent)) {
         var debugViewRootNodes: DebugNode[] = [];
-        viewRootNodes.forEach((rootNode) => debugViewRootNodes.push(getDebugNode(rootNode)));
+        for (var i = 0; i < viewRootNodes.length; i++) {
+          debugViewRootNodes.push(getDebugNode(viewRootNodes[i]));
+        }
         debugParent.insertChildrenAfter(debugNode, debugViewRootNodes);
       }
     }
@@ -79,17 +83,19 @@ export class DebugDomRenderer implements Renderer {
   }
 
   detachView(viewRootNodes: any[]) {
-    viewRootNodes.forEach((node) => {
-      var debugNode = getDebugNode(node);
+    for (var i = 0; i < viewRootNodes.length; i++) {
+      var debugNode = getDebugNode(viewRootNodes[i]);
       if (isPresent(debugNode) && isPresent(debugNode.parent)) {
         debugNode.parent.removeChild(debugNode);
       }
-    });
+    }
     this._delegate.detachView(viewRootNodes);
   }
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
-    viewAllNodes.forEach((node) => { removeDebugNodeFromIndex(getDebugNode(node)); });
+    for (var i = 0; i < viewAllNodes.length; i++) {
+      removeDebugNodeFromIndex(getDebugNode(viewAllNodes[i]));
+    }
     this._delegate.destroyView(hostElement, viewAllNodes);
   }
 
