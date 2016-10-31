@@ -162,11 +162,6 @@ export class Identifiers {
     moduleUrl: VIEW_UTILS_MODULE_URL,
     runtime: view_utils.checkBinding
   };
-  static flattenNestedViewRenderNodes: IdentifierSpec = {
-    name: 'flattenNestedViewRenderNodes',
-    moduleUrl: VIEW_UTILS_MODULE_URL,
-    runtime: view_utils.flattenNestedViewRenderNodes
-  };
   static devModeEqual:
       IdentifierSpec = {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: devModeEqual};
   static interpolate: IdentifierSpec = {

@@ -20,7 +20,7 @@ import {ElementInjector} from './element_injector';
 import {ExpressionChangedAfterItHasBeenCheckedError, ViewDestroyedError, ViewWrappedError} from './errors';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
-import {ViewUtils, ensureSlotCount, flattenNestedViewRenderNodes} from './view_utils';
+import {ViewUtils, addToArray} from './view_utils';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -30,14 +30,12 @@ var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
  */
 export abstract class AppView<T> {
   ref: ViewRef_<T>;
-  rootNodesOrAppElements: any[];
+  lastRootNode: any;
   allNodes: any[];
   disposables: Function[];
   viewContainerElement: AppElement = null;
 
   numberOfChecks: number = 0;
-
-  projectableNodes: Array<any|any[]>;
 
   renderer: Renderer;
 
@@ -67,25 +65,9 @@ export abstract class AppView<T> {
 
   get destroyed(): boolean { return this.cdMode === ChangeDetectorStatus.Destroyed; }
 
-  create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
-      AppElement {
+  create(context: T, rootSelectorOrNode: string|any): AppElement {
     this.context = context;
-    var projectableNodes: any[];
-    switch (this.type) {
-      case ViewType.COMPONENT:
-        projectableNodes = ensureSlotCount(givenProjectableNodes, this.componentType.slotCount);
-        break;
-      case ViewType.EMBEDDED:
-        projectableNodes = this.declarationAppElement.parentView.projectableNodes;
-        break;
-      case ViewType.HOST:
-        // Note: Don't ensure the slot count for the projectableNodes as we store
-        // them only for the contained component view (which will later check the slot count...)
-        projectableNodes = givenProjectableNodes;
-        break;
-    }
     this._hasExternalHostElement = isPresent(rootSelectorOrNode);
-    this.projectableNodes = projectableNodes;
     return this.createInternal(rootSelectorOrNode);
   }
 
@@ -95,8 +77,8 @@ export abstract class AppView<T> {
    */
   createInternal(rootSelectorOrNode: string|any): AppElement { return null; }
 
-  init(rootNodesOrAppElements: any[], allNodes: any[], disposables: Function[]) {
-    this.rootNodesOrAppElements = rootNodesOrAppElements;
+  init(lastRootNode: any, allNodes: any[], disposables: Function[]) {
+    this.lastRootNode = lastRootNode;
     this.allNodes = allNodes;
     this.disposables = disposables;
     if (this.type === ViewType.COMPONENT) {
@@ -180,14 +162,40 @@ export abstract class AppView<T> {
     return isPresent(this.declarationAppElement) ? this.declarationAppElement.parentView : null;
   }
 
-  get flatRootNodes(): any[] { return flattenNestedViewRenderNodes(this.rootNodesOrAppElements); }
-
-  get lastRootNode(): any {
-    var lastNode = this.rootNodesOrAppElements.length > 0 ?
-        this.rootNodesOrAppElements[this.rootNodesOrAppElements.length - 1] :
-        null;
-    return _findLastRenderNode(lastNode);
+  get flatRootNodes(): any[] {
+    const nodes: any[] = [];
+    this.visitRootNodesInternal(addToArray, nodes);
+    return nodes;
   }
+
+  projectedNodes(ngContentIndex: number): any[] {
+    const nodes: any[] = [];
+    this.visitProjectedNodes(ngContentIndex, addToArray, nodes);
+    return nodes;
+  }
+
+  visitProjectedNodes<C>(ngContentIndex: number, cb: (node: any, ctx: C) => void, c: C): void {
+    const appEl = this.declarationAppElement;
+    switch (this.type) {
+      case ViewType.EMBEDDED:
+        appEl.parentView.visitProjectedNodes(ngContentIndex, cb, c);
+        break;
+      case ViewType.COMPONENT:
+        appEl.parentView.visitProjectableNodesInternal(appEl.index, ngContentIndex, cb, c);
+        break;
+    }
+  }
+
+  /**
+   * Overwritten by implementations
+   */
+  visitRootNodesInternal<C>(cb: (node: any, ctx: C) => void, c: C): void {}
+
+  /**
+   * Overwritten by implementations
+   */
+  visitProjectableNodesInternal<C>(
+      nodeIndex: number, ngContentIndex: number, cb: (node: any, ctx: C) => void, c: C): void {}
 
   /**
    * Overwritten by implementations
@@ -258,11 +266,10 @@ export class DebugAppView<T> extends AppView<T> {
     super(clazz, componentType, type, viewUtils, parentInjector, declarationAppElement, cdMode);
   }
 
-  create(context: T, givenProjectableNodes: Array<any|any[]>, rootSelectorOrNode: string|any):
-      AppElement {
+  create(context: T, rootSelectorOrNode: string|any): AppElement {
     this._resetDebug();
     try {
-      return super.create(context, givenProjectableNodes, rootSelectorOrNode);
+      return super.create(context, rootSelectorOrNode);
     } catch (e) {
       this._rethrowWithContext(e);
       throw e;
@@ -338,25 +345,4 @@ export class DebugAppView<T> extends AppView<T> {
       }
     };
   }
-}
-
-function _findLastRenderNode(node: any): any {
-  var lastNode: any;
-  if (node instanceof AppElement) {
-    var appEl = <AppElement>node;
-    lastNode = appEl.nativeElement;
-    if (isPresent(appEl.nestedViews)) {
-      // Note: Views might have no root nodes at all!
-      for (var i = appEl.nestedViews.length - 1; i >= 0; i--) {
-        var nestedView = appEl.nestedViews[i];
-        if (nestedView.rootNodesOrAppElements.length > 0) {
-          lastNode = _findLastRenderNode(
-              nestedView.rootNodesOrAppElements[nestedView.rootNodesOrAppElements.length - 1]);
-        }
-      }
-    }
-  } else {
-    lastNode = node;
-  }
-  return lastNode;
 }

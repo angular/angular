@@ -48,7 +48,7 @@ export class TemplateRef_<C> extends TemplateRef<C> {
   createEmbeddedView(context: C): EmbeddedViewRef<C> {
     var view: AppView<C> = this._viewFactory(
         this._appElement.parentView.viewUtils, this._appElement.parentInjector, this._appElement);
-    view.create(context || <any>{}, null, null);
+    view.create(context || <any>{}, null);
     return view.ref;
   }
 
