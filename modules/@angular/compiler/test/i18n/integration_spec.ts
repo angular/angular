@@ -117,7 +117,7 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
     <div i18n id="i18n-7">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
     
     <div i18n id="i18n-8">
-        {sex, sex, m {male} f {female}}
+        {sex, select, m {male} f {female}}
     </div>
     
     <div i18n id="i18n-9">{{ "count = " + count }}</div>
@@ -161,7 +161,7 @@ const XTB = `
   <translation id="4033143013932333681">sur des balises traductibles</translation>
   <translation id="6304278477201429103">{count, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
   <translation id="7235359853951837339"><ph name="ICU"/></translation>
-  <translation id="6141976475800220872">{sex, sex, m {homme} f {femme}}</translation>
+  <translation id="3159329131322704158">{sex, select, m {homme} f {femme}}</translation>
   <translation id="5917557396782931034"><ph name="INTERPOLATION"/></translation>
   <translation id="4687596778889597732">sexe = <ph name="INTERPOLATION"/></translation>
   <translation id="2505882222003102347"><ph name="CUSTOM_NAME"/></translation>
@@ -189,7 +189,7 @@ const XMB = `
   <msg id="7235359853951837339">
         <ph name="ICU"/>
     </msg>
-  <msg id="6141976475800220872">{sex, sex, m {male} f {female} }</msg>
+  <msg id="3159329131322704158">{sex, select, m {male} f {female} }</msg>
   <msg id="5917557396782931034"><ph name="INTERPOLATION"/></msg>
   <msg id="4687596778889597732">sex = <ph name="INTERPOLATION"/></msg>
   <msg id="2505882222003102347"><ph name="CUSTOM_NAME"/></msg>
