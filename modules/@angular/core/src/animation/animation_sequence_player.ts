@@ -100,6 +100,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
       this._onFinish();
       this._players.forEach(player => player.destroy());
       this._destroyed = true;
+      this._activePlayer = new NoOpAnimationPlayer();
     }
   }
 

@@ -15,8 +15,7 @@ import {ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_m
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {RenderStoreObject, Serializer} from '../shared/serializer';
-
+import {ANIMATION_WORKER_PLAYER_PREFIX, RenderStoreObject, Serializer} from '../shared/serializer';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
@@ -28,7 +27,7 @@ export class WebWorkerRootRenderer implements RootRenderer {
 
   constructor(
       messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
-      private _serializer: Serializer, private _renderStore: RenderStore) {
+      private _serializer: Serializer, public renderStore: RenderStore) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
     bus.initChannel(EVENT_CHANNEL);
     var source = bus.from(EVENT_CHANNEL);
@@ -36,15 +35,22 @@ export class WebWorkerRootRenderer implements RootRenderer {
   }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
-    var eventName = message['eventName'];
-    var target = message['eventTarget'];
-    var event = deserializeGenericEvent(message['event']);
-    if (isPresent(target)) {
-      this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+    var element =
+        <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
+    var playerData = message['animationPlayer'];
+    if (playerData) {
+      var phaseName = message['phaseName'];
+      var player = <AnimationPlayer>this._serializer.deserialize(playerData, RenderStoreObject);
+      element.animationPlayerEvents.dispatchEvent(player, phaseName);
     } else {
-      var element =
-          <WebWorkerRenderNode>this._serializer.deserialize(message['element'], RenderStoreObject);
-      element.events.dispatchEvent(eventName, event);
+      var eventName = message['eventName'];
+      var target = message['eventTarget'];
+      var event = deserializeGenericEvent(message['event']);
+      if (isPresent(target)) {
+        this.globalEvents.dispatchEvent(eventNameWithTarget(target, eventName), event);
+      } else {
+        element.events.dispatchEvent(eventName, event);
+      }
     }
   }
 
@@ -53,8 +59,8 @@ export class WebWorkerRootRenderer implements RootRenderer {
     if (!result) {
       result = new WebWorkerRenderer(this, componentType);
       this._componentRenderers.set(componentType.id, result);
-      var id = this._renderStore.allocateId();
-      this._renderStore.store(result, id);
+      var id = this.renderStore.allocateId();
+      this.renderStore.store(result, id);
       this.runOnService('renderComponent', [
         new FnArg(componentType, RenderComponentType),
         new FnArg(result, RenderStoreObject),
@@ -70,16 +76,16 @@ export class WebWorkerRootRenderer implements RootRenderer {
 
   allocateNode(): WebWorkerRenderNode {
     var result = new WebWorkerRenderNode();
-    var id = this._renderStore.allocateId();
-    this._renderStore.store(result, id);
+    var id = this.renderStore.allocateId();
+    this.renderStore.store(result, id);
     return result;
   }
 
-  allocateId(): number { return this._renderStore.allocateId(); }
+  allocateId(): number { return this.renderStore.allocateId(); }
 
   destroyNodes(nodes: any[]) {
     for (var i = 0; i < nodes.length; i++) {
-      this._renderStore.remove(nodes[i]);
+      this.renderStore.remove(nodes[i]);
     }
   }
 }
@@ -232,10 +238,20 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
   }
 
   animate(
-      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      renderElement: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
-    // TODO
-    return null;
+    const playerId = this._rootRenderer.allocateId();
+
+    this._runOnService('animate', [
+      new FnArg(renderElement, RenderStoreObject), new FnArg(startingStyles, null),
+      new FnArg(keyframes, null), new FnArg(duration, null), new FnArg(delay, null),
+      new FnArg(easing, null), new FnArg(playerId, null)
+    ]);
+
+    const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement);
+    this._rootRenderer.renderStore.store(player, playerId);
+
+    return player;
   }
 }
 
@@ -268,8 +284,101 @@ export class NamedEventEmitter {
   }
 }
 
+export class AnimationPlayerEmitter {
+  private _listeners: Map<AnimationPlayer, {[phaseName: string]: Function[]}>;
+
+  private _getListeners(player: AnimationPlayer, phaseName: string): Function[] {
+    if (!this._listeners) {
+      this._listeners = new Map<AnimationPlayer, {[phaseName: string]: Function[]}>();
+    }
+    var phaseMap = this._listeners.get(player);
+    if (!phaseMap) {
+      this._listeners.set(player, phaseMap = {});
+    }
+    var phaseFns = phaseMap[phaseName];
+    if (!phaseFns) {
+      phaseFns = phaseMap[phaseName] = [];
+    }
+    return phaseFns;
+  }
+
+  listen(player: AnimationPlayer, phaseName: string, callback: Function) {
+    this._getListeners(player, phaseName).push(callback);
+  }
+
+  unlisten(player: AnimationPlayer) { this._listeners.delete(player); }
+
+  dispatchEvent(player: AnimationPlayer, phaseName: string) {
+    var listeners = this._getListeners(player, phaseName);
+    for (var i = 0; i < listeners.length; i++) {
+      listeners[i]();
+    }
+  }
+}
+
 function eventNameWithTarget(target: string, eventName: string): string {
   return `${target}:${eventName}`;
 }
 
-export class WebWorkerRenderNode { events: NamedEventEmitter = new NamedEventEmitter(); }
+export class WebWorkerRenderNode {
+  events = new NamedEventEmitter();
+  animationPlayerEvents = new AnimationPlayerEmitter();
+}
+
+class _AnimationWorkerRendererPlayer implements AnimationPlayer, RenderStoreObject {
+  public parentPlayer: AnimationPlayer = null;
+
+  private _destroyed: boolean = false;
+  private _started: boolean = false;
+
+  constructor(private _rootRenderer: WebWorkerRootRenderer, private _renderElement: any) {}
+
+  private _runOnService(fnName: string, fnArgs: FnArg[]) {
+    if (!this._destroyed) {
+      var fnArgsWithRenderer = [
+        new FnArg(this, RenderStoreObject), new FnArg(this._renderElement, RenderStoreObject)
+      ].concat(fnArgs);
+      this._rootRenderer.runOnService(ANIMATION_WORKER_PLAYER_PREFIX + fnName, fnArgsWithRenderer);
+    }
+  }
+
+  onStart(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onStart', fn);
+    this._runOnService('onStart', []);
+  }
+
+  onDone(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onDone', fn);
+    this._runOnService('onDone', []);
+  }
+
+  hasStarted(): boolean { return this._started; }
+
+  init(): void { this._runOnService('init', []); }
+
+  play(): void {
+    this._started = true;
+    this._runOnService('play', []);
+  }
+
+  pause(): void { this._runOnService('pause', []); }
+
+  restart(): void { this._runOnService('restart', []); }
+
+  finish(): void { this._runOnService('finish', []); }
+
+  destroy(): void {
+    if (!this._destroyed) {
+      this._renderElement.animationPlayerEvents.unlisten(this);
+      this._runOnService('destroy', []);
+      this._rootRenderer.renderStore.remove(this);
+      this._destroyed = true;
+    }
+  }
+
+  reset(): void { this._runOnService('reset', []); }
+
+  setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p, null)]); }
+
+  getPosition(): number { return 0; }
+}

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
-
+import {AnimationPlayer, Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
-import {PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
-import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
+import {ANIMATION_WORKER_PLAYER_PREFIX, PRIMITIVE, RenderStoreObject, Serializer} from '../shared/serializer';
+import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 import {EventDispatcher} from '../ui/event_dispatcher';
 
 @Injectable()
@@ -86,6 +85,65 @@ export class MessageBasedRenderer {
         this._listenGlobal.bind(this));
     broker.registerMethod(
         'listenDone', [RenderStoreObject, RenderStoreObject], this._listenDone.bind(this));
+    broker.registerMethod(
+        'animate',
+        [
+          RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE, PRIMITIVE,
+          PRIMITIVE, PRIMITIVE
+        ],
+        this._animate.bind(this));
+
+    this._bindAnimationPlayerMethods(broker);
+  }
+
+  private _bindAnimationPlayerMethods(broker: ServiceMessageBroker) {
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'play', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.play());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'pause', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.pause());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'init', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.init());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'restart', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.restart());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'destroy', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => {
+          player.destroy();
+          this._renderStore.remove(player);
+        });
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'finish', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.finish());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'getPosition', [RenderStoreObject, RenderStoreObject],
+        (player: AnimationPlayer, element: any) => player.getPosition());
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onStart',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any) =>
+            this._listenOnAnimationPlayer(player, element, 'onStart'));
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'onDone',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any) =>
+            this._listenOnAnimationPlayer(player, element, 'onDone'));
+
+    broker.registerMethod(
+        ANIMATION_WORKER_PLAYER_PREFIX + 'setPosition',
+        [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+        (player: AnimationPlayer, element: any, position: number) => player.setPosition(position));
   }
 
   private _renderComponent(renderComponentType: RenderComponentType, rendererId: number) {
@@ -187,4 +245,24 @@ export class MessageBasedRenderer {
   }
 
   private _listenDone(renderer: Renderer, unlistenCallback: Function) { unlistenCallback(); }
+
+  private _animate(
+      renderer: Renderer, element: any, startingStyles: any, keyframes: any[], duration: number,
+      delay: number, easing: string, playerId: any) {
+    var player = renderer.animate(element, startingStyles, keyframes, duration, delay, easing);
+    this._renderStore.store(player, playerId);
+  }
+
+  private _listenOnAnimationPlayer(player: AnimationPlayer, element: any, phaseName: string) {
+    const onEventComplete =
+        () => { this._eventDispatcher.dispatchAnimationEvent(player, phaseName, element); };
+
+    // there is no need to register a unlistener value here since the
+    // internal player callbacks are removed when the player is destroyed
+    if (phaseName == 'onDone') {
+      player.onDone(() => onEventComplete());
+    } else {
+      player.onStart(() => onEventComplete());
+    }
+  }
 }
