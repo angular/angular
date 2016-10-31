@@ -506,8 +506,6 @@ export class CompileMetadataResolver {
       let isSelf = false;
       let isSkipSelf = false;
       let isOptional = false;
-      let query: Query = null;
-      let viewQuery: Query = null;
       let token: any = null;
       if (Array.isArray(param)) {
         param.forEach((paramEntry) => {
@@ -522,12 +520,6 @@ export class CompileMetadataResolver {
           } else if (paramEntry instanceof Attribute) {
             isAttribute = true;
             token = paramEntry.attributeName;
-          } else if (paramEntry instanceof Query) {
-            if (paramEntry.isViewQuery) {
-              viewQuery = paramEntry;
-            } else {
-              query = paramEntry;
-            }
           } else if (paramEntry instanceof Inject) {
             token = paramEntry.token;
           } else if (isValidType(paramEntry) && isBlank(token)) {
@@ -548,8 +540,6 @@ export class CompileMetadataResolver {
         isSelf,
         isSkipSelf,
         isOptional,
-        query: query ? this.getQueryMetadata(query, null, typeOrFunc) : null,
-        viewQuery: viewQuery ? this.getQueryMetadata(viewQuery, null, typeOrFunc) : null,
         token: this.getTokenMetadata(token)
       });
 

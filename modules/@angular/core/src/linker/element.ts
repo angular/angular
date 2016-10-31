@@ -22,11 +22,10 @@ import {ViewType} from './view_type';
  * that is needed for later instantiations.
  */
 export class AppElement {
-  public nestedViews: AppView<any>[] = null;
-  public componentView: AppView<any> = null;
+  public nestedViews: AppView<any>[];
+  public componentView: AppView<any>;
 
   public component: any;
-  public componentConstructorViewQueries: QueryList<any>[];
 
   constructor(
       public index: number, public parentIndex: number, public parentView: AppView<any>,
@@ -36,10 +35,8 @@ export class AppElement {
 
   get vcRef(): ViewContainerRef_ { return new ViewContainerRef_(this); }
 
-  initComponent(
-      component: any, componentConstructorViewQueries: QueryList<any>[], view: AppView<any>) {
+  initComponent(component: any, view: AppView<any>) {
     this.component = component;
-    this.componentConstructorViewQueries = componentConstructorViewQueries;
     this.componentView = view;
   }
 
