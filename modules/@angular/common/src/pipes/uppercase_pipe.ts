@@ -16,7 +16,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @howToUse `expression | uppercase`
  * @description
  *
- * Converts value into lowercase string using `String.prototype.toUpperCase()`.
+ * Converts value into an uppercase string using `String.prototype.toUpperCase()`.
  *
  * ### Example
  *
