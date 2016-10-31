@@ -38,7 +38,7 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
     this._vc_0 = new import2.AppElement(0, (null as any), this, this._el_0);
     this._TreeComponent_0_4 = new _View_TreeComponent0(this._el_0);
     this._vc_0.initComponent(this._TreeComponent_0_4.context, [], <any>this._TreeComponent_0_4);
-    this.init([].concat([this._el_0]), [this._el_0], [], []);
+    this.init([].concat([this._el_0]), [this._el_0], []);
     return this._vc_0;
   }
   detectChangesInternal(throwOnChange: boolean): void {
