@@ -14,7 +14,7 @@ import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
 class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
-  public domPlayer = new MockDomAnimatePlayer();
+  private _overriddenDomPlayer = new MockDomAnimatePlayer();
 
   constructor(
       public element: HTMLElement, public keyframes: {[key: string]: string | number}[],
@@ -22,9 +22,11 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
     super(element, keyframes, options);
   }
 
+  get domPlayer() { return this._overriddenDomPlayer; }
+
   /** @internal */
   _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return this.domPlayer;
+    return this._overriddenDomPlayer;
   }
 }
 
