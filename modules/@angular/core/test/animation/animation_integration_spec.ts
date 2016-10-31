@@ -1151,7 +1151,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('animation output events', () => {
       it('should fire the associated animation output expression when the animation starts even if no animation is fired',
-         () => {
+         fakeAsync(() => {
            TestBed.overrideComponent(DummyIfCmp, {
              set: {
                template: `
@@ -1175,16 +1175,18 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            cmp.exp = 'one';
            fixture.detectChanges();
+           flushMicrotasks();
 
            expect(calls).toEqual(1);
            expect(isAnimationRunning).toEqual(false);
 
            cmp.exp = 'two';
            fixture.detectChanges();
+           flushMicrotasks();
 
            expect(calls).toEqual(2);
            expect(isAnimationRunning).toEqual(true);
-         });
+         }));
 
       it('should fire the associated animation output expression when the animation ends even if no animation is fired',
          fakeAsync(() => {
@@ -1294,6 +1296,36 @@ function declareTests({useJit}: {useJit: boolean}) {
            fixture.detectChanges();
            flushMicrotasks();
            expect(eventData2.totalTime).toEqual(0);
+         }));
+
+      it('should successfully update the component view when an animation start callback is fired',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+              <div [@trigger]="exp" (@trigger.start)="exp2='look at me'">{{ exp2 }}</div>
+            `,
+               animations: [
+                 trigger(
+                     'trigger',
+                     [transition(
+                         '* => *',
+                         [animate('1s 750ms', style({})), animate('2000ms 0ms', style({}))])]),
+               ]
+             }
+           });
+
+           let fixture = TestBed.createComponent(DummyIfCmp);
+           var cmp = fixture.componentInstance;
+           cmp.exp2 = 'ignore me';
+           cmp.exp = 'one';
+
+           fixture.detectChanges();
+           flushMicrotasks();
+           fixture.detectChanges();
+
+           var container = fixture.nativeElement;
+           expect(getDOM().getInnerHTML(container)).toContain('look at me');
          }));
 
       it('should throw an error if an animation output is referenced is not defined within the component',
