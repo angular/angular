@@ -42,7 +42,7 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
     this._TreeRootComponent_0_4_View =
         viewFactory_TreeRootComponent0(this.viewUtils, this.injector(0), this._appEl_0);
     this._TreeRootComponent_0_4 = new import3.TreeRootComponent();
-    this._appEl_0.initComponent(this._TreeRootComponent_0_4, [], this._TreeRootComponent_0_4_View);
+    this._appEl_0.initComponent(this._TreeRootComponent_0_4, this._TreeRootComponent_0_4_View);
     this._TreeRootComponent_0_4_View.create(this._TreeRootComponent_0_4, (null as any));
     this.init([].concat([this._el_0]), [this._el_0], []);
     return this._appEl_0;

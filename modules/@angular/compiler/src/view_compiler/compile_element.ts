@@ -49,7 +49,6 @@ export class CompileElement extends CompileNode {
 
   private _queryCount = 0;
   private _queries = new Map<any, CompileQuery[]>();
-  private _componentConstructorViewQueryLists: o.Expression[] = [];
 
   public contentNodesByNgContentIndex: Array<CompileViewRootNode>[] = null;
   public embeddedView: CompileView;
@@ -257,16 +256,9 @@ export class CompileElement extends CompileNode {
     });
 
     if (isPresent(this.component)) {
-      var componentConstructorViewQueryList = isPresent(this.component) ?
-          o.literalArr(this._componentConstructorViewQueryLists) :
-          o.NULL_EXPR;
       var compExpr = isPresent(this.getComponent()) ? this.getComponent() : o.NULL_EXPR;
       this.view.createMethod.addStmt(
-          this.appElement
-              .callMethod(
-                  'initComponent',
-                  [compExpr, componentConstructorViewQueryList, this._compViewExpr])
-              .toStmt());
+          this.appElement.callMethod('initComponent', [compExpr, this._compViewExpr]).toStmt());
     }
   }
 
@@ -342,20 +334,6 @@ export class CompileElement extends CompileNode {
   private _getLocalDependency(
       requestingProviderType: ProviderAstType, dep: CompileDiDependencyMetadata): o.Expression {
     var result: o.Expression = null;
-    // constructor content query
-    if (!result && isPresent(dep.query)) {
-      result = this._addQuery(dep.query, null).queryList;
-    }
-
-    // constructor view query
-    if (!result && isPresent(dep.viewQuery)) {
-      result = createQueryList(
-          dep.viewQuery, null,
-          `_viewQuery_${dep.viewQuery.selectors[0].name}_${this.nodeIndex}_${this._componentConstructorViewQueryLists.length}`,
-          this.view);
-      this._componentConstructorViewQueryLists.push(result);
-    }
-
     if (isPresent(dep.token)) {
       // access builtins with special visibility
       if (!result) {

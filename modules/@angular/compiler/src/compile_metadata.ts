@@ -105,33 +105,27 @@ export class CompileDiDependencyMetadata {
   isSkipSelf: boolean;
   isOptional: boolean;
   isValue: boolean;
-  query: CompileQueryMetadata;
-  viewQuery: CompileQueryMetadata;
   token: CompileTokenMetadata;
   value: any;
 
-  constructor(
-      {isAttribute, isSelf, isHost, isSkipSelf, isOptional, isValue, query, viewQuery, token,
-       value}: {
-        isAttribute?: boolean,
-        isSelf?: boolean,
-        isHost?: boolean,
-        isSkipSelf?: boolean,
-        isOptional?: boolean,
-        isValue?: boolean,
-        query?: CompileQueryMetadata,
-        viewQuery?: CompileQueryMetadata,
-        token?: CompileTokenMetadata,
-        value?: any
-      } = {}) {
+  constructor({isAttribute, isSelf, isHost, isSkipSelf, isOptional, isValue, token, value}: {
+    isAttribute?: boolean,
+    isSelf?: boolean,
+    isHost?: boolean,
+    isSkipSelf?: boolean,
+    isOptional?: boolean,
+    isValue?: boolean,
+    query?: CompileQueryMetadata,
+    viewQuery?: CompileQueryMetadata,
+    token?: CompileTokenMetadata,
+    value?: any
+  } = {}) {
     this.isAttribute = !!isAttribute;
     this.isSelf = !!isSelf;
     this.isHost = !!isHost;
     this.isSkipSelf = !!isSkipSelf;
     this.isOptional = !!isOptional;
     this.isValue = !!isValue;
-    this.query = query;
-    this.viewQuery = viewQuery;
     this.token = token;
     this.value = value;
   }

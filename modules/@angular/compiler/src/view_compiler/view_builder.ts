@@ -119,7 +119,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
                                         'createTemplateAnchor', [o.NULL_EXPR, o.NULL_EXPR]))
                                     .toStmt());
       view.rootNodes.push(
-          new CompileViewRootNode(CompileViewRootNodeType.Node, o.THIS_EXPR.prop(fieldName)))
+          new CompileViewRootNode(CompileViewRootNodeType.Node, o.THIS_EXPR.prop(fieldName)));
     }
     return view.rootNodes[view.rootNodes.length - 1].expr;
   }
