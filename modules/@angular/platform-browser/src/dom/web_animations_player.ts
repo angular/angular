@@ -55,13 +55,15 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
     // this is required so that the player doesn't start to animate right away
     this._resetDomPlayerState();
-    this._player.onfinish = () => this._onFinish();
+    this._player.addEventListener('finish', () => this._onFinish());
   }
 
   /** @internal */
   _triggerWebAnimation(element: any, keyframes: any[], options: any): DomAnimatePlayer {
     return <DomAnimatePlayer>element.animate(keyframes, options);
   }
+
+  get domPlayer() { return this._player; }
 
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 

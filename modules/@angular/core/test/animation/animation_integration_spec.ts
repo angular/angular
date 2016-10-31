@@ -8,11 +8,18 @@
 
 import {CommonModule} from '@angular/common';
 import {DomElementSchemaRegistry, ElementSchemaRegistry} from '@angular/compiler';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {WebAnimationsDriver} from '@angular/platform-browser/src/dom/web_animations_driver';
+import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
+import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
 
-import {Component} from '../../index';
+import {DomAnimatePlayer} from '../../../platform-browser/src/dom/dom_animate_player';
+import {ApplicationRef, Component, HostBinding, HostListener, NgModule, NgZone, destroyPlatform} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
@@ -2068,6 +2075,57 @@ function declareTests({useJit}: {useJit: boolean}) {
          });
     });
   });
+
+  describe('full animation integration tests', () => {
+    if (!getDOM().supportsWebAnimation()) return;
+
+    var el: any, testProviders: any[];
+
+    beforeEach(() => {
+      destroyPlatform();
+
+      let fakeDoc = getDOM().createHtmlDocument();
+      el = getDOM().createElement('animation-app', fakeDoc);
+      getDOM().appendChild(fakeDoc.body, el);
+      testProviders = [
+        {provide: DOCUMENT, useValue: fakeDoc},
+        {provide: AnimationDriver, useClass: ExtendedWebAnimationsDriver}
+      ];
+    });
+
+    afterEach(() => { destroyPlatform(); });
+
+    it('should automatically run change detection when the animation done callback code updates any bindings',
+       (asyncDone: Function) => {
+         bootstrap(AnimationAppCmp, testProviders).then(ref => {
+           let appRef = <ApplicationRef>ref.injector.get(ApplicationRef);
+           let appCmp: AnimationAppCmp =
+               appRef.components.find(cmp => cmp.componentType === AnimationAppCmp).instance;
+           let driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
+           let zone: NgZone = ref.injector.get(NgZone);
+           let text = '';
+           zone.run(() => {
+             text = getDOM().getText(el);
+             expect(text).toMatch(/Animation Status: pending/);
+             expect(text).toMatch(/Animation Time: 0/);
+             appCmp.animationStatus = 'on';
+             setTimeout(() => {
+               text = getDOM().getText(el);
+               expect(text).toMatch(/Animation Status: started/);
+               expect(text).toMatch(/Animation Time: 555/);
+               var player = driver.players.pop().domPlayer;
+               getDOM().dispatchEvent(player, getDOM().createEvent('finish'));
+               setTimeout(() => {
+                 text = getDOM().getText(el);
+                 expect(text).toMatch(/Animation Status: done/);
+                 expect(text).toMatch(/Animation Time: 555/);
+                 asyncDone();
+               }, 0);
+             }, 0);
+           });
+         });
+       });
+  });
 }
 
 class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
@@ -2148,5 +2206,62 @@ class _NaiveElementSchema extends DomElementSchemaRegistry {
   normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
       {error: string, value: string} {
     return {error: null, value: <string>val};
+  }
+}
+
+@Component({
+  selector: 'animation-app',
+  animations: [trigger('animationStatus', [transition('off => on', animate(555))])],
+  template: `
+    Animation Time: {{ time }}
+    Animation Status: {{ status }}
+  `
+})
+class AnimationAppCmp {
+  time: number = 0;
+  status: string = 'pending';
+
+  @HostBinding('@animationStatus')
+  animationStatus = 'off';
+
+  @HostListener('@animationStatus.start', ['$event'])
+  onStart(event: AnimationTransitionEvent) {
+    if (event.toState == 'on') {
+      this.time = event.totalTime;
+      this.status = 'started';
+    }
+  }
+
+  @HostListener('@animationStatus.done', ['$event'])
+  onDone(event: AnimationTransitionEvent) {
+    if (event.toState == 'on') {
+      this.time = event.totalTime;
+      this.status = 'done';
+    }
+  }
+}
+
+class AnimationTestModule {}
+function bootstrap(cmpType: any, providers: any[]): Promise<any> {
+  @NgModule({
+    imports: [BrowserModule],
+    providers: providers,
+    declarations: [cmpType],
+    bootstrap: [cmpType]
+  })
+  class AnimationTestModule {
+  }
+  return platformBrowserDynamic().bootstrapModule(AnimationTestModule);
+}
+
+class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
+  players: WebAnimationsPlayer[] = [];
+
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): WebAnimationsPlayer {
+    var player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
+    this.players.push(player);
+    return player;
   }
 }
