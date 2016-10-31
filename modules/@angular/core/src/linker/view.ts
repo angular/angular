@@ -120,8 +120,10 @@ export abstract class AppView<T> {
     }
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
-    for (var i = 0; i < this.disposables.length; i++) {
-      this.disposables[i]();
+    if (this.disposables) {
+      for (var i = 0; i < this.disposables.length; i++) {
+        this.disposables[i]();
+      }
     }
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
