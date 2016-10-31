@@ -228,7 +228,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.typeCache.get(key);
     if (!result) {
-      result = new StaticSymbol(declarationFile, name, members);
+      result = new StaticSymbol(declarationFile.replace(EXT, ''), name, members);
       this.typeCache.set(key, result);
     }
     return result;
