@@ -435,10 +435,12 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     }
     if (!shallowEqual(route.snapshot.params, route._futureSnapshot.params)) {
       (<any>route.params).next(route._futureSnapshot.params);
-      (<any>route.data).next(route._futureSnapshot.data);
     }
     if (!shallowEqualArrays(route.snapshot.url, route._futureSnapshot.url)) {
       (<any>route.url).next(route._futureSnapshot.url);
+    }
+    if (!equalParamsAndUrlSegments(route.snapshot, route._futureSnapshot)) {
+      (<any>route.data).next(route._futureSnapshot.data);
     }
     route.snapshot = route._futureSnapshot;
   } else {
