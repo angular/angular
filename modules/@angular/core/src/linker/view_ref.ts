@@ -117,7 +117,12 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
     this.markForCheck();
   }
 
-  onDestroy(callback: Function) { this._view.disposables.push(callback); }
+  onDestroy(callback: Function) {
+    if (!this._view.disposables) {
+      this._view.disposables = [];
+    }
+    this._view.disposables.push(callback);
+  }
 
   destroy() { this._view.detachAndDestroy(); }
 }
