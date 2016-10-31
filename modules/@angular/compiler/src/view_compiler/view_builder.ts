@@ -541,8 +541,8 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
             'init',
             [
               createFlatArray(view.rootNodesOrAppElements),
-              o.literalArr(view.nodes.map(node => node.renderNode)), o.literalArr(view.disposables),
-              o.literalArr(view.subscriptions)
+              o.literalArr(view.nodes.map(node => node.renderNode)),
+              o.literalArr(view.disposables),
             ])
         .toStmt(),
     new o.ReturnStatement(resultExpr)

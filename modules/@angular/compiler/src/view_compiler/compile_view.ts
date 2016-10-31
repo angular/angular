@@ -49,7 +49,6 @@ export class CompileView implements NameResolver {
   public fields: o.ClassField[] = [];
   public getters: o.ClassGetter[] = [];
   public disposables: o.Expression[] = [];
-  public subscriptions: o.Expression[] = [];
 
   public componentView: CompileView;
   public purePipes = new Map<string, CompilePipe>();
