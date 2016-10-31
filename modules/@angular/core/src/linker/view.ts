@@ -33,7 +33,6 @@ export abstract class AppView<T> {
   rootNodesOrAppElements: any[];
   allNodes: any[];
   disposables: Function[];
-  contentChildren: AppView<any>[] = [];
   viewContainerElement: AppElement = null;
 
   numberOfChecks: number = 0;
@@ -124,29 +123,19 @@ export abstract class AppView<T> {
     }
   }
 
-  destroy() {
+  detachAndDestroy() {
     if (this._hasExternalHostElement) {
       this.renderer.detachView(this.flatRootNodes);
     } else if (isPresent(this.viewContainerElement)) {
       this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
     }
-    this._destroyRecurse();
+    this.destroy();
   }
 
-  private _destroyRecurse() {
+  destroy() {
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       return;
     }
-    var children = this.contentChildren;
-    for (var i = 0; i < children.length; i++) {
-      children[i]._destroyRecurse();
-    }
-    this.destroyLocal();
-
-    this.cdMode = ChangeDetectorStatus.Destroyed;
-  }
-
-  destroyLocal() {
     var hostElement =
         this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
     for (var i = 0; i < this.disposables.length; i++) {
@@ -161,6 +150,8 @@ export abstract class AppView<T> {
     } else {
       this.renderer.destroyView(hostElement, this.allNodes);
     }
+
+    this.cdMode = ChangeDetectorStatus.Destroyed;
   }
 
   /**
@@ -222,28 +213,16 @@ export abstract class AppView<T> {
   /**
    * Overwritten by implementations
    */
-  detectChangesInternal(throwOnChange: boolean): void {
-    this.detectContentChildrenChanges(throwOnChange);
-  }
-
-  detectContentChildrenChanges(throwOnChange: boolean) {
-    for (var i = 0; i < this.contentChildren.length; ++i) {
-      var child = this.contentChildren[i];
-      if (child.cdMode === ChangeDetectorStatus.Detached) continue;
-      child.detectChanges(throwOnChange);
-    }
-  }
+  detectChangesInternal(throwOnChange: boolean): void {}
 
   markContentChildAsMoved(renderAppElement: AppElement): void { this.dirtyParentQueriesInternal(); }
 
   addToContentChildren(renderAppElement: AppElement): void {
-    renderAppElement.parentView.contentChildren.push(this);
     this.viewContainerElement = renderAppElement;
     this.dirtyParentQueriesInternal();
   }
 
   removeFromContentChildren(renderAppElement: AppElement): void {
-    ListWrapper.remove(renderAppElement.parentView.contentChildren, this);
     this.dirtyParentQueriesInternal();
     this.viewContainerElement = null;
   }
@@ -310,10 +289,10 @@ export class DebugAppView<T> extends AppView<T> {
     }
   }
 
-  destroyLocal() {
+  destroy() {
     this._resetDebug();
     try {
-      super.destroyLocal();
+      super.destroy();
     } catch (e) {
       this._rethrowWithContext(e);
       throw e;

@@ -98,6 +98,9 @@ export class CompileElement extends CompileNode {
     this.view.createMethod.addStmt(statement);
     this.appElement = o.THIS_EXPR.prop(fieldName);
     this.instances.set(resolveIdentifierToken(Identifiers.AppElement).reference, this.appElement);
+    if (this.hasViewContainer) {
+      this.view.viewContainerAppElements.push(this.appElement);
+    }
   }
 
   private _createComponentFactoryResolver() {
