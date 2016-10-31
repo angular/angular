@@ -46,6 +46,22 @@ export class AppElement {
   get parentInjector(): Injector { return this.parentView.injector(this.parentIndex); }
   get injector(): Injector { return this.parentView.injector(this.index); }
 
+  detectChangesInNestedViews(throwOnChange: boolean): void {
+    if (this.nestedViews) {
+      for (var i = 0; i < this.nestedViews.length; i++) {
+        this.nestedViews[i].detectChanges(throwOnChange);
+      }
+    }
+  }
+
+  destroyNestedViews(): void {
+    if (this.nestedViews) {
+      for (var i = 0; i < this.nestedViews.length; i++) {
+        this.nestedViews[i].destroy();
+      }
+    }
+  }
+
   mapNestedViews(nestedViewClass: any, callback: Function): any[] {
     var result: any[] /** TODO #9100 */ = [];
     if (isPresent(this.nestedViews)) {

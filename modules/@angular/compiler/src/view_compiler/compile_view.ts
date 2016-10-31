@@ -32,6 +32,7 @@ export class CompileView implements NameResolver {
   public nodes: CompileNode[] = [];
   // root nodes or AppElements for ViewContainers
   public rootNodesOrAppElements: o.Expression[] = [];
+  public viewContainerAppElements: o.Expression[] = [];
 
   public createMethod: CompileMethod;
   public animationBindingsMethod: CompileMethod;

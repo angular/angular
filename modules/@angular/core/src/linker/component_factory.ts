@@ -75,7 +75,7 @@ export class ComponentRef_<C> extends ComponentRef<C> {
   get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
   get componentType(): Type<any> { return this._componentType; }
 
-  destroy(): void { this._hostElement.parentView.destroy(); }
+  destroy(): void { this._hostElement.parentView.detachAndDestroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
