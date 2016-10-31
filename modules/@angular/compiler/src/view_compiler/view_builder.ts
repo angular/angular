@@ -194,21 +194,25 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
         parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.providers,
         ast.hasViewContainer, false, ast.references, this.targetDependencies);
     this.view.nodes.push(compileElement);
-    var compViewExpr: o.ReadVarExpr = null;
+    var compViewExpr: o.ReadPropExpr = null;
     if (isPresent(component)) {
       let nestedComponentIdentifier =
           new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
       this.targetDependencies.push(
           new ViewFactoryDependency(component.type, nestedComponentIdentifier));
 
-      compViewExpr = o.variable(`compView_${nodeIndex}`);  // fix highlighting: `
+      compViewExpr = o.THIS_EXPR.prop(`compView_${nodeIndex}`);  // fix highlighting: `
+      this.view.fields.push(new o.ClassField(
+          compViewExpr.name,
+          o.importType(resolveIdentifier(Identifiers.AppView), [o.importType(component.type)])));
+      this.view.viewChildren.push(compViewExpr);
       compileElement.setComponentView(compViewExpr);
       this.view.createMethod.addStmt(
           compViewExpr
               .set(o.importExpr(nestedComponentIdentifier).callFn([
                 ViewProperties.viewUtils, compileElement.injector, compileElement.appElement
               ]))
-              .toDeclStmt());
+              .toStmt());
     }
     compileElement.beforeChildren();
     this._addRootNodeAndProject(compileElement);
@@ -452,7 +456,7 @@ function createViewClass(
         'detectChangesInternal', [new o.FnParam(DetectChangesVars.throwOnChange.name, o.BOOL_TYPE)],
         generateDetectChangesMethod(view)),
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
-    new o.ClassMethod('destroyInternal', [], view.destroyMethod.finish()),
+    new o.ClassMethod('destroyInternal', [], generateDestroyMethod(view)),
     new o.ClassMethod('detachInternal', [], view.detachMethod.finish())
   ].filter((method) => method.body.length > 0);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
@@ -465,6 +469,14 @@ function createViewClass(
     builders: [{methods: viewMethods}, view]
   });
   return viewClass;
+}
+
+function generateDestroyMethod(view: CompileView): o.Statement[] {
+  const stmts: o.Statement[] = [];
+  view.viewChildren.forEach(
+      (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
+  stmts.push(...view.destroyMethod.finish());
+  return stmts;
 }
 
 function createViewFactory(
@@ -569,8 +581,9 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterContentStmts));
   }
   stmts.push(...view.detectChangesRenderPropertiesMethod.finish());
-  stmts.push(o.THIS_EXPR.callMethod('detectViewChildrenChanges', [DetectChangesVars.throwOnChange])
-                 .toStmt());
+  view.viewChildren.forEach((viewChild) => {
+    stmts.push(viewChild.callMethod('detectChanges', [DetectChangesVars.throwOnChange]).toStmt());
+  });
   var afterViewStmts =
       view.updateViewQueriesMethod.finish().concat(view.afterViewLifecycleCallbacksMethod.finish());
   if (afterViewStmts.length > 0) {
