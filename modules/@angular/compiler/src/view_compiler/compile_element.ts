@@ -19,7 +19,7 @@ import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../templa
 
 import {CompileMethod} from './compile_method';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
-import {CompileView} from './compile_view';
+import {CompileView, CompileViewRootNode} from './compile_view';
 import {InjectMethodVars, ViewProperties} from './constants';
 import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
@@ -51,7 +51,7 @@ export class CompileElement extends CompileNode {
   private _queries = new Map<any, CompileQuery[]>();
   private _componentConstructorViewQueryLists: o.Expression[] = [];
 
-  public contentNodesByNgContentIndex: Array<o.Expression>[] = null;
+  public contentNodesByNgContentIndex: Array<CompileViewRootNode>[] = null;
   public embeddedView: CompileView;
   public referenceTokens: {[key: string]: CompileTokenMetadata};
 
@@ -293,7 +293,7 @@ export class CompileElement extends CompileNode {
                     this.view.createMethod, this.view.updateContentQueriesMethod)));
   }
 
-  addContentNode(ngContentIndex: number, nodeExpr: o.Expression) {
+  addContentNode(ngContentIndex: number, nodeExpr: CompileViewRootNode) {
     this.contentNodesByNgContentIndex[ngContentIndex].push(nodeExpr);
   }
 

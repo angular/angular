@@ -10,8 +10,10 @@ import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
+
 import {AppElement} from './element';
 import {ElementRef} from './element_ref';
+import {AppView} from './view';
 import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
 
@@ -104,8 +106,15 @@ export class ComponentFactory<C> {
       projectableNodes = [];
     }
     // Note: Host views don't need a declarationAppElement!
-    var hostView = this._viewFactory(vu, injector, null);
-    var hostElement = hostView.create(EMPTY_CONTEXT, projectableNodes, rootSelectorOrNode);
+    var hostView: AppView<any> = this._viewFactory(vu, injector, null);
+    hostView.visitProjectableNodesInternal =
+        (nodeIndex: number, ngContentIndex: number, cb: any, ctx: any) => {
+          const nodes = projectableNodes[ngContentIndex] || [];
+          for (var i = 0; i < nodes.length; i++) {
+            cb(nodes[i], ctx);
+          }
+        };
+    var hostElement = hostView.create(EMPTY_CONTEXT, rootSelectorOrNode);
     return new ComponentRef_<C>(hostElement, this._componentType);
   }
 }

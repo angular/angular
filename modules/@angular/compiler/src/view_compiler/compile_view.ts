@@ -23,6 +23,18 @@ import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {getPropertyInView, getViewFactoryName} from './util';
 
+export enum CompileViewRootNodeType {
+  Node,
+  ViewContainer,
+  NgContent
+}
+
+export class CompileViewRootNode {
+  constructor(
+      public type: CompileViewRootNodeType, public expr: o.Expression,
+      public ngContentIndex?: number) {}
+}
+
 export class CompileView implements NameResolver {
   public viewType: ViewType;
   public viewQueries: Map<any, CompileQuery[]>;
@@ -30,8 +42,10 @@ export class CompileView implements NameResolver {
   public viewChildren: o.Expression[] = [];
 
   public nodes: CompileNode[] = [];
-  // root nodes or AppElements for ViewContainers
-  public rootNodesOrAppElements: o.Expression[] = [];
+
+  public rootNodes: CompileViewRootNode[] = [];
+  public lastRenderNode: o.Expression = o.NULL_EXPR;
+
   public viewContainerAppElements: o.Expression[] = [];
 
   public createMethod: CompileMethod;

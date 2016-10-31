@@ -48,44 +48,8 @@ export class ViewUtils {
   }
 }
 
-export function flattenNestedViewRenderNodes(nodes: any[]): any[] {
-  return _flattenNestedViewRenderNodes(nodes, []);
-}
-
-function _flattenNestedViewRenderNodes(nodes: any[], renderNodes: any[]): any[] {
-  for (var i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
-    if (node instanceof AppElement) {
-      var appEl = <AppElement>node;
-      renderNodes.push(appEl.nativeElement);
-      if (isPresent(appEl.nestedViews)) {
-        for (var k = 0; k < appEl.nestedViews.length; k++) {
-          _flattenNestedViewRenderNodes(appEl.nestedViews[k].rootNodesOrAppElements, renderNodes);
-        }
-      }
-    } else {
-      renderNodes.push(node);
-    }
-  }
-  return renderNodes;
-}
-
-const EMPTY_ARR: any[] = [];
-
-export function ensureSlotCount(projectableNodes: any[][], expectedSlotCount: number): any[][] {
-  var res: any[][];
-  if (!projectableNodes) {
-    res = EMPTY_ARR;
-  } else if (projectableNodes.length < expectedSlotCount) {
-    var givenSlotCount = projectableNodes.length;
-    res = new Array(expectedSlotCount);
-    for (var i = 0; i < expectedSlotCount; i++) {
-      res[i] = (i < givenSlotCount) ? projectableNodes[i] : EMPTY_ARR;
-    }
-  } else {
-    res = projectableNodes;
-  }
-  return res;
+export function addToArray(e: any, array: any[]) {
+  array.push(e);
 }
 
 export const MAX_INTERPOLATION_VALUES = 9;

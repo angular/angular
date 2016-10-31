@@ -43,8 +43,7 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
         viewFactory_TreeRootComponent0(this.viewUtils, this.injector(0), this._appEl_0);
     this._TreeRootComponent_0_4 = new import3.TreeRootComponent();
     this._appEl_0.initComponent(this._TreeRootComponent_0_4, [], this._TreeRootComponent_0_4_View);
-    this._TreeRootComponent_0_4_View.create(
-        this._TreeRootComponent_0_4, this.projectableNodes, (null as any));
+    this._TreeRootComponent_0_4_View.create(this._TreeRootComponent_0_4, (null as any));
     this.init([].concat([this._el_0]), [this._el_0], []);
     return this._appEl_0;
   }
@@ -147,6 +146,7 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
     this._TreeComponent0_0_4View.updateData(this.parent.context.data);
     this._TreeComponent0_0_4View.detectChangesInternal(throwOnChange);
   }
+  visitRootNodesInternal(cb: any, context: any) { cb(this._el_0, context); }
 }
 function viewFactory_TreeRootComponent1(
     viewUtils: import4.ViewUtils, parentInjector: import5.Injector,

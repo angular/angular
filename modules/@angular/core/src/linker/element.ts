@@ -62,6 +62,14 @@ export class AppElement {
     }
   }
 
+  visitNestedViewRootNodes<C>(cb: (node: any, ctx: C) => void, c: C): void {
+    if (this.nestedViews) {
+      for (var i = 0; i < this.nestedViews.length; i++) {
+        this.nestedViews[i].visitRootNodesInternal(cb, c);
+      }
+    }
+  }
+
   mapNestedViews(nestedViewClass: any, callback: Function): any[] {
     var result: any[] /** TODO #9100 */ = [];
     if (isPresent(this.nestedViews)) {
