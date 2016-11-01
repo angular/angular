@@ -95,6 +95,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
           }
         }
       }
+      this.value = selected;
       fn(selected);
     };
   }
