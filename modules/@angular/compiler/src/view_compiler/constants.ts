@@ -39,7 +39,6 @@ export class ChangeDetectorStatusEnum {
 
 export class ViewConstructorVars {
   static viewUtils = o.variable('viewUtils');
-  static parentInjector = o.variable('parentInjector');
   static parentView = o.variable('parentView');
   static parentIndex = o.variable('parentIndex');
   static parentElement = o.variable('parentElement');

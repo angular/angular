@@ -46,7 +46,7 @@ export class CompilePipe {
           resolveIdentifierToken(Identifiers.ChangeDetectorRef).reference) {
         return getPropertyInView(o.THIS_EXPR.prop('ref'), this.view, this.view.componentView);
       }
-      return injectFromViewParentInjector(diDep.token, false);
+      return injectFromViewParentInjector(view, diDep.token, false);
     });
     this.view.fields.push(new o.ClassField(this.instance.name, o.importType(this.meta.type)));
     this.view.createMethod.resetDebugInfo(null, null);

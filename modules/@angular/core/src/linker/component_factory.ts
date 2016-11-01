@@ -110,17 +110,7 @@ export class ComponentFactory<C> {
     if (!projectableNodes) {
       projectableNodes = [];
     }
-    var hostView: AppView<any> = this._viewFactory(vu, injector, null, null, null);
-    // TODO: implement this in the View class directly?!
-    // (behind a `if (this.type === ViewType.HOST)`)
-    // TODO: and pass the projectableNodes into `createHostView`
-    hostView.visitProjectableNodesInternal =
-        (nodeIndex: number, ngContentIndex: number, cb: any, ctx: any) => {
-          const nodes = projectableNodes[ngContentIndex] || [];
-          for (var i = 0; i < nodes.length; i++) {
-            cb(nodes[i], ctx);
-          }
-        };
-    return hostView.createHostView(rootSelectorOrNode);
+    var hostView: AppView<any> = this._viewFactory(vu, null, null, null);
+    return hostView.createHostView(rootSelectorOrNode, injector, projectableNodes);
   }
 }

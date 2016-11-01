@@ -12,6 +12,7 @@ import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ViewType} from '../private_import_core';
 
 import {CompileView} from './compile_view';
 
@@ -56,12 +57,18 @@ class _ReplaceViewTransformer extends o.ExpressionTransformer {
 }
 
 export function injectFromViewParentInjector(
-    token: CompileTokenMetadata, optional: boolean): o.Expression {
-  var args = [createDiTokenExpression(token)];
+    view: CompileView, token: CompileTokenMetadata, optional: boolean): o.Expression {
+  let viewExpr: o.Expression;
+  if (view.viewType === ViewType.HOST) {
+    viewExpr = o.THIS_EXPR;
+  } else {
+    viewExpr = o.THIS_EXPR.prop('parentView');
+  }
+  let args = [createDiTokenExpression(token), o.THIS_EXPR.prop('parentIndex')];
   if (optional) {
     args.push(o.NULL_EXPR);
   }
-  return o.THIS_EXPR.prop('parentInjector').callMethod('get', args);
+  return viewExpr.callMethod('injectorGet', args);
 }
 
 export function getViewFactoryName(
