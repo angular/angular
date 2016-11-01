@@ -24,7 +24,7 @@ export function getPropertyInView(
     var currView: CompileView = callingView;
     while (currView !== definedView && isPresent(currView.declarationElement.view)) {
       currView = currView.declarationElement.view;
-      viewProp = viewProp.prop('parent');
+      viewProp = viewProp.prop('parentView');
     }
     if (currView !== definedView) {
       throw new Error(

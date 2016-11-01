@@ -52,13 +52,13 @@ export abstract class AppView<T> {
 
   constructor(
       public clazz: any, public componentType: RenderComponentType, public type: ViewType,
-      public viewUtils: ViewUtils, public parentInjector: Injector,
-      public declarationAppElement: AppElement, public cdMode: ChangeDetectorStatus) {
+      public viewUtils: ViewUtils, public parentInjector: Injector, public parentView: AppView<any>,
+      public parentIndex: number, public parentElement: any, public cdMode: ChangeDetectorStatus) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
     } else {
-      this.renderer = declarationAppElement.parentView.renderer;
+      this.renderer = parentView.renderer;
     }
   }
 
@@ -129,8 +129,7 @@ export abstract class AppView<T> {
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       return;
     }
-    var hostElement =
-        this.type === ViewType.COMPONENT ? this.declarationAppElement.nativeElement : null;
+    var hostElement = this.type === ViewType.COMPONENT ? this.parentElement : null;
     if (this.disposables) {
       for (var i = 0; i < this.disposables.length; i++) {
         this.disposables[i]();
@@ -171,10 +170,6 @@ export abstract class AppView<T> {
 
   get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
 
-  get parent(): AppView<any> {
-    return isPresent(this.declarationAppElement) ? this.declarationAppElement.parentView : null;
-  }
-
   get flatRootNodes(): any[] {
     const nodes: any[] = [];
     this.visitRootNodesInternal(addToArray, nodes);
@@ -188,13 +183,12 @@ export abstract class AppView<T> {
   }
 
   visitProjectedNodes<C>(ngContentIndex: number, cb: (node: any, ctx: C) => void, c: C): void {
-    const appEl = this.declarationAppElement;
     switch (this.type) {
       case ViewType.EMBEDDED:
-        appEl.parentView.visitProjectedNodes(ngContentIndex, cb, c);
+        this.parentView.visitProjectedNodes(ngContentIndex, cb, c);
         break;
       case ViewType.COMPONENT:
-        appEl.parentView.visitProjectableNodesInternal(appEl.index, ngContentIndex, cb, c);
+        this.parentView.visitProjectableNodesInternal(this.parentIndex, ngContentIndex, cb, c);
         break;
     }
   }
@@ -256,9 +250,11 @@ export abstract class AppView<T> {
       if (c.cdMode === ChangeDetectorStatus.Checked) {
         c.cdMode = ChangeDetectorStatus.CheckOnce;
       }
-      let parentEl =
-          c.type === ViewType.COMPONENT ? c.declarationAppElement : c.viewContainerElement;
-      c = isPresent(parentEl) ? parentEl.parentView : null;
+      if (c.type === ViewType.COMPONENT) {
+        c = c.parentView;
+      } else {
+        c = c.viewContainerElement ? c.viewContainerElement.parentView : null;
+      }
     }
   }
 
@@ -274,9 +270,11 @@ export class DebugAppView<T> extends AppView<T> {
 
   constructor(
       clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
-      parentInjector: Injector, declarationAppElement: AppElement, cdMode: ChangeDetectorStatus,
-      public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
-    super(clazz, componentType, type, viewUtils, parentInjector, declarationAppElement, cdMode);
+      parentInjector: Injector, parentView: AppView<any>, parentIndex: number, parentNode: any,
+      cdMode: ChangeDetectorStatus, public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
+    super(
+        clazz, componentType, type, viewUtils, parentInjector, parentView, parentIndex, parentNode,
+        cdMode);
   }
 
   create(context: T) {

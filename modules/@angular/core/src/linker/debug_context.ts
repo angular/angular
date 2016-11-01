@@ -39,13 +39,10 @@ export class DebugContext implements RenderDebugInfo {
   }
   get componentRenderElement() {
     var componentView = this._view;
-    while (isPresent(componentView.declarationAppElement) &&
-           componentView.type !== ViewType.COMPONENT) {
-      componentView = <DebugAppView<any>>componentView.declarationAppElement.parentView;
+    while (isPresent(componentView.parentView) && componentView.type !== ViewType.COMPONENT) {
+      componentView = <DebugAppView<any>>componentView.parentView;
     }
-    return isPresent(componentView.declarationAppElement) ?
-        componentView.declarationAppElement.nativeElement :
-        null;
+    return componentView.parentElement;
   }
   get injector(): Injector { return this._view.injector(this._nodeIndex); }
   get renderNode(): any {

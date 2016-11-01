@@ -24,7 +24,7 @@ export function main() {
       const definedView = createCompileView({className: 'parentView'});
       const callingView = createCompileView({className: 'childView', parent: definedView});
       expect(getPropertyInView(expr, callingView, definedView))
-          .toEqual(o.THIS_EXPR.prop('parent').prop('someProp'));
+          .toEqual(o.THIS_EXPR.prop('parentView').prop('someProp'));
     });
 
     it('should access a known property in a parent view with cast', () => {
@@ -32,7 +32,7 @@ export function main() {
       const definedView = createCompileView({className: 'parentView', fields: ['someProp']});
       const callingView = createCompileView({className: 'childView', parent: definedView});
       expect(getPropertyInView(expr, callingView, definedView))
-          .toEqual(o.THIS_EXPR.prop('parent').cast(definedView.classType).prop('someProp'));
+          .toEqual(o.THIS_EXPR.prop('parentView').cast(definedView.classType).prop('someProp'));
     });
 
     it('should access a known property in a parent view with cast also for property chain expressions',
@@ -41,7 +41,7 @@ export function main() {
          const definedView = createCompileView({className: 'parentView', fields: ['someProp']});
          const callingView = createCompileView({className: 'childView', parent: definedView});
          expect(getPropertyInView(expr, callingView, definedView))
-             .toEqual(o.THIS_EXPR.prop('parent')
+             .toEqual(o.THIS_EXPR.prop('parentView')
                           .cast(definedView.classType)
                           .prop('someProp')
                           .prop('context'));
