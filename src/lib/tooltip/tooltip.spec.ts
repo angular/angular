@@ -50,6 +50,14 @@ describe('MdTooltip', () => {
       tooltipDirective._handleMouseLeave(null);
       expect(overlayContainerElement.textContent).toBe('');
     });
+
+    it('should be removed after parent destroyed', () => {
+      tooltipDirective._handleMouseEnter(null);
+      expect(tooltipDirective.visible).toBeTruthy();
+      fixture.destroy();
+      expect(overlayContainerElement.childNodes.length).toBe(0);
+      expect(overlayContainerElement.textContent).toBe('');
+    });
   });
 });
 

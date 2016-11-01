@@ -69,6 +69,15 @@ export class MdTooltip {
   }
 
   /**
+   * Remove overlay after tooltip's parent has been destroyed
+   */
+  ngOnDestroy() {
+    this.visible = false;
+    this._overlayRef.dispose();
+    this._overlayRef = null;
+  }
+
+  /**
    * Create the overlay config and position strategy
    */
   private _createOverlay() {
