@@ -15,7 +15,7 @@ import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToMessage, extractPlaceholders} from './serializer';
+import {Serializer} from './serializer';
 import {digest} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
@@ -72,8 +72,7 @@ class _Visitor implements ml.Visitor {
   private _bundleDepth: number;
   private _translationDepth: number;
   private _errors: I18nError[];
-  private _placeholders: {[phName: string]: string};
-  private _placeholderToMessage: {[phName: string]: i18n.Message};
+  private _sourceMessage: i18n.Message;
 
   constructor(private _serializer: Serializer) {}
 
@@ -86,13 +85,11 @@ class _Visitor implements ml.Visitor {
     this._translationDepth = 0;
     this._errors = [];
 
-    // Find all messages
+    // load all translations
     ml.visitAll(this, nodes, null);
 
     const messageMap: {[msgId: string]: i18n.Message} = {};
     messageBundle.getMessages().forEach(m => messageMap[this._serializer.digest(m)] = m);
-    const placeholdersByMsgId = extractPlaceholders(messageMap);
-    const placeholderToMessageByMsgId = extractPlaceholderToMessage(messageMap);
 
     this._messageNodes
         .filter(message => {
@@ -116,9 +113,7 @@ class _Visitor implements ml.Visitor {
         })
         .forEach(message => {
           const msgId = message[0];
-          this._placeholders = placeholdersByMsgId[msgId] || {};
-          this._placeholderToMessage = placeholderToMessageByMsgId[msgId] || {};
-
+          this._sourceMessage = messageMap[msgId];
           // TODO(vicb): make sure there is no `_TRANSLATIONS_TAG` nor `_TRANSLATION_TAG`
           this._translatedMessages[msgId] = ml.visitAll(this, message[1]).join('');
         });
@@ -161,13 +156,14 @@ class _Visitor implements ml.Visitor {
           this._addError(element, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
         } else {
           const phName = nameAttr.value;
-          if (this._placeholders.hasOwnProperty(phName)) {
-            return this._placeholders[phName];
+          if (this._sourceMessage.placeholders.hasOwnProperty(phName)) {
+            return this._sourceMessage.placeholders[phName];
           }
-          if (this._placeholderToMessage.hasOwnProperty(phName)) {
-            const refMessageId = this._serializer.digest(this._placeholderToMessage[phName]);
-            if (this._translatedMessages.hasOwnProperty(refMessageId)) {
-              return this._translatedMessages[refMessageId];
+          if (this._sourceMessage.placeholderToMessage.hasOwnProperty(phName)) {
+            const refMsg = this._sourceMessage.placeholderToMessage[phName];
+            const refMsgId = this._serializer.digest(refMsg);
+            if (this._translatedMessages.hasOwnProperty(refMsgId)) {
+              return this._translatedMessages[refMsgId];
             }
           }
           // TODO(vicb): better error message for when

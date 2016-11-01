@@ -16,7 +16,7 @@ import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToMessage, extractPlaceholders} from './serializer';
+import {Serializer} from './serializer';
 import * as xml from './xml_helper';
 
 const _VERSION = '1.2';
@@ -175,8 +175,7 @@ class _LoadVisitor implements ml.Visitor {
   private _msgId: string;
   private _target: ml.Node[];
   private _errors: I18nError[];
-  private _placeholders: {[phName: string]: string};
-  private _placeholderToMessage: {[phName: string]: i18n.Message};
+  private _sourceMessage: i18n.Message;
 
   constructor(private _serializer: Serializer) {}
 
@@ -193,8 +192,6 @@ class _LoadVisitor implements ml.Visitor {
 
     const messageMap: {[msgId: string]: i18n.Message} = {};
     messageBundle.getMessages().forEach(m => messageMap[this._serializer.digest(m)] = m);
-    const placeholdersByMsgId = extractPlaceholders(messageMap);
-    const placeholderToMessageByMsgId = extractPlaceholderToMessage(messageMap);
 
     this._messageNodes
         .filter(message => {
@@ -218,8 +215,7 @@ class _LoadVisitor implements ml.Visitor {
         })
         .forEach(message => {
           const msgId = message[0];
-          this._placeholders = placeholdersByMsgId[msgId] || {};
-          this._placeholderToMessage = placeholderToMessageByMsgId[msgId] || {};
+          this._sourceMessage = messageMap[msgId];
           // TODO(vicb): make sure there is no `_TRANSLATIONS_TAG` nor `_TRANSLATION_TAG`
           this._translatedMessages[msgId] = ml.visitAll(this, message[1]).join('');
         });
@@ -257,11 +253,12 @@ class _LoadVisitor implements ml.Visitor {
           this._addError(element, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
         } else {
           const phName = idAttr.value;
-          if (this._placeholders.hasOwnProperty(phName)) {
-            return this._placeholders[phName];
+          if (this._sourceMessage.placeholders.hasOwnProperty(phName)) {
+            return this._sourceMessage.placeholders[phName];
           }
-          if (this._placeholderToMessage.hasOwnProperty(phName)) {
-            const refMsgId = this._serializer.digest(this._placeholderToMessage[phName]);
+          if (this._sourceMessage.placeholderToMessage.hasOwnProperty(phName)) {
+            const refMsg = this._sourceMessage.placeholderToMessage[phName];
+            const refMsgId = this._serializer.digest(refMsg);
             if (this._translatedMessages.hasOwnProperty(refMsgId)) {
               return this._translatedMessages[refMsgId];
             }
