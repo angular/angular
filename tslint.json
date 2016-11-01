@@ -4,7 +4,8 @@
     "node_modules/vrsource-tslint-rules/rules"
   ],
   "rules": {
-    "file-header": [true, "Copyright Google Inc\\."],
+    "eofline": true,
+    "file-header": [true, " Copyright Google Inc\\."],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,
