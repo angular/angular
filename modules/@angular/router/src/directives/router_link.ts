@@ -108,13 +108,10 @@ export class RouterLink {
     }
   }
 
-  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
-  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
-    if (button !== 0 || ctrlKey || metaKey) {
-      return true;
-    }
+  @HostListener('click', [])
+  onClick(): boolean {
     this.router.navigateByUrl(this.urlTree);
-    return false;
+    return true;
   }
 
   get urlTree(): UrlTree {
