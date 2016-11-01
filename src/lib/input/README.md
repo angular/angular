@@ -5,7 +5,7 @@ Inputs are the basic input component of Material 2. The spec can be found [here]
 
 
 ## Notes
-* The `<md-input>` / `<md-textara>` component fully support two-way binding of `ngModel`, as if it was a normal `<input>` and `<textarea>`.
+* The `<md-input>` / `<md-textarea>` component fully support two-way binding of `ngModel`, as if it was a normal `<input>` and `<textarea>`.
 
 
 
