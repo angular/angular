@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/toPromise';
+
+import {Observable} from 'rxjs/Observable';
+
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, equalParamsAndUrlSegments} from '../src/router_state';
 import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
@@ -96,6 +101,43 @@ describe('RouterState & Snapshot', () => {
     });
   });
 
+  describe('RouterState with Params', () => {
+    let state: RouterState;
+    let a: ActivatedRoute;
+    let b: ActivatedRoute;
+    let c: ActivatedRoute;
+
+    beforeEach(() => {
+      a = createActivatedRouteWithParams('a', {
+        'param1': 'a',
+        'param2': 'b',
+      });
+      b = createActivatedRouteWithParams('b', {
+        'param3': 'c',
+        'param4': 'd',
+      });
+      c = createActivatedRouteWithParams('c', {
+        'param5': 'e',
+        'param6': 'f',
+      });
+
+      const root = new TreeNode(a, [new TreeNode(b, [new TreeNode(c, [])])]);
+
+      state = new RouterState(root, <any>null);
+    });
+
+    it('should return params from root', () => {
+      return c.paramsFromRoot.toPromise().then((params) => {
+        expect(params['param1']).toBe('a');
+        expect(params['param2']).toBe('b');
+        expect(params['param3']).toBe('c');
+        expect(params['param4']).toBe('d');
+        expect(params['param5']).toBe('e');
+        expect(params['param6']).toBe('f');
+      });
+    });
+  });
+
   describe('equalParamsAndUrlSegments', () => {
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       return new ActivatedRouteSnapshot(
@@ -133,4 +175,10 @@ function createActivatedRouteSnapshot(cmp: string) {
 function createActivatedRoute(cmp: string) {
   return new ActivatedRoute(
       <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null);
+}
+
+function createActivatedRouteWithParams(cmp: string, params: Params) {
+  return new ActivatedRoute(
+      <any>null, Observable.of(params), <any>null, <any>null, <any>null, <any>null, <any>cmp,
+      <any>null);
 }

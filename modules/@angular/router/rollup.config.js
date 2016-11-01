@@ -18,6 +18,7 @@ export default {
 
     'rxjs/BehaviorSubject': 'Rx',
     'rxjs/Observable': 'Rx',
+    'rxjs/Rx': 'Rx',
     'rxjs/Subject': 'Rx',
     'rxjs/Subscription': 'Rx',
     'rxjs/util/EmptyError': 'Rx',
@@ -27,6 +28,9 @@ export default {
     'rxjs/observable/forkJoin': 'Rx.Observable',
     'rxjs/observable/of': 'Rx.Observable',
 
+    'rxjs/add/observable/combineLatest': 'Rx.Observable',
+
+    'rxjs/operator/concatMap': 'Rx.Observable.prototype',
     'rxjs/operator/toPromise': 'Rx.Observable.prototype',
     'rxjs/operator/map': 'Rx.Observable.prototype',
     'rxjs/operator/mergeAll': 'Rx.Observable.prototype',
@@ -37,7 +41,9 @@ export default {
     'rxjs/operator/first': 'Rx.Observable.prototype',
     'rxjs/operator/catch': 'Rx.Observable.prototype',
     'rxjs/operator/last': 'Rx.Observable.prototype',
-    'rxjs/operator/filter': 'Rx.Observable.prototype'
+    'rxjs/operator/filter': 'Rx.Observable.prototype',
+
+    'rxjs/add/operator/map': 'Rx.Observable.prototype'
   },
   plugins: []
 };

@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/map';
+
 import {Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
@@ -195,6 +198,22 @@ export class ActivatedRoute {
    * The path from the root of the router state tree to this route.
    */
   get pathFromRoot(): ActivatedRoute[] { return this._routerState.pathFromRoot(this); }
+
+  /**
+   * All the parameters combined from the root of the router state tree to this route.
+   */
+  get paramsFromRoot(): Observable<Params> {
+    return Observable.combineLatest(this.pathFromRoot.map((v: ActivatedRoute) => v.params))
+        .map(
+            (params: Params[]) => params.reduce(
+                (pre: Params, cur: Params) => {
+                  for (let key of Object.keys(cur)) {
+                    pre[key] = cur[key];
+                  }
+                  return pre;
+                },
+                {} as Params));
+  }
 
   /**
    * @docsNotRequired
