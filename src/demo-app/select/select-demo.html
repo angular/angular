@@ -1,1 +1,5 @@
-<md-select></md-select>
+<div class="demo-select">
+  <md-select placeholder="Food">
+    <md-option *ngFor="let food of foods"> {{ food.viewValue }} </md-option>
+  </md-select>
+</div>

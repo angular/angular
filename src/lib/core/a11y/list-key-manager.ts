@@ -30,6 +30,10 @@ export class ListKeyManager {
     return this._tabOut.asObservable();
   }
 
+  get focusedItemIndex(): number {
+    return this._focusedItemIndex;
+  }
+
   set focusedItemIndex(value: number) {
     this._focusedItemIndex = value;
   }

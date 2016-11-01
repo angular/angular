@@ -1,0 +1,62 @@
+@import '../core/style/menu-common';
+
+$md-select-trigger-height: 30px !default;
+$md-select-trigger-min-width: 112px !default;
+$md-select-arrow-size: 5px !default;
+
+md-select {
+  display: inline-block;
+  outline: none;
+}
+
+.md-select-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: $md-select-trigger-height;
+  min-width: $md-select-trigger-min-width;
+  cursor: pointer;
+}
+
+.md-select-placeholder {
+  padding: 0 2px;
+  transform-origin: left top;
+
+  [dir='rtl'] & {
+    transform-origin: right top;
+  }
+}
+
+.md-select-value {
+  position: absolute;
+}
+
+.md-select-arrow {
+  width: 0;
+  height: 0;
+  border-left: $md-select-arrow-size solid transparent;
+  border-right: $md-select-arrow-size solid transparent;
+  border-top: $md-select-arrow-size solid;
+}
+
+.md-select-panel {
+  @include md-menu-base();
+  padding-top: 0;
+  padding-bottom: 0;
+  transform-origin: top;
+}
+
+md-option {
+  @include md-menu-item-base();
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+.md-option-ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}

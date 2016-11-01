@@ -2,5 +2,50 @@
 @import '../core/theming/theming';
 
 @mixin md-select-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
 
+  .md-select-trigger {
+    color: md-color($foreground, hint-text);
+    border-bottom: 1px solid md-color($foreground, divider);
+
+    md-select:focus & {
+      border-bottom: 1px solid md-color($primary);
+    }
+  }
+
+  .md-select-placeholder {
+    md-select:focus & {
+      color: md-color($primary);
+    }
+  }
+
+  .md-select-arrow {
+    color: md-color($foreground, hint-text);
+
+    md-select:focus & {
+      color: md-color($primary);
+    }
+  }
+
+  .md-select-content {
+    background: md-color($background, card);
+  }
+
+  .md-select-value {
+    color: md-color($foreground, text);
+  }
+
+  md-option {
+    &:hover, &:focus {
+     background: md-color($background, hover);
+    }
+
+    &.md-selected {
+      background: md-color($background, hover);
+      color: md-color($primary);
+    }
+
+  }
 }

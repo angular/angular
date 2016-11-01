@@ -26,6 +26,7 @@ export const ELEMENTS_SELECTOR = `
   md-list-item,
   md-menu,
   md-nav-list,
+  md-option,
   md-placeholder,
   md-progress-bar,
   md-progress-circle,
