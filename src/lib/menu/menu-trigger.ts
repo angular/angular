@@ -10,7 +10,7 @@ import {
     OnDestroy,
     Renderer
 } from '@angular/core';
-import {MdMenu} from './menu-directive';
+import {MdMenuPanel} from './menu-panel';
 import {MdMenuMissingError} from './menu-errors';
 import {
     ENTER,
@@ -47,7 +47,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   // the first item of the list when the menu is opened via the keyboard
   private _openedFromKeyboard: boolean = false;
 
-  @Input('md-menu-trigger-for') menu: MdMenu;
+  @Input('md-menu-trigger-for') menu: MdMenuPanel;
   @Output() onMenuOpen = new EventEmitter<void>();
   @Output() onMenuClose = new EventEmitter<void>();
 
@@ -120,7 +120,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     this._setIsMenuOpen(true);
 
     if (this._openedFromKeyboard) {
-      this.menu._focusFirstItem();
+      this.menu.focusFirstItem();
     }
   };
 
@@ -148,7 +148,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    *  md-menu-trigger-for.  If not, an exception is thrown.
    */
   private _checkMenu() {
-    if (!this.menu || !(this.menu instanceof MdMenu)) {
+    if (!this.menu) {
       throw new MdMenuMissingError();
     }
   }

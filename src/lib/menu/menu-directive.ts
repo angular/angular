@@ -16,6 +16,7 @@ import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
+import {MdMenuPanel} from './menu-panel';
 
 @Component({
   moduleId: module.id,
@@ -26,7 +27,7 @@ import {ListKeyManager} from '../core/a11y/list-key-manager';
   encapsulation: ViewEncapsulation.None,
   exportAs: 'mdMenu'
 })
-export class MdMenu {
+export class MdMenu implements MdMenuPanel {
   private _keyManager: ListKeyManager;
 
   // config object to be passed into the menu's ngClass
@@ -70,7 +71,7 @@ export class MdMenu {
    * to focus the first item when the menu is opened by the ENTER key.
    * TODO: internal
    */
-  _focusFirstItem() {
+  focusFirstItem() {
     // The menu always opens with the first item focused.
     this.items.first.focus();
     this._keyManager.focusedItemIndex = 0;
