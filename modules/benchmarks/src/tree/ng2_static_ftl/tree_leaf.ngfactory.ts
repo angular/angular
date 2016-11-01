@@ -8,8 +8,8 @@
 import * as import7 from '@angular/core/src/change_detection/change_detection';
 import * as import5 from '@angular/core/src/di/injector';
 import * as import9 from '@angular/core/src/linker/component_factory';
-import * as import2 from '@angular/core/src/linker/element';
 import * as import1 from '@angular/core/src/linker/view';
+import * as import2 from '@angular/core/src/linker/view_container';
 import * as import6 from '@angular/core/src/linker/view_type';
 import * as import4 from '@angular/core/src/linker/view_utils';
 import * as import8 from '@angular/core/src/metadata/view';

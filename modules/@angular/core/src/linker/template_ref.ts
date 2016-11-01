@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
+import {ViewContainer} from './view_container';
 import {EmbeddedViewRef} from './view_ref';
+
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.

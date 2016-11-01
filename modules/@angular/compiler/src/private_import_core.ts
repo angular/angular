@@ -17,8 +17,8 @@ export const LifecycleHooks: typeof r.LifecycleHooks = r.LifecycleHooks;
 export const LIFECYCLE_HOOKS_VALUES: typeof r.LIFECYCLE_HOOKS_VALUES = r.LIFECYCLE_HOOKS_VALUES;
 export type ReflectorReader = typeof r._ReflectorReader;
 export const ReflectorReader: typeof r.ReflectorReader = r.ReflectorReader;
-export type AppElement = typeof r._AppElement;
-export const AppElement: typeof r.AppElement = r.AppElement;
+export type ViewContainer = typeof r._ViewContainer;
+export const ViewContainer: typeof r.ViewContainer = r.ViewContainer;
 export const CodegenComponentFactoryResolver: typeof r.CodegenComponentFactoryResolver =
     r.CodegenComponentFactoryResolver;
 export const ComponentRef_: typeof r.ComponentRef_ = r.ComponentRef_;

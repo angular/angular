@@ -40,7 +40,7 @@ export class CompileElement extends CompileNode {
   }
 
   public compViewExpr: o.Expression = null;
-  public appElement: o.ReadPropExpr;
+  public viewContainer: o.ReadPropExpr;
   public elementRef: o.Expression;
   public injector: o.Expression;
   public instances = new Map<any, o.Expression>();
@@ -74,30 +74,31 @@ export class CompileElement extends CompileNode {
     this.instances.set(
         resolveIdentifierToken(Identifiers.Renderer).reference, o.THIS_EXPR.prop('renderer'));
     if (this.hasViewContainer) {
-      this._createAppElement();
+      this._createViewContainer();
     }
     if (this.component) {
       this._createComponentFactoryResolver();
     }
   }
 
-  private _createAppElement() {
-    var fieldName = `_appEl_${this.nodeIndex}`;
+  private _createViewContainer() {
+    var fieldName = `_vc_${this.nodeIndex}`;
     var parentNodeIndex = this.isRootElement() ? null : this.parent.nodeIndex;
-    // private is fine here as no child view will reference an AppElement
+    // private is fine here as no child view will reference a ViewContainer
     this.view.fields.push(new o.ClassField(
-        fieldName, o.importType(resolveIdentifier(Identifiers.AppElement)),
+        fieldName, o.importType(resolveIdentifier(Identifiers.ViewContainer)),
         [o.StmtModifier.Private]));
     var statement =
         o.THIS_EXPR.prop(fieldName)
-            .set(o.importExpr(resolveIdentifier(Identifiers.AppElement)).instantiate([
+            .set(o.importExpr(resolveIdentifier(Identifiers.ViewContainer)).instantiate([
               o.literal(this.nodeIndex), o.literal(parentNodeIndex), o.THIS_EXPR, this.renderNode
             ]))
             .toStmt();
     this.view.createMethod.addStmt(statement);
-    this.appElement = o.THIS_EXPR.prop(fieldName);
-    this.instances.set(resolveIdentifierToken(Identifiers.AppElement).reference, this.appElement);
-    this.view.appElements.push(this.appElement);
+    this.viewContainer = o.THIS_EXPR.prop(fieldName);
+    this.instances.set(
+        resolveIdentifierToken(Identifiers.ViewContainer).reference, this.viewContainer);
+    this.view.viewContainers.push(this.viewContainer);
   }
 
   private _createComponentFactoryResolver() {
@@ -159,7 +160,7 @@ export class CompileElement extends CompileNode {
     if (this.hasViewContainer) {
       this.instances.set(
           resolveIdentifierToken(Identifiers.ViewContainerRef).reference,
-          this.appElement.prop('vcRef'));
+          this.viewContainer.prop('vcRef'));
     }
 
     this._resolvedProviders = new Map<any, ProviderAst>();

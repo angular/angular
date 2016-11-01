@@ -15,9 +15,9 @@ import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
 
-import {AppElement} from './element';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
+import {ViewContainer} from './view_container';
 
 @Injectable()
 export class ViewUtils {

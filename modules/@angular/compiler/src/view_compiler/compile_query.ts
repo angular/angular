@@ -91,7 +91,7 @@ function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
   return ListWrapper.flatten(viewValues.values.map((entry) => {
     if (entry instanceof ViewQueryValues) {
       return mapNestedViews(
-          entry.view.declarationElement.appElement, entry.view, createQueryValues(entry));
+          entry.view.declarationElement.viewContainer, entry.view, createQueryValues(entry));
     } else {
       return <o.Expression>entry;
     }
@@ -99,11 +99,10 @@ function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
 }
 
 function mapNestedViews(
-    declarationAppElement: o.Expression, view: CompileView,
-    expressions: o.Expression[]): o.Expression {
+    viewContainer: o.Expression, view: CompileView, expressions: o.Expression[]): o.Expression {
   var adjustedExpressions: o.Expression[] = expressions.map(
       (expr) => o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr));
-  return declarationAppElement.callMethod('mapNestedViews', [
+  return viewContainer.callMethod('mapNestedViews', [
     o.variable(view.className),
     o.fn(
         [new o.FnParam('nestedView', view.classType)],

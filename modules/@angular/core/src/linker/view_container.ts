@@ -17,10 +17,10 @@ import {ViewType} from './view_type';
 
 
 /**
- * An AppElement is created for elements that have a ViewContainerRef
+ * A ViewContainer is created for elements that have a ViewContainerRef
  * to keep track of the nested views.
  */
-export class AppElement {
+export class ViewContainer {
   public nestedViews: AppView<any>[];
 
   constructor(

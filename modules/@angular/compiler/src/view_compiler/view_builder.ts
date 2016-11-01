@@ -72,21 +72,20 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var projectedNode = _getOuterContainerOrSelf(node);
     var parent = projectedNode.parent;
     var ngContentIndex = (<any>projectedNode.sourceAst).ngContentIndex;
-    var vcAppEl =
-        (node instanceof CompileElement && node.hasViewContainer) ? node.appElement : null;
+    var viewContainer =
+        (node instanceof CompileElement && node.hasViewContainer) ? node.viewContainer : null;
     if (this._isRootNode(parent)) {
-      // store appElement as root node only for ViewContainers
       if (this.view.viewType !== ViewType.COMPONENT) {
         this.view.rootNodes.push(new CompileViewRootNode(
-            vcAppEl ? CompileViewRootNodeType.ViewContainer : CompileViewRootNodeType.Node,
-            vcAppEl || node.renderNode));
+            viewContainer ? CompileViewRootNodeType.ViewContainer : CompileViewRootNodeType.Node,
+            viewContainer || node.renderNode));
       }
     } else if (isPresent(parent.component) && isPresent(ngContentIndex)) {
       parent.addContentNode(
           ngContentIndex,
           new CompileViewRootNode(
-              vcAppEl ? CompileViewRootNodeType.ViewContainer : CompileViewRootNodeType.Node,
-              vcAppEl || node.renderNode));
+              viewContainer ? CompileViewRootNodeType.ViewContainer : CompileViewRootNodeType.Node,
+              viewContainer || node.renderNode));
     }
   }
 
@@ -494,8 +493,9 @@ function createViewClass(
 
 function generateDestroyMethod(view: CompileView): o.Statement[] {
   const stmts: o.Statement[] = [];
-  view.appElements.forEach(
-      (appElement) => { stmts.push(appElement.callMethod('destroyNestedViews', []).toStmt()); });
+  view.viewContainers.forEach((viewContainer) => {
+    stmts.push(viewContainer.callMethod('destroyNestedViews', []).toStmt());
+  });
   view.viewChildren.forEach(
       (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
   stmts.push(...view.destroyMethod.finish());
@@ -600,9 +600,9 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   }
   stmts.push(...view.animationBindingsMethod.finish());
   stmts.push(...view.detectChangesInInputsMethod.finish());
-  view.appElements.forEach((appElement) => {
+  view.viewContainers.forEach((viewContainer) => {
     stmts.push(
-        appElement.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
+        viewContainer.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
             .toStmt());
   });
   var afterContentStmts = view.updateContentQueriesMethod.finish().concat(
