@@ -233,6 +233,44 @@ describe('MdRadio', () => {
           .toBe(0, 'Expect no [md-ripple] in radio buttons');
       }
     }));
+
+    it('should update the group\'s selected radio to null when unchecking that radio '
+        + 'programmatically', () => {
+      let changeSpy = jasmine.createSpy('radio-group change listener');
+      groupInstance.change.subscribe(changeSpy);
+      radioInstances[0].checked = true;
+
+      fixture.detectChanges();
+
+      expect(changeSpy).toHaveBeenCalled();
+      expect(groupInstance.value).toBeTruthy();
+
+      radioInstances[0].checked = false;
+
+      fixture.detectChanges();
+
+      expect(changeSpy).toHaveBeenCalledTimes(2);
+      expect(groupInstance.value).toBeFalsy();
+      expect(radioInstances.every(radio => !radio.checked)).toBe(true);
+      expect(groupInstance.selected).toBeNull();
+    });
+
+    it('should fire a change event from the group whenever a radio checked state changes', () => {
+      let changeSpy = jasmine.createSpy('radio-group change listener');
+      groupInstance.change.subscribe(changeSpy);
+      radioInstances[0].checked = true;
+
+      fixture.detectChanges();
+
+      expect(changeSpy).toHaveBeenCalled();
+      expect(groupInstance.value).toBeTruthy();
+
+      radioInstances[1].checked = true;
+
+      fixture.detectChanges();
+
+      expect(changeSpy).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('group with ngModel', () => {

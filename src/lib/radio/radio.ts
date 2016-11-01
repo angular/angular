@@ -306,15 +306,19 @@ export class MdRadioButton implements OnInit {
   }
 
   set checked(newCheckedState: boolean) {
-    if (newCheckedState) {
-      // Notify all radio buttons with the same name to un-check.
-      this.radioDispatcher.notify(this.id, this.name);
-    }
-
     this._checked = newCheckedState;
 
     if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
       this.radioGroup.selected = this;
+    } else if (!newCheckedState && this.radioGroup && this.radioGroup.value == this.value) {
+      // When unchecking the selected radio button, update the selected radio
+      // property on the group.
+      this.radioGroup.selected = null;
+    }
+
+    if (newCheckedState) {
+      // Notify all radio buttons with the same name to un-check.
+      this.radioDispatcher.notify(this.id, this.name);
     }
   }
 
