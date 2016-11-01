@@ -8,6 +8,7 @@ $md-slide-toggle-height: 24px !default;
 $md-slide-toggle-bar-height: 14px !default;
 $md-slide-toggle-thumb-size: 20px !default;
 $md-slide-toggle-margin: 16px !default;
+$md-slide-toggle-spacing: 8px !default;
 
 
 @mixin md-switch-ripple() {
@@ -72,7 +73,12 @@ md-slide-toggle {
 
   position: relative;
 
-  margin-right: 8px;
+  margin-right: $md-slide-toggle-spacing;
+
+  [dir='rtl'] & {
+    margin-left: $md-slide-toggle-spacing;
+    margin-right: 0;
+  }
 }
 
 // The thumb container is responsible for the dragging functionality.
