@@ -17,23 +17,3 @@ export interface Serializer {
 
   digest(message: i18n.Message): string;
 }
-
-// Generate a map of placeholder to content indexed by message ids
-export function extractPlaceholders(messageMap: {[msgKey: string]: i18n.Message}) {
-  const phByMsgId: {[msgId: string]: {[name: string]: string}} = {};
-
-  Object.keys(messageMap).forEach(msgId => { phByMsgId[msgId] = messageMap[msgId].placeholders; });
-
-  return phByMsgId;
-}
-
-// Generate a map of placeholder to message ids indexed by message ids
-export function extractPlaceholderToMessage(messageMap: {[msgKey: string]: i18n.Message}) {
-  const phToMsgByMsgId: {[msgId: string]: {[name: string]: i18n.Message}} = {};
-
-  Object.keys(messageMap).forEach(msgId => {
-    phToMsgByMsgId[msgId] = messageMap[msgId].placeholderToMessage;
-  });
-
-  return phToMsgByMsgId;
-}
