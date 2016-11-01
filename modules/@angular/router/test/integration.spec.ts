@@ -1245,7 +1245,7 @@ describe('Integration', () => {
               {
                 provide: 'RecordingDeactivate',
                 useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                  log.push(['Deactivate', a.routeConfig.path]);
+                  log.push({path: a.routeConfig.path, component: c});
                   return true;
                 }
               },
@@ -1290,7 +1290,11 @@ describe('Integration', () => {
                    children: [{
                      path: 'child',
                      canDeactivate: ['RecordingDeactivate'],
-                     children: [{path: 'simple', component: SimpleCmp}]
+                     children: [{
+                       path: 'simple',
+                       component: SimpleCmp,
+                       canDeactivate: ['RecordingDeactivate']
+                     }]
                    }]
                  }]
                },
@@ -1304,9 +1308,12 @@ describe('Integration', () => {
              router.navigateByUrl('/simple');
              advance(fixture);
 
-             expect(log).toEqual([
-               ['Deactivate', 'child'], ['Deactivate', 'parent'], ['Deactivate', 'grandparent']
+             const child = fixture.debugElement.children[1].componentInstance;
+
+             expect(log.map((a: any) => a.path)).toEqual([
+               'simple', 'child', 'parent', 'grandparent'
              ]);
+             expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
            })));
 
         it('works with aux routes',
@@ -1333,7 +1340,7 @@ describe('Integration', () => {
              router.navigate(['two-outlets', {outlets: {aux: null}}]);
              advance(fixture);
 
-             expect(log).toEqual([['Deactivate', 'b']]);
+             expect(log.map((a: any) => a.path)).toEqual(['b']);
              expect(location.path()).toEqual('/two-outlets/(a)');
            })));
 
