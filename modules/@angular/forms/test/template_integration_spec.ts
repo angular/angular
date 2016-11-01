@@ -765,10 +765,21 @@ export function main() {
         comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
       });
 
-      const setSelectedCities = (selectedCities: any): void => {
-        comp.selectedCities = selectedCities;
+      const detectChangesAndTick = (): void => {
         fixture.detectChanges();
         tick();
+      };
+
+      const setSelectedCities = (selectedCities: any): void => {
+        comp.selectedCities = selectedCities;
+        detectChangesAndTick();
+      };
+
+      const selectOptionViaUI = (valueString: string): void => {
+        const select = fixture.debugElement.query(By.css('select'));
+        select.nativeElement.value = valueString;
+        dispatchEvent(select.nativeElement, 'change');
+        detectChangesAndTick();
       };
 
       const assertOptionElementSelectedState = (selectedStates: boolean[]): void => {
@@ -781,36 +792,30 @@ export function main() {
         }
       };
 
-      const testNewModelValueUnselectsAllOptions = (modelValue: any): void => {
-        setSelectedCities([comp.cities[1]]);
-        assertOptionElementSelectedState([false, true, false]);
+      it('should reflect state of model after option selected and new options subsequently added',
+         fakeAsync(() => {
+           setSelectedCities([]);
 
-        setSelectedCities(modelValue);
-
-        const select = fixture.debugElement.query(By.css('select'));
-        expect(select.nativeElement.value).toEqual('');
-        assertOptionElementSelectedState([false, false, false]);
-      };
-
-      it('should support setting value to null and undefined', fakeAsync(() => {
-           testNewModelValueUnselectsAllOptions(null);
-           testNewModelValueUnselectsAllOptions(undefined);
-         }));
-
-      it('should clear all selected option elements when value of wrong type supplied',
-         fakeAsync(() => { testNewModelValueUnselectsAllOptions(''); }));
-
-      it('should set option elements to selected that are present in model', fakeAsync(() => {
-           setSelectedCities([comp.cities[0], comp.cities[2]]);
-           assertOptionElementSelectedState([true, false, true]);
-         }));
-
-      it('should clear selected option elements since removed from model', fakeAsync(() => {
-           const selectedCities: [{'name:string': string}] = <[{'name:string': string}]>[];
-           selectedCities.push.apply(selectedCities, comp.cities);
-           setSelectedCities(selectedCities);
-           setSelectedCities([comp.cities[1]]);
+           selectOptionViaUI('1: Object');
            assertOptionElementSelectedState([false, true, false]);
+
+           comp.cities.push({'name': 'Chicago'});
+           detectChangesAndTick();
+
+           assertOptionElementSelectedState([false, true, false, false]);
+         }));
+
+      it('should reflect state of model after option selected and then other options removed',
+         fakeAsync(() => {
+           setSelectedCities([]);
+
+           selectOptionViaUI('1: Object');
+           assertOptionElementSelectedState([false, true, false]);
+
+           comp.cities.pop();
+           detectChangesAndTick();
+
+           assertOptionElementSelectedState([false, true]);
          }));
     });
 
