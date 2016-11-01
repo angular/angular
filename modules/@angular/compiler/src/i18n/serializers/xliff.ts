@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../../facade/collection';
 import * as ml from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {InterpolationConfig} from '../../ml_parser/interpolation_config';
@@ -162,7 +161,7 @@ class _WriteVisitor implements i18n.Visitor {
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
     this._isInIcu = false;
-    return ListWrapper.flatten(nodes.map(node => node.visit(this)));
+    return [].concat(...nodes.map(node => node.visit(this)));
   }
 }
 
