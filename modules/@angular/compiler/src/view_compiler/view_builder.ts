@@ -477,7 +477,8 @@ function createViewClass(
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], generateDestroyMethod(view)),
     new o.ClassMethod('detachInternal', [], view.detachMethod.finish()),
-    generateVisitRootNodesMethod(view), generateVisitProjectableNodesMethod(view)
+    generateVisitRootNodesMethod(view), generateVisitProjectableNodesMethod(view),
+    generateCreateEmbeddedViewsMethod(view)
   ].filter((method) => method.body.length > 0);
   var superClass = view.genConfig.genDebugInfo ? Identifiers.DebugAppView : Identifiers.AppView;
 
@@ -493,7 +494,7 @@ function createViewClass(
 
 function generateDestroyMethod(view: CompileView): o.Statement[] {
   const stmts: o.Statement[] = [];
-  view.viewContainerAppElements.forEach(
+  view.appElements.forEach(
       (appElement) => { stmts.push(appElement.callMethod('destroyNestedViews', []).toStmt()); });
   view.viewChildren.forEach(
       (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
@@ -599,7 +600,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   }
   stmts.push(...view.animationBindingsMethod.finish());
   stmts.push(...view.detectChangesInInputsMethod.finish());
-  view.viewContainerAppElements.forEach((appElement) => {
+  view.appElements.forEach((appElement) => {
     stmts.push(
         appElement.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
             .toStmt());
@@ -716,4 +717,27 @@ function generateVisitNodesStmts(
     }
   });
   return stmts;
+}
+
+function generateCreateEmbeddedViewsMethod(view: CompileView) {
+  const nodeIndexVar = o.variable('nodeIndex');
+  const stmts: o.Statement[] = [];
+  view.nodes.forEach((node) => {
+    if (node instanceof CompileElement) {
+      if (node.embeddedView) {
+        const parentNodeIndex = node.isRootElement() ? null : node.parent.nodeIndex;
+        stmts.push(new o.IfStmt(
+            nodeIndexVar.equals(o.literal(node.nodeIndex)),
+            [new o.ReturnStatement(node.embeddedView.viewFactory.callFn([
+              ViewProperties.viewUtils,
+              o.THIS_EXPR.callMethod('injector', [o.literal(parentNodeIndex)]), o.THIS_EXPR,
+              o.literal(node.nodeIndex), node.renderNode
+            ]))]));
+      }
+    }
+  });
+  stmts.push(new o.ReturnStatement(o.NULL_EXPR));
+  return new o.ClassMethod(
+      'createEmbeddedViewInternal', [new o.FnParam(nodeIndexVar.name, o.NUMBER_TYPE)], stmts,
+      o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE]));
 }

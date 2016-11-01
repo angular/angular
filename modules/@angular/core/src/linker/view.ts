@@ -88,6 +88,11 @@ export abstract class AppView<T> {
    */
   createInternal(rootSelectorOrNode: string|any): ComponentRef<any> { return null; }
 
+  /**
+   * Overwritten by implementations.
+   */
+  createEmbeddedViewInternal(templateNodeIndex: number): AppView<any> { return null; }
+
   init(lastRootNode: any, allNodes: any[], disposables: Function[]) {
     this.lastRootNode = lastRootNode;
     this.allNodes = allNodes;

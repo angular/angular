@@ -264,7 +264,7 @@ export function main() {
        }));
 
     it('should use a default template if a custom one is null', async(() => {
-         const testTemplate = `<ul><template ngFor let-item [ngForOf]="items" 
+         const testTemplate = `<ul><template ngFor let-item [ngForOf]="items"
             [ngForTemplate]="contentTpl" let-i="index">{{i}}: {{item}};</template></ul>`;
          TestBed.overrideComponent(TestComponent, {set: {template: testTemplate}});
          const cutTemplate =
