@@ -14,8 +14,6 @@ import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 
-
-
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -44,7 +42,7 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  */
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {
-  private _baseHref: string = '';
+  private _baseHref = '';
   constructor(
       private _platformLocation: PlatformLocation,
       @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
@@ -77,7 +75,7 @@ export class HashLocationStrategy extends LocationStrategy {
 
   pushState(state: any, title: string, path: string, queryParams: string) {
     var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
-    if (url.length == 0) {
+    if (url.length === 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.pushState(state, title, url);
@@ -85,7 +83,7 @@ export class HashLocationStrategy extends LocationStrategy {
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
     var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
-    if (url.length == 0) {
+    if (url.length === 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.replaceState(state, title, url);
