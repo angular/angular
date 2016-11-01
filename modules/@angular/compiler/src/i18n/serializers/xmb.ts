@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper} from '../../facade/collection';
 import * as html from '../../ml_parser/ast';
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
@@ -123,7 +122,7 @@ class _Visitor implements i18n.Visitor {
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
-    return ListWrapper.flatten(nodes.map(node => node.visit(this)));
+    return [].concat(...nodes.map(node => node.visit(this)));
   }
 }
 
