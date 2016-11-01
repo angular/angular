@@ -82,10 +82,11 @@ export class AsyncPipe implements OnDestroy {
     }
   }
 
-  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
+  transform(obj: Observable<any>|Promise<any>|EventEmitter<any>, emitDetached: boolean = true):
+      any {
     if (!this._obj) {
       if (obj) {
-        this._subscribe(obj);
+        this._subscribe(obj, emitDetached);
       }
       this._latestReturnedValue = this._latestValue;
       return this._latestValue;
@@ -93,7 +94,7 @@ export class AsyncPipe implements OnDestroy {
 
     if (obj !== this._obj) {
       this._dispose();
-      return this.transform(obj);
+      return this.transform(obj, emitDetached);
     }
 
     if (this._latestValue === this._latestReturnedValue) {
@@ -104,11 +105,12 @@ export class AsyncPipe implements OnDestroy {
     return WrappedValue.wrap(this._latestValue);
   }
 
-  private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
+  private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>, emitDetached: boolean):
+      void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription = this._strategy.createSubscription(
-        obj, (value: Object) => this._updateLatestValue(obj, value));
+        obj, (value: Object) => this._updateLatestValue(obj, value, emitDetached));
   }
 
   private _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
@@ -131,10 +133,17 @@ export class AsyncPipe implements OnDestroy {
     this._obj = null;
   }
 
-  private _updateLatestValue(async: any, value: Object) {
+  private _updateLatestValue(async: any, value: Object, emitDetached: boolean) {
     if (async === this._obj) {
       this._latestValue = value;
-      this._ref.markForCheck();
+      if (this._ref.isDetached()) {
+        if (emitDetached) {
+          this._ref.reattach();
+          this._ref.detach();
+        }
+      } else {
+        this._ref.markForCheck();
+      }
     }
   }
 }

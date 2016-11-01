@@ -177,6 +177,7 @@ export declare abstract class ChangeDetectorRef {
     abstract checkNoChanges(): void;
     abstract detach(): void;
     abstract detectChanges(): void;
+    abstract isDetached(): boolean;
     abstract markForCheck(): void;
     abstract reattach(): void;
 }

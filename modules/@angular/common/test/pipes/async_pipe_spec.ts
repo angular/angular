@@ -83,6 +83,24 @@ export function main() {
                async.done();
              }, 10);
            }));
+
+        it('should request a change detection check upon receiving a new value when CDR is detached',
+          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+            ref.spy('isDetached').and.callFake(() => { return true; });
+
+            const markForCheck = ref.spy('markForCheck');
+            const reattach = ref.spy('reattach');
+            const detach = ref.spy('detach');
+            pipe.transform(emitter);
+            emitter.emit(message);
+
+            setTimeout(() => {
+              expect(reattach).toHaveBeenCalled();
+              expect(detach).toHaveBeenCalled();
+              expect(markForCheck).not.toHaveBeenCalled();
+              async.done();
+            }, 10);
+          }));
       });
 
       describe('ngOnDestroy', () => {
@@ -104,7 +122,7 @@ export function main() {
     });
 
     describe('Promise', () => {
-      var message = new Object();
+      var message = {};
       var pipe: AsyncPipe;
       var resolve: (result: any) => void;
       var reject: (error: any) => void;
@@ -168,7 +186,7 @@ export function main() {
 
         it('should request a change detection check upon receiving a new value',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             var markForCheck = ref.spy('markForCheck');
+             const markForCheck = ref.spy('markForCheck');
              pipe.transform(promise);
              resolve(message);
 
@@ -202,16 +220,17 @@ export function main() {
 
     describe('null', () => {
       it('should return null when given null', () => {
-        var pipe = new AsyncPipe(null);
+        const pipe = new AsyncPipe(null);
         expect(pipe.transform(null)).toEqual(null);
       });
     });
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
-        var pipe = new AsyncPipe(null);
+        const pipe = new AsyncPipe(null);
         expect(() => pipe.transform(<any>'some bogus object')).toThrowError();
       });
     });
+
   });
 }

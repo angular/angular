@@ -117,6 +117,8 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
     this.markForCheck();
   }
 
+  isDetached(): boolean { return this._view.cdMode === ChangeDetectorStatus.Detached; }
+
   onDestroy(callback: Function) { this._view.disposables.push(callback); }
 
   destroy() { this._view.destroy(); }
