@@ -17,9 +17,8 @@ import {ViewType} from './view_type';
 
 
 /**
- * An AppElement is created for elements that have a ViewContainerRef,
- * a nested component or a <template> element to keep data around
- * that is needed for later instantiations.
+ * An AppElement is created for elements that have a ViewContainerRef
+ * to keep track of the nested views.
  */
 export class AppElement {
   public nestedViews: AppView<any>[];

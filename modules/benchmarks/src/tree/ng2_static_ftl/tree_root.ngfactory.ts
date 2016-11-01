@@ -92,13 +92,20 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
     const parentRenderNode: any = this.renderer.createViewRoot(this.parentElement);
     this._anchor_0 = this.renderer.createTemplateAnchor(parentRenderNode, (null as any));
     this._appEl_0 = new import2.AppElement(0, (null as any), this, this._anchor_0);
-    this._TemplateRef_0_5 =
-        new import11.TemplateRef_(this._appEl_0, viewFactory_TreeRootComponent1);
+    this._TemplateRef_0_5 = new import11.TemplateRef_(this, 0, this._anchor_0);
     this._NgIf_0_6 = new import10.NgIf(this._appEl_0.vcRef, this._TemplateRef_0_5);
     this._expr_0 = import7.UNINITIALIZED;
     this.init([], [this._anchor_0], []);
     return (null as any);
   }
+
+  createEmbeddedViewInternal(nodeIndex: number): import1.AppView<any> {
+    if (nodeIndex === 0) {
+      return viewFactory_TreeRootComponent1(
+          this.viewUtils, this.parentInjector, this, 0, this._anchor_0);
+    }
+  }
+
   injectorGetInternal(token: any, requestNodeIndex: number, notFoundResult: any): any {
     if (((token === import11.TemplateRef) && (0 === requestNodeIndex))) {
       return this._TemplateRef_0_5;

@@ -73,7 +73,7 @@ export class CompileElement extends CompileNode {
     this.instances.set(resolveIdentifierToken(Identifiers.Injector).reference, this.injector);
     this.instances.set(
         resolveIdentifierToken(Identifiers.Renderer).reference, o.THIS_EXPR.prop('renderer'));
-    if (this.hasViewContainer || this.hasEmbeddedView) {
+    if (this.hasViewContainer) {
       this._createAppElement();
     }
     if (this.component) {
@@ -97,9 +97,7 @@ export class CompileElement extends CompileNode {
     this.view.createMethod.addStmt(statement);
     this.appElement = o.THIS_EXPR.prop(fieldName);
     this.instances.set(resolveIdentifierToken(Identifiers.AppElement).reference, this.appElement);
-    if (this.hasViewContainer) {
-      this.view.viewContainerAppElements.push(this.appElement);
-    }
+    this.view.appElements.push(this.appElement);
   }
 
   private _createComponentFactoryResolver() {
@@ -144,7 +142,7 @@ export class CompileElement extends CompileNode {
     if (isPresent(embeddedView)) {
       var createTemplateRefExpr =
           o.importExpr(resolveIdentifier(Identifiers.TemplateRef_)).instantiate([
-            this.appElement, this.embeddedView.viewFactory
+            o.THIS_EXPR, o.literal(this.nodeIndex), this.renderNode
           ]);
       var provider = new CompileProviderMetadata({
         token: resolveIdentifierToken(Identifiers.TemplateRef),
