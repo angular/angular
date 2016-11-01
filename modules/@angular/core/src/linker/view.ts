@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
-import {Injector} from '../di/injector';
+import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
@@ -30,6 +30,8 @@ var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
  */
 const EMPTY_CONTEXT = new Object();
 
+const UNDEFINED = new Object();
+
 /**
  * Cost of making objects: http://jsperf.com/instantiate-size-of-object
  *
@@ -46,14 +48,16 @@ export abstract class AppView<T> {
   renderer: Renderer;
 
   private _hasExternalHostElement: boolean;
+  private _hostInjector: Injector;
+  private _hostProjectableNodes: any[][];
   private _animationContext: AnimationViewContext;
 
   public context: T;
 
   constructor(
       public clazz: any, public componentType: RenderComponentType, public type: ViewType,
-      public viewUtils: ViewUtils, public parentInjector: Injector, public parentView: AppView<any>,
-      public parentIndex: number, public parentElement: any, public cdMode: ChangeDetectorStatus) {
+      public viewUtils: ViewUtils, public parentView: AppView<any>, public parentIndex: number,
+      public parentElement: any, public cdMode: ChangeDetectorStatus) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
@@ -76,9 +80,12 @@ export abstract class AppView<T> {
     return this.createInternal(null);
   }
 
-  createHostView(rootSelectorOrNode: string|any): ComponentRef<any> {
+  createHostView(rootSelectorOrNode: string|any, hostInjector: Injector, projectableNodes: any[][]):
+      ComponentRef<any> {
     this.context = <any>EMPTY_CONTEXT;
     this._hasExternalHostElement = isPresent(rootSelectorOrNode);
+    this._hostInjector = hostInjector;
+    this._hostProjectableNodes = projectableNodes;
     return this.createInternal(rootSelectorOrNode);
   }
 
@@ -102,8 +109,20 @@ export abstract class AppView<T> {
     }
   }
 
-  injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
-    return this.injectorGetInternal(token, nodeIndex, notFoundResult);
+  injectorGet(token: any, nodeIndex: number, notFoundValue: any = THROW_IF_NOT_FOUND): any {
+    let result = UNDEFINED;
+    let view: AppView<any> = this;
+    while (result === UNDEFINED) {
+      if (isPresent(nodeIndex)) {
+        result = view.injectorGetInternal(token, nodeIndex, UNDEFINED);
+      }
+      if (result === UNDEFINED && view.type === ViewType.HOST) {
+        result = view._hostInjector.get(token, notFoundValue);
+      }
+      nodeIndex = view.parentIndex;
+      view = view.parentView;
+    }
+    return result;
   }
 
   /**
@@ -113,13 +132,7 @@ export abstract class AppView<T> {
     return notFoundResult;
   }
 
-  injector(nodeIndex: number): Injector {
-    if (isPresent(nodeIndex)) {
-      return new ElementInjector(this, nodeIndex);
-    } else {
-      return this.parentInjector;
-    }
-  }
+  injector(nodeIndex: number): Injector { return new ElementInjector(this, nodeIndex); }
 
   detachAndDestroy() {
     if (this._hasExternalHostElement) {
@@ -193,7 +206,14 @@ export abstract class AppView<T> {
         this.parentView.visitProjectedNodes(ngContentIndex, cb, c);
         break;
       case ViewType.COMPONENT:
-        this.parentView.visitProjectableNodesInternal(this.parentIndex, ngContentIndex, cb, c);
+        if (this.parentView.type === ViewType.HOST) {
+          const nodes = this.parentView._hostProjectableNodes[ngContentIndex] || [];
+          for (var i = 0; i < nodes.length; i++) {
+            cb(nodes[i], c);
+          }
+        } else {
+          this.parentView.visitProjectableNodesInternal(this.parentIndex, ngContentIndex, cb, c);
+        }
         break;
     }
   }
@@ -275,11 +295,9 @@ export class DebugAppView<T> extends AppView<T> {
 
   constructor(
       clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
-      parentInjector: Injector, parentView: AppView<any>, parentIndex: number, parentNode: any,
-      cdMode: ChangeDetectorStatus, public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
-    super(
-        clazz, componentType, type, viewUtils, parentInjector, parentView, parentIndex, parentNode,
-        cdMode);
+      parentView: AppView<any>, parentIndex: number, parentNode: any, cdMode: ChangeDetectorStatus,
+      public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
+    super(clazz, componentType, type, viewUtils, parentView, parentIndex, parentNode, cdMode);
   }
 
   create(context: T) {
@@ -292,10 +310,12 @@ export class DebugAppView<T> extends AppView<T> {
     }
   }
 
-  createHostView(rootSelectorOrNode: string|any): ComponentRef<any> {
+  createHostView(
+      rootSelectorOrNode: string|any, injector: Injector,
+      projectableNodes: any[][] = null): ComponentRef<any> {
     this._resetDebug();
     try {
-      return super.createHostView(rootSelectorOrNode);
+      return super.createHostView(rootSelectorOrNode, injector, projectableNodes);
     } catch (e) {
       this._rethrowWithContext(e);
       throw e;

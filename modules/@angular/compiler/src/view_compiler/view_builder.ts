@@ -232,12 +232,12 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           o.importType(resolveIdentifier(Identifiers.AppView), [o.importType(component.type)])));
       this.view.viewChildren.push(compViewExpr);
       compileElement.setComponentView(compViewExpr);
-      this.view.createMethod.addStmt(compViewExpr
-                                         .set(o.importExpr(nestedComponentIdentifier).callFn([
-                                           ViewProperties.viewUtils, compileElement.injector,
-                                           o.THIS_EXPR, o.literal(nodeIndex), renderNode
-                                         ]))
-                                         .toStmt());
+      this.view.createMethod.addStmt(
+          compViewExpr
+              .set(o.importExpr(nestedComponentIdentifier).callFn([
+                ViewProperties.viewUtils, o.THIS_EXPR, o.literal(nodeIndex), renderNode
+              ]))
+              .toStmt());
     }
     compileElement.beforeChildren();
     this._addRootNodeAndProject(compileElement);
@@ -438,9 +438,6 @@ function createViewClass(
     new o.FnParam(
         ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
     new o.FnParam(
-        ViewConstructorVars.parentInjector.name,
-        o.importType(resolveIdentifier(Identifiers.Injector))),
-    new o.FnParam(
         ViewConstructorVars.parentView.name,
         o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
     new o.FnParam(ViewConstructorVars.parentIndex.name, o.NUMBER_TYPE),
@@ -448,8 +445,7 @@ function createViewClass(
   ];
   var superConstructorArgs = [
     o.variable(view.className), renderCompTypeVar, ViewTypeEnum.fromValue(view.viewType),
-    ViewConstructorVars.viewUtils, ViewConstructorVars.parentInjector,
-    ViewConstructorVars.parentView, ViewConstructorVars.parentIndex,
+    ViewConstructorVars.viewUtils, ViewConstructorVars.parentView, ViewConstructorVars.parentIndex,
     ViewConstructorVars.parentElement,
     ChangeDetectorStatusEnum.fromValue(getChangeDetectionMode(view))
   ];
@@ -507,9 +503,6 @@ function createViewFactory(
   var viewFactoryArgs = [
     new o.FnParam(
         ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
-    new o.FnParam(
-        ViewConstructorVars.parentInjector.name,
-        o.importType(resolveIdentifier(Identifiers.Injector))),
     new o.FnParam(
         ViewConstructorVars.parentView.name,
         o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
@@ -729,9 +722,7 @@ function generateCreateEmbeddedViewsMethod(view: CompileView) {
         stmts.push(new o.IfStmt(
             nodeIndexVar.equals(o.literal(node.nodeIndex)),
             [new o.ReturnStatement(node.embeddedView.viewFactory.callFn([
-              ViewProperties.viewUtils,
-              o.THIS_EXPR.callMethod('injector', [o.literal(parentNodeIndex)]), o.THIS_EXPR,
-              o.literal(node.nodeIndex), node.renderNode
+              ViewProperties.viewUtils, o.THIS_EXPR, o.literal(node.nodeIndex), node.renderNode
             ]))]));
       }
     }

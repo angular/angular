@@ -42,7 +42,6 @@ export class CompileElement extends CompileNode {
   public compViewExpr: o.Expression = null;
   public viewContainer: o.ReadPropExpr;
   public elementRef: o.Expression;
-  public injector: o.Expression;
   public instances = new Map<any, o.Expression>();
   public directiveWrapperInstance = new Map<any, o.Expression>();
   private _resolvedProviders: Map<any, ProviderAst>;
@@ -69,8 +68,9 @@ export class CompileElement extends CompileNode {
     this.elementRef =
         o.importExpr(resolveIdentifier(Identifiers.ElementRef)).instantiate([this.renderNode]);
     this.instances.set(resolveIdentifierToken(Identifiers.ElementRef).reference, this.elementRef);
-    this.injector = o.THIS_EXPR.callMethod('injector', [o.literal(this.nodeIndex)]);
-    this.instances.set(resolveIdentifierToken(Identifiers.Injector).reference, this.injector);
+    this.instances.set(
+        resolveIdentifierToken(Identifiers.Injector).reference,
+        o.THIS_EXPR.callMethod('injector', [o.literal(this.nodeIndex)]));
     this.instances.set(
         resolveIdentifierToken(Identifiers.Renderer).reference, o.THIS_EXPR.prop('renderer'));
     if (this.hasViewContainer) {
@@ -115,7 +115,7 @@ export class CompileElement extends CompileNode {
         o.importExpr(resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)).instantiate([
           o.literalArr(entryComponents.map((entryComponent) => o.importExpr(entryComponent))),
           injectFromViewParentInjector(
-              resolveIdentifierToken(Identifiers.ComponentFactoryResolver), false)
+              this.view, resolveIdentifierToken(Identifiers.ComponentFactoryResolver), false)
         ]);
     var provider = new CompileProviderMetadata({
       token: resolveIdentifierToken(Identifiers.ComponentFactoryResolver),
@@ -373,7 +373,7 @@ export class CompileElement extends CompileNode {
     }
 
     if (!result) {
-      result = injectFromViewParentInjector(dep.token, dep.isOptional);
+      result = injectFromViewParentInjector(this.view, dep.token, dep.isOptional);
     }
     if (!result) {
       result = o.NULL_EXPR;
