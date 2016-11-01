@@ -115,7 +115,7 @@ class _Visitor implements ml.Visitor {
     return {messages: this._translatedMessages, errors: this._errors};
   }
 
-  visitElement(element: ml.Element, context: any): any {
+  visitElement(element: ml.Element, context: null): string {
     switch (element.name) {
       case _TRANSLATIONS_TAG:
         this._bundleDepth++;
@@ -169,22 +169,20 @@ class _Visitor implements ml.Visitor {
     }
   }
 
-  visitAttribute(attribute: ml.Attribute, context: any): any {
-    throw new Error('unreachable code');
+  visitAttribute(attribute: ml.Attribute, context: null): void {
+    // unreachable: the attributes are being retrieved directly in `visitElement`
   }
 
-  visitText(text: ml.Text, context: any): any { return text.value; }
+  visitText(text: ml.Text, context: null): string { return text.value; }
 
-  visitComment(comment: ml.Comment, context: any): any { return ''; }
+  visitComment(comment: ml.Comment, context: null): '' { return ''; }
 
-  visitExpansion(expansion: ml.Expansion, context: any): any {
-    const strCases = expansion.cases.map(c => c.visit(this, null));
-
-    return `{${expansion.switchValue}, ${expansion.type}, strCases.join(' ')}`;
+  visitExpansion(expansion: ml.Expansion, context: null): void {
+    // unreachable: expansion forms are disabled in the `XmlParser`
   }
 
-  visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {
-    return `${expansionCase.value} {${ml.visitAll(this, expansionCase.expression, null)}}`;
+  visitExpansionCase(expansionCase: ml.ExpansionCase, context: null): void {
+    // unreachable: expansion forms are disabled in the `XmlParser`
   }
 
   private _addError(node: ml.Node, message: string): void {
