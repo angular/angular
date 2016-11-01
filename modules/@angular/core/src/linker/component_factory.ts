@@ -109,8 +109,7 @@ export class ComponentFactory<C> {
     if (!projectableNodes) {
       projectableNodes = [];
     }
-    // Note: Host views don't need a declarationAppElement!
-    var hostView: AppView<any> = this._viewFactory(vu, injector, null);
+    var hostView: AppView<any> = this._viewFactory(vu, injector, null, null, null);
     // TODO: implement this in the View class directly?!
     // (behind a `if (this.type === ViewType.HOST)`)
     // TODO: and pass the projectableNodes into `createHostView`

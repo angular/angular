@@ -27,10 +27,11 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
   _TreeComponent_0_4: _View_TreeComponent0;
   constructor(
       viewUtils: import4.ViewUtils, parentInjector: import5.Injector,
-      declarationEl: import2.AppElement) {
+      parentView: import1.AppView<any>, parentIndex: number, parentElement: any) {
     super(
         _View_TreeComponent_Host0, renderType_TreeComponent_Host, import6.ViewType.HOST, viewUtils,
-        parentInjector, declarationEl, import7.ChangeDetectorStatus.CheckAlways);
+        parentInjector, parentView, parentIndex, parentElement,
+        import7.ChangeDetectorStatus.CheckAlways);
   }
   createInternal(rootSelector: string): import9.ComponentRef<any> {
     this._el_0 = import4.selectOrCreateRenderHostElement(
@@ -53,12 +54,14 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
 }
 function viewFactory_TreeComponent_Host0(
     viewUtils: import4.ViewUtils, parentInjector: import5.Injector,
-    declarationEl: import2.AppElement): import1.AppView<any> {
+    parentView: import1.AppView<any>, parentIndex: number,
+    parentElement: any): import1.AppView<any> {
   if ((renderType_TreeComponent_Host === (null as any))) {
     (renderType_TreeComponent_Host =
          viewUtils.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
   }
-  return new _View_TreeComponent_Host0(viewUtils, parentInjector, declarationEl);
+  return new _View_TreeComponent_Host0(
+      viewUtils, parentInjector, parentView, parentIndex, parentElement);
 }
 export const TreeComponentNgFactory: import9.ComponentFactory<import3.TreeComponent> =
     new import9.ComponentFactory<import3.TreeComponent>(

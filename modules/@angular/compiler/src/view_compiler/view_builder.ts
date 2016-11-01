@@ -233,12 +233,12 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
           o.importType(resolveIdentifier(Identifiers.AppView), [o.importType(component.type)])));
       this.view.viewChildren.push(compViewExpr);
       compileElement.setComponentView(compViewExpr);
-      this.view.createMethod.addStmt(
-          compViewExpr
-              .set(o.importExpr(nestedComponentIdentifier).callFn([
-                ViewProperties.viewUtils, compileElement.injector, compileElement.appElement
-              ]))
-              .toStmt());
+      this.view.createMethod.addStmt(compViewExpr
+                                         .set(o.importExpr(nestedComponentIdentifier).callFn([
+                                           ViewProperties.viewUtils, compileElement.injector,
+                                           o.THIS_EXPR, o.literal(nodeIndex), renderNode
+                                         ]))
+                                         .toStmt());
     }
     compileElement.beforeChildren();
     this._addRootNodeAndProject(compileElement);
@@ -442,13 +442,16 @@ function createViewClass(
         ViewConstructorVars.parentInjector.name,
         o.importType(resolveIdentifier(Identifiers.Injector))),
     new o.FnParam(
-        ViewConstructorVars.declarationEl.name,
-        o.importType(resolveIdentifier(Identifiers.AppElement)))
+        ViewConstructorVars.parentView.name,
+        o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+    new o.FnParam(ViewConstructorVars.parentIndex.name, o.NUMBER_TYPE),
+    new o.FnParam(ViewConstructorVars.parentElement.name, o.DYNAMIC_TYPE)
   ];
   var superConstructorArgs = [
     o.variable(view.className), renderCompTypeVar, ViewTypeEnum.fromValue(view.viewType),
     ViewConstructorVars.viewUtils, ViewConstructorVars.parentInjector,
-    ViewConstructorVars.declarationEl,
+    ViewConstructorVars.parentView, ViewConstructorVars.parentIndex,
+    ViewConstructorVars.parentElement,
     ChangeDetectorStatusEnum.fromValue(getChangeDetectionMode(view))
   ];
   if (view.genConfig.genDebugInfo) {
@@ -507,8 +510,10 @@ function createViewFactory(
         ViewConstructorVars.parentInjector.name,
         o.importType(resolveIdentifier(Identifiers.Injector))),
     new o.FnParam(
-        ViewConstructorVars.declarationEl.name,
-        o.importType(resolveIdentifier(Identifiers.AppElement)))
+        ViewConstructorVars.parentView.name,
+        o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+    new o.FnParam(ViewConstructorVars.parentIndex.name, o.NUMBER_TYPE),
+    new o.FnParam(ViewConstructorVars.parentElement.name, o.DYNAMIC_TYPE)
   ];
   var initRenderCompTypeStmts: any[] = [];
   var templateUrlInfo: string;
@@ -553,8 +558,8 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
   var parentRenderNodeExpr: o.Expression = o.NULL_EXPR;
   var parentRenderNodeStmts: any[] = [];
   if (view.viewType === ViewType.COMPONENT) {
-    parentRenderNodeExpr = ViewProperties.renderer.callMethod(
-        'createViewRoot', [o.THIS_EXPR.prop('declarationAppElement').prop('nativeElement')]);
+    parentRenderNodeExpr =
+        ViewProperties.renderer.callMethod('createViewRoot', [o.THIS_EXPR.prop('parentElement')]);
     parentRenderNodeStmts =
         [parentRenderNodeVar.set(parentRenderNodeExpr)
              .toDeclStmt(
