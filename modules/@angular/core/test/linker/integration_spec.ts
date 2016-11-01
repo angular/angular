@@ -972,11 +972,24 @@ function declareTests({useJit}: {useJit: boolean}) {
                                .createComponent(MyComp);
              var tc = fixture.debugElement.children[0].children[0];
              var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-             dynamicVp.done.then((_) => {
-               fixture.detectChanges();
-               expect(fixture.debugElement.children[0].children[1].nativeElement)
-                   .toHaveText('dynamic greet');
-             });
+             dynamicVp.create();
+             fixture.detectChanges();
+             expect(fixture.debugElement.children[0].children[1].nativeElement)
+                 .toHaveText('dynamic greet');
+           }));
+
+        it('should allow to create multiple ViewContainerRef at a location', async(() => {
+             var fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                               .createComponent(MyComp);
+             var tc = fixture.debugElement.children[0].children[0];
+             var dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+             dynamicVp.create();
+             dynamicVp.create();
+             fixture.detectChanges();
+             expect(fixture.debugElement.children[0].children[1].nativeElement)
+                 .toHaveText('dynamic greet');
+             expect(fixture.debugElement.children[0].children[2].nativeElement)
+                 .toHaveText('dynamic greet');
            }));
       });
 
@@ -1657,17 +1670,18 @@ class SimpleImperativeViewComponent {
 
 @Directive({selector: 'dynamic-vp'})
 class DynamicViewport {
-  done: Promise<any>;
-  constructor(vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
+  private componentFactory: ComponentFactory<ChildCompUsingService>;
+  private injector: Injector;
+  constructor(private vc: ViewContainerRef, componentFactoryResolver: ComponentFactoryResolver) {
     var myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    var injector = ReflectiveInjector.resolveAndCreate(
+    this.injector = ReflectiveInjector.resolveAndCreate(
         [{provide: MyService, useValue: myService}], vc.injector);
-    this.done =
-        Promise.resolve(componentFactoryResolver.resolveComponentFactory(ChildCompUsingService))
-            .then((componentFactory) => vc.createComponent(componentFactory, 0, injector));
+    this.componentFactory = componentFactoryResolver.resolveComponentFactory(ChildCompUsingService);
   }
+
+  create() { this.vc.createComponent(this.componentFactory, this.vc.length, this.injector); }
 }
 
 @Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
