@@ -1,11 +1,13 @@
 // TODO(kara): prevent-close functionality
 
 import {
+  AfterContentInit,
   Attribute,
   Component,
   ContentChildren,
   EventEmitter,
   Input,
+  OnDestroy,
   Output,
   QueryList,
   TemplateRef,
@@ -17,6 +19,7 @@ import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {MdMenuPanel} from './menu-panel';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   moduleId: module.id,
@@ -27,10 +30,13 @@ import {MdMenuPanel} from './menu-panel';
   encapsulation: ViewEncapsulation.None,
   exportAs: 'mdMenu'
 })
-export class MdMenu implements MdMenuPanel {
+export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _keyManager: ListKeyManager;
 
-  // config object to be passed into the menu's ngClass
+  /** Subscription to tab events on the menu panel */
+  private _tabSubscription: Subscription;
+
+  /** Config object to be passed into the menu's ngClass */
   _classList: Object;
 
   positionX: MenuPositionX = 'after';
@@ -45,10 +51,19 @@ export class MdMenu implements MdMenuPanel {
     if (posY) { this._setPositionY(posY); }
   }
 
+  // TODO: internal
   ngAfterContentInit() {
     this._keyManager = new ListKeyManager(this.items);
-    this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
+    this._tabSubscription = this._keyManager.tabOut.subscribe(() => {
+      this._emitCloseEvent();
+    });
   }
+
+  // TODO: internal
+  ngOnDestroy() {
+    this._tabSubscription.unsubscribe();
+  }
+
 
   /**
    * This method takes classes set on the host md-menu element and applies them on the

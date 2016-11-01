@@ -1,5 +1,7 @@
-import {EventEmitter, Output, QueryList} from '@angular/core';
+import {QueryList} from '@angular/core';
 import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 /**
  * This is the interface for focusable items (used by the ListKeyManager).
@@ -16,14 +18,17 @@ export interface MdFocusable {
  */
 export class ListKeyManager {
   private _focusedItemIndex: number;
-
-  /**
-   * This event is emitted any time the TAB key is pressed, so components can react
-   * when focus is shifted off of the list.
-   */
-  @Output() tabOut = new EventEmitter<void>();
+  private _tabOut: Subject<any> = new Subject();
 
   constructor(private _items: QueryList<MdFocusable>) {}
+
+  /**
+   * Observable that emits any time the TAB key is pressed, so components can react
+   * when focus is shifted off of the list.
+   */
+  get tabOut(): Observable<void> {
+    return this._tabOut.asObservable();
+  }
 
   set focusedItemIndex(value: number) {
     this._focusedItemIndex = value;
@@ -35,7 +40,7 @@ export class ListKeyManager {
     } else if (event.keyCode === UP_ARROW) {
       this._focusPreviousItem();
     } else if (event.keyCode === TAB) {
-      this.tabOut.emit();
+      this._tabOut.next(null);
     }
   }
 
