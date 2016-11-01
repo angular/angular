@@ -55,7 +55,7 @@ export abstract class ComponentRef<C> {
   /**
    * The component type.
    */
-  get componentType(): Type<any> { return unimplemented(); }
+  get componentType(): Type<C> { return unimplemented(); }
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -69,15 +69,19 @@ export abstract class ComponentRef<C> {
 }
 
 export class ComponentRef_<C> extends ComponentRef<C> {
-  constructor(private _hostElement: AppElement, private _componentType: Type<any>) { super(); }
-  get location(): ElementRef { return this._hostElement.elementRef; }
-  get injector(): Injector { return this._hostElement.injector; }
-  get instance(): C { return this._hostElement.component; };
-  get hostView(): ViewRef { return this._hostElement.parentView.ref; };
-  get changeDetectorRef(): ChangeDetectorRef { return this._hostElement.parentView.ref; };
-  get componentType(): Type<any> { return this._componentType; }
+  constructor(
+      private _index: number, private _parentView: AppView<any>, private _nativeElement: any,
+      private _component: C) {
+    super();
+  }
+  get location(): ElementRef { return new ElementRef(this._nativeElement); }
+  get injector(): Injector { return this._parentView.injector(this._index); }
+  get instance(): C { return this._component; };
+  get hostView(): ViewRef { return this._parentView.ref; };
+  get changeDetectorRef(): ChangeDetectorRef { return this._parentView.ref; };
+  get componentType(): Type<C> { return <any>this._component.constructor; }
 
-  destroy(): void { this._hostElement.parentView.detachAndDestroy(); }
+  destroy(): void { this._parentView.detachAndDestroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
 }
 
@@ -107,6 +111,9 @@ export class ComponentFactory<C> {
     }
     // Note: Host views don't need a declarationAppElement!
     var hostView: AppView<any> = this._viewFactory(vu, injector, null);
+    // TODO: implement this in the View class directly?!
+    // (behind a `if (this.type === ViewType.HOST)`)
+    // TODO: and pass the projectableNodes into `createHostView`
     hostView.visitProjectableNodesInternal =
         (nodeIndex: number, ngContentIndex: number, cb: any, ctx: any) => {
           const nodes = projectableNodes[ngContentIndex] || [];
@@ -114,7 +121,6 @@ export class ComponentFactory<C> {
             cb(nodes[i], ctx);
           }
         };
-    var hostElement = hostView.create(EMPTY_CONTEXT, rootSelectorOrNode);
-    return new ComponentRef_<C>(hostElement, this._componentType);
+    return hostView.createHostView(rootSelectorOrNode);
   }
 }

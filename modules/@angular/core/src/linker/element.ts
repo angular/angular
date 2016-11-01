@@ -23,9 +23,6 @@ import {ViewType} from './view_type';
  */
 export class AppElement {
   public nestedViews: AppView<any>[];
-  public componentView: AppView<any>;
-
-  public component: any;
 
   constructor(
       public index: number, public parentIndex: number, public parentView: AppView<any>,
@@ -34,11 +31,6 @@ export class AppElement {
   get elementRef(): ElementRef { return new ElementRef(this.nativeElement); }
 
   get vcRef(): ViewContainerRef_ { return new ViewContainerRef_(this); }
-
-  initComponent(component: any, view: AppView<any>) {
-    this.component = component;
-    this.componentView = view;
-  }
 
   get parentInjector(): Injector { return this.parentView.injector(this.parentIndex); }
   get injector(): Injector { return this.parentView.injector(this.index); }

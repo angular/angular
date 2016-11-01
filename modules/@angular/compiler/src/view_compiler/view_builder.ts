@@ -457,7 +457,7 @@ function createViewClass(
   var viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
-        generateCreateMethod(view), o.importType(resolveIdentifier(Identifiers.AppElement))),
+        generateCreateMethod(view), o.importType(resolveIdentifier(Identifiers.ComponentRef))),
     new o.ClassMethod(
         'injectorGetInternal',
         [
@@ -562,7 +562,10 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
   }
   var resultExpr: o.Expression;
   if (view.viewType === ViewType.HOST) {
-    resultExpr = (<CompileElement>view.nodes[0]).appElement;
+    const hostEl = <CompileElement>view.nodes[0];
+    resultExpr = o.importExpr(resolveIdentifier(Identifiers.ComponentRef_)).instantiate([
+      o.literal(hostEl.nodeIndex), o.THIS_EXPR, hostEl.renderNode, hostEl.getComponent()
+    ]);
   } else {
     resultExpr = o.NULL_EXPR;
   }
