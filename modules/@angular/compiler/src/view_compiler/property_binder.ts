@@ -110,7 +110,7 @@ export function bindDirectiveHostProps(
   compileElement.view.detectChangesRenderPropertiesMethod.addStmts(
       DirectiveWrapperExpressions.checkHost(
           directiveAst.hostProperties, directiveWrapperInstance, o.THIS_EXPR,
-          compileElement.component ? compileElement.appElement.prop('componentView') : o.THIS_EXPR,
+          compileElement.compViewExpr ? compileElement.compViewExpr : o.THIS_EXPR,
           compileElement.renderNode, DetectChangesVars.throwOnChange, runtimeSecurityCtxExprs));
 }
 
@@ -147,9 +147,9 @@ export function bindDirectiveInputs(
       directiveWrapperInstance, o.THIS_EXPR, compileElement.renderNode,
       DetectChangesVars.throwOnChange);
   const directiveDetectChangesStmt = isOnPushComp ?
-      new o.IfStmt(directiveDetectChangesExpr, [compileElement.appElement.prop('componentView')
-                                                    .callMethod('markAsCheckOnce', [])
-                                                    .toStmt()]) :
+      new o.IfStmt(
+          directiveDetectChangesExpr,
+          [compileElement.compViewExpr.callMethod('markAsCheckOnce', []).toStmt()]) :
       directiveDetectChangesExpr.toStmt();
   detectChangesInInputsMethod.addStmt(directiveDetectChangesStmt);
 }

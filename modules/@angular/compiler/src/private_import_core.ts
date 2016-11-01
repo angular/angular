@@ -21,6 +21,7 @@ export type AppElement = typeof r._AppElement;
 export const AppElement: typeof r.AppElement = r.AppElement;
 export const CodegenComponentFactoryResolver: typeof r.CodegenComponentFactoryResolver =
     r.CodegenComponentFactoryResolver;
+export const ComponentRef_: typeof r.ComponentRef_ = r.ComponentRef_;
 export const AppView: typeof r.AppView = r.AppView;
 export const DebugAppView: typeof r.DebugAppView = r.DebugAppView;
 export const NgModuleInjector: typeof r.NgModuleInjector = r.NgModuleInjector;

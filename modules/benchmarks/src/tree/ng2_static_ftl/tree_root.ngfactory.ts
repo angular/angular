@@ -35,17 +35,16 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
         _View_TreeRootComponent_Host0, renderType_TreeRootComponent_Host, import6.ViewType.HOST,
         viewUtils, parentInjector, declarationEl, import7.ChangeDetectorStatus.CheckAlways);
   }
-  createInternal(rootSelector: string): import2.AppElement {
+  createInternal(rootSelector: string): import9.ComponentRef<any> {
     this._el_0 = import4.selectOrCreateRenderHostElement(
         this.renderer, 'tree', import4.EMPTY_INLINE_ARRAY, rootSelector, (null as any));
     this._appEl_0 = new import2.AppElement(0, (null as any), this, this._el_0);
     this._TreeRootComponent_0_4_View =
         viewFactory_TreeRootComponent0(this.viewUtils, this.injector(0), this._appEl_0);
     this._TreeRootComponent_0_4 = new import3.TreeRootComponent();
-    this._appEl_0.initComponent(this._TreeRootComponent_0_4, this._TreeRootComponent_0_4_View);
     this._TreeRootComponent_0_4_View.create(this._TreeRootComponent_0_4, (null as any));
     this.init([].concat([this._el_0]), [this._el_0], []);
-    return this._appEl_0;
+    return new import9.ComponentRef_(0, this, this._el_0, this._TreeRootComponent_0_4);
   }
   detectChangesInternal(throwOnChange: boolean): void {
     this._TreeRootComponent_0_4_View.detectChangesInternal(throwOnChange);
@@ -85,7 +84,7 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
         _View_TreeRootComponent0, renderType_TreeRootComponent, import6.ViewType.COMPONENT,
         viewUtils, parentInjector, declarationEl, import7.ChangeDetectorStatus.CheckAlways);
   }
-  createInternal(rootSelector: string): import2.AppElement {
+  createInternal(rootSelector: string): import9.ComponentRef<any> {
     const parentRenderNode: any =
         this.renderer.createViewRoot(this.declarationAppElement.nativeElement);
     this._anchor_0 = this.renderer.createTemplateAnchor(parentRenderNode, (null as any));
@@ -135,7 +134,7 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
         _View_TreeRootComponent1, renderType_TreeRootComponent, import6.ViewType.EMBEDDED,
         viewUtils, parentInjector, declarationEl, import7.ChangeDetectorStatus.CheckAlways);
   }
-  createInternal(rootSelector: string): import2.AppElement {
+  createInternal(rootSelector: string): import9.ComponentRef<any> {
     this._el_0 = this.renderer.createElement((null as any), 'tree0', (null as any));
     this._TreeComponent0_0_4View = new import13.View_TreeTreeComponent(maxDepth - 1, this._el_0);
     this.init([].concat([this._el_0]), [this._el_0], []);

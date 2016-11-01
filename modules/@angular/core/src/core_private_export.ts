@@ -20,6 +20,7 @@ import * as console from './console';
 import * as debug from './debug/debug_renderer';
 import * as reflective_provider from './di/reflective_provider';
 import {ComponentStillLoadingError} from './linker/compiler';
+import * as component_factory from './linker/component_factory';
 import * as component_factory_resolver from './linker/component_factory_resolver';
 import * as debug_context from './linker/debug_context';
 import * as element from './linker/element';
@@ -56,6 +57,7 @@ export var __core_private__: {
   _MethodFn?: reflection_types.MethodFn;
   CodegenComponentFactoryResolver:
       typeof component_factory_resolver.CodegenComponentFactoryResolver,
+  ComponentRef_: typeof component_factory.ComponentRef_,
   _CodegenComponentFactoryResolver?: component_factory_resolver.CodegenComponentFactoryResolver,
   AppElement: typeof element.AppElement, _AppElement?: element.AppElement,
   AppView: typeof view.AppView, _AppView?: view.AppView<any>,
@@ -112,6 +114,7 @@ export var __core_private__: {
   LIFECYCLE_HOOKS_VALUES: lifecycle_hooks.LIFECYCLE_HOOKS_VALUES,
   ReflectorReader: reflector_reader.ReflectorReader,
   CodegenComponentFactoryResolver: component_factory_resolver.CodegenComponentFactoryResolver,
+  ComponentRef_: component_factory.ComponentRef_,
   AppElement: element.AppElement,
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,

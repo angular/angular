@@ -39,7 +39,7 @@ export class CompileElement extends CompileNode {
     return new CompileElement(null, null, null, null, null, null, [], [], false, false, [], []);
   }
 
-  private _compViewExpr: o.Expression = null;
+  public compViewExpr: o.Expression = null;
   public appElement: o.ReadPropExpr;
   public elementRef: o.Expression;
   public injector: o.Expression;
@@ -131,7 +131,7 @@ export class CompileElement extends CompileNode {
   }
 
   setComponentView(compViewExpr: o.Expression) {
-    this._compViewExpr = compViewExpr;
+    this.compViewExpr = compViewExpr;
     this.contentNodesByNgContentIndex =
         new Array(this.component.template.ngContentSelectors.length);
     for (var i = 0; i < this.contentNodesByNgContentIndex.length; i++) {
@@ -254,12 +254,6 @@ export class CompileElement extends CompileNode {
         queryWithRead.query.addValue(value, this.view);
       }
     });
-
-    if (isPresent(this.component)) {
-      var compExpr = isPresent(this.getComponent()) ? this.getComponent() : o.NULL_EXPR;
-      this.view.createMethod.addStmt(
-          this.appElement.callMethod('initComponent', [compExpr, this._compViewExpr]).toStmt());
-    }
   }
 
   afterChildren(childNodeCount: number) {
@@ -340,7 +334,7 @@ export class CompileElement extends CompileNode {
         if (dep.token.reference ===
             resolveIdentifierToken(Identifiers.ChangeDetectorRef).reference) {
           if (requestingProviderType === ProviderAstType.Component) {
-            return this._compViewExpr.prop('ref');
+            return this.compViewExpr.prop('ref');
           } else {
             return getPropertyInView(o.THIS_EXPR.prop('ref'), this.view, this.view.componentView);
           }

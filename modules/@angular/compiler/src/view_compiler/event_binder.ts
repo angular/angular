@@ -83,8 +83,7 @@ function generateHandleEventMethod(
   const hasComponentHostListener =
       directives.some((dirAst) => dirAst.hostEvents.some((event) => dirAst.directive.isComponent));
 
-  const markPathToRootStart =
-      hasComponentHostListener ? compileElement.appElement.prop('componentView') : o.THIS_EXPR;
+  const markPathToRootStart = hasComponentHostListener ? compileElement.compViewExpr : o.THIS_EXPR;
   const handleEventStmts = new CompileMethod(compileElement.view);
   handleEventStmts.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   handleEventStmts.push(markPathToRootStart.callMethod('markPathToRootAsCheckOnce', []).toStmt());

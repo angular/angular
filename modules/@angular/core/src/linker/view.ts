@@ -14,6 +14,7 @@ import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 
 import {AnimationViewContext} from './animation_view_context';
+import {ComponentRef} from './component_factory';
 import {DebugContext, StaticNodeDebugInfo} from './debug_context';
 import {AppElement} from './element';
 import {ElementInjector} from './element_injector';
@@ -23,6 +24,11 @@ import {ViewType} from './view_type';
 import {ViewUtils, addToArray} from './view_utils';
 
 var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
+
+/**
+ * @experimental
+ */
+const EMPTY_CONTEXT = new Object();
 
 /**
  * Cost of making objects: http://jsperf.com/instantiate-size-of-object
@@ -65,17 +71,22 @@ export abstract class AppView<T> {
 
   get destroyed(): boolean { return this.cdMode === ChangeDetectorStatus.Destroyed; }
 
-  create(context: T, rootSelectorOrNode: string|any): AppElement {
+  create(context: T) {
     this.context = context;
+    return this.createInternal(null);
+  }
+
+  createHostView(rootSelectorOrNode: string|any): ComponentRef<any> {
+    this.context = <any>EMPTY_CONTEXT;
     this._hasExternalHostElement = isPresent(rootSelectorOrNode);
     return this.createInternal(rootSelectorOrNode);
   }
 
   /**
    * Overwritten by implementations.
-   * Returns the AppElement for the host element for ViewType.HOST.
+   * Returns the ComponentRef for the host element for ViewType.HOST.
    */
-  createInternal(rootSelectorOrNode: string|any): AppElement { return null; }
+  createInternal(rootSelectorOrNode: string|any): ComponentRef<any> { return null; }
 
   init(lastRootNode: any, allNodes: any[], disposables: Function[]) {
     this.lastRootNode = lastRootNode;
@@ -268,10 +279,20 @@ export class DebugAppView<T> extends AppView<T> {
     super(clazz, componentType, type, viewUtils, parentInjector, declarationAppElement, cdMode);
   }
 
-  create(context: T, rootSelectorOrNode: string|any): AppElement {
+  create(context: T) {
     this._resetDebug();
     try {
-      return super.create(context, rootSelectorOrNode);
+      return super.create(context);
+    } catch (e) {
+      this._rethrowWithContext(e);
+      throw e;
+    }
+  }
+
+  createHostView(rootSelectorOrNode: string|any): ComponentRef<any> {
+    this._resetDebug();
+    try {
+      return super.createHostView(rootSelectorOrNode);
     } catch (e) {
       this._rethrowWithContext(e);
       throw e;
