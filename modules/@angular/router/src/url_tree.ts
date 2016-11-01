@@ -350,7 +350,7 @@ export function decode(s: string): string {
 }
 
 export function serializePath(path: UrlSegment): string {
-  return `${encode(path.path)}${serializeParams(path.parameters)}`;
+  return `${encodeURI(path.path)}${serializeParams(path.parameters)}`;
 }
 
 function serializeParams(params: {[key: string]: string}): string {
