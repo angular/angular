@@ -10,11 +10,13 @@ import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/errors';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
+
 import {ComponentFactory, ComponentRef} from './component_factory';
-import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
+import {ViewContainer} from './view_container';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
+
 
 
 /**
@@ -127,7 +129,7 @@ export abstract class ViewContainerRef {
 }
 
 export class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _element: AppElement) {}
+  constructor(private _element: ViewContainer) {}
 
   get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {

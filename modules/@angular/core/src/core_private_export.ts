@@ -23,11 +23,11 @@ import {ComponentStillLoadingError} from './linker/compiler';
 import * as component_factory from './linker/component_factory';
 import * as component_factory_resolver from './linker/component_factory_resolver';
 import * as debug_context from './linker/debug_context';
-import * as element from './linker/element';
 import * as ng_module_factory from './linker/ng_module_factory';
 import * as ng_module_factory_loader from './linker/ng_module_factory_loader';
 import * as template_ref from './linker/template_ref';
 import * as view from './linker/view';
+import * as view_container from './linker/view_container';
 import * as view_type from './linker/view_type';
 import * as view_utils from './linker/view_utils';
 import * as lifecycle_hooks from './metadata/lifecycle_hooks';
@@ -59,7 +59,7 @@ export var __core_private__: {
       typeof component_factory_resolver.CodegenComponentFactoryResolver,
   ComponentRef_: typeof component_factory.ComponentRef_,
   _CodegenComponentFactoryResolver?: component_factory_resolver.CodegenComponentFactoryResolver,
-  AppElement: typeof element.AppElement, _AppElement?: element.AppElement,
+  ViewContainer: typeof view_container.ViewContainer, _ViewContainer?: view_container.ViewContainer,
   AppView: typeof view.AppView, _AppView?: view.AppView<any>,
   DebugAppView: typeof view.DebugAppView, _DebugAppView?: view.DebugAppView<any>,
   NgModuleInjector: typeof ng_module_factory.NgModuleInjector,
@@ -115,7 +115,7 @@ export var __core_private__: {
   ReflectorReader: reflector_reader.ReflectorReader,
   CodegenComponentFactoryResolver: component_factory_resolver.CodegenComponentFactoryResolver,
   ComponentRef_: component_factory.ComponentRef_,
-  AppElement: element.AppElement,
+  ViewContainer: view_container.ViewContainer,
   AppView: view.AppView,
   DebugAppView: view.DebugAppView,
   NgModuleInjector: ng_module_factory.NgModuleInjector,

@@ -11,11 +11,12 @@ import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/errors';
 import {Type} from '../type';
 
-import {AppElement} from './element';
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
+import {ViewContainer} from './view_container';
 import {ViewRef} from './view_ref';
 import {ViewUtils} from './view_utils';
+
 
 
 /**

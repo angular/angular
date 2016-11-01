@@ -8,9 +8,9 @@ import * as import10 from '@angular/common/src/directives/ng_if';
 import * as import7 from '@angular/core/src/change_detection/change_detection';
 import * as import5 from '@angular/core/src/di/injector';
 import * as import9 from '@angular/core/src/linker/component_factory';
-import * as import2 from '@angular/core/src/linker/element';
 import * as import11 from '@angular/core/src/linker/template_ref';
 import * as import1 from '@angular/core/src/linker/view';
+import * as import2 from '@angular/core/src/linker/view_container';
 import * as import6 from '@angular/core/src/linker/view_type';
 import * as import4 from '@angular/core/src/linker/view_utils';
 import * as import8 from '@angular/core/src/metadata/view';
@@ -25,7 +25,7 @@ import * as import13 from './tree_branch.ngfactory';
 var renderType_TreeRootComponent_Host: import0.RenderComponentType = (null as any);
 class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
   _el_0: any;
-  /*private*/ _appEl_0: import2.AppElement;
+  /*private*/ _appEl_0: import2.ViewContainer;
   _TreeRootComponent_0_4: import3.TreeRootComponent;
   _TreeRootComponent_0_4_View: any;
   constructor(
@@ -39,7 +39,7 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
   createInternal(rootSelector: string): import9.ComponentRef<any> {
     this._el_0 = import4.selectOrCreateRenderHostElement(
         this.renderer, 'tree', import4.EMPTY_INLINE_ARRAY, rootSelector, (null as any));
-    this._appEl_0 = new import2.AppElement(0, (null as any), this, this._el_0);
+    this._appEl_0 = new import2.ViewContainer(0, (null as any), this, this._el_0);
     this._TreeRootComponent_0_4_View =
         viewFactory_TreeRootComponent0(this.viewUtils, this.injector(0), this, 0, this._el_0);
     this._TreeRootComponent_0_4 = new import3.TreeRootComponent();
@@ -76,7 +76,7 @@ const styles_TreeRootComponent: any[] = [];
 var renderType_TreeRootComponent: import0.RenderComponentType = (null as any);
 class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent> {
   _anchor_0: any;
-  /*private*/ _appEl_0: import2.AppElement;
+  /*private*/ _appEl_0: import2.ViewContainer;
   _TemplateRef_0_5: any;
   _NgIf_0_6: import10.NgIf;
   /*private*/ _expr_0: any;
@@ -91,7 +91,7 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
   createInternal(rootSelector: string): import9.ComponentRef<any> {
     const parentRenderNode: any = this.renderer.createViewRoot(this.parentElement);
     this._anchor_0 = this.renderer.createTemplateAnchor(parentRenderNode, (null as any));
-    this._appEl_0 = new import2.AppElement(0, (null as any), this, this._anchor_0);
+    this._appEl_0 = new import2.ViewContainer(0, (null as any), this, this._anchor_0);
     this._TemplateRef_0_5 = new import11.TemplateRef_(this, 0, this._anchor_0);
     this._NgIf_0_6 = new import10.NgIf(this._appEl_0.vcRef, this._TemplateRef_0_5);
     this._expr_0 = import7.UNINITIALIZED;

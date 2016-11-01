@@ -16,9 +16,9 @@ import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 import {AnimationViewContext} from './animation_view_context';
 import {ComponentRef} from './component_factory';
 import {DebugContext, StaticNodeDebugInfo} from './debug_context';
-import {AppElement} from './element';
 import {ElementInjector} from './element_injector';
 import {ExpressionChangedAfterItHasBeenCheckedError, ViewDestroyedError, ViewWrappedError} from './errors';
+import {ViewContainer} from './view_container';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
 import {ViewUtils, addToArray} from './view_utils';
@@ -39,7 +39,7 @@ export abstract class AppView<T> {
   lastRootNode: any;
   allNodes: any[];
   disposables: Function[];
-  viewContainerElement: AppElement = null;
+  viewContainerElement: ViewContainer = null;
 
   numberOfChecks: number = 0;
 
@@ -235,14 +235,14 @@ export abstract class AppView<T> {
    */
   detectChangesInternal(throwOnChange: boolean): void {}
 
-  markContentChildAsMoved(renderAppElement: AppElement): void { this.dirtyParentQueriesInternal(); }
+  markContentChildAsMoved(viewContainer: ViewContainer): void { this.dirtyParentQueriesInternal(); }
 
-  addToContentChildren(renderAppElement: AppElement): void {
-    this.viewContainerElement = renderAppElement;
+  addToContentChildren(viewContainer: ViewContainer): void {
+    this.viewContainerElement = viewContainer;
     this.dirtyParentQueriesInternal();
   }
 
-  removeFromContentChildren(renderAppElement: AppElement): void {
+  removeFromContentChildren(viewContainer: ViewContainer): void {
     this.dirtyParentQueriesInternal();
     this.viewContainerElement = null;
   }
