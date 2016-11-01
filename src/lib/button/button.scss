@@ -43,6 +43,7 @@
   border-radius: $md-icon-button-border-radius;
 
   .md-button-wrapper > * {
+    line-height: $md-icon-button-line-height;
     vertical-align: middle;
   }
 }

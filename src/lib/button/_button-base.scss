@@ -112,5 +112,6 @@ $md-mini-fab-padding: 8px !default;
 
   i, md-icon {
     padding: $padding 0;
+    line-height: $md-icon-button-line-height;
   }
 }
