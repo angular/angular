@@ -867,14 +867,25 @@ export class PreActivation {
   private deactiveRouteAndItsChildren(
       route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet): void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
+    const r = route.value;
 
     forEach(prevChildren, (v: any, k: string) => {
-      const childOutlet = outlet ? outlet.outletMap._outlets[k] : null;
-      this.deactiveRouteAndItsChildren(v, childOutlet);
+      if (!r.component) {
+        this.deactiveRouteAndItsChildren(v, outlet);
+      } else if (!!outlet) {
+        this.deactiveRouteAndItsChildren(v, outlet.outletMap._outlets[k]);
+      } else {
+        this.deactiveRouteAndItsChildren(v, null);
+      }
     });
 
-    const component = outlet && outlet.isActivated ? outlet.component : null;
-    this.checks.push(new CanDeactivate(component, route.value));
+    if (!r.component) {
+      this.checks.push(new CanDeactivate(null, r));
+    } else if (outlet && outlet.isActivated) {
+      this.checks.push(new CanDeactivate(outlet.component, r));
+    } else {
+      this.checks.push(new CanDeactivate(null, r));
+    }
   }
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
