@@ -1,0 +1,6 @@
+<div class="md-tooltip"
+     [style.transform-origin]="_transformOrigin"
+     [@state]="_visibility"
+     (@state.done)="this._afterVisibilityAnimation($event)">
+  {{message}}
+</div>
