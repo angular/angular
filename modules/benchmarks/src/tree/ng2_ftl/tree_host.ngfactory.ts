@@ -20,7 +20,8 @@ import * as import12 from '@angular/core/src/security';
 import * as import3 from './tree';
 import {_View_TreeComponent0} from './tree.ngfactory';
 
-var renderType_TreeComponent_Host: import0.RenderComponentType = (null as any);
+var renderType_TreeComponent_Host: import0.RenderComponentType =
+    import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {});
 class _View_TreeComponent_Host0 extends import1.AppView<any> {
   _el_0: any;
   _vc_0: import2.ViewContainer;
@@ -51,15 +52,6 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
     return notFoundResult;
   }
 }
-function viewFactory_TreeComponent_Host0(
-    viewUtils: import4.ViewUtils, parentView: import1.AppView<any>, parentIndex: number,
-    parentElement: any): import1.AppView<any> {
-  if ((renderType_TreeComponent_Host === (null as any))) {
-    (renderType_TreeComponent_Host =
-         import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
-  }
-  return new _View_TreeComponent_Host0(viewUtils, parentView, parentIndex, parentElement);
-}
 export const TreeComponentNgFactory: import9.ComponentFactory<import3.TreeComponent> =
     new import9.ComponentFactory<import3.TreeComponent>(
-        'tree', viewFactory_TreeComponent_Host0, import3.TreeComponent);
+        'tree', _View_TreeComponent_Host0, import3.TreeComponent);

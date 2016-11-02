@@ -21,7 +21,7 @@ import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
-import {getPropertyInView, getViewFactoryName} from './util';
+import {getPropertyInView, getViewClassName} from './util';
 
 export enum CompileViewRootNodeType {
   Node,
@@ -73,7 +73,7 @@ export class CompileView implements NameResolver {
   public locals = new Map<string, o.Expression>();
   public className: string;
   public classType: o.Type;
-  public viewFactory: o.ReadVarExpr;
+  public classExpr: o.ReadVarExpr;
 
   public literalArrayCount = 0;
   public literalMapCount = 0;
@@ -101,9 +101,9 @@ export class CompileView implements NameResolver {
     this.detachMethod = new CompileMethod(this);
 
     this.viewType = getViewType(component, viewIndex);
-    this.className = `_View_${component.type.name}${viewIndex}`;
+    this.className = getViewClassName(component, viewIndex);
     this.classType = o.importType(new CompileIdentifierMetadata({name: this.className}));
-    this.viewFactory = o.variable(getViewFactoryName(component, viewIndex));
+    this.classExpr = o.variable(this.className);
     if (this.viewType === ViewType.COMPONENT || this.viewType === ViewType.HOST) {
       this.componentView = this;
     } else {
