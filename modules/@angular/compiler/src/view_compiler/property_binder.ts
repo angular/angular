@@ -110,8 +110,8 @@ export function bindDirectiveHostProps(
   compileElement.view.detectChangesRenderPropertiesMethod.addStmts(
       DirectiveWrapperExpressions.checkHost(
           directiveAst.hostProperties, directiveWrapperInstance, o.THIS_EXPR,
-          compileElement.compViewExpr ? compileElement.compViewExpr : o.THIS_EXPR,
-          compileElement.renderNode, DetectChangesVars.throwOnChange, runtimeSecurityCtxExprs));
+          compileElement.compViewExpr || o.THIS_EXPR, compileElement.renderNode,
+          DetectChangesVars.throwOnChange, runtimeSecurityCtxExprs));
 }
 
 export function bindDirectiveInputs(
