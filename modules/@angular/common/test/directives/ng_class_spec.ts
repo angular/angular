@@ -8,7 +8,6 @@
 
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('binding to CSS class list', () => {
@@ -187,6 +186,13 @@ export function main() {
            getComponent().arrExpr = ['foo bar   baz foobar'];
            detectChangesAndExpectClassName('foo bar baz foobar');
          }));
+
+      it('should throw with descriptive error message when CSS class is not a string', () => {
+        fixture = createTestComponent(`<div [ngClass]="['foo', {}]"></div>`);
+        expect(() => fixture.detectChanges())
+            .toThrowError(
+                /NgClass can only toggle CSS classes expressed as strings, got \[object Object\]/);
+      });
     });
 
     describe('expressions evaluating to sets', () => {
