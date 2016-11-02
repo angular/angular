@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import * as base64js from '../b64';
+import {fromByteArray} from 'base64-js';
 
 // This class is based on the Bitmap examples at:
 // http://www.i-programmer.info/projects/36-web/6234-reading-a-bmp-file-in-javascript.html
@@ -35,12 +35,12 @@ export class BitmapService {
   toDataUri(imageData: ImageData): string {
     const header = this._createBMPHeader(imageData);
     imageData = this._imageDataToBMP(imageData);
-    return 'data:image/bmp;base64,' + btoa(header) + base64js.fromByteArray(imageData.data);
+    return 'data:image/bmp;base64,' + btoa(header) + fromByteArray(imageData.data);
   }
 
   // converts a .bmp file ArrayBuffer to a dataURI
   arrayBufferToDataUri(data: Uint8Array): string {
-    return 'data:image/bmp;base64,' + base64js.fromByteArray(data);
+    return 'data:image/bmp;base64,' + fromByteArray(data);
   }
 
   // returns a UInt8Array in BMP order (starting from the bottom)

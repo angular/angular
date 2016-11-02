@@ -6,6 +6,10 @@
       "version": "1.5.13-alpha",
       "dev": true
     },
+    "@types/base64-js": {
+      "version": "1.2.5",
+      "dev": true
+    },
     "@types/fs-extra": {
       "version": "0.0.22-alpha",
       "dev": true
@@ -205,7 +209,7 @@
       "dev": true
     },
     "assert": {
-      "version": "1.3.0",
+      "version": "1.4.1",
       "dev": true
     },
     "assert-plus": {
@@ -249,7 +253,7 @@
       "dev": true
     },
     "base64-js": {
-      "version": "0.0.8",
+      "version": "1.2.0",
       "dev": true
     },
     "base64-url": {
@@ -1801,7 +1805,7 @@
       "dev": true
     },
     "buffer": {
-      "version": "3.6.0",
+      "version": "4.9.1",
       "dev": true,
       "dependencies": {
         "isarray": {
@@ -2153,6 +2157,10 @@
       "version": "2.0.5",
       "dev": true
     },
+    "crypto-browserify": {
+      "version": "3.2.8",
+      "dev": true
+    },
     "csrf": {
       "version": "3.0.0",
       "dev": true
@@ -2405,7 +2413,7 @@
       "dev": true
     },
     "events": {
-      "version": "1.0.2",
+      "version": "1.1.1",
       "dev": true
     },
     "exit": {
@@ -3556,6 +3564,10 @@
         }
       }
     },
+    "https-browserify": {
+      "version": "0.0.0",
+      "dev": true
+    },
     "https-proxy-agent": {
       "version": "1.0.0",
       "dev": true
@@ -3565,7 +3577,7 @@
       "dev": true
     },
     "ieee754": {
-      "version": "1.1.6",
+      "version": "1.1.8",
       "dev": true
     },
     "incremental-dom": {
@@ -4423,26 +4435,8 @@
       "dev": true
     },
     "node-libs-browser": {
-      "version": "0.5.3",
-      "dev": true,
-      "dependencies": {
-        "crypto-browserify": {
-          "version": "3.2.8",
-          "dev": true
-        },
-        "https-browserify": {
-          "version": "0.0.0",
-          "dev": true
-        },
-        "ripemd160": {
-          "version": "0.2.0",
-          "dev": true
-        },
-        "sha.js": {
-          "version": "2.2.6",
-          "dev": true
-        }
-      }
+      "version": "0.6.0",
+      "dev": true
     },
     "node-source-walk": {
       "version": "1.4.2",
@@ -4651,7 +4645,7 @@
       "dev": true
     },
     "process": {
-      "version": "0.11.2",
+      "version": "0.11.9",
       "dev": true
     },
     "process-nextick-args": {
@@ -4761,7 +4755,7 @@
       }
     },
     "punycode": {
-      "version": "1.4.0",
+      "version": "1.4.1",
       "dev": true
     },
     "q": {
@@ -4981,6 +4975,10 @@
         }
       }
     },
+    "ripemd160": {
+      "version": "0.2.0",
+      "dev": true
+    },
     "rndm": {
       "version": "1.1.1",
       "dev": true
@@ -5132,6 +5130,10 @@
     },
     "setimmediate": {
       "version": "1.0.4",
+      "dev": true
+    },
+    "sha.js": {
+      "version": "2.2.6",
       "dev": true
     },
     "sigmund": {
