@@ -14,6 +14,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
+import {ServerModule} from '@angular/platform-server';
 
 import {TestBed, async, inject, withModule} from '../testing';
 
@@ -49,12 +50,14 @@ export function main() {
       const errorHandler = new ErrorHandler(false);
       errorHandler._console = mockConsole as any;
 
+      const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
+
       @NgModule({
         providers: [
           {provide: ErrorHandler, useValue: errorHandler}, {provide: DOCUMENT, useValue: fakeDoc},
           options.providers || []
         ],
-        imports: [BrowserModule],
+        imports: [platformModule],
         declarations: [SomeComponent],
         entryComponents: [SomeComponent],
         bootstrap: options.bootstrap || []
