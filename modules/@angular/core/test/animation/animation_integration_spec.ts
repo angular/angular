@@ -52,7 +52,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        'void => *',
-                       [style({'opacity': 0}), animate(500, style({'opacity': 1}))])])]
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])]
              }
            });
 
@@ -68,8 +68,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
-           expect(keyframes2[0]).toEqual([0, {'opacity': 0}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 1}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
          }));
 
       it('should trigger a state change animation from state => void', fakeAsync(() => {
@@ -82,7 +82,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        '* => void',
-                       [style({'opacity': 1}), animate(500, style({'opacity': 0}))])])]
+                       [style({'opacity': '1'}), animate(500, style({'opacity': '0'}))])])]
              }
            });
 
@@ -102,8 +102,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
-           expect(keyframes2[0]).toEqual([0, {'opacity': 1}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 0}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '1'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '0'}]);
          }));
 
       it('should animate the element when the expression changes between states', fakeAsync(() => {
@@ -154,10 +154,12 @@ function declareTests({useJit}: {useJit: boolean}) {
                   <div *ngIf="exp" [@myAnimation]="exp"></div>
                 `,
                  animations: [trigger(
-                     'myAnimation',
-                     [transition(
-                         ':enter',
-                         [style({'opacity': 0}), animate('500ms', style({opacity: 1}))])])]
+                     'myAnimation', [transition(
+                                        ':enter',
+                                        [
+                                          style({'opacity': '0'}),
+                                          animate('500ms', style({'opacity': '1'}))
+                                        ])])]
                }
              });
 
@@ -181,7 +183,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `,
                  animations: [trigger(
                      'myAnimation',
-                     [transition(':leave', [animate('999ms', style({opacity: 0}))])])]
+                     [transition(':leave', [animate('999ms', style({'opacity': '0'}))])])]
                }
              });
 
@@ -211,7 +213,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `,
                  animations: [trigger(
                      'myAnimation',
-                     [transition(':dont_leave_me', [animate('444ms', style({opacity: 0}))])])]
+                     [transition(
+                         ':dont_leave_me', [animate('444ms', style({'opacity': '0'}))])])]
                }
              });
 
@@ -277,11 +280,11 @@ function declareTests({useJit}: {useJit: boolean}) {
                   style({'background': 'red'}),
                   style({'width': '100px'}),
                   style({'background': 'gold'}),
-                  style({'height': 111}),
+                  style({'height': '111px'}),
                   animate('999ms', style({'width': '200px', 'background': 'blue'})),
                   style({'opacity': '1'}),
-                  style({'border-width': '100px'}),
-                  animate('999ms', style({'opacity': '0', 'height': '200px', 'border-width': '10px'}))
+                  style({'borderWidth': '100px'}),
+                  animate('999ms', style({'opacity': '0', 'height': '200px', 'borderWidth': '10px'}))
                 ])
               ])
             ]
@@ -303,7 +306,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(animation1['delay']).toEqual(0);
            expect(animation1['easing']).toEqual(null);
            expect(animation1['startingStyles'])
-               .toEqual({'background': 'gold', 'width': '100px', 'height': 111});
+               .toEqual({'background': 'gold', 'width': '100px', 'height': '111px'});
 
            var keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'background': 'gold', 'width': '100px'}]);
@@ -313,14 +316,14 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(animation2['duration']).toEqual(999);
            expect(animation2['delay']).toEqual(0);
            expect(animation2['easing']).toEqual(null);
-           expect(animation2['startingStyles']).toEqual({'opacity': '1', 'border-width': '100px'});
+           expect(animation2['startingStyles']).toEqual({'opacity': '1', 'borderWidth': '100px'});
 
            var keyframes2 = animation2['keyframeLookup'];
            expect(keyframes2[0]).toEqual([
-             0, {'opacity': '1', 'height': 111, 'border-width': '100px'}
+             0, {'opacity': '1', 'height': '111px', 'borderWidth': '100px'}
            ]);
            expect(keyframes2[1]).toEqual([
-             1, {'opacity': '0', 'height': '200px', 'border-width': '10px'}
+             1, {'opacity': '0', 'height': '200px', 'borderWidth': '10px'}
            ]);
          }));
 
@@ -496,13 +499,14 @@ function declareTests({useJit}: {useJit: boolean}) {
               `,
                  animations: [trigger(
                      'myAnimation',
-                     [transition('void => *', [animate(
-                                                  1000, keyframes([
-                                                    style([{'width': 0, offset: 0}]),
-                                                    style([{'width': 100, offset: 0.25}]),
-                                                    style([{'width': 200, offset: 0.75}]),
-                                                    style([{'width': 300, offset: 1}])
-                                                  ]))])])]
+                     [transition(
+                         'void => *',
+                         [animate(1000, keyframes([
+                                    style([{'width': '0px', offset: 0}]),
+                                    style([{'width': '100px', offset: 0.25}]),
+                                    style([{'width': '200px', offset: 0.75}]),
+                                    style([{'width': '300px', offset: 1}])
+                                  ]))])])]
                }
              });
 
@@ -515,10 +519,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              var kf = driver.log[0]['keyframeLookup'];
              expect(kf.length).toEqual(4);
-             expect(kf[0]).toEqual([0, {'width': 0}]);
-             expect(kf[1]).toEqual([0.25, {'width': 100}]);
-             expect(kf[2]).toEqual([0.75, {'width': 200}]);
-             expect(kf[3]).toEqual([1, {'width': 300}]);
+             expect(kf[0]).toEqual([0, {'width': '0px'}]);
+             expect(kf[1]).toEqual([0.25, {'width': '100px'}]);
+             expect(kf[2]).toEqual([0.75, {'width': '200px'}]);
+             expect(kf[3]).toEqual([1, {'width': '300px'}]);
            }));
 
         it('should fetch any keyframe styles that are not defined in the first keyframe from the previous entries or getCompuedStyle',
@@ -535,7 +539,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                     animate(1000, style({'color': 'silver'})),
                     animate(1000, keyframes([
                       style([{'color': 'gold', offset: 0.25}]),
-                      style([{'color': 'bronze', 'background-color': 'teal', offset: 0.50}]),
+                      style([{'color': 'bronze', 'backgroundColor': 'teal', offset: 0.50}]),
                       style([{'color': 'platinum', offset: 0.75}]),
                       style([{'color': 'diamond', offset: 1}])
                     ]))
@@ -554,11 +558,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              var kf = driver.log[1]['keyframeLookup'];
              expect(kf.length).toEqual(5);
-             expect(kf[0]).toEqual([0, {'color': 'silver', 'background-color': AUTO_STYLE}]);
+             expect(kf[0]).toEqual([0, {'color': 'silver', 'backgroundColor': AUTO_STYLE}]);
              expect(kf[1]).toEqual([0.25, {'color': 'gold'}]);
-             expect(kf[2]).toEqual([0.50, {'color': 'bronze', 'background-color': 'teal'}]);
+             expect(kf[2]).toEqual([0.50, {'color': 'bronze', 'backgroundColor': 'teal'}]);
              expect(kf[3]).toEqual([0.75, {'color': 'platinum'}]);
-             expect(kf[4]).toEqual([1, {'color': 'diamond', 'background-color': 'teal'}]);
+             expect(kf[4]).toEqual([1, {'color': 'diamond', 'backgroundColor': 'teal'}]);
            }));
       });
 
@@ -573,7 +577,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        '* => *',
-                       [style({'opacity': 0}), animate(500, style({'opacity': 1}))])])]
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])]
              }
            });
 
@@ -607,7 +611,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             animations: [
               trigger('myAnimation', [
                 transition('void => *', [
-                  style({'background': 'red', 'opacity': 0.5}),
+                  style({'background': 'red', 'opacity': '0.5'}),
                   animate(500, style({'background': 'black'})),
                   group([
                     animate(500, style({'background': 'black'})),
@@ -714,7 +718,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             `,
                animations: [trigger(
                    'myAnimation',
-                   [transition('* => void', [animate(1000, style({'opacity': 0}))])])]
+                   [transition('* => void', [animate(1000, style({'opacity': '0'}))])])]
              }
            });
 
@@ -750,8 +754,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                    [trigger('myAnimation', [transition(
                                                '* => *',
                                                [
-                                                 animate(1000, style({'opacity': 0})),
-                                                 animate(1000, style({'opacity': 1}))
+                                                 animate(1000, style({'opacity': '0'})),
+                                                 animate(1000, style({'opacity': '1'}))
                                                ])])]
              }
            });
@@ -766,12 +770,12 @@ function declareTests({useJit}: {useJit: boolean}) {
            var animation1 = driver.log[0];
            var keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'opacity': AUTO_STYLE}]);
-           expect(keyframes1[1]).toEqual([1, {'opacity': 0}]);
+           expect(keyframes1[1]).toEqual([1, {'opacity': '0'}]);
 
            var animation2 = driver.log[1];
            var keyframes2 = animation2['keyframeLookup'];
-           expect(keyframes2[0]).toEqual([0, {'opacity': 0}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 1}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
          }));
 
       it('should perform two transitions in parallel if defined in different state triggers',
@@ -783,9 +787,10 @@ function declareTests({useJit}: {useJit: boolean}) {
             `,
                animations: [
                  trigger(
-                     'one', [transition(
-                                'state1 => state2',
-                                [style({'opacity': 0}), animate(1000, style({'opacity': 1}))])]),
+                     'one',
+                     [transition(
+                         'state1 => state2',
+                         [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])]),
                  trigger(
                      'two',
                      [transition(
@@ -1629,8 +1634,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                animations: [trigger(
                    'status',
                    [
-                     state('final', style({'top': '100px'})),
-                     transition('* => final', [animate(1000)])
+                     state('final', style({'top': 100})), transition('* => final', [animate(1000)])
                    ])]
              }
            });
@@ -1877,7 +1881,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                animations: [trigger(
                    'status',
                    [
-                     state('void', style({'height': '100px', 'opacity': 0})),
+                     state('void', style({'height': '100px', 'opacity': '0'})),
                      state('final', style({'height': '333px', 'width': '200px'})),
                      transition('void => final', [animate(1000)])
                    ])]
@@ -1895,7 +1899,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            var animation = driver.log.pop();
            var kf = animation['keyframeLookup'];
 
-           expect(kf[0]).toEqual([0, {'height': '100px', 'opacity': 0, 'width': AUTO_STYLE}]);
+           expect(kf[0]).toEqual([0, {'height': '100px', 'opacity': '0', 'width': AUTO_STYLE}]);
 
            expect(kf[1]).toEqual([1, {'height': '333px', 'opacity': AUTO_STYLE, 'width': '200px'}]);
          });

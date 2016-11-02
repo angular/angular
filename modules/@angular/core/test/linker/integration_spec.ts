@@ -124,6 +124,50 @@ function declareTests({useJit}: {useJit: boolean}) {
             .toEqual('');
       });
 
+      it('should auto suffix dimensional string-based style values with `px` that do not already contain a unit suffix',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyComp]});
+           const template = '<div [style.height]="ctxProp" [style.zIndex]="ctxProp"></div>';
+           TestBed.overrideComponent(MyComp, {set: {template}});
+           const fixture = TestBed.createComponent(MyComp);
+
+           var node = fixture.debugElement.children[0].nativeElement;
+
+           fixture.componentInstance.ctxProp = '10';
+           fixture.detectChanges();
+           expect(getDOM().getStyle(node, 'height')).toEqual('10px');
+           expect(getDOM().getStyle(node, 'zIndex')).toEqual('10');
+
+           fixture.componentInstance.ctxProp = '20em';
+           fixture.detectChanges();
+           expect(getDOM().getStyle(node, 'height')).toEqual('20em');
+           expect(getDOM().getStyle(node, 'zIndex')).not.toEqual('20em');
+
+           fixture.componentInstance.ctxProp = '0';
+           fixture.detectChanges();
+           expect(getDOM().getStyle(node, 'height')).toEqual('0px');
+           expect(getDOM().getStyle(node, 'zIndex')).toEqual('0');
+         });
+
+      it('should auto suffix dimensional numeric style values with `px`', () => {
+        TestBed.configureTestingModule({declarations: [MyComp]});
+        const template = '<div [style.height]="ctxNumProp" [style.zIndex]="ctxNumProp"></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
+
+        var node = fixture.debugElement.children[0].nativeElement;
+
+        fixture.componentInstance.ctxNumProp = 10;
+        fixture.detectChanges();
+        expect(getDOM().getStyle(node, 'height')).toEqual('10px');
+        expect(getDOM().getStyle(node, 'zIndex')).toEqual('10');
+
+        fixture.componentInstance.ctxNumProp = 0;
+        fixture.detectChanges();
+        expect(getDOM().getStyle(node, 'height')).toEqual('0px');
+        expect(getDOM().getStyle(node, 'zIndex')).toEqual('0');
+      });
+
       it('should consume binding to property names where attr name and property name do not match',
          () => {
            TestBed.configureTestingModule({declarations: [MyComp]});
