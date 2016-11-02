@@ -56,7 +56,7 @@ export abstract class ComponentRef<C> {
   /**
    * The component type.
    */
-  get componentType(): Type<C> { return unimplemented(); }
+  get componentType(): Type<any> { return unimplemented(); }
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -80,7 +80,7 @@ export class ComponentRef_<C> extends ComponentRef<C> {
   get instance(): C { return this._component; };
   get hostView(): ViewRef { return this._parentView.ref; };
   get changeDetectorRef(): ChangeDetectorRef { return this._parentView.ref; };
-  get componentType(): Type<C> { return <any>this._component.constructor; }
+  get componentType(): Type<any> { return <any>this._component.constructor; }
 
   destroy(): void { this._parentView.detachAndDestroy(); }
   onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }

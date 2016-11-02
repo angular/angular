@@ -322,7 +322,7 @@ export class DebugAppView<T> extends AppView<T> {
     }
   }
 
-  injectorGet(token: any, nodeIndex: number, notFoundResult: any): any {
+  injectorGet(token: any, nodeIndex: number, notFoundResult?: any): any {
     this._resetDebug();
     try {
       return super.injectorGet(token, nodeIndex, notFoundResult);
