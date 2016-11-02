@@ -28,14 +28,15 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22) 
 label.
 
-High level items planned for October 2016:
+High level items planned for November 2016:
 * Initial version of md-select
-* Basic docs for dialog and snackbar
-* Major bug bashing
-* Start design on autocomplete and chips
+* Continued bug bashing
+* Initial versions of autocomplete and chips
 * AoT compile e2e app
-* Start work on https://material.angular.io site
-* Onboarding for 3 (!) new Angular Material team members.
+* Continue work on https://material.angular.io site
+* Major refactoring for md-input
+* Tabs animations
+* Expanding e2e test coverage
 
 
 #### Feature status:
@@ -64,14 +65,14 @@ High level items planned for October 2016:
 | dialog           |  Started, not yet ready for release | [README][22] |   [#114][0114] |
 | snackbar / toast | Initial version, needs enhancements | [README][21] |   [#115][0115] |
 | select           |                      Design started |           -  |   [#118][0118] |
-| textarea         |                         Not started |           -  |   [#546][0546] |
-| autocomplete     |                         Not started |           -  |   [#117][0117] |
-| chips            |                         Not started |           -  |   [#120][0120] |
+| textarea         |                             Started |           -  |   [#546][0546] |
+| autocomplete     |                      Design started |           -  |   [#117][0117] |
+| chips            |                      Design started |           -  |   [#120][0120] |
 | theming          | Initial version, needs enhancements | [Guide][20]  |              - |
 | prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
-| layout           |                         Not started |           -  |              - |
+| layout           |      Design in-progress, prototyped |           -  |              - |
 | fab speed-dial   |                         Not started |           -  |   [#860][0860] |
 | fab toolbar      |                         Not started |           -  |              - |
 | bottom-sheet     |                         Not started |           -  |              - |
