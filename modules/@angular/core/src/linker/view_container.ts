@@ -104,7 +104,12 @@ export class ViewContainer {
       nestedViews = [];
       this.nestedViews = nestedViews;
     }
-    nestedViews.splice(viewIndex, 0, view);
+    // perf: array.push is faster than array.splice!
+    if (viewIndex >= nestedViews.length) {
+      nestedViews.push(view);
+    } else {
+      nestedViews.splice(viewIndex, 0, view);
+    }
     var refRenderNode: any /** TODO #9100 */;
     if (viewIndex > 0) {
       var prevView = nestedViews[viewIndex - 1];
@@ -119,7 +124,13 @@ export class ViewContainer {
   }
 
   detachView(viewIndex: number): AppView<any> {
-    const view = this.nestedViews.splice(viewIndex, 1)[0];
+    const view = this.nestedViews[viewIndex];
+    // perf: array.pop is faster than array.splice!
+    if (viewIndex >= this.nestedViews.length - 1) {
+      this.nestedViews.pop();
+    } else {
+      this.nestedViews.splice(viewIndex, 1);
+    }
     if (view.type === ViewType.COMPONENT) {
       throw new Error(`Component views can't be moved!`);
     }
