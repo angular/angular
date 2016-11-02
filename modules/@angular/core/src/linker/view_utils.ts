@@ -22,7 +22,7 @@ import {AppView} from './view';
 @Injectable()
 export class ViewUtils {
   sanitizer: Sanitizer;
-  private _nextCompTypeId: number = 0;
+  private static _nextCompTypeId: number = 0;
 
   constructor(
       private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
@@ -38,8 +38,8 @@ export class ViewUtils {
       templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
       styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
     return new RenderComponentType(
-        `${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles,
-        animations);
+        `${this._appId}-${ViewUtils._nextCompTypeId++}`, templateUrl, slotCount, encapsulation,
+        styles, animations);
   }
 
   /** @internal */
