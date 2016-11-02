@@ -333,7 +333,7 @@ export class UpgradeAdapter {
         .value(NG2_COMPONENT_FACTORY_REF_MAP, componentFactoryRefMap)
         .config([
           '$provide', '$injector',
-          (provide: any /** TODO #???? */, ng1Injector: angular.IInjectorService) => {
+          (provide: angular.IProvideService, ng1Injector: angular.IInjectorService) => {
             provide.decorator(NG1_ROOT_SCOPE, [
               '$delegate',
               function(rootScopeDelegate: angular.IRootScopeService) {
