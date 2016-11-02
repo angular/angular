@@ -35,3 +35,4 @@ export var balanceAnimationKeyframes: typeof r.balanceAnimationKeyframes =
     r.balanceAnimationKeyframes;
 export var clearStyles: typeof r.clearStyles = r.clearStyles;
 export var collectAndResolveStyles: typeof r.collectAndResolveStyles = r.collectAndResolveStyles;
+export var APP_ID_RANDOM_PROVIDER: typeof r.APP_ID_RANDOM_PROVIDER = r.APP_ID_RANDOM_PROVIDER;

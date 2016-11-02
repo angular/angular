@@ -9,6 +9,7 @@
 import {ErrorHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {AnimationDriver, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
 
+import {APP_ID_RANDOM_PROVIDER} from './private_import_core';
 import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, getDOM} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
@@ -67,6 +68,7 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
   {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+  APP_ID_RANDOM_PROVIDER,
   {provide: DomRootRenderer, useClass: DomRootRenderer_},
   {provide: RootRenderer, useExisting: DomRootRenderer},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},

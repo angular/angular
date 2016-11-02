@@ -14,6 +14,7 @@ import {AnimationSequencePlayer as AnimationSequencePlayer_} from './animation/a
 import * as animationUtils from './animation/animation_style_util';
 import {AnimationStyles as AnimationStyles_} from './animation/animation_styles';
 import {AnimationTransition} from './animation/animation_transition';
+import * as application_tokens from './application_tokens';
 import * as change_detection_util from './change_detection/change_detection_util';
 import * as constants from './change_detection/constants';
 import * as console from './console';
@@ -96,6 +97,7 @@ export var __core_private__: {
   clearStyles: typeof animationUtils.clearStyles,
   renderStyles: typeof animationUtils.renderStyles,
   collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles,
+  APP_ID_RANDOM_PROVIDER: typeof application_tokens.APP_ID_RANDOM_PROVIDER,
   AnimationStyles: typeof AnimationStyles_, _AnimationStyles?: AnimationStyles_,
   ANY_STATE: typeof ANY_STATE_,
   DEFAULT_STATE: typeof DEFAULT_STATE_,
@@ -147,6 +149,7 @@ export var __core_private__: {
   clearStyles: animationUtils.clearStyles,
   renderStyles: animationUtils.renderStyles,
   collectAndResolveStyles: animationUtils.collectAndResolveStyles,
+  APP_ID_RANDOM_PROVIDER: application_tokens.APP_ID_RANDOM_PROVIDER,
   AnimationStyles: AnimationStyles_,
   ANY_STATE: ANY_STATE_,
   DEFAULT_STATE: DEFAULT_STATE_,
