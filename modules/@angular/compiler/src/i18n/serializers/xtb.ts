@@ -29,7 +29,7 @@ export class Xtb implements Serializer {
 
   load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: ml.Node[]} {
     // Parse the xtb file into xml nodes
-    const result = new XmlParser().parse(content, url);
+    const result = new XmlParser().parse(content, url, true);
 
     if (result.errors.length) {
       throw new Error(`xtb parse errors:\n${result.errors.join('\n')}`);
@@ -188,12 +188,11 @@ class _Visitor implements ml.Visitor {
 
   visitExpansion(expansion: ml.Expansion, context: any): any {
     const strCases = expansion.cases.map(c => c.visit(this, null));
-
-    return `{${expansion.switchValue}, ${expansion.type}, strCases.join(' ')}`;
+    return `{${expansion.switchValue}, ${expansion.type}, ${strCases.join(' ')}}`;
   }
 
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {
-    return `${expansionCase.value} {${ml.visitAll(this, expansionCase.expression, null)}}`;
+    return `${expansionCase.value} {${ml.visitAll(this, expansionCase.expression, null).join('')}}`;
   }
 
   private _addError(node: ml.Node, message: string): void {
