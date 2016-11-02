@@ -57,6 +57,9 @@ export function main() {
   }
 
   describe('Web Worker Renderer', () => {
+    // Don't run on server...
+    if (!getDOM().supportsDOMEvents()) return;
+
     var uiInjector: Injector;
     var uiRenderStore: RenderStore;
     var workerRenderStore: RenderStore;

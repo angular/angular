@@ -8,10 +8,13 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
+import {NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';
+import {DebugDomRootRenderer} from './private_import_core';
+import {SharedStylesHost} from './private_import_platform-browser';
+import {ServerRootRenderer} from './server_renderer';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -39,12 +42,26 @@ function initParse5Adapter() {
   Parse5DomAdapter.makeCurrent();
 }
 
+
+export function _createConditionalRootRenderer(rootRenderer: any) {
+  if (isDevMode()) {
+    return new DebugDomRootRenderer(rootRenderer);
+  }
+  return rootRenderer;
+}
+
+export const SERVER_RENDER_PROVIDERS: Provider[] = [
+  ServerRootRenderer,
+  {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
+  {provide: SharedStylesHost, useClass: SharedStylesHost},
+];
+
 /**
  * The ng module for the server.
  *
  * @experimental
  */
-@NgModule({imports: [BrowserModule]})
+@NgModule({imports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
 export class ServerModule {
 }
 

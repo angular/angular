@@ -12,13 +12,12 @@ import {isBlank, isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
-import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 import {camelCaseToDashCase} from './util';
 
-const NAMESPACE_URIS = {
+export const NAMESPACE_URIS: {[ns: string]: string} = {
   'xlink': 'http://www.w3.org/1999/xlink',
   'svg': 'http://www.w3.org/2000/svg',
   'xhtml': 'http://www.w3.org/1999/xhtml'
@@ -30,12 +29,12 @@ export abstract class DomRootRenderer implements RootRenderer {
   protected registeredComponents: Map<string, DomRenderer> = new Map<string, DomRenderer>();
 
   constructor(
-      public document: any, public eventManager: EventManager,
+      public document: Document, public eventManager: EventManager,
       public sharedStylesHost: DomSharedStylesHost, public animationDriver: AnimationDriver,
       public appId: string) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
-    var renderer = this.registeredComponents.get(componentProto.id);
+    let renderer = this.registeredComponents.get(componentProto.id);
     if (!renderer) {
       renderer = new DomRenderer(
           this, componentProto, this.animationDriver, `${this.appId}-${componentProto.id}`);
@@ -63,97 +62,106 @@ export class DomRenderer implements Renderer {
   constructor(
       private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
       private _animationDriver: AnimationDriver, styleShimId: string) {
-    this._styles = _flattenStyles(styleShimId, componentProto.styles, []);
+    this._styles = flattenStyles(styleShimId, componentProto.styles, []);
     if (componentProto.encapsulation !== ViewEncapsulation.Native) {
       this._rootRenderer.sharedStylesHost.addStyles(this._styles);
     }
     if (this.componentProto.encapsulation === ViewEncapsulation.Emulated) {
-      this._contentAttr = _shimContentAttribute(styleShimId);
-      this._hostAttr = _shimHostAttribute(styleShimId);
+      this._contentAttr = shimContentAttribute(styleShimId);
+      this._hostAttr = shimHostAttribute(styleShimId);
     } else {
       this._contentAttr = null;
       this._hostAttr = null;
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, debugInfo: RenderDebugInfo): Element {
-    var el: any /** TODO #9100 */;
+  selectRootElement(selectorOrNode: string|Element, debugInfo: RenderDebugInfo): Element {
+    let el: Element;
     if (typeof selectorOrNode === 'string') {
-      el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
-      if (isBlank(el)) {
+      el = this._rootRenderer.document.querySelector(selectorOrNode);
+      if (!el) {
         throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
       }
     } else {
       el = selectorOrNode;
     }
-    getDOM().clearNodes(el);
-    return el;
-  }
-
-  createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
-    var nsAndName = splitNamespace(name);
-    var el = isPresent(nsAndName[0]) ?
-        getDOM().createElementNS(
-            (NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]], nsAndName[1]) :
-        getDOM().createElement(nsAndName[1]);
-    if (isPresent(this._contentAttr)) {
-      getDOM().setAttribute(el, this._contentAttr, '');
-    }
-    if (isPresent(parent)) {
-      getDOM().appendChild(parent, el);
+    while (el.firstChild) {
+      el.removeChild(el.firstChild);
     }
     return el;
   }
 
-  createViewRoot(hostElement: any): any {
-    var nodesParent: any /** TODO #9100 */;
+  createElement(parent: Element|DocumentFragment, name: string, debugInfo: RenderDebugInfo):
+      Element {
+    let el: Element;
+    if (isNamespaced(name)) {
+      const nsAndName = splitNamespace(name);
+      el = document.createElementNS((NAMESPACE_URIS)[nsAndName[0]], nsAndName[1]);
+    } else {
+      el = document.createElement(name);
+    }
+    if (this._contentAttr) {
+      el.setAttribute(this._contentAttr, '');
+    }
+    if (parent) {
+      parent.appendChild(el);
+    }
+    return el;
+  }
+
+  createViewRoot(hostElement: Element): Element|DocumentFragment {
+    let nodesParent: Element|DocumentFragment;
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
-      nodesParent = getDOM().createShadowRoot(hostElement);
+      nodesParent = (hostElement as any).createShadowRoot();
       this._rootRenderer.sharedStylesHost.addHost(nodesParent);
-      for (var i = 0; i < this._styles.length; i++) {
-        getDOM().appendChild(nodesParent, getDOM().createStyleElement(this._styles[i]));
+      for (let i = 0; i < this._styles.length; i++) {
+        const styleEl = document.createElement('style');
+        styleEl.textContent = this._styles[i];
+        nodesParent.appendChild(styleEl);
       }
     } else {
-      if (isPresent(this._hostAttr)) {
-        getDOM().setAttribute(hostElement, this._hostAttr, '');
+      if (this._hostAttr) {
+        hostElement.setAttribute(this._hostAttr, '');
       }
       nodesParent = hostElement;
     }
     return nodesParent;
   }
 
-  createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any {
-    var comment = getDOM().createComment(TEMPLATE_COMMENT_TEXT);
-    if (isPresent(parentElement)) {
-      getDOM().appendChild(parentElement, comment);
+  createTemplateAnchor(parentElement: Element|DocumentFragment, debugInfo: RenderDebugInfo):
+      Comment {
+    const comment = document.createComment(TEMPLATE_COMMENT_TEXT);
+    if (parentElement) {
+      parentElement.appendChild(comment);
     }
     return comment;
   }
 
-  createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
-    var node = getDOM().createTextNode(value);
-    if (isPresent(parentElement)) {
-      getDOM().appendChild(parentElement, node);
+  createText(parentElement: Element|DocumentFragment, value: string, debugInfo: RenderDebugInfo):
+      any {
+    const node = document.createTextNode(value);
+    if (parentElement) {
+      parentElement.appendChild(node);
     }
     return node;
   }
 
-  projectNodes(parentElement: any, nodes: any[]) {
-    if (isBlank(parentElement)) return;
+  projectNodes(parentElement: Element|DocumentFragment, nodes: Node[]) {
+    if (!parentElement) return;
     appendNodes(parentElement, nodes);
   }
 
-  attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
+  attachViewAfter(node: Node, viewRootNodes: Node[]) { moveNodesAfterSibling(node, viewRootNodes); }
 
-  detachView(viewRootNodes: any[]) {
-    for (var i = 0; i < viewRootNodes.length; i++) {
-      getDOM().remove(viewRootNodes[i]);
+  detachView(viewRootNodes: (Element|Text|Comment)[]) {
+    for (let i = 0; i < viewRootNodes.length; i++) {
+      viewRootNodes[i].remove();
     }
   }
 
-  destroyView(hostElement: any, viewAllNodes: any[]) {
-    if (this.componentProto.encapsulation === ViewEncapsulation.Native && isPresent(hostElement)) {
-      this._rootRenderer.sharedStylesHost.removeHost(getDOM().getShadowRoot(hostElement));
+  destroyView(hostElement: Element|DocumentFragment, viewAllNodes: Node[]) {
+    if (this.componentProto.encapsulation === ViewEncapsulation.Native && hostElement) {
+      this._rootRenderer.sharedStylesHost.removeHost((hostElement as any).shadowRoot);
     }
   }
 
@@ -167,68 +175,71 @@ export class DomRenderer implements Renderer {
         target, name, decoratePreventDefault(callback));
   }
 
-  setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void {
-    getDOM().setProperty(renderElement, propertyName, propertyValue);
+  setElementProperty(
+      renderElement: Element|DocumentFragment, propertyName: string, propertyValue: any): void {
+    (renderElement as any)[propertyName] = propertyValue;
   }
 
-  setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void {
-    var attrNs: any /** TODO #9100 */;
-    var nsAndName = splitNamespace(attributeName);
-    if (isPresent(nsAndName[0])) {
+  setElementAttribute(renderElement: Element, attributeName: string, attributeValue: string): void {
+    let attrNs: string;
+    let attrNameWithoutNs = attributeName;
+    if (isNamespaced(attributeName)) {
+      const nsAndName = splitNamespace(attributeName);
+      attrNameWithoutNs = nsAndName[1];
       attributeName = nsAndName[0] + ':' + nsAndName[1];
-      attrNs = (NAMESPACE_URIS as any /** TODO #9100 */)[nsAndName[0]];
+      attrNs = NAMESPACE_URIS[nsAndName[0]];
     }
     if (isPresent(attributeValue)) {
-      if (isPresent(attrNs)) {
-        getDOM().setAttributeNS(renderElement, attrNs, attributeName, attributeValue);
+      if (attrNs) {
+        renderElement.setAttributeNS(attrNs, attributeName, attributeValue);
       } else {
-        getDOM().setAttribute(renderElement, attributeName, attributeValue);
+        renderElement.setAttribute(attributeName, attributeValue);
       }
     } else {
       if (isPresent(attrNs)) {
-        getDOM().removeAttributeNS(renderElement, attrNs, nsAndName[1]);
+        renderElement.removeAttributeNS(attrNs, attrNameWithoutNs);
       } else {
-        getDOM().removeAttribute(renderElement, attributeName);
+        renderElement.removeAttribute(attributeName);
       }
     }
   }
 
-  setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void {
-    var dashCasedPropertyName = camelCaseToDashCase(propertyName);
-    if (getDOM().isCommentNode(renderElement)) {
+  setBindingDebugInfo(renderElement: Element, propertyName: string, propertyValue: string): void {
+    if (renderElement.nodeType === Node.COMMENT_NODE) {
       const existingBindings =
-          getDOM().getText(renderElement).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      var parsedBindings = JSON.parse(existingBindings[1]);
-      (parsedBindings as any /** TODO #9100 */)[dashCasedPropertyName] = propertyValue;
-      getDOM().setText(
-          renderElement,
-          TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(parsedBindings, null, 2)));
+          renderElement.nodeValue.replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
+      const parsedBindings = JSON.parse(existingBindings[1]);
+      parsedBindings[propertyName] = propertyValue;
+      renderElement.nodeValue =
+          TEMPLATE_COMMENT_TEXT.replace('{}', JSON.stringify(parsedBindings, null, 2));
     } else {
       this.setElementAttribute(renderElement, propertyName, propertyValue);
     }
   }
 
-  setElementClass(renderElement: any, className: string, isAdd: boolean): void {
+  setElementClass(renderElement: Element, className: string, isAdd: boolean): void {
     if (isAdd) {
-      getDOM().addClass(renderElement, className);
+      renderElement.classList.add(className);
     } else {
-      getDOM().removeClass(renderElement, className);
+      renderElement.classList.remove(className);
     }
   }
 
-  setElementStyle(renderElement: any, styleName: string, styleValue: string): void {
+  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
     if (isPresent(styleValue)) {
-      getDOM().setStyle(renderElement, styleName, stringify(styleValue));
+      (renderElement.style as any)[styleName] = stringify(styleValue);
     } else {
-      getDOM().removeStyle(renderElement, styleName);
+      // IE requires '' instead of null
+      // see https://github.com/angular/angular/issues/7916
+      (renderElement.style as any)[styleName] = '';
     }
   }
 
-  invokeElementMethod(renderElement: any, methodName: string, args: any[]): void {
-    getDOM().invoke(renderElement, methodName, args);
+  invokeElementMethod(renderElement: Element, methodName: string, args: any[]): void {
+    (renderElement as any)[methodName].apply(renderElement, args);
   }
 
-  setText(renderNode: any, text: string): void { getDOM().setText(renderNode, text); }
+  setText(renderNode: Text, text: string): void { renderNode.nodeValue = text; }
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
@@ -238,57 +249,59 @@ export class DomRenderer implements Renderer {
   }
 }
 
-function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  var parent = getDOM().parentElement(sibling);
-  if (nodes.length > 0 && isPresent(parent)) {
-    var nextSibling = getDOM().nextSibling(sibling);
-    if (isPresent(nextSibling)) {
-      for (var i = 0; i < nodes.length; i++) {
-        getDOM().insertBefore(nextSibling, nodes[i]);
+function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {
+  const parent = sibling.parentElement;
+  if (nodes.length > 0 && parent) {
+    const nextSibling = sibling.nextSibling;
+    if (nextSibling) {
+      for (let i = 0; i < nodes.length; i++) {
+        parent.insertBefore(nodes[i], nextSibling);
       }
     } else {
-      for (var i = 0; i < nodes.length; i++) {
-        getDOM().appendChild(parent, nodes[i]);
+      for (let i = 0; i < nodes.length; i++) {
+        parent.appendChild(nodes[i]);
       }
     }
   }
 }
 
-function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  for (var i = 0; i < nodes.length; i++) {
-    getDOM().appendChild(parent, nodes[i]);
+function appendNodes(parent: Element | DocumentFragment, nodes: Node[]) {
+  for (let i = 0; i < nodes.length; i++) {
+    parent.appendChild(nodes[i]);
   }
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
-  return (event: any /** TODO #9100 */) => {
-    var allowDefaultBehavior = eventHandler(event);
+  return (event: any) => {
+    const allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
-      getDOM().preventDefault(event);
+      event.preventDefault();
+      event.returnValue = false;
     }
   };
 }
 
-var COMPONENT_REGEX = /%COMP%/g;
+const COMPONENT_REGEX = /%COMP%/g;
 export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
-function _shimContentAttribute(componentShortId: string): string {
+export function shimContentAttribute(componentShortId: string): string {
   return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);
 }
 
-function _shimHostAttribute(componentShortId: string): string {
+export function shimHostAttribute(componentShortId: string): string {
   return HOST_ATTR.replace(COMPONENT_REGEX, componentShortId);
 }
 
-function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string[]): string[] {
+export function flattenStyles(
+    compId: string, styles: Array<any|any[]>, target: string[]): string[] {
   for (let i = 0; i < styles.length; i++) {
     let style = styles[i];
 
     if (Array.isArray(style)) {
-      _flattenStyles(compId, style, target);
+      flattenStyles(compId, style, target);
     } else {
       style = style.replace(COMPONENT_REGEX, compId);
       target.push(style);
@@ -299,10 +312,11 @@ function _flattenStyles(compId: string, styles: Array<any|any[]>, target: string
 
 const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
 
-function splitNamespace(name: string): string[] {
-  if (name[0] != ':') {
-    return [null, name];
-  }
+export function isNamespaced(name: string) {
+  return name[0] === ':';
+}
+
+export function splitNamespace(name: string): string[] {
   const match = name.match(NS_PREFIX_RE);
   return [match[1], match[2]];
 }
