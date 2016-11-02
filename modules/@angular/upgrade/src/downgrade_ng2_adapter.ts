@@ -23,26 +23,21 @@ export class DowngradeNg2ComponentAdapter {
   componentRef: ComponentRef<any> = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
-  childNodes: Node[];
-  contentInsertionPoint: Node = null;
 
   constructor(
-      private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
+      private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
       private parentInjector: Injector, private parse: angular.IParseService,
       private componentFactory: ComponentFactory<any>) {
-    (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
-    this.childNodes = <Node[]><any>element.contents();
   }
 
-  bootstrapNg2() {
+  bootstrapNg2(projectableNodes: Node[][]) {
     const childInjector = ReflectiveInjector.resolveAndCreate(
         [{provide: NG1_SCOPE, useValue: this.componentScope}], this.parentInjector);
-    this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
-    this.componentRef = this.componentFactory.create(
-        childInjector, [[this.contentInsertionPoint]], this.element[0]);
+    this.componentRef =
+        this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
   }
@@ -101,16 +96,6 @@ export class DowngradeNg2ComponentAdapter {
       });
     }
     this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
-  }
-
-  projectContent() {
-    const childNodes = this.childNodes;
-    const parent = this.contentInsertionPoint.parentNode;
-    if (parent) {
-      for (let i = 0, ii = childNodes.length; i < ii; i++) {
-        parent.insertBefore(childNodes[i], this.contentInsertionPoint);
-      }
-    }
   }
 
   setupOutputs() {

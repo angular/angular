@@ -70,6 +70,14 @@ export class JitCompiler implements Compiler {
     return this._compileModuleAndAllComponents(moduleType, false).asyncResult;
   }
 
+  getNgContentSelectors(component: Type<any>): string[] {
+    const template = this._compiledTemplateCache.get(component);
+    if (!template) {
+      throw new Error(`The component ${stringify(component)} is not yet compiled!`);
+    }
+    return template.compMeta.template.ngContentSelectors;
+  }
+
   private _compileModuleAndComponents<T>(moduleType: Type<T>, isSync: boolean):
       SyncAsyncResult<NgModuleFactory<T>> {
     const loadingPromise = this._loadModules(moduleType, isSync);
@@ -407,6 +415,11 @@ class ModuleBoundCompiler implements Compiler {
       Promise<ModuleWithComponentFactories<T>> {
     return this._delegate.compileModuleAndAllComponentsAsync(moduleType);
   }
+
+  getNgContentSelectors(component: Type<any>): string[] {
+    return this._delegate.getNgContentSelectors(component);
+  }
+
 
   /**
    * Clears all caches
