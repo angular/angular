@@ -12,7 +12,6 @@ import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
-import {digest} from './digest';
 
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
@@ -34,8 +33,8 @@ class _I18nVisitor implements html.Visitor {
   private _isIcu: boolean;
   private _icuDepth: number;
   private _placeholderRegistry: PlaceholderRegistry;
-  private _placeholderToContent: {[name: string]: string};
-  private _placeholderToMessage: {[name: string]: i18n.Message};
+  private _placeholderToContent: {[phName: string]: string};
+  private _placeholderToMessage: {[phName: string]: i18n.Message};
 
   constructor(
       private _expressionParser: ExpressionParser,
