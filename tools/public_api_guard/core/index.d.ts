@@ -151,7 +151,9 @@ export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
+    abstract registerChangeDetector(changeDetector: ChangeDetectorRef): void;
     abstract tick(): void;
+    abstract unregisterChangeDetector(changeDetector: ChangeDetectorRef): void;
 }
 
 /** @experimental */
