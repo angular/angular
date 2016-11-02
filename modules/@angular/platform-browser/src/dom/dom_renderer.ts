@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {AUTO_STYLE, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+
 import {isBlank, isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../private_import_core';
 
@@ -15,7 +16,7 @@ import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
-import {camelCaseToDashCase} from './util';
+import {camelCaseToDashCase, dashCaseToCamelCase} from './util';
 
 const NAMESPACE_URIS = {
   'xlink': 'http://www.w3.org/1999/xlink',
@@ -214,7 +215,9 @@ export class DomRenderer implements Renderer {
 
   setElementStyle(renderElement: any, styleName: string, styleValue: string): void {
     if (isPresent(styleValue)) {
-      getDOM().setStyle(renderElement, styleName, stringify(styleValue));
+      styleValue =
+          stringify(styleValue) + _resolveStyleUnit(styleValue, styleName, styleName, 'px');
+      getDOM().setStyle(renderElement, styleName, styleValue);
     } else {
       getDOM().removeStyle(renderElement, styleName);
     }
@@ -229,6 +232,10 @@ export class DomRenderer implements Renderer {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
+    startingStyles = _suffixPxStylesIfNeeded(startingStyles);
+    keyframes = keyframes.map(keyframe => {
+      return new AnimationKeyframe(keyframe.offset, _suffixPxStylesIfNeeded(keyframe.styles));
+    });
     return this._animationDriver.animate(
         element, startingStyles, keyframes, duration, delay, easing);
   }
@@ -301,4 +308,89 @@ function splitNamespace(name: string): string[] {
   }
   const match = name.match(NS_PREFIX_RE);
   return [match[1], match[2]];
+}
+
+function _suffixPxStylesIfNeeded(styles: AnimationStyles): AnimationStyles {
+  var newStyles: {[key: string]: string | number}[] = [];
+  styles.styles.forEach((entry) => {
+    var styleData: {[key: string]: string | number} = {};
+    Object.keys(entry).forEach(prop => {
+      const val = entry[prop];
+      var formattedProp = dashCaseToCamelCase(prop);
+      styleData[formattedProp] =
+          val == AUTO_STYLE ? val : val.toString() + _resolveStyleUnit(val, prop, formattedProp);
+    });
+    newStyles.push(styleData);
+  });
+  return new AnimationStyles(newStyles);
+}
+
+function _resolveStyleUnit(
+    val: string | number, userProvidedProp: string, formattedProp: string,
+    fallbackUnit: string = null): string {
+  var unit = '';
+  if (_isPixelDimensionStyle(formattedProp) && val != 0 && val != '0') {
+    if (typeof val === 'number') {
+      unit = 'px';
+    } else if (_findDimensionalSuffix(val.toString()).length == 0) {
+      if (fallbackUnit) {
+        unit = fallbackUnit;
+      } else {
+        throw new Error('Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
+      }
+    }
+  }
+  return unit;
+}
+
+
+function _isPixelDimensionStyle(prop: string): boolean {
+  switch (prop) {
+    case 'width':
+    case 'height':
+    case 'minWidth':
+    case 'minHeight':
+    case 'maxWidth':
+    case 'maxHeight':
+    case 'left':
+    case 'top':
+    case 'bottom':
+    case 'right':
+    case 'fontSize':
+    case 'outlineWidth':
+    case 'outlineOffset':
+    case 'paddingTop':
+    case 'paddingLeft':
+    case 'paddingBottom':
+    case 'paddingRight':
+    case 'marginTop':
+    case 'marginLeft':
+    case 'marginBottom':
+    case 'marginRight':
+    case 'borderRadius':
+    case 'borderWidth':
+    case 'borderTopWidth':
+    case 'borderLeftWidth':
+    case 'borderRightWidth':
+    case 'borderBottomWidth':
+    case 'textIndent':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+const _$0 = 48;
+const _$9 = 57;
+const _$MINUS = 45;
+const _$PERIOD = 46;
+
+function _findDimensionalSuffix(value: string): string {
+  for (var i = 0; i < value.length; i++) {
+    var c = value.charCodeAt(i);
+    if ((c >= _$0 && c <= _$9) || c == _$PERIOD || c == _$MINUS) continue;
+    return value.substring(i, value.length);
+  }
+  return '';
 }
