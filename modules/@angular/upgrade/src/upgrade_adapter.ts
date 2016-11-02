@@ -20,12 +20,12 @@ import {Deferred, controllerKey, getAttributesAsArray, onError} from './util';
 let upgradeCount: number = 0;
 
 /**
- * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.
+ * Use `UpgradeAdapter` to allow Angular 1 and Angular 2+ to coexist in a single application.
  *
  * The `UpgradeAdapter` allows:
- * 1. creation of Angular v2 component from AngularJS v1 component directive
+ * 1. creation of Angular 2+ component from Angular 1 component directive
  *    (See [UpgradeAdapter#upgradeNg1Component()])
- * 2. creation of AngularJS v1 directive from Angular v2 component.
+ * 2. creation of Angular 1 directive from Angular 2+ component.
  *    (See [UpgradeAdapter#downgradeNg2Component()])
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
  *    coexisting in a single application.
@@ -40,20 +40,20 @@ let upgradeCount: number = 0;
  * 2. Each DOM element on the page is owned exactly by one framework. Whichever framework
  *    instantiated the element is the owner. Each framework only updates/interacts with its own
  *    DOM elements and ignores others.
- * 3. AngularJS v1 directives always execute inside AngularJS v1 framework codebase regardless of
+ * 3. Angular 1 directives always execute inside Angular 1 framework codebase regardless of
  *    where they are instantiated.
- * 4. Angular v2 components always execute inside Angular v2 framework codebase regardless of
+ * 4. Angular 2+ components always execute inside Angular 2+ framework codebase regardless of
  *    where they are instantiated.
- * 5. An AngularJS v1 component can be upgraded to an Angular v2 component. This creates an
- *    Angular v2 directive, which bootstraps the AngularJS v1 component directive in that location.
- * 6. An Angular v2 component can be downgraded to an AngularJS v1 component directive. This creates
- *    an AngularJS v1 directive, which bootstraps the Angular v2 component in that location.
+ * 5. An Angular 1 component can be upgraded to an Angular 2+ component. This creates an
+ *    Angular 2+ directive, which bootstraps the Angular 1 component directive in that location.
+ * 6. An Angular 2+ component can be downgraded to an Angular 1 component directive. This creates
+ *    an Angular 1 directive, which bootstraps the Angular 2+ component in that location.
  * 7. Whenever an adapter component is instantiated the host element is owned by the framework
  *    doing the instantiation. The other framework then instantiates and owns the view for that
  *    component. This implies that component bindings will always follow the semantics of the
- *    instantiation framework. The syntax is always that of Angular v2 syntax.
- * 8. AngularJS v1 is always bootstrapped first and owns the bottom most view.
- * 9. The new application is running in Angular v2 zone, and therefore it no longer needs calls to
+ *    instantiation framework. The syntax is always that of Angular 2+ syntax.
+ * 8. Angular 1 is always bootstrapped first and owns the bottom most view.
+ * 9. The new application is running in Angular 2+ zone, and therefore it no longer needs calls to
  *    `$apply()`.
  *
  * ### Example
@@ -124,19 +124,19 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows Angular v2 Component to be used from AngularJS v1.
+   * Allows Angular 2+ Component to be used from Angular 1.
    *
-   * Use `downgradeNg2Component` to create an AngularJS v1 Directive Definition Factory from
-   * Angular v2 Component. The adapter will bootstrap Angular v2 component from within the
-   * AngularJS v1 template.
+   * Use `downgradeNg2Component` to create an Angular 1 Directive Definition Factory from
+   * Angular 2+ Component. The adapter will bootstrap Angular 2+ component from within the
+   * Angular 1 template.
    *
    * ## Mental Model
    *
-   * 1. The component is instantiated by being listed in AngularJS v1 template. This means that the
-   *    host element is controlled by AngularJS v1, but the component's view will be controlled by
-   *    Angular v2.
-   * 2. Even thought the component is instantiated in AngularJS v1, it will be using Angular v2
-   *    syntax. This has to be done, this way because we must follow Angular v2 components do not
+   * 1. The component is instantiated by being listed in Angular 1 template. This means that the
+   *    host element is controlled by Angular 1, but the component's view will be controlled by
+   *    Angular 2+.
+   * 2. Even thought the component is instantiated in Angular 1, it will be using Angular 2+
+   *    syntax. This has to be done, this way because we must follow Angular 2+ components do not
    *    declare how the attributes should be interpreted.
    *
    * ## Supported Features
@@ -185,17 +185,17 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows AngularJS v1 Component to be used from Angular v2.
+   * Allows Angular 1 Component to be used from Angular 2+.
    *
-   * Use `upgradeNg1Component` to create an Angular v2 component from AngularJS v1 Component
-   * directive. The adapter will bootstrap AngularJS v1 component from within the Angular v2
+   * Use `upgradeNg1Component` to create an Angular 2+ component from Angular 1 Component
+   * directive. The adapter will bootstrap Angular 1 component from within the Angular 2+
    * template.
    *
    * ## Mental Model
    *
-   * 1. The component is instantiated by being listed in Angular v2 template. This means that the
-   *    host element is controlled by Angular v2, but the component's view will be controlled by
-   *    AngularJS v1.
+   * 1. The component is instantiated by being listed in Angular 2+ template. This means that the
+   *    host element is controlled by Angular 2+, but the component's view will be controlled by
+   *    Angular 1.
    *
    * ## Supported Features
    *
@@ -208,7 +208,7 @@ export class UpgradeAdapter {
    * - Only some of the features of
    *   [Directive Definition Object](https://docs.angularjs.org/api/ng/service/$compile) are
    *   supported:
-   *   - `compile`: not supported because the host element is owned by Angular v2, which does
+   *   - `compile`: not supported because the host element is owned by Angular 2+, which does
    *     not allow modifying DOM structure during compilation.
    *   - `controller`: supported. (NOTE: injection of `$attrs` and `$transclude` is not supported.)
    *   - `controllerAs': supported.
@@ -325,11 +325,11 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Bootstrap a hybrid AngularJS v1 / Angular v2 application.
+   * Bootstrap a hybrid Angular 1 / Angular 2+ application.
    *
-   * This `bootstrap` method is a direct replacement (takes same arguments) for AngularJS v1
+   * This `bootstrap` method is a direct replacement (takes same arguments) for Angular 1
    * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
-   * AngularJS v1, this bootstrap is asynchronous.
+   * Angular 1, this bootstrap is asynchronous.
    *
    * ### Example
    *
@@ -401,7 +401,7 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows AngularJS v1 service to be accessible from Angular v2.
+   * Allows Angular 1 service to be accessible from Angular 2+.
    *
    *
    * ### Example
@@ -441,7 +441,7 @@ export class UpgradeAdapter {
   }
 
   /**
-   * Allows Angular v2 service to be accessible from AngularJS v1.
+   * Allows Angular 2+ service to be accessible from Angular 1.
    *
    *
    * ### Example
@@ -607,7 +607,7 @@ interface ComponentFactoryRefMap {
 
 /**
  * Synchronous promise-like object to wrap parent injectors,
- * to preserve the synchronous nature of AngularJS v1's $compile.
+ * to preserve the synchronous nature of Angular 1's $compile.
  */
 class ParentInjectorPromise {
   private injector: Injector;
@@ -723,7 +723,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
 }
 
 /**
- * Use `UpgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
+ * Use `UpgradeAdapterRef` to control a hybrid Angular 1 / Angular 2+ application.
  *
  * @stable
  */
@@ -746,16 +746,16 @@ export class UpgradeAdapterRef {
   }
 
   /**
-   * Register a callback function which is notified upon successful hybrid AngularJS v1 / Angular v2
+   * Register a callback function which is notified upon successful hybrid Angular 1 / Angular 2+
    * application has been bootstrapped.
    *
-   * The `ready` callback function is invoked inside the Angular v2 zone, therefore it does not
+   * The `ready` callback function is invoked inside the Angular 2+ zone, therefore it does not
    * require a call to `$apply()`.
    */
   public ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void) { this._readyFn = fn; }
 
   /**
-   * Dispose of running hybrid AngularJS v1 / Angular v2 application.
+   * Dispose of running hybrid Angular 1 / Angular 2+ application.
    */
   public dispose() {
     this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
