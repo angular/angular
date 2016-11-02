@@ -27,7 +27,7 @@ export interface IModule {
   run(a: IInjectable): IModule;
 }
 export interface ICompileService {
-  (element: Element|NodeList|string, transclude?: Function): ILinkFn;
+  (element: Element|NodeList|Node[]|string, transclude?: Function): ILinkFn;
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;

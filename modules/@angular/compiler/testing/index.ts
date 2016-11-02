@@ -70,6 +70,10 @@ export class TestingCompilerImpl implements TestingCompiler {
     return this._compiler.compileModuleAndAllComponentsAsync(moduleType);
   }
 
+  getNgContentSelectors(component: Type<any>): string[] {
+    return this._compiler.getNgContentSelectors(component);
+  }
+
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
     const oldMetadata = this._moduleResolver.resolve(ngModule, false);
     this._moduleResolver.setNgModule(

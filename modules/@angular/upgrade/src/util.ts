@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
   if (console.error) {
@@ -21,6 +19,19 @@ export function onError(e: any) {
 
 export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
+}
+
+export function getAttributesAsArray(node: Node): string[][] {
+  const attributes = node.attributes;
+  let asArray: string[][];
+  if (attributes) {
+    let attrLen = attributes.length;
+    asArray = new Array(attrLen);
+    for (let i = 0; i < attrLen; i++) {
+      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue];
+    }
+  }
+  return asArray || [];
 }
 
 export class Deferred<R> {

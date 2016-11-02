@@ -10,8 +10,8 @@ import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgM
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeAdapter, sortProjectableNodes} from '@angular/upgrade/src/upgrade_adapter';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -178,7 +178,7 @@ export function main() {
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
              // https://github.com/angular/angular.js/issues/12983
-             expect(log).toEqual(['1A', '1B', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+             expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
              ref.dispose();
            });
          }));
@@ -356,6 +356,33 @@ export function main() {
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(multiTrim(document.body.textContent)).toEqual('test');
+             ref.dispose();
+           });
+         }));
+
+      it('should support multi-slot projection', async(() => {
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: '2a(<ng-content select=".ng1a"></ng-content>)' +
+                             '2b(<ng-content select=".ng1b"></ng-content>)'
+                       }).Class({constructor: function() {}});
+
+           const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+             constructor: function() {}
+           });
+
+           // The ng-if on one of the projected children is here to make sure
+           // the correct slot is targeted even with structural directives in play.
+           const element = html(
+               '<ng2><div ng-if="true" class="ng1a">1a</div><div' +
+               ' class="ng1b">1b</div></ng2>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
              ref.dispose();
            });
          }));
@@ -1128,6 +1155,33 @@ export function main() {
              ref.dispose();
            });
          }));
+
+      it('should respect hierarchical dependency injection for ng2', async(() => {
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2Parent = Component({
+                               selector: 'ng2-parent',
+                               template: `ng2-parent(<ng-content></ng-content>)`
+                             }).Class({constructor: function() {}});
+           const Ng2Child = Component({selector: 'ng2-child', template: `ng2-child`}).Class({
+             constructor: [Ng2Parent, function(parent: any) {}]
+           });
+
+           const Ng2Module =
+               NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]}).Class({
+                 constructor: function() {}
+               });
+
+           const element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2Parent', adapter.downgradeNg2Component(Ng2Parent))
+               .directive('ng2Child', adapter.downgradeNg2Component(Ng2Child));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
+             ref.dispose();
+           });
+         }));
     });
 
     describe('testability', () => {
@@ -1241,6 +1295,70 @@ export function main() {
          }));
     });
   });
+
+  describe('sortProjectableNodes', () => {
+    it('should return an array of node collections for each selector', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const selectors = ['input[type=date]', 'span', '.x'];
+      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
+
+      expect(projectableNodes[0]).toEqual(nodes('<input type="date" name="myDate">'));
+      expect(projectableNodes[1]).toEqual(nodes('<span>span content</span>'));
+      expect(projectableNodes[2])
+          .toEqual(nodes(
+              '<div class="x"><span>div-1 content</span></div>' +
+              '<div class="x"><span>div-2 content</span></div>'));
+    });
+
+    it('should collect up unmatched nodes for the wildcard selector', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const selectors = ['.x', '*', 'input[type=date]'];
+      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
+
+      expect(projectableNodes[0])
+          .toEqual(nodes(
+              '<div class="x"><span>div-1 content</span></div>' +
+              '<div class="x"><span>div-2 content</span></div>'));
+      expect(projectableNodes[1])
+          .toEqual(nodes(
+              '<input type="number" name="myNum">' +
+              '<span>span content</span>'));
+      expect(projectableNodes[2]).toEqual(nodes('<input type="date" name="myDate">'));
+    });
+
+    it('should return an array of empty arrays if there are no nodes passed in', () => {
+      const selectors = ['.x', '*', 'input[type=date]'];
+      const projectableNodes = sortProjectableNodes(selectors, []);
+      expect(projectableNodes).toEqual([[], [], []]);
+    });
+
+    it('should return an empty array for each selector that does not match', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const noSelectorNodes = sortProjectableNodes([], contentNodes);
+      expect(noSelectorNodes).toEqual([]);
+
+      const noMatchSelectorNodes = sortProjectableNodes(['.not-there'], contentNodes);
+      expect(noMatchSelectorNodes).toEqual([[]]);
+    });
+  });
 }
 
 function multiTrim(text: string): string {
@@ -1256,4 +1374,10 @@ function html(html: string): Element {
   }
 
   return body;
+}
+
+function nodes(html: string) {
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  return Array.prototype.slice.call(element.childNodes);
 }
