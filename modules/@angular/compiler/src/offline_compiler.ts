@@ -21,7 +21,7 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewCompileResult, ViewCompiler, ViewFactoryDependency} from './view_compiler/view_compiler';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from './view_compiler/view_compiler';
 
 export class SourceModule {
   constructor(public fileUrl: string, public moduleUrl: string, public source: string) {}
@@ -278,7 +278,7 @@ export class OfflineCompiler {
     }
     compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
     targetStatements.push(..._resolveViewStatements(viewResult));
-    return viewResult.viewFactoryVar;
+    return viewResult.viewClassVar;
   }
 
   private _codgenStyles(
@@ -301,8 +301,8 @@ export class OfflineCompiler {
 
 function _resolveViewStatements(compileResult: ViewCompileResult): o.Statement[] {
   compileResult.dependencies.forEach((dep) => {
-    if (dep instanceof ViewFactoryDependency) {
-      const vfd = <ViewFactoryDependency>dep;
+    if (dep instanceof ViewClassDependency) {
+      const vfd = <ViewClassDependency>dep;
       vfd.placeholder.moduleUrl = _ngfactoryModuleUrl(vfd.comp.moduleUrl);
     } else if (dep instanceof ComponentFactoryDependency) {
       const cfd = <ComponentFactoryDependency>dep;

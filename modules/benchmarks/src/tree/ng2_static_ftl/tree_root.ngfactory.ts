@@ -22,7 +22,8 @@ import * as import3 from './tree';
 import * as import12 from './tree';
 import * as import13 from './tree_branch.ngfactory';
 
-var renderType_TreeRootComponent_Host: import0.RenderComponentType = (null as any);
+var renderType_TreeRootComponent_Host: import0.RenderComponentType =
+    import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {});
 class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
   _el_0: any;
   /*private*/ _appEl_0: import2.ViewContainer;
@@ -41,7 +42,7 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
         this.renderer, 'tree', import4.EMPTY_INLINE_ARRAY, rootSelector, (null as any));
     this._appEl_0 = new import2.ViewContainer(0, (null as any), this, this._el_0);
     this._TreeRootComponent_0_4_View =
-        viewFactory_TreeRootComponent0(this.viewUtils, this, 0, this._el_0);
+        new _View_TreeRootComponent0(this.viewUtils, this, 0, this._el_0);
     this._TreeRootComponent_0_4 = new import3.TreeRootComponent();
     this._TreeRootComponent_0_4_View.create(this._TreeRootComponent_0_4, (null as any));
     this.init([].concat([this._el_0]), [this._el_0], []);
@@ -58,20 +59,13 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
     return notFoundResult;
   }
 }
-function viewFactory_TreeRootComponent_Host0(
-    viewUtils: import4.ViewUtils, parentView: import1.AppView<any>, parentIndex: number,
-    parentElement: any): import1.AppView<any> {
-  if ((renderType_TreeRootComponent_Host === (null as any))) {
-    (renderType_TreeRootComponent_Host =
-         import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
-  }
-  return new _View_TreeRootComponent_Host0(viewUtils, parentView, parentIndex, parentElement);
-}
 export const TreeRootComponentNgFactory: import9.ComponentFactory<import3.TreeRootComponent> =
     new import9.ComponentFactory<import3.TreeRootComponent>(
-        'tree', viewFactory_TreeRootComponent_Host0, import3.TreeRootComponent);
+        'tree', _View_TreeRootComponent_Host0, import3.TreeRootComponent);
 const styles_TreeRootComponent: any[] = [];
-var renderType_TreeRootComponent: import0.RenderComponentType = (null as any);
+var renderType_TreeRootComponent: import0.RenderComponentType = import4.createRenderComponentType(
+    '/Users/tbosch/projects/conf-demos/ngc-demo/src/ng2_static/root_tree.ts class TreeRootComponent - inline template',
+    0, import8.ViewEncapsulation.None, styles_TreeRootComponent, {});
 class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent> {
   _anchor_0: any;
   /*private*/ _appEl_0: import2.ViewContainer;
@@ -99,7 +93,7 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
 
   createEmbeddedViewInternal(nodeIndex: number): import1.AppView<any> {
     if (nodeIndex === 0) {
-      return viewFactory_TreeRootComponent1(this.viewUtils, this, 0, this._anchor_0);
+      return new _View_TreeRootComponent1(this.viewUtils, this, 0, this._anchor_0);
     }
   }
 
@@ -120,16 +114,6 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
     }
     this._appEl_0.detectChangesInNestedViews(throwOnChange);
   }
-}
-export function viewFactory_TreeRootComponent0(
-    viewUtils: import4.ViewUtils, parentView: import1.AppView<any>, parentIndex: number,
-    parentElement: any): import1.AppView<import3.TreeRootComponent> {
-  if ((renderType_TreeRootComponent === (null as any))) {
-    (renderType_TreeRootComponent = import4.createRenderComponentType(
-         '/Users/tbosch/projects/conf-demos/ngc-demo/src/ng2_static/root_tree.ts class TreeRootComponent - inline template',
-         0, import8.ViewEncapsulation.None, styles_TreeRootComponent, {}));
-  }
-  return new _View_TreeRootComponent0(viewUtils, parentView, parentIndex, parentElement);
 }
 class _View_TreeRootComponent1 extends import1.AppView<any> {
   _el_0: any;
@@ -154,9 +138,4 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
     this._TreeComponent0_0_4View.detectChangesInternal(throwOnChange);
   }
   visitRootNodesInternal(cb: any, context: any) { cb(this._el_0, context); }
-}
-function viewFactory_TreeRootComponent1(
-    viewUtils: import4.ViewUtils, parentView: import1.AppView<any>, parentIndex: number,
-    parentElement: any): import1.AppView<any> {
-  return new _View_TreeRootComponent1(viewUtils, parentView, parentIndex, parentElement);
 }

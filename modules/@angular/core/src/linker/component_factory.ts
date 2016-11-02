@@ -96,7 +96,8 @@ const EMPTY_CONTEXT = new Object();
  */
 export class ComponentFactory<C> {
   constructor(
-      public selector: string, private _viewFactory: Function, private _componentType: Type<any>) {}
+      public selector: string, private _viewClass: Type<AppView<any>>,
+      private _componentType: Type<any>) {}
 
   get componentType(): Type<any> { return this._componentType; }
 
@@ -110,7 +111,7 @@ export class ComponentFactory<C> {
     if (!projectableNodes) {
       projectableNodes = [];
     }
-    var hostView: AppView<any> = this._viewFactory(vu, null, null, null);
+    var hostView: AppView<any> = new this._viewClass(vu, null, null, null);
     return hostView.createHostView(rootSelectorOrNode, injector, projectableNodes);
   }
 }

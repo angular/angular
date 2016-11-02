@@ -247,7 +247,7 @@ export interface ComponentDecorator {
 export declare class ComponentFactory<C> {
     componentType: Type<any>;
     selector: string;
-    constructor(selector: string, _viewFactory: Function, _componentType: Type<any>);
+    constructor(selector: string, _viewClass: Type<AppView<any>>, _componentType: Type<any>);
     create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any): ComponentRef<C>;
 }
 

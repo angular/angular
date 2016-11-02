@@ -22,8 +22,8 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView, CompileViewRootNode, CompileViewRootNodeType} from './compile_view';
 import {ChangeDetectorStatusEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
-import {getViewFactoryName} from './util';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
+import {getViewClassName} from './util';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
@@ -36,8 +36,7 @@ var rootSelectorVar = o.variable('rootSelector');
 export function buildView(
     view: CompileView, template: TemplateAst[],
     targetDependencies:
-        Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>):
-    number {
+        Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>): number {
   var builderVisitor = new ViewBuilderVisitor(view, targetDependencies);
   const parentEl =
       view.declarationElement.isNull() ? view.declarationElement : view.declarationElement.parent;
@@ -64,7 +63,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   constructor(
       public view: CompileView,
       public targetDependencies:
-          Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
+          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
@@ -222,9 +221,9 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var compViewExpr: o.ReadPropExpr = null;
     if (isPresent(component)) {
       let nestedComponentIdentifier =
-          new CompileIdentifierMetadata({name: getViewFactoryName(component, 0)});
+          new CompileIdentifierMetadata({name: getViewClassName(component, 0)});
       this.targetDependencies.push(
-          new ViewFactoryDependency(component.type, nestedComponentIdentifier));
+          new ViewClassDependency(component.type, nestedComponentIdentifier));
 
       compViewExpr = o.THIS_EXPR.prop(`compView_${nodeIndex}`);  // fix highlighting: `
       this.view.fields.push(new o.ClassField(
@@ -234,7 +233,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       compileElement.setComponentView(compViewExpr);
       this.view.createMethod.addStmt(
           compViewExpr
-              .set(o.importExpr(nestedComponentIdentifier).callFn([
+              .set(o.importExpr(nestedComponentIdentifier).instantiate([
                 ViewProperties.viewUtils, o.THIS_EXPR, o.literal(nodeIndex), renderNode
               ]))
               .toStmt());
@@ -416,7 +415,6 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
 
   var viewClass = createViewClass(view, renderCompTypeVar, nodeDebugInfosVar);
   targetStatements.push(viewClass);
-  targetStatements.push(createViewFactory(view, viewClass));
 }
 
 function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
@@ -512,27 +510,6 @@ function generateDestroyMethod(view: CompileView): o.Statement[] {
       (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
   stmts.push(...view.destroyMethod.finish());
   return stmts;
-}
-
-function createViewFactory(view: CompileView, viewClass: o.ClassStmt): o.Statement {
-  var viewFactoryArgs = [
-    new o.FnParam(
-        ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
-    new o.FnParam(
-        ViewConstructorVars.parentView.name,
-        o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
-    new o.FnParam(ViewConstructorVars.parentIndex.name, o.NUMBER_TYPE),
-    new o.FnParam(ViewConstructorVars.parentElement.name, o.DYNAMIC_TYPE)
-  ];
-  return o
-      .fn(viewFactoryArgs,
-          [
-            new o.ReturnStatement(o.variable(viewClass.name)
-                                      .instantiate(viewClass.constructorMethod.params.map(
-                                          (param) => o.variable(param.name)))),
-          ],
-          o.importType(resolveIdentifier(Identifiers.AppView), [getContextType(view)]))
-      .toDeclStmt(view.viewFactory.name, [o.StmtModifier.Final]);
 }
 
 function generateCreateMethod(view: CompileView): o.Statement[] {
@@ -709,7 +686,7 @@ function generateCreateEmbeddedViewsMethod(view: CompileView) {
         const parentNodeIndex = node.isRootElement() ? null : node.parent.nodeIndex;
         stmts.push(new o.IfStmt(
             nodeIndexVar.equals(o.literal(node.nodeIndex)),
-            [new o.ReturnStatement(node.embeddedView.viewFactory.callFn([
+            [new o.ReturnStatement(node.embeddedView.classExpr.instantiate([
               ViewProperties.viewUtils, o.THIS_EXPR, o.literal(node.nodeIndex), node.renderNode
             ]))]));
       }

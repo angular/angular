@@ -17,17 +17,17 @@ import {TemplateAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
 import {bindView} from './view_binder';
 import {buildView, finishView} from './view_builder';
 
-export {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
+export {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
 
 export class ViewCompileResult {
   constructor(
-      public statements: o.Statement[], public viewFactoryVar: string,
+      public statements: o.Statement[], public viewClassVar: string,
       public dependencies:
-          Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
+          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 }
 
 @Injectable()
@@ -39,7 +39,7 @@ export class ViewCompiler {
       pipes: CompilePipeMetadata[],
       compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
     const dependencies:
-        Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
+        Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
     const view = new CompileView(
         component, this._genConfig, pipes, styles, compiledAnimations, 0,
         CompileElement.createNull(), []);
@@ -51,6 +51,6 @@ export class ViewCompiler {
     bindView(view, template, this._schemaRegistry);
     finishView(view, statements);
 
-    return new ViewCompileResult(statements, view.viewFactory.name, dependencies);
+    return new ViewCompileResult(statements, view.classExpr.name, dependencies);
   }
 }

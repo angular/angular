@@ -8,7 +8,7 @@
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
-export class ViewFactoryDependency {
+export class ViewClassDependency {
   constructor(
       public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
 }

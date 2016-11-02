@@ -21,7 +21,7 @@ import {CompileMethod} from './compile_method';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView, CompileViewRootNode} from './compile_view';
 import {InjectMethodVars, ViewProperties} from './constants';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewFactoryDependency} from './deps';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
 import {getPropertyInView, injectFromViewParentInjector} from './util';
 
 export class CompileNode {
@@ -60,7 +60,7 @@ export class CompileElement extends CompileNode {
       private _resolvedProvidersArray: ProviderAst[], public hasViewContainer: boolean,
       public hasEmbeddedView: boolean, references: ReferenceAst[],
       private _targetDependencies:
-          Array<ViewFactoryDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
+          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
     super(parent, view, nodeIndex, renderNode, sourceAst);
     this.referenceTokens = {};
     references.forEach(ref => this.referenceTokens[ref.name] = ref.value);
