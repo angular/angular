@@ -702,7 +702,7 @@ export class Router {
             this.currentRouterState = state;
 
             if (!shouldPreventPushState) {
-              let path = this.urlSerializer.serialize(this.rawUrlTree);
+              const path = this.urlSerializer.serialize(this.rawUrlTree);
               if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
                 this.location.replaceState(path);
               } else {
@@ -722,12 +722,14 @@ export class Router {
                       new NavigationEnd(id, this.serializeUrl(url), this.serializeUrl(appliedUrl)));
                   resolvePromise(true);
                 } else {
+                  this.resetUrlToCurrentUrlTree();
                   this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url), ''));
                   resolvePromise(false);
                 }
               },
               (e: any) => {
                 if (e instanceof NavigationCancelingError) {
+                  this.resetUrlToCurrentUrlTree();
                   this.navigated = true;
                   this.routerEvents.next(
                       new NavigationCancel(id, this.serializeUrl(url), e.message));
@@ -741,14 +743,17 @@ export class Router {
                   }
                 }
 
-                if (id === this.navigationId) {
-                  this.currentRouterState = storedState;
-                  this.currentUrlTree = storedUrl;
-                  this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
-                  this.location.replaceState(this.serializeUrl(this.rawUrlTree));
-                }
+                this.currentRouterState = storedState;
+                this.currentUrlTree = storedUrl;
+                this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+                this.location.replaceState(this.serializeUrl(this.rawUrlTree));
               });
     });
+  }
+
+  private resetUrlToCurrentUrlTree(): void {
+    const path = this.urlSerializer.serialize(this.rawUrlTree);
+    this.location.replaceState(path);
   }
 }
 

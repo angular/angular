@@ -1213,6 +1213,35 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/team/22');
            })));
       });
+
+      describe('should reset the location when cancleling a navigation', () => {
+        beforeEach(() => {
+          TestBed.configureTestingModule({
+            providers: [{
+              provide: 'alwaysFalse',
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+            }]
+          });
+        });
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([
+               {path: 'one', component: SimpleCmp},
+               {path: 'two', component: SimpleCmp, canActivate: ['alwaysFalse']}
+             ]);
+
+             router.navigateByUrl('/one');
+             advance(fixture);
+             expect(location.path()).toEqual('/one');
+
+             location.go('/two');
+             advance(fixture);
+             expect(location.path()).toEqual('/one');
+
+           })));
+      });
     });
 
     describe('CanDeactivate', () => {
