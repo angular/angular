@@ -276,8 +276,7 @@ export class OfflineCompiler {
     if (componentStyles) {
       targetStatements.push(..._resolveStyleStatements(componentStyles, fileSuffix));
     }
-    compiledAnimations.forEach(
-        entry => { entry.statements.forEach(statement => { targetStatements.push(statement); }); });
+    compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
     targetStatements.push(..._resolveViewStatements(viewResult));
     return viewResult.viewFactoryVar;
   }

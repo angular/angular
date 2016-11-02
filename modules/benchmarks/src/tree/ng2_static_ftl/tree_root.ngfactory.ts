@@ -63,7 +63,7 @@ function viewFactory_TreeRootComponent_Host0(
     parentElement: any): import1.AppView<any> {
   if ((renderType_TreeRootComponent_Host === (null as any))) {
     (renderType_TreeRootComponent_Host =
-         viewUtils.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
+         import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
   }
   return new _View_TreeRootComponent_Host0(viewUtils, parentView, parentIndex, parentElement);
 }
@@ -125,7 +125,7 @@ export function viewFactory_TreeRootComponent0(
     viewUtils: import4.ViewUtils, parentView: import1.AppView<any>, parentIndex: number,
     parentElement: any): import1.AppView<import3.TreeRootComponent> {
   if ((renderType_TreeRootComponent === (null as any))) {
-    (renderType_TreeRootComponent = viewUtils.createRenderComponentType(
+    (renderType_TreeRootComponent = import4.createRenderComponentType(
          '/Users/tbosch/projects/conf-demos/ngc-demo/src/ng2_static/root_tree.ts class TreeRootComponent - inline template',
          0, import8.ViewEncapsulation.None, styles_TreeRootComponent, {}));
   }

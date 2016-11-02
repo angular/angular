@@ -147,7 +147,7 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
     if ((this.__DomRootRenderer_19 == (null as any))) {
       (this.__DomRootRenderer_19 = new import13.DomRootRenderer_(
            this._DOCUMENT_13, this._EventManager_16, this._DomSharedStylesHost_17,
-           this._AnimationDriver_18));
+           this._AnimationDriver_18, this._APP_ID_12));
     }
     return this.__DomRootRenderer_19;
   }
@@ -172,8 +172,7 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   }
   get _ViewUtils_23(): import15.ViewUtils {
     if ((this.__ViewUtils_23 == (null as any))) {
-      (this.__ViewUtils_23 =
-           new import15.ViewUtils(this._RootRenderer_20, this._APP_ID_12, this._Sanitizer_22));
+      (this.__ViewUtils_23 = new import15.ViewUtils(this._RootRenderer_20, this._Sanitizer_22));
     }
     return this.__ViewUtils_23;
   }

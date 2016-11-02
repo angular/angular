@@ -320,10 +320,9 @@ export class RuntimeCompiler implements Compiler {
         dwd.placeholder.reference = this._assertDirectiveWrapper(dwd.dir.reference);
       }
     });
-    const statements =
-        stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
-    compiledAnimations.forEach(
-        entry => { entry.statements.forEach(statement => { statements.push(statement); }); });
+    const statements = stylesCompileResult.componentStylesheet.statements
+                           .concat(...compiledAnimations.map(ca => ca.statements))
+                           .concat(compileResult.statements);
     let factory: any;
     if (!this._compilerConfig.useJit) {
       factory = interpretStatements(statements, compileResult.viewFactoryVar);

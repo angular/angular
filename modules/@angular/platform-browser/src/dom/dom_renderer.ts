@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
+
 import {isBlank, isPresent, stringify} from '../facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../private_import_core';
 
@@ -30,12 +31,14 @@ export abstract class DomRootRenderer implements RootRenderer {
 
   constructor(
       public document: any, public eventManager: EventManager,
-      public sharedStylesHost: DomSharedStylesHost, public animationDriver: AnimationDriver) {}
+      public sharedStylesHost: DomSharedStylesHost, public animationDriver: AnimationDriver,
+      public appId: string) {}
 
   renderComponent(componentProto: RenderComponentType): Renderer {
     var renderer = this.registeredComponents.get(componentProto.id);
     if (!renderer) {
-      renderer = new DomRenderer(this, componentProto, this.animationDriver);
+      renderer = new DomRenderer(
+          this, componentProto, this.animationDriver, `${this.appId}-${componentProto.id}`);
       this.registeredComponents.set(componentProto.id, renderer);
     }
     return renderer;
@@ -46,8 +49,9 @@ export abstract class DomRootRenderer implements RootRenderer {
 export class DomRootRenderer_ extends DomRootRenderer {
   constructor(
       @Inject(DOCUMENT) _document: any, _eventManager: EventManager,
-      sharedStylesHost: DomSharedStylesHost, animationDriver: AnimationDriver) {
-    super(_document, _eventManager, sharedStylesHost, animationDriver);
+      sharedStylesHost: DomSharedStylesHost, animationDriver: AnimationDriver,
+      @Inject(APP_ID) appId: string) {
+    super(_document, _eventManager, sharedStylesHost, animationDriver, appId);
   }
 }
 
@@ -58,14 +62,14 @@ export class DomRenderer implements Renderer {
 
   constructor(
       private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,
-      private _animationDriver: AnimationDriver) {
-    this._styles = _flattenStyles(componentProto.id, componentProto.styles, []);
+      private _animationDriver: AnimationDriver, styleShimId: string) {
+    this._styles = _flattenStyles(styleShimId, componentProto.styles, []);
     if (componentProto.encapsulation !== ViewEncapsulation.Native) {
       this._rootRenderer.sharedStylesHost.addStyles(this._styles);
     }
     if (this.componentProto.encapsulation === ViewEncapsulation.Emulated) {
-      this._contentAttr = _shimContentAttribute(componentProto.id);
-      this._hostAttr = _shimHostAttribute(componentProto.id);
+      this._contentAttr = _shimContentAttribute(styleShimId);
+      this._hostAttr = _shimHostAttribute(styleShimId);
     } else {
       this._contentAttr = null;
       this._hostAttr = null;

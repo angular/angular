@@ -323,6 +323,11 @@ export class Identifiers {
     moduleUrl: VIEW_UTILS_MODULE_URL,
     runtime: view_utils.subscribeToRenderElement
   };
+  static createRenderComponentType: IdentifierSpec = {
+    name: 'createRenderComponentType',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.createRenderComponentType
+  };
   static noop:
       IdentifierSpec = {name: 'noop', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.noop};
 }
