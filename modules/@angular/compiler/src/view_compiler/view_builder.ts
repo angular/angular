@@ -394,14 +394,29 @@ function createViewTopLevelStmts(view: CompileView, targetStatements: o.Statemen
   var renderCompTypeVar: o.ReadVarExpr =
       o.variable(`renderType_${view.component.type.name}`);  // fix highlighting: `
   if (view.viewIndex === 0) {
+    let templateUrlInfo: string;
+    if (view.component.template.templateUrl == view.component.type.moduleUrl) {
+      templateUrlInfo =
+          `${view.component.type.moduleUrl} class ${view.component.type.name} - inline template`;
+    } else {
+      templateUrlInfo = view.component.template.templateUrl;
+    }
     targetStatements.push(
-        renderCompTypeVar.set(o.NULL_EXPR)
+        renderCompTypeVar
+            .set(o.importExpr(resolveIdentifier(Identifiers.createRenderComponentType)).callFn([
+              view.genConfig.genDebugInfo ? o.literal(templateUrlInfo) : o.literal(''),
+              o.literal(view.component.template.ngContentSelectors.length),
+              ViewEncapsulationEnum.fromValue(view.component.template.encapsulation),
+              view.styles,
+              o.literalMap(view.animations.map(
+                  (entry): [string, o.Expression] => [entry.name, entry.fnExp])),
+            ]))
             .toDeclStmt(o.importType(resolveIdentifier(Identifiers.RenderComponentType))));
   }
 
   var viewClass = createViewClass(view, renderCompTypeVar, nodeDebugInfosVar);
   targetStatements.push(viewClass);
-  targetStatements.push(createViewFactory(view, viewClass, renderCompTypeVar));
+  targetStatements.push(createViewFactory(view, viewClass));
 }
 
 function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
@@ -499,8 +514,7 @@ function generateDestroyMethod(view: CompileView): o.Statement[] {
   return stmts;
 }
 
-function createViewFactory(
-    view: CompileView, viewClass: o.ClassStmt, renderCompTypeVar: o.ReadVarExpr): o.Statement {
+function createViewFactory(view: CompileView, viewClass: o.ClassStmt): o.Statement {
   var viewFactoryArgs = [
     new o.FnParam(
         ViewConstructorVars.viewUtils.name, o.importType(resolveIdentifier(Identifiers.ViewUtils))),
@@ -510,41 +524,13 @@ function createViewFactory(
     new o.FnParam(ViewConstructorVars.parentIndex.name, o.NUMBER_TYPE),
     new o.FnParam(ViewConstructorVars.parentElement.name, o.DYNAMIC_TYPE)
   ];
-  var initRenderCompTypeStmts: any[] = [];
-  var templateUrlInfo: string;
-  if (view.component.template.templateUrl == view.component.type.moduleUrl) {
-    templateUrlInfo =
-        `${view.component.type.moduleUrl} class ${view.component.type.name} - inline template`;
-  } else {
-    templateUrlInfo = view.component.template.templateUrl;
-  }
-  if (view.viewIndex === 0) {
-    var animationsExpr = o.literalMap(
-        view.animations.map((entry): [string, o.Expression] => [entry.name, entry.fnExp]));
-    initRenderCompTypeStmts = [
-      new o.IfStmt(
-        renderCompTypeVar.identical(o.NULL_EXPR),
-        [
-          renderCompTypeVar
-             .set(ViewConstructorVars.viewUtils.callMethod(
-                 'createRenderComponentType',
-                 [
-                   view.genConfig.genDebugInfo ? o.literal(templateUrlInfo) : o.literal(''),
-                   o.literal(view.component.template.ngContentSelectors.length),
-                   ViewEncapsulationEnum.fromValue(view.component.template.encapsulation),
-                   view.styles,
-                   animationsExpr,
-                 ]))
-             .toStmt(),
-        ]),
-    ];
-  }
   return o
-      .fn(viewFactoryArgs, initRenderCompTypeStmts.concat([
-        new o.ReturnStatement(o.variable(viewClass.name)
-                                  .instantiate(viewClass.constructorMethod.params.map(
-                                      (param) => o.variable(param.name)))),
-      ]),
+      .fn(viewFactoryArgs,
+          [
+            new o.ReturnStatement(o.variable(viewClass.name)
+                                      .instantiate(viewClass.constructorMethod.params.map(
+                                          (param) => o.variable(param.name)))),
+          ],
           o.importType(resolveIdentifier(Identifiers.AppView), [getContextType(view)]))
       .toDeclStmt(view.viewFactory.name, [o.StmtModifier.Final]);
 }

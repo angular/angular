@@ -24,28 +24,21 @@ export class ViewUtils {
   sanitizer: Sanitizer;
   private _nextCompTypeId: number = 0;
 
-  constructor(
-      private _renderer: RootRenderer, @Inject(APP_ID) private _appId: string,
-      sanitizer: Sanitizer) {
-    this.sanitizer = sanitizer;
-  }
-
-  /**
-   * Used by the generated code
-   */
-  // TODO (matsko): add typing for the animation function
-  createRenderComponentType(
-      templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
-      styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
-    return new RenderComponentType(
-        `${this._appId}-${this._nextCompTypeId++}`, templateUrl, slotCount, encapsulation, styles,
-        animations);
-  }
+  constructor(private _renderer: RootRenderer, sanitizer: Sanitizer) { this.sanitizer = sanitizer; }
 
   /** @internal */
   renderComponent(renderComponentType: RenderComponentType): Renderer {
     return this._renderer.renderComponent(renderComponentType);
   }
+}
+
+let nextRenderComponentTypeId = 0;
+
+export function createRenderComponentType(
+    templateUrl: string, slotCount: number, encapsulation: ViewEncapsulation,
+    styles: Array<string|any[]>, animations: {[key: string]: Function}): RenderComponentType {
+  return new RenderComponentType(
+      `${nextRenderComponentTypeId++}`, templateUrl, slotCount, encapsulation, styles, animations);
 }
 
 export function addToArray(e: any, array: any[]) {

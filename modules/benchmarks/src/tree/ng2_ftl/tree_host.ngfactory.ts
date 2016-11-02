@@ -56,7 +56,7 @@ function viewFactory_TreeComponent_Host0(
     parentElement: any): import1.AppView<any> {
   if ((renderType_TreeComponent_Host === (null as any))) {
     (renderType_TreeComponent_Host =
-         viewUtils.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
+         import4.createRenderComponentType('', 0, import8.ViewEncapsulation.None, [], {}));
   }
   return new _View_TreeComponent_Host0(viewUtils, parentView, parentIndex, parentElement);
 }
