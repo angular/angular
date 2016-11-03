@@ -1,6 +1,6 @@
 import {async, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MdTabGroup, MdTabsModule} from './tabs';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 
@@ -271,6 +271,10 @@ describe('MdTabGroup', () => {
       expect(getSelectedLabel(fixture).textContent).toMatch('Chips');
       expect(getSelectedContent(fixture).textContent).toMatch('Salt, vinegar');
     });
+
+    it('should support @ViewChild in the tab content', () => {
+      expect(fixture.componentInstance.legumes).toBeTruthy();
+    });
   });
 
   /**
@@ -389,10 +393,12 @@ class AsyncTabsTestApp {
     <md-tab label="Junk food"> Pizza, fries </md-tab>
     <md-tab label="Vegetables"> Broccoli, spinach </md-tab>
     <md-tab [label]="otherLabel"> {{otherContent}} </md-tab>
+    <md-tab label="Legumes"> <p #legumes>Peanuts</p> </md-tab>
   </md-tab-group>
   `
 })
 class TabGroupWithSimpleApi {
   otherLabel = 'Fruit';
   otherContent = 'Apples, grapes';
+  @ViewChild('legumes') legumes: any;
 }
