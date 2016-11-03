@@ -58,10 +58,10 @@ export const transformPanel: AnimationEntryMetadata = trigger('transformPanel', 
       width: '100%',
       transform: `translate3d(0, 0, 0) scaleY(0)`
     }),
-    animate(`150ms cubic-bezier(0.55, 0, 0.55, 0.2)`)
+    animate(`150ms cubic-bezier(0.25, 0.8, 0.25, 1)`)
   ]),
   transition('* => void', [
-    animate('250ms linear', style({opacity: 0}))
+    animate('250ms 100ms linear', style({opacity: 0}))
   ])
 ]);
 

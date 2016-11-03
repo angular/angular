@@ -105,9 +105,10 @@ export class MdSelect implements AfterContentInit, OnDestroy {
     this._panelOpen = true;
   }
 
-  /** Closes the overlay panel. */
+  /** Closes the overlay panel and focuses the host element. */
   close(): void {
     this._panelOpen = false;
+    this._focusHost();
   }
 
   /** Whether or not the overlay panel is open. */
@@ -152,13 +153,15 @@ export class MdSelect implements AfterContentInit, OnDestroy {
     }
   }
 
-  /** Emits an event and sets focus when overlay panel is finished animating. */
+  /**
+   * When the panel is finished animating, emits an event and focuses
+   * an option if the panel is open.
+   */
   _onPanelDone(): void {
     if (this.panelOpen) {
       this._focusCorrectOption();
       this.onOpen.emit();
     } else {
-      this._focusHost();
       this.onClose.emit();
     }
   }
