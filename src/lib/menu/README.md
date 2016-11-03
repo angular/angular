@@ -84,6 +84,34 @@ class MyComp {
 </md-menu>
 ```
 
+### Adding an icon
+
+Menus also support displaying `md-icon` elements before the menu item text.
+
+*my-comp.html*
+```html
+<md-menu #menu="mdMenu">
+  <button md-menu-item> 
+    <md-icon> dialpad </md-icon>
+    <span> Redial </span>
+  </button>
+  <button md-menu-item disabled> 
+    <md-icon> voicemail </md-icon>
+    <span> Check voicemail </span>
+  </button>
+  <button md-menu-item> 
+    <md-icon> notifications_off </md-icon>
+    <span> Disable alerts </span>
+  </button>
+</md-menu>
+```
+
+Output:
+
+<img src="https://material.angularjs.org/material2_assets/menu/icon_menu_closed.png">
+<img src="https://material.angularjs.org/material2_assets/menu/icon_menu_open.png">
+
+
 ### Customizing menu position
 
 By default, the menu will display after and below its trigger.  You can change this display position 

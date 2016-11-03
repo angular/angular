@@ -18,6 +18,10 @@
       color: md-color($foreground, 'disabled');
     }
 
+    md-icon {
+      color: md-color($foreground, 'icon');
+    }
+
     &:hover:not([disabled]), &:focus:not([disabled]) {
       background: md-color($background, 'hover');
     }

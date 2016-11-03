@@ -16,5 +16,11 @@ export class MenuDemo {
     {text: 'Sign Out'}
   ];
 
+  iconItems = [
+    {text: 'Redial', icon: 'dialpad'},
+    {text: 'Check voicemail', icon: 'voicemail', disabled: true},
+    {text: 'Disable alerts', icon: 'notifications_off'}
+  ];
+
   select(text: string) { this.selected = text; }
 }

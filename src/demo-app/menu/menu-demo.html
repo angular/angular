@@ -39,7 +39,8 @@
     </md-toolbar>
 
     <md-menu x-position="before" #posXMenu="mdMenu" class="before">
-      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+      <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
+        <md-icon>{{ item.icon }}</md-icon>
         {{ item.text }}
       </button>
     </md-menu>

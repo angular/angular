@@ -42,4 +42,12 @@ $md-menu-vertical-padding: 8px !default;
   &[disabled] {
     cursor: default;
   }
+
+  md-icon {
+    margin-right: 16px;
+
+    [dir='rtl'] & {
+      margin-left: 16px;
+    }
+  }
 }
