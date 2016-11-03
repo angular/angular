@@ -27,6 +27,7 @@ md-button-toggle {
   line-height: $md-button-toggle-line-height;
   padding: $md-button-toggle-padding;
   cursor: pointer;
+  user-select: none;
 }
 
 .md-button-toggle-label-content > * {
