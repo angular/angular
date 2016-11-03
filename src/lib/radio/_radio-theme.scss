@@ -29,7 +29,11 @@
     }
   }
 
-  .md-radio-focused .md-radio-ripple .md-ripple-foreground {
+  .md-radio-ripple .md-ripple-foreground {
     background-color: md-color($accent, 0.26);
+
+    .md-radio-disabled & {
+      background-color: md-color($foreground, disabled);
+    }
   }
 }
