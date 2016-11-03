@@ -10,7 +10,6 @@ import {Injectable, ViewEncapsulation} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {MapWrapper} from './facade/collection';
 import {isBlank, isPresent} from './facade/lang';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
@@ -169,7 +168,7 @@ export class DirectiveNormalizer {
                    return this._loadMissingExternalStylesheets(
                        stylesheet.styleUrls, loadedStylesheets);
                  })))
-        .then((_) => MapWrapper.values(loadedStylesheets));
+        .then((_) => Array.from(loadedStylesheets.values()));
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {

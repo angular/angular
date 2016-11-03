@@ -11,7 +11,6 @@ import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata
 import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
 import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
-import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -153,19 +152,21 @@ export class CompileView implements NameResolver {
   }
 
   afterNodes() {
-    MapWrapper.values(this.viewQueries)
+    Array.from(this.viewQueries.values())
         .forEach(
-            (queries) => queries.forEach(
-                (query) => query.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
+            queries => queries.forEach(
+                q => q.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
   }
 }
 
 function getViewType(component: CompileDirectiveMetadata, embeddedTemplateIndex: number): ViewType {
   if (embeddedTemplateIndex > 0) {
     return ViewType.EMBEDDED;
-  } else if (component.type.isHost) {
-    return ViewType.HOST;
-  } else {
-    return ViewType.COMPONENT;
   }
+
+  if (component.type.isHost) {
+    return ViewType.HOST;
+  }
+
+  return ViewType.COMPONENT;
 }

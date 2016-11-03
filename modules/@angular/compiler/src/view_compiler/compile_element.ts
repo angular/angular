@@ -10,7 +10,6 @@
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import {DirectiveWrapperCompiler, DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
-import {MapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {Identifiers, identifierToken, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -169,21 +168,23 @@ export class CompileElement extends CompileNode {
 
     // create all the provider instances, some in the view constructor,
     // some as getters. We rely on the fact that they are already sorted topologically.
-    MapWrapper.values(this._resolvedProviders).forEach((resolvedProvider) => {
+    Array.from(this._resolvedProviders.values()).forEach((resolvedProvider) => {
       const isDirectiveWrapper = resolvedProvider.providerType === ProviderAstType.Component ||
           resolvedProvider.providerType === ProviderAstType.Directive;
-      var providerValueExpressions = resolvedProvider.providers.map((provider) => {
-        if (isPresent(provider.useExisting)) {
+      const providerValueExpressions = resolvedProvider.providers.map((provider) => {
+        if (provider.useExisting) {
           return this._getDependency(
               resolvedProvider.providerType,
               new CompileDiDependencyMetadata({token: provider.useExisting}));
-        } else if (isPresent(provider.useFactory)) {
-          var deps = provider.deps || provider.useFactory.diDeps;
-          var depsExpr = deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
+        } else if (provider.useFactory) {
+          const deps = provider.deps || provider.useFactory.diDeps;
+          const depsExpr =
+              deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
           return o.importExpr(provider.useFactory).callFn(depsExpr);
-        } else if (isPresent(provider.useClass)) {
-          var deps = provider.deps || provider.useClass.diDeps;
-          var depsExpr = deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
+        } else if (provider.useClass) {
+          const deps = provider.deps || provider.useClass.diDeps;
+          const depsExpr =
+              deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
           if (isDirectiveWrapper) {
             const directiveWrapperIdentifier = new CompileIdentifierMetadata(
                 {name: DirectiveWrapperCompiler.dirWrapperClassName(provider.useClass)});
@@ -217,7 +218,7 @@ export class CompileElement extends CompileNode {
       directive.queries.forEach((queryMeta) => { this._addQuery(queryMeta, directiveInstance); });
     }
     var queriesWithReads: _QueryWithRead[] = [];
-    MapWrapper.values(this._resolvedProviders).forEach((resolvedProvider) => {
+    Array.from(this._resolvedProviders.values()).forEach((resolvedProvider) => {
       var queriesForProvider = this._getQueriesFor(resolvedProvider.token);
       queriesWithReads.push(
           ...queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
@@ -225,7 +226,7 @@ export class CompileElement extends CompileNode {
     Object.keys(this.referenceTokens).forEach(varName => {
       var token = this.referenceTokens[varName];
       var varValue: o.Expression;
-      if (isPresent(token)) {
+      if (token) {
         varValue = this.instances.get(token.reference);
       } else {
         varValue = this.renderNode;
@@ -256,7 +257,7 @@ export class CompileElement extends CompileNode {
   }
 
   afterChildren(childNodeCount: number) {
-    MapWrapper.values(this._resolvedProviders).forEach((resolvedProvider) => {
+    Array.from(this._resolvedProviders.values()).forEach((resolvedProvider) => {
       // Note: afterChildren is called after recursing into children.
       // This is good so that an injector match in an element that is closer to a requesting element
       // matches first.
@@ -271,11 +272,11 @@ export class CompileElement extends CompileNode {
           this.nodeIndex, providerChildNodeCount, resolvedProvider, providerExpr));
     });
 
-    MapWrapper.values(this._queries)
+    Array.from(this._queries.values())
         .forEach(
-            (queries) => queries.forEach(
-                (query) => query.afterChildren(
-                    this.view.createMethod, this.view.updateContentQueriesMethod)));
+            queries => queries.forEach(
+                q =>
+                    q.afterChildren(this.view.createMethod, this.view.updateContentQueriesMethod)));
   }
 
   addContentNode(ngContentIndex: number, nodeExpr: CompileViewRootNode) {
@@ -289,7 +290,7 @@ export class CompileElement extends CompileNode {
   }
 
   getProviderTokens(): o.Expression[] {
-    return MapWrapper.values(this._resolvedProviders)
+    return Array.from(this._resolvedProviders.values())
         .map((resolvedProvider) => createDiTokenExpression(resolvedProvider.token));
   }
 

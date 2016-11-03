@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
-import {ListWrapper, MapWrapper} from './facade/collection';
+import {ListWrapper} from './facade/collection';
 import {isPresent} from './facade/lang';
 import {LifecycleHooks} from './private_import_core';
 import {CssSelector} from './selector';
@@ -582,7 +582,7 @@ export function removeIdentifierDuplicates<T extends CompileMetadataWithIdentifi
     }
   });
 
-  return MapWrapper.values(map);
+  return Array.from(map.values());
 }
 
 function _normalizeArray(obj: any[]): any[] {

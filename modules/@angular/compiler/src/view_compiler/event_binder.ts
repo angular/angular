@@ -9,8 +9,6 @@
 import {EventHandlerVars, convertActionBinding} from '../compiler_util/expression_converter';
 import {createInlineArray} from '../compiler_util/identifier_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
-import {MapWrapper} from '../facade/collection';
-import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
@@ -69,7 +67,7 @@ function subscribeToRenderEvents(
 function subscribeToDirectiveEvents(
     usedEvents: Map<string, EventSummary>, directives: DirectiveAst[],
     compileElement: CompileElement) {
-  const usedEventNames = MapWrapper.keys(usedEvents);
+  const usedEventNames = Array.from(usedEvents.keys());
   directives.forEach((dirAst) => {
     const dirWrapper = compileElement.directiveWrapperInstance.get(dirAst.directive.type.reference);
     compileElement.view.createMethod.addStmts(DirectiveWrapperExpressions.subscribe(

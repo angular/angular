@@ -8,7 +8,6 @@
 
 import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
 
-import {MapWrapper} from '../facade/collection';
 import {isBlank, isPresent, isPrimitive, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -108,7 +107,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _getOptionId(value: any): string {
-    for (let id of MapWrapper.keys(this._optionMap)) {
+    for (let id of Array.from(this._optionMap.keys())) {
       if (looseIdentical(this._optionMap.get(id), value)) return id;
     }
     return null;

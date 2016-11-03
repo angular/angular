@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, MapWrapper, StringMapWrapper} from '../src/collection';
+import {ListWrapper, StringMapWrapper} from '../src/collection';
 
 export function main() {
   describe('ListWrapper', () => {
@@ -35,44 +35,35 @@ export function main() {
          () => { expect(StringMapWrapper.equals({}, {})).toBe(true); });
 
       it('should return true when comparing the same map', () => {
-        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
         expect(StringMapWrapper.equals(m1, m1)).toBe(true);
       });
 
       it('should return true when comparing different maps with the same keys and values', () => {
-        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
-        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(true);
       });
 
       it('should return false when comparing maps with different numbers of keys', () => {
-        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
-        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3, 'd': 4};
+        const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3, 'd': 4};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
       });
 
       it('should return false when comparing maps with different keys', () => {
-        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
-        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'CC': 3};
+        const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m2: {[key: string]: number} = {'a': 1, 'b': 2, 'CC': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
       });
 
       it('should return false when comparing maps with different values', () => {
-        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
-        var m2: {[key: string]: number} = {'a': 1, 'b': 20, 'c': 3};
+        const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        const m2: {[key: string]: number} = {'a': 1, 'b': 20, 'c': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
-      });
-    });
-
-    describe('MapWrapper', () => {
-      it('should return a list of keys values', () => {
-        var m = new Map();
-        m.set('a', 'b');
-        expect(MapWrapper.keys(m)).toEqual(['a']);
-        expect(MapWrapper.values(m)).toEqual(['b']);
       });
     });
   });
