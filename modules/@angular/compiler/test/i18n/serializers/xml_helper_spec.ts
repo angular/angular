@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
-
 import * as xml from '../../../src/i18n/serializers/xml_helper';
 
 export function main(): void {

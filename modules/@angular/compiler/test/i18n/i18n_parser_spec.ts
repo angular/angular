@@ -9,7 +9,6 @@
 import {digest} from '@angular/compiler/src/i18n/digest';
 import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {serializeNodes} from '../../src/i18n/digest';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
@@ -273,9 +272,12 @@ export function main() {
           [['{count, plural, =1 {[1]}}'], '', ''],
         ]);
 
-        // ICU message placeholders are reference to translations.
-        // As such they have no static content but refs to message ids.
-        expect(_humanizePlaceholders(html)).toEqual(['', '', '', '']);
+        expect(_humanizePlaceholders(html)).toEqual([
+          '',
+          'VAR_PLURAL=count',
+          'VAR_PLURAL=count',
+          'VAR_PLURAL=count',
+        ]);
 
         expect(_humanizePlaceholdersToMessage(html)).toEqual([
           'ICU=f0f76923009914f1b05f41042a5c7231b9496504, ICU_1=73693d1f78d0fc882f0bcbce4cb31a0aa1995cfe',

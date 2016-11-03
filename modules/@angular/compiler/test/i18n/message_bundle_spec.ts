@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
-import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
 import {serializeNodes} from '../../src/i18n/digest';
+import * as i18n from '../../src/i18n/i18n_ast';
 import {MessageBundle} from '../../src/i18n/message_bundle';
+import {Serializer} from '../../src/i18n/serializers/serializer';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
@@ -50,7 +48,7 @@ class _TestSerializer implements Serializer {
         .join('//');
   }
 
-  load(content: string, url: string, placeholders: {}): {} { return null; }
+  load(content: string, url: string): {} { return null; }
 
   digest(msg: i18n.Message): string { return 'unused'; }
 }

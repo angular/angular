@@ -95,6 +95,10 @@ export class PlaceholderRegistry {
     return uniqueName;
   }
 
+  getUniquePlaceholder(name: string): string {
+    return this._generateUniqueName(name.toUpperCase());
+  }
+
   // Generate a hash for a tag - does not take attribute order into account
   private _hashTag(tag: string, attrs: {[k: string]: string}, isVoid: boolean): string {
     const start = `<${tag}`;

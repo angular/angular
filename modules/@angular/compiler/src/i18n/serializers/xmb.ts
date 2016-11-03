@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../../ml_parser/ast';
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
-import {MessageBundle} from '../message_bundle';
 
 import {Serializer} from './serializer';
 import * as xml from './xml_helper';
@@ -78,7 +76,7 @@ export class Xmb implements Serializer {
     ]);
   }
 
-  load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: html.Node[]} {
+  load(content: string, url: string): {[msgId: string]: i18n.Node[]} {
     throw new Error('Unsupported');
   }
 
@@ -95,7 +93,7 @@ class _Visitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu, context?: any): xml.Node[] {
-    const nodes = [new xml.Text(`{${icu.expression}, ${icu.type}, `)];
+    const nodes = [new xml.Text(`{${icu.expressionPlaceholder}, ${icu.type}, `)];
 
     Object.keys(icu.cases).forEach((c: string) => {
       nodes.push(new xml.Text(`${c} {`), ...icu.cases[c].visit(this), new xml.Text(`} `));

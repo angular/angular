@@ -43,6 +43,9 @@ export function main() {
       expectHtml(el, '#i18n-2').toBe('<div id="i18n-2"><p>imbriqué</p></div>');
       expectHtml(el, '#i18n-3')
           .toBe('<div id="i18n-3"><p><i>avec des espaces réservés</i></p></div>');
+      expectHtml(el, '#i18n-3b')
+          .toBe(
+              '<div id="i18n-3b"><p><i class="preserved-on-placeholders">avec des espaces réservés</i></p></div>');
       expectHtml(el, '#i18n-4')
           .toBe('<p id="i18n-4" title="sur des balises non traductibles"></p>');
       expectHtml(el, '#i18n-5').toBe('<p id="i18n-5" title="sur des balises traductibles"></p>');
@@ -66,8 +69,10 @@ export function main() {
       expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('beaucoup');
 
       cmp.sex = 'm';
+      cmp.sexB = 'f';
       tb.detectChanges();
       expect(el.query(By.css('#i18n-8')).nativeElement).toHaveText('homme');
+      expect(el.query(By.css('#i18n-8b')).nativeElement).toHaveText('femme');
       cmp.sex = 'f';
       tb.detectChanges();
       expect(el.query(By.css('#i18n-8')).nativeElement).toHaveText('femme');
@@ -106,6 +111,7 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
     <div id="i18n-2"><p i18n="different meaning|">nested</p></div>
     
     <div id="i18n-3"><p i18n><i>with placeholders</i></p></div>
+    <div id="i18n-3b"><p i18n><i class="preserved-on-placeholders">with placeholders</i></p></div>
     
     <div>
         <p id="i18n-4" i18n-title title="on not translatable node"></p>
@@ -118,6 +124,9 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
     
     <div i18n id="i18n-8">
         {sex, select, m {male} f {female}}
+    </div>
+    <div i18n id="i18n-8b">
+        {sexB, select, m {male} f {female}}
     </div>
     
     <div i18n id="i18n-9">{{ "count = " + count }}</div>
@@ -135,8 +144,9 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
 `
 })
 class I18nComponent {
-  count: number = 0;
-  sex: string = 'm';
+  count: number;
+  sex: string;
+  sexB: string;
 }
 
 class FrLocalization extends NgLocalization {
@@ -159,14 +169,14 @@ const XTB = `
   <translation id="7210334813789040330"><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
   <translation id="4769680004784140786">sur des balises non traductibles</translation>
   <translation id="4033143013932333681">sur des balises traductibles</translation>
-  <translation id="6304278477201429103">{count, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
-  <translation id="7235359853951837339"><ph name="ICU"/></translation>
-  <translation id="3159329131322704158">{sex, select, m {homme} f {femme}}</translation>
+  <translation id="6162642997206060264">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
+  <translation id="1882489820012923152"><ph name="ICU"/></translation>
+  <translation id="4822972059757846302">{VAR_SELECT, select, m {homme} f {femme}}</translation>
   <translation id="5917557396782931034"><ph name="INTERPOLATION"/></translation>
   <translation id="4687596778889597732">sexe = <ph name="INTERPOLATION"/></translation>
   <translation id="2505882222003102347"><ph name="CUSTOM_NAME"/></translation>
   <translation id="5340176214595489533">dans une section traductible</translation>
-  <translation id="8173674801943621225">
+  <translation id="4120782520649528473">
     <ph name="START_HEADING_LEVEL1"/>Balises dans les commentaires html<ph name="CLOSE_HEADING_LEVEL1"/>   
     <ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/>
     <ph name="START_TAG_DIV_1"/><ph name="ICU"/><ph name="CLOSE_TAG_DIV"></ph>
@@ -185,16 +195,16 @@ const XMB = `
   <msg id="7210334813789040330"><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
   <msg id="4769680004784140786">on not translatable node</msg>
   <msg id="4033143013932333681">on translatable node</msg>
-  <msg id="6304278477201429103">{count, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="7235359853951837339">
+  <msg id="6162642997206060264">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="1882489820012923152">
         <ph name="ICU"/>
     </msg>
-  <msg id="3159329131322704158">{sex, select, m {male} f {female} }</msg>
+  <msg id="4822972059757846302">{VAR_SELECT, select, m {male} f {female} }</msg>
   <msg id="5917557396782931034"><ph name="INTERPOLATION"/></msg>
   <msg id="4687596778889597732">sex = <ph name="INTERPOLATION"/></msg>
   <msg id="2505882222003102347"><ph name="CUSTOM_NAME"/></msg>
   <msg id="5340176214595489533">in a translatable section</msg>
-  <msg id="8173674801943621225">
+  <msg id="4120782520649528473">
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>   
     <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"/><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>

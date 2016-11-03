@@ -10,7 +10,6 @@ import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
 
-import {digest} from './digest';
 import * as i18n from './i18n_ast';
 import {createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
