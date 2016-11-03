@@ -98,4 +98,5 @@ md-radio-button {
   bottom: -$md-radio-ripple-size;
   border-radius: 50%;
   z-index: 1;
+  pointer-events: none;
 }

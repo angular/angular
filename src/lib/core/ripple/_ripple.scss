@@ -13,7 +13,6 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
   // "relative" so that the ripple divs it creates inside itself are correctly positioned.
   [md-ripple] {
     overflow: hidden;
-    pointer-events: none;
   }
 
   [md-ripple].md-ripple-unbounded {
