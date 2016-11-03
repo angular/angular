@@ -14,7 +14,7 @@ import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, N
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {ComponentInfo, getComponentInfo} from './metadata';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
-import {controllerKey, onError} from './util';
+import {controllerKey, onError, Deferred} from './util';
 
 let upgradeCount: number = 0;
 
@@ -326,7 +326,7 @@ export class UpgradeAdapter {
     const componentFactoryRefMap: ComponentFactoryRefMap = {};
     const ng1Module = angular.module(this.idPrefix, modules);
     let ng1BootstrapPromise: Promise<any>;
-    let ng1compilePromise: Promise<any>;
+    const ng2BootstrapDeferred = new Deferred();
     ng1Module.factory(NG2_INJECTOR, () => moduleRef.injector.get(Injector))
         .value(NG2_ZONE, ngZone)
         .factory(NG2_COMPILER, () => moduleRef.injector.get(Compiler))
@@ -375,54 +375,52 @@ export class UpgradeAdapter {
           }
         ]);
 
-    ng1compilePromise = new Promise((resolve, reject) => {
-      ng1Module.run([
-        '$injector', '$rootScope',
-        (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
-          ng1Injector = injector;
-          UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, injector)
-              .then(() => {
-                // At this point we have ng1 injector and we have lifted ng1 components into ng2, we
-                // now can bootstrap ng2.
-                const DynamicNgUpgradeModule =
-                    NgModule({
-                      providers: [
-                        {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
-                        {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
-                        this.providers
-                      ],
-                      imports: [this.ng2AppModule]
-                    }).Class({
-                      constructor: function DynamicNgUpgradeModule() {},
-                      ngDoBootstrap: function() {}
-                    });
+    ng1Module.run([
+      '$injector', '$rootScope',
+      (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
+        ng1Injector = injector;
+        UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, injector)
+            .then(() => {
+              // At this point we have ng1 injector and we have lifted ng1 components into ng2, we
+              // now can bootstrap ng2.
+              const DynamicNgUpgradeModule =
+                  NgModule({
+                    providers: [
+                      {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
+                      {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
+                      this.providers
+                    ],
+                    imports: [this.ng2AppModule]
+                  }).Class({
+                    constructor: function DynamicNgUpgradeModule() {},
+                    ngDoBootstrap: function() {}
+                  });
 
-                (platformBrowserDynamic() as any)
-                    ._bootstrapModuleWithZone(
-                        DynamicNgUpgradeModule, this.compilerOptions, ngZone,
-                        (componentFactories: ComponentFactory<any>[]) => {
-                          componentFactories.forEach((componentFactory: ComponentFactory<any>) => {
-                            const type: Type<any> = componentFactory.componentType;
-                            if (this.upgradedComponents.indexOf(type) !== -1) {
-                              componentFactoryRefMap[getComponentInfo(type).selector] =
-                                  componentFactory;
-                            }
-                          });
-                        })
-                    .then((ref: NgModuleRef<any>) => {
-                      moduleRef = ref;
-                      angular.element(element).data(
-                          controllerKey(NG2_INJECTOR), moduleRef.injector);
-                      ngZone.onMicrotaskEmpty.subscribe({
-                        next: (_: any) => ngZone.runOutsideAngular(() => rootScope.$evalAsync())
-                      });
-                    })
-                    .then(resolve, reject);
-              })
-              .catch(reject);
+              (platformBrowserDynamic() as any)
+                  ._bootstrapModuleWithZone(
+                      DynamicNgUpgradeModule, this.compilerOptions, ngZone,
+                      (componentFactories: ComponentFactory<any>[]) => {
+                        componentFactories.forEach((componentFactory: ComponentFactory<any>) => {
+                          const type: Type<any> = componentFactory.componentType;
+                          if (this.upgradedComponents.indexOf(type) !== -1) {
+                            componentFactoryRefMap[getComponentInfo(type).selector] =
+                                componentFactory;
+                          }
+                        });
+                      })
+                  .then((ref: NgModuleRef<any>) => {
+                    moduleRef = ref;
+                    angular.element(element).data(
+                        controllerKey(NG2_INJECTOR), moduleRef.injector);
+                    ngZone.onMicrotaskEmpty.subscribe({
+                      next: (_: any) => ngZone.runOutsideAngular(() => rootScope.$evalAsync())
+                    });
+                  })
+                  .then(ng2BootstrapDeferred.resolve, ng2BootstrapDeferred.reject);
+            })
+            .catch(ng2BootstrapDeferred.reject);
         }
       ]);
-    });
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
     const windowAngular = (window as any /** TODO #???? */)['angular'];
@@ -443,7 +441,7 @@ export class UpgradeAdapter {
       }
     });
 
-    Promise.all([ng1BootstrapPromise, ng1compilePromise]).then(() => {
+    Promise.all([ng1BootstrapPromise, ng2BootstrapDeferred.promise]).then(() => {
       moduleRef.injector.get(NgZone).run(() => {
         if (rootScopePrototype) {
           rootScopePrototype.$apply = original$applyFn;  // restore original $apply
