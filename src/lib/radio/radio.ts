@@ -127,11 +127,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
       this._value = newValue;
 
       this._updateSelectedRadioFromValue();
-
-      // Only fire a change event if this isn't the first time the value is ever set.
-      if (this._isInitialized) {
-        this._emitChangeEvent();
-      }
     }
   }
 
@@ -197,11 +192,13 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   }
 
   /** Dispatch change event with current selection and group value. */
-  private _emitChangeEvent(): void {
-    let event = new MdRadioChange();
-    event.source = this._selected;
-    event.value = this._value;
-    this.change.emit(event);
+  _emitChangeEvent(): void {
+    if (this._isInitialized) {
+      let event = new MdRadioChange();
+      event.source = this._selected;
+      event.value = this._value;
+      this.change.emit(event);
+    }
   }
 
   /**
@@ -418,12 +415,16 @@ export class MdRadioButton implements OnInit {
     // emit its event object to the `change` output.
     event.stopPropagation();
 
+    let groupValueChanged = this.radioGroup && this.value != this.radioGroup.value;
     this.checked = true;
     this._emitChangeEvent();
 
     if (this.radioGroup) {
       this.radioGroup._controlValueAccessorChangeFn(this.value);
       this.radioGroup._touch();
+      if (groupValueChanged) {
+        this.radioGroup._emitChangeEvent();
+      }
     }
   }
 

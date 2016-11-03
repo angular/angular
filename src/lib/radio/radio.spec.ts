@@ -152,21 +152,22 @@ describe('MdRadio', () => {
       expect(spies[1]).toHaveBeenCalledTimes(1);
     });
 
-    it('should emit a change event from the radio group', () => {
+    it(`should not emit a change event from the radio group when change group value 
+        programmatically`, () => {
       expect(groupInstance.value).toBeFalsy();
 
       let changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
 
-      groupInstance.value = 'fire';
+      radioLabelElements[0].click();
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalled();
+      expect(changeSpy).toHaveBeenCalledTimes(1);
 
       groupInstance.value = 'water';
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalledTimes(2);
+      expect(changeSpy).toHaveBeenCalledTimes(1);
     });
 
     // TODO(jelbourn): test this in an e2e test with *real* focus, rather than faking
@@ -234,42 +235,44 @@ describe('MdRadio', () => {
       }
     }));
 
-    it('should update the group\'s selected radio to null when unchecking that radio '
-        + 'programmatically', () => {
+    it(`should update the group's selected radio to null when unchecking that radio 
+        programmatically`, () => {
       let changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
       radioInstances[0].checked = true;
 
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalled();
+      expect(changeSpy).not.toHaveBeenCalled();
       expect(groupInstance.value).toBeTruthy();
 
       radioInstances[0].checked = false;
 
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalledTimes(2);
+      expect(changeSpy).not.toHaveBeenCalled();
       expect(groupInstance.value).toBeFalsy();
       expect(radioInstances.every(radio => !radio.checked)).toBe(true);
       expect(groupInstance.selected).toBeNull();
     });
 
-    it('should fire a change event from the group whenever a radio checked state changes', () => {
+    it('should not fire a change event from the group when a radio checked state changes', () => {
       let changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
       radioInstances[0].checked = true;
 
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalled();
+      expect(changeSpy).not.toHaveBeenCalled();
       expect(groupInstance.value).toBeTruthy();
+      expect(groupInstance.value).toBe('fire');
 
       radioInstances[1].checked = true;
 
       fixture.detectChanges();
 
-      expect(changeSpy).toHaveBeenCalledTimes(2);
+      expect(groupInstance.value).toBe('water');
+      expect(changeSpy).not.toHaveBeenCalled();
     });
   });
 
