@@ -221,9 +221,12 @@ describe('MdSidenav', () => {
       endSidenavTransition(fixture);
 
       let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      let testComponent = fixture.debugElement.query(By.css('md-sidenav')).componentInstance;
 
       expect(sidenavEl.classList).not.toContain('md-sidenav-closed');
       expect(sidenavEl.classList).toContain('md-sidenav-opened');
+
+      expect((testComponent as any)._openPromise).toBeNull();
     });
 
     it('should remove align attr from DOM', () => {

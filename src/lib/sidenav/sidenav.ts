@@ -45,7 +45,7 @@ export class MdDuplicatedSidenavError extends MdError {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSidenav {
+export class MdSidenav implements AfterContentInit {
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
   @Input() align: 'start' | 'end' = 'start';
 
@@ -72,6 +72,15 @@ export class MdSidenav {
    *     If not available we do not hook on transitions.
    */
   constructor(private _elementRef: ElementRef) {}
+
+  ngAfterContentInit() {
+    // This can happen when the sidenav is set to opened in the template and the transition
+    // isn't ended.
+    if (this._openPromise) {
+      this._openPromiseResolve();
+      this._openPromise = null;
+    }
+  }
 
   /**
    * Whether the sidenav is opened. We overload this because we trigger an event when it

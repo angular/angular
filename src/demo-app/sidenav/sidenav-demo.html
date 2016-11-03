@@ -1,3 +1,5 @@
+<h2>Basic Use Case</h2>
+
 <md-sidenav-layout class="demo-sidenav-layout">
   <md-sidenav #start (open)="myinput.focus()" mode="side">
     Start Side Drawer
@@ -34,4 +36,14 @@
   </div>
 </md-sidenav-layout>
 
-<h2>Content after Sidenav</h2>
+<h2>Sidenav Already Opened</h2>
+
+<md-sidenav-layout class="demo-sidenav-layout">
+  <md-sidenav #start2 opened mode="side">
+    Drawer
+  </md-sidenav>
+
+  <div class="demo-sidenav-content">
+    <button md-button (click)="start2.toggle()">Toggle Start Side Drawer</button>
+  </div>
+</md-sidenav-layout>
