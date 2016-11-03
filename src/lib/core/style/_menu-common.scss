@@ -11,7 +11,6 @@ $md-menu-overlay-max-width: 280px !default;   // 56 * 5
 $md-menu-item-height: 48px !default;
 $md-menu-font-size: 16px !default;
 $md-menu-side-padding: 16px !default;
-$md-menu-vertical-padding: 8px !default;
 
 @mixin md-menu-base() {
   @include md-elevation(2);
@@ -20,9 +19,6 @@ $md-menu-vertical-padding: 8px !default;
 
   overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
-
-  padding-top: $md-menu-vertical-padding;
-  padding-bottom: $md-menu-vertical-padding;
 }
 
 @mixin md-menu-item-base() {
@@ -49,5 +45,27 @@ $md-menu-vertical-padding: 8px !default;
     [dir='rtl'] & {
       margin-left: 16px;
     }
+  }
+}
+
+/**
+ * This mixin adds the correct panel transform styles based
+ * on the direction that the menu panel opens.
+ */
+@mixin md-menu-positions() {
+  &.md-menu-after.md-menu-below {
+    transform-origin: left top;
+  }
+
+  &.md-menu-after.md-menu-above {
+    transform-origin: left bottom;
+  }
+
+  &.md-menu-before.md-menu-below {
+    transform-origin: right top;
+  }
+
+  &.md-menu-before.md-menu-above {
+    transform-origin: right bottom;
   }
 }

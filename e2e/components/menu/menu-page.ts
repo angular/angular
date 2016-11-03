@@ -14,7 +14,7 @@ export class MenuPage {
 
   triggerTwo() { return element(by.id('trigger-two')); }
 
-  body() { return element(by.tagName('body')); }
+  backdrop() { return element(by.css('.md-overlay-backdrop')); }
 
   items(index: number) {
     return element.all(by.css('[md-menu-item]')).get(index);

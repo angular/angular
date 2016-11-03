@@ -4,7 +4,6 @@ import {
     Input,
     Output,
     EventEmitter,
-    HostListener,
     ViewContainerRef,
     AfterViewInit,
     OnDestroy,
@@ -33,7 +32,8 @@ import { Subscription } from 'rxjs/Subscription';
   selector: '[md-menu-trigger-for]',
   host: {
     'aria-haspopup': 'true',
-    '(keydown)': '_handleKeydown($event)'
+    '(keydown)': '_handleKeydown($event)',
+    '(click)': 'toggleMenu()'
   },
   exportAs: 'mdMenuTrigger'
 })
@@ -63,7 +63,6 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   get menuOpen(): boolean { return this._menuOpen; }
 
-  @HostListener('click')
   toggleMenu(): void {
     return this._menuOpen ? this.closeMenu() : this.openMenu();
   }

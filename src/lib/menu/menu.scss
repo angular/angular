@@ -5,18 +5,35 @@
 @import '../core/style/sidenav-common';
 @import '../core/style/menu-common';
 
+$md-menu-vertical-padding: 8px !default;
+
 .md-menu-panel {
   @include md-menu-base();
+  @include md-menu-positions();
 
   // max height must be 100% of the viewport height + one row height
   max-height: calc(100vh + 48px);
 }
 
+.md-menu-content {
+  padding-top: $md-menu-vertical-padding;
+  padding-bottom: $md-menu-vertical-padding;
+}
+
 [md-menu-item] {
   @include md-button-reset();
   @include md-menu-item-base();
+  position: relative;
 }
 
 button[md-menu-item] {
   width: 100%;
+}
+
+.md-menu-ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

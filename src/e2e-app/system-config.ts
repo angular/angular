@@ -15,6 +15,8 @@ System.config({
     '@angular/forms': 'vendor/@angular/forms/bundles/forms.umd.js',
     '@angular/router': 'vendor/@angular/router/bundles/router.umd.js',
     '@angular/platform-browser': 'vendor/@angular/platform-browser/bundles/platform-browser.umd.js',
+    '@angular/platform-browser/testing':
+      'vendor/@angular/platform-browser/bundles/platform-browser-testing.umd.js',
     '@angular/platform-browser-dynamic':
       'vendor/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
   },

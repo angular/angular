@@ -6,7 +6,7 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  .md-menu-panel {
+  .md-menu-content {
     background: md-color($background, 'card');
   }
 

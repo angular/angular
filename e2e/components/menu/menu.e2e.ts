@@ -42,21 +42,23 @@ describe('menu', () => {
     expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
     page.expectMenuAlignedWith(page.menu(), 'trigger-two');
 
-    page.body().click();
+    page.backdrop().click();
     page.expectMenuPresent(false);
 
+    // TODO(kara): temporary, remove when #1607 is fixed
+    browser.sleep(250);
     page.trigger().click();
     expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
     page.expectMenuAlignedWith(page.menu(), 'trigger');
 
-    page.body().click();
+    page.backdrop().click();
     page.expectMenuPresent(false);
   });
 
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
     page.menu().getAttribute('class').then((classes) => {
-      expect(classes).toEqual('md-menu-panel custom');
+      expect(classes).toContain('md-menu-panel custom');
     });
   });
 
@@ -110,9 +112,10 @@ describe('menu', () => {
       page.pressKey(protractor.Key.TAB);
       page.expectMenuPresent(false);
 
-      page.start().click();
       page.pressKey(protractor.Key.TAB);
       page.pressKey(protractor.Key.ENTER);
+      page.expectMenuPresent(true);
+
       page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
       page.expectMenuPresent(false);
     });

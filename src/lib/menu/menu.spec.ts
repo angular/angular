@@ -1,4 +1,5 @@
 import {TestBed, async} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {
   Component,
   EventEmitter,
@@ -15,14 +16,13 @@ import {
 } from './menu';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 
-
 describe('MdMenu', () => {
   let overlayContainerElement: HTMLElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdMenuModule.forRoot()],
-      declarations: [CustomMenuPanel, CustomMenu, SimpleMenu],
+      declarations: [SimpleMenu, PositionedMenu, CustomMenuPanel, CustomMenu],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -42,11 +42,12 @@ describe('MdMenu', () => {
       fixture.componentInstance.trigger.openMenu();
       fixture.componentInstance.trigger.openMenu();
 
-      expect(overlayContainerElement.textContent.trim()).toBe('Simple Content');
+      expect(overlayContainerElement.textContent).toContain('Simple Content');
+      expect(overlayContainerElement.textContent).toContain('Disabled Content');
     }).not.toThrowError();
   });
 
-  it('should close the menu when a click occurs outside the menu', () => {
+  it('should close the menu when a click occurs outside the menu', async(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
@@ -55,8 +56,10 @@ describe('MdMenu', () => {
     backdrop.click();
     fixture.detectChanges();
 
-    expect(overlayContainerElement.textContent).toBe('');
-  });
+    fixture.whenStable().then(() => {
+      expect(overlayContainerElement.textContent).toBe('');
+    });
+  }));
 
   it('should open a custom menu', () => {
     const fixture = TestBed.createComponent(CustomMenu);
@@ -71,6 +74,70 @@ describe('MdMenu', () => {
     }).not.toThrowError();
   });
 
+  describe('positions', () => {
+    it('should append md-menu-after and md-menu-below classes by default', () => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+      const panel = overlayContainerElement.querySelector('.md-menu-panel');
+      expect(panel.classList).toContain('md-menu-after');
+      expect(panel.classList).toContain('md-menu-below');
+      expect(panel.classList).not.toContain('md-menu-before');
+      expect(panel.classList).not.toContain('md-menu-above');
+    });
+
+    it('should append md-menu-before if x position is changed', () => {
+      const fixture = TestBed.createComponent(PositionedMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+      const panel = overlayContainerElement.querySelector('.md-menu-panel');
+      expect(panel.classList).toContain('md-menu-before');
+      expect(panel.classList).not.toContain('md-menu-after');
+    });
+
+    it('should append md-menu-above if y position is changed', () => {
+      const fixture = TestBed.createComponent(PositionedMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+      const panel = overlayContainerElement.querySelector('.md-menu-panel');
+      expect(panel.classList).toContain('md-menu-above');
+      expect(panel.classList).not.toContain('md-menu-below');
+    });
+
+  });
+
+  describe('animations', () => {
+    it('should include the ripple on items by default', () => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+      const item = fixture.debugElement.query(By.css('[md-menu-item]'));
+      const ripple = item.query(By.css('[md-ripple]'));
+
+      expect(ripple).not.toBeNull();
+    });
+
+    it('should remove the ripple on disabled items', () => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+      const items = fixture.debugElement.queryAll(By.css('[md-menu-item]'));
+
+      // items[1] is disabled, so the ripple should not be present
+      const ripple = items[1].query(By.css('[md-ripple]'));
+      expect(ripple).toBeNull();
+    });
+
+  });
+
 });
 
 @Component({
@@ -78,12 +145,26 @@ describe('MdMenu', () => {
     <button [md-menu-trigger-for]="menu">Toggle menu</button>
     <md-menu #menu="mdMenu">
       <button md-menu-item> Simple Content </button>
+      <button md-menu-item disabled> Disabled Content </button>
     </md-menu>
   `
 })
 class SimpleMenu {
   @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
 }
+
+@Component({
+  template: `
+    <button [md-menu-trigger-for]="menu">Toggle menu</button>
+    <md-menu x-position="before" y-position="above" #menu="mdMenu">
+      <button md-menu-item> Positioned Content </button>
+    </md-menu>
+  `
+})
+class PositionedMenu {
+  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+}
+
 
 @Component({
   selector: 'custom-menu',

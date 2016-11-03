@@ -12,7 +12,7 @@ import {
   QueryList,
   TemplateRef,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
@@ -20,6 +20,7 @@ import {MdMenuItem} from './menu-item';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {MdMenuPanel} from './menu-panel';
 import {Subscription} from 'rxjs/Subscription';
+import {transformMenu, fadeInItems} from './menu-animations';
 
 @Component({
   moduleId: module.id,
@@ -28,6 +29,10 @@ import {Subscription} from 'rxjs/Subscription';
   templateUrl: 'menu.html',
   styleUrls: ['menu.css'],
   encapsulation: ViewEncapsulation.None,
+  animations: [
+    transformMenu,
+    fadeInItems
+  ],
   exportAs: 'mdMenu'
 })
 export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
@@ -37,7 +42,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _tabSubscription: Subscription;
 
   /** Config object to be passed into the menu's ngClass */
-  _classList: Object;
+  _classList: any = {};
 
   positionX: MenuPositionX = 'after';
   positionY: MenuPositionY = 'below';
@@ -49,6 +54,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
               @Attribute('y-position') posY: MenuPositionY) {
     if (posX) { this._setPositionX(posX); }
     if (posY) { this._setPositionY(posY); }
+    this._setPositionClasses();
   }
 
   // TODO: internal
@@ -77,6 +83,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
       obj[className] = true;
       return obj;
     }, {});
+    this._setPositionClasses();
   }
 
   @Output() close = new EventEmitter<void>();
@@ -91,11 +98,12 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this.items.first.focus();
     this._keyManager.focusedItemIndex = 0;
   }
+
   /**
    * This emits a close event to which the trigger is subscribed. When emitted, the
    * trigger will close the menu.
    */
-  private _emitCloseEvent(): void {
+  _emitCloseEvent(): void {
     this.close.emit();
   }
 
@@ -112,4 +120,16 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     }
     this.positionY = pos;
   }
+
+  /**
+   * It's necessary to set position-based classes to ensure the menu panel animation
+   * folds out from the correct direction.
+   */
+  private _setPositionClasses() {
+    this._classList['md-menu-before'] = this.positionX == 'before';
+    this._classList['md-menu-after'] = this.positionX == 'after';
+    this._classList['md-menu-above'] = this.positionY == 'above';
+    this._classList['md-menu-below'] = this.positionY == 'below';
+  }
+
 }
