@@ -3,8 +3,10 @@ import {
   ModuleWithProviders,
   Component,
   ElementRef,
+  EventEmitter,
   HostBinding,
   Input,
+  Output,
   ViewEncapsulation,
   AfterContentInit,
   forwardRef,
@@ -29,6 +31,12 @@ export const MD_SLIDER_VALUE_ACCESSOR: any = {
   useExisting: forwardRef(() => MdSlider),
   multi: true
 };
+
+/** A simple change event emitted by the MdSlider component. */
+export class MdSliderChange {
+  source: MdSlider;
+  value: number;
+}
 
 @Component({
   moduleId: module.id,
@@ -79,6 +87,9 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
   private _percent: number = 0;
 
   private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
+
+  /** The last value for which a change event was emitted. */
+  private _lastEmittedValue: number = null;
 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
@@ -161,6 +172,8 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
     this.snapThumbToValue();
   }
 
+  @Output() change = new EventEmitter<MdSliderChange>();
+
   constructor(elementRef: ElementRef) {
     this._renderer = new SliderRenderer(elementRef);
   }
@@ -190,6 +203,7 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
     this._renderer.addFocus();
     this.updateValueFromPosition(event.clientX);
     this.snapThumbToValue();
+    this._emitValueIfChanged();
   }
 
   /** TODO: internal */
@@ -220,6 +234,7 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
   onSlideEnd() {
     this.isSliding = false;
     this.snapThumbToValue();
+    this._emitValueIfChanged();
   }
 
   /** TODO: internal */
@@ -273,6 +288,17 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
     if (this._sliderDimensions) {
       let renderedPercent = this.clamp(this._percent);
       this._renderer.updateThumbAndFillPosition(renderedPercent, this._sliderDimensions.width);
+    }
+  }
+
+  /** Emits a change event if the current value is different from the last emitted value. */
+  private _emitValueIfChanged() {
+    if (this.value != this._lastEmittedValue) {
+      let event = new MdSliderChange();
+      event.source = this;
+      event.value = this.value;
+      this.change.emit(event);
+      this._lastEmittedValue = this.value;
     }
   }
 
@@ -366,10 +392,6 @@ export class MdSlider implements AfterContentInit, ControlValueAccessor {
    */
   writeValue(value: any) {
     this.value = value;
-
-    if (this._sliderDimensions) {
-      this.snapThumbToValue();
-    }
   }
 
   /**
