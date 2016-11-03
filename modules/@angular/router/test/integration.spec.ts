@@ -72,6 +72,62 @@ describe('Integration', () => {
       });
     });
 
+    describe('should advance the parent route after deactivating its children', () => {
+      let log: string[] = [];
+
+      @Component({template: '<router-outlet></router-outlet>'})
+      class Parent {
+        constructor(route: ActivatedRoute) {
+          route.params.subscribe((s: any) => { log.push(s); });
+        }
+      }
+
+      @Component({template: 'child1'})
+      class Child1 {
+        ngOnDestroy() { log.push('child1 destroy'); }
+      }
+
+      @Component({template: 'child2'})
+      class Child2 {
+        constructor() { log.push('child2 constructor'); }
+      }
+
+      @NgModule({
+        declarations: [Parent, Child1, Child2],
+        entryComponents: [Parent, Child1, Child2],
+        imports: [RouterModule]
+      })
+      class TestModule {
+      }
+
+      beforeEach(() => {
+        log = [];
+        TestBed.configureTestingModule({imports: [TestModule]});
+      });
+
+      it('should work',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{
+             path: 'parent/:id',
+             component: Parent,
+             children:
+                 [{path: 'child1', component: Child1}, {path: 'child2', component: Child2}]
+           }]);
+
+           router.navigateByUrl('/parent/1/child1');
+           advance(fixture);
+
+           router.navigateByUrl('/parent/2/child2');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/parent/2/child2');
+           expect(log).toEqual([{id: '1'}, 'child1 destroy', {id: '2'}, 'child2 constructor']);
+         })));
+
+    });
+
     it('should execute navigations serialy',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);
