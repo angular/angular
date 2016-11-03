@@ -10,6 +10,7 @@ import {__core_private__ as r} from '@angular/core';
 
 export type RenderDebugInfo = typeof r._RenderDebugInfo;
 export var RenderDebugInfo: typeof r.RenderDebugInfo = r.RenderDebugInfo;
+export type DirectRenderer = typeof r._DirectRenderer;
 
 export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
 
