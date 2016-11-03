@@ -22,6 +22,9 @@ import {ViewType} from './view_type';
  */
 export class ViewContainer {
   public nestedViews: AppView<any>[];
+  // views that have been declared at the place of this view container,
+  // but inserted into another view container
+  public projectedViews: AppView<any>[];
 
   constructor(
       public index: number, public parentIndex: number, public parentView: AppView<any>,
@@ -59,13 +62,22 @@ export class ViewContainer {
   }
 
   mapNestedViews(nestedViewClass: any, callback: Function): any[] {
-    var result: any[] /** TODO #9100 */ = [];
-    if (isPresent(this.nestedViews)) {
-      this.nestedViews.forEach((nestedView) => {
+    var result: any[] = [];
+    if (this.nestedViews) {
+      for (var i = 0; i < this.nestedViews.length; i++) {
+        const nestedView = this.nestedViews[i];
         if (nestedView.clazz === nestedViewClass) {
           result.push(callback(nestedView));
         }
-      });
+      }
+    }
+    if (this.projectedViews) {
+      for (var i = 0; i < this.projectedViews.length; i++) {
+        const projectedView = this.projectedViews[i];
+        if (projectedView.clazz === nestedViewClass) {
+          result.push(callback(projectedView));
+        }
+      }
     }
     return result;
   }
@@ -82,17 +94,8 @@ export class ViewContainer {
     }
     nestedViews.splice(previousIndex, 1);
     nestedViews.splice(currentIndex, 0, view);
-    var refRenderNode: any /** TODO #9100 */;
-    if (currentIndex > 0) {
-      var prevView = nestedViews[currentIndex - 1];
-      refRenderNode = prevView.lastRootNode;
-    } else {
-      refRenderNode = this.nativeElement;
-    }
-    if (isPresent(refRenderNode)) {
-      view.attachAfter(refRenderNode);
-    }
-    view.markContentChildAsMoved(this);
+    const prevView = currentIndex > 0 ? nestedViews[currentIndex - 1] : null;
+    view.moveAfter(this, prevView);
   }
 
   attachView(view: AppView<any>, viewIndex: number) {
@@ -110,17 +113,8 @@ export class ViewContainer {
     } else {
       nestedViews.splice(viewIndex, 0, view);
     }
-    var refRenderNode: any /** TODO #9100 */;
-    if (viewIndex > 0) {
-      var prevView = nestedViews[viewIndex - 1];
-      refRenderNode = prevView.lastRootNode;
-    } else {
-      refRenderNode = this.nativeElement;
-    }
-    if (isPresent(refRenderNode)) {
-      view.attachAfter(refRenderNode);
-    }
-    view.addToContentChildren(this);
+    const prevView = viewIndex > 0 ? nestedViews[viewIndex - 1] : null;
+    view.attachAfter(this, prevView);
   }
 
   detachView(viewIndex: number): AppView<any> {
@@ -135,8 +129,6 @@ export class ViewContainer {
       throw new Error(`Component views can't be moved!`);
     }
     view.detach();
-
-    view.removeFromContentChildren(this);
     return view;
   }
 }

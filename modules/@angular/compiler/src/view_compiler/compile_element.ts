@@ -73,7 +73,7 @@ export class CompileElement extends CompileNode {
         o.THIS_EXPR.callMethod('injector', [o.literal(this.nodeIndex)]));
     this.instances.set(
         resolveIdentifierToken(Identifiers.Renderer).reference, o.THIS_EXPR.prop('renderer'));
-    if (this.hasViewContainer) {
+    if (this.hasViewContainer || this.hasEmbeddedView) {
       this._createViewContainer();
     }
     if (this.component) {

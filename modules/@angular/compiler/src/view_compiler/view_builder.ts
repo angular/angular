@@ -459,6 +459,11 @@ function createViewClass(
   if (view.genConfig.genDebugInfo) {
     superConstructorArgs.push(nodeDebugInfosVar);
   }
+  if (view.viewType === ViewType.EMBEDDED) {
+    viewConstructorArgs.push(new o.FnParam(
+        'declaredViewContainer', o.importType(resolveIdentifier(Identifiers.ViewContainer))));
+    superConstructorArgs.push(o.variable('declaredViewContainer'));
+  }
   var viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
@@ -676,7 +681,7 @@ function generateVisitNodesStmts(
   return stmts;
 }
 
-function generateCreateEmbeddedViewsMethod(view: CompileView) {
+function generateCreateEmbeddedViewsMethod(view: CompileView): o.ClassMethod {
   const nodeIndexVar = o.variable('nodeIndex');
   const stmts: o.Statement[] = [];
   view.nodes.forEach((node) => {
@@ -686,12 +691,15 @@ function generateCreateEmbeddedViewsMethod(view: CompileView) {
         stmts.push(new o.IfStmt(
             nodeIndexVar.equals(o.literal(node.nodeIndex)),
             [new o.ReturnStatement(node.embeddedView.classExpr.instantiate([
-              ViewProperties.viewUtils, o.THIS_EXPR, o.literal(node.nodeIndex), node.renderNode
+              ViewProperties.viewUtils, o.THIS_EXPR, o.literal(node.nodeIndex), node.renderNode,
+              node.viewContainer
             ]))]));
       }
     }
   });
-  stmts.push(new o.ReturnStatement(o.NULL_EXPR));
+  if (stmts.length > 0) {
+    stmts.push(new o.ReturnStatement(o.NULL_EXPR));
+  }
   return new o.ClassMethod(
       'createEmbeddedViewInternal', [new o.FnParam(nodeIndexVar.name, o.NUMBER_TYPE)], stmts,
       o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE]));

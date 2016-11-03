@@ -41,7 +41,7 @@ export abstract class AppView<T> {
   lastRootNode: any;
   allNodes: any[];
   disposables: Function[];
-  viewContainerElement: ViewContainer = null;
+  viewContainer: ViewContainer = null;
 
   numberOfChecks: number = 0;
 
@@ -58,7 +58,8 @@ export abstract class AppView<T> {
   constructor(
       public clazz: any, public componentType: RenderComponentType, public type: ViewType,
       public viewUtils: ViewUtils, public parentView: AppView<any>, public parentIndex: number,
-      public parentElement: any, public cdMode: ChangeDetectorStatus) {
+      public parentElement: any, public cdMode: ChangeDetectorStatus,
+      public declaredViewContainer: ViewContainer = null) {
     this.ref = new ViewRef_(this);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
@@ -139,8 +140,8 @@ export abstract class AppView<T> {
   detachAndDestroy() {
     if (this._hasExternalHostElement) {
       this.detach();
-    } else if (isPresent(this.viewContainerElement)) {
-      this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
+    } else if (isPresent(this.viewContainer)) {
+      this.viewContainer.detachView(this.viewContainer.nestedViews.indexOf(this));
     }
     this.destroy();
   }
@@ -185,6 +186,18 @@ export abstract class AppView<T> {
     } else {
       this._renderDetach();
     }
+    if (this.declaredViewContainer && this.declaredViewContainer !== this.viewContainer) {
+      const projectedViews = this.declaredViewContainer.projectedViews;
+      const index = projectedViews.indexOf(this);
+      // perf: pop is faster than splice!
+      if (index >= projectedViews.length - 1) {
+        projectedViews.pop();
+      } else {
+        projectedViews.splice(index, 1);
+      }
+    }
+    this.viewContainer = null;
+    this.dirtyParentQueriesInternal();
   }
 
   private _renderDetach() {
@@ -195,7 +208,25 @@ export abstract class AppView<T> {
     }
   }
 
-  attachAfter(prevNode: any) {
+  attachAfter(viewContainer: ViewContainer, prevView: AppView<any>) {
+    this._renderAttach(viewContainer, prevView);
+    this.viewContainer = viewContainer;
+    if (this.declaredViewContainer && this.declaredViewContainer !== viewContainer) {
+      if (!this.declaredViewContainer.projectedViews) {
+        this.declaredViewContainer.projectedViews = [];
+      }
+      this.declaredViewContainer.projectedViews.push(this);
+    }
+    this.dirtyParentQueriesInternal();
+  }
+
+  moveAfter(viewContainer: ViewContainer, prevView: AppView<any>) {
+    this._renderAttach(viewContainer, prevView);
+    this.dirtyParentQueriesInternal();
+  }
+
+  private _renderAttach(viewContainer: ViewContainer, prevView: AppView<any>) {
+    const prevNode = prevView ? prevView.lastRootNode : viewContainer.nativeElement;
     if (this._directRenderer) {
       const nextSibling = this._directRenderer.nextSibling(prevNode);
       if (nextSibling) {
@@ -282,18 +313,6 @@ export abstract class AppView<T> {
    */
   detectChangesInternal(throwOnChange: boolean): void {}
 
-  markContentChildAsMoved(viewContainer: ViewContainer): void { this.dirtyParentQueriesInternal(); }
-
-  addToContentChildren(viewContainer: ViewContainer): void {
-    this.viewContainerElement = viewContainer;
-    this.dirtyParentQueriesInternal();
-  }
-
-  removeFromContentChildren(viewContainer: ViewContainer): void {
-    this.dirtyParentQueriesInternal();
-    this.viewContainerElement = null;
-  }
-
   markAsCheckOnce(): void { this.cdMode = ChangeDetectorStatus.CheckOnce; }
 
   markPathToRootAsCheckOnce(): void {
@@ -305,7 +324,7 @@ export abstract class AppView<T> {
       if (c.type === ViewType.COMPONENT) {
         c = c.parentView;
       } else {
-        c = c.viewContainerElement ? c.viewContainerElement.parentView : null;
+        c = c.viewContainer ? c.viewContainer.parentView : null;
       }
     }
   }
@@ -323,8 +342,11 @@ export class DebugAppView<T> extends AppView<T> {
   constructor(
       clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
       parentView: AppView<any>, parentIndex: number, parentNode: any, cdMode: ChangeDetectorStatus,
-      public staticNodeDebugInfos: StaticNodeDebugInfo[]) {
-    super(clazz, componentType, type, viewUtils, parentView, parentIndex, parentNode, cdMode);
+      public staticNodeDebugInfos: StaticNodeDebugInfo[],
+      declaredViewContainer: ViewContainer = null) {
+    super(
+        clazz, componentType, type, viewUtils, parentView, parentIndex, parentNode, cdMode,
+        declaredViewContainer);
   }
 
   create(context: T) {
