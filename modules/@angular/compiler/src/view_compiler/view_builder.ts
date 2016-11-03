@@ -156,13 +156,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     var parentRenderNode = this._getParentRenderNode(parent);
     if (parentRenderNode !== o.NULL_EXPR) {
       this.view.createMethod.addStmt(
-          ViewProperties.renderer
-              .callMethod(
-                  'projectNodes',
-                  [
-                    parentRenderNode,
-                    o.THIS_EXPR.callMethod('projectedNodes', [o.literal(ast.index)])
-                  ])
+          o.THIS_EXPR.callMethod('projectNodes', [parentRenderNode, o.literal(ast.index)])
               .toStmt());
     } else if (this._isRootNode(parent)) {
       if (this.view.viewType !== ViewType.COMPONENT) {
@@ -533,13 +527,17 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
   } else {
     resultExpr = o.NULL_EXPR;
   }
+  let allNodesExpr: o.Expression =
+      ViewProperties.renderer.prop('directRenderer')
+          .conditional(o.NULL_EXPR, o.literalArr(view.nodes.map(node => node.renderNode)));
+
   return parentRenderNodeStmts.concat(view.createMethod.finish(), [
     o.THIS_EXPR
         .callMethod(
             'init',
             [
               view.lastRenderNode,
-              o.literalArr(view.nodes.map(node => node.renderNode)),
+              allNodesExpr,
               view.disposables.length ? o.literalArr(view.disposables) : o.NULL_EXPR,
             ])
         .toStmt(),

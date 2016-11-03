@@ -9,7 +9,7 @@
 import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {isBlank, isPresent, stringify} from '../facade/lang';
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from '../private_import_core';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, RenderDebugInfo} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
@@ -54,10 +54,20 @@ export class DomRootRenderer_ extends DomRootRenderer {
   }
 }
 
+export const DIRECT_DOM_RENDERER: DirectRenderer = {
+  remove(node: Text | Comment | Element) { node.remove();},
+  appendChild(node: Node, parent: Element) { parent.appendChild(node);},
+  insertBefore(node: Node, refNode: Node) { refNode.parentElement.insertBefore(node, refNode);},
+  nextSibling(node: Node) { return node.nextSibling;},
+  parentElement(node: Node): Element{return node.parentElement;}
+};
+
 export class DomRenderer implements Renderer {
   private _contentAttr: string;
   private _hostAttr: string;
   private _styles: string[];
+
+  directRenderer: DirectRenderer = DIRECT_DOM_RENDERER;
 
   constructor(
       private _rootRenderer: DomRootRenderer, private componentProto: RenderComponentType,

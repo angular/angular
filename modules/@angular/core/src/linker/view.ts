@@ -11,7 +11,7 @@ import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
-import {RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
+import {DirectRenderer, RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 
 import {AnimationViewContext} from './animation_view_context';
 import {ComponentRef} from './component_factory';
@@ -51,6 +51,7 @@ export abstract class AppView<T> {
   private _hostInjector: Injector;
   private _hostProjectableNodes: any[][];
   private _animationContext: AnimationViewContext;
+  private _directRenderer: DirectRenderer;
 
   public context: T;
 
@@ -64,6 +65,7 @@ export abstract class AppView<T> {
     } else {
       this.renderer = parentView.renderer;
     }
+    this._directRenderer = (this.renderer as any).directRenderer;
   }
 
   get animationContext(): AnimationViewContext {
@@ -136,7 +138,7 @@ export abstract class AppView<T> {
 
   detachAndDestroy() {
     if (this._hasExternalHostElement) {
-      this.renderer.detachView(this.flatRootNodes);
+      this.detach();
     } else if (isPresent(this.viewContainerElement)) {
       this.viewContainerElement.detachView(this.viewContainerElement.nestedViews.indexOf(this));
     }
@@ -179,10 +181,31 @@ export abstract class AppView<T> {
   detach(): void {
     this.detachInternal();
     if (this._animationContext) {
-      this._animationContext.onAllActiveAnimationsDone(
-          () => this.renderer.detachView(this.flatRootNodes));
+      this._animationContext.onAllActiveAnimationsDone(() => this._renderDetach());
+    } else {
+      this._renderDetach();
+    }
+  }
+
+  private _renderDetach() {
+    if (this._directRenderer) {
+      this.visitRootNodesInternal(this._directRenderer.remove, null);
     } else {
       this.renderer.detachView(this.flatRootNodes);
+    }
+  }
+
+  attachAfter(prevNode: any) {
+    if (this._directRenderer) {
+      const nextSibling = this._directRenderer.nextSibling(prevNode);
+      if (nextSibling) {
+        this.visitRootNodesInternal(this._directRenderer.insertBefore, nextSibling);
+      } else {
+        this.visitRootNodesInternal(
+            this._directRenderer.appendChild, this._directRenderer.parentElement(prevNode));
+      }
+    } else {
+      this.renderer.attachViewAfter(prevNode, this.flatRootNodes);
     }
   }
 
@@ -194,10 +217,14 @@ export abstract class AppView<T> {
     return nodes;
   }
 
-  projectedNodes(ngContentIndex: number): any[] {
-    const nodes: any[] = [];
-    this.visitProjectedNodes(ngContentIndex, addToArray, nodes);
-    return nodes;
+  projectNodes(parentElement: any, ngContentIndex: number) {
+    if (this._directRenderer) {
+      this.visitProjectedNodes(ngContentIndex, this._directRenderer.appendChild, parentElement);
+    } else {
+      const nodes: any[] = [];
+      this.visitProjectedNodes(ngContentIndex, addToArray, nodes);
+      this.renderer.projectNodes(parentElement, nodes);
+    }
   }
 
   visitProjectedNodes<C>(ngContentIndex: number, cb: (node: any, ctx: C) => void, c: C): void {

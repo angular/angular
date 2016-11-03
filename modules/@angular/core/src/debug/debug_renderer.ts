@@ -89,6 +89,7 @@ export class DebugDomRenderer implements Renderer {
   }
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
+    viewAllNodes = viewAllNodes || [];
     viewAllNodes.forEach((node) => { removeDebugNodeFromIndex(getDebugNode(node)); });
     this._delegate.destroyView(hostElement, viewAllNodes);
   }

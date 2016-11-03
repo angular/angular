@@ -33,6 +33,14 @@ export abstract class RenderDebugInfo {
   get source(): string { return unimplemented(); }
 }
 
+export interface DirectRenderer {
+  remove(node: any): void;
+  appendChild(node: any, parent: any): void;
+  insertBefore(node: any, refNode: any): void;
+  nextSibling(node: any): any;
+  parentElement(node: any): any;
+}
+
 /**
  * @experimental
  */
