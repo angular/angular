@@ -13,7 +13,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from './angular_js';
 import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
-import {isPresent} from './facade/lang';
 import {ComponentInfo, getComponentInfo} from './metadata';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 import {Deferred, controllerKey, getAttributesAsArray, onError} from './util';
@@ -272,6 +271,60 @@ export class UpgradeAdapter {
   }
 
   /**
+   * Registers the adapter's Angular 1 upgrade module for unit testing in Angular 1.
+   * Use this instead of `angular.mock.module()` to load the upgrade module into
+   * the Angular 1 testing injector.
+   *
+   * ### Example
+   *
+   * ```
+   * const upgradeAdapter = new UpgradeAdapter();
+   *
+   * // configure the adapter with upgrade/downgrade components and services
+   * upgradeAdapter.downgradeNg2Component(MyComponent);
+   *
+   * let upgradeAdapterRef: UpgradeAdapterRef;
+   * let $compile, $rootScope;
+   *
+   * // We must register the adapter before any calls to `inject()`
+   * beforeEach(() => {
+   *   upgradeAdapterRef = upgradeAdapter.registerForNg1Tests(['heroApp']);
+   * });
+   *
+   * beforeEach(inject((_$compile_, _$rootScope_) => {
+   *   $compile = _$compile_;
+   *   $rootScope = _$rootScope_;
+   * }));
+   *
+   * it("says hello", (done) => {
+   *   upgradeAdapterRef.ready(() => {
+   *     const element = $compile("<my-component></my-component>")($rootScope);
+   *     $rootScope.$apply();
+   *     expect(element.html()).toContain("Hello World");
+   *     done();
+   *   })
+   * });
+   *
+   * ```
+   *
+   * @param modules any Angular 1 modules that the upgrade module should depend upon
+   * @returns an {@link UpgradeAdapterRef}, which lets you register a `ready()` callback to
+   * run assertions once the Angular 2+ components are ready to test through Angular 1.
+   */
+  registerForNg1Tests(modules?: string[]): UpgradeAdapterRef {
+    const windowNgMock = (window as any)['angular'].mock;
+    if (!windowNgMock || !windowNgMock.module) {
+      throw new Error('Failed to find \'angular.mock.module\'.');
+    }
+    this.declareNg1Module(modules);
+    windowNgMock.module(this.ng1Module.name);
+    const upgrade = new UpgradeAdapterRef();
+    this.ng2BootstrapDeferred.promise.then(
+        () => { (<any>upgrade)._bootstrapDone(this.moduleRef, upgrade.ng1Injector); }, onError);
+    return upgrade;
+  }
+
+  /**
    * Bootstrap a hybrid AngularJS v1 / Angular v2 application.
    *
    * This `bootstrap` method is a direct replacement (takes same arguments) for AngularJS v1
@@ -419,7 +472,7 @@ export class UpgradeAdapter {
    * Declare the Angular 1 upgrade module for this adapter without bootstrapping the whole
    * hybrid application.
    *
-   * This method is automatically called by `bootstrap()`.
+   * This method is automatically called by `bootstrap()` and `registerForNg1Tests()`.
    *
    * @param modules The Angular 1 modules that this upgrade module should depend upon.
    * @returns The Angular 1 upgrade module that is declared by this method
