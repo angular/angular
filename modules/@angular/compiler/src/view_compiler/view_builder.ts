@@ -528,7 +528,8 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
     resultExpr = o.NULL_EXPR;
   }
   let allNodesExpr: o.Expression =
-      ViewProperties.renderer.prop('directRenderer')
+      ViewProperties.renderer.cast(o.DYNAMIC_TYPE)
+          .prop('directRenderer')
           .conditional(o.NULL_EXPR, o.literalArr(view.nodes.map(node => node.renderNode)));
 
   return parentRenderNodeStmts.concat(view.createMethod.finish(), [

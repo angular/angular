@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';
@@ -53,7 +53,8 @@ export function _createConditionalRootRenderer(rootRenderer: any) {
 export const SERVER_RENDER_PROVIDERS: Provider[] = [
   ServerRootRenderer,
   {provide: RootRenderer, useFactory: _createConditionalRootRenderer, deps: [ServerRootRenderer]},
-  {provide: SharedStylesHost, useClass: SharedStylesHost},
+  // use plain SharedStylesHost, not the DomSharedStylesHost
+  SharedStylesHost
 ];
 
 /**
@@ -61,7 +62,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
  *
  * @experimental
  */
-@NgModule({imports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
+@NgModule({exports: [BrowserModule], providers: SERVER_RENDER_PROVIDERS})
 export class ServerModule {
 }
 

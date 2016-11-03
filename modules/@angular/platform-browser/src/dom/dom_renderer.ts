@@ -55,11 +55,15 @@ export class DomRootRenderer_ extends DomRootRenderer {
 }
 
 export const DIRECT_DOM_RENDERER: DirectRenderer = {
-  remove(node: Text | Comment | Element) { node.remove();},
+  remove(node: Text | Comment | Element) {
+    if (node.parentNode) {
+      node.parentNode.removeChild(node);
+    }
+  },
   appendChild(node: Node, parent: Element) { parent.appendChild(node);},
-  insertBefore(node: Node, refNode: Node) { refNode.parentElement.insertBefore(node, refNode);},
+  insertBefore(node: Node, refNode: Node) { refNode.parentNode.insertBefore(node, refNode);},
   nextSibling(node: Node) { return node.nextSibling;},
-  parentElement(node: Node): Element{return node.parentElement;}
+  parentElement(node: Node): Element{return node.parentNode as Element;}
 };
 
 export class DomRenderer implements Renderer {
@@ -165,7 +169,10 @@ export class DomRenderer implements Renderer {
 
   detachView(viewRootNodes: (Element|Text|Comment)[]) {
     for (let i = 0; i < viewRootNodes.length; i++) {
-      viewRootNodes[i].remove();
+      const node = viewRootNodes[i];
+      if (node.parentNode) {
+        node.parentNode.removeChild(node);
+      }
     }
   }
 
@@ -260,7 +267,7 @@ export class DomRenderer implements Renderer {
 }
 
 function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {
-  const parent = sibling.parentElement;
+  const parent = sibling.parentNode;
   if (nodes.length > 0 && parent) {
     const nextSibling = sibling.nextSibling;
     if (nextSibling) {
