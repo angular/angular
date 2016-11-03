@@ -876,7 +876,7 @@ export class PreActivation {
     forEach(prevChildren, (v: any, k: string) => {
       if (!r.component) {
         this.deactiveRouteAndItsChildren(v, outlet);
-      } else if (!!outlet) {
+      } else if (!!outlet && !!outlet.outletMap) {
         this.deactiveRouteAndItsChildren(v, outlet.outletMap._outlets[k]);
       } else {
         this.deactiveRouteAndItsChildren(v, null);
