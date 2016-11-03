@@ -6,39 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, isBlank, isJsObject, isPresent} from './lang';
-
-// Safari doesn't implement MapIterator.next(), which is used is Traceur's polyfill of Array.from
-// TODO(mlaval): remove the work around once we have a working polyfill of Array.from
-const _arrayFromMap: {(m: Map<any, any>, getValues: boolean): any[]} = (function() {
-  try {
-    if ((<any>(new Map()).values()).next) {
-      return function createArrayFromMap(m: Map<any, any>, getValues: boolean): any[] {
-        return getValues ? (<any>Array).from(m.values()) : (<any>Array).from(m.keys());
-      };
-    }
-  } catch (e) {
-  }
-  return function createArrayFromMapWithForeach(m: Map<any, any>, getValues: boolean): any[] {
-    var res = new Array(m.size), i = 0;
-    m.forEach((v, k) => {
-      res[i] = getValues ? v : k;
-      i++;
-    });
-    return res;
-  };
-})();
+import {getSymbolIterator, isJsObject, isPresent} from './lang';
 
 export class MapWrapper {
   static createFromStringMap<T>(stringMap: {[key: string]: T}): Map<string, T> {
-    var result = new Map<string, T>();
-    for (var prop in stringMap) {
+    const result = new Map<string, T>();
+    for (let prop in stringMap) {
       result.set(prop, stringMap[prop]);
     }
     return result;
   }
-  static keys<K>(m: Map<K, any>): K[] { return _arrayFromMap(m, false); }
-  static values<V>(m: Map<any, V>): V[] { return _arrayFromMap(m, true); }
 }
 
 /**

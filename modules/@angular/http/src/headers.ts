@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper} from '../src/facade/collection';
-
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
  * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class).
@@ -128,7 +126,7 @@ export class Headers {
   /**
    * Returns the names of the headers
    */
-  keys(): string[] { return MapWrapper.values(this._normalizedNames); }
+  keys(): string[] { return Array.from(this._normalizedNames.values()); }
 
   /**
    * Sets or overrides header value for given name.
@@ -147,7 +145,7 @@ export class Headers {
   /**
    * Returns values of all headers.
    */
-  values(): string[][] { return MapWrapper.values(this._headers); }
+  values(): string[][] { return Array.from(this._headers.values()); }
 
   /**
    * Returns string of all headers.

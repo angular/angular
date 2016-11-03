@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MapWrapper} from '../facade/collection';
-import {isBlank, isPresent} from '../facade/lang';
 import {reflector} from '../reflection/reflection';
 import {Type} from '../type';
 
@@ -103,16 +101,16 @@ export class ResolvedReflectiveFactory {
  * Resolve a single provider.
  */
 function resolveReflectiveFactory(provider: NormalizedProvider): ResolvedReflectiveFactory {
-  var factoryFn: Function;
-  var resolvedDeps: ReflectiveDependency[];
-  if (isPresent(provider.useClass)) {
-    var useClass = resolveForwardRef(provider.useClass);
+  let factoryFn: Function;
+  let resolvedDeps: ReflectiveDependency[];
+  if (provider.useClass) {
+    const useClass = resolveForwardRef(provider.useClass);
     factoryFn = reflector.factory(useClass);
     resolvedDeps = _dependenciesFor(useClass);
-  } else if (isPresent(provider.useExisting)) {
+  } else if (provider.useExisting) {
     factoryFn = (aliasInstance: any) => aliasInstance;
     resolvedDeps = [ReflectiveDependency.fromKey(ReflectiveKey.get(provider.useExisting))];
-  } else if (isPresent(provider.useFactory)) {
+  } else if (provider.useFactory) {
     factoryFn = provider.useFactory;
     resolvedDeps = constructDependencies(provider.useFactory, provider.deps);
   } else {
@@ -137,10 +135,10 @@ function resolveReflectiveProvider(provider: NormalizedProvider): ResolvedReflec
  * Resolve a list of Providers.
  */
 export function resolveReflectiveProviders(providers: Provider[]): ResolvedReflectiveProvider[] {
-  var normalized = _normalizeProviders(providers, []);
-  var resolved = normalized.map(resolveReflectiveProvider);
-  return MapWrapper.values(
-      mergeResolvedReflectiveProviders(resolved, new Map<number, ResolvedReflectiveProvider>()));
+  const normalized = _normalizeProviders(providers, []);
+  const resolved = normalized.map(resolveReflectiveProvider);
+  const resolvedProviderMap = mergeResolvedReflectiveProviders(resolved, new Map());
+  return Array.from(resolvedProviderMap.values());
 }
 
 /**
@@ -152,22 +150,22 @@ export function mergeResolvedReflectiveProviders(
     providers: ResolvedReflectiveProvider[],
     normalizedProvidersMap: Map<number, ResolvedReflectiveProvider>):
     Map<number, ResolvedReflectiveProvider> {
-  for (var i = 0; i < providers.length; i++) {
-    var provider = providers[i];
-    var existing = normalizedProvidersMap.get(provider.key.id);
-    if (isPresent(existing)) {
+  for (let i = 0; i < providers.length; i++) {
+    const provider = providers[i];
+    const existing = normalizedProvidersMap.get(provider.key.id);
+    if (existing) {
       if (provider.multiProvider !== existing.multiProvider) {
         throw new MixingMultiProvidersWithRegularProvidersError(existing, provider);
       }
       if (provider.multiProvider) {
-        for (var j = 0; j < provider.resolvedFactories.length; j++) {
+        for (let j = 0; j < provider.resolvedFactories.length; j++) {
           existing.resolvedFactories.push(provider.resolvedFactories[j]);
         }
       } else {
         normalizedProvidersMap.set(provider.key.id, provider);
       }
     } else {
-      var resolvedProvider: ResolvedReflectiveProvider;
+      let resolvedProvider: ResolvedReflectiveProvider;
       if (provider.multiProvider) {
         resolvedProvider = new ResolvedReflectiveProvider_(
             provider.key, provider.resolvedFactories.slice(), provider.multiProvider);
@@ -204,26 +202,26 @@ export function constructDependencies(
   if (!dependencies) {
     return _dependenciesFor(typeOrFunc);
   } else {
-    var params: any[][] = dependencies.map(t => [t]);
+    const params: any[][] = dependencies.map(t => [t]);
     return dependencies.map(t => _extractToken(typeOrFunc, t, params));
   }
 }
 
 function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
-  var params = reflector.parameters(typeOrFunc);
+  const params = reflector.parameters(typeOrFunc);
+
   if (!params) return [];
-  if (params.some(isBlank)) {
+  if (params.some(p => p == null)) {
     throw new NoAnnotationError(typeOrFunc, params);
   }
-  return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));
+  return params.map(p => _extractToken(typeOrFunc, p, params));
 }
 
 function _extractToken(
-    typeOrFunc: any /** TODO #9100 */, metadata: any /** TODO #9100 */ /*any[] | any*/,
-    params: any[][]): ReflectiveDependency {
-  var depProps: any[] /** TODO #9100 */ = [];
-  var token: any /** TODO #9100 */ = null;
-  var optional = false;
+    typeOrFunc: any, metadata: any[] | any, params: any[][]): ReflectiveDependency {
+  const depProps: any[] = [];
+  let token: any = null;
+  let optional = false;
 
   if (!Array.isArray(metadata)) {
     if (metadata instanceof Inject) {
@@ -233,11 +231,11 @@ function _extractToken(
     }
   }
 
-  var lowerBoundVisibility: any /** TODO #9100 */ = null;
-  var upperBoundVisibility: any /** TODO #9100 */ = null;
+  let lowerBoundVisibility: any = null;
+  let upperBoundVisibility: any = null;
 
-  for (var i = 0; i < metadata.length; ++i) {
-    var paramMetadata = metadata[i];
+  for (let i = 0; i < metadata.length; ++i) {
+    let paramMetadata = metadata[i];
 
     if (paramMetadata instanceof Type) {
       token = paramMetadata;
@@ -261,7 +259,7 @@ function _extractToken(
 
   token = resolveForwardRef(token);
 
-  if (isPresent(token)) {
+  if (token != null) {
     return _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps);
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
@@ -269,9 +267,8 @@ function _extractToken(
 }
 
 function _createDependency(
-    token: any /** TODO #9100 */, optional: any /** TODO #9100 */,
-    lowerBoundVisibility: any /** TODO #9100 */, upperBoundVisibility: any /** TODO #9100 */,
-    depProps: any /** TODO #9100 */): ReflectiveDependency {
+    token: any, optional: boolean, lowerBoundVisibility: any, upperBoundVisibility: any,
+    depProps: any[]): ReflectiveDependency {
   return new ReflectiveDependency(
       ReflectiveKey.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
 }

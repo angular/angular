@@ -8,18 +8,17 @@
 
 import {NgZone} from '@angular/core';
 
-import {MapWrapper} from './facade/collection';
-import {global, isPresent} from './facade/lang';
+import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
 export class BrowserDetection {
   private _overrideUa: string;
   private get _ua(): string {
-    if (isPresent(this._overrideUa)) {
+    if (typeof this._overrideUa === 'string') {
       return this._overrideUa;
-    } else {
-      return getDOM() ? getDOM().getUserAgent() : '';
     }
+
+    return getDOM() ? getDOM().getUserAgent() : '';
   }
 
   static setup() { browserDetection = new BrowserDetection(null); }
@@ -102,7 +101,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     var attributeMap = getDOM().attributeMap(el);
-    var keys: string[] = MapWrapper.keys(attributeMap).sort();
+    var keys: string[] = Array.from(attributeMap.keys()).sort();
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];
       var attValue = attributeMap.get(key);
@@ -116,7 +115,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Children
     var childrenRoot = getDOM().templateAwareRoot(el);
-    var children = isPresent(childrenRoot) ? getDOM().childNodes(childrenRoot) : [];
+    var children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }
