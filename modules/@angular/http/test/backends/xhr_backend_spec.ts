@@ -233,9 +233,9 @@ export function main() {
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({headers: headers}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/xml');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('breaking-bad', '<3');
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('x-multi', 'a,b');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/xml');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', '<3');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
       });
 
       it('should skip content type detection if custom content type header is set', () => {
@@ -246,7 +246,8 @@ export function main() {
             new Request(base.merge(new RequestOptions({body: body, headers: headers}))),
             new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/plain');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/plain');
+        expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('Content-Type', 'application/json');
         expect(setRequestHeaderSpy).not.toHaveBeenCalledWith('content-type', 'application/json');
       });
 
@@ -355,7 +356,7 @@ export function main() {
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
            });
 
         it('should use array buffer body to the request', () => {
@@ -386,7 +387,7 @@ export function main() {
                  new MockBrowserXHR());
              connection.response.subscribe();
              expect(sendSpy).toHaveBeenCalledWith(body);
-             expect(setRequestHeaderSpy).toHaveBeenCalledWith('content-type', 'text/css');
+             expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/css');
            });
       }
 

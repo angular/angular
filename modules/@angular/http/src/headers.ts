@@ -49,7 +49,7 @@ export class Headers {
     }
 
     if (headers instanceof Headers) {
-      headers._headers.forEach((values: string[], name: string) => {
+      headers.forEach((values: string[], name: string) => {
         values.forEach(value => this.append(name, value));
       });
       return;
