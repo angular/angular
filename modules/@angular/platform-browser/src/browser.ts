@@ -15,6 +15,7 @@ import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
 import {BrowserGetTestability} from './browser/testability';
+import {WINDOW} from './browser/browser_tokens';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
 import {DomRootRenderer, DomRootRenderer_} from './dom/dom_renderer';
@@ -57,6 +58,10 @@ export function errorHandler(): ErrorHandler {
   return new ErrorHandler();
 }
 
+export function _window(): any {
+  return window;
+}
+
 export function _document(): any {
   return getDOM().defaultDoc();
 }
@@ -77,6 +82,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
   providers: [
     BROWSER_SANITIZATION_PROVIDERS, {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: DOCUMENT, useFactory: _document, deps: []},
+    {provide: WINDOW, useFactory: _window, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},

@@ -8,6 +8,7 @@
 
 export {BrowserModule, platformBrowser} from './browser';
 export {Title} from './browser/title';
+export {WINDOW} from './browser/browser_tokens';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {AnimationDriver} from './dom/animation_driver';
 export {By} from './dom/debug/by';
