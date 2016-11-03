@@ -100,7 +100,7 @@ export function main() {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      destroyViewLogs.splice(0, destroyViewLogs.length);
+      destroyViewLogs.length = 0;
 
       fixture.componentInstance.shown = false;
       fixture.detectChanges();

@@ -128,6 +128,8 @@ export class ServerRenderer implements Renderer {
   destroyView(hostElement: any, viewAllNodes: any[]) {}
 
   listen(renderElement: any, name: string, callback: Function): Function {
+    // Note: We are not using the EventsPlugin here as this is not needed
+    // to run our tests.
     var outsideHandler = (event: any) => this._zone.runGuarded(() => callback(event));
     return this._zone.runOutsideAngular(
         () => getDOM().onAndCancel(renderElement, name, outsideHandler));

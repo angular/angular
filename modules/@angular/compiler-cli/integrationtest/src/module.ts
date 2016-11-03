@@ -8,7 +8,7 @@
 
 import {ApplicationRef, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
+import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 
 import {ThirdpartyModule} from '../third_party_src/module';
@@ -48,7 +48,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     ComponentUsingThirdParty,
   ],
   imports: [
-    BrowserModule,
+    ServerModule,
     FormsModule,
     MdButtonModule,
     ModuleUsingCustomElements,

@@ -8,7 +8,6 @@
 
 import {LowerCasePipe, NgIf} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, ModuleWithProviders, NgModule, OpaqueToken, Pipe} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
 
 @Injectable()
 export class SomeService {
