@@ -136,10 +136,45 @@ describe('MdDialog', () => {
 
     viewContainerFixture.detectChanges();
 
-    let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+    let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
     backdrop.click();
 
     expect(overlayContainerElement.querySelector('md-dialog-container')).toBeFalsy();
+  });
+
+  describe('disableClose option', () => {
+    it('should prevent closing via clicks on the backdrop', () => {
+      let config = new MdDialogConfig();
+      config.viewContainerRef = testViewContainerRef;
+      config.disableClose = true;
+
+      dialog.open(PizzaMsg, config);
+
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+
+      expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
+    });
+
+    it('should prevent closing via the escape key', () => {
+      let config = new MdDialogConfig();
+      config.viewContainerRef = testViewContainerRef;
+      config.disableClose = true;
+
+      dialog.open(PizzaMsg, config);
+
+      viewContainerFixture.detectChanges();
+
+      let dialogContainer: MdDialogContainer = viewContainerFixture.debugElement.query(
+          By.directive(MdDialogContainer)).componentInstance;
+
+      // Fake the user pressing the escape key by calling the handler directly.
+      dialogContainer.handleEscapeKey();
+
+      expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
+    });
   });
 
   describe('focus management', () => {

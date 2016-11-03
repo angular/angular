@@ -1,10 +1,10 @@
 import {
-    Component,
-    ComponentRef,
-    ViewChild,
-    ViewEncapsulation,
-    NgZone,
-    OnDestroy
+  Component,
+  ComponentRef,
+  ViewChild,
+  ViewEncapsulation,
+  NgZone,
+  OnDestroy,
 } from '@angular/core';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
@@ -74,8 +74,9 @@ export class MdDialogContainer extends BasePortalHost implements OnDestroy {
 
   /** Handles the user pressing the Escape key. */
   handleEscapeKey() {
-    // TODO(jelbourn): add MdDialogConfig option to disable this behavior.
-    this.dialogRef.close();
+    if (!this.dialogConfig.disableClose) {
+      this.dialogRef.close();
+    }
   }
 
   ngOnDestroy() {
