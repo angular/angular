@@ -115,7 +115,7 @@ export function execTask(binPath: string, args: string[], options: ExecTaskOptio
         done();
       }
     });
-  }
+  };
 }
 
 /**
@@ -135,11 +135,13 @@ export function execNodeTask(packageName: string, executable: string | string[],
       if (err) {
         done(err);
       } else {
-        // Forward to execTask.
-        execTask(binPath, args, options)(done);
+        // Execute the node binary within a new child process using spawn.
+        // The binary needs to be `node` because on Windows the shell cannot determine the correct
+        // interpreter from the shebang.
+        execTask('node', [binPath].concat(args), options)(done);
       }
     });
-  }
+  };
 }
 
 
@@ -185,7 +187,7 @@ export function vendorTask() {
 
 
 /** Create a task that serves the dist folder. */
-export function serverTask(liveReload: boolean = true,
+export function serverTask(liveReload = true,
                            streamCallback: (stream: NodeJS.ReadWriteStream) => void = null) {
   return () => {
     const stream = gulp.src('dist').pipe(gulpServer({
@@ -198,7 +200,7 @@ export function serverTask(liveReload: boolean = true,
       streamCallback(stream);
     }
     return stream;
-  }
+  };
 }
 
 
@@ -209,5 +211,5 @@ export function sequenceTask(...args: any[]) {
       ...args,
       done
     );
-  }
+  };
 }
