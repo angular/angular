@@ -1,7 +1,4 @@
-import {
-  ComponentFactoryResolver,
-  Injectable,
-} from '@angular/core';
+import {ComponentFactoryResolver, Injectable, ApplicationRef, Injector} from '@angular/core';
 import {OverlayState} from './overlay-state';
 import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';
@@ -29,7 +26,9 @@ let defaultState = new OverlayState();
 export class Overlay {
   constructor(private _overlayContainer: OverlayContainer,
               private _componentFactoryResolver: ComponentFactoryResolver,
-              private _positionBuilder: OverlayPositionBuilder) {}
+              private _positionBuilder: OverlayPositionBuilder,
+              private _appRef: ApplicationRef,
+              private _injector: Injector) {}
 
   /**
    * Creates an overlay.
@@ -53,7 +52,7 @@ export class Overlay {
    * @returns Promise resolving to the created element.
    */
   private _createPaneElement(): HTMLElement {
-    var pane = document.createElement('div');
+    let pane = document.createElement('div');
     pane.id = `md-overlay-${nextUniqueId++}`;
     pane.classList.add('md-overlay-pane');
 
@@ -68,7 +67,7 @@ export class Overlay {
    * @returns A portal host for the given DOM element.
    */
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
-    return new DomPortalHost(pane, this._componentFactoryResolver);
+    return new DomPortalHost(pane, this._componentFactoryResolver, this._appRef, this._injector);
   }
 
   /**

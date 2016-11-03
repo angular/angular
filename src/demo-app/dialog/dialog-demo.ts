@@ -1,5 +1,5 @@
 import {Component, ViewContainerRef} from '@angular/core';
-import {MdDialog, MdDialogConfig, MdDialogRef} from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -16,10 +16,7 @@ export class DialogDemo {
       public viewContainerRef: ViewContainerRef) { }
 
   open() {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = this.viewContainerRef;
-
-    this.dialogRef = this.dialog.open(JazzDialog, config);
+    this.dialogRef = this.dialog.open(JazzDialog);
 
     this.dialogRef.afterClosed().subscribe(result => {
       this.lastCloseResult = result;
@@ -34,8 +31,11 @@ export class DialogDemo {
   template: `
   <p>It's Jazz!</p>
   <p><label>How much? <input #howMuch></label></p>
+  <p> {{ jazzMessage }} </p>
   <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>`
 })
 export class JazzDialog {
+  jazzMessage = 'Jazzy jazz jazz';
+
   constructor(public dialogRef: MdDialogRef<JazzDialog>) { }
 }

@@ -8,6 +8,7 @@ import {
   ComponentFactoryResolver,
   Optional,
   Injector,
+  ApplicationRef,
 } from '@angular/core';
 import {TemplatePortalDirective, PortalModule} from './portal-directives';
 import {Portal, ComponentPortal} from './portal';
@@ -134,20 +135,26 @@ describe('Portals', () => {
     let componentFactoryResolver: ComponentFactoryResolver;
     let someViewContainerRef: ViewContainerRef;
     let someInjector: Injector;
+    let someFixture: ComponentFixture<any>;
     let someDomElement: HTMLElement;
     let host: DomPortalHost;
+    let injector: Injector;
+    let appRef: ApplicationRef;
 
-    beforeEach(inject([ComponentFactoryResolver], (dcl: ComponentFactoryResolver) => {
+    let deps = [ComponentFactoryResolver, Injector, ApplicationRef];
+    beforeEach(inject(deps, (dcl: ComponentFactoryResolver, i: Injector, ar: ApplicationRef) => {
       componentFactoryResolver = dcl;
+      injector = i;
+      appRef = ar;
     }));
 
     beforeEach(() => {
       someDomElement = document.createElement('div');
-      host = new DomPortalHost(someDomElement, componentFactoryResolver);
+      host = new DomPortalHost(someDomElement, componentFactoryResolver, appRef, injector);
 
-      let fixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
-      someViewContainerRef = fixture.componentInstance.viewContainerRef;
-      someInjector = fixture.componentInstance.injector;
+      someFixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
+      someViewContainerRef = someFixture.componentInstance.viewContainerRef;
+      someInjector = someFixture.componentInstance.injector;
     });
 
     it('should attach and detach a component portal', () => {
@@ -237,6 +244,27 @@ describe('Portals', () => {
       host.attach(new ComponentPortal(PizzaMsg, someViewContainerRef));
 
       expect(someDomElement.textContent).toContain('Pizza');
+    });
+
+    it('should attach and detach a component portal without a ViewContainerRef', () => {
+      let portal = new ComponentPortal(PizzaMsg);
+
+      let componentInstance: PizzaMsg = portal.attach(host).instance;
+
+      expect(componentInstance)
+          .toEqual(jasmine.any(PizzaMsg), 'Expected a PizzaMsg component to be created');
+      expect(someDomElement.textContent)
+          .toContain('Pizza', 'Expected the static string "Pizza" in the DomPortalHost.');
+
+      componentInstance.snack = new Chocolate();
+      someFixture.detectChanges();
+      expect(someDomElement.textContent)
+          .toContain('Chocolate', 'Expected the bound string "Chocolate" in the DomPortalHost');
+
+      host.detach();
+
+      expect(someDomElement.innerHTML)
+          .toBe('', 'Expected the DomPortalHost to be empty after detach');
     });
   });
 });

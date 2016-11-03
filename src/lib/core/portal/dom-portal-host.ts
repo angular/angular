@@ -1,6 +1,11 @@
-import {ComponentFactoryResolver, ComponentRef, EmbeddedViewRef} from '@angular/core';
+import {
+  ComponentFactoryResolver,
+  ComponentRef,
+  EmbeddedViewRef,
+  ApplicationRef,
+  Injector,
+} from '@angular/core';
 import {BasePortalHost, ComponentPortal, TemplatePortal} from './portal';
-import {MdComponentPortalAttachedToDomWithoutOriginError} from './portal-errors';
 
 
 /**
@@ -12,27 +17,60 @@ import {MdComponentPortalAttachedToDomWithoutOriginError} from './portal-errors'
 export class DomPortalHost extends BasePortalHost {
   constructor(
       private _hostDomElement: Element,
-      private _componentFactoryResolver: ComponentFactoryResolver) {
+      private _componentFactoryResolver: ComponentFactoryResolver,
+      private _appRef: ApplicationRef,
+      private _defaultInjector: Injector) {
     super();
   }
 
   /** Attach the given ComponentPortal to DOM element using the ComponentFactoryResolver. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    if (portal.viewContainerRef == null) {
-      throw new MdComponentPortalAttachedToDomWithoutOriginError();
+    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(portal.component);
+    let componentRef: ComponentRef<T>;
+
+    // If the portal specifies a ViewContainerRef, we will use that as the attachment point
+    // for the component (in terms of Angular's component tree, not rendering).
+    // When the ViewContainerRef is missing, we use the factory to create the component directly
+    // and then manually attach the ChangeDetector for that component to the application (which
+    // happens automatically when using a ViewContainer).
+    if (portal.viewContainerRef) {
+      componentRef = portal.viewContainerRef.createComponent(
+          componentFactory,
+          portal.viewContainerRef.length,
+          portal.injector || portal.viewContainerRef.parentInjector);
+
+      this.setDisposeFn(() => componentRef.destroy());
+    } else {
+      componentRef = componentFactory.create(portal.injector || this._defaultInjector);
+
+      // When creating a component outside of a ViewContainer, we need to manually register
+      // its ChangeDetector with the application. This API is unfortunately not yet published
+      // in Angular core. The change detector must also be deregistered when the component
+      // is destroyed to prevent memory leaks.
+      //
+      // See https://github.com/angular/angular/pull/12674
+      let changeDetectorRef = componentRef.changeDetectorRef;
+      (this._appRef as any).registerChangeDetector(changeDetectorRef);
+
+      this.setDisposeFn(() => {
+        (this._appRef as any).unregisterChangeDetector(changeDetectorRef);
+
+        // Normally the ViewContainer will remove the component's nodes from the DOM.
+        // Without a ViewContainer, we need to manually remove the nodes.
+        let componentRootNode = this._getComponentRootNode(componentRef);
+        if (componentRootNode.parentNode) {
+          componentRootNode.parentNode.removeChild(componentRootNode);
+        }
+
+        componentRef.destroy();
+      });
     }
 
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(portal.component);
-    let ref = portal.viewContainerRef.createComponent(
-        componentFactory,
-        portal.viewContainerRef.length,
-        portal.injector || portal.viewContainerRef.parentInjector);
+    // At this point the component has been instantiated, so we move it to the location in the DOM
+    // where we want it to be rendered.
+    this._hostDomElement.appendChild(this._getComponentRootNode(componentRef));
 
-    let hostView = <EmbeddedViewRef<any>> ref.hostView;
-    this._hostDomElement.appendChild(hostView.rootNodes[0]);
-    this.setDisposeFn(() => ref.destroy());
-
-    return ref;
+    return componentRef;
   }
 
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
@@ -57,5 +95,10 @@ export class DomPortalHost extends BasePortalHost {
     if (this._hostDomElement.parentNode != null) {
       this._hostDomElement.parentNode.removeChild(this._hostDomElement);
     }
+  }
+
+  /** Gets the root HTMLElement for an instantiated component. */
+  private _getComponentRootNode(componentRef: ComponentRef<any>): HTMLElement {
+    return (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
   }
 }

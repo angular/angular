@@ -1,14 +1,5 @@
 import {MdError} from '../errors/error';
 
-/** Exception thrown when a ComponentPortal is attached to a DomPortalHost without an origin. */
-export class MdComponentPortalAttachedToDomWithoutOriginError extends MdError {
-  constructor() {
-      super(
-          'A ComponentPortal must have an origin set when attached to a DomPortalHost ' +
-          'because the DOM element is not part of the Angular application context.');
-  }
-}
-
 /** Exception thrown when attempting to attach a null portal to a host. */
 export class MdNullPortalError extends MdError {
   constructor() {

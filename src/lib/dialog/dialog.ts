@@ -40,7 +40,7 @@ export class MdDialog {
    * @param component Type of the component to load into the load.
    * @param config
    */
-  open<T>(component: ComponentType<T>, config: MdDialogConfig): MdDialogRef<T> {
+  open<T>(component: ComponentType<T>, config = new MdDialogConfig()): MdDialogRef<T> {
     let overlayRef = this._createOverlay(config);
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
 
@@ -64,7 +64,8 @@ export class MdDialog {
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
   private _attachDialogContainer(overlay: OverlayRef, config: MdDialogConfig): MdDialogContainer {
-    let containerPortal = new ComponentPortal(MdDialogContainer, config.viewContainerRef);
+    let viewContainer = config ? config.viewContainerRef : null;
+    let containerPortal = new ComponentPortal(MdDialogContainer, viewContainer);
 
     let containerRef: ComponentRef<MdDialogContainer> = overlay.attach(containerPortal);
     containerRef.instance.dialogConfig = config;

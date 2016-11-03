@@ -64,6 +64,20 @@ describe('MdDialog', () => {
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
   });
 
+  it('should open a dialog with a component and no ViewContainerRef', () => {
+    let dialogRef = dialog.open(PizzaMsg);
+
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toContain('Pizza');
+    expect(dialogRef.componentInstance).toEqual(jasmine.any(PizzaMsg));
+    expect(dialogRef.componentInstance.dialogRef).toBe(dialogRef);
+
+    viewContainerFixture.detectChanges();
+    let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container');
+    expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+  });
+
   it('should apply the configured role to the dialog element', () => {
     let config = new MdDialogConfig();
     config.viewContainerRef = testViewContainerRef;
