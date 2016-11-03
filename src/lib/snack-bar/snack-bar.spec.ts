@@ -1,8 +1,8 @@
 import {
-  inject,
-  async,
-  ComponentFixture,
-  TestBed
+    inject,
+    async,
+    ComponentFixture,
+    TestBed,
 } from '@angular/core/testing';
 import {
   NgModule,
@@ -91,7 +91,7 @@ describe('MdSnackBar', () => {
         .toBe('BUTTON', 'Expected snack bar action label to be a <button>');
     expect(buttonElement.textContent)
         .toBe(simpleActionLabel,
-              `Expected the snack bar action labe; to be '${simpleActionLabel}'`);
+              `Expected the snack bar action label to be '${simpleActionLabel}'`);
   });
 
   it('should open a simple message with no button', () => {
@@ -114,25 +114,28 @@ describe('MdSnackBar', () => {
         .toBeNull('Expected the query selection for action label to be null');
   });
 
-  it('should dismiss the snack bar and remove itself from the view', () => {
+  it('should dismiss the snack bar and remove itself from the view', async(() => {
     let config = new MdSnackBarConfig(testViewContainerRef);
-    let snackBarRef = snackBar.open(simpleMessage, null, config);
-    let dismissed = true;
-    snackBarRef.afterDismissed().subscribe(result => {
-      dismissed = true;
-    });
+    let dismissObservableCompleted = false;
 
+    let snackBarRef = snackBar.open(simpleMessage, null, config);
     viewContainerFixture.detectChanges();
     expect(overlayContainerElement.childElementCount)
         .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
 
-    snackBarRef.dismiss();
     snackBarRef.afterDismissed().subscribe(null, null, () => {
-      expect(dismissed).toBeTruthy('Expected the snack bar to be dismissed');
+      dismissObservableCompleted = true;
+    });
+
+    snackBarRef.dismiss();
+    viewContainerFixture.detectChanges();  // Run through animations for dismissal
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
       expect(overlayContainerElement.childElementCount)
           .toBe(0, 'Expected the overlay container element to have no child elements');
     });
-  });
+  }));
 
   it('should open a custom component', () => {
     let config = new MdSnackBarConfig(testViewContainerRef);
@@ -166,9 +169,10 @@ describe('MdSnackBar', () => {
   });
 
   it(`should set the old snack bar animation state to complete and the new snack bar animation
-      state to visible on entry of new snack bar`, () => {
+      state to visible on entry of new snack bar`, async(() => {
     let config = new MdSnackBarConfig(testViewContainerRef);
     let snackBarRef = snackBar.open(simpleMessage, null, config);
+    let dismissObservableCompleted = false;
 
     viewContainerFixture.detectChanges();
     expect(snackBarRef.containerInstance.animationState)
@@ -179,12 +183,17 @@ describe('MdSnackBar', () => {
 
     viewContainerFixture.detectChanges();
     snackBarRef.afterDismissed().subscribe(null, null, () => {
+      dismissObservableCompleted = true;
+    });
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(dismissObservableCompleted).toBe(true);
       expect(snackBarRef.containerInstance.animationState)
           .toBe('complete', `Expected the animation state would be 'complete'.`);
       expect(snackBarRef2.containerInstance.animationState)
           .toBe('visible', `Expected the animation state would be 'visible'.`);
     });
-  });
+  }));
 });
 
 @Directive({selector: 'dir-with-view-container'})
