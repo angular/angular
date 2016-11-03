@@ -178,6 +178,7 @@ md-input, md-textarea {
 // The hint is shown below the underline. There can be more than one; one at the start
 // and one at the end.
 .md-hint {
+  display: block;
   position: absolute;
   font-size: 75%;
   bottom: -0.5em;
