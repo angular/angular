@@ -11,13 +11,19 @@ import {
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
- * implict position relative some origin element. The relative position is defined in terms of
+ * implicit position relative some origin element. The relative position is defined in terms of
  * a point on the origin element that is connected to a point on the overlay element. For example,
  * a basic dropdown is connecting the bottom-left corner of the origin to the top-left corner
  * of the overlay.
  */
 export class ConnectedPositionStrategy implements PositionStrategy {
   private _dir = 'ltr';
+
+  /** The offset in pixels for the overlay connection point on the x-axis */
+  private _offsetX: number = 0;
+
+  /** The offset in pixels for the overlay connection point on the y-axis */
+  private _offsetY: number = 0;
 
   /** Whether the we're dealing with an RTL context */
   get _isRtl() {
@@ -89,8 +95,20 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Sets the layout direction so the overlay's position can be adjusted to match. */
-  setDirection(dir: 'ltr' | 'rtl') {
+  withDirection(dir: 'ltr' | 'rtl'): this {
     this._dir = dir;
+    return this;
+  }
+
+  /** Sets an offset for the overlay's connection point on the x-axis */
+  withOffsetX(offset: number): this {
+    this._offsetX = offset;
+    return this;
+  }
+
+  /** Sets an offset for the overlay's connection point on the y-axis */
+  withOffsetY(offset: number): this {
+    this._offsetY = offset;
     return this;
   }
 
@@ -168,8 +186,8 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     }
 
     return {
-      x: originPoint.x + overlayStartX,
-      y: originPoint.y + overlayStartY
+      x: originPoint.x + overlayStartX + this._offsetX,
+      y: originPoint.y + overlayStartY + this._offsetY
     };
   }
 

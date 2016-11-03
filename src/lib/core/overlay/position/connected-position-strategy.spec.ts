@@ -215,7 +215,7 @@ describe('ConnectedPositionStrategy', () => {
         fakeElementRef,
         {originX: 'start', originY: 'bottom'},
         {overlayX: 'start', overlayY: 'top'})
-        .setDirection('rtl');
+        .withDirection('rtl');
 
       strategy.apply(overlayElement);
 
@@ -223,6 +223,37 @@ describe('ConnectedPositionStrategy', () => {
       expect(overlayRect.top).toBe(originRect.bottom);
       expect(overlayRect.right).toBe(originRect.right);
     });
+
+    it('should position a panel with the x offset provided', () => {
+      originRect = originElement.getBoundingClientRect();
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'start', originY: 'top'},
+        {overlayX: 'start', overlayY: 'top'});
+
+      strategy.withOffsetX(10);
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originRect.top);
+      expect(overlayRect.left).toBe(originRect.left + 10);
+    });
+
+    it('should position a panel with the y offset provided', () => {
+      originRect = originElement.getBoundingClientRect();
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'start', originY: 'top'},
+        {overlayX: 'start', overlayY: 'top'});
+
+      strategy.withOffsetY(50);
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originRect.top + 50);
+      expect(overlayRect.left).toBe(originRect.left);
+    });
+
   });
 
 

@@ -67,6 +67,12 @@ export class ConnectedOverlayDirective implements OnDestroy {
   @Input() origin: OverlayOrigin;
   @Input() positions: ConnectionPositionPair[];
 
+  /** The offset in pixels for the overlay connection point on the x-axis */
+  @Input() offsetX: number = 0;
+
+  /** The offset in pixels for the overlay connection point on the y-axis */
+  @Input() offsetY: number = 0;
+
   /** The width of the overlay panel. */
   @Input() width: number | string;
 
@@ -150,20 +156,24 @@ export class ConnectedOverlayDirective implements OnDestroy {
       overlayConfig.backdropClass = this.backdropClass;
     }
 
-    overlayConfig.positionStrategy = this._getPosition();
+    overlayConfig.positionStrategy = this._createPositionStrategy();
 
     overlayConfig.direction = this.dir;
 
     return overlayConfig;
   }
 
-  /** Returns the position of the overlay to be set on the overlay config */
-  private _getPosition(): ConnectedPositionStrategy {
-    return this._overlay.position().connectedTo(
-      this.origin.elementRef,
-      {originX: this.positions[0].overlayX, originY: this.positions[0].originY},
-      {overlayX: this.positions[0].overlayX, overlayY: this.positions[0].overlayY})
-      .setDirection(this.dir);
+  /** Returns the position strategy of the overlay to be set on the overlay config */
+  private _createPositionStrategy(): ConnectedPositionStrategy {
+    const pos = this.positions[0];
+    const originPoint = {originX: pos.originX, originY: pos.originY};
+    const overlayPoint = {overlayX: pos.overlayX, overlayY: pos.overlayY};
+
+    return this._overlay.position()
+      .connectedTo(this.origin.elementRef, originPoint, overlayPoint)
+      .withDirection(this.dir)
+      .withOffsetX(this.offsetX)
+      .withOffsetY(this.offsetY);
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */
