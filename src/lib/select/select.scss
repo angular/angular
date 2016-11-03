@@ -25,6 +25,11 @@ md-select {
   [dir='rtl'] & {
     transform-origin: right top;
   }
+
+  // TODO: Double-check accessibility of this style
+  [aria-required=true] &::after {
+    content: '*';
+  }
 }
 
 .md-select-value {

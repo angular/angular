@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-
+import {FormControl} from '@angular/forms';
 
 @Component({
     moduleId: module.id,
@@ -8,9 +8,14 @@ import {Component} from '@angular/core';
     styleUrls: ['select-demo.css'],
 })
 export class SelectDemo {
+  isRequired = false;
+
   foods = [
-    {value: 'steak', viewValue: 'Steak'},
-    {value: 'pizza', viewValue: 'Pizza'},
-    {value: 'tacos', viewValue: 'Tacos'}
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos'}
   ];
+
+  control = new FormControl('');
+
 }

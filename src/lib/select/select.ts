@@ -19,6 +19,8 @@ import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {Dir} from '../core/rtl/dir';
 import {Subscription} from 'rxjs/Subscription';
 import {transformPlaceholder, transformPanel, fadeInContent} from './select-animations';
+import {ControlValueAccessor, NgControl} from '@angular/forms';
+import {coerceBooleanProperty} from '../core/coersion/boolean-property';
 
 @Component({
   moduleId: module.id,
@@ -30,16 +32,19 @@ import {transformPlaceholder, transformPanel, fadeInContent} from './select-anim
     'role': 'listbox',
     'tabindex': '0',
     '[attr.aria-label]': 'placeholder',
-    '(keydown)': '_openOnActivate($event)'
+    '[attr.aria-required]': 'required.toString()',
+    '[attr.aria-invalid]': '_control?.invalid || "false"',
+    '(keydown)': '_handleKeydown($event)',
+    '(blur)': '_onBlur()'
   },
   animations: [
     transformPlaceholder,
     transformPanel,
     fadeInContent
   ],
-  exportAs: 'mdSelect'
+  exportAs: 'mdSelect',
 })
-export class MdSelect implements AfterContentInit, OnDestroy {
+export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestroy {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -55,8 +60,17 @@ export class MdSelect implements AfterContentInit, OnDestroy {
   /** Subscription to tab events while overlay is focused. */
   private _tabSubscription: Subscription;
 
+  /** Whether filling out the select is required in the form.  */
+  private _required: boolean = false;
+
   /** Manages keyboard events for options in the panel. */
   _keyManager: ListKeyManager;
+
+  /** View -> model callback called when value changes */
+  _onChange: (value: any) => void;
+
+  /** View -> model callback called when select has been touched */
+  _onTouched: Function;
 
   /** This position config ensures that the top left corner of the overlay
    * is aligned with with the top left of the origin (overlapping the trigger
@@ -73,11 +87,23 @@ export class MdSelect implements AfterContentInit, OnDestroy {
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
   @Input() placeholder: string;
+
+  @Input()
+  get required() {
+    return this._required;
+  }
+
+  set required(value: any) {
+    this._required = coerceBooleanProperty(value);
+  }
+
   @Output() onOpen = new EventEmitter();
   @Output() onClose = new EventEmitter();
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
-              @Optional() private _dir: Dir) {}
+              @Optional() private _dir: Dir, @Optional() public _control: NgControl) {
+    this._control.valueAccessor = this;
+  }
 
   ngAfterContentInit() {
     this._initKeyManager();
@@ -109,6 +135,38 @@ export class MdSelect implements AfterContentInit, OnDestroy {
   close(): void {
     this._panelOpen = false;
     this._focusHost();
+  }
+
+  /**
+   * Sets the select's value. Part of the ControlValueAccessor interface
+   * required to integrate with Angular's core forms API.
+   */
+  writeValue(value: any): void {
+    if (!this.options) { return; }
+
+    this.options.forEach((option: MdOption) => {
+      if (option.value === value) {
+        option.select();
+      }
+    });
+  }
+
+  /**
+   * Saves a callback function to be invoked when the select's value
+   * changes from user input. Part of the ControlValueAccessor interface
+   * required to integrate with Angular's core forms API.
+   */
+  registerOnChange(fn: (value: any) => void): void {
+    this._onChange = fn;
+  }
+
+  /**
+   * Saves a callback function to be invoked when the select is blurred
+   * by the user. Part of the ControlValueAccessor interface required
+   * to integrate with Angular's core forms API.
+   */
+  registerOnTouched(fn: Function): void {
+    this._onTouched = fn;
   }
 
   /** Whether or not the overlay panel is open. */
@@ -147,7 +205,7 @@ export class MdSelect implements AfterContentInit, OnDestroy {
   }
 
   /** Ensures the panel opens if activated by the keyboard. */
-  _openOnActivate(event: KeyboardEvent): void {
+  _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ENTER || event.keyCode === SPACE) {
       this.open();
     }
@@ -166,6 +224,16 @@ export class MdSelect implements AfterContentInit, OnDestroy {
     }
   }
 
+  /**
+   * Calls the touched callback only if the panel is closed. Otherwise, the trigger will
+   * "blur" to the panel when it opens, causing a false positive.
+   */
+  _onBlur() {
+    if (!this.panelOpen) {
+      this._onTouched();
+    }
+  }
+
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
     this._keyManager = new ListKeyManager(this.options);
@@ -177,7 +245,12 @@ export class MdSelect implements AfterContentInit, OnDestroy {
   /** Listens to selection events on each option. */
   private _listenToOptions(): void {
     this.options.forEach((option: MdOption) => {
-      const sub = option.onSelect.subscribe(() => this._onSelect(option));
+      const sub = option.onSelect.subscribe((isUserInput: boolean) => {
+        if (isUserInput) {
+          this._onChange(option.value);
+        }
+        this._onSelect(option);
+      });
       this._subscriptions.push(sub);
     });
   }

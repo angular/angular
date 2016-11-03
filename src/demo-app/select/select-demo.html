@@ -1,5 +1,11 @@
 <div class="demo-select">
-  <md-select placeholder="Food">
-    <md-option *ngFor="let food of foods"> {{ food.viewValue }} </md-option>
+  <md-select placeholder="Food" [formControl]="control" [required]="isRequired">
+    <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
   </md-select>
+  <p> Value: {{ control.value }} </p>
+  <p> Touched: {{ control.touched }} </p>
+  <p> Dirty: {{ control.dirty }} </p>
+  <p> Status: {{ control.status }} </p>
+  <button md-button (click)="control.setValue('pizza-1')">SET VALUE</button>
+  <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
 </div>

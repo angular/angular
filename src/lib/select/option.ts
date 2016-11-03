@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   Output,
   Renderer,
   ViewEncapsulation
@@ -16,7 +17,7 @@ import {ENTER, SPACE} from '../core/keyboard/keycodes';
     'tabindex': '0',
     '[class.md-selected]': 'selected',
     '[attr.aria-selected]': 'selected.toString()',
-    '(click)': 'select()',
+    '(click)': '_selectViaInteraction()',
     '(keydown)': '_handleKeydown($event)'
   },
   templateUrl: 'option.html',
@@ -25,6 +26,9 @@ import {ENTER, SPACE} from '../core/keyboard/keycodes';
 })
 export class MdOption {
   private _selected = false;
+
+  /** The form value of the option. */
+  @Input() value: any;
 
   /** Event emitted when the option is selected. */
   @Output() onSelect = new EventEmitter();
@@ -64,8 +68,17 @@ export class MdOption {
   /** Ensures the option is selected when activated from the keyboard. */
   _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ENTER || event.keyCode === SPACE) {
-      this.select();
+      this._selectViaInteraction();
     }
+  }
+
+  /**
+   * Selects the option while indicating the selection came from the user. Used to
+   * determine if the select's view -> model callback should be invoked.
+   */
+  _selectViaInteraction() {
+    this._selected = true;
+    this.onSelect.emit(true);
   }
 
   _getHostElement(): HTMLElement {
