@@ -51,9 +51,8 @@ function extract(
       case 'xliff':
       case 'xlf':
       default:
-        const htmlParser = new compiler.I18NHtmlParser(new compiler.HtmlParser());
         ext = 'xlf';
-        serializer = new compiler.Xliff(htmlParser, compiler.DEFAULT_INTERPOLATION_CONFIG);
+        serializer = new compiler.Xliff();
         break;
     }
 

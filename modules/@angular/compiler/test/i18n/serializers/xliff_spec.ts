@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {escapeRegExp} from '@angular/core/src/facade/lang';
+
+import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
+import {Xliff} from '../../../src/i18n/serializers/xliff';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
-import {serializeNodes} from '../../ml_parser/ast_serializer_spec';
 
 const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
@@ -77,8 +78,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 `;
 
 export function main(): void {
-  let serializer: Xliff;
-  let htmlParser: HtmlParser;
+  const serializer = new Xliff();
 
   function toXliff(html: string): string {
     const catalog = new MessageBundle(new HtmlParser, [], {});
@@ -86,37 +86,89 @@ export function main(): void {
     return catalog.write(serializer);
   }
 
-  function loadAsText(template: string, xliff: string): {[id: string]: string} {
-    const messageBundle = new MessageBundle(htmlParser, [], {});
-    messageBundle.updateFromTemplate(template, 'url', DEFAULT_INTERPOLATION_CONFIG);
+  function loadAsMap(xliff: string): {[id: string]: string} {
+    const i18nNodesByMsgId = serializer.load(xliff, 'url');
+    const msgMap: {[id: string]: string} = {};
+    Object.keys(i18nNodesByMsgId)
+        .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
 
-    const asAst = serializer.load(xliff, 'url', messageBundle);
-    const asText: {[id: string]: string} = {};
-    Object.keys(asAst).forEach(id => { asText[id] = serializeNodes(asAst[id]).join(''); });
-
-    return asText;
+    return msgMap;
   }
 
   describe('XLIFF serializer', () => {
-
-    beforeEach(() => {
-      htmlParser = new HtmlParser();
-      serializer = new Xliff(htmlParser, DEFAULT_INTERPOLATION_CONFIG);
-    });
-
-
     describe('write', () => {
       it('should write a valid xliff file', () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
     });
 
     describe('load', () => {
       it('should load XLIFF files', () => {
-        expect(loadAsText(HTML, LOAD_XLIFF)).toEqual({
+        expect(loadAsMap(LOAD_XLIFF)).toEqual({
           '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
           'ec1d033f2436133c14ab038286c4f5df4697484a':
-              '{{ interpolation}} footnemele elbatalsnart <b>sredlohecalp htiw</b>',
+              '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
           'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
-          'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d': '<div></div><img/><br/>',
+          'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
+              '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
+        });
+      });
+
+      describe('errors', () => {
+        it('should throw when a placeholder has no id attribute', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit datatype="html">
+        <source/>
+        <target/>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => {
+            loadAsMap(XLIFF);
+          }).toThrowError(/<trans-unit> misses the "id" attribute/);
+        });
+
+        it('should throw on unknown message tags', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="deadbeef" datatype="html">
+        <source/>
+        <target><b>msg should contain only ph tags</b></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => { loadAsMap(XLIFF); })
+              .toThrowError(
+                  new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
+        });
+
+        it('should throw when a placeholder has no name attribute', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="deadbeef">
+        <source/>
+        <target/>
+      </trans-unit>
+      <trans-unit id="deadbeef">
+        <source/>
+        <target/>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => {
+            loadAsMap(XLIFF);
+          }).toThrowError(/Duplicated translations for msg deadbeef/);
         });
       });
     });

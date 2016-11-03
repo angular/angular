@@ -22,7 +22,10 @@ export class Message {
       public description: string) {}
 }
 
-export interface Node { visit(visitor: Visitor, context?: any): any; }
+export interface Node {
+  sourceSpan: ParseSourceSpan;
+  visit(visitor: Visitor, context?: any): any;
+}
 
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
@@ -30,6 +33,7 @@ export class Text implements Node {
   visit(visitor: Visitor, context?: any): any { return visitor.visitText(this, context); }
 }
 
+// TODO(vicb): do we really need this node (vs an array) ?
 export class Container implements Node {
   constructor(public children: Node[], public sourceSpan: ParseSourceSpan) {}
 
@@ -37,6 +41,7 @@ export class Container implements Node {
 }
 
 export class Icu implements Node {
+  public expressionPlaceholder: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},
       public sourceSpan: ParseSourceSpan) {}
@@ -54,13 +59,13 @@ export class TagPlaceholder implements Node {
 }
 
 export class Placeholder implements Node {
-  constructor(public value: string, public name: string = '', public sourceSpan: ParseSourceSpan) {}
+  constructor(public value: string, public name: string, public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitPlaceholder(this, context); }
 }
 
 export class IcuPlaceholder implements Node {
-  constructor(public value: Icu, public name: string = '', public sourceSpan: ParseSourceSpan) {}
+  constructor(public value: Icu, public name: string, public sourceSpan: ParseSourceSpan) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
 }

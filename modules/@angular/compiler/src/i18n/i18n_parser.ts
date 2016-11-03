@@ -98,7 +98,13 @@ class _I18nVisitor implements html.Visitor {
     this._icuDepth--;
 
     if (this._isIcu || this._icuDepth > 0) {
-      // If the message (vs a part of the message) is an ICU message returns it
+      // Returns an ICU node when:
+      // - the message (vs a part of the message) is an ICU message, or
+      // - the ICU message is nested.
+      const expPh = this._placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
+      i18nIcu.expressionPlaceholder = expPh;
+      this._placeholderToContent[expPh] = icu.switchValue;
+
       return i18nIcu;
     }
 

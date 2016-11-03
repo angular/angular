@@ -13,7 +13,9 @@ export function digest(message: i18n.Message): string {
 }
 
 export function decimalDigest(message: i18n.Message): string {
-  return fingerprint(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+  const visitor = new _SerializerIgnoreIcuExpVisitor();
+  const parts = message.nodes.map(a => a.visit(visitor, null));
+  return fingerprint(parts.join('') + `[${message.meaning}]`);
 }
 
 /**
@@ -43,7 +45,7 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context: any): any {
-    return `<ph name="${ph.name}">${ph.value}</ph>`;
+    return ph.value ? `<ph name="${ph.name}">${ph.value}</ph>` : `<ph name="${ph.name}"/>`;
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
@@ -55,6 +57,21 @@ const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: i18n.Node[]): string[] {
   return nodes.map(a => a.visit(serializerVisitor, null));
+}
+
+/**
+ * Serialize the i18n ast to something xml-like in order to generate an UID.
+ *
+ * Ignore the ICU expressions so that message IDs stays identical if only the expression changes.
+ *
+ * @internal
+ */
+class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
+  visitIcu(icu: i18n.Icu, context: any): any {
+    let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    // Do not take the expression into account
+    return `{${icu.type}, ${strCases.join(', ')}}`;
+  }
 }
 
 /**

@@ -44,9 +44,9 @@ export function main(): void {
 ]>
 <messagebundle>
   <msg id="2348600990161399314">translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"/></msg>
-  <msg id="8332678508949127113">{ count, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
+  <msg id="5525949440406338075">{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
   <msg id="130772889486467622" desc="d" meaning="m">foo</msg>
-  <msg id="5848862331224404557">{ count, plural, =0 {{ sex, gender, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
+  <msg id="9095788995532341072">{VAR_PLURAL, plural, =0 {{VAR_GENDER, gender, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
 </messagebundle>
 `;
 
@@ -55,7 +55,7 @@ export function main(): void {
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
         const serializer = new Xmb();
-        serializer.load(XMB, 'url', null);
+        serializer.load(XMB, 'url');
       }).toThrowError(/Unsupported/);
     });
   });

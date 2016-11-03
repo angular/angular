@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
 import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
 
 export function main(): void {

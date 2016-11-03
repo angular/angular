@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
+import {isPrimitive, isStrictStringMap} from './facade/lang';
 
 export const MODULE_SUFFIX = '';
 
@@ -48,7 +48,7 @@ export function visitValue(value: any, visitor: ValueVisitor, context: any): any
     return visitor.visitStringMap(<{[key: string]: any}>value, context);
   }
 
-  if (isBlank(value) || isPrimitive(value)) {
+  if (value == null || isPrimitive(value)) {
     return visitor.visitPrimitive(value, context);
   }
 
