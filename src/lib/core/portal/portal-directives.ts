@@ -5,7 +5,8 @@ import {
     Directive,
     TemplateRef,
     ComponentFactoryResolver,
-    ViewContainerRef
+    ViewContainerRef,
+    OnDestroy
 } from '@angular/core';
 import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal';
 
@@ -41,7 +42,7 @@ export class TemplatePortalDirective extends TemplatePortal {
   selector: '[portalHost]',
   inputs: ['portal: portalHost']
 })
-export class PortalHostDirective extends BasePortalHost {
+export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   /** The attached portal. */
   private _portal: Portal<any>;
 
@@ -59,7 +60,11 @@ export class PortalHostDirective extends BasePortalHost {
     this._replaceAttachedPortal(p);
   }
 
-  /** Attach the given ComponentPortal to this PortlHost using the ComponentFactoryResolver. */
+  ngOnDestroy() {
+    this.dispose();
+  }
+
+  /** Attach the given ComponentPortal to this PortalHost using the ComponentFactoryResolver. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     portal.setAttachedHost(this);
 

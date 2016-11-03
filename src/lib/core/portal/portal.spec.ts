@@ -43,6 +43,18 @@ describe('Portals', () => {
       expect(hostContainer.textContent).toContain('Pizza');
     });
 
+    it('should dispose the host when destroyed', () => {
+      // Set the selectedHost to be a ComponentPortal.
+      let testAppComponent = fixture.debugElement.componentInstance;
+      testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg);
+
+      fixture.detectChanges();
+      expect(testAppComponent.selectedPortal.isAttached).toBe(true);
+
+      fixture.destroy();
+      expect(testAppComponent.selectedPortal.isAttached).toBe(false);
+    });
+
     it('should load a component into the portal with a given injector', () => {
       // Create a custom injector for the component.
       let chocolateInjector = new ChocolateInjector(fixture.componentInstance.injector);
