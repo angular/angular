@@ -7,14 +7,13 @@
  */
 
 import {AnimationPlayer} from '@angular/core';
-import {isPresent} from './facade/lang';
 
 export class MockAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
   private _finished = false;
   private _destroyed = false;
-  private _started: boolean = false;
+  private _started = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -27,9 +26,6 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
       this._onDoneFns.forEach(fn => fn());
       this._onDoneFns = [];
-      if (!isPresent(this.parentPlayer)) {
-        this.destroy();
-      }
     }
   }
 
@@ -56,7 +52,12 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   finish(): void { this._onFinish(); }
 
-  reset(): void { this.log.push('reset'); }
+  reset(): void {
+    this.log.push('reset');
+    this._destroyed = false;
+    this._finished = false;
+    this._started = false;
+  }
 
   destroy(): void {
     if (!this._destroyed) {

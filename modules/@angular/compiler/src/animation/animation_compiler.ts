@@ -251,17 +251,22 @@ class _AnimationBuilder implements AnimationAstVisitor {
         _ANIMATION_PLAYER_VAR
             .callMethod(
                 'onDone',
-                [o.fn(
-                    [],
-                    [RENDER_STYLES_FN
-                         .callFn([
-                           _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                           o.importExpr(resolveIdentifier(Identifiers.prepareFinalAnimationStyles))
+                [o
+                     .fn([],
+                         [
+                           _ANIMATION_PLAYER_VAR.callMethod('destroy', []).toStmt(),
+                           RENDER_STYLES_FN
                                .callFn([
-                                 _ANIMATION_START_STATE_STYLES_VAR, _ANIMATION_END_STATE_STYLES_VAR
+                                 _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                                 o.importExpr(
+                                      resolveIdentifier(Identifiers.prepareFinalAnimationStyles))
+                                     .callFn([
+                                       _ANIMATION_START_STATE_STYLES_VAR,
+                                       _ANIMATION_END_STATE_STYLES_VAR
+                                     ])
                                ])
-                         ])
-                         .toStmt()])])
+                               .toStmt()
+                         ])])
             .toStmt());
 
     statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT

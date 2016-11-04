@@ -15,6 +15,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onStartFns: Function[] = [];
   private _finished = false;
   private _started = false;
+  private _destroyed = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -38,9 +39,6 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      if (!isPresent(this.parentPlayer)) {
-        this.destroy();
-      }
       this._onDoneFns.forEach(fn => fn());
       this._onDoneFns = [];
     }
@@ -76,11 +74,19 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   destroy(): void {
-    this._onFinish();
-    this._players.forEach(player => player.destroy());
+    if (!this._destroyed) {
+      this._onFinish();
+      this._players.forEach(player => player.destroy());
+      this._destroyed = true;
+    }
   }
 
-  reset(): void { this._players.forEach(player => player.reset()); }
+  reset(): void {
+    this._players.forEach(player => player.reset());
+    this._destroyed = false;
+    this._finished = false;
+    this._started = false;
+  }
 
   setPosition(p: any /** TODO #9100 */): void {
     this._players.forEach(player => { player.setPosition(p); });

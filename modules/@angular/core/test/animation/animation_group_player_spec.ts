@@ -95,7 +95,7 @@ export function main() {
       assertLastStatus(players[2], 'restart', true);
     });
 
-    it('should finish all the players', () => {
+    it('should not destroy the inner the players when finished', () => {
       var group = new AnimationGroupPlayer(players);
 
       var completed = false;
@@ -113,55 +113,36 @@ export function main() {
 
       group.finish();
 
-      assertLastStatus(players[0], 'finish', true, -1);
-      assertLastStatus(players[1], 'finish', true, -1);
-      assertLastStatus(players[2], 'finish', true, -1);
-
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
+      assertLastStatus(players[0], 'finish', true);
+      assertLastStatus(players[1], 'finish', true);
+      assertLastStatus(players[2], 'finish', true);
 
       expect(completed).toBeTruthy();
     });
 
-    it('should call destroy automatically when finished if no parent player is present', () => {
-      var group = new AnimationGroupPlayer(players);
+    it('should not call destroy automatically when finished even if a parent player finishes',
+       () => {
+         var group = new AnimationGroupPlayer(players);
+         var parent = new AnimationGroupPlayer([group, new MockAnimationPlayer()]);
 
-      group.play();
+         group.play();
 
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
 
-      group.finish();
+         group.finish();
 
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
-    });
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
 
-    it('should not call destroy automatically when finished if a parent player is present', () => {
-      var group = new AnimationGroupPlayer(players);
-      var parent = new AnimationGroupPlayer([group, new MockAnimationPlayer()]);
+         parent.finish();
 
-      group.play();
-
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
-
-      group.finish();
-
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
-
-      parent.finish();
-
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
-    });
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
+       });
 
     it('should function without any players', () => {
       var group = new AnimationGroupPlayer([]);
@@ -192,6 +173,32 @@ export function main() {
          expect(completed).toEqual(false);
          flushMicrotasks();
          expect(completed).toEqual(true);
+       }));
+
+    it('should not allow the player to be destroyed if it already has been destroyed unless reset',
+       fakeAsync(() => {
+         var p1 = new MockAnimationPlayer();
+         var p2 = new MockAnimationPlayer();
+         var innerPlayers = [p1, p2];
+
+         var groupPlayer = new AnimationGroupPlayer(innerPlayers);
+         expect(p1.log[p1.log.length - 1]).not.toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).not.toContain('destroy');
+
+         groupPlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).toContain('destroy');
+
+         p1.log = p2.log = [];
+
+         groupPlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).not.toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).not.toContain('destroy');
+
+         groupPlayer.reset();
+         groupPlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).toContain('destroy');
        }));
   });
 }
