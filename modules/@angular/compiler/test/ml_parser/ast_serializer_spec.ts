@@ -51,7 +51,7 @@ export function main() {
         <span>{{ interpolation }}</span>
         <!--comment-->
         <p expansion="true">
-          {number, plural, =0 {{sex, gender, other {<b>?</b>}}}}
+          {number, plural, =0 {{sex, select, other {<b>?</b>}}}}
         </p>                            
       </div>`;
       const ast = parser.parse(html, 'url', true);

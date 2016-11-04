@@ -7,7 +7,6 @@
  */
 
 import {escapeRegExp} from '@angular/core/src/facade/lang';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {Xtb} from '../../../src/i18n/serializers/xtb';
@@ -101,22 +100,22 @@ export function main(): void {
 <div i18n>foo <b>bar</b> {{ a + b }}</div>
 <div i18n>{ count, plural, =0 {<p>bar</p>}}</div>
 <div i18n="m|d">foo</div>
-<div i18n>{ count, plural, =0 {{ sex, gender, other {<p>bar</p>}} }}</div>`;
+<div i18n>{ count, plural, =0 {{ sex, select, other {<p>bar</p>}} }}</div>`;
 
         const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
   <translation id="7103b4b13b616270a0044efade97d8b4f96f2ca6"><ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof</translation>
   <translation id="fc92b9b781194a02ab773129c8c5a7fc0735efd7">{ count, plural, =1 {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}}</translation>
   <translation id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23">oof</translation>
-  <translation id="e3bf2d706c3da16ce05658e07f62f0519f7c561c">{ count, plural, =1 {{ sex, gender, male {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}} }}</translation>
+  <translation id="8fb569d3dd83e92eff2551b24f5290d3035ce61b">{ count, plural, =1 {{ sex, select, other {<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>}} }}</translation>
 </translationbundle>`;
 
         expect(loadAsText(HTML, XTB)).toEqual({
           '7103b4b13b616270a0044efade97d8b4f96f2ca6': `{{ a + b }}<b>rab</b> oof`,
           'fc92b9b781194a02ab773129c8c5a7fc0735efd7': `{ count, plural, =1 {<p>rab</p>}}`,
           'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': `oof`,
-          'e3bf2d706c3da16ce05658e07f62f0519f7c561c':
-              `{ count, plural, =1 {{ sex, gender, male {<p>rab</p>}} }}`,
+          '8fb569d3dd83e92eff2551b24f5290d3035ce61b':
+              `{ count, plural, =1 {{ sex, select, other {<p>rab</p>}} }}`,
         });
       });
 

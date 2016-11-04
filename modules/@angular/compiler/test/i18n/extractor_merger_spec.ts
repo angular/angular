@@ -155,27 +155,27 @@ export function main() {
          () => { expect(extract('{count, plural, =0 {text}}')).toEqual([]); });
 
       it('should ignore nested ICU messages', () => {
-        expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, gender, =m {m}} }}</div>'))
+        expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>'))
             .toEqual([
-              [['{count, plural, =0 {[{sex, gender, =m {[m]}},  ]}}'], 'm', 'd'],
+              [['{count, plural, =0 {[{sex, select, male {[m]}},  ]}}'], 'm', 'd'],
             ]);
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
         expect(
             extract(
-                '<div i18n="m|d">{count, plural, =0 { {sex, gender, =m {<p>ignore</p>}} }}</div>',
+                '<div i18n="m|d">{count, plural, =0 { {sex, select, male {<p>ignore</p>}} }}</div>',
                 ['p']))
             .toEqual([[
               [
-                '{count, plural, =0 {[{sex, gender, =m {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
+                '{count, plural, =0 {[{sex, select, male {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
               ],
               'm', 'd'
             ]]);
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
-        expect(extract('{count, plural, =0 { {sex, gender, =m {<p>ignore</p>}} }}', ['p']))
+        expect(extract('{count, plural, =0 { {sex, select, male {<p>ignore</p>}} }}', ['p']))
             .toEqual([]);
       });
     });
