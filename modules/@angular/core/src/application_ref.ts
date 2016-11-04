@@ -21,6 +21,8 @@ import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
+import {AppView} from './linker/view';
+import {ViewRef, ViewRef_} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
@@ -387,6 +389,23 @@ export abstract class ApplicationRef {
    * Get a list of components registered to this application.
    */
   get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
+
+  /**
+   * Attaches a view so that it will be dirty checked.
+   * The view will be automatically detached when it is destroyed.
+   * This will throw if the view is already attached to a ViewContainer.
+   */
+  attachView(view: ViewRef): void { unimplemented(); }
+
+  /**
+   * Detaches a view from dirty checking again.
+   */
+  detachView(view: ViewRef): void { unimplemented(); }
+
+  /**
+   * Returns the number of attached views.
+   */
+  get viewCount() { return unimplemented(); }
 }
 
 @Injectable()
@@ -397,7 +416,7 @@ export class ApplicationRef_ extends ApplicationRef {
   private _bootstrapListeners: Function[] = [];
   private _rootComponents: ComponentRef<any>[] = [];
   private _rootComponentTypes: Type<any>[] = [];
-  private _changeDetectorRefs: ChangeDetectorRef[] = [];
+  private _views: AppView<any>[] = [];
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
 
@@ -415,12 +434,16 @@ export class ApplicationRef_ extends ApplicationRef {
         {next: () => { this._zone.run(() => { this.tick(); }); }});
   }
 
-  registerChangeDetector(changeDetector: ChangeDetectorRef): void {
-    this._changeDetectorRefs.push(changeDetector);
+  attachView(viewRef: ViewRef): void {
+    const view = (viewRef as ViewRef_<any>).internalView;
+    this._views.push(view);
+    view.attachToAppRef(this);
   }
 
-  unregisterChangeDetector(changeDetector: ChangeDetectorRef): void {
-    ListWrapper.remove(this._changeDetectorRefs, changeDetector);
+  detachView(viewRef: ViewRef): void {
+    const view = (viewRef as ViewRef_<any>).internalView;
+    ListWrapper.remove(this._views, view);
+    view.detach();
   }
 
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>): ComponentRef<C> {
@@ -451,9 +474,8 @@ export class ApplicationRef_ extends ApplicationRef {
     return compRef;
   }
 
-  /** @internal */
-  _loadComponent(componentRef: ComponentRef<any>): void {
-    this._changeDetectorRefs.push(componentRef.changeDetectorRef);
+  private _loadComponent(componentRef: ComponentRef<any>): void {
+    this.attachView(componentRef.hostView);
     this.tick();
     this._rootComponents.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
@@ -463,12 +485,8 @@ export class ApplicationRef_ extends ApplicationRef {
     listeners.forEach((listener) => listener(componentRef));
   }
 
-  /** @internal */
-  _unloadComponent(componentRef: ComponentRef<any>): void {
-    if (this._rootComponents.indexOf(componentRef) == -1) {
-      return;
-    }
-    this.unregisterChangeDetector(componentRef.changeDetectorRef);
+  private _unloadComponent(componentRef: ComponentRef<any>): void {
+    this.detachView(componentRef.hostView);
     ListWrapper.remove(this._rootComponents, componentRef);
   }
 
@@ -480,9 +498,9 @@ export class ApplicationRef_ extends ApplicationRef {
     const scope = ApplicationRef_._tickScope();
     try {
       this._runningTick = true;
-      this._changeDetectorRefs.forEach((detector) => detector.detectChanges());
+      this._views.forEach((view) => view.ref.detectChanges());
       if (this._enforceNoNewChanges) {
-        this._changeDetectorRefs.forEach((detector) => detector.checkNoChanges());
+        this._views.forEach((view) => view.ref.checkNoChanges());
       }
     } finally {
       this._runningTick = false;
@@ -492,8 +510,10 @@ export class ApplicationRef_ extends ApplicationRef {
 
   ngOnDestroy() {
     // TODO(alxhub): Dispose of the NgZone.
-    this._rootComponents.slice().forEach((component) => component.destroy());
+    this._views.slice().forEach((view) => view.destroy());
   }
+
+  get viewCount() { return this._views.length; }
 
   get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
 

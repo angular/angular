@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
@@ -41,7 +42,10 @@ export abstract class AppView<T> {
   lastRootNode: any;
   allNodes: any[];
   disposables: Function[];
-  viewContainer: ViewContainer = null;
+  viewContainer: ViewContainer;
+  // This will be set if a view is directly attached to an ApplicationRef
+  // and not to a view container.
+  appRef: ApplicationRef;
 
   numberOfChecks: number = 0;
 
@@ -138,10 +142,12 @@ export abstract class AppView<T> {
   injector(nodeIndex: number): Injector { return new ElementInjector(this, nodeIndex); }
 
   detachAndDestroy() {
-    if (this._hasExternalHostElement) {
-      this.detach();
-    } else if (isPresent(this.viewContainer)) {
+    if (this.viewContainer) {
       this.viewContainer.detachView(this.viewContainer.nestedViews.indexOf(this));
+    } else if (this.appRef) {
+      this.appRef.detachView(this.ref);
+    } else if (this._hasExternalHostElement) {
+      this.detach();
     }
     this.destroy();
   }
@@ -196,6 +202,7 @@ export abstract class AppView<T> {
         projectedViews.splice(index, 1);
       }
     }
+    this.appRef = null;
     this.viewContainer = null;
     this.dirtyParentQueriesInternal();
   }
@@ -208,7 +215,18 @@ export abstract class AppView<T> {
     }
   }
 
+  attachToAppRef(appRef: ApplicationRef) {
+    if (this.viewContainer) {
+      throw new Error('This view is already attached to a ViewContainer!');
+    }
+    this.appRef = appRef;
+    this.dirtyParentQueriesInternal();
+  }
+
   attachAfter(viewContainer: ViewContainer, prevView: AppView<any>) {
+    if (this.appRef) {
+      throw new Error('This view is already attached directly to the ApplicationRef!');
+    }
     this._renderAttach(viewContainer, prevView);
     this.viewContainer = viewContainer;
     if (this.declaredViewContainer && this.declaredViewContainer !== viewContainer) {

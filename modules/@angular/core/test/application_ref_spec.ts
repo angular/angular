@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, Type} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -16,9 +16,7 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {ServerModule} from '@angular/platform-server';
 
-import {TestBed, async, inject, withModule} from '../testing';
-
-import {SpyChangeDetectorRef} from './spies';
+import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
 @Component({selector: 'comp', template: 'hello'})
 class SomeComponent {
@@ -74,13 +72,16 @@ export function main() {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
 
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
-           const cdRef = <any>new SpyChangeDetectorRef();
+           const view = jasmine.createSpyObj('view', ['detach', 'attachToAppRef']);
+           const viewRef = jasmine.createSpyObj('viewRef', ['detectChanges']);
+           viewRef.internalView = view;
+           view.ref = viewRef;
            try {
-             ref.registerChangeDetector(cdRef);
-             cdRef.spy('detectChanges').and.callFake(() => ref.tick());
+             ref.attachView(viewRef);
+             viewRef.detectChanges.and.callFake(() => ref.tick());
              expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
            } finally {
-             ref.unregisterChangeDetector(cdRef);
+             ref.detachView(viewRef);
            }
          }));
 
@@ -260,6 +261,84 @@ export function main() {
                  expect(mockConsole.res).toEqual(['EXCEPTION: Test']);
                });
          }));
+    });
+
+    describe('attachView / detachView', () => {
+      @Component({template: '{{name}}'})
+      class MyComp {
+        name = 'Initial';
+      }
+
+      @Component({template: '<ng-container #vc></ng-container>'})
+      class ContainerComp {
+        @ViewChild('vc', {read: ViewContainerRef})
+        vc: ViewContainerRef;
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [MyComp, ContainerComp],
+          providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]
+        });
+      });
+
+      it('should dirty check attached views', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        expect(appRef.viewCount).toBe(0);
+
+        appRef.tick();
+        expect(comp.nativeElement).toHaveText('');
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(appRef.viewCount).toBe(1);
+        expect(comp.nativeElement).toHaveText('Initial');
+      });
+
+      it('should not dirty check detached views', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(comp.nativeElement).toHaveText('Initial');
+
+        appRef.detachView(comp.componentRef.hostView);
+        comp.componentInstance.name = 'New';
+        appRef.tick();
+        expect(appRef.viewCount).toBe(0);
+        expect(comp.nativeElement).toHaveText('Initial');
+      });
+
+      it('should detach attached views if they are destroyed', () => {
+        const comp = TestBed.createComponent(MyComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        appRef.attachView(comp.componentRef.hostView);
+        comp.destroy();
+
+        expect(appRef.viewCount).toBe(0);
+      });
+
+      it('should not allow to attach a view to both, a view container and the ApplicationRef',
+         () => {
+           const comp = TestBed.createComponent(MyComp);
+           const hostView = comp.componentRef.hostView;
+           const containerComp = TestBed.createComponent(ContainerComp);
+           containerComp.detectChanges();
+           const vc = containerComp.componentInstance.vc;
+           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+           vc.insert(hostView);
+           expect(() => appRef.attachView(hostView))
+               .toThrowError('This view is already attached to a ViewContainer!');
+           vc.detach(0);
+
+           appRef.attachView(hostView);
+           expect(() => vc.insert(hostView))
+               .toThrowError('This view is already attached directly to the ApplicationRef!');
+         });
     });
   });
 }
