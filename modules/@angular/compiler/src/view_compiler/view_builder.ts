@@ -557,7 +557,8 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
       view.updateContentQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
       view.detectChangesRenderPropertiesMethod.isEmpty() &&
-      view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty()) {
+      view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty() &&
+      view.viewContainers.length === 0 && view.viewChildren.length === 0) {
     return stmts;
   }
   stmts.push(...view.animationBindingsMethod.finish());
