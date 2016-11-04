@@ -166,14 +166,15 @@ export declare class NgSwitch {
 }
 
 /** @stable */
-export declare class NgSwitchCase {
+export declare class NgSwitchCase implements DoCheck {
     ngSwitchCase: any;
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
+    ngDoCheck(): void;
 }
 
 /** @stable */
 export declare class NgSwitchDefault {
-    constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, sswitch: NgSwitch);
+    constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }
 
 /** @experimental */
