@@ -8,16 +8,6 @@
 
 import {getSymbolIterator, isJsObject, isPresent} from './lang';
 
-export class MapWrapper {
-  static createFromStringMap<T>(stringMap: {[key: string]: T}): Map<string, T> {
-    const result = new Map<string, T>();
-    for (let prop in stringMap) {
-      result.set(prop, stringMap[prop]);
-    }
-    return result;
-  }
-}
-
 /**
  * Wraps Javascript Objects
  */
