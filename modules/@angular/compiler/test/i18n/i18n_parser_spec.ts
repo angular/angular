@@ -186,16 +186,16 @@ export function main() {
 
       it('should not extract nested ICU messages', () => {
         expect(_humanizeMessages(
-                   '<div i18n="m|d">b{count, plural, =0 {{sex, gender, =m {m}}}}a</div>'))
+                   '<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>'))
             .toEqual([
               [
                 [
-                  'b', '<ph icu name="ICU">{count, plural, =0 {[{sex, gender, =m {[m]}}]}}</ph>',
+                  'b', '<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>',
                   'a'
                 ],
                 'm', 'd'
               ],
-              [['{count, plural, =0 {[{sex, gender, =m {[m]}}]}}'], '', ''],
+              [['{count, plural, =0 {[{sex, select, male {[m]}}]}}'], '', ''],
             ]);
       });
     });

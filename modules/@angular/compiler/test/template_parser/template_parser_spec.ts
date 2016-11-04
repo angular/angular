@@ -1787,8 +1787,8 @@ The pipe 'test' could not be found ("[ERROR ->]{{a | test}}"): TestComp@0:0`);
             const shortForm = '{ count, plural, =0 {small} many {big} }';
             const expandedForm = '<ng-container [ngPlural]="count">' +
                 '<template ngPluralCase="=0">small</template>' +
-                '<template ngPluralCase="many">big</template>' + i
-            '</ng-container>';
+                '<template ngPluralCase="many">big</template>' +
+                '</ng-container>';
 
             expect(humanizeTplAst(parse(shortForm, [
             ]))).toEqual(humanizeTplAst(parse(expandedForm, [])));

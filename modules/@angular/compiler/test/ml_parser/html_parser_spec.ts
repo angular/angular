@@ -306,7 +306,7 @@ export function main() {
 
         it('should parse out nested expansion forms', () => {
           let parsed = parser.parse(
-              `{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`, 'TestComp', true);
+              `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp', true);
           expect(humanizeDom(parsed)).toEqual([
             [html.Expansion, 'messages.length', 'plural', 0],
             [html.ExpansionCase, '=0', 1],
@@ -315,8 +315,8 @@ export function main() {
           let firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
           expect(humanizeDom(new ParseTreeResult(firstCase.expression, []))).toEqual([
-            [html.Expansion, 'p.gender', 'gender', 0],
-            [html.ExpansionCase, '=m', 1],
+            [html.Expansion, 'p.gender', 'select', 0],
+            [html.ExpansionCase, 'male', 1],
             [html.Text, ' ', 0],
           ]);
         });

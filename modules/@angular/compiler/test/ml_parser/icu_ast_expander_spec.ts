@@ -37,7 +37,7 @@ export function main() {
     });
 
     it('should handle nested expansion forms', () => {
-      const res = expand(`{messages.length, plural, =0 { {p.gender, gender, =m {m}} }}`);
+      const res = expand(`{messages.length, plural, =0 { {p.gender, select, =m {m}} }}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
