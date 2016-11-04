@@ -76,6 +76,13 @@ export function main() {
         expect(JSON.stringify(headers)).toEqual('{"fOo":["bat"]}');
       });
 
+      it('should preserve cases after cloning', () => {
+        const headers = new Headers();
+        headers.set('fOo', 'baz');
+        headers.set('foo', 'bat');
+        expect(JSON.stringify(new Headers(headers))).toEqual('{"fOo":["bat"]}');
+      });
+
       it('should convert input array to string', () => {
         const headers = new Headers();
         headers.set('foo', ['bar', 'baz']);
