@@ -7,7 +7,6 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {isBlank} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -16,9 +15,10 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @howToUse `expression | i18nSelect:mapping`
  * @description
  *
- *  Where:
- *  - `mapping`: is an object that indicates the text that should be displayed
+ *  Where `mapping` is an object that indicates the text that should be displayed
  *  for different values of the provided `expression`.
+ *  If none of the keys of the mapping match the value of the `expression`, then the content
+ *  of the `other` key is returned when present, otherwise an empty string is returned.
  *
  *  ## Example
  *
@@ -29,12 +29,20 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({name: 'i18nSelect', pure: true})
 export class I18nSelectPipe implements PipeTransform {
   transform(value: string, mapping: {[key: string]: string}): string {
-    if (isBlank(value)) return '';
+    if (value == null) return '';
 
-    if (typeof mapping !== 'object' || mapping === null) {
+    if (typeof mapping !== 'object' || typeof value !== 'string') {
       throw new InvalidPipeArgumentError(I18nSelectPipe, mapping);
     }
 
-    return mapping[value] || '';
+    if (mapping.hasOwnProperty(value)) {
+      return mapping[value];
+    }
+
+    if (mapping.hasOwnProperty('other')) {
+      return mapping['other'];
+    }
+
+    return '';
   }
 }
