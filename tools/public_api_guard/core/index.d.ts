@@ -150,7 +150,10 @@ export declare class ApplicationModule {
 export declare abstract class ApplicationRef {
     componentTypes: Type<any>[];
     components: ComponentRef<any>[];
+    viewCount: any;
+    attachView(view: ViewRef): void;
     abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
+    detachView(view: ViewRef): void;
     abstract tick(): void;
 }
 
