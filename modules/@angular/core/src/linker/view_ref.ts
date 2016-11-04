@@ -17,7 +17,7 @@ import {AppView} from './view';
 /**
  * @stable
  */
-export abstract class ViewRef {
+export abstract class ViewRef extends ChangeDetectorRef {
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
   abstract onDestroy(callback: Function): any /** TODO #9100 */;
