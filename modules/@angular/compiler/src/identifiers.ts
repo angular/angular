@@ -174,6 +174,11 @@ export class Identifiers {
   };
   static devModeEqual:
       IdentifierSpec = {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: devModeEqual};
+  static inlineInterpolate: IdentifierSpec = {
+    name: 'inlineInterpolate',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.inlineInterpolate
+  };
   static interpolate: IdentifierSpec = {
     name: 'interpolate',
     moduleUrl: VIEW_UTILS_MODULE_URL,
