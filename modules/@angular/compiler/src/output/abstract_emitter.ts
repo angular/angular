@@ -250,13 +250,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(`)`);
     return null;
   }
-  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext, absentValue: string = 'null'):
-      any {
-    var value = ast.value;
+
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+    const value = ast.value;
     if (typeof value === 'string') {
       ctx.print(escapeIdentifier(value, this._escapeDollarInStrings));
-    } else if (isBlank(value)) {
-      ctx.print(absentValue);
     } else {
       ctx.print(`${value}`);
     }

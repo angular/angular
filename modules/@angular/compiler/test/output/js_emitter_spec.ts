@@ -105,6 +105,11 @@ export function main() {
       expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
     });
 
+    it('should support blank literals', () => {
+      expect(emitStmt(o.literal(null).toStmt())).toEqual('null;');
+      expect(emitStmt(o.literal(undefined).toStmt())).toEqual('undefined;');
+    });
+
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
