@@ -1000,7 +1000,7 @@ export declare enum ViewEncapsulation {
 }
 
 /** @stable */
-export declare abstract class ViewRef {
+export declare abstract class ViewRef extends ChangeDetectorRef {
     destroyed: boolean;
     abstract onDestroy(callback: Function): any;
 }
