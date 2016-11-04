@@ -82,14 +82,17 @@ export function main() {
     });
 
     it('should handle other special forms', () => {
-      const res = expand(`{person.gender, gender,=male {m}}`);
+      const res = expand(`{person.gender, select, male {m} other {default}}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
         [html.Attribute, '[ngSwitch]', 'person.gender'],
         [html.Element, 'template', 1],
-        [html.Attribute, 'ngSwitchCase', '=male'],
+        [html.Attribute, 'ngSwitchCase', 'male'],
         [html.Text, 'm', 2],
+        [html.Element, 'template', 1],
+        [html.Attribute, 'ngSwitchDefault', ''],
+        [html.Text, 'default', 2],
       ]);
     });
 

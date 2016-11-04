@@ -1787,18 +1787,18 @@ The pipe 'test' could not be found ("[ERROR ->]{{a | test}}"): TestComp@0:0`);
             const shortForm = '{ count, plural, =0 {small} many {big} }';
             const expandedForm = '<ng-container [ngPlural]="count">' +
                 '<template ngPluralCase="=0">small</template>' +
-                '<template ngPluralCase="many">big</template>' +
-                '</ng-container>';
+                '<template ngPluralCase="many">big</template>' + i
+            '</ng-container>';
 
             expect(humanizeTplAst(parse(shortForm, [
             ]))).toEqual(humanizeTplAst(parse(expandedForm, [])));
           });
 
-          it('should expand other messages', () => {
-            const shortForm = '{ sex, gender, =f {foo} other {bar} }';
+          it('should expand select messages', () => {
+            const shortForm = '{ sex, select, female {foo} other {bar} }';
             const expandedForm = '<ng-container [ngSwitch]="sex">' +
-                '<template ngSwitchCase="=f">foo</template>' +
-                '<template ngSwitchCase="other">bar</template>' +
+                '<template ngSwitchCase="female">foo</template>' +
+                '<template ngSwitchDefault>bar</template>' +
                 '</ng-container>';
 
             expect(humanizeTplAst(parse(shortForm, [
