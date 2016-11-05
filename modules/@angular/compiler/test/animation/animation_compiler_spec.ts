@@ -12,14 +12,19 @@ import {AnimationCompiler, AnimationEntryCompileResult} from '../../src/animatio
 import {AnimationParser} from '../../src/animation/animation_parser';
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
 
 export function main() {
   describe('RuntimeAnimationCompiler', () => {
     var resolver: CompileMetadataResolver;
-    beforeEach(
-        inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
+    var parser: AnimationParser;
+    beforeEach(inject(
+        [CompileMetadataResolver, ElementSchemaRegistry],
+        (res: CompileMetadataResolver, schema: ElementSchemaRegistry) => {
+          resolver = res;
+          parser = new AnimationParser(schema);
+        }));
 
-    const parser = new AnimationParser();
     const compiler = new AnimationCompiler();
 
     var compileAnimations =

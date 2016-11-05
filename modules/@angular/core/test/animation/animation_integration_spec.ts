@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {DomElementSchemaRegistry, ElementSchemaRegistry} from '@angular/compiler';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
@@ -52,7 +53,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        'void => *',
-                       [style({'opacity': 0}), animate(500, style({'opacity': 1}))])])]
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])]
              }
            });
 
@@ -68,8 +69,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
-           expect(keyframes2[0]).toEqual([0, {'opacity': 0}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 1}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
          }));
 
       it('should trigger a state change animation from state => void', fakeAsync(() => {
@@ -82,7 +83,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        '* => void',
-                       [style({'opacity': 1}), animate(500, style({'opacity': 0}))])])]
+                       [style({'opacity': '1'}), animate(500, style({'opacity': '0'}))])])]
              }
            });
 
@@ -102,12 +103,14 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            var keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
-           expect(keyframes2[0]).toEqual([0, {'opacity': 1}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 0}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '1'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '0'}]);
          }));
 
-      it('should animate the element when the expression changes between states', fakeAsync(() => {
-           TestBed.overrideComponent(DummyIfCmp, {
+      it('should animate the element when the expression changes between states',
+         fakeAsync(
+             () => {
+               TestBed.overrideComponent(DummyIfCmp, {
           set: {
             template: `
                 <div *ngIf="exp" [@myAnimation]="exp"></div>
@@ -115,36 +118,36 @@ function declareTests({useJit}: {useJit: boolean}) {
             animations: [
               trigger('myAnimation', [
                 transition('* => state1', [
-                  style({'background': 'red'}),
-                  animate('0.5s 1s ease-out', style({'background': 'blue'}))
+                  style({'backgroundColor': 'red'}),
+                  animate('0.5s 1s ease-out', style({'backgroundColor': 'blue'}))
                 ])
               ])
             ]
           }
         });
 
-           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           cmp.exp = 'state1';
-           fixture.detectChanges();
+               const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+               let fixture = TestBed.createComponent(DummyIfCmp);
+               var cmp = fixture.componentInstance;
+               cmp.exp = 'state1';
+               fixture.detectChanges();
 
-           flushMicrotasks();
+               flushMicrotasks();
 
-           expect(driver.log.length).toEqual(1);
+               expect(driver.log.length).toEqual(1);
 
-           var animation1 = driver.log[0];
-           expect(animation1['duration']).toEqual(500);
-           expect(animation1['delay']).toEqual(1000);
-           expect(animation1['easing']).toEqual('ease-out');
+               var animation1 = driver.log[0];
+               expect(animation1['duration']).toEqual(500);
+               expect(animation1['delay']).toEqual(1000);
+               expect(animation1['easing']).toEqual('ease-out');
 
-           var startingStyles = animation1['startingStyles'];
-           expect(startingStyles).toEqual({'background': 'red'});
+               var startingStyles = animation1['startingStyles'];
+               expect(startingStyles).toEqual({'backgroundColor': 'red'});
 
-           var kf = animation1['keyframeLookup'];
-           expect(kf[0]).toEqual([0, {'background': 'red'}]);
-           expect(kf[1]).toEqual([1, {'background': 'blue'}]);
-         }));
+               var kf = animation1['keyframeLookup'];
+               expect(kf[0]).toEqual([0, {'backgroundColor': 'red'}]);
+               expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
+             }));
 
       describe('animation aliases', () => {
         it('should animate the ":enter" animation alias as "void => *"', fakeAsync(() => {
@@ -154,10 +157,12 @@ function declareTests({useJit}: {useJit: boolean}) {
                   <div *ngIf="exp" [@myAnimation]="exp"></div>
                 `,
                  animations: [trigger(
-                     'myAnimation',
-                     [transition(
-                         ':enter',
-                         [style({'opacity': 0}), animate('500ms', style({opacity: 1}))])])]
+                     'myAnimation', [transition(
+                                        ':enter',
+                                        [
+                                          style({'opacity': '0'}),
+                                          animate('500ms', style({'opacity': '1'}))
+                                        ])])]
                }
              });
 
@@ -181,7 +186,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `,
                  animations: [trigger(
                      'myAnimation',
-                     [transition(':leave', [animate('999ms', style({opacity: 0}))])])]
+                     [transition(':leave', [animate('999ms', style({'opacity': '0'}))])])]
                }
              });
 
@@ -211,7 +216,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                 `,
                  animations: [trigger(
                      'myAnimation',
-                     [transition(':dont_leave_me', [animate('444ms', style({opacity: 0}))])])]
+                     [transition(
+                         ':dont_leave_me', [animate('444ms', style({'opacity': '0'}))])])]
                }
              });
 
@@ -265,6 +271,135 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(result['keyframeLookup']).toEqual([[0, {'opacity': '1'}], [1, {'opacity': '0'}]]);
          }));
 
+      describe('schema normalization', () => {
+        beforeEach(() => {
+          TestBed.overrideComponent(DummyIfCmp, {
+            set: {
+              template: `<div [@myAnimation] *ngIf="exp"></div>`,
+              animations: [trigger(
+                'myAnimation',
+                [
+                  state('*', style({'border-width': '10px', 'height': 111})),
+                  state('void', style({'z-index': '20'})),
+                  transition('* => *', [
+                    style({ height: '200px ', '-webkit-border-radius': '10px' }),
+                    animate('500ms')
+                  ])
+                ])]
+            }
+          });
+        });
+
+        describe('via DomElementSchemaRegistry', () => {
+          beforeEach(() => {
+            TestBed.configureTestingModule({
+              providers: [{provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}]
+            });
+          });
+
+          it('should normalize all CSS style properties to camelCase during compile time if a DOM schema is used',
+             fakeAsync(() => {
+               const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+               let fixture = TestBed.createComponent(DummyIfCmp);
+               var cmp = fixture.componentInstance;
+               cmp.exp = true;
+               fixture.detectChanges();
+               flushMicrotasks();
+
+               var result = driver.log.pop();
+               var styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
+               var styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
+
+               var expectedProps = ['WebkitBorderRadius', 'borderWidth', 'height', 'zIndex'];
+               expect(styleProps1)
+                   .toEqual(expectedProps);  // the start/end styles are always balanced
+               expect(styleProps2).toEqual(expectedProps);
+             }));
+
+          it('should normalize all dimensional CSS style values to `px` values if the value is a number',
+             fakeAsync(() => {
+               const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+               let fixture = TestBed.createComponent(DummyIfCmp);
+               var cmp = fixture.componentInstance;
+               cmp.exp = true;
+               fixture.detectChanges();
+               flushMicrotasks();
+
+               var result = driver.log.pop();
+
+               var styleVals1 = result['keyframeLookup'][0][1];
+               expect(styleVals1['zIndex']).toEqual('20');
+               expect(styleVals1['height']).toEqual('200px');
+
+               var styleVals2 = result['keyframeLookup'][1][1];
+               expect(styleVals2['borderWidth']).toEqual('10px');
+               expect(styleVals2['height']).toEqual('111px');
+             }));
+
+          it('should throw an error when a string-based dimensional style value is used that does not contain a unit value is detected',
+             fakeAsync(() => {
+               TestBed.overrideComponent(DummyIfCmp, {
+                 set: {
+                   template: `<div [@myAnimation] *ngIf="exp"></div>`,
+                   animations: [trigger(
+                       'myAnimation',
+                       [state('*', style({width: '123'})), transition('* => *', animate(500))])]
+                 }
+               });
+
+               expect(() => {
+                 TestBed.createComponent(DummyIfCmp);
+               }).toThrowError(/Please provide a CSS unit value for width:123/);
+             }));
+        });
+
+        describe('not using DomElementSchemaRegistry', () => {
+          beforeEach(() => {
+            TestBed.configureTestingModule(
+                {providers: [{provide: ElementSchemaRegistry, useClass: _NaiveElementSchema}]});
+
+            it('should not normalize any CSS style properties to camelCase during compile time if a DOM schema is used',
+               fakeAsync(() => {
+                 const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+                 let fixture = TestBed.createComponent(DummyIfCmp);
+                 var cmp = fixture.componentInstance;
+                 cmp.exp = true;
+                 fixture.detectChanges();
+                 flushMicrotasks();
+
+                 var result = driver.log.pop();
+                 var styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
+                 var styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
+
+                 var expectedProps = ['-webkit-border-radius', 'border-width', 'height', 'z-index'];
+                 expect(styleProps1)
+                     .toEqual(expectedProps);  // the start/end styles are always balanced
+                 expect(styleProps2).toEqual(expectedProps);
+               }));
+
+            it('should not normalize nay dimensional CSS style values to `px` values if the value is a number',
+               fakeAsync(() => {
+                 const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+                 let fixture = TestBed.createComponent(DummyIfCmp);
+                 var cmp = fixture.componentInstance;
+                 cmp.exp = true;
+                 fixture.detectChanges();
+                 flushMicrotasks();
+
+                 var result = driver.log.pop();
+
+                 var styleVals1 = result['keyframeLookup'][0][1];
+                 expect(styleVals1['z-index']).toEqual('20');
+                 expect(styleVals1['height']).toEqual('200px');
+
+                 var styleVals2 = result['keyframeLookup'][1][1];
+                 expect(styleVals2['border-width']).toEqual('10px');
+                 expect(styleVals2['height']).toEqual(111);
+               }));
+          });
+        });
+      });
+
       it('should combine repeated style steps into a single step', fakeAsync(() => {
            TestBed.overrideComponent(DummyIfCmp, {
           set: {
@@ -277,11 +412,11 @@ function declareTests({useJit}: {useJit: boolean}) {
                   style({'background': 'red'}),
                   style({'width': '100px'}),
                   style({'background': 'gold'}),
-                  style({'height': 111}),
+                  style({'height': '111px'}),
                   animate('999ms', style({'width': '200px', 'background': 'blue'})),
                   style({'opacity': '1'}),
-                  style({'border-width': '100px'}),
-                  animate('999ms', style({'opacity': '0', 'height': '200px', 'border-width': '10px'}))
+                  style({'borderWidth': '100px'}),
+                  animate('999ms', style({'opacity': '0', 'height': '200px', 'borderWidth': '10px'}))
                 ])
               ])
             ]
@@ -303,7 +438,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(animation1['delay']).toEqual(0);
            expect(animation1['easing']).toEqual(null);
            expect(animation1['startingStyles'])
-               .toEqual({'background': 'gold', 'width': '100px', 'height': 111});
+               .toEqual({'background': 'gold', 'width': '100px', 'height': '111px'});
 
            var keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'background': 'gold', 'width': '100px'}]);
@@ -313,14 +448,14 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(animation2['duration']).toEqual(999);
            expect(animation2['delay']).toEqual(0);
            expect(animation2['easing']).toEqual(null);
-           expect(animation2['startingStyles']).toEqual({'opacity': '1', 'border-width': '100px'});
+           expect(animation2['startingStyles']).toEqual({'opacity': '1', 'borderWidth': '100px'});
 
            var keyframes2 = animation2['keyframeLookup'];
            expect(keyframes2[0]).toEqual([
-             0, {'opacity': '1', 'height': 111, 'border-width': '100px'}
+             0, {'opacity': '1', 'height': '111px', 'borderWidth': '100px'}
            ]);
            expect(keyframes2[1]).toEqual([
-             1, {'opacity': '0', 'height': '200px', 'border-width': '10px'}
+             1, {'opacity': '0', 'height': '200px', 'borderWidth': '10px'}
            ]);
          }));
 
@@ -515,10 +650,10 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              var kf = driver.log[0]['keyframeLookup'];
              expect(kf.length).toEqual(4);
-             expect(kf[0]).toEqual([0, {'width': 0}]);
-             expect(kf[1]).toEqual([0.25, {'width': 100}]);
-             expect(kf[2]).toEqual([0.75, {'width': 200}]);
-             expect(kf[3]).toEqual([1, {'width': 300}]);
+             expect(kf[0]).toEqual([0, {'width': '0'}]);
+             expect(kf[1]).toEqual([0.25, {'width': '100px'}]);
+             expect(kf[2]).toEqual([0.75, {'width': '200px'}]);
+             expect(kf[3]).toEqual([1, {'width': '300px'}]);
            }));
 
         it('should fetch any keyframe styles that are not defined in the first keyframe from the previous entries or getCompuedStyle',
@@ -535,7 +670,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                     animate(1000, style({'color': 'silver'})),
                     animate(1000, keyframes([
                       style([{'color': 'gold', offset: 0.25}]),
-                      style([{'color': 'bronze', 'background-color': 'teal', offset: 0.50}]),
+                      style([{'color': 'bronze', 'backgroundColor': 'teal', offset: 0.50}]),
                       style([{'color': 'platinum', offset: 0.75}]),
                       style([{'color': 'diamond', offset: 1}])
                     ]))
@@ -554,11 +689,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              var kf = driver.log[1]['keyframeLookup'];
              expect(kf.length).toEqual(5);
-             expect(kf[0]).toEqual([0, {'color': 'silver', 'background-color': AUTO_STYLE}]);
+             expect(kf[0]).toEqual([0, {'color': 'silver', 'backgroundColor': AUTO_STYLE}]);
              expect(kf[1]).toEqual([0.25, {'color': 'gold'}]);
-             expect(kf[2]).toEqual([0.50, {'color': 'bronze', 'background-color': 'teal'}]);
+             expect(kf[2]).toEqual([0.50, {'color': 'bronze', 'backgroundColor': 'teal'}]);
              expect(kf[3]).toEqual([0.75, {'color': 'platinum'}]);
-             expect(kf[4]).toEqual([1, {'color': 'diamond', 'background-color': 'teal'}]);
+             expect(kf[4]).toEqual([1, {'color': 'diamond', 'backgroundColor': 'teal'}]);
            }));
       });
 
@@ -573,7 +708,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                    'myAnimation',
                    [transition(
                        '* => *',
-                       [style({'opacity': 0}), animate(500, style({'opacity': 1}))])])]
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])]
              }
            });
 
@@ -607,7 +742,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             animations: [
               trigger('myAnimation', [
                 transition('void => *', [
-                  style({'background': 'red', 'opacity': 0.5}),
+                  style({'background': 'red', 'opacity': '0.5'}),
                   animate(500, style({'background': 'black'})),
                   group([
                     animate(500, style({'background': 'black'})),
@@ -714,7 +849,7 @@ function declareTests({useJit}: {useJit: boolean}) {
             `,
                animations: [trigger(
                    'myAnimation',
-                   [transition('* => void', [animate(1000, style({'opacity': 0}))])])]
+                   [transition('* => void', [animate(1000, style({'opacity': '0'}))])])]
              }
            });
 
@@ -750,8 +885,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                    [trigger('myAnimation', [transition(
                                                '* => *',
                                                [
-                                                 animate(1000, style({'opacity': 0})),
-                                                 animate(1000, style({'opacity': 1}))
+                                                 animate(1000, style({'opacity': '0'})),
+                                                 animate(1000, style({'opacity': '1'}))
                                                ])])]
              }
            });
@@ -766,12 +901,12 @@ function declareTests({useJit}: {useJit: boolean}) {
            var animation1 = driver.log[0];
            var keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'opacity': AUTO_STYLE}]);
-           expect(keyframes1[1]).toEqual([1, {'opacity': 0}]);
+           expect(keyframes1[1]).toEqual([1, {'opacity': '0'}]);
 
            var animation2 = driver.log[1];
            var keyframes2 = animation2['keyframeLookup'];
-           expect(keyframes2[0]).toEqual([0, {'opacity': 0}]);
-           expect(keyframes2[1]).toEqual([1, {'opacity': 1}]);
+           expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
+           expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
          }));
 
       it('should perform two transitions in parallel if defined in different state triggers',
@@ -783,9 +918,10 @@ function declareTests({useJit}: {useJit: boolean}) {
             `,
                animations: [
                  trigger(
-                     'one', [transition(
-                                'state1 => state2',
-                                [style({'opacity': 0}), animate(1000, style({'opacity': 1}))])]),
+                     'one',
+                     [transition(
+                         'state1 => state2',
+                         [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])]),
                  trigger(
                      'two',
                      [transition(
@@ -1661,8 +1797,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                animations: [trigger(
                    'status',
                    [
-                     state('final', style({'top': '100px'})),
-                     transition('* => final', [animate(1000)])
+                     state('final', style({'top': 100})), transition('* => final', [animate(1000)])
                    ])]
              }
            });
@@ -1778,8 +1913,8 @@ function declareTests({useJit}: {useJit: boolean}) {
                animations: [trigger(
                    'status',
                    [
-                     state('void', style({'width': '0px'})),
-                     state('final', style({'width': '100px'})),
+                     state('void', style({'width': 0})),
+                     state('final', style({'width': 100})),
                    ])]
              }
            });
@@ -1909,7 +2044,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                animations: [trigger(
                    'status',
                    [
-                     state('void', style({'height': '100px', 'opacity': 0})),
+                     state('void', style({'height': '100px', 'opacity': '0'})),
                      state('final', style({'height': '333px', 'width': '200px'})),
                      transition('void => final', [animate(1000)])
                    ])]
@@ -1927,7 +2062,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            var animation = driver.log.pop();
            var kf = animation['keyframeLookup'];
 
-           expect(kf[0]).toEqual([0, {'height': '100px', 'opacity': 0, 'width': AUTO_STYLE}]);
+           expect(kf[0]).toEqual([0, {'height': '100px', 'opacity': '0', 'width': AUTO_STYLE}]);
 
            expect(kf[1]).toEqual([1, {'height': '333px', 'opacity': AUTO_STYLE, 'width': '200px'}]);
          });
@@ -2005,4 +2140,13 @@ class DummyLoadingCmp {
 class BrokenDummyLoadingCmp {
   exp = false;
   callback = () => {};
+}
+
+class _NaiveElementSchema extends DomElementSchemaRegistry {
+  normalizeAnimationStyleProperty(propName: string): string { return propName; }
+
+  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
+      {error: string, value: string} {
+    return {error: null, value: <string>val};
+  }
 }

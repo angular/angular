@@ -109,7 +109,6 @@ export function analyzeNgModules(
 }
 
 export class OfflineCompiler {
-  private _animationParser = new AnimationParser();
   private _animationCompiler = new AnimationCompiler();
 
   constructor(
@@ -118,7 +117,8 @@ export class OfflineCompiler {
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _dirWrapperCompiler: DirectiveWrapperCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
-      private _localeId: string, private _translationFormat: string) {}
+      private _localeId: string, private _translationFormat: string,
+      private _animationParser: AnimationParser) {}
 
   clearCache() {
     this._directiveNormalizer.clearCache();

@@ -45,46 +45,6 @@ export function main() {
       elm = el('<div></div>');
     });
 
-    it('should convert all styles to camelcase', () => {
-      var startingStyles = _makeStyles({'border-top-right': '40px'});
-      var styles = [
-        _makeKeyframe(0, {'max-width': '100px', 'height': '200px'}),
-        _makeKeyframe(1, {'font-size': '555px'})
-      ];
-
-      var player = driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
-      var details = _formatOptions(player);
-      var startKeyframe = details['keyframes'][0];
-      var firstKeyframe = details['keyframes'][1];
-      var lastKeyframe = details['keyframes'][2];
-
-      expect(startKeyframe['borderTopRight']).toEqual('40px');
-
-      expect(firstKeyframe['maxWidth']).toEqual('100px');
-      expect(firstKeyframe['max-width']).toBeFalsy();
-      expect(firstKeyframe['height']).toEqual('200px');
-
-      expect(lastKeyframe['fontSize']).toEqual('555px');
-      expect(lastKeyframe['font-size']).toBeFalsy();
-    });
-
-    it('should auto prefix numeric properties with a `px` value', () => {
-      var startingStyles = _makeStyles({'borderTopWidth': 40});
-      var styles = [_makeKeyframe(0, {'font-size': 100}), _makeKeyframe(1, {'height': '555em'})];
-
-      var player = driver.animate(elm, startingStyles, styles, 0, 0, 'linear');
-      var details = _formatOptions(player);
-      var startKeyframe = details['keyframes'][0];
-      var firstKeyframe = details['keyframes'][1];
-      var lastKeyframe = details['keyframes'][2];
-
-      expect(startKeyframe['borderTopWidth']).toEqual('40px');
-
-      expect(firstKeyframe['fontSize']).toEqual('100px');
-
-      expect(lastKeyframe['height']).toEqual('555em');
-    });
-
     it('should use a fill mode of `both`', () => {
       var startingStyles = _makeStyles({});
       var styles = [_makeKeyframe(0, {'color': 'green'}), _makeKeyframe(1, {'color': 'red'})];

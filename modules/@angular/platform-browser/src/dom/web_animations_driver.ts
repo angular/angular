@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE} from '@angular/core';
-
 import {isPresent} from '../facade/lang';
 import {AnimationKeyframe, AnimationStyles} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
-import {dashCaseToCamelCase} from './util';
 import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {
@@ -63,81 +60,12 @@ function _populateStyles(
     element: any, styles: AnimationStyles,
     defaultStyles: {[key: string]: string | number}): {[key: string]: string | number} {
   var data: {[key: string]: string | number} = {};
-  styles.styles.forEach((entry) => {
-    Object.keys(entry).forEach(prop => {
-      const val = entry[prop];
-      var formattedProp = dashCaseToCamelCase(prop);
-      data[formattedProp] =
-          val == AUTO_STYLE ? val : val.toString() + _resolveStyleUnit(val, prop, formattedProp);
-    });
-  });
+  styles.styles.forEach(
+      (entry) => { Object.keys(entry).forEach(prop => { data[prop] = entry[prop]; }); });
   Object.keys(defaultStyles).forEach(prop => {
     if (!isPresent(data[prop])) {
       data[prop] = defaultStyles[prop];
     }
   });
   return data;
-}
-
-function _resolveStyleUnit(
-    val: string | number, userProvidedProp: string, formattedProp: string): string {
-  var unit = '';
-  if (_isPixelDimensionStyle(formattedProp) && val != 0 && val != '0') {
-    if (typeof val === 'number') {
-      unit = 'px';
-    } else if (_findDimensionalSuffix(val.toString()).length == 0) {
-      throw new Error('Please provide a CSS unit value for ' + userProvidedProp + ':' + val);
-    }
-  }
-  return unit;
-}
-
-const _$0 = 48;
-const _$9 = 57;
-const _$PERIOD = 46;
-
-function _findDimensionalSuffix(value: string): string {
-  for (var i = 0; i < value.length; i++) {
-    var c = value.charCodeAt(i);
-    if ((c >= _$0 && c <= _$9) || c == _$PERIOD) continue;
-    return value.substring(i, value.length);
-  }
-  return '';
-}
-
-function _isPixelDimensionStyle(prop: string): boolean {
-  switch (prop) {
-    case 'width':
-    case 'height':
-    case 'minWidth':
-    case 'minHeight':
-    case 'maxWidth':
-    case 'maxHeight':
-    case 'left':
-    case 'top':
-    case 'bottom':
-    case 'right':
-    case 'fontSize':
-    case 'outlineWidth':
-    case 'outlineOffset':
-    case 'paddingTop':
-    case 'paddingLeft':
-    case 'paddingBottom':
-    case 'paddingRight':
-    case 'marginTop':
-    case 'marginLeft':
-    case 'marginBottom':
-    case 'marginRight':
-    case 'borderRadius':
-    case 'borderWidth':
-    case 'borderTopWidth':
-    case 'borderLeftWidth':
-    case 'borderRightWidth':
-    case 'borderBottomWidth':
-    case 'textIndent':
-      return true;
-
-    default:
-      return false;
-  }
 }

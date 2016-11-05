@@ -11,9 +11,14 @@ import {isBlank, isPrimitive, isStrictStringMap} from './facade/lang';
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
+const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function camelCaseToDashCase(input: string): string {
   return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
+}
+
+export function dashCaseToCamelCase(input: string): string {
+  return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
