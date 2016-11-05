@@ -378,6 +378,18 @@ export abstract class ApplicationRef {
    * Get a list of components registered to this application.
    */
   get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
+
+  /**
+   * Registers a change detector with the application.
+   * @param changeDetector Reference to the change detector to register.
+   */
+  abstract registerChangeDetector(changeDetector: ChangeDetectorRef): void;
+
+  /**
+   * Unregisters a change detector with the application.
+   * @param changeDetector Reference to the change detector to unregister.
+   */
+  abstract unregisterChangeDetector(changeDetector: ChangeDetectorRef): void;
 }
 
 @Injectable()
