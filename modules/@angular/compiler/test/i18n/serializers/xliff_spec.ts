@@ -70,7 +70,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/><x id="TAG_IMG" ctype="image"/><x id="LINE_BREAK" ctype="lb"/></target>
         <note priority="1" from="description">ph names</note>
-      </trans-unit>            
+      </trans-unit>
     </body>
   </file>
 </xliff>
