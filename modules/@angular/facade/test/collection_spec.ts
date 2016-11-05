@@ -6,29 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ListWrapper, StringMapWrapper} from '../src/collection';
+import {StringMapWrapper} from '../src/collection';
 
 export function main() {
-  describe('ListWrapper', () => {
-    describe('maximum', () => {
-      it('should return the maximal element', () => {
-        expect(ListWrapper.maximum([1, 2, 3, 4], x => x)).toEqual(4);
-      });
-
-      it('should ignore null values', () => {
-        expect(ListWrapper.maximum([null, 2, 3, null], x => x)).toEqual(3);
-      });
-
-      it('should use the provided function to determine maximum', () => {
-        expect(ListWrapper.maximum([1, 2, 3, 4], x => -x)).toEqual(1);
-      });
-
-      it('should return null for an empty list',
-         () => { expect(ListWrapper.maximum([], x => x)).toEqual(null); });
-    });
-
-  });
-
   describe('StringMapWrapper', () => {
     describe('equals', () => {
       it('should return true when comparing empty maps',

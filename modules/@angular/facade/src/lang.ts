@@ -90,13 +90,14 @@ export function stringify(token: any): string {
     return token;
   }
 
-  if (token === undefined || token === null) {
+  if (token == null) {
     return '' + token;
   }
 
   if (token.overriddenName) {
     return token.overriddenName;
   }
+
   if (token.name) {
     return token.name;
   }
@@ -113,24 +114,6 @@ export class NumberWrapper {
       throw new Error('Invalid integer literal when parsing ' + text);
     }
     return result;
-  }
-
-  static parseInt(text: string, radix: number): number {
-    if (radix == 10) {
-      if (/^(\-|\+)?[0-9]+$/.test(text)) {
-        return parseInt(text, radix);
-      }
-    } else if (radix == 16) {
-      if (/^(\-|\+)?[0-9ABCDEFabcdef]+$/.test(text)) {
-        return parseInt(text, radix);
-      }
-    } else {
-      const result = parseInt(text, radix);
-      if (!isNaN(result)) {
-        return result;
-      }
-    }
-    throw new Error('Invalid integer literal when parsing ' + text + ' in base ' + radix);
   }
 
   static isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
@@ -154,11 +137,11 @@ export function warn(obj: Error | Object) {
 }
 
 export function setValueOnPath(global: any, path: string, value: any) {
-  var parts = path.split('.');
-  var obj: any = global;
+  const parts = path.split('.');
+  let obj: any = global;
   while (parts.length > 1) {
-    var name = parts.shift();
-    if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
+    const name = parts.shift();
+    if (obj.hasOwnProperty(name) && obj[name] != null) {
       obj = obj[name];
     } else {
       obj = obj[name] = {};
