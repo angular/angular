@@ -7,7 +7,7 @@
  */
 
 var testingPlatformServer = require('../../all/@angular/platform-server/testing/server.js');
-var testing = require('../../all/@angular/core/testing');
+var testingJasmine = require('../../all/@angular/core/testing');
 
-testing.TestBed.initTestEnvironment(
+testingJasmine.TestBed.initTestEnvironment(
     testingPlatformServer.ServerTestingModule, testingPlatformServer.platformServerTesting());
