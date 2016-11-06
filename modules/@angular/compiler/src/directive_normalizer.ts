@@ -40,6 +40,8 @@ export class DirectiveNormalizer {
   }
 
   private _fetch(url: string): Promise<string> {
+    // remove the `~` to allow the url to be processed as a root url
+    if (url[0] == '~') url = url.substring(1, url.length);
     var result = this._resourceLoaderCache.get(url);
     if (!result) {
       result = this._resourceLoader.get(url);
@@ -172,8 +174,11 @@ export class DirectiveNormalizer {
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
-    var allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
-                           .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
+    var allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable).map(url => {
+      // remove the `~` to allow the url to be processed as a root url
+      if (url[0] == '~') url = url.substring(1, url.length);
+      return this._urlResolver.resolve(stylesheet.moduleUrl, url);
+    });
 
     var allStyles = stylesheet.styles.map(style => {
       var styleWithImports = extractStyleUrls(this._urlResolver, stylesheet.moduleUrl, style);
