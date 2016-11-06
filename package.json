@@ -63,7 +63,6 @@
     "karma-sauce-launcher": "^0.3.0",
     "karma-sourcemap-loader": "^0.3.6",
     "madge": "0.5.0",
-    "minimatch": "^3.0.0",
     "minimist": "^1.2.0",
     "nan": "^2.4.0",
     "node-uuid": "1.4.x",

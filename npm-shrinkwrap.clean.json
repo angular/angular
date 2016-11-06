@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.2.0-beta.1",
+  "version": "2.2.0-rc.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -2666,10 +2666,6 @@
           "version": "1.4.1",
           "dev": true
         },
-        "balanced-match": {
-          "version": "0.4.2",
-          "dev": true
-        },
         "bl": {
           "version": "1.1.2",
           "dev": true,
@@ -2686,10 +2682,6 @@
         },
         "boom": {
           "version": "2.10.1",
-          "dev": true
-        },
-        "brace-expansion": {
-          "version": "1.1.5",
           "dev": true
         },
         "buffer-shims": {
@@ -2714,10 +2706,6 @@
         },
         "commander": {
           "version": "2.9.0",
-          "dev": true
-        },
-        "concat-map": {
-          "version": "0.0.1",
           "dev": true
         },
         "console-control-strings": {
@@ -2925,10 +2913,6 @@
         },
         "mime-types": {
           "version": "2.1.11",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.2",
           "dev": true
         },
         "minimist": {
@@ -3268,10 +3252,6 @@
       "dependencies": {
         "glob": {
           "version": "7.0.6",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.3",
           "dev": true
         }
       }
@@ -4377,7 +4357,7 @@
       "dev": true
     },
     "minimatch": {
-      "version": "3.0.0",
+      "version": "3.0.3",
       "dev": true
     },
     "minimist": {
@@ -4734,10 +4714,6 @@
         },
         "mime-types": {
           "version": "2.1.11",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.3",
           "dev": true
         },
         "qs": {
@@ -5531,10 +5507,6 @@
       "dependencies": {
         "glob": {
           "version": "7.1.1",
-          "dev": true
-        },
-        "minimatch": {
-          "version": "3.0.3",
           "dev": true
         },
         "resolve": {
