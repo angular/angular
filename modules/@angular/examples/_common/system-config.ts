@@ -19,6 +19,7 @@ System.config({
         '/vendor/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
     '@angular/router': '/vendor/@angular/router/bundles/router.umd.js',
     '@angular/upgrade': '/vendor/@angular/upgrade/bundles/upgrade.umd.js',
+    '@angular/upgrade/static': '/vendor/@angular/upgrade/bundles/upgrade-static.umd.js',
     'rxjs': '/vendor/rxjs',
   },
   packages: {

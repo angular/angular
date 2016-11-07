@@ -20,6 +20,7 @@ mkdir $DIST/vendor/
 ln -s ../../../dist/packages-dist/ $DIST/vendor/@angular
 
 for FILE in \
+    ../../../node_modules/angular/angular.js \
     ../../../node_modules/zone.js/dist/zone.js \
     ../../../node_modules/systemjs/dist/system.js \
     ../../../node_modules/reflect-metadata/Reflect.js \
@@ -35,4 +36,6 @@ for MODULE in `find . -name module.ts`; do
   cp _common/*.html $FINAL_DIR_PATH
   cp $DIST/_common/*.js $FINAL_DIR_PATH
   cp $DIST/_common/*.js.map $FINAL_DIR_PATH
+
+  find `dirname $MODULE` -name \*.css -exec cp {} $FINAL_DIR_PATH \;
 done
