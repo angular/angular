@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementArrayFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('simpleForm example', () => {
   afterEach(verifyNoBrowserErrors);
-  let inputs: protractor.ElementArrayFinder;
-  let paragraphs: protractor.ElementArrayFinder;
+  let inputs: ElementArrayFinder;
+  let paragraphs: ElementArrayFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/simpleForm/index.html');

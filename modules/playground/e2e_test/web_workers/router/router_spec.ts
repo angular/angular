@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, by, element, protractor} from 'protractor';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
@@ -67,7 +68,7 @@ describe('WebWorker Router', () => {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
       const elem = element(by.css(contentSelector));
-      elem.getText().then((text) => deferred.fulfill(text === expected));
+      elem.getText().then((text: string) => { return deferred.fulfill(text === expected); });
       return deferred.promise;
     }, 5000);
   }
@@ -75,7 +76,8 @@ describe('WebWorker Router', () => {
   function waitForUrl(regex: RegExp): void {
     browser.wait(() => {
       let deferred = protractor.promise.defer();
-      browser.getCurrentUrl().then((url) => deferred.fulfill(url.match(regex) !== null));
+      browser.getCurrentUrl().then(
+          (url: string) => { return deferred.fulfill(url.match(regex) !== null); });
       return deferred.promise;
     }, 5000);
   }

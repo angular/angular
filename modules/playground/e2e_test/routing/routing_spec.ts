@@ -7,11 +7,11 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, ExpectedConditions, browser, by, element} from 'protractor';
 
 function waitForElement(selector: string) {
-  const EC = protractor.ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
+  browser.wait(ExpectedConditions.presenceOf($(selector)), 20000);
 }
 
 describe('routing inbox-app', () => {

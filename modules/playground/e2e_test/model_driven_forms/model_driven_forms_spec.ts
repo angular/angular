@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, by, element} from 'protractor';
 
 describe('Model-Driven Forms', function() {
 
@@ -24,6 +25,9 @@ describe('Model-Driven Forms', function() {
     input.sendKeys('invalid');
     firstName.click();
 
-    expect(form.getInnerHtml()).toContain('is invalid credit card number');
+    // TODO: getInnerHtml has been deprecated by selenium-webdriver in the
+    // upcoming release of 3.0.0. Protractor has removed this method from
+    // ElementFinder but can still be accessed via WebElement.
+    expect(form.getWebElement().getInnerHtml()).toContain('is invalid credit card number');
   });
 });
