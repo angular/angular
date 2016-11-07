@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {AppModule} from './module';
+import * as module from './module';
 
-platformBrowserDynamic().bootstrapModule(AppModule);
+if (module.AppModule) {
+  platformBrowserDynamic().bootstrapModule(module.AppModule);
+}
