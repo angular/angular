@@ -140,9 +140,15 @@ export function main() {
             .toEqual('[a="b"][a-host], [c="d"][a-host] {}');
       });
 
-      it('should handle pseudo selector', () => {
+      it('should handle pseudo selectors', () => {
         expect(s(':host(:before) {}', 'a', 'a-host')).toEqual('[a-host]:before {}');
         expect(s(':host:before {}', 'a', 'a-host')).toEqual('[a-host]:before {}');
+        expect(s(':host:nth-child(8n+1) {}', 'a', 'a-host')).toEqual('[a-host]:nth-child(8n+1) {}');
+        expect(s(':host:nth-of-type(8n+1) {}', 'a', 'a-host'))
+            .toEqual('[a-host]:nth-of-type(8n+1) {}');
+        expect(s(':host(.class):before {}', 'a', 'a-host')).toEqual('.class[a-host]:before {}');
+        expect(s(':host.class:before {}', 'a', 'a-host')).toEqual('.class[a-host]:before {}');
+        expect(s(':host(:not(p)):before {}', 'a', 'a-host')).toEqual('[a-host]:not(p):before {}');
       });
     });
 
