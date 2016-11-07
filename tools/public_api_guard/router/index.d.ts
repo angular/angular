@@ -227,7 +227,7 @@ export declare class RouterLink {
     routerLink: any[] | string;
     urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
-    onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean;
+    onClick(): boolean;
 }
 
 /** @stable */
