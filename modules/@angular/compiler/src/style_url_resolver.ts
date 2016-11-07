@@ -18,7 +18,12 @@ export class StyleWithImports {
 }
 
 export function isStyleUrlResolvable(url: string): boolean {
-  if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
+  // resolve a url beginning with `~`
+  // it will be removed by directive_normalizer.ts to be treated as a root url
+  if (url !== null && url[0] == '~')
+    url = url.substring(1, url.length);
+  else if (isBlank(url) || url.length === 0 || url[0] == '/')
+    return false;
   const schemeMatch = url.match(_urlWithSchemaRe);
   return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }

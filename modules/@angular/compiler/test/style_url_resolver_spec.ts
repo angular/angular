@@ -106,6 +106,9 @@ export function main() {
       expect(isStyleUrlResolvable('/otherurl')).toBe(false);
       expect(isStyleUrlResolvable('//otherurl')).toBe(false);
     });
+
+    it('should resolve urls starting with `~` to a root relative path',
+       () => { expect(isStyleUrlResolvable('~/someStyleUrl.css')).toBe(true); });
   });
 }
 
