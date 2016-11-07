@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('reactiveSelectControl example', () => {
   afterEach(verifyNoBrowserErrors);
-  let select: protractor.ElementFinder;
-  let options: protractor.ElementArrayFinder;
-  let p: protractor.ElementFinder;
+  let select: ElementFinder;
+  let options: ElementArrayFinder;
+  let p: ElementFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/reactiveSelectControl/index.html');
