@@ -268,6 +268,9 @@ export declare class FormGroup extends AbstractControl {
         [key: string]: AbstractControl;
     }, validator?: ValidatorFn, asyncValidator?: AsyncValidatorFn);
     addControl(name: string, control: AbstractControl): void;
+    addControls(controlMap: {
+        [name: string]: AbstractControl;
+    }): void;
     contains(controlName: string): boolean;
     getRawValue(): Object;
     patchValue(value: {

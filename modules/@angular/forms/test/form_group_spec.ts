@@ -74,6 +74,21 @@ export function main() {
         expect(g.valid).toBe(false);
       });
 
+      it('should update value and validity when multiple controls are added', () => {
+        const g = new FormGroup({'one': new FormControl('1')});
+        expect(g.value).toEqual({'one': '1'});
+        expect(g.valid).toBe(true);
+
+        const gs = {
+          'two': new FormControl('2', Validators.minLength(10)),
+          'three': new FormControl('3', Validators.minLength(10))
+        };
+        g.addControls(gs);
+
+        expect(g.value).toEqual({'one': '1', 'two': '2', 'three': '3'});
+        expect(g.valid).toBe(false);
+      });
+
       it('should update value and validity when control is removed', () => {
         const g = new FormGroup(
             {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});

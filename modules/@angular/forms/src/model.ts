@@ -873,6 +873,13 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
+   * Add multiple controls to this group.
+   */
+  addControls(controlMap: {[name: string]: AbstractControl}): void {
+    Object.keys(controlMap).forEach((name) => this.addControl(name, controlMap[name]));
+  }
+
+  /**
    * Remove a control from this group.
    */
   removeControl(name: string): void {
