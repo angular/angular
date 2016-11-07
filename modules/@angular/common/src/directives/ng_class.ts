@@ -9,7 +9,7 @@
 import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 import {isListLikeIterable} from '../facade/collection';
-import {isPresent} from '../facade/lang';
+import {isPresent, stringify} from '../facade/lang';
 
 /**
  * @ngModule CommonModule
@@ -108,8 +108,14 @@ export class NgClass implements DoCheck {
   }
 
   private _applyIterableChanges(changes: any): void {
-    changes.forEachAddedItem(
-        (record: CollectionChangeRecord) => this._toggleClass(record.item, true));
+    changes.forEachAddedItem((record: CollectionChangeRecord) => {
+      if (typeof record.item === 'string') {
+        this._toggleClass(record.item, true);
+      } else {
+        throw new Error(
+            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`);
+      }
+    });
 
     changes.forEachRemovedItem(
         (record: CollectionChangeRecord) => this._toggleClass(record.item, false));
