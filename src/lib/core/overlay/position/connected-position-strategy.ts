@@ -217,10 +217,8 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param overlayPoint
    */
   private _setElementPosition(element: HTMLElement, overlayPoint: Point) {
-    let scrollPos = this._viewportRuler.getViewportScrollPosition();
-
-    let x = overlayPoint.x + scrollPos.left;
-    let y = overlayPoint.y + scrollPos.top;
+    let x = overlayPoint.x;
+    let y = overlayPoint.y;
 
     // TODO(jelbourn): we don't want to always overwrite the transform property here,
     // because it will need to be used for animations.

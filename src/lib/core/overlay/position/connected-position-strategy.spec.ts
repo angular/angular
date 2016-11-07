@@ -20,6 +20,7 @@ describe('ConnectedPositionStrategy', () => {
 
   let originElement: HTMLElement;
   let overlayElement: HTMLElement;
+  let overlayContainerElement: HTMLElement;
   let strategy: ConnectedPositionStrategy;
   let fakeElementRef: ElementRef;
   let fakeViewportRuler: FakeViewportRuler;
@@ -34,9 +35,11 @@ describe('ConnectedPositionStrategy', () => {
 
     // The origin and overlay elements need to be in the document body in order to have geometry.
     originElement = createPositionedBlockElement();
+    overlayContainerElement = createFixedElement();
     overlayElement = createPositionedBlockElement();
     document.body.appendChild(originElement);
-    document.body.appendChild(overlayElement);
+    document.body.appendChild(overlayContainerElement);
+    overlayContainerElement.appendChild(overlayElement);
 
     fakeElementRef = new FakeElementRef(originElement);
     positionBuilder = new OverlayPositionBuilder(new ViewportRuler());
@@ -44,7 +47,7 @@ describe('ConnectedPositionStrategy', () => {
 
   afterEach(() => {
     document.body.removeChild(originElement);
-    document.body.removeChild(overlayElement);
+    document.body.removeChild(overlayContainerElement);
 
     // Reset the origin geometry after each test so we don't accidently keep state between tests.
     originRect = null;
@@ -355,6 +358,18 @@ function createPositionedBlockElement() {
   element.style.width = `${DEFAULT_WIDTH}px`;
   element.style.height = `${DEFAULT_HEIGHT}px`;
   element.style.backgroundColor = 'rebeccapurple';
+  element.style.zIndex = '100';
+  return element;
+}
+
+/** Creates an position: fixed element that spans the screen size. */
+function createFixedElement() {
+  let element = document.createElement('div');
+  element.style.position = 'fixed';
+  element.style.top = '0';
+  element.style.left = '0';
+  element.style.width = `100%`;
+  element.style.height = `100%`;
   element.style.zIndex = '100';
   return element;
 }
