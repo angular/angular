@@ -104,11 +104,6 @@ export class BindingParser {
       const ast = this._exprParser.parseInterpolation(value, sourceInfo, this._interpolationConfig);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
-      if (ast &&
-          (<Interpolation>ast.ast).expressions.length > view_utils.MAX_INTERPOLATION_VALUES) {
-        throw new Error(
-            `Only support at most ${view_utils.MAX_INTERPOLATION_VALUES} interpolation values!`);
-      }
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);

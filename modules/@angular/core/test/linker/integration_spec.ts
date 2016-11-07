@@ -70,6 +70,29 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('true|false');
       });
 
+      it('should support an arbitrary number of interpolations in an element', () => {
+        TestBed.configureTestingModule({declarations: [MyComp]});
+        const template =
+            `<div>before{{'0'}}a{{'1'}}b{{'2'}}c{{'3'}}d{{'4'}}e{{'5'}}f{{'6'}}g{{'7'}}h{{'8'}}i{{'9'}}j{{'10'}}after</div>`;
+        const fixture =
+            TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('before0a1b2c3d4e5f6g7h8i9j10after');
+      });
+
+      it('should use a blank string when interpolation evaluates to null or undefined with an arbitrary number of interpolations',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyComp]});
+           const template =
+               `<div>0{{null}}a{{undefined}}b{{null}}c{{undefined}}d{{null}}e{{undefined}}f{{null}}g{{undefined}}h{{null}}i{{undefined}}j{{null}}1</div>`;
+           const fixture =
+               TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('0abcdefghij1');
+         });
+
       it('should consume element binding changes', () => {
         TestBed.configureTestingModule({declarations: [MyComp]});
         const template = '<div [id]="ctxProp"></div>';

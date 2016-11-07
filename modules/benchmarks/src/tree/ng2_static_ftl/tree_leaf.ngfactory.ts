@@ -47,7 +47,7 @@ export class View_TreeLeafComponent {
       this._el_0.style.backgroundColor = currVal_0;
       this._expr_0 = currVal_0;
     }
-    const currVal_1: any = import4.interpolate(1, ' ', this.context.data.value, ' ');
+    const currVal_1: any = import4.inlineInterpolate(1, ' ', this.context.data.value, ' ');
     if (import4.checkBinding(throwOnChange, this._expr_1, currVal_1)) {
       this._text_1.nodeValue = currVal_1;
       this._expr_1 = currVal_1;
