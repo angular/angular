@@ -195,7 +195,7 @@ export class UrlSegmentGroup {
 export class UrlSegment {
   constructor(
       /**
-       * The part part of a URL segment.
+       * The path part of a URL segment.
        */
       public path: string,
 
