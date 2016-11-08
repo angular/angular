@@ -138,7 +138,8 @@ export class CodeGenerator {
         new compiler.DirectiveWrapperCompiler(
             config, expressionParser, elementSchemaRegistry, console),
         new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(reflectorHost),
-        cliOptions.locale, cliOptions.i18nFormat);
+        cliOptions.locale, cliOptions.i18nFormat,
+        new compiler.AnimationParser(elementSchemaRegistry));
 
     return new CodeGenerator(
         options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);

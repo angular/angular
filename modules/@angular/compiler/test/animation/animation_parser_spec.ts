@@ -13,6 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStepAst, AnimationStylesAst} from '../../src/animation/animation_ast';
 import {AnimationParser} from '../../src/animation/animation_parser';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
 import {FILL_STYLE_FLAG, flattenStyles} from '../private_import_core';
 
 export function main() {
@@ -39,13 +40,18 @@ export function main() {
     };
 
     var resolver: CompileMetadataResolver;
-    beforeEach(
-        inject([CompileMetadataResolver], (res: CompileMetadataResolver) => { resolver = res; }));
+    var schema: ElementSchemaRegistry;
+    beforeEach(inject(
+        [CompileMetadataResolver, ElementSchemaRegistry],
+        (res: CompileMetadataResolver, sch: ElementSchemaRegistry) => {
+          resolver = res;
+          schema = sch;
+        }));
 
     var parseAnimation = (data: AnimationMetadata[]) => {
       const entry = trigger('myAnimation', [transition('state1 => state2', sequence(data))]);
       const compiledAnimationEntry = resolver.getAnimationEntryMetadata(entry);
-      const parser = new AnimationParser();
+      const parser = new AnimationParser(schema);
       return parser.parseEntry(compiledAnimationEntry);
     };
 
@@ -59,21 +65,21 @@ export function main() {
 
     it('should merge repeated style steps into a single style ast step entry', () => {
       var ast = parseAnimationAst([
-        style({'color': 'black'}), style({'background': 'red'}), style({'opacity': 0}),
-        animate(1000, style({'color': 'white', 'background': 'black', 'opacity': 1}))
+        style({'color': 'black'}), style({'background': 'red'}), style({'opacity': '0'}),
+        animate(1000, style({'color': 'white', 'background': 'black', 'opacity': '1'}))
       ]);
 
       expect(ast.steps.length).toEqual(1);
 
       var step = <AnimationStepAst>ast.steps[0];
       expect(step.startingStyles.styles[0])
-          .toEqual({'color': 'black', 'background': 'red', 'opacity': 0});
+          .toEqual({'color': 'black', 'background': 'red', 'opacity': '0'});
 
       expect(step.keyframes[0].styles.styles[0])
-          .toEqual({'color': 'black', 'background': 'red', 'opacity': 0});
+          .toEqual({'color': 'black', 'background': 'red', 'opacity': '0'});
 
       expect(step.keyframes[1].styles.styles[0])
-          .toEqual({'color': 'white', 'background': 'black', 'opacity': 1});
+          .toEqual({'color': 'white', 'background': 'black', 'opacity': '1'});
     });
 
     it('should animate only the styles requested within an animation step', () => {
@@ -93,7 +99,7 @@ export function main() {
 
     it('should populate the starting and duration times propertly', () => {
       var ast = parseAnimationAst([
-        style({'color': 'black', 'opacity': 1}),
+        style({'color': 'black', 'opacity': '1'}),
         animate(1000, style({'color': 'red'})),
         animate(4000, style({'color': 'yellow'})),
         sequence(
@@ -144,13 +150,13 @@ export function main() {
     it('should apply the correct animate() styles when parallel animations are active and use the same properties',
        () => {
          var details = parseAnimation([
-           style({'opacity': 0, 'color': 'red'}), group([
+           style({'opacity': '0', 'color': 'red'}), group([
              sequence([
                animate(2000, style({'color': 'black'})),
-               animate(2000, style({'opacity': 0.5})),
+               animate(2000, style({'opacity': '0.5'})),
              ]),
              sequence([
-               animate(2000, style({'opacity': 0.8})),
+               animate(2000, style({'opacity': '0.8'})),
                animate(2000, style({'color': 'blue'}))
              ])
            ])
@@ -169,10 +175,10 @@ export function main() {
          expect(collectStepStyles(sq1a1)).toEqual([{'color': 'red'}, {'color': 'black'}]);
 
          var sq1a2 = <AnimationStepAst>sq1.steps[1];
-         expect(collectStepStyles(sq1a2)).toEqual([{'opacity': 0.8}, {'opacity': 0.5}]);
+         expect(collectStepStyles(sq1a2)).toEqual([{'opacity': '0.8'}, {'opacity': '0.5'}]);
 
          var sq2a1 = <AnimationStepAst>sq2.steps[0];
-         expect(collectStepStyles(sq2a1)).toEqual([{'opacity': 0}, {'opacity': 0.8}]);
+         expect(collectStepStyles(sq2a1)).toEqual([{'opacity': '0'}, {'opacity': '0.8'}]);
 
          var sq2a2 = <AnimationStepAst>sq2.steps[1];
          expect(collectStepStyles(sq2a2)).toEqual([{'color': 'black'}, {'color': 'blue'}]);
@@ -180,8 +186,8 @@ export function main() {
 
     it('should throw errors when animations animate a CSS property at the same time', () => {
       var animation1 = parseAnimation([
-        style({'opacity': 0}),
-        group([animate(1000, style({'opacity': 1})), animate(2000, style({'opacity': 0.5}))])
+        style({'opacity': '0'}),
+        group([animate(1000, style({'opacity': '1'})), animate(2000, style({'opacity': '0.5'}))])
       ]);
 
       var errors1 = animation1.errors;
@@ -205,23 +211,24 @@ export function main() {
 
     it('should return an error when an animation style contains an invalid timing value', () => {
       var errors = parseAnimationAndGetErrors(
-          [style({'opacity': 0}), animate('one second', style({'opacity': 1}))]);
+          [style({'opacity': '0'}), animate('one second', style({'opacity': '1'}))]);
       expect(errors[0].msg).toContainError(`The provided timing value "one second" is invalid.`);
     });
 
     it('should collect and return any errors collected when parsing the metadata', () => {
       var errors = parseAnimationAndGetErrors([
-        style({'opacity': 0}), animate('one second', style({'opacity': 1})), style({'opacity': 0}),
-        animate('one second', null), style({'background': 'red'})
+        style({'opacity': '0'}), animate('one second', style({'opacity': '1'})),
+        style({'opacity': '0'}), animate('one second', null), style({'background': 'red'})
       ]);
       expect(errors.length).toBeGreaterThan(1);
     });
 
     it('should normalize a series of keyframe styles into a list of offset steps', () => {
-      var ast = parseAnimationAst([animate(1000, keyframes([
-                                             style({'width': 0}), style({'width': 25}),
-                                             style({'width': 50}), style({'width': 75})
-                                           ]))]);
+      var ast =
+          parseAnimationAst([animate(1000, keyframes([
+                                       style({'width': '0'}), style({'width': '25px'}),
+                                       style({'width': '50px'}), style({'width': '75px'})
+                                     ]))]);
 
       var step = <AnimationStepAst>ast.steps[0];
       expect(step.keyframes.length).toEqual(4);
@@ -233,11 +240,11 @@ export function main() {
     });
 
     it('should use an existing collection of offset steps if provided', () => {
-      var ast = parseAnimationAst(
-          [animate(1000, keyframes([
-                     style({'height': 0, 'offset': 0}), style({'height': 25, 'offset': 0.6}),
-                     style({'height': 50, 'offset': 0.7}), style({'height': 75, 'offset': 1})
-                   ]))]);
+      var ast = parseAnimationAst([animate(
+          1000, keyframes([
+            style({'height': '0', 'offset': 0}), style({'height': '25px', 'offset': 0.6}),
+            style({'height': '50px', 'offset': 0.7}), style({'height': '75px', 'offset': 1})
+          ]))]);
 
       var step = <AnimationStepAst>ast.steps[0];
       expect(step.keyframes.length).toEqual(4);
@@ -251,24 +258,25 @@ export function main() {
     it('should sort the provided collection of steps that contain offsets', () => {
       var ast = parseAnimationAst([animate(
           1000, keyframes([
-            style({'opacity': 0, 'offset': 0.9}), style({'opacity': .25, 'offset': 0}),
-            style({'opacity': .50, 'offset': 1}), style({'opacity': .75, 'offset': 0.91})
+            style({'opacity': '0', 'offset': 0.9}), style({'opacity': '0.25', 'offset': 0}),
+            style({'opacity': '0.50', 'offset': 1}),
+            style({'opacity': '0.75', 'offset': 0.91})
           ]))]);
 
       var step = <AnimationStepAst>ast.steps[0];
       expect(step.keyframes.length).toEqual(4);
 
       expect(step.keyframes[0].offset).toEqual(0);
-      expect(step.keyframes[0].styles.styles[0]['opacity']).toEqual(.25);
+      expect(step.keyframes[0].styles.styles[0]['opacity']).toEqual('0.25');
 
       expect(step.keyframes[1].offset).toEqual(0.9);
-      expect(step.keyframes[1].styles.styles[0]['opacity']).toEqual(0);
+      expect(step.keyframes[1].styles.styles[0]['opacity']).toEqual('0');
 
       expect(step.keyframes[2].offset).toEqual(0.91);
-      expect(step.keyframes[2].styles.styles[0]['opacity']).toEqual(.75);
+      expect(step.keyframes[2].styles.styles[0]['opacity']).toEqual('0.75');
 
       expect(step.keyframes[3].offset).toEqual(1);
-      expect(step.keyframes[3].styles.styles[0]['opacity']).toEqual(.50);
+      expect(step.keyframes[3].styles.styles[0]['opacity']).toEqual('0.50');
     });
 
     it('should throw an error if a partial amount of keyframes contain an offset', () => {
@@ -302,7 +310,7 @@ export function main() {
     it('should copy over any missing styles to the final keyframe if not already defined', () => {
       var ast = parseAnimationAst([animate(
           1000, keyframes([
-            style({'color': 'white', 'border-color': 'white'}),
+            style({'color': 'white', 'borderColor': 'white'}),
             style({'color': 'red', 'background': 'blue'}), style({'background': 'blue'})
           ]))]);
 
@@ -312,20 +320,17 @@ export function main() {
       var kf3 = keyframesStep.keyframes[2];
 
       expect(flattenStyles(kf3.styles.styles))
-          .toEqual({'background': 'blue', 'color': 'red', 'border-color': 'white'});
+          .toEqual({'background': 'blue', 'color': 'red', 'borderColor': 'white'});
     });
 
     it('should create an initial keyframe if not detected and place all keyframes styles there',
        () => {
-         var ast = parseAnimationAst(
-             [animate(1000, keyframes([
-                        style({'color': 'white', 'background': 'black', 'offset': 0.5}), style({
-                          'color': 'orange',
-                          'background': 'red',
-                          'font-size': '100px',
-                          'offset': 1
-                        })
-                      ]))]);
+         var ast = parseAnimationAst([animate(
+             1000, keyframes([
+               style({'color': 'white', 'background': 'black', 'offset': 0.5}),
+               style(
+                   {'color': 'orange', 'background': 'red', 'fontSize': '100px', 'offset': 1})
+             ]))]);
 
          var keyframesStep = <AnimationStepAst>ast.steps[0];
          expect(keyframesStep.keyframes.length).toEqual(3);
@@ -335,7 +340,7 @@ export function main() {
 
          expect(kf1.offset).toEqual(0);
          expect(flattenStyles(kf1.styles.styles)).toEqual({
-           'font-size': FILL_STYLE_FLAG,
+           'fontSize': FILL_STYLE_FLAG,
            'background': FILL_STYLE_FLAG,
            'color': FILL_STYLE_FLAG
          });
@@ -353,7 +358,7 @@ export function main() {
                                                 style({
                                                   'color': 'orange',
                                                   'background': 'red',
-                                                  'font-size': '100px',
+                                                  'fontSize': '100px',
                                                   'offset': 0.5
                                                 })
                                               ]))]);
@@ -369,13 +374,13 @@ export function main() {
            'color': 'orange',
            'background': 'red',
            'transform': 'rotate(360deg)',
-           'font-size': '100px'
+           'fontSize': '100px'
          });
        });
 
     describe('easing / duration / delay', () => {
       it('should parse simple string-based values', () => {
-        var ast = parseAnimationAst([animate('1s .5s ease-out', style({'opacity': 1}))]);
+        var ast = parseAnimationAst([animate('1s .5s ease-out', style({'opacity': '1'}))]);
 
         var step = <AnimationStepAst>ast.steps[0];
         expect(step.duration).toEqual(1000);
@@ -384,7 +389,7 @@ export function main() {
       });
 
       it('should parse a numeric duration value', () => {
-        var ast = parseAnimationAst([animate(666, style({'opacity': 1}))]);
+        var ast = parseAnimationAst([animate(666, style({'opacity': '1'}))]);
 
         var step = <AnimationStepAst>ast.steps[0];
         expect(step.duration).toEqual(666);
@@ -393,7 +398,7 @@ export function main() {
       });
 
       it('should parse an easing value without a delay', () => {
-        var ast = parseAnimationAst([animate('5s linear', style({'opacity': 1}))]);
+        var ast = parseAnimationAst([animate('5s linear', style({'opacity': '1'}))]);
 
         var step = <AnimationStepAst>ast.steps[0];
         expect(step.duration).toEqual(5000);
@@ -403,7 +408,7 @@ export function main() {
 
       it('should parse a complex easing value', () => {
         var ast =
-            parseAnimationAst([animate('30ms cubic-bezier(0, 0,0, .69)', style({'opacity': 1}))]);
+            parseAnimationAst([animate('30ms cubic-bezier(0, 0,0, .69)', style({'opacity': '1'}))]);
 
         var step = <AnimationStepAst>ast.steps[0];
         expect(step.duration).toEqual(30);

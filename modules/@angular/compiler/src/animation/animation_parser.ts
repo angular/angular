@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '@angular/core';
+
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
 import {StylesCollection} from './styles_collection';
@@ -32,7 +35,10 @@ export class AnimationEntryParseResult {
   constructor(public ast: AnimationEntryAst, public errors: AnimationParseError[]) {}
 }
 
+@Injectable()
 export class AnimationParser {
+  constructor(private _schema: ElementSchemaRegistry) {}
+
   parseComponent(component: CompileDirectiveMetadata): AnimationEntryAst[] {
     const errors: string[] = [];
     const componentName = component.type.name;
@@ -73,7 +79,7 @@ export class AnimationParser {
     var stateDeclarationAsts: AnimationStateDeclarationAst[] = [];
     entry.definitions.forEach(def => {
       if (def instanceof CompileAnimationStateDeclarationMetadata) {
-        _parseAnimationDeclarationStates(def, errors).forEach(ast => {
+        _parseAnimationDeclarationStates(def, this._schema, errors).forEach(ast => {
           stateDeclarationAsts.push(ast);
           stateStyles[ast.stateName] = ast.styles;
         });
@@ -82,8 +88,8 @@ export class AnimationParser {
       }
     });
 
-    var stateTransitionAsts =
-        transitions.map(transDef => _parseAnimationStateTransition(transDef, stateStyles, errors));
+    var stateTransitionAsts = transitions.map(
+        transDef => _parseAnimationStateTransition(transDef, stateStyles, this._schema, errors));
 
     var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
     return new AnimationEntryParseResult(ast, errors);
@@ -91,27 +97,17 @@ export class AnimationParser {
 }
 
 function _parseAnimationDeclarationStates(
-    stateMetadata: CompileAnimationStateDeclarationMetadata,
+    stateMetadata: CompileAnimationStateDeclarationMetadata, schema: ElementSchemaRegistry,
     errors: AnimationParseError[]): AnimationStateDeclarationAst[] {
-  var styleValues: Styles[] = [];
-  stateMetadata.styles.styles.forEach(stylesEntry => {
-    // TODO (matsko): change this when we get CSS class integration support
-    if (typeof stylesEntry === 'object' && stylesEntry !== null) {
-      styleValues.push(stylesEntry as Styles);
-    } else {
-      errors.push(new AnimationParseError(
-          `State based animations cannot contain references to other states`));
-    }
-  });
-  var defStyles = new AnimationStylesAst(styleValues);
-
+  var normalizedStyles = _normalizeStyleMetadata(stateMetadata.styles, {}, schema, errors, false);
+  var defStyles = new AnimationStylesAst(normalizedStyles);
   var states = stateMetadata.stateNameExpr.split(/\s*,\s*/);
   return states.map(state => new AnimationStateDeclarationAst(state, defStyles));
 }
 
 function _parseAnimationStateTransition(
     transitionStateMetadata: CompileAnimationStateTransitionMetadata,
-    stateStyles: {[key: string]: AnimationStylesAst},
+    stateStyles: {[key: string]: AnimationStylesAst}, schema: ElementSchemaRegistry,
     errors: AnimationParseError[]): AnimationStateTransitionAst {
   var styles = new StylesCollection();
   var transitionExprs: AnimationStateTransitionExpression[] = [];
@@ -119,7 +115,7 @@ function _parseAnimationStateTransition(
   transitionStates.forEach(
       expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
   var entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
-  var animation = _normalizeStyleSteps(entry, stateStyles, errors);
+  var animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
   var animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
   if (errors.length == 0) {
     _fillAnimationAstStartingKeyframes(animationAst, styles, errors);
@@ -176,13 +172,31 @@ function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnima
 
 function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    errors: AnimationParseError[]): {[key: string]: string | number}[] {
+    schema: ElementSchemaRegistry, errors: AnimationParseError[],
+    permitStateReferences: boolean): {[key: string]: string | number}[] {
   var normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (typeof styleEntry === 'string') {
-      normalizedStyles.push(..._resolveStylesFromState(<string>styleEntry, stateStyles, errors));
+      if (permitStateReferences) {
+        normalizedStyles.push(..._resolveStylesFromState(<string>styleEntry, stateStyles, errors));
+      } else {
+        errors.push(new AnimationParseError(
+            `State based animations cannot contain references to other states`));
+      }
     } else {
-      normalizedStyles.push(<{[key: string]: string | number}>styleEntry);
+      var stylesObj = <Styles>styleEntry;
+      var normalizedStylesObj: Styles = {};
+      Object.keys(stylesObj).forEach(propName => {
+        var normalizedProp = schema.normalizeAnimationStyleProperty(propName);
+        var normalizedOutput =
+            schema.normalizeAnimationStyleValue(normalizedProp, propName, stylesObj[propName]);
+        var normalizationError = normalizedOutput['error'];
+        if (normalizationError) {
+          errors.push(new AnimationParseError(normalizationError));
+        }
+        normalizedStylesObj[normalizedProp] = normalizedOutput['value'];
+      });
+      normalizedStyles.push(normalizedStylesObj);
     }
   });
   return normalizedStyles;
@@ -190,8 +204,8 @@ function _normalizeStyleMetadata(
 
 function _normalizeStyleSteps(
     entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    errors: AnimationParseError[]): CompileAnimationMetadata {
-  var steps = _normalizeStyleStepEntry(entry, stateStyles, errors);
+    schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata {
+  var steps = _normalizeStyleStepEntry(entry, stateStyles, schema, errors);
   return (entry instanceof CompileAnimationGroupMetadata) ?
       new CompileAnimationGroupMetadata(steps) :
       new CompileAnimationSequenceMetadata(steps);
@@ -213,7 +227,7 @@ function _mergeAnimationStyles(
 
 function _normalizeStyleStepEntry(
     entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    errors: AnimationParseError[]): CompileAnimationMetadata[] {
+    schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata[] {
   var steps: CompileAnimationMetadata[];
   if (entry instanceof CompileAnimationWithStepsMetadata) {
     steps = entry.steps;
@@ -232,7 +246,8 @@ function _normalizeStyleStepEntry(
       if (!isPresent(combinedStyles)) {
         combinedStyles = [];
       }
-      _normalizeStyleMetadata(<CompileAnimationStyleMetadata>step, stateStyles, errors)
+      _normalizeStyleMetadata(
+          <CompileAnimationStyleMetadata>step, stateStyles, schema, errors, true)
           .forEach(entry => { _mergeAnimationStyles(combinedStyles, entry); });
     } else {
       // it is important that we create a metadata entry of the combined styles
@@ -250,13 +265,14 @@ function _normalizeStyleStepEntry(
         var animateStyleValue = (<CompileAnimationAnimateMetadata>step).styles;
         if (animateStyleValue instanceof CompileAnimationStyleMetadata) {
           animateStyleValue.styles =
-              _normalizeStyleMetadata(animateStyleValue, stateStyles, errors);
+              _normalizeStyleMetadata(animateStyleValue, stateStyles, schema, errors, true);
         } else if (animateStyleValue instanceof CompileAnimationKeyframesSequenceMetadata) {
-          animateStyleValue.steps.forEach(
-              step => { step.styles = _normalizeStyleMetadata(step, stateStyles, errors); });
+          animateStyleValue.steps.forEach(step => {
+            step.styles = _normalizeStyleMetadata(step, stateStyles, schema, errors, true);
+          });
         }
       } else if (step instanceof CompileAnimationWithStepsMetadata) {
-        let innerSteps = _normalizeStyleStepEntry(step, stateStyles, errors);
+        let innerSteps = _normalizeStyleStepEntry(step, stateStyles, schema, errors);
         step = step instanceof CompileAnimationGroupMetadata ?
             new CompileAnimationGroupMetadata(innerSteps) :
             new CompileAnimationSequenceMetadata(innerSteps);

@@ -8,6 +8,7 @@
 
 import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, Injectable, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
+import {AnimationParser} from './animation/animation_parser';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
@@ -74,7 +75,8 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   UrlResolver,
   DirectiveResolver,
   PipeResolver,
-  NgModuleResolver
+  NgModuleResolver,
+  AnimationParser
 ];
 
 

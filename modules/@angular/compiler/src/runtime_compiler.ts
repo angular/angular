@@ -43,7 +43,6 @@ export class RuntimeCompiler implements Compiler {
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledDirectiveWrapperCache = new Map<Type<any>, Type<any>>();
   private _compiledNgModuleCache = new Map<Type<any>, NgModuleFactory<any>>();
-  private _animationParser = new AnimationParser();
   private _animationCompiler = new AnimationCompiler();
 
   constructor(
@@ -52,7 +51,7 @@ export class RuntimeCompiler implements Compiler {
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _ngModuleCompiler: NgModuleCompiler,
       private _directiveWrapperCompiler: DirectiveWrapperCompiler,
-      private _compilerConfig: CompilerConfig) {}
+      private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser) {}
 
   get injector(): Injector { return this._injector; }
 
