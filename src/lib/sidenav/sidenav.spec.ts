@@ -25,6 +25,7 @@ describe('MdSidenav', () => {
         SidenavLayoutNoSidenavTestApp,
         SidenavSetToOpenedFalse,
         SidenavSetToOpenedTrue,
+        SidenavDynamicAlign,
       ],
     });
 
@@ -193,14 +194,6 @@ describe('MdSidenav', () => {
         tick();
       }).not.toThrow();
     }));
-
-    it('does throw when created with two sidenav on the same side', fakeAsync(() => {
-      expect(() => {
-        let fixture = TestBed.createComponent(SidenavLayoutTwoSidenavTestApp);
-        fixture.detectChanges();
-        tick();
-      }).toThrow();
-    }));
   });
 
   describe('attributes', () => {
@@ -238,6 +231,24 @@ describe('MdSidenav', () => {
           .toBe(false, 'Expected sidenav not to have a native align attribute.');
     });
 
+    it('should mark sidenavs invalid when multiple have same align', () => {
+      const fixture = TestBed.createComponent(SidenavDynamicAlign);
+      fixture.detectChanges();
+
+      const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
+      const sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      expect(sidenavEl.classList).not.toContain('md-sidenav-invalid');
+
+      testComponent.sidenav1Align = 'end';
+      fixture.detectChanges();
+
+      expect(sidenavEl.classList).toContain('md-sidenav-invalid');
+
+      testComponent.sidenav2Align = 'start';
+      fixture.detectChanges();
+
+      expect(sidenavEl.classList).not.toContain('md-sidenav-invalid');
+    });
   });
 
 });
@@ -314,3 +325,15 @@ class SidenavSetToOpenedFalse { }
     </md-sidenav-layout>`,
 })
 class SidenavSetToOpenedTrue { }
+
+@Component({
+  template: `
+    <md-sidenav-layout>
+      <md-sidenav #sidenav1 [align]="sidenav1Align"></md-sidenav>
+      <md-sidenav #sidenav2 [align]="sidenav2Align"></md-sidenav>
+    </md-sidenav-layout>`,
+})
+class SidenavDynamicAlign {
+  sidenav1Align = 'start';
+  sidenav2Align = 'end';
+}

@@ -7,4 +7,6 @@ import {Component} from '@angular/core';
   templateUrl: 'sidenav-demo.html',
   styleUrls: ['sidenav-demo.css'],
 })
-export class SidenavDemo {}
+export class SidenavDemo {
+  side = 'start';
+}

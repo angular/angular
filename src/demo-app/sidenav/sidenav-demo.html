@@ -47,3 +47,14 @@
     <button md-button (click)="start2.toggle()">Toggle Start Side Drawer</button>
   </div>
 </md-sidenav-layout>
+
+<h2>Dynamic Alignment Sidenav</h2>
+
+<md-sidenav-layout class="demo-sidenav-layout">
+  <md-sidenav #dynamicAlignSidenav mode="push" [align]="side">Drawer</md-sidenav>
+
+  <div class="demo-sidenav-content">
+    <button (click)="dynamicAlignSidenav.toggle()">Toggle sidenav</button>
+    <button (click)="side = (side == 'start') ? 'end' : 'start'">Change sides</button>
+  </div>
+</md-sidenav-layout>

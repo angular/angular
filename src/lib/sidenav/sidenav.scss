@@ -18,13 +18,11 @@
   }
   &.md-sidenav-closing {
     transform: translate3d($close, 0, 0);
-    will-change: transform;
   }
   &.md-sidenav-opening {
     @include md-elevation(1);
     visibility: visible;
     transform: translate3d($open, 0, 0);
-    will-change: transform;
   }
   &.md-sidenav-opened {
     @include md-elevation(1);
@@ -130,4 +128,8 @@ md-sidenav {
       @include md-sidenav-transition(0, -100%);
     }
   }
+}
+
+.md-sidenav-invalid {
+  display: none;
 }

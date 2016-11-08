@@ -11,13 +11,6 @@ MdSidenav is the side navigation component for Material 2. It is composed of two
 
 The parent component. Contains the code necessary to coordinate one or two sidenav and the backdrop.
 
-### Properties
-
-| Name | Description |
-| --- | --- |
-| `start` | The start aligned `MdSidenav` instance, or `null` if none is specified. In LTR direction, this is the sidenav shown on the left side. In RTL direction, it will show on the right. There can only be one sidenav on either side. |
-| `end` | The end aligned `MdSidenav` instance, or `null` if none is specified. This is the sidenav opposing the `start` sidenav. There can only be one sidenav on either side. |
-
 ## `<md-sidenav>`
 
 The sidenav panel.
@@ -26,7 +19,7 @@ The sidenav panel.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `align` | `"start"|"end"` | The alignment of this sidenav. In LTR direction, `"start"` will be shown on the left, `"end"` on the right. In RTL, it is reversed. `"start"` is used by default. An exception will be thrown if there are more than 1 sidenav on either side. |
+| `align` | `"start"|"end"` | The alignment of this sidenav. In LTR direction, `"start"` will be shown on the left, `"end"` on the right. In RTL, it is reversed. `"start"` is used by default. If there is more than 1 sidenav on either side the layout will be considered invalid and none of the sidenavs will be visible or toggleable until the layout is valid again. |
 | `mode` | `"over"|"push"|"side"` | The mode or styling of the sidenav, default being `"over"`. With `"over"` the sidenav will appear above the content, and a backdrop will be shown. With `"push"` the sidenav will push the content of the `<md-sidenav-layout>` to the side, and show a backdrop over it. `"side"` will resize the content and keep the sidenav opened. Clicking the backdrop will close sidenavs that do not have `mode="side"`. |
 | `opened` | `boolean` | Whether or not the sidenav is opened. Use this binding to open/close the sidenav. |
 
