@@ -163,25 +163,25 @@ class FrLocalization extends NgLocalization {
 
 const XTB = `
 <translationbundle>
-  <translation id="7613717798286137988">attributs i18n sur les balises</translation>
-  <translation id="496143996034957490">imbriqué</translation>
-  <translation id="4275167479475215567">imbriqué</translation>
-  <translation id="7210334813789040330"><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
-  <translation id="4769680004784140786">sur des balises non traductibles</translation>
-  <translation id="4033143013932333681">sur des balises traductibles</translation>
-  <translation id="6162642997206060264">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
-  <translation id="1882489820012923152"><ph name="ICU"/></translation>
-  <translation id="4822972059757846302">{VAR_SELECT, select, m {homme} f {femme}}</translation>
-  <translation id="5917557396782931034"><ph name="INTERPOLATION"/></translation>
-  <translation id="4687596778889597732">sexe = <ph name="INTERPOLATION"/></translation>
-  <translation id="2505882222003102347"><ph name="CUSTOM_NAME"/></translation>
-  <translation id="5340176214595489533">dans une section traductible</translation>
-  <translation id="4120782520649528473">
+  <translation id="615790887472569365">attributs i18n sur les balises</translation>
+  <translation id="3707494640264351337">imbriqué</translation>
+  <translation id="5539162898278769904">imbriqué</translation>
+  <translation id="3780349238193953556"><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
+  <translation id="5525133077318024839">sur des balises non traductibles</translation>
+  <translation id="8670732454866344690">sur des balises traductibles</translation>
+  <translation id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
+  <translation id="1746565782635215"><ph name="ICU"/></translation>
+  <translation id="5868084092545682515">{VAR_SELECT, select, m {homme} f {femme}}</translation>
+  <translation id="4851788426695310455"><ph name="INTERPOLATION"/></translation>
+  <translation id="9013357158046221374">sexe = <ph name="INTERPOLATION"/></translation>
+  <translation id="8324617391167353662"><ph name="CUSTOM_NAME"/></translation>
+  <translation id="7685649297917455806">dans une section traductible</translation>
+  <translation id="2387287228265107305">
     <ph name="START_HEADING_LEVEL1"/>Balises dans les commentaires html<ph name="CLOSE_HEADING_LEVEL1"/>   
     <ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/>
     <ph name="START_TAG_DIV_1"/><ph name="ICU"/><ph name="CLOSE_TAG_DIV"></ph>
 </translation>
-  <translation id="1309478472899123444">ca <ph name="START_BOLD_TEXT"/>devrait<ph name="CLOSE_BOLD_TEXT"/> marcher</translation>
+  <translation id="1491627405349178954">ca <ph name="START_BOLD_TEXT"/>devrait<ph name="CLOSE_BOLD_TEXT"/> marcher</translation>
 </translationbundle>`;
 
 // unused, for reference only
@@ -189,26 +189,26 @@ const XTB = `
 // `fit('extract xmb', () => { console.log(toXmb(HTML)); });`
 const XMB = `
 <messagebundle>
-  <msg id="7613717798286137988">i18n attribute on tags</msg>
-  <msg id="496143996034957490">nested</msg>
-  <msg id="4275167479475215567" meaning="different meaning">nested</msg>
-  <msg id="7210334813789040330"><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
-  <msg id="4769680004784140786">on not translatable node</msg>
-  <msg id="4033143013932333681">on translatable node</msg>
-  <msg id="6162642997206060264">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="1882489820012923152">
+  <msg id="615790887472569365">i18n attribute on tags</msg>
+  <msg id="3707494640264351337">nested</msg>
+  <msg id="5539162898278769904" meaning="different meaning">nested</msg>
+  <msg id="3780349238193953556"><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
+  <msg id="5525133077318024839">on not translatable node</msg>
+  <msg id="8670732454866344690">on translatable node</msg>
+  <msg id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="1746565782635215">
         <ph name="ICU"/>
     </msg>
-  <msg id="4822972059757846302">{VAR_SELECT, select, m {male} f {female} }</msg>
-  <msg id="5917557396782931034"><ph name="INTERPOLATION"/></msg>
-  <msg id="4687596778889597732">sex = <ph name="INTERPOLATION"/></msg>
-  <msg id="2505882222003102347"><ph name="CUSTOM_NAME"/></msg>
-  <msg id="5340176214595489533">in a translatable section</msg>
-  <msg id="4120782520649528473">
+  <msg id="5868084092545682515">{VAR_SELECT, select, m {male} f {female} }</msg>
+  <msg id="4851788426695310455"><ph name="INTERPOLATION"/></msg>
+  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"/></msg>
+  <msg id="8324617391167353662"><ph name="CUSTOM_NAME"/></msg>
+  <msg id="7685649297917455806">in a translatable section</msg>
+  <msg id="2387287228265107305">
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>   
     <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"/><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
 </msg>
-  <msg id="1309478472899123444">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
+  <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
 </messagebundle>
 `;

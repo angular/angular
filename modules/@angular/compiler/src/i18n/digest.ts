@@ -15,7 +15,7 @@ export function digest(message: i18n.Message): string {
 export function decimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map(a => a.visit(visitor, null));
-  return fingerprint(parts.join('') + `[${message.meaning}]`);
+  return computeMsgId(parts.join(''), message.meaning);
 }
 
 /**
@@ -138,7 +138,7 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
  * based on:
  * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
  */
-export function fingerprint(str: string): string {
+export function fingerprint(str: string): [number, number] {
   const utf8 = utf8Encode(str);
 
   let [hi, lo] = [hash32(utf8, 0), hash32(utf8, 102072)];
@@ -148,9 +148,18 @@ export function fingerprint(str: string): string {
     lo = lo ^ -0x6b5f56d8;
   }
 
-  hi = hi & 0x7fffffff;
+  return [hi, lo];
+}
 
-  return byteStringToDecString(words32ToByteString([hi, lo]));
+export function computeMsgId(msg: string, meaning: string): string {
+  let [hi, lo] = fingerprint(msg);
+
+  if (meaning) {
+    const [him, lom] = fingerprint(meaning);
+    [hi, lo] = add64(rol64([hi, lo], 1), [him, lom]);
+  }
+
+  return byteStringToDecString(words32ToByteString([hi & 0x7fffffff, lo]));
 }
 
 function hash32(str: string, c: number): number {
@@ -239,9 +248,19 @@ function decodeSurrogatePairs(str: string, index: number): number {
 }
 
 function add32(a: number, b: number): number {
+  return add32to64(a, b)[1];
+}
+
+function add32to64(a: number, b: number): [number, number] {
   const low = (a & 0xffff) + (b & 0xffff);
-  const high = (a >> 16) + (b >> 16) + (low >> 16);
-  return (high << 16) | (low & 0xffff);
+  const high = (a >>> 16) + (b >>> 16) + (low >>> 16);
+  return [high >>> 16, (high << 16) | (low & 0xffff)];
+}
+
+function add64([ah, al]: [number, number], [bh, bl]: [number, number]): [number, number] {
+  const [carry, l] = add32to64(al, bl);
+  const h = add32(add32(ah, bh), carry);
+  return [h, l];
 }
 
 function sub32(a: number, b: number): number {
@@ -253,6 +272,13 @@ function sub32(a: number, b: number): number {
 // Rotate a 32b number left `count` position
 function rol32(a: number, count: number): number {
   return (a << count) | (a >>> (32 - count));
+}
+
+// Rotate a 64b number left `count` position
+function rol64([hi, lo]: [number, number], count: number): [number, number] {
+  const h = (hi << count) | (lo >>> (32 - count));
+  const l = (lo << count) | (hi >>> (32 - count));
+  return [h, l];
 }
 
 function stringToWords32(str: string, endian: Endian): number[] {
@@ -317,6 +343,7 @@ function byteStringToDecString(str: string): string {
   return decimal.split('').reverse().join('');
 }
 
+// x and y decimal, lowest significant digit first
 function addBigInt(x: string, y: string): string {
   let sum = '';
   const len = Math.max(x.length, y.length);
