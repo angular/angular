@@ -296,9 +296,9 @@ class _Scanner {
         if (this.peek == chars.$u) {
           // 4 character hex code for unicode character.
           const hex: string = input.substring(this.index + 1, this.index + 5);
-          try {
-            unescapedCode = NumberWrapper.parseInt(hex, 16);
-          } catch (e) {
+          if (/^[0-9a-f]+$/i.test(hex)) {
+            unescapedCode = parseInt(hex, 16);
+          } else {
             return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
           }
           for (let i: number = 0; i < 5; i++) {

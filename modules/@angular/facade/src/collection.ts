@@ -13,7 +13,7 @@ import {getSymbolIterator, isJsObject, isPresent} from './lang';
  */
 export class StringMapWrapper {
   static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
-    var m: {[key: string]: V} = {};
+    const m: {[key: string]: V} = {};
 
     for (let k of Object.keys(m1)) {
       m[k] = m1[k];
@@ -55,7 +55,9 @@ export class ListWrapper {
   static removeAll<T>(list: T[], items: T[]) {
     for (let i = 0; i < items.length; ++i) {
       const index = list.indexOf(items[i]);
-      list.splice(index, 1);
+      if (index > -1) {
+        list.splice(index, 1);
+      }
     }
   }
 
@@ -76,47 +78,13 @@ export class ListWrapper {
     return true;
   }
 
-  static maximum<T>(list: T[], predicate: (t: T) => number): T {
-    if (list.length == 0) {
-      return null;
-    }
-    var solution: any /** TODO #???? */ = null;
-    var maxValue = -Infinity;
-    for (var index = 0; index < list.length; index++) {
-      var candidate = list[index];
-      if (candidate == null) {
-        continue;
-      }
-      var candidateValue = predicate(candidate);
-      if (candidateValue > maxValue) {
-        solution = candidate;
-        maxValue = candidateValue;
-      }
-    }
-    return solution;
-  }
-
   static flatten<T>(list: Array<T|T[]>): T[] {
-    var target: any[] = [];
-    _flattenArray(list, target);
-    return target;
+    return list.reduce((flat: any[], item: T | T[]): T[] => {
+      const flatItem = Array.isArray(item) ? ListWrapper.flatten(item) : item;
+      return (<T[]>flat).concat(flatItem);
+    }, []);
   }
 }
-
-function _flattenArray(source: any[], target: any[]): any[] {
-  if (isPresent(source)) {
-    for (let i = 0; i < source.length; i++) {
-      const item = source[i];
-      if (Array.isArray(item)) {
-        _flattenArray(item, target);
-      } else {
-        target.push(item);
-      }
-    }
-  }
-  return target;
-}
-
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
@@ -125,7 +93,8 @@ export function isListLikeIterable(obj: any): boolean {
        getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
-export function areIterablesEqual(a: any, b: any, comparator: Function): boolean {
+export function areIterablesEqual(
+    a: any, b: any, comparator: (a: any, b: any) => boolean): boolean {
   const iterator1 = a[getSymbolIterator()]();
   const iterator2 = b[getSymbolIterator()]();
 
@@ -138,9 +107,9 @@ export function areIterablesEqual(a: any, b: any, comparator: Function): boolean
   }
 }
 
-export function iterateListLike(obj: any, fn: Function) {
+export function iterateListLike(obj: any, fn: (p: any) => any) {
   if (Array.isArray(obj)) {
-    for (var i = 0; i < obj.length; i++) {
+    for (let i = 0; i < obj.length; i++) {
       fn(obj[i]);
     }
   } else {
