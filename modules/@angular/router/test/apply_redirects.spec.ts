@@ -515,6 +515,37 @@ describe('applyRedirects', () => {
       });
     });
   });
+
+  describe('empty URL leftovers', () => {
+    it('should not error when no children matching and no url is left', () => {
+      checkRedirect(
+          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
+          '/a', (t: UrlTree) => { compareTrees(t, tree('a')); });
+    });
+
+    it('should not error when no children matching and no url is left (aux routes)', () => {
+      checkRedirect(
+          [{
+            path: 'a',
+            component: ComponentA,
+            children: [
+              {path: 'b', component: ComponentB},
+              {path: '', redirectTo: 'c', outlet: 'aux'},
+              {path: 'c', component: ComponentC, outlet: 'aux'},
+            ]
+          }],
+          '/a', (t: UrlTree) => { compareTrees(t, tree('a/(aux:c)')); });
+    });
+
+    it('should error when no children matching and some url is left', () => {
+      applyRedirects(
+          null, null, tree('/a/c'),
+          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}])
+          .subscribe(
+              (_) => { throw 'Should not be reached'; },
+              e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\''); });
+    });
+  });
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {

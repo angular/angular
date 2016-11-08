@@ -146,11 +146,20 @@ class ApplyRedirects {
     const first$ = first.call(concattedProcessedRoutes$, (s: any) => !!s);
     return _catch.call(first$, (e: any, _: any): Observable<UrlSegmentGroup> => {
       if (e instanceof EmptyError) {
-        throw new NoMatch(segmentGroup);
+        if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+          return of (new UrlSegmentGroup([], {}));
+        } else {
+          throw new NoMatch(segmentGroup);
+        }
       } else {
         throw e;
       }
     });
+  }
+
+  private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
+      boolean {
+    return segments.length === 0 && !segmentGroup.children[outlet];
   }
 
   private expandSegmentAgainstRoute(
