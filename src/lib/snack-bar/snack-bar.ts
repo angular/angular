@@ -45,6 +45,11 @@ export class MdSnackBar {
     let snackBarContainer = this._attachSnackBarContainer(overlayRef, config);
     let mdSnackBarRef = this._attachSnackbarContent(component, snackBarContainer, overlayRef);
 
+    // When the snackbar is dismissed, clear the reference to it.
+    mdSnackBarRef.afterDismissed().subscribe(() => {
+      this._snackBarRef = null;
+    });
+
     // If a snack bar is already in view, dismiss it and enter the new snack bar after exit
     // animation is complete.
     if (this._snackBarRef) {

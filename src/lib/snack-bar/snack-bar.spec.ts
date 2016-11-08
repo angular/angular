@@ -1,16 +1,5 @@
-import {
-    inject,
-    async,
-    ComponentFixture,
-    TestBed,
-} from '@angular/core/testing';
-import {
-  NgModule,
-  Component,
-  Directive,
-  ViewChild,
-  ViewContainerRef
-} from '@angular/core';
+import {inject, async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
 import {OverlayContainer, MdLiveAnnouncer} from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';
@@ -192,6 +181,26 @@ describe('MdSnackBar', () => {
           .toBe('complete', `Expected the animation state would be 'complete'.`);
       expect(snackBarRef2.containerInstance.animationState)
           .toBe('visible', `Expected the animation state would be 'visible'.`);
+    });
+  }));
+
+  it('should open a new snackbar after dismissing a previous snackbar', async(() => {
+    let config = new MdSnackBarConfig(testViewContainerRef);
+    let snackBarRef = snackBar.open(simpleMessage, 'DISMISS', config);
+    viewContainerFixture.detectChanges();
+
+    snackBarRef.dismiss();
+    viewContainerFixture.detectChanges();
+
+    // Wait for the snackbar dismiss animation to finish.
+    viewContainerFixture.whenStable().then(() => {
+      snackBarRef = snackBar.open('Second snackbar', 'DISMISS', config);
+      viewContainerFixture.detectChanges();
+
+      // Wait for the snackbar open animation to finish.
+      viewContainerFixture.whenStable().then(() => {
+        expect(snackBarRef.containerInstance.animationState).toBe('visible');
+      });
     });
   }));
 });
