@@ -34,9 +34,9 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="252798779920123642">other-3rdP-component</msg>
-  <msg id="7281825156779575080" desc="desc" meaning="meaning">translate me</msg>
-  <msg id="1325493959242906696">Welcome</msg>
+  <msg id="3772663375917578720">other-3rdP-component</msg>
+  <msg id="8136548302122759730" desc="desc" meaning="meaning">translate me</msg>
+  <msg id="3492007542396725315">Welcome</msg>
 </messagebundle>
 `;
 
