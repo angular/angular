@@ -149,7 +149,9 @@ export class RuntimeCompiler implements Compiler {
     const moduleByDirective = new Map<any, CompileNgModuleMetadata>();
     const templates = new Set<CompiledTemplate>();
 
-    ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
+    ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
+      const localModuleMeta =
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.type.reference);
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         moduleByDirective.set(dirIdentifier.reference, localModuleMeta);
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
@@ -165,7 +167,9 @@ export class RuntimeCompiler implements Compiler {
         }
       });
     });
-    ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
+    ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
+      const localModuleMeta =
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.type.reference);
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
         if (dirMeta.isComponent) {
@@ -279,9 +283,9 @@ export class RuntimeCompiler implements Compiler {
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
     const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const directives =
-        template.directives.map(dir => this._metadataResolver.getDirectiveMetadata(dir.reference));
+        template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
-        pipe => this._metadataResolver.getPipeMetadata(pipe.reference));
+        pipe => this._metadataResolver.getPipeSummary(pipe.reference));
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
         compMeta.type.name);

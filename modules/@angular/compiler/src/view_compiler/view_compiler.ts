@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import * as o from '../output/output_ast';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
@@ -36,7 +36,7 @@ export class ViewCompiler {
 
   compileComponent(
       component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
-      pipes: CompilePipeMetadata[],
+      pipes: CompilePipeSummary[],
       compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
     const dependencies:
         Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];

@@ -7,7 +7,7 @@
  */
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary} from '../compile_metadata';
 import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
 import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
@@ -82,7 +82,7 @@ export class CompileView implements NameResolver {
 
   constructor(
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
-      public pipeMetas: CompilePipeMetadata[], public styles: o.Expression,
+      public pipeMetas: CompilePipeSummary[], public styles: o.Expression,
       public animations: AnimationEntryCompileResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
     this.createMethod = new CompileMethod(this);

@@ -7,7 +7,7 @@
  */
 
 
-import {CompilePipeMetadata} from '../compile_metadata';
+import {CompilePipeSummary} from '../compile_metadata';
 import {createPureProxy} from '../compiler_util/identifier_util';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -39,7 +39,7 @@ export class CompilePipe {
   instance: o.ReadPropExpr;
   private _purePipeProxyCount = 0;
 
-  constructor(public view: CompileView, public meta: CompilePipeMetadata) {
+  constructor(public view: CompileView, public meta: CompilePipeSummary) {
     this.instance = o.THIS_EXPR.prop(`_pipe_${meta.name}_${view.pipeCount++}`);
     var deps = this.meta.type.diDeps.map((diDep) => {
       if (diDep.token.reference ===
@@ -77,8 +77,8 @@ export class CompilePipe {
   }
 }
 
-function _findPipeMeta(view: CompileView, name: string): CompilePipeMetadata {
-  var pipeMeta: CompilePipeMetadata = null;
+function _findPipeMeta(view: CompileView, name: string): CompilePipeSummary {
+  var pipeMeta: CompilePipeSummary = null;
   for (var i = view.pipeMetas.length - 1; i >= 0; i--) {
     var localPipeMeta = view.pipeMetas[i];
     if (localPipeMeta.name == name) {

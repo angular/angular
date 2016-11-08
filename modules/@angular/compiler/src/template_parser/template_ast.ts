@@ -8,7 +8,7 @@
 
 import {SecurityContext} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {AST} from '../expression_parser/ast';
 import {ParseSourceSpan} from '../parse_util';
 import {LifecycleHooks} from '../private_import_core';
@@ -168,7 +168,7 @@ export class BoundDirectivePropertyAst implements TemplateAst {
  */
 export class DirectiveAst implements TemplateAst {
   constructor(
-      public directive: CompileDirectiveMetadata, public inputs: BoundDirectivePropertyAst[],
+      public directive: CompileDirectiveSummary, public inputs: BoundDirectivePropertyAst[],
       public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
       public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
