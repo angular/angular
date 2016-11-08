@@ -8,7 +8,7 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {DateFormatter} from '../facade/intl';
-import {NumberWrapper, isBlank, isDate} from '../facade/lang';
+import {NumberWrapper, isDate} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
@@ -97,20 +97,27 @@ export class DatePipe implements PipeTransform {
   transform(value: any, pattern: string = 'mediumDate'): string {
     if (isBlank(value)) return null;
 
-    if (!this.supports(value)) {
+    if (typeof value === 'string') {
+      value = value.trim();
+    }
+
+    let date: Date;
+    if (isDate(value)) {
+      date = value;
+    } else if (NumberWrapper.isNumeric(value)) {
+      date = new Date(parseFloat(value));
+    } else {
+      date = new Date(value);
+    }
+
+    if (!isDate(date)) {
       throw new InvalidPipeArgumentError(DatePipe, value);
     }
 
-    if (NumberWrapper.isNumeric(value)) {
-      value = parseFloat(value);
-    }
-
-    return DateFormatter.format(
-        new Date(value), this._locale, DatePipe._ALIASES[pattern] || pattern);
+    return DateFormatter.format(date, this._locale, DatePipe._ALIASES[pattern] || pattern);
   }
+}
 
-  private supports(obj: any): boolean {
-    return isDate(obj) || NumberWrapper.isNumeric(obj) ||
-        (typeof obj === 'string' && isDate(new Date(obj)));
-  }
+function isBlank(obj: any): boolean {
+  return obj == null || obj === '';
 }
