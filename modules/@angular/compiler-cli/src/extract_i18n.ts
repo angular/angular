@@ -48,6 +48,11 @@ function extract(
         ext = 'xmb';
         serializer = new compiler.Xmb();
         break;
+      case 'xliff2':
+        const htmlParser2 = new compiler.I18NHtmlParser(new compiler.HtmlParser());
+        ext = 'v2.xlf';
+        serializer = new compiler.Xliff2(htmlParser2, compiler.DEFAULT_INTERPOLATION_CONFIG);
+        break;
       case 'xliff':
       case 'xlf':
       default:

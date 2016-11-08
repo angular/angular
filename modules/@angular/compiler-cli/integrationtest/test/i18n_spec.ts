@@ -63,6 +63,32 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 </xliff>
 `;
 
+const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+  <file original="ng2.template" id="ngi18n">
+    <unit id="63a85808f03b8181e36a952e0fa38202c2304862">
+      <segment>
+        <source>other-3rdP-component</source>
+      </segment>
+    </unit>
+    <unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4">
+      <notes>
+        <note category="description">desc</note>
+        <note category="meaning">meaning</note>
+      </notes>
+      <segment>
+        <source>translate me</source>
+      </segment>
+    </unit>
+    <unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2">
+      <segment>
+        <source>Welcome</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>
+`;
+
 describe('template i18n extraction output', () => {
   const outDir = '';
 
@@ -78,6 +104,13 @@ describe('template i18n extraction output', () => {
     expect(fs.existsSync(xlfOutput)).toBeTruthy();
     const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
     expect(xlf).toEqual(EXPECTED_XLIFF);
+  });
+
+  it('should extract i18n messages as xliff 2.0', () => {
+    const xlfOutput = path.join(outDir, 'messages.v2.xlf');
+    expect(fs.existsSync(xlfOutput)).toBeTruthy();
+    const xlf = fs.readFileSync(xlfOutput, {encoding: 'utf-8'});
+    expect(xlf).toEqual(EXPECTED_XLIFF2);
   });
 
 });
