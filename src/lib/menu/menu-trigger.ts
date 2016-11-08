@@ -12,8 +12,7 @@ import {
 import {MdMenuPanel} from './menu-panel';
 import {MdMenuMissingError} from './menu-errors';
 import {
-    ENTER,
-    SPACE,
+    isFakeMousedownFromScreenReader,
     Overlay,
     OverlayState,
     OverlayRef,
@@ -32,8 +31,8 @@ import { Subscription } from 'rxjs/Subscription';
   selector: '[md-menu-trigger-for]',
   host: {
     'aria-haspopup': 'true',
-    '(keydown)': '_handleKeydown($event)',
-    '(click)': 'toggleMenu()'
+    '(mousedown)': '_handleMousedown($event)',
+    '(click)': 'toggleMenu()',
   },
   exportAs: 'mdMenuTrigger'
 })
@@ -45,7 +44,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   // tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
-  private _openedFromKeyboard: boolean = false;
+  private _openedByMouse: boolean = false;
 
   @Input('md-menu-trigger-for') menu: MdMenuPanel;
   @Output() onMenuOpen = new EventEmitter<void>();
@@ -118,7 +117,10 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _initMenu(): void {
     this._setIsMenuOpen(true);
 
-    if (this._openedFromKeyboard) {
+    // Should only set focus if opened via the keyboard, so keyboard users can
+    // can easily navigate menu items. According to spec, mouse users should not
+    // see the focus style.
+    if (!this._openedByMouse) {
       this.menu.focusFirstItem();
     }
   };
@@ -130,10 +132,12 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _resetMenu(): void {
     this._setIsMenuOpen(false);
 
-    if (this._openedFromKeyboard) {
+    // Focus only needs to be reset to the host element if the menu was opened
+    // by the keyboard and manually shifted to the first menu item.
+    if (!this._openedByMouse) {
       this.focus();
-      this._openedFromKeyboard = false;
     }
+    this._openedByMouse = false;
   }
 
   // set state rather than toggle to support triggers sharing a menu
@@ -191,10 +195,9 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     );
   }
 
-  // TODO: internal
-  _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ENTER || event.keyCode === SPACE) {
-      this._openedFromKeyboard = true;
+  _handleMousedown(event: MouseEvent): void {
+    if (!isFakeMousedownFromScreenReader(event)) {
+      this._openedByMouse = true;
     }
   }
 

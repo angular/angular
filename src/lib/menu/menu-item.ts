@@ -11,7 +11,7 @@ import {MdFocusable} from '../core/a11y/list-key-manager';
   host: {
     'role': 'menuitem',
     '(click)': '_checkDisabled($event)',
-    'tabindex': '-1'
+    '[attr.tabindex]': '_tabindex'
   },
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem'
@@ -39,6 +39,10 @@ export class MdMenuItem implements MdFocusable {
   @HostBinding('attr.aria-disabled')
   get isAriaDisabled(): string {
     return String(!!this.disabled);
+  }
+
+  get _tabindex() {
+    return this.disabled ? '-1' : '0';
   }
 
 

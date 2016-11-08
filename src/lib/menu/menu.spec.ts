@@ -181,7 +181,7 @@ class CustomMenuPanel implements MdMenuPanel {
   positionY: MenuPositionY = 'below';
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
   @Output() close = new EventEmitter<void>();
-  focusFirstItem: () => void;
+  focusFirstItem = () => {};
 }
 
 @Component({
