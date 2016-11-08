@@ -830,7 +830,20 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(listener.eventTypes).toEqual([]);
       });
 
-      it('should support updating host element via hostAttributes', () => {
+      it('should support updating host element via hostAttributes on root elements', () => {
+        @Component({host: {'role': 'button'}, template: ''})
+        class ComponentUpdatingHostAttributes {
+        }
+
+        TestBed.configureTestingModule({declarations: [ComponentUpdatingHostAttributes]});
+        const fixture = TestBed.createComponent(ComponentUpdatingHostAttributes);
+
+        fixture.detectChanges();
+
+        expect(getDOM().getAttribute(fixture.debugElement.nativeElement, 'role')).toEqual('button');
+      });
+
+      it('should support updating host element via hostAttributes on host elements', () => {
         TestBed.configureTestingModule({declarations: [MyComp, DirectiveUpdatingHostAttributes]});
         const template = '<div update-host-attributes></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
