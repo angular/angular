@@ -4,5 +4,17 @@ set -e -o pipefail
 
 
 echo "Shutting down Browserstack tunnel"
-echo "TODO: implement me"
-exit 1
+
+PID=$(cat $BROWSER_PROVIDER_READY_FILE);
+
+# Resolving the PID from the readyfile.
+kill $PID
+
+
+while [[ -n `ps -ef | grep $PID | grep -v "grep"` ]]; do
+  printf "."
+  sleep .5
+done
+
+echo ""
+echo "Browserstack tunnel has been shut down"

@@ -44,7 +44,7 @@ tunnel.start(function(error) {
     });
 
     if (READY_FILE) {
-      fs.writeFile(READY_FILE, '');
+      fs.writeFile(READY_FILE, process.pid);
     }
   }
 });

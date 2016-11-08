@@ -34,7 +34,7 @@ teardown_tunnel() {
       ./scripts/sauce/sauce_connect_teardown.sh
       ;;
     browserstack*)
-      # ./scripts/browserstack/teardown_tunnel.sh
+      ./scripts/browserstack/teardown_tunnel.sh
       ;;
     *)
       ;;
