@@ -7,146 +7,133 @@ $md-slider-thickness: 48px !default;
 $md-slider-min-size: 128px !default;
 $md-slider-padding: 8px !default;
 
-$md-slider-track-height: 2px !default;
+$md-slider-track-thickness: 2px !default;
 $md-slider-thumb-size: 20px !default;
 
 $md-slider-thumb-default-scale: 0.7 !default;
 $md-slider-thumb-focus-scale: 1 !default;
 
-$md-slider-thumb-arrow-height: 16px !default;
-$md-slider-thumb-arrow-width: 28px !default;
+$md-slider-thumb-arrow-gap: 12px !default;
 
 $md-slider-thumb-label-size: 28px !default;
-// The thumb has to be moved down so that it appears right over the slider track when visible and
-// on the slider track when not.
-$md-slider-thumb-label-top: ($md-slider-thickness / 2) -
-    ($md-slider-thumb-default-scale * $md-slider-thumb-size / 2) - $md-slider-thumb-label-size -
-    $md-slider-thumb-arrow-height + 10px !default;
 
-// Uses a container height and an item height to center an item vertically within the container.
-@function center-vertically($containerHeight, $itemHeight) {
-  @return ($containerHeight / 2) - ($itemHeight / 2);
-}
+$md-slider-tick-color: rgba(0, 0, 0, 0.6) !default;
+$md-slider-tick-size: 2px !default;
 
-// Positions the thumb based on its width and height.
-@mixin slider-thumb-position($width: $md-slider-thumb-size, $height: $md-slider-thumb-size) {
-  position: absolute;
-  top: center-vertically($md-slider-thickness, $height);
-  // This makes it so that the center of the thumb aligns with where the click was.
-  // This is not affected by the movement of the thumb.
-  left: (-$width / 2);
-  width: $width;
-  height: $height;
-  border-radius: max($width, $height);
-}
 
 md-slider {
+  display: inline-block;
+  box-sizing: border-box;
+  position: relative;
   height: $md-slider-thickness;
   min-width: $md-slider-min-size;
-  position: relative;
-  padding: 0;
-  display: inline-block;
+  padding: $md-slider-padding;
   outline: none;
   vertical-align: middle;
 }
 
-md-slider *,
-md-slider *::after {
-  box-sizing: border-box;
-}
-
-// Exists in order to pad the slider and keep everything positioned correctly.
-// Cannot be merged with the .md-slider-container.
-.md-slider-wrapper {
-  width: 100%;
-  height: 100%;
-  padding-left: $md-slider-padding;
-  padding-right: $md-slider-padding;
-}
-
-
-// Holds the isActive and isSliding classes as well as helps with positioning the children.
-// Cannot be merged with .md-slider-wrapper.
-.md-slider-container {
-  position: relative;
-}
-
-.md-slider-track-container {
-  width: 100%;
-  position: absolute;
-  top: center-vertically($md-slider-thickness, $md-slider-track-height);
-  height: $md-slider-track-height;
-}
-
 .md-slider-track {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 100%;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  position: relative;
+  top: ($md-slider-thickness - $md-slider-track-thickness) / 2 - $md-slider-padding;
+  height: $md-slider-track-thickness;
+  transition: box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
+}
+
+.md-slider-has-ticks.md-slider-active .md-slider-track,
+.md-slider-has-ticks:hover .md-slider-track {
+  box-shadow: inset (-2 * $md-slider-tick-size) 0 0 (-$md-slider-tick-size) $md-slider-tick-color;
 }
 
 .md-slider-track-fill {
-  transition-duration: $swift-ease-out-duration;
-  transition-timing-function: $swift-ease-out-timing-function;
-  transition-property: width, height;
+  flex: 0 0 50%;
+  height: $md-slider-track-thickness;
+  transition: flex-basis $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-tick-container, .md-slider-last-tick-container {
+.md-slider-sliding .md-slider-track-fill {
+  transition: none;
+}
+
+.md-slider-ticks-container {
   position: absolute;
   left: 0;
-  right: 0;
-  height: 100%;
+  top: 0;
+  height: $md-slider-track-thickness;
+  width: 100%;
+  overflow: hidden;
+}
+
+.md-slider-ticks {
+  background: repeating-linear-gradient(to right, $md-slider-tick-color,
+      $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+  // Firefox doesn't draw the gradient correctly with 'to right'
+  // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
+  background: -moz-repeating-linear-gradient(0.0001deg, $md-slider-tick-color,
+      $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+  height: $md-slider-track-thickness;
+  width: 100%;
+  opacity: 0;
+  transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+}
+
+.md-slider-has-ticks.md-slider-active .md-slider-ticks,
+.md-slider-has-ticks:hover .md-slider-ticks {
+  opacity: 1;
 }
 
 .md-slider-thumb-container {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  transition-duration: $swift-ease-out-duration;
-  transition-timing-function: $swift-ease-out-timing-function;
-  transition-property: left, bottom;
-}
-
-.md-slider-thumb-position {
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  flex: 0 0 auto;
+  position: relative;
+  width: 0;
+  height: 0;
 }
 
 .md-slider-thumb {
-  z-index: 1;
-
-  @include slider-thumb-position($md-slider-thumb-size, $md-slider-thumb-size);
+  position: absolute;
+  left: -$md-slider-thumb-size / 2;
+  top: -$md-slider-thumb-size / 2;
+  width: $md-slider-thumb-size;
+  height: $md-slider-thumb-size;
+  border-radius: 50%;
+  transform-origin: 50% 50%;
   transform: scale($md-slider-thumb-default-scale);
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-thumb::after {
-  content: '';
-  position: absolute;
-  width: $md-slider-thumb-size;
-  height: $md-slider-thumb-size;
-  border-radius: max($md-slider-thumb-size, $md-slider-thumb-size);
-  // Separate border properties because, if you combine them into "border", it defaults to 'black'.
-  border-width: 3px;
-  border-style: solid;
-  transition: inherit;
+.md-slider-active .md-slider-thumb {
+  transform: scale($md-slider-thumb-focus-scale);
+}
+
+.md-slider-active.md-slider-thumb-label-showing .md-slider-thumb {
+  transform: scale(0);
 }
 
 .md-slider-thumb-label {
   display: flex;
   align-items: center;
   justify-content: center;
-
   position: absolute;
-  left: -($md-slider-thumb-label-size / 2);
-  top: $md-slider-thumb-label-top;
+  left: -$md-slider-thumb-label-size / 2;
+  top: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
   width: $md-slider-thumb-label-size;
   height: $md-slider-thumb-label-size;
   border-radius: 50%;
-
-  transform: scale(0.4) translate3d(0, (-$md-slider-thumb-label-top + 10) / 0.4, 0) rotate(45deg);
+  transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap)
+      scale(0.4) rotate(45deg);
   transition: 300ms $swift-ease-in-out-timing-function;
   transition-property: transform, border-radius;
+}
+
+.md-slider-active .md-slider-thumb-label {
+  border-radius: 50% 50% 0;
+  transform: rotate(45deg);
+}
+
+md-slider:not(.md-slider-thumb-label-showing) .md-slider-thumb-label {
+  display: none;
 }
 
 .md-slider-thumb-label-text {
@@ -156,29 +143,6 @@ md-slider *::after {
   opacity: 0;
   transform: rotate(-45deg);
   transition: opacity 300ms $swift-ease-in-out-timing-function;
-}
-
-.md-slider-container:not(.md-slider-thumb-label-showing) .md-slider-thumb-label {
-  display: none;
-}
-
-.md-slider-active.md-slider-thumb-label-showing .md-slider-thumb {
-  transform: scale(0);
-}
-
-.md-slider-sliding .md-slider-thumb-position,
-.md-slider-sliding .md-slider-track-fill {
-  transition: none;
-  cursor: default;
-}
-
-.md-slider-active .md-slider-thumb {
-  transform: scale($md-slider-thumb-focus-scale);
-}
-
-.md-slider-active .md-slider-thumb-label {
-  border-radius: 50% 50% 0;
-  transform: rotate(45deg);
 }
 
 .md-slider-active .md-slider-thumb-label-text {

@@ -18,9 +18,8 @@
     background-color: md-color($accent);
   }
 
-  .md-slider-thumb::after {
+  .md-slider-thumb {
     background-color: md-color($accent);
-    border-color: md-color($accent);
   }
 
   .md-slider-thumb-label {

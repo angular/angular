@@ -33,3 +33,9 @@ Label <md-slider #slidey></md-slider>
 <h1>Slider with two-way binding</h1>
 <md-slider [(ngModel)]="demo" step="40"></md-slider>
 <input [(ngModel)]="demo">
+
+<md-tab-group>
+  <md-tab label="One">
+    <md-slider min="1" max="5" value="3"></md-slider>
+  </md-tab>
+</md-tab-group>

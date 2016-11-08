@@ -83,6 +83,7 @@ export * from './animation/animation';
 
 // Coersion
 export {coerceBooleanProperty} from './coersion/boolean-property';
+export {coerceNumberProperty} from './coersion/number-property';
 
 
 @NgModule({
