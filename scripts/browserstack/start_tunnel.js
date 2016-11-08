@@ -34,7 +34,12 @@ var tunnel = new BrowserStackTunnel({
 });
 
 console.log('Starting tunnel on ports', PORTS.join(', '));
-tunnel.start(function(error) {
+
+// Emit a `newer_available` event to force an update of the Browserstack binaries (necessary due to Travis caching)
+// This also starts a new tunnel after the latest binaries are available.
+tunnel.emit('newer_available');
+
+tunnel.once('started', function(error) {
   if (error) {
     console.error('Can not establish the tunnel', error);
   } else {
