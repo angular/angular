@@ -62,6 +62,7 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
     height: 100%;
     position: absolute;
     width: 100%;
+    left: 0;
   }
 
   &[mode='query'] {
