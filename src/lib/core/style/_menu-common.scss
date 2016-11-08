@@ -68,4 +68,22 @@ $md-menu-side-padding: 16px !default;
   &.md-menu-before.md-menu-above {
     transform-origin: right bottom;
   }
+
+  [dir='rtl'] & {
+    &.md-menu-after.md-menu-below {
+      transform-origin: right top;
+    }
+
+    &.md-menu-after.md-menu-above {
+      transform-origin: right bottom;
+    }
+
+    &.md-menu-before.md-menu-below {
+      transform-origin: left top;
+    }
+
+    &.md-menu-before.md-menu-above {
+      transform-origin: left bottom;
+    }
+  }
 }

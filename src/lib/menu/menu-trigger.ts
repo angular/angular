@@ -1,18 +1,21 @@
 import {
+    AfterViewInit,
     Directive,
     ElementRef,
-    Input,
-    Output,
     EventEmitter,
-    ViewContainerRef,
-    AfterViewInit,
+    Input,
     OnDestroy,
-    Renderer
+    Optional,
+    Output,
+    Renderer,
+    ViewContainerRef,
 } from '@angular/core';
 import {MdMenuPanel} from './menu-panel';
 import {MdMenuMissingError} from './menu-errors';
 import {
     isFakeMousedownFromScreenReader,
+    Dir,
+    LayoutDirection,
     Overlay,
     OverlayState,
     OverlayRef,
@@ -51,7 +54,8 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
-              private _viewContainerRef: ViewContainerRef, private _renderer: Renderer) {}
+              private _viewContainerRef: ViewContainerRef, private _renderer: Renderer,
+              @Optional() private _dir: Dir) {}
 
   ngAfterViewInit() {
     this._checkMenu();
@@ -96,6 +100,11 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   focus() {
     this._renderer.invokeElementMethod(this._element.nativeElement, 'focus');
+  }
+
+  /** The text direction of the containing app. */
+  get dir(): LayoutDirection {
+    return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 
   /**
@@ -173,9 +182,11 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    */
   private _getOverlayConfig(): OverlayState {
     const overlayState = new OverlayState();
-    overlayState.positionStrategy = this._getPosition();
+    overlayState.positionStrategy = this._getPosition()
+                                        .withDirection(this.dir);
     overlayState.hasBackdrop = true;
     overlayState.backdropClass = 'md-overlay-transparent-backdrop';
+    overlayState.direction = this.dir;
     return overlayState;
   }
 

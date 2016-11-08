@@ -15,9 +15,11 @@ import {
   MenuPositionY
 } from './menu';
 import {OverlayContainer} from '../core/overlay/overlay-container';
+import {Dir, LayoutDirection} from '../core/rtl/dir';
 
 describe('MdMenu', () => {
   let overlayContainerElement: HTMLElement;
+  let dir: LayoutDirection = 'ltr';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -27,6 +29,9 @@ describe('MdMenu', () => {
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           return {getContainerElement: () => overlayContainerElement};
+        }},
+        {provide: Dir, useFactory: () => {
+          return {value: dir};
         }}
       ]
     });
@@ -72,6 +77,17 @@ describe('MdMenu', () => {
       expect(overlayContainerElement.textContent).toContain('Custom Menu header');
       expect(overlayContainerElement.textContent).toContain('Custom Content');
     }).not.toThrowError();
+  });
+
+  it('should set the panel direction based on the trigger direction', () => {
+    dir = 'rtl';
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const overlayPane = overlayContainerElement.children[0];
+    expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
   describe('positions', () => {
