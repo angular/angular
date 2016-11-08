@@ -204,6 +204,7 @@ md-checkbox {
   // (e.g. pointer by default, regular when disabled), instead of the browser default.
   cursor: inherit;
   align-items: baseline;
+  vertical-align: middle;
   display: inline-flex;
 }
 
