@@ -90,7 +90,8 @@ md-input, md-textarea {
   // fire any events when a form auto-fill is occurring.
   // Once the autofill is committed, a change event happen and the regular md-input
   // classes take over to fulfill this behaviour.
-  &:-webkit-autofill + .md-input-placeholder {
+  // Assumes the autofill is non-empty.
+  &:-webkit-autofill + .md-input-placeholder.md-float {
     @include md-input-placeholder-floating;
   }
 }
