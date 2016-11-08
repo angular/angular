@@ -1,12 +1,12 @@
 @import '../core/style/variables';
 
 
-// Animation Durations 
+// Animation Durations
 $md-progress-circle-duration: 5250ms !default;
 $md-progress-circle-constant-rotate-duration: $md-progress-circle-duration * 0.55 !default;
 $md-progress-circle-sporadic-rotate-duration: $md-progress-circle-duration !default;
 
-// Component sizing 
+// Component sizing
 $md-progress-circle-stroke-width: 10px !default;
 // Height and weight of the viewport for md-progress-circle.
 $md-progress-circle-viewport-size: 100px !default;
@@ -18,6 +18,7 @@ $md-progress-circle-viewport-size: 100px !default;
   // The height and width are expected to be overwritten by application css.
   height: $md-progress-circle-viewport-size;
   width: $md-progress-circle-viewport-size;
+  overflow: hidden;
 
   // SVG's viewBox is defined as 0 0 100 100, this means that all SVG children will placed
   // based on a 100px by 100px box.  Additionally all SVG sizes and locations are in reference to
@@ -37,7 +38,7 @@ $md-progress-circle-viewport-size: 100px !default;
   }
 
 
-  &[mode='indeterminate'] {
+  &[mode='indeterminate'] svg {
     animation-duration: $md-progress-circle-sporadic-rotate-duration,
                         $md-progress-circle-constant-rotate-duration;
     animation-name: md-progress-circle-sporadic-rotate,
@@ -50,7 +51,7 @@ $md-progress-circle-viewport-size: 100px !default;
 }
 
 
-// Animations for indeterminate mode 
+// Animations for indeterminate mode
 @keyframes md-progress-circle-linear-rotate {
   0%       { transform: rotate(0deg); }
   100%     { transform: rotate(360deg); }
