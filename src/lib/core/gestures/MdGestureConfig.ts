@@ -7,9 +7,6 @@ export class MdGestureConfig extends HammerGestureConfig {
 
   /* List of new event names to add to the gesture support list */
   events: string[] = [
-    'drag',
-    'dragright',
-    'dragleft',
     'longpress',
     'slide',
     'slidestart',
@@ -41,14 +38,13 @@ export class MdGestureConfig extends HammerGestureConfig {
     // Notice that a HammerJS recognizer can only depend on one other recognizer once.
     // Otherwise the previous `recognizeWith` will be dropped.
     let slide = this._createRecognizer(pan, {event: 'slide', threshold: 0}, swipe);
-    let drag = this._createRecognizer(slide, {event: 'drag', threshold: 6}, swipe);
     let longpress = this._createRecognizer(press, {event: 'longpress', time: 500});
 
     // Overwrite the default `pan` event to use the swipe event.
     pan.recognizeWith(swipe);
 
     // Add customized gestures to Hammer manager
-    mc.add([swipe, press, pan, drag, slide, longpress]);
+    mc.add([swipe, press, pan, slide, longpress]);
 
     return mc;
   }
@@ -58,7 +54,7 @@ export class MdGestureConfig extends HammerGestureConfig {
     let recognizer = new (<RecognizerStatic> base.constructor)(options);
 
     inheritances.push(base);
-    inheritances.forEach((item) => recognizer.recognizeWith(item));
+    inheritances.forEach(item => recognizer.recognizeWith(item));
 
     return recognizer;
   }
