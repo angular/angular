@@ -22,11 +22,8 @@ import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 describe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule.withRoutes(
-            [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]),
-        TestModule
-      ]
+      imports:
+          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule]
     });
   });
 
@@ -108,6 +105,29 @@ describe('Integration', () => {
          ]);
        })));
   });
+
+  it('should not error when no url left and no children are matching',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{
+         path: 'team/:id',
+         component: TeamCmp,
+         children: [{path: 'simple', component: SimpleCmp}]
+       }]);
+
+       router.navigateByUrl('/team/33/simple');
+       advance(fixture);
+
+       expect(location.path()).toEqual('/team/33/simple');
+       expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');
+
+       router.navigateByUrl('/team/33');
+       advance(fixture);
+
+       expect(location.path()).toEqual('/team/33');
+       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+     })));
 
   it('should work when an outlet is in an ngIf',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -655,13 +675,13 @@ describe('Integration', () => {
        expect(cmp.activations.length).toEqual(1);
        expect(cmp.activations[0] instanceof BlankCmp).toBe(true);
 
-       router.navigateByUrl('/simple');
+       router.navigateByUrl('/simple').catch(e => console.log(e));
        advance(fixture);
 
        expect(cmp.activations.length).toEqual(2);
        expect(cmp.activations[1] instanceof SimpleCmp).toBe(true);
-       expect(cmp.deactivations.length).toEqual(2);
-       expect(cmp.deactivations[1] instanceof BlankCmp).toBe(true);
+       expect(cmp.deactivations.length).toEqual(1);
+       expect(cmp.deactivations[0] instanceof BlankCmp).toBe(true);
      }));
 
   it('should update url and router state before activating components',

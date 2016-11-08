@@ -608,6 +608,34 @@ describe('recognize', () => {
     });
   });
 
+  describe('empty URL leftovers', () => {
+    it('should not throw when no children matching', () => {
+      checkRecognize(
+          [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
+          '/a', (s: RouterStateSnapshot) => {
+            const a = s.firstChild(s.root);
+            checkActivatedRoute(a, 'a', {}, ComponentA);
+          });
+    });
+
+    it('should not throw when no children matching (aux routes)', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            component: ComponentA,
+            children: [
+              {path: 'b', component: ComponentB},
+              {path: '', component: ComponentC, outlet: 'aux'},
+            ]
+          }],
+          '/a', (s: RouterStateSnapshot) => {
+            const a = s.firstChild(s.root);
+            checkActivatedRoute(a, 'a', {}, ComponentA);
+            checkActivatedRoute(a.children[0], '', {}, ComponentC, 'aux');
+          });
+    });
+  });
+
   describe('query parameters', () => {
     it('should support query params', () => {
       const config = [{path: 'a', component: ComponentA}];

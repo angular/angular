@@ -90,7 +90,16 @@ class Recognizer {
         if (!(e instanceof NoMatch)) throw e;
       }
     }
-    throw new NoMatch();
+    if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+      return [];
+    } else {
+      throw new NoMatch();
+    }
+  }
+
+  private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):
+      boolean {
+    return segments.length === 0 && !segmentGroup.children[outlet];
   }
 
   processSegmentAgainstRoute(
