@@ -7,7 +7,7 @@
  */
 
 const fs = require('fs');
-const addStream = require('add-stream');
+const merge2 = require('merge2');
 const changelog = require('conventional-changelog');
 const spawnSync = require('child_process').spawnSync;
 const npmVersion = require('../../package.json').version;
@@ -17,7 +17,7 @@ const npmVersion = require('../../package.json').version;
  * By default, it will only create the changelog from the latest tag to head and prepends it to the changelog.
  */
 const isForce = process.argv.indexOf('--force') !== -1;
-const inStream = fs.createReadStream('CHANGELOG.md');
+const previousChangelog = fs.createReadStream('CHANGELOG.md');
 const gitTags = getAvailableTags();
 
 // Whether the npm version is later than the most recent tag.
@@ -27,33 +27,40 @@ const currentTag = isNpmLatest ? npmVersion : gitTags[0];
 // When the npm version is the latest use the most recent tag. Otherwise use the previous tag.
 const previousTag = isNpmLatest ? gitTags[0] : gitTags[1];
 
-inStream.on('error', function(err) {
-  console.error('An error occurred, while reading the previous changelog file.\n' +
-    'If there is no previous changelog, then you should create an empty file or use the `--force` flag.\n' + err);
+if (!isForce) {
+  previousChangelog.on('error', function(err) {
+    console.error('An error occurred, while reading the previous changelog file.\n' +
+      'If there is changelog file, you should create an empty file or use the `--force` flag.\n' + err);
 
-  process.exit(1);
-});
+    process.exit(1);
+  });
+}
 
-var config = {
+const config = {
   preset: 'angular',
   releaseCount: isForce ? 0 : 1
 };
 
-var context = {
+const context = {
   currentTag: currentTag,
   previousTag: previousTag
 };
 
-var stream = changelog(config, context)
-  .on('error', function(err) {
-    console.error('An error occurred while generating the changelog: ' + err);
-  })
-  .pipe(!isForce && addStream(inStream) || getOutputStream());
+let stream = changelog(config, context).on('error', function(err) {
+  console.error('An error occurred while generating the changelog: ' + err);
+});
+
+if (!isForce) {
+  // Append the previous changelog to the new generated one.
+  stream = merge2(stream, previousChangelog);
+} else {
+  stream.pipe(getOutputStream())
+}
 
 // When we are pre-pending the new changelog, then we need to wait for the input stream to be ending,
 // otherwise we can't write into the same destination.
 if (!isForce) {
-  inStream.on('end', function() {
+  previousChangelog.on('end', function() {
     stream.pipe(getOutputStream());
   });
 }
