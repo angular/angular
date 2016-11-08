@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, forwardRef} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef} from '@angular/core';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -20,6 +20,7 @@ export function main() {
       TestBed.configureTestingModule({
         imports: [FormsModule, ReactiveFormsModule],
         declarations: [
+          FormControlWithFocus,
           FormControlComp,
           FormGroupComp,
           FormArrayComp,
@@ -61,6 +62,35 @@ export function main() {
         // view -> model
         expect(control.value).toEqual('updated value');
       });
+
+      it('should set focus using directive reference', () => {
+        const fixture = TestBed.createComponent(FormControlWithFocus);
+        const testComponent = fixture.componentInstance;
+
+        expect(getDOM().defaultDoc().activeElement)
+            .not.toEqual(testComponent.element.nativeElement);
+
+        testComponent.setFocus();
+
+        expect(getDOM().defaultDoc().activeElement).toEqual(testComponent.element.nativeElement);
+      });
+
+      it('should set focus using FormControl', fakeAsync(() => {
+           const fixture = TestBed.createComponent(FormControlWithFocus);
+           const testComponent = fixture.componentInstance;
+
+           fixture.detectChanges();
+
+           expect(getDOM().defaultDoc().activeElement)
+               .not.toEqual(testComponent.element.nativeElement);
+
+           testComponent.control.focus();
+
+           fixture.detectChanges();
+           tick();
+
+           expect(getDOM().defaultDoc().activeElement).toEqual(testComponent.element.nativeElement);
+         }));
 
       it('should work with formGroups (model -> view)', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
@@ -1866,6 +1896,18 @@ function sortedClassList(el: HTMLElement) {
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
   control: FormControl;
+}
+
+@Component({
+  selector: 'form-control-focus',
+  template: `<input type="text" [formControl]="control" #ngForm="ngForm" #elem>`
+})
+class FormControlWithFocus {
+  @ViewChild('ngForm') formControl: FormControl;
+  @ViewChild('elem') element: ElementRef;
+  control: FormControl = new FormControl('');
+
+  setFocus(): void { this.formControl.focus(); }
 }
 
 @Component({

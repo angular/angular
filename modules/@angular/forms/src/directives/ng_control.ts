@@ -38,4 +38,6 @@ export abstract class NgControl extends AbstractControlDirective {
   get asyncValidator(): AsyncValidatorFn { return <AsyncValidatorFn>unimplemented(); }
 
   abstract viewToModelUpdate(newValue: any): void;
+
+  abstract focus(): void;
 }

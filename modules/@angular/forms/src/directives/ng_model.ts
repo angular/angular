@@ -170,6 +170,10 @@ export class NgModel extends NgControl implements OnChanges,
                 this.update.emit(newValue);
               }
 
+              focus(): void {
+                if (this.valueAccessor.focus) this.valueAccessor.focus();
+              }
+
               private _setUpControl(): void {
                 this._isStandalone() ? this._setUpStandalone() :
                                        this.formDirective.addControl(this);

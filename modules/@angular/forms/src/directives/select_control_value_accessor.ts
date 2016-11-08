@@ -102,6 +102,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
+  focus(): void { this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus'); }
+
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 

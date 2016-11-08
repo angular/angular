@@ -643,6 +643,8 @@ export abstract class AbstractControl {
 export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function[] = [];
+  /** @internal */
+  _onFocus: Function[] = [];
 
   constructor(
       formState: any = null, validator: ValidatorFn|ValidatorFn[] = null,
@@ -736,6 +738,15 @@ export class FormControl extends AbstractControl {
   }
 
   /**
+   * Gives focus to a control (if it can be focused).
+   */
+  focus(): void {
+    if (this._onFocus.length) {
+      this._onFocus.forEach((focusFn) => focusFn());
+    }
+  }
+
+  /**
    * @internal
    */
   _updateValue() {}
@@ -751,6 +762,11 @@ export class FormControl extends AbstractControl {
   _allControlsDisabled(): boolean { return this.disabled; }
 
   /**
+   * @internal
+   */
+  _registerOnFocus(fn: Function): void { this._onFocus.push(fn); }
+
+  /**
    * Register a listener for change events.
    */
   registerOnChange(fn: Function): void { this._onChange.push(fn); }
@@ -763,6 +779,11 @@ export class FormControl extends AbstractControl {
     this._onDisabledChange = [];
     this._onCollectionChange = () => {};
   }
+
+  /**
+   * @internal
+   */
+  _clearFocusFns(): void { this._onFocus = []; }
 
   /**
    * Register a listener for disabled events.
