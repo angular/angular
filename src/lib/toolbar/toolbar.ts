@@ -5,10 +5,10 @@ import {
   ChangeDetectionStrategy,
   Input,
   ViewEncapsulation,
-  Directive
+  Directive,
+  ElementRef,
+  Renderer
 } from '@angular/core';
-import {Renderer} from '@angular/core';
-import {ElementRef} from '@angular/core';
 
 @Directive({
   selector: 'md-toolbar-row'
