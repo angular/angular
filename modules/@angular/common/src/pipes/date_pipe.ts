@@ -54,6 +54,9 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Timezone of the formatted text will be the local system timezone of the end-user's machine.
  *
+ * When the expression is a ISO string without time (e.g. 2016-09-19) the time zone offset is not
+ * applied and the formatted text will have the same day, month and year of the expression.
+ *
  * WARNINGS:
  * - this pipe is marked as pure hence it will not be re-evaluated when the input is mutated.
  *   Instead users should treat the date as an immutable object and change the reference when the
@@ -95,17 +98,30 @@ export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: any, pattern: string = 'mediumDate'): string {
+    let date: Date;
+
     if (isBlank(value)) return null;
 
     if (typeof value === 'string') {
       value = value.trim();
     }
 
-    let date: Date;
     if (isDate(value)) {
       date = value;
     } else if (NumberWrapper.isNumeric(value)) {
       date = new Date(parseFloat(value));
+    } else if (typeof value === 'string' && /^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
+      /**
+      * For ISO Strings without time the day, month and year must be extracted from the ISO String
+      * before Date creation to avoid time offset and errors in the new Date.
+      * If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
+      * date, some browsers (e.g. IE 9) will throw an invalid Date error
+      * If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
+      * is applied
+      * Note: ISO months are 0 for January, 1 for February, ...
+      */
+      const [y, m, d] = value.split('-').map((val: string) => parseInt(val, 10));
+      date = new Date(y, m - 1, d);
     } else {
       date = new Date(value);
     }
