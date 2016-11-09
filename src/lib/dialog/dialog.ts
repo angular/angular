@@ -14,6 +14,7 @@ import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
 import {A11yModule, InteractivityChecker} from '../core';
+import {extendObject} from '../core/util/object-extend';
 
 export {MdDialogConfig} from './dialog-config';
 export {MdDialogRef} from './dialog-ref';
@@ -41,7 +42,7 @@ export class MdDialog {
    * @param config
    */
   open<T>(component: ComponentType<T>, config?: MdDialogConfig): MdDialogRef<T> {
-    config = this._applyConfigDefaults(config);
+    config = _applyConfigDefaults(config);
 
     let overlayRef = this._createOverlay(config);
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
@@ -127,15 +128,15 @@ export class MdDialog {
 
     return state;
   }
+}
 
-  /**
-   * Applies default options to the dialog config.
-   * @param dialogConfig Config to be modified.
-   * @returns The new configuration object.
-   */
-  private _applyConfigDefaults(dialogConfig: MdDialogConfig): MdDialogConfig {
-    return Object.assign(new MdDialogConfig(), dialogConfig);
-  }
+/**
+ * Applies default options to the dialog config.
+ * @param dialogConfig Config to be modified.
+ * @returns The new configuration object.
+ */
+function _applyConfigDefaults(dialogConfig: MdDialogConfig): MdDialogConfig {
+  return extendObject(new MdDialogConfig(), dialogConfig);
 }
 
 

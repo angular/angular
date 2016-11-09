@@ -20,6 +20,7 @@ import {MdSnackBarConfig} from './snack-bar-config';
 import {MdSnackBarRef} from './snack-bar-ref';
 import {MdSnackBarContainer} from './snack-bar-container';
 import {SimpleSnackBar} from './simple-snack-bar';
+import {extendObject} from '../core/util/object-extend';
 
 // TODO(josephperrott): Automate dismiss after timeout.
 
@@ -124,7 +125,7 @@ export class MdSnackBar {
  * @returns The new configuration object with defaults applied.
  */
 function _applyConfigDefaults(config: MdSnackBarConfig): MdSnackBarConfig {
-  return Object.assign(new MdSnackBarConfig(), config);
+  return extendObject(new MdSnackBarConfig(), config);
 }
 
 
