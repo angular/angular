@@ -546,6 +546,26 @@ describe('applyRedirects', () => {
               e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\''); });
     });
   });
+
+  describe('custom path matchers', () => {
+    it('should use custom path matcher', () => {
+      const matcher = (s: any, g: any, r: any) => {
+        if (s[0].path === 'a') {
+          return {consumed: s.slice(0, 2), posParams: {id: s[1]}};
+        } else {
+          return null;
+        }
+      };
+
+      checkRedirect(
+          [{
+            matcher: matcher,
+            component: ComponentA,
+            children: [{path: 'b', component: ComponentB}]
+          }],
+          '/a/1/b', (t: UrlTree) => { compareTrees(t, tree('a/1/b')); });
+    });
+  });
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {

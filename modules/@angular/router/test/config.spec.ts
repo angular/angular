@@ -51,7 +51,14 @@ describe('config', () => {
               `Invalid configuration of route 'a': redirectTo and component cannot be used together`);
     });
 
-    it('should throw when path is missing', () => {
+
+    it('should throw when path and mathcer are used together', () => {
+      expect(() => { validateConfig([{path: 'a', matcher: <any>'someFunc', children: []}]); })
+          .toThrowError(
+              `Invalid configuration of route 'a': path and matcher cannot be used together`);
+    });
+
+    it('should throw when path and matcher are missing', () => {
       expect(() => {
         validateConfig([{component: null, redirectTo: 'b'}]);
       }).toThrowError(`Invalid route configuration: routes must have path specified`);

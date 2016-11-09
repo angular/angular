@@ -675,7 +675,7 @@ describe('Integration', () => {
        expect(cmp.activations.length).toEqual(1);
        expect(cmp.activations[0] instanceof BlankCmp).toBe(true);
 
-       router.navigateByUrl('/simple').catch(e => console.log(e));
+       router.navigateByUrl('/simple');
        advance(fixture);
 
        expect(cmp.activations.length).toEqual(2);
