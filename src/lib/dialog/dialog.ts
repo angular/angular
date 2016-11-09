@@ -40,7 +40,9 @@ export class MdDialog {
    * @param component Type of the component to load into the load.
    * @param config
    */
-  open<T>(component: ComponentType<T>, config = new MdDialogConfig()): MdDialogRef<T> {
+  open<T>(component: ComponentType<T>, config?: MdDialogConfig): MdDialogRef<T> {
+    config = this._applyConfigDefaults(config);
+
     let overlayRef = this._createOverlay(config);
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
 
@@ -124,6 +126,15 @@ export class MdDialog {
         .centerVertically();
 
     return state;
+  }
+
+  /**
+   * Applies default options to the dialog config.
+   * @param dialogConfig Config to be modified.
+   * @returns The new configuration object.
+   */
+  private _applyConfigDefaults(dialogConfig: MdDialogConfig): MdDialogConfig {
+    return Object.assign(new MdDialogConfig(), dialogConfig);
   }
 }
 

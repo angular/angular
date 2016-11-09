@@ -10,7 +10,6 @@ import {By} from '@angular/platform-browser';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdDialog, MdDialogModule} from './dialog';
 import {OverlayContainer} from '../core';
-import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
 
@@ -48,10 +47,9 @@ describe('MdDialog', () => {
   });
 
   it('should open a dialog with a component', () => {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = testViewContainerRef;
-
-    let dialogRef = dialog.open(PizzaMsg, config);
+    let dialogRef = dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
 
     viewContainerFixture.detectChanges();
 
@@ -79,11 +77,7 @@ describe('MdDialog', () => {
   });
 
   it('should apply the configured role to the dialog element', () => {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = testViewContainerRef;
-    config.role = 'alertdialog';
-
-    dialog.open(PizzaMsg, config);
+    dialog.open(PizzaMsg, { role: 'alertdialog' });
 
     viewContainerFixture.detectChanges();
 
@@ -92,10 +86,9 @@ describe('MdDialog', () => {
   });
 
   it('should close a dialog and get back a result', () => {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = testViewContainerRef;
-
-    let dialogRef = dialog.open(PizzaMsg, config);
+    let dialogRef = dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
 
     viewContainerFixture.detectChanges();
 
@@ -112,10 +105,9 @@ describe('MdDialog', () => {
 
 
   it('should close a dialog via the escape key', () => {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = testViewContainerRef;
-
-    dialog.open(PizzaMsg, config);
+    dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
 
     viewContainerFixture.detectChanges();
 
@@ -129,10 +121,9 @@ describe('MdDialog', () => {
   });
 
   it('should close when clicking on the overlay backdrop', () => {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = testViewContainerRef;
-
-    dialog.open(PizzaMsg, config);
+    dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
 
     viewContainerFixture.detectChanges();
 
@@ -144,11 +135,10 @@ describe('MdDialog', () => {
 
   describe('disableClose option', () => {
     it('should prevent closing via clicks on the backdrop', () => {
-      let config = new MdDialogConfig();
-      config.viewContainerRef = testViewContainerRef;
-      config.disableClose = true;
-
-      dialog.open(PizzaMsg, config);
+      dialog.open(PizzaMsg, {
+        disableClose: true,
+        viewContainerRef: testViewContainerRef
+      });
 
       viewContainerFixture.detectChanges();
 
@@ -159,11 +149,10 @@ describe('MdDialog', () => {
     });
 
     it('should prevent closing via the escape key', () => {
-      let config = new MdDialogConfig();
-      config.viewContainerRef = testViewContainerRef;
-      config.disableClose = true;
-
-      dialog.open(PizzaMsg, config);
+      dialog.open(PizzaMsg, {
+        disableClose: true,
+        viewContainerRef: testViewContainerRef
+      });
 
       viewContainerFixture.detectChanges();
 
@@ -189,10 +178,10 @@ describe('MdDialog', () => {
     });
 
     it('should focus the first tabbable element of the dialog on open', fakeAsync(() => {
-      let config = new MdDialogConfig();
-      config.viewContainerRef = testViewContainerRef;
+      dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef
+      });
 
-      dialog.open(PizzaMsg, config);
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
@@ -207,10 +196,10 @@ describe('MdDialog', () => {
       document.body.appendChild(button);
       button.focus();
 
-      let config = new MdDialogConfig();
-      config.viewContainerRef = testViewContainerRef;
+      let dialogRef = dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef
+      });
 
-      let dialogRef = dialog.open(PizzaMsg, config);
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 

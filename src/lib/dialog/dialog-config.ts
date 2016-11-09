@@ -15,7 +15,7 @@ export class MdDialogConfig {
   role?: DialogRole = 'dialog';
 
   /** Whether the user can use escape or clicking outside to close a modal. */
-  disableClose = false;
+  disableClose?: boolean = false;
 
   // TODO(jelbourn): add configuration for size, lifecycle hooks, ARIA labelling.
 }
