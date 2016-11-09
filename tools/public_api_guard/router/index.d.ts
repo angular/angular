@@ -218,6 +218,12 @@ export declare class Router {
 }
 
 /** @stable */
+export declare const ROUTER_CONFIGURATION: OpaqueToken;
+
+/** @experimental */
+export declare const ROUTER_INITIALIZER: OpaqueToken;
+
+/** @stable */
 export declare class RouterLink {
     fragment: string;
     preserveFragment: boolean;
@@ -293,6 +299,14 @@ export declare class RouterOutlet implements OnDestroy {
 export declare class RouterOutletMap {
     registerOutlet(name: string, outlet: RouterOutlet): void;
     removeOutlet(name: string): void;
+}
+
+/** @stable */
+export declare class RouterPreloader {
+    constructor(router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, preloadingStrategy: PreloadingStrategy);
+    ngOnDestroy(): void;
+    preload(): Observable<any>;
+    setUpPreloading(): void;
 }
 
 /** @stable */

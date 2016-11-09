@@ -14,8 +14,8 @@ PACKAGES=(core
   platform-webworker
   platform-webworker-dynamic
   http
-  router
   upgrade
+  router
   compiler-cli
   benchpress)
 BUILD_ALL=true
@@ -103,14 +103,21 @@ do
   UMD_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.js
   UMD_TESTING_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-testing.umd.js
   UMD_STATIC_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.js
+  UMD_UPGRADE_ES5_PATH=${DESTDIR}/bundles/${PACKAGE}-upgrade.umd.js
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
   UMD_STATIC_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.min.js
+  UMD_UPGRADE_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}-upgrade.umd.min.js
   LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
 
   rm -rf ${DESTDIR}
 
   echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-build.json        ====="
   $TSC -p ${SRCDIR}/tsconfig-build.json
+
+  if [[ -e ${SRCDIR}/tsconfig-upgrade.json ]]; then
+    echo "======      COMPILING: ${TSC} -p ${SRCDIR}/tsconfig-upgrade.json        ====="
+    $TSC -p ${SRCDIR}/tsconfig-upgrade.json
+  fi
 
   cp ${SRCDIR}/package.json ${DESTDIR}/
   cp ${PWD}/modules/@angular/README.md ${DESTDIR}/
@@ -171,6 +178,18 @@ do
         cat ${UMD_STATIC_ES5_PATH} >> ${UMD_STATIC_ES5_PATH}.tmp
         mv ${UMD_STATIC_ES5_PATH}.tmp ${UMD_STATIC_ES5_PATH}
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_STATIC_ES5_MIN_PATH} ${UMD_STATIC_ES5_PATH}
+      fi
+
+      if [[ -e rollup-upgrade.config.js ]]; then
+        echo "======         Rollup ${PACKAGE} upgrade"
+        ../../../node_modules/.bin/rollup -c rollup-upgrade.config.js
+        # create dir because it doesn't exist yet, we should move the src code here and remove this line
+        mkdir ${DESTDIR}/upgrade
+        echo "{\"main\": \"../bundles/${PACKAGE}-upgrade.umd.js\"}" > ${DESTDIR}/upgrade/package.json
+        cat ${LICENSE_BANNER} > ${UMD_UPGRADE_ES5_PATH}.tmp
+        cat ${UMD_UPGRADE_ES5_PATH} >> ${UMD_UPGRADE_ES5_PATH}.tmp
+        mv ${UMD_UPGRADE_ES5_PATH}.tmp ${UMD_UPGRADE_ES5_PATH}
+        $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_UPGRADE_ES5_MIN_PATH} ${UMD_UPGRADE_ES5_PATH}
       fi
     ) 2>&1 | grep -v "as external dependency"
 
