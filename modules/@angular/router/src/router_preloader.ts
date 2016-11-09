@@ -69,6 +69,8 @@ export class NoPreloading implements PreloadingStrategy {
  * will check if any configurations can be loaded lazily.
  *
  * If a route is protected by `canLoad` guards, the preloaded will not load it.
+ *
+ * @stable
  */
 @Injectable()
 export class RouterPreloader {
