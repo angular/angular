@@ -18,11 +18,11 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {Route, Routes} from './config';
+import {Route, Routes, UrlMatchResult} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
-import {NavigationCancelingError, PRIMARY_OUTLET} from './shared';
+import {NavigationCancelingError, PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {andObservables, merge, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 
 class NoMatch {
   constructor(public segmentGroup: UrlSegmentGroup = null) {}
@@ -316,34 +316,16 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
     }
   }
 
-  const path = route.path;
-  const parts = path.split('/');
-  const positionalParamSegments: {[k: string]: UrlSegment} = {};
-  const consumedSegments: UrlSegment[] = [];
+  const matcher = route.matcher || defaultUrlMatcher;
+  const res = matcher(segments, segmentGroup, route);
+  if (!res) return noMatch;
 
-  let currentIndex = 0;
-
-  for (let i = 0; i < parts.length; ++i) {
-    if (currentIndex >= segments.length) return noMatch;
-    const current = segments[currentIndex];
-
-    const p = parts[i];
-    const isPosParam = p.startsWith(':');
-
-    if (!isPosParam && p !== current.path) return noMatch;
-    if (isPosParam) {
-      positionalParamSegments[p.substring(1)] = current;
-    }
-    consumedSegments.push(current);
-    currentIndex++;
-  }
-
-  if (route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || currentIndex < segments.length)) {
-    return {matched: false, consumedSegments: [], lastChild: 0, positionalParamSegments: {}};
-  }
-
-  return {matched: true, consumedSegments, lastChild: currentIndex, positionalParamSegments};
+  return {
+    matched: true,
+    consumedSegments: res.consumed,
+    lastChild: res.consumed.length,
+    positionalParamSegments: res.posParams
+  };
 }
 
 function applyRedirectCommands(

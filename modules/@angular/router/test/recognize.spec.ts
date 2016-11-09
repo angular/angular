@@ -636,6 +636,30 @@ describe('recognize', () => {
     });
   });
 
+  describe('custom path matchers', () => {
+    it('should use custom path matcher', () => {
+      const matcher = (s: any, g: any, r: any) => {
+        if (s[0].path === 'a') {
+          return {consumed: s.slice(0, 2), posParams: {id: s[1]}};
+        } else {
+          return null;
+        }
+      };
+
+      checkRecognize(
+          [{
+            matcher: matcher,
+            component: ComponentA,
+            children: [{path: 'b', component: ComponentB}]
+          }],
+          '/a/1;p=99/b', (s: RouterStateSnapshot) => {
+            const a = s.root.firstChild;
+            checkActivatedRoute(a, 'a/1', {id: '1', p: '99'}, ComponentA);
+            checkActivatedRoute(a.firstChild, 'b', {}, ComponentB);
+          });
+    });
+  });
+
   describe('query parameters', () => {
     it('should support query params', () => {
       const config = [{path: 'a', component: ComponentA}];

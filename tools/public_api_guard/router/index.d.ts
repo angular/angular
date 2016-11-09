@@ -187,6 +187,7 @@ export interface Route {
     component?: Type<any>;
     data?: Data;
     loadChildren?: LoadChildren;
+    matcher?: UrlMatcher;
     outlet?: string;
     path?: string;
     pathMatch?: string;

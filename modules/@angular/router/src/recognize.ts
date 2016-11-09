@@ -11,11 +11,11 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, ResolveData, Route, Routes} from './config';
+import {Data, ResolveData, Route, Routes, UrlMatchResult} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
-import {last, merge} from './utils/collection';
+import {forEach, last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {}
@@ -174,35 +174,15 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
     }
   }
 
-  const path = route.path;
-  const parts = path.split('/');
-  const posParameters: {[key: string]: any} = {};
-  const consumedSegments: UrlSegment[] = [];
+  const matcher = route.matcher || defaultUrlMatcher;
+  const res = matcher(segments, segmentGroup, route);
+  if (!res) throw new NoMatch();
 
-  let currentIndex = 0;
+  const posParams: {[n: string]: string} = {};
+  forEach(res.posParams, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
+  const parameters = merge(posParams, res.consumed[res.consumed.length - 1].parameters);
 
-  for (let i = 0; i < parts.length; ++i) {
-    if (currentIndex >= segments.length) throw new NoMatch();
-    const current = segments[currentIndex];
-
-    const p = parts[i];
-    const isPosParam = p.startsWith(':');
-
-    if (!isPosParam && p !== current.path) throw new NoMatch();
-    if (isPosParam) {
-      posParameters[p.substring(1)] = current.path;
-    }
-    consumedSegments.push(current);
-    currentIndex++;
-  }
-
-  if (route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || currentIndex < segments.length)) {
-    throw new NoMatch();
-  }
-
-  const parameters = merge(posParameters, consumedSegments[consumedSegments.length - 1].parameters);
-  return {consumedSegments, lastChild: currentIndex, parameters};
+  return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
