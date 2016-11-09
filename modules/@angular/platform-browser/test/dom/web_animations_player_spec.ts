@@ -110,12 +110,12 @@ export function main() {
          expect(count).toEqual(2);
        });
 
-    it('should destroy itself automatically if a parent player is not present', () => {
+    it('should not destroy itself automatically if a parent player is not present', () => {
       captures['cancel'] = [];
       player.finish();
 
       expect(captures['finish'].length).toEqual(1);
-      expect(captures['cancel'].length).toEqual(1);
+      expect(captures['cancel'].length).toEqual(0);
 
       var next = makePlayer();
       var player2 = next['player'];
@@ -139,5 +139,20 @@ export function main() {
       player.play();
       expect(calls).toEqual(1);
     });
+
+    it('should not allow the player to be cancelled via destroy if it has already been destroyed unless reset',
+       () => {
+         captures['cancel'] = [];
+         expect(captures['cancel'].length).toBe(0);
+         player.destroy();
+         expect(captures['cancel'].length).toBe(1);
+         captures['cancel'] = [];
+         player.destroy();
+         expect(captures['cancel'].length).toBe(0);
+         player.reset();
+         captures['cancel'] = [];
+         player.destroy();
+         expect(captures['cancel'].length).toBe(1);
+       });
   });
 }

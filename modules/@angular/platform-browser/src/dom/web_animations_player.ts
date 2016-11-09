@@ -7,7 +7,6 @@
  */
 
 import {AUTO_STYLE} from '@angular/core';
-import {isPresent} from '../facade/lang';
 import {AnimationPlayer} from '../private_import_core';
 
 import {getDOM} from './dom_adapter';
@@ -16,11 +15,12 @@ import {DomAnimatePlayer} from './dom_animate_player';
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
-  private _finished = false;
-  private _initialized = false;
   private _player: DomAnimatePlayer;
-  private _started: boolean = false;
   private _duration: number;
+  private _initialized = false;
+  private _finished = false;
+  private _started = false;
+  private _destroyed = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -33,9 +33,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      if (!isPresent(this.parentPlayer)) {
-        this.destroy();
-      }
       this._onDoneFns.forEach(fn => fn());
       this._onDoneFns = [];
     }
@@ -57,7 +54,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
 
     // this is required so that the player doesn't start to animate right away
-    this.reset();
+    this._resetDomPlayerState();
     this._player.onfinish = () => this._onFinish();
   }
 
@@ -91,7 +88,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._player.finish();
   }
 
-  reset(): void { this._player.cancel(); }
+  reset(): void {
+    this._resetDomPlayerState();
+    this._destroyed = false;
+    this._finished = false;
+    this._started = false;
+  }
+
+  private _resetDomPlayerState() { this._player.cancel(); }
 
   restart(): void {
     this.reset();
@@ -101,8 +105,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   hasStarted(): boolean { return this._started; }
 
   destroy(): void {
-    this.reset();
-    this._onFinish();
+    if (!this._destroyed) {
+      this._resetDomPlayerState();
+      this._onFinish();
+      this._destroyed = true;
+    }
   }
 
   get totalTime(): number { return this._duration; }
