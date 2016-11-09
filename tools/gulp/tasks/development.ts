@@ -10,7 +10,11 @@ import {
 
 const appDir = path.join(SOURCE_ROOT, 'demo-app');
 const outDir = DIST_ROOT;
-
+const LIVERELOAD_PATTERNS = [
+  /material\.umd\.js$/,
+  /-demo\.[a-z]+$/,
+  /\/theming\/prebuilt/
+];
 
 task(':watch:devapp', () => {
   watch(path.join(appDir, '**/*.ts'), [':build:devapp:ts']);
@@ -25,7 +29,13 @@ task(':build:devapp:scss', [':build:components:scss'], sassBuildTask(outDir, app
 task(':build:devapp:assets', copyTask(appDir, outDir));
 task('build:devapp', buildAppTask('devapp'));
 
-task(':serve:devapp', serverTask());
+task(':serve:devapp', serverTask({
+  enable: true,
+  filter: (filename: string, callback: Function) => {
+    callback(LIVERELOAD_PATTERNS.some(pattern => pattern.test(filename)));
+  }
+}));
+
 task('serve:devapp', ['build:devapp'], sequenceTask(
   [':serve:devapp', ':watch:components', ':watch:devapp']
 ));

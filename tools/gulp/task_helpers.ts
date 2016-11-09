@@ -185,10 +185,15 @@ export function vendorTask() {
     }));
 }
 
+export type livereloadOptions = boolean | {
+  enable: boolean;
+  filter: (filename: string, callback: (isAllowed: boolean) => void) => void;
+}
 
 /** Create a task that serves the dist folder. */
-export function serverTask(liveReload = true,
+export function serverTask(liveReload: livereloadOptions = true,
                            streamCallback: (stream: NodeJS.ReadWriteStream) => void = null) {
+
   return () => {
     const stream = gulp.src('dist').pipe(gulpServer({
       livereload: liveReload,
