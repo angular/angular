@@ -80,6 +80,16 @@ describe('MdButton', () => {
       expect(testComponent.clickCount).toBe(0);
     });
 
+    it('should disable the native button element', () => {
+      let fixture = TestBed.createComponent(TestApp);
+      let buttonNativeElement = fixture.nativeElement.querySelector('button');
+      expect(buttonNativeElement.disabled).toBeFalsy('Expected button not to be disabled');
+
+      fixture.componentInstance.isDisabled = true;
+      fixture.detectChanges();
+      expect(buttonNativeElement.disabled).toBeTruthy('Expected button to be disabled');
+    });
+
   });
 
   // Anchor button tests

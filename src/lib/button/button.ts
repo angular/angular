@@ -21,7 +21,7 @@ import {MdRippleModule, coerceBooleanProperty} from '../core';
   selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
             'button[md-fab], button[md-mini-fab]',
   host: {
-    '[attr.disabled]': 'disabled',
+    '[disabled]': 'disabled',
     '[class.md-button-focus]': '_isKeyboardFocused',
     '(mousedown)': '_setMousedown()',
     '(focus)': '_setKeyboardFocus()',
