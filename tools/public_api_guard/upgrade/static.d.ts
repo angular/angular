@@ -1,5 +1,9 @@
 /** @experimental */
-export declare function downgradeComponent(info: ComponentInfo): angular.IInjectable;
+export declare function downgradeComponent(info: {
+    component: Type<any>;
+    inputs?: string[];
+    outputs?: string[];
+}): any;
 
 /** @experimental */
 export declare function downgradeInjectable(token: any): (string | ((i: Injector) => any))[];
@@ -15,9 +19,11 @@ export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnD
 
 /** @experimental */
 export declare class UpgradeModule {
-    $injector: angular.IInjectorService;
+    $injector: any;
     injector: Injector;
     ngZone: NgZone;
-    constructor(injector: Injector, ngZone: NgZone);
-    bootstrap(element: Element, modules?: string[], config?: angular.IAngularBootstrapConfig): void;
+    constructor(
+        injector: Injector,
+        ngZone: NgZone);
+    bootstrap(element: Element, modules?: string[], config?: any): void;
 }
