@@ -13,6 +13,7 @@
 import * as compiler from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
+import {readFileSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -21,8 +22,6 @@ import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from './static_reflector';
-
-const nodeFs = require('fs');
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
@@ -100,7 +99,7 @@ export class CodeGenerator {
         throw new Error(
             `The translation file (${transFile}) locale must be provided. Use the --locale option.`);
       }
-      transContent = nodeFs.readFileSync(transFile, 'utf8');
+      transContent = readFileSync(transFile, 'utf8');
     }
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
