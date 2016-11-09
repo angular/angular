@@ -217,6 +217,19 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(nativeEl).not.toHaveCssClass('initial');
       });
 
+      it('should consume binding to htmlFor using for alias', () => {
+        const template = '<label [for]="ctxProp"></label>';
+        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+                            .overrideComponent(MyComp, {set: {template}})
+                            .createComponent(MyComp);
+
+        const nativeEl = fixture.debugElement.children[0].nativeElement;
+        fixture.debugElement.componentInstance.ctxProp = 'foo';
+        fixture.detectChanges();
+
+        expect(nativeEl.htmlFor).toBe('foo');
+      });
+
       it('should consume directive watch expression change.', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
         const template = '<span>' +

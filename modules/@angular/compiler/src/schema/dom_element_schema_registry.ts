@@ -231,6 +231,7 @@ const SCHEMA:
 
 const _ATTR_TO_PROP: {[name: string]: string} = {
   'class': 'className',
+  'for': 'htmlFor',
   'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
