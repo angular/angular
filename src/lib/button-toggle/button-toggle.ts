@@ -66,7 +66,10 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   /** Whether the button toggle group is initialized or not. */
   private _isInitialized: boolean = false;
 
-  /** The method to be called in order to update ngModel. */
+  /**
+   * The method to be called in order to update ngModel.
+   * Now `ngModel` binding is not supported in multiple selection mode.
+   */
   private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
@@ -200,7 +203,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   }
 }
 
-/** Multiple selection button-toggle group. */
+/** Multiple selection button-toggle group. `ngModel` is not supported in this mode. */
 @Directive({
   selector: 'md-button-toggle-group[multiple]',
   exportAs: 'mdButtonToggleGroup',

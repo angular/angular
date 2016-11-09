@@ -44,7 +44,7 @@ Output:
 
 `md-button-toggle` can be used in a multiple selection group when surrounded by
 `md-button-toggle-group multiple`. This styles all buttons within the group to appear as a single
-group of button toggles.
+group of button toggles. This component does not yet support `NgModel` when using `multiple` mode.
 
 ```html
 <md-button-toggle-group multiple>
