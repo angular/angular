@@ -7322,9 +7322,9 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-beta.12",
-      "from": "rxjs@5.0.0-beta.12",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.12.tgz"
+      "version": "5.0.0-rc.2",
+      "from": "rxjs@5.0.0-rc.2",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-rc.2.tgz"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",

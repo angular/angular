@@ -10,7 +10,7 @@ PKGS=(
   reflect-metadata@0.1.8
   typescript@2.0.2
   zone.js@0.6.25
-  rxjs@5.0.0-beta.12
+  rxjs@5.0.0-rc.2
   @types/{node@6.0.38,jasmine@2.2.33}
   jasmine@2.4.1
   webpack@2.1.0-beta.21
