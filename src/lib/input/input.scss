@@ -19,6 +19,7 @@ md-input, md-textarea {
   display: inline-block;
   position: relative;
   font-family: $md-font-family;
+  line-height: normal;
 
   // To avoid problems with text-align.
   text-align: left;
