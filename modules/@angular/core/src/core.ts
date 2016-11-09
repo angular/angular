@@ -14,7 +14,7 @@
 export * from './metadata';
 export * from './util';
 export * from './di';
-export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, enableProdMode, isDevMode, createPlatformFactory} from './application_ref';
+export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, enableProdMode, isDevMode, createPlatformFactory, NgProbeToken} from './application_ref';
 export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, APP_BOOTSTRAP_LISTENER} from './application_tokens';
 export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 export * from './zone';

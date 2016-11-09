@@ -58,8 +58,10 @@ export declare class HammerGestureConfig {
     buildHammer(element: HTMLElement): HammerInstance;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class NgProbeToken {
+    name: string;
+    token: any;
     constructor(name: string, token: any);
 }
 

@@ -154,7 +154,8 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   get _RootRenderer_20(): any {
     if ((this.__RootRenderer_20 == (null as any))) {
       (this.__RootRenderer_20 = import23._createConditionalRootRenderer(
-           this._DomRootRenderer_19, this.parent.get(import23.NgProbeToken, (null as any))));
+           this._DomRootRenderer_19, this.parent.get(import23.NgProbeToken, (null as any)),
+           this.parent.get(import8.NgProbeToken, (null as any))));
     }
     return this.__RootRenderer_20;
   }

@@ -600,6 +600,13 @@ export declare abstract class NgModuleRef<T> {
 }
 
 /** @experimental */
+export declare class NgProbeToken {
+    name: string;
+    token: any;
+    constructor(name: string, token: any);
+}
+
+/** @experimental */
 export declare class NgZone {
     hasPendingMacrotasks: boolean;
     hasPendingMicrotasks: boolean;
