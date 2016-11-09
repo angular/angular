@@ -11,7 +11,7 @@ import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -149,11 +149,19 @@ export function main() {
 
     afterEach(destroyPlatform);
 
-    it('should throw if bootstrapped Directive is not a Component', () => {
-      expect(() => bootstrap(HelloRootDirectiveIsNotCmp))
-          .toThrowError(
-              `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-    });
+    it('should throw if bootstrapped Directive is not a Component',
+       inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
+         var logger = new MockConsole();
+         var errorHandler = new ErrorHandler(false);
+         errorHandler._console = logger as any;
+         bootstrap(HelloRootDirectiveIsNotCmp, [
+           {provide: ErrorHandler, useValue: errorHandler}
+         ]).catch((e) => {
+           expect(e.message).toBe(
+               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
+           done.done();
+         });
+       }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
