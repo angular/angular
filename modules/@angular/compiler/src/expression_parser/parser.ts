@@ -102,8 +102,17 @@ export class Parser {
     return new Quote(new ParseSpan(0, input.length), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(input: string, location: any): TemplateBindingParseResult {
-    var tokens = this._lexer.tokenize(input);
+  parseTemplateBindings(prefixToken: string, input: string, location: any):
+      TemplateBindingParseResult {
+    const tokens = this._lexer.tokenize(input);
+    if (prefixToken) {
+      // Prefix the tokens with the tokens from prefixToken but have them take no space (0 index).
+      const prefixTokens = this._lexer.tokenize(prefixToken).map(t => {
+        t.index = 0;
+        return t;
+      });
+      tokens.unshift(...prefixTokens);
+    }
     return new _ParseAST(input, location, tokens, input.length, false, this.errors, 0)
         .parseTemplateBindings();
   }
@@ -161,6 +170,8 @@ export class Parser {
             'Blank expressions are not allowed in interpolated strings', input,
             `at column ${this._findInterpolationErrorColumn(parts, i, interpolationConfig)} in`,
             location);
+        expressions.push('$implict');
+        offsets.push(offset);
       }
     }
     return new SplitInterpolation(strings, expressions, offsets);
@@ -676,6 +687,7 @@ export class _ParseAST {
     let prefix: string = null;
     let warnings: string[] = [];
     while (this.index < this.tokens.length) {
+      const start = this.inputIndex;
       const keyIsVar: boolean = this.peekKeywordLet();
       if (keyIsVar) {
         this.advance();
@@ -700,10 +712,10 @@ export class _ParseAST {
       } else if (this.next !== EOF && !this.peekKeywordLet()) {
         const start = this.inputIndex;
         const ast = this.parsePipe();
-        const source = this.input.substring(start, this.inputIndex);
+        const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
         expression = new ASTWithSource(ast, source, this.location, this.errors);
       }
-      bindings.push(new TemplateBinding(key, keyIsVar, name, expression));
+      bindings.push(new TemplateBinding(this.span(start), key, keyIsVar, name, expression));
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
       }

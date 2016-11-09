@@ -112,9 +112,9 @@ export class BindingParser {
   }
 
   parseInlineTemplateBinding(
-      name: string, value: string, sourceSpan: ParseSourceSpan, targetMatchableAttrs: string[][],
-      targetProps: BoundProperty[], targetVars: VariableAst[]) {
-    const bindings = this._parseTemplateBindings(value, sourceSpan);
+      name: string, prefixToken: string, value: string, sourceSpan: ParseSourceSpan,
+      targetMatchableAttrs: string[][], targetProps: BoundProperty[], targetVars: VariableAst[]) {
+    const bindings = this._parseTemplateBindings(prefixToken, value, sourceSpan);
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
       if (binding.keyIsVar) {
@@ -129,11 +129,12 @@ export class BindingParser {
     }
   }
 
-  private _parseTemplateBindings(value: string, sourceSpan: ParseSourceSpan): TemplateBinding[] {
+  private _parseTemplateBindings(prefixToken: string, value: string, sourceSpan: ParseSourceSpan):
+      TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult = this._exprParser.parseTemplateBindings(value, sourceInfo);
+      const bindingsResult = this._exprParser.parseTemplateBindings(prefixToken, value, sourceInfo);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (isPresent(binding.expression)) {

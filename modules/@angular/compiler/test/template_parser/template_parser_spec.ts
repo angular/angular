@@ -1192,7 +1192,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
             it('should report an error on variables declared with #', () => {
               expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
-                  .toThrowError(/Parser Error: Unexpected token # at column 6/);
+                  .toThrowError(/Parser Error: Unexpected token # at column 1/);
             });
 
             it('should parse variables via let ...', () => {

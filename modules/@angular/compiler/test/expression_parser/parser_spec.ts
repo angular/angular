@@ -28,11 +28,12 @@ export function main() {
   }
 
   function parseTemplateBindingsResult(
-      text: string, location: any = null): TemplateBindingParseResult {
-    return createParser().parseTemplateBindings(text, location);
+      text: string, location: any = null, prefix?: string): TemplateBindingParseResult {
+    return createParser().parseTemplateBindings(prefix, text, location);
   }
-  function parseTemplateBindings(text: string, location: any = null): TemplateBinding[] {
-    return parseTemplateBindingsResult(text, location).templateBindings;
+  function parseTemplateBindings(
+      text: string, location: any = null, prefix?: string): TemplateBinding[] {
+    return parseTemplateBindingsResult(text, location, prefix).templateBindings;
   }
 
   function parseInterpolation(text: string, location: any = null): ASTWithSource {
@@ -327,6 +328,11 @@ export function main() {
         });
       }
 
+      function keySpans(source: string, templateBindings: TemplateBinding[]) {
+        return templateBindings.map(
+            binding => source.substring(binding.span.start, binding.span.end));
+      }
+
       function exprSources(templateBindings: any[]) {
         return templateBindings.map(
             binding => isPresent(binding.expression) ? binding.expression.source : null);
@@ -428,6 +434,30 @@ export function main() {
         var bindings = parseTemplateBindings('key value|pipe');
         var ast = bindings[0].expression.ast;
         expect(ast).toBeAnInstanceOf(BindingPipe);
+      });
+
+      describe('spans', () => {
+        it('should should support let', () => {
+          const source = 'let i';
+          expect(keySpans(source, parseTemplateBindings(source))).toEqual(['let i']);
+        });
+
+        it('should support multiple lets', () => {
+          const source = 'let item; let i=index; let e=even;';
+          expect(keySpans(source, parseTemplateBindings(source))).toEqual([
+            'let item', 'let i=index', 'let e=even'
+          ]);
+        });
+
+        it('should support a prefix', () => {
+          var source = 'let person of people';
+          var prefix = 'ngFor';
+          var bindings = parseTemplateBindings(source, null, prefix);
+          expect(keyValues(bindings)).toEqual([
+            'ngFor', 'let person=$implicit', 'ngForOf=people in null'
+          ]);
+          expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+        });
       });
     });
 
