@@ -23,7 +23,7 @@ import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY
  */
 @NgModule({providers: angular1Providers})
 export class UpgradeModule {
-  public $injector: angular.IInjectorService;
+  public $injector: any /*angular.IInjectorService*/;
 
   constructor(public injector: Injector, public ngZone: NgZone) {}
 
@@ -33,7 +33,8 @@ export class UpgradeModule {
    * @param [modules] the Angular 1 modules to bootstrap for this application
    * @param [config] optional extra Angular 1 bootstrap configuration
    */
-  bootstrap(element: Element, modules: string[] = [], config?: angular.IAngularBootstrapConfig) {
+  bootstrap(
+      element: Element, modules: string[] = [], config?: any /*angular.IAngularBootstrapConfig*/) {
     // Create an ng1 module to bootstrap
     const upgradeModule =
         angular

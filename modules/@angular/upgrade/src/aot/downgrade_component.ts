@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactory, ComponentFactoryResolver, Injector} from '@angular/core';
+import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 import * as angular from '../angular_js';
 
-import {ComponentInfo} from './component_info';
 import {$INJECTOR, $PARSE, INJECTOR_KEY} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 
@@ -19,7 +18,11 @@ let downgradeCount = 0;
 /**
  * @experimental
  */
-export function downgradeComponent(info: ComponentInfo): angular.IInjectable {
+export function downgradeComponent(info: /* ComponentInfo */ {
+  component: Type<any>;
+  inputs?: string[];
+  outputs?: string[];
+}): any /* angular.IInjectable */ {
   const idPrefix = `NG2_UPGRADE_${downgradeCount++}_`;
   let idCount = 0;
 
