@@ -14,7 +14,7 @@
            (blur)="_onInputBlur()"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
-    <div md-ripple *ngIf="!disableRipple" class="md-checkbox-ripple"
+    <div md-ripple *ngIf="!_isRippleDisabled()" class="md-checkbox-ripple"
          [md-ripple-trigger]="getHostElement()"
          [md-ripple-centered]="true"
          [md-ripple-speed-factor]="0.3"

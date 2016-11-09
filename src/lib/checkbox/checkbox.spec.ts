@@ -153,6 +153,17 @@ describe('MdCheckbox', () => {
       expect(inputElement.disabled).toBe(false);
     });
 
+    it('should not have a ripple when disabled', () => {
+      let rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
+      expect(rippleElement).toBeTruthy('Expected an enabled checkbox to have a ripple');
+
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      rippleElement = checkboxNativeElement.querySelector('[md-ripple]');
+      expect(rippleElement).toBeFalsy('Expected a disabled checkbox not to have a ripple');
+    });
+
     it('should not toggle `checked` state upon interation while disabled', () => {
       testComponent.isDisabled = true;
       fixture.detectChanges();

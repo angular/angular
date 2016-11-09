@@ -218,6 +218,17 @@ describe('MdRadio', () => {
       expect(radioInstances.every(radio => !radio.checked)).toBe(true);
     });
 
+    it('should not have a ripple on disabled radio buttons', () => {
+      let rippleElement = radioNativeElements[0].querySelector('[md-ripple]');
+      expect(rippleElement).toBeTruthy('Expected an enabled radio button to have a ripple');
+
+      radioInstances[0].disabled = true;
+      fixture.detectChanges();
+
+      rippleElement = radioNativeElements[0].querySelector('[md-ripple]');
+      expect(rippleElement).toBeFalsy('Expected a disabled radio button not to have a ripple');
+    });
+
     it('should remove ripple if md-ripple-disabled input is set', async(() => {
       fixture.detectChanges();
       for (let radioNativeElement of radioNativeElements)

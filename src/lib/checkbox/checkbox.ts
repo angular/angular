@@ -217,6 +217,10 @@ export class MdCheckbox implements ControlValueAccessor {
     }
   }
 
+  _isRippleDisabled() {
+    return this.disableRipple || this.disabled;
+  }
+
   /**
    * Implemented as part of ControlValueAccessor.
    * TODO: internal

@@ -1,5 +1,5 @@
 <span class="md-button-wrapper"><ng-content></ng-content></span>
-<div md-ripple *ngIf="isRippleEnabled()" class="md-button-ripple"
+<div md-ripple *ngIf="!_isRippleDisabled()" class="md-button-ripple"
     [class.md-button-ripple-round]="isRoundButton()"
     [md-ripple-trigger]="getHostElement()"
     [md-ripple-color]="isRoundButton() ? 'rgba(255, 255, 255, 0.2)' : ''"
