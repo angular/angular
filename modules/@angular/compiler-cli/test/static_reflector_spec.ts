@@ -337,6 +337,25 @@ describe('StaticReflector', () => {
             'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
+  it('should record data about the error in the exception', () => {
+    let threw = false;
+    try {
+      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts');
+      expect(metadata).toBeDefined();
+      if (!Array.isArray(metadata)) {
+        const moduleMetadata: any = metadata['metadata'];
+        expect(moduleMetadata).toBeDefined();
+        const classData: any = moduleMetadata['InvalidMetadata'];
+        expect(classData).toBeDefined();
+        simplify(new StaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
+      }
+    } catch (e) {
+      expect(e.fileName).toBe('/tmp/src/invalid-metadata.ts');
+      threw = true;
+    }
+    expect(threw).toBe(true);
+  });
+
   it('should error on indirect recursive calls', () => {
     expect(
         () => simplify(
@@ -1040,6 +1059,14 @@ class MockReflectorHost implements StaticReflectorHost {
         export class MethodReference {
 
         }
+      `,
+      '/tmp/src/invalid-metadata.ts': `
+        import {Component} from 'angular2/src/core/metadata';
+
+        @Component({
+          providers: [ { provider: 'a', useValue: (() => 1)() }]
+        })
+        export class InvalidMetadata {}
       `
     };
 
@@ -1047,7 +1074,8 @@ class MockReflectorHost implements StaticReflectorHost {
     if (data[moduleId] && moduleId.match(TS_EXT)) {
       let text = data[moduleId];
       if (typeof text === 'string') {
-        let sf = ts.createSourceFile(moduleId, data[moduleId], ts.ScriptTarget.ES5);
+        let sf = ts.createSourceFile(
+            moduleId, data[moduleId], ts.ScriptTarget.ES5, /* setParentNodes */ true);
         let diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
         if (diagnostics && diagnostics.length) {
           throw Error(`Error encountered during parse of file ${moduleId}`);
