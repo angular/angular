@@ -1,5 +1,5 @@
 import {Component, ViewContainerRef} from '@angular/core';
-import {MdSnackBar, MdSnackBarConfig} from '@angular/material';
+import {MdSnackBar} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -16,7 +16,6 @@ export class SnackBarDemo {
       public viewContainerRef: ViewContainerRef) { }
 
   open() {
-    let config = new MdSnackBarConfig(this.viewContainerRef);
-    this.snackBar.open(this.message, this.action && this.actionButtonLabel, config);
+    this.snackBar.open(this.message, this.action && this.actionButtonLabel);
   }
 }
