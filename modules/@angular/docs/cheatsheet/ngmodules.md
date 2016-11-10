@@ -49,7 +49,7 @@ List of components, directives, and pipes visible to modules that import this mo
 syntax:
 `providers: [MyService, { provide: ... }]`|`providers:`
 description:
-List of dependency injection providers visible both to the contents of this module and to importers of this module.
+List of dependency injection providers visible everywhere in the application.
 
 @cheatsheetItem
 syntax:
