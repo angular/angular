@@ -15,7 +15,7 @@ import {DomRootRenderer} from '../dom_renderer';
 
 const CORE_TOKENS = {
   'ApplicationRef': core.ApplicationRef,
-  'NgZone': core.NgZone
+  'NgZone': core.NgZone,
 };
 
 const INSPECT_GLOBAL_NAME = 'ng.probe';
@@ -26,7 +26,7 @@ const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
  * null if the given native element does not have an Angular view associated
  * with it.
  */
-export function inspectNativeElement(element: any /** TODO #9100 */): core.DebugNode {
+export function inspectNativeElement(element: any): core.DebugNode {
   return core.getDebugNode(element);
 }
 
@@ -40,16 +40,13 @@ export class NgProbeToken {
 
 
 export function _createConditionalRootRenderer(
-    rootRenderer: any /** TODO #9100 */, extraTokens: NgProbeToken[],
-    coreTokens: core.NgProbeToken[]) {
-  if (core.isDevMode()) {
-    const tokens = (extraTokens || []).concat(coreTokens || []);
-    return _createRootRenderer(rootRenderer, tokens);
-  }
-  return rootRenderer;
+    rootRenderer: any, extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]) {
+  return core.isDevMode() ?
+      _createRootRenderer(rootRenderer, (extraTokens || []).concat(coreTokens || [])) :
+      rootRenderer;
 }
 
-function _createRootRenderer(rootRenderer: any /** TODO #9100 */, extraTokens: NgProbeToken[]) {
+function _createRootRenderer(rootRenderer: any, extraTokens: NgProbeToken[]) {
   getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   getDOM().setGlobalVar(
       CORE_TOKENS_GLOBAL_NAME,
