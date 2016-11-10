@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -41,15 +41,6 @@ export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
  */
 export const ROUTER_FORROOT_GUARD = new OpaqueToken('ROUTER_FORROOT_GUARD');
 
-const pathLocationStrategy = {
-  provide: LocationStrategy,
-  useClass: PathLocationStrategy
-};
-const hashLocationStrategy = {
-  provide: LocationStrategy,
-  useClass: HashLocationStrategy
-};
-
 export const ROUTER_PROVIDERS: Provider[] = [
   Location, {provide: UrlSerializer, useClass: DefaultUrlSerializer}, {
     provide: Router,
@@ -63,6 +54,10 @@ export const ROUTER_PROVIDERS: Provider[] = [
   {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader}, RouterPreloader, NoPreloading,
   PreloadAllModules, {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}}
 ];
+
+export function routerNgProbeToken() {
+  return new NgProbeToken('Router', Router);
+}
 
 /**
  * @whatItDoes Adds router directives and providers.
@@ -152,6 +147,7 @@ export class RouterModule {
           useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
                                                              NoPreloading
         },
+        {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         provideRouterInitializer()
       ]
     };

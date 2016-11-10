@@ -61,6 +61,15 @@ export function isDevMode(): boolean {
 }
 
 /**
+ * A token for third-party components that can register themselves with NgProbe.
+ *
+ * @experimental
+ */
+export class NgProbeToken {
+  constructor(public name: string, public token: any) {}
+}
+
+/**
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
  *
