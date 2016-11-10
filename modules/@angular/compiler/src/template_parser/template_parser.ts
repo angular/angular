@@ -237,9 +237,9 @@ class TemplateParseVisitor implements html.Visitor {
   visitElement(element: html.Element, parent: ElementContext): any {
     const nodeName = element.name;
     const preparsedElement = preparseElement(element);
-    if (preparsedElement.type === PreparsedElementType.SCRIPT ||
+    if (preparsedElement.type === PreparsedElementType.JAVASCRIPT ||
         preparsedElement.type === PreparsedElementType.STYLE) {
-      // Skipping <script> for security reasons
+      // Skipping <script> containing JS for security reasons
       // Skipping <style> as we already processed them
       // in the StyleCompiler
       return null;
@@ -733,7 +733,7 @@ class TemplateParseVisitor implements html.Visitor {
 class NonBindableVisitor implements html.Visitor {
   visitElement(ast: html.Element, parent: ElementContext): ElementAst {
     const preparsedElement = preparseElement(ast);
-    if (preparsedElement.type === PreparsedElementType.SCRIPT ||
+    if (preparsedElement.type === PreparsedElementType.JAVASCRIPT ||
         preparsedElement.type === PreparsedElementType.STYLE ||
         preparsedElement.type === PreparsedElementType.STYLESHEET) {
       // Skipping <script> for security reasons

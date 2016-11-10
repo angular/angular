@@ -1534,9 +1534,16 @@ Property binding a not used by any directive on an embedded template. Make sure 
         });
 
         describe('ignore elements', () => {
-          it('should ignore <script> elements', () => {
-            expect(humanizeTplAst(parse('<script></script>a', []))).toEqual([[TextAst, 'a']]);
-
+          it('should ignore <script> elements with JS content', () => {
+            expect(humanizeTplAst(parse('<script></script>a', []))).toEqual([
+              [TextAst, 'a'],
+            ]);
+            expect(humanizeTplAst(parse('<script type="application/ld+json"></script>a', [])))
+                .toEqual([
+                  [ElementAst, 'script'],
+                  [AttrAst, 'type', 'application/ld+json'],
+                  [TextAst, 'a'],
+                ]);
           });
 
           it('should ignore <style> elements', () => {
@@ -1549,8 +1556,10 @@ Property binding a not used by any directive on an embedded template. Make sure 
                () => {
                  expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
                      .toEqual([
-                       [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
-                       [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
+                       [ElementAst, 'link'],
+                       [AttrAst, 'rel', 'stylesheet'],
+                       [AttrAst, 'href', 'http://someurl'],
+                       [TextAst, 'a'],
                      ]);
                });
 
