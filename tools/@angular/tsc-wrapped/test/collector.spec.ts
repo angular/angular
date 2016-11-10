@@ -15,7 +15,7 @@ import {Directory, Host, expectValidSources} from './typescript.mocks';
 
 describe('Collector', () => {
   let documentRegistry = ts.createDocumentRegistry();
-  let host: ts.LanguageServiceHost;
+  let host: Host;
   let service: ts.LanguageService;
   let program: ts.Program;
   let collector: MetadataCollector;
@@ -589,6 +589,28 @@ describe('Collector', () => {
           .toThrowError(/Reference to non-exported class/);
     });
   });
+
+  describe('with invalid input', () => {
+    it('should not throw with a class with no name', () => {
+      const fileName = '/invalid-class.ts';
+      override(fileName, 'export class');
+      let invalidClass = program.getSourceFile(fileName);
+      expect(() => collector.getMetadata(invalidClass)).not.toThrow();
+    });
+
+    it('should not throw with a function with no name', () => {
+      const fileName = '/invalid-function.ts';
+      override(fileName, 'export function');
+      let invalidFunction = program.getSourceFile(fileName);
+      expect(() => collector.getMetadata(invalidFunction)).not.toThrow();
+    });
+  });
+
+  function override(fileName: string, content: string) {
+    host.overrideFile(fileName, content);
+    host.addFile(fileName);
+    program = service.getProgram();
+  }
 });
 
 // TODO: Do not use \` in a template literal as it confuses clang-format

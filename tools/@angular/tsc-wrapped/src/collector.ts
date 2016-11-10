@@ -205,12 +205,14 @@ export class MetadataCollector {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
           const classDeclaration = <ts.ClassDeclaration>node;
-          const className = classDeclaration.name.text;
-          if (node.flags & ts.NodeFlags.Export) {
-            locals.define(className, {__symbolic: 'reference', name: className});
-          } else {
-            locals.define(
-                className, errorSym('Reference to non-exported class', node, {className}));
+          if (classDeclaration.name) {
+            const className = classDeclaration.name.text;
+            if (node.flags & ts.NodeFlags.Export) {
+              locals.define(className, {__symbolic: 'reference', name: className});
+            } else {
+              locals.define(
+                  className, errorSym('Reference to non-exported class', node, {className}));
+            }
           }
           break;
         case ts.SyntaxKind.FunctionDeclaration:
@@ -218,9 +220,12 @@ export class MetadataCollector {
             // Report references to this function as an error.
             const functionDeclaration = <ts.FunctionDeclaration>node;
             const nameNode = functionDeclaration.name;
-            locals.define(
-                nameNode.text,
-                errorSym('Reference to a non-exported function', nameNode, {name: nameNode.text}));
+            if (nameNode && nameNode.text) {
+              locals.define(
+                  nameNode.text,
+                  errorSym(
+                      'Reference to a non-exported function', nameNode, {name: nameNode.text}));
+            }
           }
           break;
       }
@@ -248,11 +253,13 @@ export class MetadataCollector {
           break;
         case ts.SyntaxKind.ClassDeclaration:
           const classDeclaration = <ts.ClassDeclaration>node;
-          const className = classDeclaration.name.text;
-          if (node.flags & ts.NodeFlags.Export) {
-            if (classDeclaration.decorators) {
-              if (!metadata) metadata = {};
-              metadata[className] = classMetadataOf(classDeclaration);
+          if (classDeclaration.name) {
+            const className = classDeclaration.name.text;
+            if (node.flags & ts.NodeFlags.Export) {
+              if (classDeclaration.decorators) {
+                if (!metadata) metadata = {};
+                metadata[className] = classMetadataOf(classDeclaration);
+              }
             }
           }
           // Otherwise don't record metadata for the class.
