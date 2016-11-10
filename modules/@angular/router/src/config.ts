@@ -350,10 +350,26 @@ export interface Route {
 }
 
 export function validateConfig(config: Routes): void {
-  config.forEach(validateNode);
+  // forEach doesn't iterate undefined values
+  for (let i = 0; i < config.length; i++) {
+    validateNode(config[i]);
+  }
 }
 
 function validateNode(route: Route): void {
+  if (!route) {
+    throw new Error(`
+      Invalid route configuration: Encountered undefined route.
+      The reason might be an extra comma.
+       
+      Example: 
+      const routes: Routes = [
+        { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+        { path: 'dashboard',  component: DashboardComponent },, << two commas
+        { path: 'detail/:id', component: HeroDetailComponent }
+      ];
+    `);
+  }
   if (Array.isArray(route)) {
     throw new Error(`Invalid route configuration: Array cannot be specified`);
   }
