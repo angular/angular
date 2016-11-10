@@ -7,11 +7,9 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
-import {browser, by, element} from 'protractor';
+import {browser, by, element, protractor} from 'protractor';
 
-// TODO: Key exists on protractor; however, the typings for these are from
-// @types/selenium-webdriver which needs to be fixed.
-const Key = require('selenium-webdriver').Key;
+const Key = protractor.Key;
 
 describe('key_events', function() {
 
