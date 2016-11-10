@@ -29,12 +29,12 @@ You can include a theme file directly into your application from
 If you're using Angular CLI, this is as simple as including one line
 in your `style.css`  file:
 ```css
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~@angular/material/src/lib/core/theming/prebuilt/deeppurple-amber.css';
 ```
 
 Alternatively, you can just reference the file directly. This would look something like
 ```html
-<link href="node_modules/@angular/material/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">
+<link href="node_modules/@angular/material/src/lib/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">
 ```
 The actual path will depend on your server setup.
 
@@ -46,7 +46,7 @@ When you want more customization than a pre-built theme offers, you can create y
 A theme file is a simple Sass file that defines your palettes and passes them to mixins that output
 the corresponding styles. A typical theme file will look something like this:
 ```scss
-@import '~@angular/material/core/theming/all-theme';
+@import '~@angular/material/src/lib/core/theming/all-theme';
 // Plus imports for other components in your app.
 
 // Include the base styles for Angular Material core. We include this here so that you only
