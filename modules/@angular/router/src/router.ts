@@ -596,7 +596,9 @@ export class Router {
     const id = ++this.navigationId;
     this.navigations.next({id, rawUrl, prevRawUrl, extras, resolve, reject, promise});
 
-    return promise;
+    // Make sure that the error is propagated even though `processNavigations` catch
+    // handler does not rethrow
+    return promise.catch((e: any) => Promise.reject(e));
   }
 
   private executeScheduledNavigation({id, rawUrl, prevRawUrl, extras, resolve,
