@@ -13,8 +13,6 @@ import {isPresent} from '../../facade/lang';
 import {RenderStore} from './render_store';
 import {LocationType} from './serialized_types';
 
-
-
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
 /**
@@ -121,5 +119,6 @@ export class Serializer {
   }
 }
 
+export const ANIMATION_WORKER_PLAYER_PREFIX = 'AnimationPlayer.';
 
 export class RenderStoreObject {}
