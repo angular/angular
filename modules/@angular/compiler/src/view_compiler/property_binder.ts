@@ -13,19 +13,14 @@ import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {triggerAnimation, writeToRenderer} from '../compiler_util/render_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
-import * as cdAst from '../expression_parser/ast';
-import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
-import {EMPTY_STATE as EMPTY_ANIMATION_STATE, LifecycleHooks, isDefaultChangeDetectionStrategy} from '../private_import_core';
+import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
-import {camelCaseToDashCase} from '../util';
-
+import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {CompileElement, CompileNode} from './compile_element';
-import {CompileMethod} from './compile_method';
 import {CompileView} from './compile_view';
-import {DetectChangesVars, ViewProperties} from './constants';
+import {DetectChangesVars} from './constants';
 import {getHandleEventMethodName} from './util';
 
 export function bindRenderText(
@@ -47,8 +42,9 @@ export function bindRenderText(
 
 export function bindRenderInputs(
     boundProps: BoundElementPropertyAst[], hasEvents: boolean, compileElement: CompileElement) {
-  var view = compileElement.view;
-  var renderNode = compileElement.renderNode;
+  const view = compileElement.view;
+  const renderNode = compileElement.renderNode;
+
   boundProps.forEach((boundProp) => {
     const bindingField = createCheckBindingField(view);
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
@@ -57,8 +53,8 @@ export function bindRenderInputs(
     if (!evalResult) {
       return;
     }
-    var checkBindingStmts: o.Statement[] = [];
-    var compileMethod = view.detectChangesRenderPropertiesMethod;
+    const checkBindingStmts: o.Statement[] = [];
+    let compileMethod = view.detectChangesRenderPropertiesMethod;
     switch (boundProp.type) {
       case PropertyBindingType.Property:
       case PropertyBindingType.Attribute:
@@ -117,8 +113,8 @@ export function bindDirectiveHostProps(
 export function bindDirectiveInputs(
     directiveAst: DirectiveAst, directiveWrapperInstance: o.Expression, dirIndex: number,
     compileElement: CompileElement) {
-  var view = compileElement.view;
-  var detectChangesInInputsMethod = view.detectChangesInInputsMethod;
+  const view = compileElement.view;
+  const detectChangesInInputsMethod = view.detectChangesInInputsMethod;
   detectChangesInInputsMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
 
   directiveAst.inputs.forEach((input, inputIdx) => {
@@ -141,7 +137,7 @@ export function bindDirectiveInputs(
                 ])
             .toStmt());
   });
-  var isOnPushComp = directiveAst.directive.isComponent &&
+  const isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
   let directiveDetectChangesExpr = DirectiveWrapperExpressions.ngDoCheck(
       directiveWrapperInstance, o.THIS_EXPR, compileElement.renderNode,
