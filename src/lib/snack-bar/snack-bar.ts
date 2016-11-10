@@ -48,7 +48,10 @@ export class MdSnackBar {
 
     // When the snackbar is dismissed, clear the reference to it.
     snackBarRef.afterDismissed().subscribe(() => {
-      this._snackBarRef = null;
+      // Clear the snackbar ref if it hasn't already been replaced by a newer snackbar.
+      if (this._snackBarRef == snackBarRef) {
+        this._snackBarRef = null;
+      }
     });
 
     // If a snack bar is already in view, dismiss it and enter the new snack bar after exit

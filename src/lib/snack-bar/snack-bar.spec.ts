@@ -219,6 +219,23 @@ describe('MdSnackBar', () => {
       });
     });
   }));
+
+  it('should remove past snackbars when opening new snackbars', async(() => {
+    snackBar.open('First snackbar');
+    viewContainerFixture.detectChanges();
+
+    snackBar.open('Second snackbar');
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      snackBar.open('Third snackbar');
+      viewContainerFixture.detectChanges();
+
+      viewContainerFixture.whenStable().then(() => {
+        expect(overlayContainerElement.textContent.trim()).toBe('Third snackbar');
+      });
+    });
+  }));
 });
 
 @Directive({selector: 'dir-with-view-container'})
