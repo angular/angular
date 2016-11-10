@@ -28,50 +28,40 @@ export class Extractor {
       private options: tsc.AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: StaticReflector,
       private messageBundle: compiler.MessageBundle, private reflectorHost: ReflectorHost,
-      private metadataResolver: compiler.CompileMetadataResolver,
-      private directiveNormalizer: compiler.DirectiveNormalizer) {}
+      private metadataResolver: compiler.CompileMetadataResolver) {}
 
   extract(): Promise<compiler.MessageBundle> {
     const programSymbols: StaticSymbol[] =
         extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
 
-    const files =
-        compiler.analyzeNgModules(programSymbols, {transitiveModules: true}, this.metadataResolver)
-            .files;
-    const errors: compiler.ParseError[] = [];
-    const filePromises: Promise<any>[] = [];
+    return compiler
+        .analyzeNgModules(programSymbols, {transitiveModules: true}, this.metadataResolver)
+        .then(({files}) => {
+          const errors: compiler.ParseError[] = [];
 
-    files.forEach(file => {
-      const cmpPromises: Promise<compiler.CompileDirectiveMetadata>[] = [];
-      file.directives.forEach(directiveType => {
-        const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
-        if (dirMeta.isComponent) {
-          cmpPromises.push(this.directiveNormalizer.normalizeDirective(dirMeta).asyncResult);
-        }
-      });
-
-      if (cmpPromises.length) {
-        const done =
-            Promise.all(cmpPromises).then((compMetas: compiler.CompileDirectiveMetadata[]) => {
-              compMetas.forEach(compMeta => {
-                const html = compMeta.template.template;
-                const interpolationConfig =
-                    compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
-                errors.push(...this.messageBundle.updateFromTemplate(
-                    html, file.srcUrl, interpolationConfig));
-              });
+          files.forEach(file => {
+            const compMetas: compiler.CompileDirectiveMetadata[] = [];
+            file.directives.forEach(directiveType => {
+              const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
+              if (dirMeta && dirMeta.isComponent) {
+                compMetas.push(dirMeta);
+              }
             });
+            compMetas.forEach(compMeta => {
+              const html = compMeta.template.template;
+              const interpolationConfig =
+                  compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
+              errors.push(
+                  ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
+            });
+          });
 
-        filePromises.push(done);
-      }
-    });
+          if (errors.length) {
+            throw new Error(errors.map(e => e.toString()).join('\n'));
+          }
 
-
-    if (errors.length) {
-      throw new Error(errors.map(e => e.toString()).join('\n'));
-    }
-
-    return Promise.all(filePromises).then(_ => this.messageBundle);
+          return this.messageBundle;
+        });
   }
 
   static create(
@@ -98,13 +88,12 @@ export class Extractor {
     const resolver = new compiler.CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        elementSchemaRegistry, staticReflector);
+        elementSchemaRegistry, normalizer, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     let messageBundle = new compiler.MessageBundle(htmlParser, [], {});
 
     return new Extractor(
-        options, program, compilerHost, staticReflector, messageBundle, reflectorHost, resolver,
-        normalizer);
+        options, program, compilerHost, staticReflector, messageBundle, reflectorHost, resolver);
   }
 }

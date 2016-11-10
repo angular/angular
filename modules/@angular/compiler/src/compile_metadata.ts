@@ -326,9 +326,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
-        entryComponents?: CompileTypeMetadata[],
-        viewDirectives?: CompileTypeMetadata[],
-        viewPipes?: CompileTypeMetadata[],
+        entryComponents?: CompileIdentifierMetadata[],
         template?: CompileTemplateMetadata
       } = {}): CompileDirectiveMetadata {
     var hostListeners: {[key: string]: string} = {};
@@ -397,7 +395,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
   // Note: Need to keep types here to prevent cycles!
-  entryComponents: CompileTypeMetadata[];
+  entryComponents: CompileIdentifierMetadata[];
 
   template: CompileTemplateMetadata;
 
@@ -421,9 +419,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
         queries?: CompileQueryMetadata[],
         viewQueries?: CompileQueryMetadata[],
-        entryComponents?: CompileTypeMetadata[],
-        viewDirectives?: CompileTypeMetadata[],
-        viewPipes?: CompileTypeMetadata[],
+        entryComponents?: CompileIdentifierMetadata[],
         template?: CompileTemplateMetadata,
       } = {}) {
     this.type = type;
@@ -506,13 +502,13 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
  */
 export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   type: CompileTypeMetadata;
-  declaredDirectives: CompileDirectiveMetadata[];
-  exportedDirectives: CompileDirectiveMetadata[];
-  declaredPipes: CompilePipeMetadata[];
-  exportedPipes: CompilePipeMetadata[];
+  declaredDirectives: CompileIdentifierMetadata[];
+  exportedDirectives: CompileIdentifierMetadata[];
+  declaredPipes: CompileIdentifierMetadata[];
+  exportedPipes: CompileIdentifierMetadata[];
   // Note: See CompileDirectiveMetadata.entryComponents why this has to be a type.
-  entryComponents: CompileTypeMetadata[];
-  bootstrapComponents: CompileTypeMetadata[];
+  entryComponents: CompileIdentifierMetadata[];
+  bootstrapComponents: CompileIdentifierMetadata[];
   providers: CompileProviderMetadata[];
 
   importedModules: CompileNgModuleMetadata[];
@@ -529,12 +525,12 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         type?: CompileTypeMetadata,
         providers?:
             Array<CompileProviderMetadata|CompileTypeMetadata|CompileIdentifierMetadata|any[]>,
-        declaredDirectives?: CompileDirectiveMetadata[],
-        exportedDirectives?: CompileDirectiveMetadata[],
-        declaredPipes?: CompilePipeMetadata[],
-        exportedPipes?: CompilePipeMetadata[],
-        entryComponents?: CompileTypeMetadata[],
-        bootstrapComponents?: CompileTypeMetadata[],
+        declaredDirectives?: CompileIdentifierMetadata[],
+        exportedDirectives?: CompileIdentifierMetadata[],
+        declaredPipes?: CompileIdentifierMetadata[],
+        exportedPipes?: CompileIdentifierMetadata[],
+        entryComponents?: CompileIdentifierMetadata[],
+        bootstrapComponents?: CompileIdentifierMetadata[],
         importedModules?: CompileNgModuleMetadata[],
         exportedModules?: CompileNgModuleMetadata[],
         transitiveModule?: TransitiveCompileNgModuleMetadata,
@@ -560,15 +556,16 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
 }
 
 export class TransitiveCompileNgModuleMetadata {
-  directivesSet = new Set<Type<any>>();
-  pipesSet = new Set<Type<any>>();
+  directivesSet = new Set<any>();
+  pipesSet = new Set<any>();
 
   constructor(
       public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
-      public entryComponents: CompileTypeMetadata[], public directives: CompileDirectiveMetadata[],
-      public pipes: CompilePipeMetadata[]) {
-    directives.forEach(dir => this.directivesSet.add(dir.type.reference));
-    pipes.forEach(pipe => this.pipesSet.add(pipe.type.reference));
+      public entryComponents: CompileIdentifierMetadata[],
+      public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[],
+      public loadingPromises: Promise<any>[]) {
+    directives.forEach(dir => this.directivesSet.add(dir.reference));
+    pipes.forEach(pipe => this.pipesSet.add(pipe.reference));
   }
 }
 

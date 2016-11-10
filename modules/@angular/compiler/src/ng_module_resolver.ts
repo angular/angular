@@ -22,6 +22,8 @@ function _isNgModuleMetadata(obj: any): obj is NgModule {
 export class NgModuleResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
+  isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
+
   resolve(type: Type<any>, throwIfNotFound = true): NgModule {
     const ngModuleMeta: NgModule = this._reflector.annotations(type).find(_isNgModuleMetadata);
 

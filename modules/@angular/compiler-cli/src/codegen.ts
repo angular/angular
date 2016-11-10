@@ -129,10 +129,10 @@ export class CodeGenerator {
     const resolver = new compiler.CompileMetadataResolver(
         new compiler.NgModuleResolver(staticReflector),
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
-        elementSchemaRegistry, staticReflector);
+        elementSchemaRegistry, normalizer, staticReflector);
     // TODO(vicb): do not pass cliOptions.i18nFormat here
     const offlineCompiler = new compiler.OfflineCompiler(
-        resolver, normalizer, tmplParser, new compiler.StyleCompiler(urlResolver),
+        resolver, tmplParser, new compiler.StyleCompiler(urlResolver),
         new compiler.ViewCompiler(config, elementSchemaRegistry),
         new compiler.DirectiveWrapperCompiler(
             config, expressionParser, elementSchemaRegistry, console),

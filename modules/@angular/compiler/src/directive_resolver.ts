@@ -24,6 +24,11 @@ import {splitAtColon} from './util';
 export class DirectiveResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
+  isDirective(type: Type<any>) {
+    const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
+    return typeMetadata && typeMetadata.some(isDirectiveMetadata);
+  }
+
   /**
    * Return {@link Directive} for a given `Type`.
    */

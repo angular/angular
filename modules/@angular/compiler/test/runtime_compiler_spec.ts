@@ -8,8 +8,7 @@
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, Injector, NgModule, NgModuleFactory} from '@angular/core';
-import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../src/facade/lang';

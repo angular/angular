@@ -20,7 +20,6 @@ import {NgModuleCompiler} from './ng_module_compiler';
 import * as ir from './output/output_ast';
 import {interpretStatements} from './output/output_interpreter';
 import {jitStatements} from './output/output_jit';
-import {ComponentStillLoadingError} from './private_import_core';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
 import {SyncAsyncResult} from './util';
@@ -47,9 +46,8 @@ export class RuntimeCompiler implements Compiler {
 
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
-      private _templateNormalizer: DirectiveNormalizer, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler,
+      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
+      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _directiveWrapperCompiler: DirectiveWrapperCompiler,
       private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser) {}
 
@@ -74,38 +72,47 @@ export class RuntimeCompiler implements Compiler {
 
   private _compileModuleAndComponents<T>(moduleType: Type<T>, isSync: boolean):
       SyncAsyncResult<NgModuleFactory<T>> {
-    const componentPromise = this._compileComponents(moduleType, isSync);
-    const ngModuleFactory = this._compileModule(moduleType);
-    return new SyncAsyncResult(ngModuleFactory, componentPromise.then(() => ngModuleFactory));
+    const loadingPromise = this._loadModules(moduleType, isSync);
+    const createResult = () => {
+      this._compileComponents(moduleType, null);
+      return this._compileModule(moduleType);
+    };
+    if (isSync) {
+      return new SyncAsyncResult(createResult());
+    } else {
+      return new SyncAsyncResult(null, loadingPromise.then(createResult));
+    }
   }
 
   private _compileModuleAndAllComponents<T>(moduleType: Type<T>, isSync: boolean):
       SyncAsyncResult<ModuleWithComponentFactories<T>> {
-    const componentPromise = this._compileComponents(moduleType, isSync);
-    const ngModuleFactory = this._compileModule(moduleType);
-    const moduleMeta = this._metadataResolver.getNgModuleMetadata(moduleType);
-    const componentFactories: ComponentFactory<any>[] = [];
-    const templates = new Set<CompiledTemplate>();
-    moduleMeta.transitiveModule.modules.forEach((localModuleMeta) => {
-      localModuleMeta.declaredDirectives.forEach((dirMeta) => {
-        if (dirMeta.isComponent) {
-          const template =
-              this._createCompiledHostTemplate(dirMeta.type.reference, localModuleMeta);
-          templates.add(template);
-          componentFactories.push(template.proxyComponentFactory);
-        }
-      });
-    });
-    const syncResult = new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
-    // Note: host components themselves can always be compiled synchronously as they have an
-    // inline template. However, we still need to wait for the components that they
-    // reference to be loaded / compiled.
-    const compile = () => {
-      templates.forEach((template) => { this._compileTemplate(template); });
-      return syncResult;
+    const loadingPromise = this._loadModules(moduleType, isSync);
+    const createResult = () => {
+      const componentFactories: ComponentFactory<any>[] = [];
+      this._compileComponents(moduleType, componentFactories);
+      return new ModuleWithComponentFactories(this._compileModule(moduleType), componentFactories);
     };
-    const asyncResult = isSync ? Promise.resolve(compile()) : componentPromise.then(compile);
-    return new SyncAsyncResult(syncResult, asyncResult);
+    if (isSync) {
+      return new SyncAsyncResult(createResult());
+    } else {
+      return new SyncAsyncResult(null, loadingPromise.then(createResult));
+    }
+  }
+
+  private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
+    var loadingPromises: Promise<any>[] = [];
+    const {ngModule, loading} = this._metadataResolver.loadNgModuleMetadata(mainModule, isSync);
+    loadingPromises.push(loading);
+    // Note: the loadingPromise for a module only includes the loading of the exported directives
+    // of imported modules.
+    // However, for runtime compilation, we want to transitively compile all modules,
+    // so we also need to call loadNgModuleMetadata for all nested modules.
+    ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
+      loadingPromises.push(
+          this._metadataResolver.loadNgModuleMetadata(localModuleMeta.type.reference, isSync)
+              .loading);
+    });
+    return Promise.all(loadingPromises);
   }
 
   private _compileModule<T>(moduleType: Type<T>): NgModuleFactory<T> {
@@ -137,23 +144,30 @@ export class RuntimeCompiler implements Compiler {
   /**
    * @internal
    */
-  _compileComponents(mainModule: Type<any>, isSync: boolean): Promise<any> {
-    const templates = new Set<CompiledTemplate>();
-    var loadingPromises: Promise<any>[] = [];
-
+  _compileComponents(mainModule: Type<any>, allComponentFactories: ComponentFactory<any>[]) {
     const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule);
     const moduleByDirective = new Map<any, CompileNgModuleMetadata>();
+    const templates = new Set<CompiledTemplate>();
+
     ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
-      localModuleMeta.declaredDirectives.forEach((dirMeta) => {
-        moduleByDirective.set(dirMeta.type.reference, localModuleMeta);
+      localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
+        moduleByDirective.set(dirIdentifier.reference, localModuleMeta);
+        const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
         this._compileDirectiveWrapper(dirMeta, localModuleMeta);
         if (dirMeta.isComponent) {
           templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
+          if (allComponentFactories) {
+            const template =
+                this._createCompiledHostTemplate(dirMeta.type.reference, localModuleMeta);
+            templates.add(template);
+            allComponentFactories.push(template.proxyComponentFactory);
+          }
         }
       });
     });
     ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
-      localModuleMeta.declaredDirectives.forEach((dirMeta) => {
+      localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
+        const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
         if (dirMeta.isComponent) {
           dirMeta.entryComponents.forEach((entryComponentType) => {
             const moduleMeta = moduleByDirective.get(entryComponentType.reference);
@@ -167,24 +181,7 @@ export class RuntimeCompiler implements Compiler {
         templates.add(this._createCompiledHostTemplate(entryComponentType.reference, moduleMeta));
       });
     });
-
-    templates.forEach((template) => {
-      if (template.loading) {
-        if (isSync) {
-          throw new ComponentStillLoadingError(template.compType.reference);
-        } else {
-          loadingPromises.push(template.loading);
-        }
-      }
-    });
-    const compile =
-        () => { templates.forEach((template) => { this._compileTemplate(template); }); };
-    if (isSync) {
-      compile();
-      return Promise.resolve(null);
-    } else {
-      return Promise.all(loadingPromises).then(compile);
-    }
+    templates.forEach((template) => this._compileTemplate(template));
   }
 
   clearCacheFor(type: Type<any>) {
@@ -193,7 +190,6 @@ export class RuntimeCompiler implements Compiler {
     this._compiledHostTemplateCache.delete(type);
     var compiledTemplate = this._compiledTemplateCache.get(type);
     if (compiledTemplate) {
-      this._templateNormalizer.clearCacheFor(compiledTemplate.normalizedCompMeta);
       this._compiledTemplateCache.delete(type);
     }
   }
@@ -202,7 +198,6 @@ export class RuntimeCompiler implements Compiler {
     this._metadataResolver.clearCache();
     this._compiledTemplateCache.clear();
     this._compiledHostTemplateCache.clear();
-    this._templateNormalizer.clearCache();
     this._compiledNgModuleCache.clear();
   }
 
@@ -218,8 +213,7 @@ export class RuntimeCompiler implements Compiler {
       assertComponent(compMeta);
       var hostMeta = createHostComponentMeta(compMeta);
       compiledTemplate = new CompiledTemplate(
-          true, compMeta.selector, compMeta.type, ngModule, [compMeta],
-          this._templateNormalizer.normalizeDirective(hostMeta));
+          true, compMeta.selector, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
     }
     return compiledTemplate;
@@ -231,8 +225,8 @@ export class RuntimeCompiler implements Compiler {
     if (!compiledTemplate) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
-          false, compMeta.selector, compMeta.type, ngModule, ngModule.transitiveModule.directives,
-          this._templateNormalizer.normalizeDirective(compMeta));
+          false, compMeta.selector, compMeta.type, compMeta, ngModule,
+          ngModule.transitiveModule.directives);
       this._compiledTemplateCache.set(compMeta.type.reference, compiledTemplate);
     }
     return compiledTemplate;
@@ -243,16 +237,7 @@ export class RuntimeCompiler implements Compiler {
                                       this._compiledTemplateCache.get(compType);
     if (!compiledTemplate) {
       throw new Error(
-          `Illegal state: Compiled view for component ${stringify(compType)} does not exist!`);
-    }
-    return compiledTemplate;
-  }
-
-  private _assertComponentLoaded(compType: any, isHost: boolean): CompiledTemplate {
-    const compiledTemplate = this._assertComponentKnown(compType, isHost);
-    if (compiledTemplate.loading) {
-      throw new Error(
-          `Illegal state: CompiledTemplate for ${stringify(compType)} (isHost: ${isHost}) is still loading!`);
+          `Illegal state: Compiled view for component ${stringify(compType)} (host: ${isHost}) does not exist!`);
     }
     return compiledTemplate;
   }
@@ -285,34 +270,36 @@ export class RuntimeCompiler implements Compiler {
     if (template.isCompiled) {
       return;
     }
-    const compMeta = template.normalizedCompMeta;
+    const compMeta = template.compMeta;
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
     const stylesCompileResult = this._styleCompiler.compileComponent(compMeta);
     stylesCompileResult.externalStylesheets.forEach(
         (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r); });
     this._resolveStylesCompileResult(
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
-    const viewCompMetas = template.viewComponentTypes.map(
-        (compType) => this._assertComponentLoaded(compType, false).normalizedCompMeta);
     const parsedAnimations = this._animationParser.parseComponent(compMeta);
+    const directives =
+        template.directives.map(dir => this._metadataResolver.getDirectiveMetadata(dir.reference));
+    const pipes = template.ngModule.transitiveModule.pipes.map(
+        pipe => this._metadataResolver.getPipeMetadata(pipe.reference));
     const parsedTemplate = this._templateParser.parse(
-        compMeta, compMeta.template.template, template.viewDirectives.concat(viewCompMetas),
-        template.viewPipes, template.schemas, compMeta.type.name);
+        compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
+        compMeta.type.name);
     const compiledAnimations =
         this._animationCompiler.compile(compMeta.type.name, parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
-        template.viewPipes, compiledAnimations);
+        pipes, compiledAnimations);
     compileResult.dependencies.forEach((dep) => {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewClassDependency) {
         let vfd = <ViewClassDependency>dep;
-        depTemplate = this._assertComponentLoaded(vfd.comp.reference, false);
+        depTemplate = this._assertComponentKnown(vfd.comp.reference, false);
         vfd.placeholder.reference = depTemplate.proxyViewClass;
         vfd.placeholder.name = `View_${vfd.comp.name}`;
       } else if (dep instanceof ComponentFactoryDependency) {
         let cfd = <ComponentFactoryDependency>dep;
-        depTemplate = this._assertComponentLoaded(cfd.comp.reference, true);
+        depTemplate = this._assertComponentKnown(cfd.comp.reference, true);
         cfd.placeholder.reference = depTemplate.proxyComponentFactory;
         cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       } else if (dep instanceof DirectiveWrapperDependency) {
@@ -361,29 +348,12 @@ class CompiledTemplate {
   private _viewClass: Function = null;
   proxyViewClass: Type<any>;
   proxyComponentFactory: ComponentFactory<any>;
-  loading: Promise<any> = null;
-  private _normalizedCompMeta: CompileDirectiveMetadata = null;
   isCompiled = false;
-  isCompiledWithDeps = false;
-  viewComponentTypes: Type<any>[] = [];
-  viewDirectives: CompileDirectiveMetadata[] = [];
-  viewPipes: CompilePipeMetadata[];
-  schemas: SchemaMetadata[];
 
   constructor(
       public isHost: boolean, selector: string, public compType: CompileIdentifierMetadata,
-      public ngModule: CompileNgModuleMetadata,
-      viewDirectiveAndComponents: CompileDirectiveMetadata[],
-      _normalizeResult: SyncAsyncResult<CompileDirectiveMetadata>) {
-    this.viewPipes = ngModule.transitiveModule.pipes;
-    this.schemas = ngModule.schemas;
-    viewDirectiveAndComponents.forEach((dirMeta) => {
-      if (dirMeta.isComponent) {
-        this.viewComponentTypes.push(dirMeta.type.reference);
-      } else {
-        this.viewDirectives.push(dirMeta);
-      }
-    });
+      public compMeta: CompileDirectiveMetadata, public ngModule: CompileNgModuleMetadata,
+      public directives: CompileIdentifierMetadata[]) {
     const self = this;
     this.proxyViewClass = <any>function() {
       if (!self._viewClass) {
@@ -395,21 +365,6 @@ class CompiledTemplate {
     this.proxyComponentFactory = isHost ?
         new ComponentFactory<any>(selector, this.proxyViewClass, compType.reference) :
         null;
-    if (_normalizeResult.syncResult) {
-      this._normalizedCompMeta = _normalizeResult.syncResult;
-    } else {
-      this.loading = _normalizeResult.asyncResult.then((normalizedCompMeta) => {
-        this._normalizedCompMeta = normalizedCompMeta;
-        this.loading = null;
-      });
-    }
-  }
-
-  get normalizedCompMeta(): CompileDirectiveMetadata {
-    if (this.loading) {
-      throw new Error(`Template is still loading for ${this.compType.name}!`);
-    }
-    return this._normalizedCompMeta;
   }
 
   compiled(viewClass: Function) {
@@ -417,8 +372,6 @@ class CompiledTemplate {
     this.proxyViewClass.prototype = viewClass.prototype;
     this.isCompiled = true;
   }
-
-  depsCompiled() { this.isCompiledWithDeps = true; }
 }
 
 function assertComponent(meta: CompileDirectiveMetadata) {
