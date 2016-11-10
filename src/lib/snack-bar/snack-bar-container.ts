@@ -92,8 +92,7 @@ export class MdSnackBarContainer extends BasePortalHost {
 
   /** Mark snack bar as exited from the view. */
   markAsExited(event: AnimationTransitionEvent) {
-    if (event.fromState === 'visible' &&
-        (event.toState === 'void' || event.toState === 'complete')) {
+    if (event.toState === 'void' || event.toState === 'complete') {
       this._ngZone.run(() => {
         this._onExit.next();
         this._onExit.complete();

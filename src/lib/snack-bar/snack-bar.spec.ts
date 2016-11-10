@@ -1,4 +1,12 @@
-import {inject, async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  inject,
+  async,
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  flushMicrotasks,
+  tick,
+} from '@angular/core/testing';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
 import {OverlayContainer, MdLiveAnnouncer} from '../core';
@@ -235,6 +243,21 @@ describe('MdSnackBar', () => {
         expect(overlayContainerElement.textContent.trim()).toBe('Third snackbar');
       });
     });
+  }));
+
+  it('should remove snackbar if another is shown while its still animating open', fakeAsync(() => {
+    snackBar.open('First snackbar');
+    viewContainerFixture.detectChanges();
+
+    snackBar.open('Second snackbar');
+    viewContainerFixture.detectChanges();
+
+    // Flush microtasks to make observables run, but don't tick such that any animations would run.
+    flushMicrotasks();
+    expect(overlayContainerElement.textContent.trim()).toBe('Second snackbar');
+
+    // Let remaining animations run.
+    tick(500);
   }));
 });
 

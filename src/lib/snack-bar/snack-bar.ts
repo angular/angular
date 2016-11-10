@@ -33,8 +33,7 @@ export class MdSnackBar {
   /** A reference to the current snack bar in the view. */
   private _snackBarRef: MdSnackBarRef<any>;
 
-  constructor(private _overlay: Overlay,
-              private _live: MdLiveAnnouncer) {}
+  constructor(private _overlay: Overlay, private _live: MdLiveAnnouncer) {}
 
   /**
    * Creates and dispatches a snack bar with a custom component for the content, removing any
