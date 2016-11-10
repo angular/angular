@@ -1,4 +1,4 @@
-import {Component, ViewContainerRef} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdSnackBar} from '@angular/material';
 
 @Component({
@@ -12,8 +12,7 @@ export class SnackBarDemo {
   action: boolean = false;
 
   constructor(
-      public snackBar: MdSnackBar,
-      public viewContainerRef: ViewContainerRef) { }
+      public snackBar: MdSnackBar) { }
 
   open() {
     this.snackBar.open(this.message, this.action && this.actionButtonLabel);

@@ -26,12 +26,10 @@ The service can be injected in a component.
 })
 export class MyComponent {
 
- constructor(snackBar: MdSnackBar
-             viewContainerRef: ViewContainerRef) {}
+ constructor(snackBar: MdSnackBar) {}
 
  failedAttempt() {
-   config = new MdSnackBarConfig(this.viewContainerRef);
-   this.snackBar.open('It didn\'t quite work!', 'Try Again', config);
+   this.snackBar.open('It didn\'t quite work!', 'Try Again');
  }
 
 }
