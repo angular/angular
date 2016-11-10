@@ -90,17 +90,17 @@ module.exports = function(config) {
       project: 'Angular2',
       startTunnel: false,
       retryLimit: 3,
-      timeout: 600,
+      timeout: 1800,
       pollingTimeout: 10000,
     },
 
     browsers: ['Chrome'],
 
     port: 9876,
-    captureTimeout: 60000,
-    browserDisconnectTimeout: 60000,
+    captureTimeout: 180000,
+    browserDisconnectTimeout: 180000,
     browserDisconnectTolerance: 3,
-    browserNoActivityTimeout: 60000,
+    browserNoActivityTimeout: 300000,
   });
 
   if (process.env.TRAVIS) {
