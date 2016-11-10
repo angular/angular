@@ -15,6 +15,7 @@ import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
 import {isPresent} from '../../src/facade/lang';
+import {Headers} from '../../src/headers';
 import {Request} from '../../src/static_request';
 
 var existingScripts: MockBrowserJsonp[] = [];
@@ -156,6 +157,16 @@ export function main() {
               expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
                   .toThrowError();
             });
+      });
+
+      it('should throw if request includes headers', () => {
+        let base = new BaseRequestOptions();
+        let req = new Request(base.merge(new RequestOptions({
+          url: 'https://google.com',
+          headers: new Headers({'Content-Type': 'application/json'})
+        })));
+        expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
+            .toThrowError();
       });
 
       it('should respond with data passed to callback',
