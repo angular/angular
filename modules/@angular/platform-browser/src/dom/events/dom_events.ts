@@ -19,22 +19,4 @@ export class DomEventsPlugin extends EventManagerPlugin {
     element.addEventListener(eventName, handler as any, false);
     return () => element.removeEventListener(eventName, handler as any, false);
   }
-
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    let element: any;
-    switch (target) {
-      case 'window':
-        element = window;
-        break;
-      case 'document':
-        element = document;
-        break;
-      case 'body':
-        element = document.body;
-        break;
-      default:
-        throw new Error(`Unsupported event target ${target} for event ${eventName}`);
-    }
-    return this.addEventListener(element, eventName, handler);
-  }
 }
