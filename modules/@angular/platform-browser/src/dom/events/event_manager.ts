@@ -7,7 +7,7 @@
  */
 
 import {Inject, Injectable, NgZone, OpaqueToken} from '@angular/core';
-
+import {getDOM} from '../dom_adapter';
 
 /**
  * @stable
@@ -27,12 +27,12 @@ export class EventManager {
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin = this._findPluginFor(eventName);
     return plugin.addEventListener(element, eventName, handler);
   }
 
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var plugin = this._findPluginFor(eventName);
+    const plugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
 
@@ -40,9 +40,9 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
-    var plugins = this._plugins;
-    for (var i = 0; i < plugins.length; i++) {
-      var plugin = plugins[i];
+    const plugins = this._plugins;
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i];
       if (plugin.supports(eventName)) {
         return plugin;
       }
