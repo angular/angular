@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()

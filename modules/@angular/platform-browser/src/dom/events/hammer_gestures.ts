@@ -7,7 +7,6 @@
  */
 
 import {Inject, Injectable, OpaqueToken} from '@angular/core';
-
 import {HammerGesturesPluginCommon} from './hammer_common';
 
 /**
