@@ -51,17 +51,18 @@ export class EventManager {
   }
 }
 
-export class EventManagerPlugin {
+export abstract class EventManagerPlugin {
   manager: EventManager;
 
-  // That is equivalent to having supporting $event.target
-  supports(eventName: string): boolean { return false; }
+  abstract supports(eventName: string): boolean;
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    throw 'not implemented';
-  }
+  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-    throw 'not implemented';
-  }
+    const target: HTMLElement = getDOM().getGlobalEventTarget(element);
+    if (!target) {
+      throw new Error(`Unsupported event target ${target} for event ${eventName}`);
+    }
+    return this.addEventListener(target, eventName, handler);
+  };
 }
