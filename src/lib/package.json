@@ -1,6 +1,6 @@
 {
   "name": "@angular/material",
-  "version": "2.0.0-alpha.9-3",
+  "version": "2.0.0-alpha.10",
   "description": "Angular 2 Material",
   "main": "./material.umd.js",
   "module": "./index.js",
