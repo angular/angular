@@ -30,12 +30,12 @@
       "version": "4.0.22-alpha",
       "dev": true
     },
-    "@types/protractor": {
-      "version": "1.5.11-alpha",
+    "@types/q": {
+      "version": "0.0.32",
       "dev": true
     },
     "@types/selenium-webdriver": {
-      "version": "2.44.20-alpha",
+      "version": "2.53.35",
       "dev": true
     },
     "accepts": {
@@ -224,12 +224,16 @@
       "version": "0.1.6",
       "dev": true
     },
+    "asynckit": {
+      "version": "0.4.0",
+      "dev": true
+    },
     "aws-sign2": {
       "version": "0.6.0",
       "dev": true
     },
     "aws4": {
-      "version": "1.4.1",
+      "version": "1.5.0",
       "dev": true
     },
     "backo2": {
@@ -279,14 +283,7 @@
     "bcrypt-pbkdf": {
       "version": "1.0.0",
       "dev": true,
-      "optional": true,
-      "dependencies": {
-        "tweetnacl": {
-          "version": "0.14.3",
-          "dev": true,
-          "optional": true
-        }
-      }
+      "optional": true
     },
     "beeper": {
       "version": "1.1.0",
@@ -2579,23 +2576,15 @@
       "dev": true
     },
     "form-data": {
-      "version": "1.0.1",
+      "version": "2.1.2",
       "dev": true,
       "dependencies": {
-        "async": {
-          "version": "2.0.1",
-          "dev": true
-        },
-        "lodash": {
-          "version": "4.15.0",
-          "dev": true
-        },
         "mime-db": {
-          "version": "1.23.0",
+          "version": "1.24.0",
           "dev": true
         },
         "mime-types": {
-          "version": "2.1.11",
+          "version": "2.1.12",
           "dev": true
         }
       }
@@ -3259,7 +3248,7 @@
       "dev": true,
       "dependencies": {
         "glob": {
-          "version": "7.0.6",
+          "version": "7.1.1",
           "dev": true
         }
       }
@@ -3501,7 +3490,11 @@
       "dev": true,
       "dependencies": {
         "is-my-json-valid": {
-          "version": "2.13.1",
+          "version": "2.15.0",
+          "dev": true
+        },
+        "jsonpointer": {
+          "version": "4.0.0",
           "dev": true
         }
       }
@@ -3831,7 +3824,7 @@
       "optional": true
     },
     "json-schema": {
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dev": true
     },
     "json-stringify-safe": {
@@ -3867,7 +3860,7 @@
       "dev": true
     },
     "jsprim": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "dev": true
     },
     "jstransform": {
@@ -4591,7 +4584,7 @@
       "dev": true
     },
     "path-is-inside": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "dev": true
     },
     "path-type": {
@@ -4661,65 +4654,35 @@
       "dev": true
     },
     "protractor": {
-      "version": "4.0.5",
+      "version": "4.0.11",
       "dev": true,
       "dependencies": {
         "@types/jasmine": {
-          "version": "2.2.33",
+          "version": "2.5.37",
           "dev": true
         },
         "@types/node": {
-          "version": "6.0.38",
-          "dev": true
-        },
-        "bl": {
-          "version": "1.1.2",
+          "version": "6.0.46",
           "dev": true
         },
         "glob": {
-          "version": "7.0.6",
-          "dev": true
-        },
-        "isarray": {
-          "version": "1.0.0",
-          "dev": true
-        },
-        "jasmine": {
-          "version": "2.4.1",
-          "dev": true,
-          "dependencies": {
-            "glob": {
-              "version": "3.2.11",
-              "dev": true
-            },
-            "minimatch": {
-              "version": "0.3.0",
-              "dev": true
-            }
-          }
-        },
-        "jasmine-core": {
-          "version": "2.4.1",
+          "version": "7.1.1",
           "dev": true
         },
         "mime-db": {
-          "version": "1.23.0",
+          "version": "1.24.0",
           "dev": true
         },
         "mime-types": {
-          "version": "2.1.11",
+          "version": "2.1.12",
           "dev": true
         },
         "qs": {
-          "version": "6.2.1",
-          "dev": true
-        },
-        "readable-stream": {
-          "version": "2.0.6",
+          "version": "6.3.0",
           "dev": true
         },
         "request": {
-          "version": "2.74.0",
+          "version": "2.78.0",
           "dev": true
         },
         "rimraf": {
@@ -4730,12 +4693,16 @@
           "version": "1.3.0",
           "dev": true
         },
+        "semver": {
+          "version": "5.3.0",
+          "dev": true
+        },
         "tough-cookie": {
-          "version": "2.3.1",
+          "version": "2.3.2",
           "dev": true
         },
         "webdriver-manager": {
-          "version": "10.2.3",
+          "version": "10.2.8",
           "dev": true
         }
       }
@@ -5263,7 +5230,7 @@
       "dev": true
     },
     "sshpk": {
-      "version": "1.10.0",
+      "version": "1.10.1",
       "dev": true,
       "dependencies": {
         "assert-plus": {
@@ -5526,7 +5493,7 @@
       "dev": true
     },
     "tweetnacl": {
-      "version": "0.13.3",
+      "version": "0.14.3",
       "dev": true,
       "optional": true
     },
