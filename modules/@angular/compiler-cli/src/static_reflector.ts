@@ -516,6 +516,8 @@ export class StaticReflector implements ReflectorReader {
                 if (expression['line']) {
                   message =
                       `${message} (position ${expression['line']+1}:${expression['character']+1} in the original .ts file)`;
+                  throw positionalError(
+                      message, context.filePath, expression['line'], expression['character']);
                 }
                 throw new Error(message);
             }
@@ -529,7 +531,11 @@ export class StaticReflector implements ReflectorReader {
       try {
         return simplify(value);
       } catch (e) {
-        throw new Error(`${e.message}, resolving symbol ${context.name} in ${context.filePath}`);
+        const message = `${e.message}, resolving symbol ${context.name} in ${context.filePath}`;
+        if (e.fileName) {
+          throw positionalError(message, e.fileName, e.line, e.column);
+        }
+        throw new Error(message);
       }
     }
 
@@ -658,4 +664,12 @@ function sameSymbol(a: StaticSymbol, b: StaticSymbol): boolean {
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
+}
+
+function positionalError(message: string, fileName: string, line: number, column: number): Error {
+  const result = new Error(message);
+  (result as any).fileName = fileName;
+  (result as any).line = line;
+  (result as any).column = column;
+  return result;
 }
