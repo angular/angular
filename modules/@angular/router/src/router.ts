@@ -596,7 +596,7 @@ export class Router {
     const id = ++this.navigationId;
     this.navigations.next({id, rawUrl, prevRawUrl, extras, resolve, reject, promise});
 
-    return promise;
+    return promise.catch((e: any) => Promise.reject(e));
   }
 
   private executeScheduledNavigation({id, rawUrl, prevRawUrl, extras, resolve,

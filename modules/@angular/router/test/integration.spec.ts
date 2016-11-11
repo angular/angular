@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
+import {Component, Injector, NgModule, NgModuleFactoryLoader} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
@@ -619,6 +619,19 @@ describe('Integration', () => {
 
        expectEvents(recordedEvents, [[NavigationStart, '/invalid'], [NavigationError, '/invalid']]);
      })));
+
+  it('should not swallow errors', fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+
+       router.navigateByUrl('/invalid');
+       expect(() => advance(fixture)).toThrow();
+
+       router.navigateByUrl('/invalid2');
+       expect(() => advance(fixture)).toThrow();
+     })));
+
 
   it('should replace state when path is equal to current path',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
