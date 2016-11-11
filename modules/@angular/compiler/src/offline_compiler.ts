@@ -228,9 +228,9 @@ export class OfflineCompiler {
       fileSuffix: string, targetStatements: o.Statement[]): string {
     const parsedAnimations = this._animationParser.parseComponent(compMeta);
     const directives =
-        directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveMetadata(dir.reference));
+        directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = ngModule.transitiveModule.pipes.map(
-        pipe => this._metadataResolver.getPipeMetadata(pipe.reference));
+        pipe => this._metadataResolver.getPipeSummary(pipe.reference));
 
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, ngModule.schemas,

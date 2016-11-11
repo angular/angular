@@ -7,7 +7,7 @@
  */
 
 
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';
 import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
@@ -440,7 +440,7 @@ function _normalizeProviders(
 
 
 function _resolveProvidersFromDirectives(
-    directives: CompileDirectiveMetadata[], sourceSpan: ParseSourceSpan,
+    directives: CompileDirectiveSummary[], sourceSpan: ParseSourceSpan,
     targetErrors: ParseError[]): Map<any, ProviderAst> {
   var providersByToken = new Map<any, ProviderAst>();
   directives.forEach((directive) => {
@@ -504,7 +504,7 @@ function _getViewQueries(component: CompileDirectiveMetadata): Map<any, CompileQ
   return viewQueries;
 }
 
-function _getContentQueries(directives: CompileDirectiveMetadata[]):
+function _getContentQueries(directives: CompileDirectiveSummary[]):
     Map<any, CompileQueryMetadata[]> {
   var contentQueries = new Map<any, CompileQueryMetadata[]>();
   directives.forEach(directive => {

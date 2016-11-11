@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
 import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
@@ -336,7 +336,7 @@ function _isNgContainer(node: CompileNode, view: CompileView): boolean {
 
 
 function _mergeHtmlAndDirectiveAttrs(
-    declaredHtmlAttrs: {[key: string]: string}, directives: CompileDirectiveMetadata[]): string[] {
+    declaredHtmlAttrs: {[key: string]: string}, directives: CompileDirectiveSummary[]): string[] {
   const mapResult: {[key: string]: string} = {};
   Object.keys(declaredHtmlAttrs).forEach(key => { mapResult[key] = declaredHtmlAttrs[key]; });
   directives.forEach(directiveMeta => {

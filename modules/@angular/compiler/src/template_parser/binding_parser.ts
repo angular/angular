@@ -8,7 +8,7 @@
 
 import {SecurityContext} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
+import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, LiteralPrimitive, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
@@ -52,16 +52,16 @@ export class BoundProperty {
  * Parses bindings in templates and in the directive host area.
  */
 export class BindingParser {
-  pipesByName: Map<string, CompilePipeMetadata> = new Map();
+  pipesByName: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeMetadata[],
+      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[],
       private _targetErrors: ParseError[]) {
     pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
 
-  createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveMetadata, sourceSpan: ParseSourceSpan):
+  createDirectiveHostPropertyAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
       BoundElementPropertyAst[] {
     if (dirMeta.hostProperties) {
       const boundProps: BoundProperty[] = [];
@@ -79,7 +79,7 @@ export class BindingParser {
     }
   }
 
-  createDirectiveHostEventAsts(dirMeta: CompileDirectiveMetadata, sourceSpan: ParseSourceSpan):
+  createDirectiveHostEventAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
       BoundEventAst[] {
     if (dirMeta.hostListeners) {
       const targetEventAsts: BoundEventAst[] = [];

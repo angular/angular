@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeMetadata} from '../compile_metadata';
+import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import * as o from '../output/output_ast';
 import {LifecycleHooks} from '../private_import_core';
@@ -20,7 +20,7 @@ var STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.
 var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
 export function bindDirectiveAfterContentLifecycleCallbacks(
-    directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,
+    directiveMeta: CompileDirectiveSummary, directiveInstance: o.Expression,
     compileElement: CompileElement) {
   var view = compileElement.view;
   var lifecycleHooks = directiveMeta.type.lifecycleHooks;
@@ -38,7 +38,7 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
 }
 
 export function bindDirectiveAfterViewLifecycleCallbacks(
-    directiveMeta: CompileDirectiveMetadata, directiveInstance: o.Expression,
+    directiveMeta: CompileDirectiveSummary, directiveInstance: o.Expression,
     compileElement: CompileElement) {
   var view = compileElement.view;
   var lifecycleHooks = directiveMeta.type.lifecycleHooks;
@@ -77,7 +77,7 @@ export function bindInjectableDestroyLifecycleCallbacks(
 }
 
 export function bindPipeDestroyLifecycleCallbacks(
-    pipeMeta: CompilePipeMetadata, pipeInstance: o.Expression, view: CompileView) {
+    pipeMeta: CompilePipeSummary, pipeInstance: o.Expression, view: CompileView) {
   var onDestroyMethod = view.destroyMethod;
   if (pipeMeta.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(pipeInstance.callMethod('ngOnDestroy', []).toStmt());

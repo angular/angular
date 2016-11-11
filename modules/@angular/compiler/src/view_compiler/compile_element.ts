@@ -7,7 +7,7 @@
  */
 
 
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import {DirectiveWrapperCompiler, DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import {isPresent} from '../facade/lang';
@@ -54,8 +54,8 @@ export class CompileElement extends CompileNode {
 
   constructor(
       parent: CompileElement, view: CompileView, nodeIndex: number, renderNode: o.Expression,
-      sourceAst: TemplateAst, public component: CompileDirectiveMetadata,
-      private _directives: CompileDirectiveMetadata[],
+      sourceAst: TemplateAst, public component: CompileDirectiveSummary,
+      private _directives: CompileDirectiveSummary[],
       private _resolvedProvidersArray: ProviderAst[], public hasViewContainer: boolean,
       public hasEmbeddedView: boolean, references: ReferenceAst[],
       private _targetDependencies:

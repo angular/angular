@@ -7,7 +7,7 @@
  */
 
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
 import {Identifiers, resolveIdentifier} from '../identifiers';
@@ -72,7 +72,8 @@ export function injectFromViewParentInjector(
 }
 
 export function getViewClassName(
-    component: CompileDirectiveMetadata, embeddedTemplateIndex: number): string {
+    component: CompileDirectiveSummary | CompileDirectiveMetadata,
+    embeddedTemplateIndex: number): string {
   return `View_${component.type.name}${embeddedTemplateIndex}`;
 }
 

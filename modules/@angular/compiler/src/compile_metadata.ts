@@ -98,6 +98,15 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
   get identifier(): CompileIdentifierMetadata { return this; }
 }
 
+/**
+ * A CompileSummary is the data needed to use a directive / pipe / module
+ * in other modules / components. However, this data is not enough to compile
+ * the directive / module itself.
+ */
+export interface CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+}
+
 export class CompileDiDependencyMetadata {
   isAttribute: boolean;
   isSelf: boolean;
@@ -265,6 +274,16 @@ export class CompileStylesheetMetadata {
 }
 
 /**
+ * Summary Metadata regarding compilation of a template.
+ */
+export interface CompileTemplateSummary extends CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+  animations: string[];
+  ngContentSelectors: string[];
+  encapsulation: ViewEncapsulation;
+}
+
+/**
  * Metadata regarding compilation of a template.
  */
 export class CompileTemplateMetadata {
@@ -303,6 +322,34 @@ export class CompileTemplateMetadata {
     }
     this.interpolation = interpolation;
   }
+
+  toSummary(): CompileTemplateSummary {
+    return {
+      isSummary: true,
+      animations: this.animations.map(anim => anim.name),
+      ngContentSelectors: this.ngContentSelectors,
+      encapsulation: this.encapsulation
+    };
+  }
+}
+
+export interface CompileDirectiveSummary extends CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+  type: CompileTypeMetadata;
+  isComponent: boolean;
+  selector: string;
+  exportAs: string;
+  inputs: {[key: string]: string};
+  outputs: {[key: string]: string};
+  hostListeners: {[key: string]: string};
+  hostProperties: {[key: string]: string};
+  hostAttributes: {[key: string]: string};
+  providers: CompileProviderMetadata[];
+  viewProviders: CompileProviderMetadata[];
+  queries: CompileQueryMetadata[];
+  entryComponents: CompileIdentifierMetadata[];
+  changeDetection: ChangeDetectionStrategy;
+  template: CompileTemplateSummary;
 }
 
 /**
@@ -394,7 +441,6 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   viewProviders: CompileProviderMetadata[];
   queries: CompileQueryMetadata[];
   viewQueries: CompileQueryMetadata[];
-  // Note: Need to keep types here to prevent cycles!
   entryComponents: CompileIdentifierMetadata[];
 
   template: CompileTemplateMetadata;
@@ -442,6 +488,27 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
   }
 
   get identifier(): CompileIdentifierMetadata { return this.type; }
+
+  toSummary(): CompileDirectiveSummary {
+    return {
+      isSummary: true,
+      type: this.type,
+      isComponent: this.isComponent,
+      selector: this.selector,
+      exportAs: this.exportAs,
+      inputs: this.inputs,
+      outputs: this.outputs,
+      hostListeners: this.hostListeners,
+      hostProperties: this.hostProperties,
+      hostAttributes: this.hostAttributes,
+      providers: this.providers,
+      viewProviders: this.viewProviders,
+      queries: this.queries,
+      entryComponents: this.entryComponents,
+      changeDetection: this.changeDetection,
+      template: this.template && this.template.toSummary()
+    };
+  }
 }
 
 /**
@@ -479,6 +546,12 @@ export function createHostComponentMeta(compMeta: CompileDirectiveMetadata):
   });
 }
 
+export interface CompilePipeSummary extends CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+  type: CompileTypeMetadata;
+  name: string;
+  pure: boolean;
+}
 
 export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
   type: CompileTypeMetadata;
@@ -495,7 +568,32 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
     this.pure = !!pure;
   }
   get identifier(): CompileIdentifierMetadata { return this.type; }
+
+  toSummary(): CompilePipeSummary {
+    return {isSummary: true, type: this.type, name: this.name, pure: this.pure};
+  }
 }
+
+export interface CompileNgModuleInjectorSummary extends CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+  type: CompileTypeMetadata;
+  entryComponents: CompileIdentifierMetadata[];
+  providers: CompileProviderMetadata[];
+  importedModules: CompileNgModuleInjectorSummary[];
+  exportedModules: CompileNgModuleInjectorSummary[];
+}
+
+export interface CompileNgModuleDirectiveSummary extends CompileSummary {
+  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
+  type: CompileTypeMetadata;
+  exportedDirectives: CompileIdentifierMetadata[];
+  exportedPipes: CompileIdentifierMetadata[];
+  exportedModules: CompileNgModuleDirectiveSummary[];
+  loadingPromises: Promise<any>[];
+}
+
+export type CompileNgModuleSummary =
+    CompileNgModuleInjectorSummary & CompileNgModuleDirectiveSummary;
 
 /**
  * Metadata regarding compilation of a module.
@@ -506,13 +604,12 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   exportedDirectives: CompileIdentifierMetadata[];
   declaredPipes: CompileIdentifierMetadata[];
   exportedPipes: CompileIdentifierMetadata[];
-  // Note: See CompileDirectiveMetadata.entryComponents why this has to be a type.
   entryComponents: CompileIdentifierMetadata[];
   bootstrapComponents: CompileIdentifierMetadata[];
   providers: CompileProviderMetadata[];
 
-  importedModules: CompileNgModuleMetadata[];
-  exportedModules: CompileNgModuleMetadata[];
+  importedModules: CompileNgModuleSummary[];
+  exportedModules: CompileNgModuleSummary[];
   schemas: SchemaMetadata[];
   id: string;
 
@@ -531,8 +628,8 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
         exportedPipes?: CompileIdentifierMetadata[],
         entryComponents?: CompileIdentifierMetadata[],
         bootstrapComponents?: CompileIdentifierMetadata[],
-        importedModules?: CompileNgModuleMetadata[],
-        exportedModules?: CompileNgModuleMetadata[],
+        importedModules?: CompileNgModuleSummary[],
+        exportedModules?: CompileNgModuleSummary[],
         transitiveModule?: TransitiveCompileNgModuleMetadata,
         schemas?: SchemaMetadata[],
         id?: string
@@ -553,6 +650,41 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
   }
 
   get identifier(): CompileIdentifierMetadata { return this.type; }
+
+  toSummary(): CompileNgModuleSummary {
+    return {
+      isSummary: true,
+      type: this.type,
+      entryComponents: this.entryComponents,
+      providers: this.providers,
+      importedModules: this.importedModules,
+      exportedModules: this.exportedModules,
+      exportedDirectives: this.exportedDirectives,
+      exportedPipes: this.exportedPipes,
+      loadingPromises: this.transitiveModule.loadingPromises
+    };
+  }
+
+  toInjectorSummary(): CompileNgModuleInjectorSummary {
+    return {
+      isSummary: true,
+      type: this.type,
+      entryComponents: this.entryComponents,
+      providers: this.providers,
+      importedModules: this.importedModules,
+      exportedModules: this.exportedModules
+    };
+  }
+  toDirectiveSummary(): CompileNgModuleDirectiveSummary {
+    return {
+      isSummary: true,
+      type: this.type,
+      exportedDirectives: this.exportedDirectives,
+      exportedPipes: this.exportedPipes,
+      exportedModules: this.exportedModules,
+      loadingPromises: this.transitiveModule.loadingPromises
+    };
+  }
 }
 
 export class TransitiveCompileNgModuleMetadata {
@@ -560,7 +692,7 @@ export class TransitiveCompileNgModuleMetadata {
   pipesSet = new Set<any>();
 
   constructor(
-      public modules: CompileNgModuleMetadata[], public providers: CompileProviderMetadata[],
+      public modules: CompileNgModuleInjectorSummary[], public providers: CompileProviderMetadata[],
       public entryComponents: CompileIdentifierMetadata[],
       public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[],
       public loadingPromises: Promise<any>[]) {
