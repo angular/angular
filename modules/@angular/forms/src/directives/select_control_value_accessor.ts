@@ -7,9 +7,7 @@
  */
 
 import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
-
 import {isPrimitive, looseIdentical} from '../facade/lang';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: any = {
@@ -115,8 +113,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _getOptionValue(valueString: string): any {
-    const value = this._optionMap.get(_extractId(valueString));
-    return value != null ? value : valueString;
+    const id: string = _extractId(valueString);
+    return this._optionMap.has(id) ? this._optionMap.get(id) : valueString;
   }
 }
 
