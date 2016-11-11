@@ -127,6 +127,24 @@ describe('MdButton', () => {
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('true');
     });
+
+    it('should not add aria-disabled attribute if disabled is false', () => {
+      let fixture = TestBed.createComponent(TestApp);
+      let testComponent = fixture.debugElement.componentInstance;
+      let buttonDebugElement = fixture.debugElement.query(By.css('a'));
+      fixture.detectChanges();
+      expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
+        .toBe('false', 'Expect aria-disabled="false"');
+      expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
+        .toBeNull('Expect disabled="false"');
+
+      testComponent.isDisabled = false;
+      fixture.detectChanges();
+      expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
+        .toBe('false', 'Expect no aria-disabled');
+      expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
+        .toBeNull('Expect no disabled');
+    });
   });
 
   // Ripple tests.
