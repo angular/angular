@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef} from '@angular/core';
 
 import {isPrimitive, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_VALUE_ACCESSOR: any = {
+export const SELECT_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectControlValueAccessor),
   multi: true
@@ -115,8 +115,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _getOptionValue(valueString: string): any {
-    let key: string = _extractId(valueString);
-    return this._optionMap.has(key) ? this._optionMap.get(key) : valueString;
+    const id: string = _extractId(valueString);
+    return this._optionMap.has(id) ? this._optionMap.get(id) : valueString;
   }
 }
 
@@ -158,7 +158,7 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setElementProperty(this._element.nativeElement, 'value', value);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
       this._select.writeValue(this._select.value);
