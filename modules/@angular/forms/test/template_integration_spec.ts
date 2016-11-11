@@ -23,7 +23,7 @@ export function main() {
           NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
           NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
-          NgModelAsyncValidation
+          NgModelAsyncValidation, NgModelSelectWithNull
         ],
         imports: [FormsModule]
       });
@@ -699,6 +699,16 @@ export function main() {
            expect(select.nativeElement.value).toEqual('2: Object');
            expect(secondNYC.nativeElement.selected).toBe(true);
          }));
+
+      it('should work with null option', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectWithNull);
+           fixture.detectChanges();
+
+           const select = fixture.debugElement.query(By.css('select'));
+           const option = fixture.debugElement.queryAll(By.css('option'))[0];
+           expect(select.nativeElement.value).toEqual('null');
+           expect(option.nativeElement.selected).toBe(true);
+         }));
     });
 
     describe('custom value accessors', () => {
@@ -1076,6 +1086,18 @@ class NgModelRadioForm {
 class NgModelSelectForm {
   selectedCity: {[k: string]: string} = {};
   cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-null',
+  template: `
+    <select [(ngModel)]="selected">
+      <option [ngValue]="null"></option>
+    </select>
+  `
+})
+class NgModelSelectWithNull {
+  selected: any = null;
 }
 
 @Component({

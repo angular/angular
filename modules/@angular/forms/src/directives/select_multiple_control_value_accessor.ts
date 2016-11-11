@@ -7,9 +7,7 @@
  */
 
 import {Directive, ElementRef, Host, Input, OnDestroy, OpaqueToken, Optional, Renderer, Type, forwardRef} from '@angular/core';
-
 import {isPrimitive, looseIdentical} from '../facade/lang';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_MULTIPLE_VALUE_ACCESSOR = {
@@ -121,8 +119,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /** @internal */
   _getOptionValue(valueString: string): any {
-    const opt = this._optionMap.get(_extractId(valueString));
-    return opt ? opt._value : valueString;
+    const id: string = _extractId(valueString);
+    return this._optionMap.has(id) ? this._optionMap.get(id)._value : valueString;
   }
 }
 
@@ -176,16 +174,14 @@ export class NgSelectMultipleOption implements OnDestroy {
   }
 
   /** @internal */
-  _setSelected(selected: boolean) {
+  _setSelected(selected: boolean): void {
     this._renderer.setElementProperty(this._element.nativeElement, 'selected', selected);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
       this._select.writeValue(this._select.value);
     }
   }
 }
-
-export const SELECT_DIRECTIVES = [SelectMultipleControlValueAccessor, NgSelectMultipleOption];
