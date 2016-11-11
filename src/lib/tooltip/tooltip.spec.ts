@@ -2,7 +2,7 @@ import {
     async, ComponentFixture, TestBed, tick, fakeAsync,
     flushMicrotasks
 } from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, AnimationTransitionEvent} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {TooltipPosition, MdTooltip, TOOLTIP_HIDE_DELAY, MdTooltipModule} from './tooltip';
 import {OverlayContainer} from '../core';
@@ -123,14 +123,45 @@ describe('MdTooltip', () => {
       expect(overlayContainerElement.childNodes.length).toBe(0);
       expect(overlayContainerElement.textContent).toBe('');
     });
+
+    it('should not try to dispose the tooltip when destroyed and done hiding', fakeAsync(() => {
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(150);
+
+      tooltipDirective.hide();
+      tick(TOOLTIP_HIDE_DELAY); // Change the tooltip state to hidden and trigger animation start
+
+      // Store the tooltip instance, which will be set to null after the button is hidden.
+      const tooltipInstance = tooltipDirective._tooltipInstance;
+      fixture.componentInstance.showButton = false;
+      fixture.detectChanges();
+
+      // At this point the animation should be able to complete itself and trigger the
+      // _afterVisibilityAnimation function, but for unknown reasons in the test infrastructure,
+      // this does not occur. Manually call this and verify that doing so does not
+      // throw an error.
+      tooltipInstance._afterVisibilityAnimation(new AnimationTransitionEvent({
+        fromState: 'visible',
+        toState: 'hidden',
+        totalTime: 150,
+        phaseName: '',
+      }));
+    }));
   });
 });
 
 @Component({
   selector: 'app',
-  template: `<button [md-tooltip]="message" [tooltip-position]="position">Button</button>`
+  template: `
+    <button *ngIf="showButton"
+            [md-tooltip]="message" 
+            [tooltip-position]="position">
+      Button
+    </button>`
 })
 class BasicTooltipDemo {
   position: TooltipPosition = 'below';
   message: string = initialTooltipMessage;
+  showButton: boolean = true;
 }

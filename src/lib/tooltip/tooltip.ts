@@ -129,7 +129,10 @@ export class MdTooltip {
 
     // Dispose the overlay when finished the shown tooltip.
     this._tooltipInstance.afterHidden().subscribe(() => {
-      this._disposeTooltip();
+      // Check first if the tooltip has already been removed through this components destroy.
+      if (this._tooltipInstance) {
+        this._disposeTooltip();
+      }
     });
   }
 
@@ -270,7 +273,6 @@ export class TooltipComponent {
   _afterVisibilityAnimation(e: AnimationTransitionEvent): void {
     if (e.toState === 'hidden' && !this.isVisible()) {
       this._onHide.next();
-
     }
   }
 
