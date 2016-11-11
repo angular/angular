@@ -18,9 +18,21 @@ export class TabsDemo {
   activeLinkIndex = 0;
 
   tabs = [
-    {label: 'Tab One', content: 'This is the body of the first tab'},
-    {label: 'Tab Two', content: 'This is the body of the second tab'},
-    {label: 'Tab Three', content: 'This is the body of the third tab'},
+    {
+      label: 'Tab One',
+      content: 'This is the body of the first tab'},
+    {
+      label: 'Tab Two',
+      disabled: true,
+      content: 'This is the body of the second tab'},
+    {
+      label: 'Tab Three',
+      extraContent: true,
+      content: 'This is the body of the third tab'},
+    {
+      label: 'Tab Four',
+      content: 'This is the body of the fourth tab'
+    },
   ];
 
   asyncTabs: Observable<any>;

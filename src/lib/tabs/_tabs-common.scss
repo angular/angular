@@ -2,6 +2,8 @@
 
 $md-tab-bar-height: 48px !default;
 
+$md-tab-animation-duration: 500ms !default;
+
 // Mixin styles for labels that are contained within the tab header.
 @mixin tab-label {
   line-height: $md-tab-bar-height;
@@ -36,5 +38,5 @@ $md-tab-bar-height: 48px !default;
   position: absolute;
   bottom: 0;
   height: 2px;
-  transition: 350ms ease-out;
+  transition: $md-tab-animation-duration $ease-in-out-curve-function;
 }

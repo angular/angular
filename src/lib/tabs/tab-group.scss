@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../core/style/layout-common';
 @import 'tabs-common';
 
 :host {
@@ -32,19 +33,24 @@ md-ink-bar {
 .md-tab-body-wrapper {
   position: relative;
   overflow: hidden;
-  flex-grow: 1;
   display: flex;
+  transition: height $md-tab-animation-duration $ease-in-out-curve-function;
 }
 
 // Wraps each tab body 
-.md-tab-body {
-  display: none;
-  overflow: auto;
-  box-sizing: border-box;
-  flex-grow: 1;
-  flex-shrink: 1;
-  &.md-tab-active {
-    display: block;
+md-tab-body {
+  @include md-fill;
+  display: block;
+  overflow: hidden;
+  &.md-tab-body-active {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1;
+    flex-grow: 1;
+  }
+  :host[md-dynamic-height] &.md-tab-body-active {
+    overflow-y: hidden;
   }
 }
 

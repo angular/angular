@@ -57,7 +57,9 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   }
 
   set portal(p: Portal<any>) {
-    this._replaceAttachedPortal(p);
+    if (p) {
+      this._replaceAttachedPortal(p);
+    }
   }
 
   ngOnDestroy() {

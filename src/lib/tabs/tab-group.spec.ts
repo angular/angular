@@ -1,11 +1,16 @@
-import {async, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+    async, fakeAsync, tick, ComponentFixture, TestBed,
+    flushMicrotasks
+} from '@angular/core/testing';
 import {MdTabGroup, MdTabsModule} from './tabs';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
+import {LayoutDirection, Dir} from '../core/rtl/dir';
 
 
 describe('MdTabGroup', () => {
+  let dir: LayoutDirection = 'ltr';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -16,6 +21,11 @@ describe('MdTabGroup', () => {
         DisabledTabsTestApp,
         TabGroupWithSimpleApi,
       ],
+      providers: [
+        {provide: Dir, useFactory: () => {
+          return {value: dir};
+        }}
+      ]
     });
 
     TestBed.compileComponents();
@@ -135,6 +145,87 @@ describe('MdTabGroup', () => {
 
       expect(component.handleSelection).toHaveBeenCalledTimes(1);
       expect(component.selectEvent.index).toBe(2);
+    }));
+
+    it('should update tab positions and attach content when selected', fakeAsync(() => {
+      fixture.detectChanges();
+      const tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      const tabBodyList = fixture.debugElement.queryAll(By.css('md-tab-body'));
+
+      // Begin on the second tab
+      flushMicrotasks();  // finish animation
+
+      expect(tabBodyList[0].componentInstance._position).toBe('left');
+      expect(tabBodyList[0].componentInstance._content.isAttached).toBe(false);
+
+      expect(tabBodyList[1].componentInstance._position).toBe('center');
+      expect(tabBodyList[1].componentInstance._content.isAttached).toBe(true);
+
+      expect(tabBodyList[2].componentInstance._position).toBe('right');
+      expect(tabBodyList[2].componentInstance._content.isAttached).toBe(false);
+
+      // Move to third tab
+      tabComponent.selectedIndex = 2;
+      fixture.detectChanges();
+      flushMicrotasks();  // finish animation
+
+      expect(tabBodyList[0].componentInstance._position).toBe('left');
+      expect(tabBodyList[0].componentInstance._content.isAttached).toBe(false);
+
+      expect(tabBodyList[1].componentInstance._position).toBe('left');
+      expect(tabBodyList[1].componentInstance._content.isAttached).toBe(false);
+
+      expect(tabBodyList[2].componentInstance._position).toBe('center');
+      expect(tabBodyList[2].componentInstance._content.isAttached).toBe(true);
+
+      // Move to the first tab
+      tabComponent.selectedIndex = 0;
+      fixture.detectChanges();
+      flushMicrotasks();  // finish animation
+
+      // Check that the tab bodies have correctly positions themselves
+      expect(tabBodyList[0].componentInstance._position).toBe('center');
+      expect(tabBodyList[0].componentInstance._content.isAttached).toBe(true);
+
+      expect(tabBodyList[1].componentInstance._position).toBe('right');
+      expect(tabBodyList[1].componentInstance._content.isAttached).toBe(false);
+
+      expect(tabBodyList[2].componentInstance._position).toBe('right');
+      expect(tabBodyList[2].componentInstance._content.isAttached).toBe(false);
+    }));
+
+
+    it('should support RTL for the tab positions', fakeAsync(() => {
+      dir = 'rtl';
+      fixture.detectChanges();
+      const tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      const tabBodyList = fixture.debugElement.queryAll(By.css('md-tab-body'));
+
+      // Begin on the second tab
+      flushMicrotasks();  // finish animation
+
+      expect(tabBodyList[0].componentInstance._position).toBe('right');
+      expect(tabBodyList[1].componentInstance._position).toBe('center');
+      expect(tabBodyList[2].componentInstance._position).toBe('left');
+
+      // Move to third tab
+      tabComponent.selectedIndex = 2;
+      fixture.detectChanges();
+      flushMicrotasks();  // finish animation
+
+      expect(tabBodyList[0].componentInstance._position).toBe('right');
+      expect(tabBodyList[1].componentInstance._position).toBe('right');
+      expect(tabBodyList[2].componentInstance._position).toBe('center');
+
+      // Move to the first tab
+      tabComponent.selectedIndex = 0;
+      fixture.detectChanges();
+      flushMicrotasks();  // finish animation
+
+      // Check that the tab bodies have correctly positions themselves
+      expect(tabBodyList[0].componentInstance._position).toBe('center');
+      expect(tabBodyList[1].componentInstance._position).toBe('left');
+      expect(tabBodyList[2].componentInstance._position).toBe('left');
     }));
   });
 
@@ -278,8 +369,8 @@ describe('MdTabGroup', () => {
   });
 
   /**
-   * Checks that the `selectedIndex` has been updated; checks that the label and body have the
-   * `md-tab-active` class
+   * Checks that the `selectedIndex` has been updated; checks that the label and body have their
+   * respective `active` classes
    */
   function checkSelectedIndex(index: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
@@ -290,19 +381,19 @@ describe('MdTabGroup', () => {
 
     let tabLabelElement = fixture.debugElement
         .query(By.css(`.md-tab-label:nth-of-type(${index + 1})`)).nativeElement;
-    expect(tabLabelElement.classList.contains('md-tab-active')).toBe(true);
+    expect(tabLabelElement.classList.contains('md-tab-label-active')).toBe(true);
 
     let tabContentElement = fixture.debugElement
-        .query(By.css(`#${tabLabelElement.id}`)).nativeElement;
-    expect(tabContentElement.classList.contains('md-tab-active')).toBe(true);
+        .query(By.css(`md-tab-body:nth-of-type(${index + 1})`)).nativeElement;
+    expect(tabContentElement.classList.contains('md-tab-body-active')).toBe(true);
   }
 
   function getSelectedLabel(fixture: ComponentFixture<any>): HTMLElement {
-    return fixture.nativeElement.querySelector('.md-tab-label.md-tab-active');
+    return fixture.nativeElement.querySelector('.md-tab-label-active');
   }
 
   function getSelectedContent(fixture: ComponentFixture<any>): HTMLElement {
-    return fixture.nativeElement.querySelector('.md-tab-body.md-tab-active');
+    return fixture.nativeElement.querySelector('.md-tab-body-active');
   }
 });
 

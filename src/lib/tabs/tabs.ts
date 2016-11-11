@@ -14,6 +14,15 @@ import {
     TemplateRef,
     ViewContainerRef,
     OnInit,
+    trigger,
+    state,
+    style,
+    animate,
+    transition,
+    AnimationTransitionEvent,
+    ElementRef,
+    Renderer,
+    Optional,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
@@ -23,6 +32,9 @@ import {
     LEFT_ARROW,
     ENTER,
     coerceBooleanProperty,
+    PortalHostDirective,
+    Dir,
+    LayoutDirection
 } from '../core';
 import {MdTabLabel} from './tab-label';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
@@ -82,7 +94,7 @@ export class MdTab implements OnInit {
   moduleId: module.id,
   selector: 'md-tab-group',
   templateUrl: 'tab-group.html',
-  styleUrls: ['tab-group.css'],
+  styleUrls: ['tab-group.css']
 })
 export class MdTabGroup {
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
@@ -90,11 +102,23 @@ export class MdTabGroup {
   @ViewChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
   @ViewChildren(MdInkBar) _inkBar: QueryList<MdInkBar>;
 
+  @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
+
   private _isInitialized: boolean = false;
 
+  /** Snapshot of the height of the tab body wrapper before another tab is activated. */
+  private _tabBodyWrapperHeight: number = 0;
+
+  /** Whether the tab group should grow to the size of the active tab */
+  private _dynamicHeight: boolean = false;
+  @Input('md-dynamic-height') set dynamicHeight(value: boolean) {
+    this._dynamicHeight = coerceBooleanProperty(value);
+  }
+
+  /** The index of the active tab. */
   private _selectedIndex: number = 0;
-  @Input()
-  set selectedIndex(value: number) {
+  @Input() set selectedIndex(value: number) {
+    this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
     if (value != this._selectedIndex && this.isValidIndex(value)) {
       this._selectedIndex = value;
 
@@ -105,19 +129,6 @@ export class MdTabGroup {
   }
   get selectedIndex(): number {
     return this._selectedIndex;
-  }
-
-  /**
-   * Determines if an index is valid.  If the tabs are not ready yet, we assume that the user is
-   * providing a valid index and return true.
-   */
-  isValidIndex(index: number): boolean {
-    if (this._tabs) {
-      const tab = this._tabs.toArray()[index];
-      return tab && !tab.disabled;
-    } else {
-      return true;
-    }
   }
 
   /** Output to enable support for two-way binding on `selectedIndex`. */
@@ -138,7 +149,7 @@ export class MdTabGroup {
   private _focusIndex: number = 0;
   private _groupId: number;
 
-  constructor(private _zone: NgZone) {
+  constructor(private _zone: NgZone, private _renderer: Renderer) {
     this._groupId = nextId++;
   }
 
@@ -154,6 +165,19 @@ export class MdTabGroup {
       });
     });
     this._isInitialized = true;
+  }
+
+  /**
+   * Determines if an index is valid.  If the tabs are not ready yet, we assume that the user is
+   * providing a valid index and return true.
+   */
+  isValidIndex(index: number): boolean {
+    if (this._tabs) {
+      const tab = this._tabs.toArray()[index];
+      return tab && !tab.disabled;
+    } else {
+      return true;
+    }
   }
 
   /** Tells the ink-bar to align itself to the current label wrapper */
@@ -189,25 +213,6 @@ export class MdTabGroup {
         this._labelWrappers.toArray()[value].focus();
       }
     }
-  }
-
-  private _createChangeEvent(index: number): MdTabChangeEvent {
-    const event = new MdTabChangeEvent;
-    event.index = index;
-    if (this._tabs && this._tabs.length) {
-      event.tab = this._tabs.toArray()[index];
-    }
-    return event;
-  }
-
-  /** Returns a unique id for each tab label element */
-  _getTabLabelId(i: number): string {
-    return `md-tab-label-${this._groupId}-${i}`;
-  }
-
-  /** Returns a unique id for each tab content element */
-  _getTabContentId(i: number): string {
-    return `md-tab-content-${this._groupId}-${i}`;
   }
 
   handleKeydown(event: KeyboardEvent) {
@@ -248,15 +253,133 @@ export class MdTabGroup {
   focusPreviousTab(): void {
     this.moveFocus(-1);
   }
+
+  private _createChangeEvent(index: number): MdTabChangeEvent {
+    const event = new MdTabChangeEvent;
+    event.index = index;
+    if (this._tabs && this._tabs.length) {
+      event.tab = this._tabs.toArray()[index];
+    }
+    return event;
+  }
+
+  /** Returns a unique id for each tab label element */
+  _getTabLabelId(i: number): string {
+    return `md-tab-label-${this._groupId}-${i}`;
+  }
+
+  /** Returns a unique id for each tab content element */
+  _getTabContentId(i: number): string {
+    return `md-tab-content-${this._groupId}-${i}`;
+  }
+
+  /**
+   * Sets the height of the body wrapper to the height of the activating tab if dynamic
+   * height property is true.
+   */
+  _setTabBodyWrapperHeight(tabHeight: number): void {
+    if (!this._dynamicHeight) { return; }
+
+    this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height',
+        this._tabBodyWrapperHeight + 'px');
+
+    // This conditional forces the browser to paint the height so that
+    // the animation to the new height can have an origin.
+    if (this._tabBodyWrapper.nativeElement.offsetHeight) {
+      this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height',
+          tabHeight + 'px');
+    }
+  }
+
+  /** Removes the height of the tab body wrapper. */
+  _removeTabBodyWrapperHeight(): void {
+    this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height', '');
+  }
 }
 
+export type MdTabBodyActiveState = 'left' | 'center' | 'right';
+
+@Component({
+  moduleId: module.id,
+  selector: 'md-tab-body',
+  templateUrl: 'tab-body.html',
+  animations: [
+    trigger('translateTab', [
+      state('left', style({transform: 'translate3d(-100%, 0, 0)'})),
+      state('center', style({transform: 'translate3d(0, 0, 0)'})),
+      state('right', style({transform: 'translate3d(100%, 0, 0)'})),
+      transition('* => *', animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')),
+    ])
+  ]
+})
+export class MdTabBody implements OnInit {
+  /** The portal host inside of this container into which the tab body content will be loaded. */
+  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+
+  /** Event emitted when the tab begins to animate towards the center as the active tab. */
+  @Output()
+  onTabBodyCentering: EventEmitter<number> = new EventEmitter<number>();
+
+  /** Event emitted when the tab completes its animation towards the center. */
+  @Output()
+  onTabBodyCentered: EventEmitter<void> = new EventEmitter<void>();
+
+  /** The tab body content to display. */
+  @Input('md-tab-body-content') _content: TemplatePortal;
+
+  /** The shifted index position of the tab body, where zero represents the active center tab. */
+  _position: MdTabBodyActiveState;
+  @Input('md-tab-body-position') set position(v: number) {
+    if (v < 0) {
+      this._position = this.getLayoutDirection() == 'ltr' ? 'left' : 'right';
+    } else if (v > 0) {
+      this._position = this.getLayoutDirection() == 'ltr' ? 'right' : 'left';
+    } else {
+      this._position = 'center';
+    }
+
+    if (this._position === 'center' && !this._portalHost.hasAttached() && this._content) {
+      this._portalHost.attach(this._content);
+    }
+  }
+
+  constructor(private _elementRef: ElementRef, @Optional() private _dir: Dir) {}
+
+  ngOnInit() {
+    if (this._position == 'center' && !this._portalHost.hasAttached()) {
+      this._portalHost.attach(this._content);
+    }
+  }
+
+  _onTranslateTabStarted(e: AnimationTransitionEvent) {
+    if (e.fromState != 'void' && e.toState == 'center') {
+      this.onTabBodyCentering.emit(this._elementRef.nativeElement.clientHeight);
+    }
+  }
+
+  _onTranslateTabComplete(e: AnimationTransitionEvent) {
+    if ((e.toState == 'left' || e.toState == 'right') && this._position !== 'center') {
+      // If the end state is that the tab is not centered, then detach the content.
+      this._portalHost.detach();
+    }
+
+    if ((e.toState == 'center') && this._position == 'center') {
+      this.onTabBodyCentered.emit();
+    }
+  }
+
+  /** The text direction of the containing app. */
+  getLayoutDirection(): LayoutDirection {
+    return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
+  }
+}
 
 @NgModule({
   imports: [CommonModule, PortalModule],
   // Don't export MdInkBar or MdTabLabelWrapper, as they are internal implementation details.
   exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink],
   declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
-    MdTabNavBar, MdTabLink],
+    MdTabNavBar, MdTabLink, MdTabBody],
 })
 export class MdTabsModule {
   static forRoot(): ModuleWithProviders {

@@ -1,6 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
-@import '../core/style/sidenav-common';
+@import '../core/style/layout-common';
 
 
 // Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
@@ -57,7 +57,7 @@ md-sidenav-layout {
 
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
-    @include md-fullscreen();
+    @include md-fill();
 
     &.md-sidenav-opened {
       overflow: hidden;
@@ -66,7 +66,7 @@ md-sidenav-layout {
 }
 
 .md-sidenav-backdrop {
-  @include md-fullscreen();
+  @include md-fill();
 
   display: block;
 
