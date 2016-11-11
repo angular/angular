@@ -12,8 +12,6 @@ import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
-
-
 /**
  * An interface that can be implemented by classes that can act as validators.
  *
@@ -135,7 +133,7 @@ export class MinLengthValidator implements Validator,
   }
 
   validate(c: AbstractControl): {[key: string]: any} {
-    return isPresent(this.minlength) ? this._validator(c) : null;
+    return this.minlength == null ? null : this._validator(c);
   }
 
   registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
@@ -215,7 +213,7 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': 'pattern? pattern : null'}
+  host: {'[attr.pattern]': 'pattern ? pattern : null'}
 })
 export class PatternValidator implements Validator,
     OnChanges {
@@ -234,7 +232,7 @@ export class PatternValidator implements Validator,
   }
 
   validate(c: AbstractControl): {[key: string]: any} {
-    return isPresent(this.pattern) ? this._validator(c) : null;
+    return this.pattern ? this._validator(c) : null;
   }
 
   registerOnValidatorChange(fn: () => void) { this._onChange = fn; }

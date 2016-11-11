@@ -29,13 +29,12 @@ export class RadioControlRegistry {
   }
 
   remove(accessor: RadioControlValueAccessor) {
-    var indexToRemove = -1;
-    for (var i = 0; i < this._accessors.length; ++i) {
+    for (let i = this._accessors.length - 1; i >= 0; --i) {
       if (this._accessors[i][1] === accessor) {
-        indexToRemove = i;
+        this._accessors.splice(i, 1);
+        return;
       }
     }
-    this._accessors.splice(indexToRemove, 1);
   }
 
   select(accessor: RadioControlValueAccessor) {
@@ -99,7 +98,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   /** @internal */
   _fn: Function;
   onChange = () => {};
-  onTouched = () => {}
+  onTouched = () => {};
 
   @Input() name: string;
   @Input() formControlName: string;

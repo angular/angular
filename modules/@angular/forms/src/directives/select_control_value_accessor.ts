@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer, forwardRef} from '@angular/core';
 
-import {isBlank, isPresent, isPrimitive, looseIdentical} from '../facade/lang';
+import {isPrimitive, looseIdentical} from '../facade/lang';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -19,7 +19,7 @@ export const SELECT_VALUE_ACCESSOR: any = {
 };
 
 function _buildValueString(id: string, value: any): string {
-  if (isBlank(id)) return `${value}`;
+  if (id == null) return `${value}`;
   if (!isPrimitive(value)) value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
 }
@@ -86,7 +86,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
-    var valueString = _buildValueString(this._getOptionId(value), value);
+    const valueString = _buildValueString(this._getOptionId(value), value);
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', valueString);
   }
 
@@ -115,8 +115,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _getOptionValue(valueString: string): any {
-    let value = this._optionMap.get(_extractId(valueString));
-    return isPresent(value) ? value : valueString;
+    const value = this._optionMap.get(_extractId(valueString));
+    return value != null ? value : valueString;
   }
 }
 
@@ -136,7 +136,7 @@ export class NgSelectOption implements OnDestroy {
   constructor(
       private _element: ElementRef, private _renderer: Renderer,
       @Optional() @Host() private _select: SelectControlValueAccessor) {
-    if (isPresent(this._select)) this.id = this._select._registerOption();
+    if (this._select) this.id = this._select._registerOption();
   }
 
   @Input('ngValue')
@@ -150,7 +150,7 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (isPresent(this._select)) this._select.writeValue(this._select.value);
+    if (this._select) this._select.writeValue(this._select.value);
   }
 
   /** @internal */
@@ -159,7 +159,7 @@ export class NgSelectOption implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (isPresent(this._select)) {
+    if (this._select) {
       this._select._optionMap.delete(this.id);
       this._select.writeValue(this._select.value);
     }

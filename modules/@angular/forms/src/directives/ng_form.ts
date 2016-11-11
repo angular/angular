@@ -9,7 +9,6 @@
 import {Directive, Inject, Optional, Self, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../facade/async';
-import {isPresent} from '../facade/lang';
 import {AbstractControl, FormControl, FormGroup} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
@@ -103,7 +102,7 @@ export class NgForm extends ControlContainer implements Form {
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      if (isPresent(container)) {
+      if (container) {
         container.removeControl(dir.name);
       }
     });
@@ -122,7 +121,7 @@ export class NgForm extends ControlContainer implements Form {
   removeFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      if (isPresent(container)) {
+      if (container) {
         container.removeControl(dir.name);
       }
     });
