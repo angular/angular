@@ -1,4 +1,4 @@
-import {Component, ViewContainerRef} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 
 @Component({
@@ -11,9 +11,7 @@ export class DialogDemo {
   dialogRef: MdDialogRef<JazzDialog>;
   lastCloseResult: string;
 
-  constructor(
-      public dialog: MdDialog,
-      public viewContainerRef: ViewContainerRef) { }
+  constructor(public dialog: MdDialog) { }
 
   open() {
     this.dialogRef = this.dialog.open(JazzDialog);

@@ -1,6 +1,6 @@
 # MdDialog
 
-MdDialog is a service, which opens dialogs components in the view. 
+MdDialog is a service, which opens dialogs components in the view.
 
 ### Methods
 
@@ -12,8 +12,9 @@ MdDialog is a service, which opens dialogs components in the view.
 
 | Key |  Description |
 | --- | --- |
-| `viewContainerRef: ViewContainerRef` | The view container ref to attach the dialog to. |
 | `role: DialogRole = 'dialog'` | The ARIA role of the dialog element. Possible values are `dialog` and `alertdialog`. Defaults to `dialog`. |
+| `disableClose: boolean = false` | Whether to prevent the user from closing a dialog by clicking on the backdrop or pressing escape. Defaults to `false`. |
+| `viewContainerRef: ViewContainerRef` | The view container ref to attach the dialog to. Optional. |
 
 ## MdDialogRef
 
@@ -40,15 +41,12 @@ export class PizzaComponent {
 
   dialogRef: MdDialogRef<PizzaDialog>;
 
-  constructor(
-    public dialog: MdDialog,
-    public viewContainerRef: ViewContainerRef) { }
+  constructor(public dialog: MdDialog) { }
 
   openDialog() {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = this.viewContainerRef;
-
-    this.dialogRef = this.dialog.open(PizzaDialog, config);
+    this.dialogRef = this.dialog.open(PizzaDialog, {
+      disableClose: false
+    });
 
     this.dialogRef.afterClosed().subscribe(result => {
       console.log('result: ' + result);
