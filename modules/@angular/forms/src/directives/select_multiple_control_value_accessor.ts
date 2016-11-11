@@ -121,8 +121,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /** @internal */
   _getOptionValue(valueString: string): any {
-    let opt = this._optionMap.get(_extractId(valueString));
-    return isPresent(opt) ? opt._value : valueString;
+    let key: string = _extractId(valueString);
+    return this._optionMap.has(key) ? this._optionMap.get(key)._value : valueString;
   }
 }
 
