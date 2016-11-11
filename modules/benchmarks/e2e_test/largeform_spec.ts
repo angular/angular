@@ -7,6 +7,7 @@
  */
 
 import {openBrowser, verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$, By, element} from 'protractor';
 
 describe('largeform benchmark spec', () => {
 

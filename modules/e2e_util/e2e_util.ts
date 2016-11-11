@@ -5,12 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {browser} from 'protractor';
+
 const yargs = require('yargs');
 import * as webdriver from 'selenium-webdriver';
 
 let cmdArgs: {'bundles': boolean};
 
-declare var browser: any;
 declare var expect: any;
 
 export function readCommandLine(extraOptions?: {[key: string]: any}) {

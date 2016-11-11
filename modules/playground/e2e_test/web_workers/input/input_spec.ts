@@ -7,6 +7,8 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
+
 
 describe('WebWorkers Input', function() {
   afterEach(() => {
@@ -37,8 +39,7 @@ describe('WebWorkers Input', function() {
     input.sendKeys(VALUE);
     let displayElem = element(by.css(selector + ' .input-val'));
     const expectedVal = `Input val is ${VALUE}.`;
-    browser.wait(
-        protractor.ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
+    browser.wait(ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
     expect(displayElem.getText()).toEqual(expectedVal);
   });
 
@@ -52,20 +53,19 @@ describe('WebWorkers Input', function() {
     input.sendKeys(VALUE);
     let displayElem = element(by.css(selector + ' .textarea-val'));
     const expectedVal = `Textarea val is ${VALUE}.`;
-    browser.wait(
-        protractor.ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
+    browser.wait(ExpectedConditions.textToBePresentInElement(displayElem, expectedVal), 5000);
     expect(displayElem.getText()).toEqual(expectedVal);
   });
 
   function waitForBootstrap() {
     browser.wait(protractor.until.elementLocated(by.css(selector + ' h2')), 5000)
         .then(
-            _ => {
+            () => {
               let elem = element(by.css(selector + ' h2'));
               browser.wait(
                   protractor.ExpectedConditions.textToBePresentInElement(elem, 'Input App'), 5000);
             },
-            _ => {
+            () => {
               // jasmine will timeout if this gets called too many times
               console.log('>> unexpected timeout -> browser.refresh()');
               browser.refresh();

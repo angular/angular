@@ -7,6 +7,7 @@
  */
 
 import {openBrowser, verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {$} from 'protractor';
 
 describe('tree benchmark spec', () => {
 
