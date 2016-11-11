@@ -216,11 +216,55 @@ export abstract class AbstractControl {
   get statusChanges(): Observable<any> { return this._statusChanges; }
 
   /**
-   * Sets the synchronous validators that are active on this control.  Calling
+   * Adds the synchronous validators that are active on this control. Calling
+   * this will merge them with any existing sync validators.
+   */
+  addValidators(newValidator: ValidatorFn|ValidatorFn[]): void {
+    if (!newValidator) return;
+    if (Array.isArray(newValidator) && newValidator.length === 0) return;
+
+    if (!this.validator) {
+      this.validator = coerceToValidator(newValidator);
+      return;
+    }
+
+    const validators: ValidatorFn[] = [this.validator];
+    if (Array.isArray(newValidator)) {
+      validators.concat(newValidator);
+    } else {
+      validators.push(newValidator);
+    }
+    this.validator = coerceToValidator(validators);
+  }
+
+  /**
+   * Sets the synchronous validators that are active on this control. Calling
    * this will overwrite any existing sync validators.
    */
   setValidators(newValidator: ValidatorFn|ValidatorFn[]): void {
     this.validator = coerceToValidator(newValidator);
+  }
+
+  /**
+   * Adds the async validators that are active on this control. Calling this
+   * will merge them with any existing async validators.
+   */
+  addAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]): void {
+    if (!newValidator) return;
+    if (Array.isArray(newValidator) && newValidator.length === 0) return;
+
+    if (!this.asyncValidator) {
+      this.asyncValidator = coerceToAsyncValidator(newValidator);
+      return;
+    }
+
+    const asyncValidators: ValidatorFn[] = [this.asyncValidator];
+    if (Array.isArray(newValidator)) {
+      asyncValidators.concat(newValidator);
+    } else {
+      asyncValidators.push(newValidator);
+    }
+    this.asyncValidator = coerceToAsyncValidator(asyncValidators);
   }
 
   /**
@@ -1213,6 +1257,7 @@ export class FormArray extends AbstractControl {
   get length(): number { return this.controls.length; }
 
   /**
+   *  Sets the value of the {@link FormArray}. It accepts an array that matches
    *  Sets the value of the {@link FormArray}. It accepts an array that matches
    *  the structure of the control.
    *
