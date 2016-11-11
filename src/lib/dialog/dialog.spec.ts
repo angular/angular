@@ -5,6 +5,7 @@ import {
   flushMicrotasks,
   ComponentFixture,
   TestBed,
+  tick,
 } from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
@@ -207,6 +208,7 @@ describe('MdDialog', () => {
           .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
 
       dialogRef.close();
+      tick(500);
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 

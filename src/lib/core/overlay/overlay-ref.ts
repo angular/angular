@@ -92,7 +92,9 @@ export class OverlayRef implements PortalHost {
 
     // Add class to fade-in the backdrop after one frame.
     requestAnimationFrame(() => {
-      this._backdropElement.classList.add('md-overlay-backdrop-showing');
+      if (this._backdropElement) {
+        this._backdropElement.classList.add('md-overlay-backdrop-showing');
+      }
     });
   }
 
@@ -101,10 +103,11 @@ export class OverlayRef implements PortalHost {
     let backdropToDetach = this._backdropElement;
 
     if (backdropToDetach) {
-      backdropToDetach.classList.remove('md-overlay-backdrop-showing');
-      backdropToDetach.classList.remove(this._state.backdropClass);
-      backdropToDetach.addEventListener('transitionend', () => {
-        backdropToDetach.parentNode.removeChild(backdropToDetach);
+      let finishDetach = () => {
+        // It may not be attached to anything in certain cases (e.g. unit tests).
+        if (backdropToDetach && backdropToDetach.parentNode) {
+          backdropToDetach.parentNode.removeChild(backdropToDetach);
+        }
 
         // It is possible that a new portal has been attached to this overlay since we started
         // removing the backdrop. If that is the case, only clear the backdrop reference if it
@@ -112,7 +115,16 @@ export class OverlayRef implements PortalHost {
         if (this._backdropElement == backdropToDetach) {
           this._backdropElement = null;
         }
-      });
+      };
+
+      backdropToDetach.classList.remove('md-overlay-backdrop-showing');
+      backdropToDetach.classList.remove(this._state.backdropClass);
+      backdropToDetach.addEventListener('transitionend', finishDetach);
+
+      // If the backdrop doesn't have a transition, the `transitionend` event won't fire.
+      // In this case we make it unclickable and we try to remove it after a delay.
+      backdropToDetach.style.pointerEvents = 'none';
+      setTimeout(finishDetach, 500);
     }
   }
 }

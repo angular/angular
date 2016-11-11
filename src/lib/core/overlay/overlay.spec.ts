@@ -172,7 +172,7 @@ describe('Overlay', () => {
       overlayRef.attach(componentPortal);
 
       viewContainerFixture.detectChanges();
-      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
       expect(backdrop).toBeTruthy();
       expect(backdrop.classList).not.toContain('md-overlay-backdrop-showing');
 
@@ -188,7 +188,7 @@ describe('Overlay', () => {
       overlayRef.attach(componentPortal);
       viewContainerFixture.detectChanges();
 
-      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
       expect(backdrop.classList).toContain('md-overlay-dark-backdrop');
     });
 
@@ -199,8 +199,22 @@ describe('Overlay', () => {
       overlayRef.attach(componentPortal);
       viewContainerFixture.detectChanges();
 
-      let backdrop = <HTMLElement> overlayContainerElement.querySelector('.md-overlay-backdrop');
+      let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
       expect(backdrop.classList).toContain('md-overlay-transparent-backdrop');
+    });
+
+    it('should disable the pointer events of a backdrop that is being removed', () => {
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+
+      viewContainerFixture.detectChanges();
+      let backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+
+      expect(backdrop.style.pointerEvents).toBeFalsy();
+
+      overlayRef.detach();
+
+      expect(backdrop.style.pointerEvents).toBe('none');
     });
 
   });
