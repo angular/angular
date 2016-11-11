@@ -18,6 +18,3 @@ export const END = 35;
 export const ENTER = 13;
 export const SPACE = 32;
 export const TAB = 9;
-
-export const HOME = 36;
-export const END = 35;
