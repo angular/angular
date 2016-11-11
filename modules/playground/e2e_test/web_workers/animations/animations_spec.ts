@@ -7,6 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {browser, element, by, protractor} from 'protractor';
 
 describe('WebWorkers Animations', function() {
   afterEach(() => {

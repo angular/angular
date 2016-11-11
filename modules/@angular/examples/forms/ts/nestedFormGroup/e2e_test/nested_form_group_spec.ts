@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('nestedFormGroup example', () => {
   afterEach(verifyNoBrowserErrors);
-  let firstInput: protractor.ElementFinder;
-  let lastInput: protractor.ElementFinder;
-  let button: protractor.ElementFinder;
+  let firstInput: ElementFinder;
+  let lastInput: ElementFinder;
+  let button: ElementFinder;
 
   beforeEach(() => {
     browser.get('/forms/ts/nestedFormGroup/index.html');
