@@ -8,8 +8,6 @@
 
 import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
 
-import {isBlank} from '../facade/lang';
-
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const NUMBER_VALUE_ACCESSOR: any = {
@@ -45,7 +43,7 @@ export class NumberValueAccessor implements ControlValueAccessor {
 
   writeValue(value: number): void {
     // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
-    const normalizedValue = isBlank(value) ? '' : value;
+    const normalizedValue = value == null ? '' : value;
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 

@@ -8,8 +8,6 @@
 
 import {Directive, Self} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
-
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -19,27 +17,13 @@ export class AbstractControlStatus {
 
   constructor(cd: AbstractControlDirective) { this._cd = cd; }
 
-  get ngClassUntouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.untouched : false;
-  }
-  get ngClassTouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.touched : false;
-  }
-  get ngClassPristine(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.pristine : false;
-  }
-  get ngClassDirty(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.dirty : false;
-  }
-  get ngClassValid(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.valid : false;
-  }
-  get ngClassInvalid(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.invalid : false;
-  }
-  get ngClassPending(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.pending : false;
-  }
+  get ngClassUntouched(): boolean { return this._cd.control ? this._cd.control.untouched : false; }
+  get ngClassTouched(): boolean { return this._cd.control ? this._cd.control.touched : false; }
+  get ngClassPristine(): boolean { return this._cd.control ? this._cd.control.pristine : false; }
+  get ngClassDirty(): boolean { return this._cd.control ? this._cd.control.dirty : false; }
+  get ngClassValid(): boolean { return this._cd.control ? this._cd.control.valid : false; }
+  get ngClassInvalid(): boolean { return this._cd.control ? this._cd.control.invalid : false; }
+  get ngClassPending(): boolean { return this._cd.control ? this._cd.control.pending : false; }
 }
 
 export const ngControlStatusHost = {
@@ -49,7 +33,7 @@ export const ngControlStatusHost = {
   '[class.ng-dirty]': 'ngClassDirty',
   '[class.ng-valid]': 'ngClassValid',
   '[class.ng-invalid]': 'ngClassInvalid',
-  '[class.ng-pending]': 'ngClassPending'
+  '[class.ng-pending]': 'ngClassPending',
 };
 
 /**
