@@ -7,15 +7,15 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  &.md-primary::after {
+  &.md-primary .md-button-focus-overlay {
     background-color: md-color($primary, 0.12);
   }
 
-  &.md-accent::after {
+  &.md-accent .md-button-focus-overlay {
     background-color: md-color($accent, 0.12);
   }
 
-  &.md-warn::after {
+  &.md-warn .md-button-focus-overlay {
     background-color: md-color($warn, 0.12);
   }
 }

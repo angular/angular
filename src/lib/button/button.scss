@@ -10,11 +10,13 @@
   // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
   &:hover {
     // Use the same visual treatment for hover as for focus.
-    @include md-button-focus();
+    .md-button-focus-overlay {
+      opacity: 1;
+    }
   }
 
   &[disabled]:hover {
-    &.md-primary, &.md-accent, &.md-warn, &::after {
+    &.md-primary, &.md-accent, &.md-warn, .md-button-focus-overlay {
       background-color: transparent;
     }
   }
@@ -56,12 +58,24 @@
 }
 
 // The ripple container should match the bounds of the entire button.
-.md-button-ripple {
+.md-button-ripple, .md-button-focus-overlay {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
+}
+
+// Overlay to be used as a tint. Note that the same effect can be achieved by using a pseudo
+// element, however we use a proper DOM element in order to be able to disable the default
+// touch action. This makes the buttons more responsive on touch devices.
+.md-button-focus-overlay {
+  // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
+  // black, 12% opacity shade over the normal color (for both light and dark themes).
+  background-color: rgba(black, 0.12);
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
 }
 
 // For round buttons, the ripple container should clip child ripples to a circle.

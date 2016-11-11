@@ -3,24 +3,6 @@
 @import '../core/style/button-common';
 
 
-// Applies a focus style to an md-button element.
-@mixin md-button-focus {
-  &::after {
-    // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
-    // black, 12% opacity shade over the normal color (for both light and dark themes).
-    // We do this by placing an :after pseudo-element with the appropriate shade over the button.
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    content: '';
-    background-color: rgba(black, 0.12);
-    border-radius: inherit;
-    pointer-events: none;
-  }
-}
-
 // Flat and raised button standards
 $md-button-padding: 0 16px !default;
 $md-button-min-width: 88px !default;
@@ -74,7 +56,9 @@ $md-mini-fab-padding: 8px !default;
   }
 
   &.md-button-focus {
-    @include md-button-focus();
+    .md-button-focus-overlay {
+      opacity: 1;
+    }
   }
 }
 
