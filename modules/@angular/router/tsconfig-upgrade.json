@@ -13,6 +13,7 @@
     "outDir": "../../../dist/packages-dist/router",
     "paths": {
       "@angular/core": ["../../../dist/packages-dist/core"],
+      "@angular/platform-browser": ["../../../dist/packages-dist/platform-browser"],
       "@angular/router": ["../../../dist/packages-dist/router"],
       "@angular/upgrade/static": ["../../../dist/packages-dist/upgrade/static"]
     },

@@ -8,10 +8,12 @@
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {getDOM} from './private_import_platform-browser';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
@@ -20,7 +22,6 @@ import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
-
 
 
 /**
@@ -249,11 +250,12 @@ export function setupRouter(
   }
 
   if (opts.enableTracing) {
+    const dom = getDOM();
     router.events.subscribe(e => {
-      console.group(`Router Event: ${(<any>e.constructor).name}`);
-      console.log(e.toString());
-      console.log(e);
-      console.groupEnd();
+      dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
+      dom.log(e.toString());
+      dom.log(e);
+      dom.logGroupEnd();
     });
   }
 
