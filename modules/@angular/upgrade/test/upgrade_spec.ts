@@ -9,8 +9,7 @@
 import {Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeAdapter} from '@angular/upgrade';
+import {UpgradeAdapter, platformUpgrade} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
 
 export function main() {
@@ -113,7 +112,7 @@ export function main() {
        }));
 
     it('supports the compilerOptions argument', async(() => {
-         const platformRef = platformBrowserDynamic();
+         const platformRef = platformUpgrade();
          spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
 
          const ng1Module = angular.module('ng1', []);
@@ -180,7 +179,7 @@ export function main() {
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
              // https://github.com/angular/angular.js/issues/12983
-             expect(log).toEqual(['1A', '1B', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+             expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
              ref.dispose();
            });
          }));
@@ -361,6 +360,33 @@ export function main() {
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(multiTrim(document.body.textContent)).toEqual('test');
+             ref.dispose();
+           });
+         }));
+
+      it('should support multi-slot projection', async(() => {
+           var ng1Module = angular.module('ng1', []);
+
+           var Ng2 = Component({
+                       selector: 'ng2',
+                       template: '2a(<ng-content select=".ng1a"></ng-content>)' +
+                           '2b(<ng-content select=".ng1b"></ng-content>)'
+                     }).Class({constructor: function() {}});
+
+           var Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+             constructor: function() {}
+           });
+
+           // The ng-if on one of the projected children is here to make sure
+           // the correct slot is targeted even with structural directives in play.
+           var element = html(
+               '<ng2><div ng-if="true" class="ng1a">1a</div><div' +
+               ' class="ng1b">1b</div></ng2>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
              ref.dispose();
            });
          }));
@@ -1017,6 +1043,33 @@ export function main() {
              expect(ref.ng2Injector.get('testValue')).toBe('secreteToken');
              expect(ref.ng2Injector.get(String)).toBe('secreteToken');
              expect(ref.ng2Injector.get('testToken')).toBe('secreteToken');
+             ref.dispose();
+           });
+         }));
+
+      it('should respect hierarchical dependency injection for ng2', async(() => {
+           var ng1Module = angular.module('ng1', []);
+
+           var Ng2Parent = Component({
+                             selector: 'ng2-parent',
+                             template: `ng2-parent(<ng-content></ng-content>)`
+                           }).Class({constructor: function() {}});
+           var Ng2Child = Component({selector: 'ng2-child', template: `ng2-child`}).Class({
+             constructor: [Ng2Parent, function(parent: any) {}]
+           });
+
+           var Ng2Module =
+               NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]}).Class({
+                 constructor: function() {}
+               });
+
+           var element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2Parent', adapter.downgradeNg2Component(Ng2Parent))
+               .directive('ng2Child', adapter.downgradeNg2Component(Ng2Child));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
              ref.dispose();
            });
          }));

@@ -1,9 +1,14 @@
+/** @experimental */
+export declare const platformUpgrade: (extraProviders?: Provider[]) => PlatformRef;
+
 /** @stable */
 export declare class UpgradeAdapter {
     constructor(ng2AppModule: Type<any>, compilerOptions?: CompilerOptions);
     bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef;
+    declareNg1Module(modules?: any[]): void;
     downgradeNg2Component(type: Type<any>): Function;
     downgradeNg2Provider(token: any): Function;
+    initForNg1Tests(): UpgradeAdapterRef;
     upgradeNg1Component(name: string): Type<any>;
     upgradeNg1Provider(name: string, options?: {
         asToken: any;

@@ -42,6 +42,7 @@ export interface IRootScopeService {
   $parent: IScope;
   $root: IScope;
   $watch(expr: any, fn?: (a1?: any, a2?: any) => void): Function;
+  $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
   $destroy(): any;
   $apply(): any;
   $apply(exp: string): any;

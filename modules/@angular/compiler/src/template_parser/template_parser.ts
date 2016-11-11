@@ -812,7 +812,8 @@ class ElementContext {
   }
 }
 
-function createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
+export function createElementCssSelector(
+    elementName: string, matchableAttrs: string[][]): CssSelector {
   const cssSelector = new CssSelector();
   const elNameNoNs = splitNsName(elementName)[1];
 
