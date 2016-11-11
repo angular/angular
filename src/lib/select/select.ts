@@ -282,11 +282,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    */
   private _focusCorrectOption(): void {
     if (this.selected) {
-      this._keyManager.focusedItemIndex = this._getOptionIndex(this.selected);
-      this.selected.focus();
+      this._keyManager.setFocus(this._getOptionIndex(this.selected));
     } else {
-      this._keyManager.focusedItemIndex = 0;
-      this.options.first.focus();
+      this._keyManager.focusFirstItem();
     }
   }
 

@@ -59,7 +59,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   // TODO: internal
   ngAfterContentInit() {
-    this._keyManager = new ListKeyManager(this.items);
+    this._keyManager = new ListKeyManager(this.items).withFocusWrap();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => {
       this._emitCloseEvent();
     });
@@ -94,9 +94,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
    * TODO: internal
    */
   focusFirstItem() {
-    // The menu always opens with the first item focused.
-    this.items.first.focus();
-    this._keyManager.focusedItemIndex = 0;
+    this._keyManager.focusFirstItem();
   }
 
   /**
