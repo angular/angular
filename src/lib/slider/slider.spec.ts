@@ -1,10 +1,18 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
-import {By} from '@angular/platform-browser';
+import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './slider';
-import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {TestGestureConfig} from './test-gesture-config';
+import {
+  UP_ARROW,
+  RIGHT_ARROW,
+  DOWN_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  END,
+  HOME, LEFT_ARROW
+} from '../core/keyboard/keycodes';
 
 
 describe('MdSlider', () => {
@@ -746,6 +754,90 @@ describe('MdSlider', () => {
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('keyboard support', () => {
+    let fixture: ComponentFixture<StandardSlider>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderTrackElement: HTMLElement;
+    let testComponent: StandardSlider;
+    let sliderInstance: MdSlider;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(StandardSlider);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+    });
+
+    it('should increment slider by 1 on up arrow pressed', () => {
+      dispatchKeydownEvent(sliderNativeElement, UP_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+
+    it('should increment slider by 1 on right arrow pressed', () => {
+      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+
+    it('should decrement slider by 1 on down arrow pressed', () => {
+      sliderInstance.value = 100;
+
+      dispatchKeydownEvent(sliderNativeElement, DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should decrement slider by 1 on left arrow pressed', () => {
+      sliderInstance.value = 100;
+
+      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should increment slider by 10 on page up pressed', () => {
+      dispatchKeydownEvent(sliderNativeElement, PAGE_UP);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(10);
+    });
+
+    it('should decrement slider by 10 on page down pressed', () => {
+      sliderInstance.value = 100;
+
+      dispatchKeydownEvent(sliderNativeElement, PAGE_DOWN);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(90);
+    });
+
+    it('should set slider to max on end pressed', () => {
+      dispatchKeydownEvent(sliderNativeElement, END);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(100);
+    });
+
+    it('should set slider to min on home pressed', () => {
+      sliderInstance.value = 100;
+
+      dispatchKeydownEvent(sliderNativeElement, HOME);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(0);
+    });
+  });
 });
 
 // Disable animations and make the slider an even 100px (+ 8px padding on either side)
@@ -843,7 +935,7 @@ class SliderWithChangeHandler {
 }
 
 /**
- * Dispatches a click event from an element.
+ * Dispatches a click event sequence (consisting of moueseenter, click) from an element.
  * Note: The mouse event truncates the position for the click.
  * @param sliderElement The md-slider element from which the event will be dispatched.
  * @param percentage The percentage of the slider where the click should occur. Used to find the
@@ -909,6 +1001,8 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
 
+  dispatchMouseenterEvent(sliderElement);
+
   gestureConfig.emitEventForElement('slidestart', sliderElement, {
     center: { x: x },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
@@ -936,10 +1030,7 @@ function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number,
 /**
  * Dispatches a mouseenter event from an element.
  * Note: The mouse event truncates the position for the click.
- * @param trackElement The track element from which the event location will be calculated.
- * @param containerElement The container element from which the event will be dispatched.
- * @param percentage The percentage of the slider where the click should occur. Used to find the
- * physical location of the click.
+ * @param element The element from which the event will be dispatched.
  */
 function dispatchMouseenterEvent(element: HTMLElement): void {
   let dimensions = element.getBoundingClientRect();
@@ -949,5 +1040,20 @@ function dispatchMouseenterEvent(element: HTMLElement): void {
   let event = document.createEvent('MouseEvent');
   event.initMouseEvent(
       'mouseenter', true, true, window, 0, x, y, x, y, false, false, false, false, 0, null);
+  element.dispatchEvent(event);
+}
+
+/**
+ * Dispatches a keydown event from an element.
+ * @param element The element from which the event will be dispatched.
+ * @param keyCode The key code of the key being pressed.
+ */
+function dispatchKeydownEvent(element: HTMLElement, keyCode: number): void {
+  let event: any = document.createEvent('KeyboardEvent');
+  (event.initKeyEvent || event.initKeyboardEvent).bind(event)(
+      'keydown', true, true, window, 0, 0, 0, 0, 0, keyCode);
+  Object.defineProperty(event, 'keyCode', {
+    get: function() { return keyCode; }
+  });
   element.dispatchEvent(event);
 }

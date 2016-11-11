@@ -1,18 +1,28 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    Component,
-    ElementRef,
-    Input,
-    Output,
-    ViewEncapsulation,
-    forwardRef,
-    EventEmitter,
+  NgModule,
+  ModuleWithProviders,
+  Component,
+  ElementRef,
+  Input,
+  Output,
+  ViewEncapsulation,
+  forwardRef,
+  EventEmitter
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdGestureConfig, coerceBooleanProperty, coerceNumberProperty} from '../core';
 import {Input as HammerInput} from 'hammerjs';
+import {
+  PAGE_UP,
+  PAGE_DOWN,
+  END,
+  HOME,
+  LEFT_ARROW,
+  UP_ARROW,
+  RIGHT_ARROW,
+  DOWN_ARROW
+} from '../core/keyboard/keycodes';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -43,10 +53,12 @@ export class MdSliderChange {
   host: {
     '(blur)': '_onBlur()',
     '(click)': '_onClick($event)',
+    '(keydown)': '_onKeydown($event)',
     '(mouseenter)': '_onMouseenter()',
     '(slide)': '_onSlide($event)',
     '(slideend)': '_onSlideEnd()',
     '(slidestart)': '_onSlideStart($event)',
+    'role': 'slider',
     'tabindex': '0',
     '[attr.aria-disabled]': 'disabled',
     '[attr.aria-valuemax]': 'max',
@@ -252,6 +264,48 @@ export class MdSlider implements ControlValueAccessor {
   _onBlur() {
     this._isActive = false;
     this.onTouched();
+  }
+
+  _onKeydown(event: KeyboardEvent) {
+    if (this.disabled) { return; }
+
+    switch (event.keyCode) {
+      case PAGE_UP:
+        this._increment(10);
+        break;
+      case PAGE_DOWN:
+        this._increment(-10);
+        break;
+      case END:
+        this.value = this.max;
+        break;
+      case HOME:
+        this.value = this.min;
+        break;
+      case LEFT_ARROW:
+        this._increment(-1);
+        break;
+      case UP_ARROW:
+        this._increment(1);
+        break;
+      case RIGHT_ARROW:
+        this._increment(1);
+        break;
+      case DOWN_ARROW:
+        this._increment(-1);
+        break;
+      default:
+        // Return if the key is not one that we explicitly handle to avoid calling preventDefault on
+        // it.
+        return;
+    }
+
+    event.preventDefault();
+  }
+
+  /** Increments the slider by the given number of steps (negative number decrements). */
+  private _increment(numSteps: number) {
+    this.value = this._clamp(this.value + this.step * numSteps, this.min, this.max);
   }
 
   /**
