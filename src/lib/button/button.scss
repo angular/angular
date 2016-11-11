@@ -35,23 +35,26 @@
 }
 
 [md-icon-button] {
-  min-width: 0;
   padding: 0;
+
+  // Reset the min-width from the button base.
+  min-width: 0;
 
   width: $md-icon-button-size;
   height: $md-icon-button-size;
 
-  line-height: $md-icon-button-line-height;
+  flex-shrink: 0;
+
+  line-height: $md-icon-button-size;
   border-radius: $md-icon-button-border-radius;
 
-  .md-button-wrapper > * {
+  i, md-icon {
     line-height: $md-icon-button-line-height;
-    vertical-align: middle;
   }
 }
 
 // The text and icon should be vertical aligned inside a button
-[md-button], [md-raised-button] {
+[md-button], [md-raised-button], [md-icon-button] {
   .md-button-wrapper > * {
     vertical-align: middle;
   }
