@@ -77,9 +77,19 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 export function cleanUpControl(control: FormControl, dir: NgControl) {
   dir.valueAccessor.registerOnChange(() => _noControlError(dir));
   dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
-  dir._rawValidators.forEach((validator: Validator) => validator.registerOnValidatorChange(null));
-  dir._rawAsyncValidators.forEach(
-      (validator: Validator) => validator.registerOnValidatorChange(null));
+
+  dir._rawValidators.forEach((validator: any) => {
+    if (validator.registerOnValidatorChange) {
+      validator.registerOnValidatorChange(null);
+    }
+  });
+
+  dir._rawAsyncValidators.forEach((validator: any) => {
+    if (validator.registerOnValidatorChange) {
+      validator.registerOnValidatorChange(null);
+    }
+  });
+
   if (control) control._clearChangeFns();
 }
 
