@@ -8,15 +8,18 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
+import {coerceBooleanProperty} from '../core/coersion/boolean-property';
 
 @Component({
   moduleId: module.id,
   selector: 'md-option',
   host: {
     'role': 'option',
-    'tabindex': '0',
+    '[attr.tabindex]': '_getTabIndex()',
     '[class.md-selected]': 'selected',
     '[attr.aria-selected]': 'selected.toString()',
+    '[attr.aria-disabled]': 'disabled.toString()',
+    '[class.md-option-disabled]': 'disabled',
     '(click)': '_selectViaInteraction()',
     '(keydown)': '_handleKeydown($event)'
   },
@@ -25,10 +28,22 @@ import {ENTER, SPACE} from '../core/keyboard/keycodes';
   encapsulation: ViewEncapsulation.None
 })
 export class MdOption {
-  private _selected = false;
+  private _selected: boolean = false;
+
+  /** Whether the option is disabled.  */
+  private _disabled: boolean = false;
 
   /** The form value of the option. */
   @Input() value: any;
+
+  @Input()
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value: any) {
+    this._disabled = coerceBooleanProperty(value);
+  }
 
   /** Event emitted when the option is selected. */
   @Output() onSelect = new EventEmitter();
@@ -72,13 +87,21 @@ export class MdOption {
     }
   }
 
+
   /**
    * Selects the option while indicating the selection came from the user. Used to
    * determine if the select's view -> model callback should be invoked.
    */
   _selectViaInteraction() {
-    this._selected = true;
-    this.onSelect.emit(true);
+    if (!this.disabled) {
+      this._selected = true;
+      this.onSelect.emit(true);
+    }
+  }
+
+  /** Returns the correct tabindex for the option depending on disabled state. */
+  _getTabIndex() {
+    return this.disabled ? '-1' : '0';
   }
 
   _getHostElement(): HTMLElement {

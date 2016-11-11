@@ -1,4 +1,5 @@
 @import '../core/style/menu-common';
+@import '../core/style/form-common';
 
 $md-select-trigger-height: 30px !default;
 $md-select-trigger-min-width: 112px !default;
@@ -16,6 +17,14 @@ md-select {
   height: $md-select-trigger-height;
   min-width: $md-select-trigger-min-width;
   cursor: pointer;
+
+  [aria-disabled='true'] & {
+    @include md-control-disabled-underline();
+    border-bottom: transparent;
+    background-position: 0 bottom;
+    cursor: default;
+    user-select: none;
+  }
 }
 
 .md-select-placeholder {
@@ -56,6 +65,11 @@ md-option {
   position: relative;
   cursor: pointer;
   outline: none;
+
+  &[aria-disabled='true'] {
+    cursor: default;
+    user-select: none;
+  }
 }
 
 .md-option-ripple {

@@ -1,2 +1,10 @@
 .demo-select {
+  display: flex;
+  flex-flow: row wrap;
+
+  md-card {
+    width: 450px;
+    margin: 24px;
+  }
+
 }

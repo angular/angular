@@ -1,11 +1,30 @@
 <div class="demo-select">
-  <md-select placeholder="Food" [formControl]="control" [required]="isRequired">
-    <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
-  </md-select>
-  <p> Value: {{ control.value }} </p>
-  <p> Touched: {{ control.touched }} </p>
-  <p> Dirty: {{ control.dirty }} </p>
-  <p> Status: {{ control.status }} </p>
-  <button md-button (click)="control.setValue('pizza-1')">SET VALUE</button>
-  <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
+  <md-card>
+    <md-select placeholder="Food" [formControl]="foodControl">
+      <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
+    </md-select>
+    <p> Value: {{ foodControl.value }} </p>
+    <p> Touched: {{ foodControl.touched }} </p>
+    <p> Dirty: {{ foodControl.dirty }} </p>
+    <p> Status: {{ foodControl.status }} </p>
+    <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
+    <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
+  </md-card>
+
+  <md-card>
+    <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="isRequired" [disabled]="isDisabled"
+      #drinkControl="ngModel">
+      <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
+        {{ drink.viewValue }}
+      </md-option>
+    </md-select>
+    <p> Value: {{ currentDrink }} </p>
+    <p> Touched: {{ drinkControl.touched }} </p>
+    <p> Dirty: {{ drinkControl.dirty }} </p>
+    <p> Status: {{ drinkControl.control?.status }} </p>
+    <button md-button (click)="currentDrink='sprite-1'">SET VALUE</button>
+    <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
+    <button md-button (click)="isDisabled=!isDisabled">TOGGLE DISABLED</button>
+  </md-card>
+
 </div>

@@ -30,9 +30,11 @@ import {coerceBooleanProperty} from '../core/coersion/boolean-property';
   encapsulation: ViewEncapsulation.None,
   host: {
     'role': 'listbox',
-    'tabindex': '0',
+    '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-label]': 'placeholder',
     '[attr.aria-required]': 'required.toString()',
+    '[attr.aria-disabled]': 'disabled.toString()',
+    '[class.md-select-disabled]': 'disabled',
     '[attr.aria-invalid]': '_control?.invalid || "false"',
     '(keydown)': '_handleKeydown($event)',
     '(blur)': '_onBlur()'
@@ -63,6 +65,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** Whether filling out the select is required in the form.  */
   private _required: boolean = false;
 
+  /** Whether the select is disabled.  */
+  private _disabled: boolean = false;
+
   /** Manages keyboard events for options in the panel. */
   _keyManager: ListKeyManager;
 
@@ -87,6 +92,15 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
   @Input() placeholder: string;
+
+  @Input()
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value: any) {
+    this._disabled = coerceBooleanProperty(value);
+  }
 
   @Input()
   get required() {
@@ -128,6 +142,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   /** Opens the overlay panel. */
   open(): void {
+    if (this.disabled) {
+      return;
+    }
     this._panelOpen = true;
   }
 
@@ -167,6 +184,14 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    */
   registerOnTouched(fn: Function): void {
     this._onTouched = fn;
+  }
+
+  /**
+   * Disables the select. Part of the ControlValueAccessor interface required
+   * to integrate with Angular's core forms API.
+   */
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
 
   /** Whether or not the overlay panel is open. */
@@ -232,6 +257,11 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     if (!this.panelOpen) {
       this._onTouched();
     }
+  }
+
+  /** Returns the correct tabindex for the select depending on disabled state. */
+  _getTabIndex() {
+    return this.disabled ? '-1' : '0';
   }
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */

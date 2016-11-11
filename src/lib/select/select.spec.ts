@@ -6,7 +6,7 @@ import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
 import {MdOption} from './option';
 import {Dir} from '../core/rtl/dir';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
@@ -14,8 +14,8 @@ describe('MdSelect', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSelectModule.forRoot(), ReactiveFormsModule],
-      declarations: [BasicSelect],
+      imports: [MdSelectModule.forRoot(), ReactiveFormsModule, FormsModule],
+      declarations: [BasicSelect, NgModelSelect],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -205,6 +205,20 @@ describe('MdSelect', () => {
         .toBe(fixture.componentInstance.options.last);
     });
 
+    it('should not select disabled options', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const options =
+        overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      options[2].click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select.panelOpen).toBe(true);
+      expect(options[2].classList).not.toContain('md-selected');
+      expect(fixture.componentInstance.select.selected).not.toBeDefined();
+    });
+
   });
 
   describe('forms integration', () => {
@@ -312,6 +326,84 @@ describe('MdSelect', () => {
       expect(getComputedStyle(placeholder, '::after').getPropertyValue('content'))
         .toContain('*', `Expected placeholder to have an asterisk, as control was required.`);
     });
+
+  });
+
+  describe('disabled behavior', () => {
+
+    it('should disable itself when control is disabled programmatically', () => {
+      const fixture = TestBed.createComponent(BasicSelect);
+      fixture.detectChanges();
+
+      fixture.componentInstance.control.disable();
+      fixture.detectChanges();
+      let trigger =
+        fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+      expect(getComputedStyle(trigger).getPropertyValue('cursor'))
+        .toEqual('default', `Expected cursor to be default arrow on disabled control.`);
+
+      trigger.click();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.textContent)
+        .toEqual('', `Expected select panel to stay closed.`);
+      expect(fixture.componentInstance.select.panelOpen)
+        .toBe(false, `Expected select panelOpen property to stay false.`);
+
+      fixture.componentInstance.control.enable();
+      fixture.detectChanges();
+      expect(getComputedStyle(trigger).getPropertyValue('cursor'))
+        .toEqual('pointer', `Expected cursor to be a pointer on enabled control.`);
+
+      trigger.click();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.textContent)
+        .toContain('Steak', `Expected select panel to open normally on re-enabled control`);
+      expect(fixture.componentInstance.select.panelOpen)
+        .toBe(true, `Expected select panelOpen property to become true.`);
+    });
+
+    it('should disable itself when control is disabled using the property', async(() => {
+      const fixture = TestBed.createComponent(NgModelSelect);
+      fixture.detectChanges();
+
+      fixture.componentInstance.isDisabled = true;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        let trigger =
+          fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+        expect(getComputedStyle(trigger).getPropertyValue('cursor'))
+          .toEqual('default', `Expected cursor to be default arrow on disabled control.`);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(overlayContainerElement.textContent)
+          .toEqual('', `Expected select panel to stay closed.`);
+        expect(fixture.componentInstance.select.panelOpen)
+          .toBe(false, `Expected select panelOpen property to stay false.`);
+
+        fixture.componentInstance.isDisabled = false;
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(getComputedStyle(trigger).getPropertyValue('cursor'))
+            .toEqual('pointer', `Expected cursor to be a pointer on enabled control.`);
+
+          trigger.click();
+          fixture.detectChanges();
+
+          expect(overlayContainerElement.textContent)
+            .toContain('Steak', `Expected select panel to open normally on re-enabled control`);
+          expect(fixture.componentInstance.select.panelOpen)
+            .toBe(true, `Expected select panelOpen property to become true.`);
+        });
+      });
+    }));
 
   });
 
@@ -427,25 +519,48 @@ describe('MdSelect', () => {
           .toEqual('true', `Expected aria-invalid attr to be true for invalid selects.`);
       });
 
+      it('should set aria-disabled for disabled selects', () => {
+        expect(select.getAttribute('aria-disabled')).toEqual('false');
+
+        fixture.componentInstance.control.disable();
+        fixture.detectChanges();
+
+        expect(select.getAttribute('aria-disabled')).toEqual('true');
+      });
+
+      it('should set the tabindex of the select to -1 if disabled', () => {
+        fixture.componentInstance.control.disable();
+        fixture.detectChanges();
+        expect(select.getAttribute('tabindex')).toEqual('-1');
+
+        fixture.componentInstance.control.enable();
+        fixture.detectChanges();
+        expect(select.getAttribute('tabindex')).toEqual('0');
+      });
+
+
     });
 
     describe('for options', () => {
       let trigger: HTMLElement;
+      let options: NodeListOf<HTMLElement>;
 
       beforeEach(() => {
         trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
         trigger.click();
         fixture.detectChanges();
+
+        options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
       });
 
       it('should set the role of md-option to option', () => {
-        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
-        expect(option.getAttribute('role')).toEqual('option');
+        expect(options[0].getAttribute('role')).toEqual('option');
+        expect(options[1].getAttribute('role')).toEqual('option');
+        expect(options[2].getAttribute('role')).toEqual('option');
       });
 
       it('should set aria-selected on each option', () => {
-        const options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
         expect(options[0].getAttribute('aria-selected')).toEqual('false');
         expect(options[1].getAttribute('aria-selected')).toEqual('false');
         expect(options[2].getAttribute('aria-selected')).toEqual('false');
@@ -461,12 +576,23 @@ describe('MdSelect', () => {
         expect(options[2].getAttribute('aria-selected')).toEqual('false');
       });
 
-      it('should set the tabindex of each option to 0', () => {
-        const options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      it('should set the tabindex of each option according to disabled state', () => {
         expect(options[0].getAttribute('tabindex')).toEqual('0');
         expect(options[1].getAttribute('tabindex')).toEqual('0');
-        expect(options[2].getAttribute('tabindex')).toEqual('0');
+        expect(options[2].getAttribute('tabindex')).toEqual('-1');
+      });
+
+      it('should set aria-disabled for disabled options', () => {
+        expect(options[0].getAttribute('aria-disabled')).toEqual('false');
+        expect(options[1].getAttribute('aria-disabled')).toEqual('false');
+        expect(options[2].getAttribute('aria-disabled')).toEqual('true');
+
+        fixture.componentInstance.foods[2]['disabled'] = false;
+        fixture.detectChanges();
+
+        expect(options[0].getAttribute('aria-disabled')).toEqual('false');
+        expect(options[1].getAttribute('aria-disabled')).toEqual('false');
+        expect(options[2].getAttribute('aria-disabled')).toEqual('false');
       });
 
     });
@@ -479,15 +605,17 @@ describe('MdSelect', () => {
   selector: 'basic-select',
   template: `
     <md-select placeholder="Food" [formControl]="control" [required]="isRequired">
-      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+      <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+        {{ food.viewValue }}
+      </md-option>
     </md-select>
   `
 })
 class BasicSelect {
-  foods = [
+  foods: any[] = [
     { value: 'steak-0', viewValue: 'Steak' },
     { value: 'pizza-1', viewValue: 'Pizza' },
-    { value: 'tacos-2', viewValue: 'Tacos' },
+    { value: 'tacos-2', viewValue: 'Tacos', disabled: true },
   ];
   control = new FormControl();
   isRequired: boolean;
@@ -495,6 +623,27 @@ class BasicSelect {
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 }
+
+@Component({
+  selector: 'ng-model-select',
+  template: `
+    <md-select placeholder="Food" ngModel [disabled]="isDisabled">
+      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+    </md-select>
+  `
+})
+class NgModelSelect {
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+  ];
+  isDisabled: boolean;
+
+  @ViewChild(MdSelect) select: MdSelect;
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
+}
+
 
 /**
  * TODO: Move this to core testing utility until Angular has event faking

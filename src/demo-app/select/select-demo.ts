@@ -9,6 +9,9 @@ import {FormControl} from '@angular/forms';
 })
 export class SelectDemo {
   isRequired = false;
+  isDisabled = false;
+  currentDrink: string;
+  foodControl = new FormControl('');
 
   foods = [
     {value: 'steak-0', viewValue: 'Steak'},
@@ -16,6 +19,14 @@ export class SelectDemo {
     {value: 'tacos-2', viewValue: 'Tacos'}
   ];
 
-  control = new FormControl('');
+  drinks = [
+    {value: 'coke-0', viewValue: 'Coke'},
+    {value: 'sprite-1', viewValue: 'Sprite', disabled: true},
+    {value: 'water-2', viewValue: 'Water'}
+  ];
+
+  toggleDisabled() {
+    this.foodControl.enabled ? this.foodControl.disable() : this.foodControl.enable();
+  }
 
 }

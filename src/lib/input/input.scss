@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../core/style/form-common';
 
 
 $md-input-floating-placeholder-scale-factor: 0.75 !default;
@@ -151,11 +152,9 @@ md-input, md-textarea {
   border-top-style: solid;
 
   &.md-disabled {
+    @include md-control-disabled-underline();
     border-top: 0;
-    background-image: $md-input-underline-disabled-background-image;
     background-position: 0;
-    background-size: 4px 1px;
-    background-repeat: repeat-x;
   }
 
   .md-input-ripple {
