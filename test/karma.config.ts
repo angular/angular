@@ -59,6 +59,7 @@ export function config(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
+    autoWatchBatchDelay: 500,
 
     sauceLabs: {
       testName: 'material2',
