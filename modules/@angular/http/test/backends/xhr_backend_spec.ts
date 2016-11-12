@@ -9,7 +9,6 @@
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
-
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -486,6 +485,7 @@ export function main() {
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
+
       it('should normalize IE\'s 1223 status code into 204',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const statusCode = 1223;
@@ -499,6 +499,22 @@ export function main() {
            });
 
            existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should ignore response body for 204 status code',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const statusCode = 204;
+           const connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe((res: Response) => {
+             expect(res.text()).toBe('');
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].setResponseText('Doge');
            existingXHRs[0].dispatchEvent('load');
          }));
 
