@@ -8,6 +8,8 @@
 
 import {Injectable} from '@angular/core';
 import {__platform_browser_private__} from '@angular/platform-browser';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {Headers} from '../headers';
@@ -16,8 +18,6 @@ import {Connection, ConnectionBackend, XSRFStrategy} from '../interfaces';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {BrowserXhr} from './browser_xhr';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -49,18 +49,23 @@ export class XHRConnection implements Connection {
       }
       // load event handler
       const onLoad = () => {
-        // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-        // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
-        // by IE10)
-        let body = _xhr.response === undefined ? _xhr.responseText : _xhr.response;
-        // Implicitly strip a potential XSSI prefix.
-        if (typeof body === 'string') body = body.replace(XSSI_PREFIX, '');
-        const headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
-
-        const url = getResponseURL(_xhr);
-
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
+
+        let body: any = null;
+
+        // HTTP 204 means no content
+        if (status !== 204) {
+          // responseText is the old-school way of retrieving response (supported by IE8 & 9)
+          // response/responseType properties were introduced in ResourceLoader Level2 spec
+          // (supported by IE10)
+          body = _xhr.response == null ? _xhr.responseText : _xhr.response;
+
+          // Implicitly strip a potential XSSI prefix.
+          if (typeof body === 'string') {
+            body = body.replace(XSSI_PREFIX, '');
+          }
+        }
 
         // fix status code when it is 0 (0 status is undocumented).
         // Occurs when accessing file resources or on Android 4.1 stock browser
@@ -69,7 +74,11 @@ export class XHRConnection implements Connection {
           status = body ? 200 : 0;
         }
 
-        const statusText = _xhr.statusText || 'OK';
+        const headers: Headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
+
+        const url: string = getResponseURL(_xhr);
+
+        const statusText: string = _xhr.statusText || 'OK';
 
         let responseOptions = new ResponseOptions({body, status, headers, statusText, url});
         if (baseResponseOptions != null) {
@@ -86,7 +95,7 @@ export class XHRConnection implements Connection {
         responseObserver.error(response);
       };
       // error event handler
-      const onError = (err: any) => {
+      const onError = (err: ErrorEvent) => {
         let responseOptions = new ResponseOptions({
           body: err,
           type: ResponseType.Error,
@@ -138,7 +147,7 @@ export class XHRConnection implements Connection {
     });
   }
 
-  setDetectedContentType(req: any /** TODO #9100 */, _xhr: XMLHttpRequest) {
+  setDetectedContentType(req: any /** TODO Request */, _xhr: any /** XMLHttpRequest */) {
     // Skip if a custom Content-Type header is provided
     if (req.headers != null && req.headers.get('Content-Type') != null) {
       return;
