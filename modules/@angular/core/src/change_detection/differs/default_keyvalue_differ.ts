@@ -13,14 +13,17 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
 
-export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
+export class DefaultKeyValueDifferFactory implements
+    KeyValueDifferFactory<Map<any, any>|{[k: string]: any}> {
   constructor() {}
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  create(cdRef: ChangeDetectorRef): KeyValueDiffer { return new DefaultKeyValueDiffer(); }
+  create(cdRef: ChangeDetectorRef): KeyValueDiffer<Map<any, any>|{[k: string]: any}> {
+    return new DefaultKeyValueDiffer();
+  }
 }
 
-export class DefaultKeyValueDiffer implements KeyValueDiffer {
+export class DefaultKeyValueDiffer implements KeyValueDiffer<Map<any, any>|{[k: string]: any}> {
   private _records: Map<any, any> = new Map();
   private _mapHead: KeyValueChangeRecord = null;
   private _previousMapHead: KeyValueChangeRecord = null;

@@ -40,12 +40,13 @@ import {isPresent, stringify} from '../facade/lang';
 @Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck {
   private _iterableDiffer: IterableDiffer;
-  private _keyValueDiffer: KeyValueDiffer;
+  private _keyValueDiffer: KeyValueDiffer<string[]|Set<string>|{[klass: string]: any}>;
   private _initialClasses: string[] = [];
   private _rawClass: string[]|Set<string>|{[klass: string]: any};
 
   constructor(
-      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
+      private _iterableDiffers: IterableDiffers,
+      private _keyValueDiffers: KeyValueDiffers<string[]|Set<string>|{[klass: string]: any}>,
       private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   @Input('class')

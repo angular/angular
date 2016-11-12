@@ -33,10 +33,11 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDif
 @Directive({selector: '[ngStyle]'})
 export class NgStyle implements DoCheck {
   private _ngStyle: {[key: string]: string};
-  private _differ: KeyValueDiffer;
+  private _differ: KeyValueDiffer<{[key: string]: string}>;
 
   constructor(
-      private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer) {}
+      private _differs: KeyValueDiffers<{[key: string]: string}>, private _ngEl: ElementRef,
+      private _renderer: Renderer) {}
 
   @Input()
   set ngStyle(v: {[key: string]: string}) {

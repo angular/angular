@@ -27,7 +27,8 @@ export {PipeTransform} from './pipe_transform';
 /**
  * Structural diffing for `Object`s and `Map`s.
  */
-export const keyValDiff: KeyValueDifferFactory[] = [new DefaultKeyValueDifferFactory()];
+export const keyValDiff: KeyValueDifferFactory<Map<any, any>|{[k: string]: any}>[] =
+    [new DefaultKeyValueDifferFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
