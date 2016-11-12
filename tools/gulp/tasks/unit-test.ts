@@ -2,7 +2,7 @@ import gulp = require('gulp');
 import path = require('path');
 import gulpMerge = require('merge2');
 
-import {PROJECT_ROOT} from '../constants';
+import {PROJECT_ROOT, DIST_COMPONENTS_ROOT} from '../constants';
 import {sequenceTask} from '../task_helpers';
 
 const karma = require('karma');
@@ -48,10 +48,10 @@ gulp.task(':test:deps:inline', sequenceTask(':test:deps', ':inline-resources'));
  *
  * This task should be used when running unit tests locally.
  */
-gulp.task('test', [':test:watch'], () => {
+gulp.task('test', [':test:watch'], (done: () => void) => {
   new karma.Server({
     configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js')
-  }).start();
+  }, done).start();
 });
 
 /**
@@ -59,9 +59,9 @@ gulp.task('test', [':test:watch'], () => {
  *
  * This task should be used when running tests on the CI server.
  */
-gulp.task('test:single-run', [':test:deps:inline'], () => {
+gulp.task('test:single-run', [':test:deps:inline'], (done: () => void) => {
   new karma.Server({
     configFile: path.join(PROJECT_ROOT, 'test/karma.conf.js'),
     singleRun: true
-  }).start();
+  }, done).start();
 });

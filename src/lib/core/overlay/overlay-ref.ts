@@ -1,3 +1,4 @@
+import {NgZone} from '@angular/core';
 import {PortalHost, Portal} from '../portal/portal';
 import {OverlayState} from './overlay-state';
 import {Observable} from 'rxjs/Observable';
@@ -15,7 +16,8 @@ export class OverlayRef implements PortalHost {
   constructor(
       private _portalHost: PortalHost,
       private _pane: HTMLElement,
-      private _state: OverlayState) { }
+      private _state: OverlayState,
+      private _ngZone: NgZone) { }
 
   attach(portal: Portal<any>): any {
     if (this._state.hasBackdrop) {
@@ -124,7 +126,13 @@ export class OverlayRef implements PortalHost {
       // If the backdrop doesn't have a transition, the `transitionend` event won't fire.
       // In this case we make it unclickable and we try to remove it after a delay.
       backdropToDetach.style.pointerEvents = 'none';
-      setTimeout(finishDetach, 500);
+
+      // Run this outside the Angular zone because there's nothing that Angular cares about.
+      // If it were to run inside the Angular zone, every test that used Overlay would have to be
+      // either async or fakeAsync.
+      this._ngZone.runOutsideAngular(() => {
+        setTimeout(finishDetach, 500);
+      });
     }
   }
 }
