@@ -20,6 +20,7 @@ export const EVENT_MANAGER_PLUGINS: OpaqueToken = new OpaqueToken('EventManagerP
 @Injectable()
 export class EventManager {
   private _plugins: EventManagerPlugin[];
+  private _eventNameToPlugin: Map<string, EventManagerPlugin> = new Map<string, EventManagerPlugin>();
 
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
     plugins.forEach(p => p.manager = this);
@@ -40,10 +41,13 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
+    const plugin = _eventNameToPlugin.get(eventName);
+    if (plugin != null) return plugin;
     const plugins = this._plugins;
     for (let i = 0; i < plugins.length; i++) {
-      const plugin = plugins[i];
+      plugin = plugins[i];
       if (plugin.supports(eventName)) {
+        _eventNameToPlugin.set(eventName, plugin);
         return plugin;
       }
     }
