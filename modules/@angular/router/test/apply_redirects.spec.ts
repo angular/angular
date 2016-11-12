@@ -143,7 +143,8 @@ describe('applyRedirects', () => {
   describe('lazy loading', () => {
     it('should load config on demand', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
       const loader = {
         load: (injector: any, p: any) => {
           if (injector !== 'providedInjector') throw 'Invalid Injector';
@@ -171,7 +172,8 @@ describe('applyRedirects', () => {
 
     it('should load when all canLoad guards return true', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
       const guard = () => true;
@@ -191,7 +193,8 @@ describe('applyRedirects', () => {
 
     it('should not load when any canLoad guards return false', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
       const trueGuard = () => true;
@@ -216,7 +219,8 @@ describe('applyRedirects', () => {
 
     it('should not load when any canLoad guards is rejected (promises)', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
       const trueGuard = () => Promise.resolve(true);
@@ -237,7 +241,8 @@ describe('applyRedirects', () => {
 
     it('should work with objects implementing the CanLoad interface', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: 'b', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
       const guard = {canLoad: () => Promise.resolve(true)};
@@ -254,7 +259,8 @@ describe('applyRedirects', () => {
 
     it('should work with absolute redirects', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
@@ -269,7 +275,8 @@ describe('applyRedirects', () => {
 
     it('should load the configuration only once', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
 
       let called = false;
       const loader = {
@@ -295,7 +302,8 @@ describe('applyRedirects', () => {
 
     it('should load the configuration of a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
@@ -308,7 +316,8 @@ describe('applyRedirects', () => {
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
@@ -322,7 +331,8 @@ describe('applyRedirects', () => {
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig(
-          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver');
+          [{path: '', component: ComponentB}], <any>'stubInjector', <any>'stubFactoryResolver',
+          <any>'injectorFactory');
 
       const loader = {load: (injector: any, p: any) => of (loadedConfig)};
 
