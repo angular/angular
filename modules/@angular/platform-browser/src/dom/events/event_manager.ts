@@ -41,13 +41,13 @@ export class EventManager {
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
-    const plugin = _eventNameToPlugin.get(eventName);
+    const plugin = this._eventNameToPlugin.get(eventName);
     if (plugin != null) return plugin;
     const plugins = this._plugins;
     for (let i = 0; i < plugins.length; i++) {
       plugin = plugins[i];
       if (plugin.supports(eventName)) {
-        _eventNameToPlugin.set(eventName, plugin);
+        this._eventNameToPlugin.set(eventName, plugin);
         return plugin;
       }
     }
