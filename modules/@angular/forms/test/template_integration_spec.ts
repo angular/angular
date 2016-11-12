@@ -23,7 +23,7 @@ export function main() {
           NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
           NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
-          NgModelAsyncValidation
+          NgModelAsyncValidation, NgModelSelectWithNullForm
         ],
         imports: [FormsModule]
       });
@@ -699,6 +699,30 @@ export function main() {
            expect(select.nativeElement.value).toEqual('2: Object');
            expect(secondNYC.nativeElement.selected).toBe(true);
          }));
+
+      it('should work with null option', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelSelectWithNullForm);
+           const comp = fixture.componentInstance;
+           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
+           comp.selectedCity = null;
+           fixture.detectChanges();
+
+           const select = fixture.debugElement.query(By.css('select'));
+
+           select.nativeElement.value = '2: Object';
+           dispatchEvent(select.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
+
+           expect(comp.selectedCity['name']).toEqual('NYC');
+
+           select.nativeElement.value = '0: null';
+           dispatchEvent(select.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
+
+           expect(comp.selectedCity).toEqual(null);
+         }));
     });
 
     describe('custom value accessors', () => {
@@ -1074,6 +1098,20 @@ class NgModelRadioForm {
   `
 })
 class NgModelSelectForm {
+  selectedCity: {[k: string]: string} = {};
+  cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-null-form',
+  template: `
+    <select [(ngModel)]="selectedCity">
+      <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+      <option [ngValue]="null">Unspecified</option>
+    </select>
+  `
+})
+class NgModelSelectWithNullForm {
   selectedCity: {[k: string]: string} = {};
   cities: any[] = [];
 }
