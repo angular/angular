@@ -264,7 +264,7 @@ class ApplyRedirects {
 
   private getChildConfig(injector: Injector, route: Route): Observable<LoadedRouterConfig> {
     if (route.children) {
-      return of (new LoadedRouterConfig(route.children, injector, null));
+      return of (new LoadedRouterConfig(route.children, injector, null, null));
     } else if (route.loadChildren) {
       return mergeMap.call(runGuards(injector, route), (shouldLoad: any) => {
         if (shouldLoad) {
@@ -281,7 +281,7 @@ class ApplyRedirects {
         }
       });
     } else {
-      return of (new LoadedRouterConfig([], injector, null));
+      return of (new LoadedRouterConfig([], injector, null, null));
     }
   }
 }

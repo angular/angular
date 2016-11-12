@@ -54,6 +54,9 @@ export class RouterOutlet implements OnDestroy {
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
 
+  get locationInjector(): Injector { return this.location.injector; }
+  get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
+
   get isActivated(): boolean { return !!this.activated; }
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -74,9 +77,8 @@ export class RouterOutlet implements OnDestroy {
   }
 
   activate(
-      activatedRoute: ActivatedRoute, loadedResolver: ComponentFactoryResolver,
-      loadedInjector: Injector, providers: ResolvedReflectiveProvider[],
-      outletMap: RouterOutletMap): void {
+      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
+      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
     if (this.isActivated) {
       throw new Error('Cannot activate an already activated outlet');
     }
@@ -86,15 +88,8 @@ export class RouterOutlet implements OnDestroy {
 
     const snapshot = activatedRoute._futureSnapshot;
     const component: any = <any>snapshot._routeConfig.component;
+    const factory = resolver.resolveComponentFactory(component);
 
-    let factory: ComponentFactory<any>;
-    if (loadedResolver) {
-      factory = loadedResolver.resolveComponentFactory(component);
-    } else {
-      factory = this.resolver.resolveComponentFactory(component);
-    }
-
-    const injector = loadedInjector ? loadedInjector : this.location.parentInjector;
     const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
     this.activated = this.location.createComponent(factory, this.location.length, inj, []);
     this.activated.changeDetectorRef.detectChanges();

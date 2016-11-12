@@ -1080,17 +1080,19 @@ class ActivateRoutes {
 
     const config = parentLoadedConfig(future.snapshot);
 
-    let loadedFactoryResolver: ComponentFactoryResolver = null;
-    let loadedInjector: Injector = null;
+    let resolver: ComponentFactoryResolver = null;
+    let injector: Injector = null;
 
     if (config) {
-      loadedFactoryResolver = config.factoryResolver;
-      loadedInjector = config.injector;
-      resolved.push({provide: ComponentFactoryResolver, useValue: loadedFactoryResolver});
+      injector = config.injectorFactory(outlet.locationInjector);
+      resolver = config.factoryResolver;
+      resolved.push({provide: ComponentFactoryResolver, useValue: resolver});
+    } else {
+      injector = outlet.locationInjector;
+      resolver = outlet.locationFactoryResolver;
     }
-    outlet.activate(
-        future, loadedFactoryResolver, loadedInjector, ReflectiveInjector.resolve(resolved),
-        outletMap);
+
+    outlet.activate(future, resolver, injector, ReflectiveInjector.resolve(resolved), outletMap);
   }
 
   private deactiveRouteAndItsChildren(

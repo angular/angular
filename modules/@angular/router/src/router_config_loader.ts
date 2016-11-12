@@ -24,17 +24,19 @@ export const ROUTES = new OpaqueToken('ROUTES');
 export class LoadedRouterConfig {
   constructor(
       public routes: Route[], public injector: Injector,
-      public factoryResolver: ComponentFactoryResolver) {}
+      public factoryResolver: ComponentFactoryResolver, public injectorFactory: Function) {}
 }
 
 export class RouterConfigLoader {
   constructor(private loader: NgModuleFactoryLoader, private compiler: Compiler) {}
 
   load(parentInjector: Injector, loadChildren: LoadChildren): Observable<LoadedRouterConfig> {
-    return map.call(this.loadModuleFactory(loadChildren), (r: any) => {
+    return map.call(this.loadModuleFactory(loadChildren), (r: NgModuleFactory<any>) => {
       const ref = r.create(parentInjector);
+      const injectorFactory = (parent: Injector) => r.create(parent).injector;
       return new LoadedRouterConfig(
-          flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver);
+          flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver,
+          injectorFactory);
     });
   }
 
