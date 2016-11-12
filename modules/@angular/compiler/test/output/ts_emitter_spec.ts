@@ -110,6 +110,7 @@ export function main() {
     it('should support blank literals', () => {
       expect(emitStmt(o.literal(null).toStmt())).toEqual('(null as any);');
       expect(emitStmt(o.literal(undefined).toStmt())).toEqual('(undefined as any);');
+      expect(emitStmt(o.variable('a', null).isBlank().toStmt())).toEqual('(a == null);');
     });
 
     it('should support external identifiers', () => {

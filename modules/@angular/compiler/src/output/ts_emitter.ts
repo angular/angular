@@ -69,7 +69,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
     const value = ast.value;
-    if (isBlank(value)) {
+    if (isBlank(value) && ast.type != o.NULL_TYPE) {
       ctx.print(`(${value} as any)`);
       return null;
     }
