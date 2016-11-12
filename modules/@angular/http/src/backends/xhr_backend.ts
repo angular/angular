@@ -75,9 +75,8 @@ export class XHRConnection implements Connection {
         }
 
         const headers: Headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
-
-        const url: string = getResponseURL(_xhr);
-
+        // IE 9 does not provide the way to get URL of response
+        const url = getResponseURL(_xhr) || req.url;
         const statusText: string = _xhr.statusText || 'OK';
 
         let responseOptions = new ResponseOptions({body, status, headers, statusText, url});

@@ -639,6 +639,21 @@ Connection: keep-alive`;
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should return request url if it cannot be retrieved from response',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const statusCode = 200;
+           const connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe((res: Response) => {
+             expect(res.url).toEqual('https://google.com');
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
       it('should set the status text property from the XMLHttpRequest instance if present',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const statusText = 'test';
