@@ -826,10 +826,10 @@ describe('Integration', () => {
          expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
          expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
 
-         let primaryRecorded: any[] = [];
+         const primaryRecorded: any[] = [];
          primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
 
-         let rightRecorded: any[] = [];
+         const rightRecorded: any[] = [];
          rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
 
          router.navigateByUrl('/parent/2');
@@ -850,7 +850,7 @@ describe('Integration', () => {
          router.resetConfig(
              [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}}]);
 
-         let recordedEvents: any[] = [];
+         const recordedEvents: any[] = [];
          router.events.subscribe(e => recordedEvents.push(e));
 
          let e: any = null;
@@ -878,7 +878,7 @@ describe('Integration', () => {
            ]
          }]);
 
-         let e: any = null;
+         const e: any = null;
          router.navigateByUrl('/parent/child1');
          advance(fixture);
 
@@ -899,7 +899,7 @@ describe('Integration', () => {
            resolve: {numberOfUrlSegments: 'numberOfUrlSegments'}
          }]);
 
-         let e: any = null;
+         const e: any = null;
          router.navigateByUrl('/one/two');
          advance(fixture);
          const cmp = fixture.debugElement.children[1].componentInstance;
@@ -2278,7 +2278,7 @@ describe('Integration', () => {
              ]
            }]);
 
-           let events: any[] = [];
+           const events: any[] = [];
            router.events.subscribe(e => events.push(e));
 
            // supported URL
@@ -2336,7 +2336,7 @@ describe('Integration', () => {
              ]
            }]);
 
-           let events: any[] = [];
+           const events: any[] = [];
            router.events.subscribe(e => events.push(e));
 
            location.go('/include/user/kate(aux:excluded)');

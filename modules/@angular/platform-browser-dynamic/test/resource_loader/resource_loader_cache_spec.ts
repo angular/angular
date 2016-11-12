@@ -17,7 +17,7 @@ import {setTemplateCache} from './resource_loader_cache_setter';
 
 export function main() {
   describe('CachedResourceLoader', () => {
-    var resourceLoader: CachedResourceLoader;
+    let resourceLoader: CachedResourceLoader;
 
     function createCachedResourceLoader(): CachedResourceLoader {
       setTemplateCache({'test.html': '<div>Hello</div>'});
@@ -61,7 +61,7 @@ export function main() {
          TestBed.compileComponents();
          tick();
 
-         let fixture = TestBed.createComponent(TestComponent);
+         const fixture = TestBed.createComponent(TestComponent);
 
          // This should initialize the fixture.
          tick();

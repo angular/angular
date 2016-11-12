@@ -102,7 +102,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
 }
 
 function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
-  let children = ast.cases.map(c => {
+  const children = ast.cases.map(c => {
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 

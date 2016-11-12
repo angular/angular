@@ -15,7 +15,7 @@ export class AnimationViewContext {
   private _players = new ViewAnimationMap();
 
   onAllActiveAnimationsDone(callback: () => any): void {
-    var activeAnimationPlayers = this._players.getAllPlayers();
+    const activeAnimationPlayers = this._players.getAllPlayers();
     // we check for the length to avoid having GroupAnimationPlayer
     // issue an unnecessary microtask when zero players are passed in
     if (activeAnimationPlayers.length) {
@@ -35,7 +35,7 @@ export class AnimationViewContext {
     if (removeAllAnimations) {
       this._players.findAllPlayersByElement(element).forEach(player => player.destroy());
     } else {
-      var player = this._players.find(element, animationName);
+      const player = this._players.find(element, animationName);
       if (player) {
         player.destroy();
       }

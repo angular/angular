@@ -14,11 +14,11 @@ import {ReflectorHost} from '../src/reflector_host';
 import {Directory, Entry, MockCompilerHost, MockContext} from './mocks';
 
 describe('reflector_host', () => {
-  var context: MockContext;
-  var host: ts.CompilerHost;
-  var program: ts.Program;
-  var reflectorNestedGenDir: ReflectorHost;
-  var reflectorSiblingGenDir: ReflectorHost;
+  let context: MockContext;
+  let host: ts.CompilerHost;
+  let program: ts.Program;
+  let reflectorNestedGenDir: ReflectorHost;
+  let reflectorSiblingGenDir: ReflectorHost;
 
   beforeEach(() => {
     context = new MockContext('/tmp/src', clone(FILES));
@@ -29,7 +29,7 @@ describe('reflector_host', () => {
         },
         host);
     // Force a typecheck
-    let errors = program.getSemanticDiagnostics();
+    const errors = program.getSemanticDiagnostics();
     if (errors && errors.length) {
       throw new Error('Expected no errors');
     }
@@ -122,7 +122,7 @@ describe('reflector_host', () => {
   });
 
   it('should provide the import locations for angular', () => {
-    let {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} =
+    const {coreDecorators, diDecorators, diMetadata, animationMetadata, provider} =
         reflectorNestedGenDir.angularImportLocations();
     expect(coreDecorators).toEqual('@angular/core/src/metadata');
     expect(diDecorators).toEqual('@angular/core/src/di/metadata');
@@ -163,8 +163,8 @@ describe('reflector_host', () => {
 
 
   it('should be produce the same symbol if asked twice', () => {
-    let foo1 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
-    let foo2 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
+    const foo1 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
+    const foo2 = reflectorNestedGenDir.getStaticSymbol('main.ts', 'foo');
     expect(foo1).toBe(foo2);
   });
 
@@ -320,8 +320,8 @@ function clone(entry: Entry): Entry {
   if (typeof entry === 'string') {
     return entry;
   } else {
-    let result: Directory = {};
-    for (let name in entry) {
+    const result: Directory = {};
+    for (const name in entry) {
       result[name] = clone(entry[name]);
     }
     return result;

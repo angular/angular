@@ -20,7 +20,7 @@ export function main() {
 
   function createDom() {
     const flatTree = flattenTree(buildTree(), []);
-    for (var i = 0; i < flatTree.length; i++) {
+    for (let i = 0; i < flatTree.length; i++) {
       const el: any = document.createElement('tree-leaf');
       el.data = flatTree[i];
       rootEl.appendChild(el);

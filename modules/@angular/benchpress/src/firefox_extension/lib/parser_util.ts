@@ -12,11 +12,11 @@
  *     within the perf profile.
  */
 export function convertPerfProfileToEvents(perfProfile: any): any[] {
-  var inProgressEvents = new Map();                 // map from event name to start time
-  var finishedEvents: {[key: string]: any}[] = [];  // Event[] finished events
-  var addFinishedEvent = function(eventName: string, startTime: number, endTime: number) {
-    var categorizedEventName = categorizeEvent(eventName);
-    var args: {[key: string]: any} = undefined;
+  const inProgressEvents = new Map();                 // map from event name to start time
+  const finishedEvents: {[key: string]: any}[] = [];  // Event[] finished events
+  const addFinishedEvent = function(eventName: string, startTime: number, endTime: number) {
+    const categorizedEventName = categorizeEvent(eventName);
+    let args: {[key: string]: any} = undefined;
     if (categorizedEventName == 'gc') {
       // TODO: We cannot measure heap size at the moment
       args = {usedHeapSize: 0};
@@ -31,17 +31,17 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
     }
   };
 
-  var samples = perfProfile.threads[0].samples;
+  const samples = perfProfile.threads[0].samples;
   // In perf profile, firefox samples all the frames in set time intervals. Here
   // we go through all the samples and construct the start and end time for each
   // event.
-  for (var i = 0; i < samples.length; ++i) {
-    var sample = samples[i];
-    var sampleTime = sample.time;
+  for (let i = 0; i < samples.length; ++i) {
+    const sample = samples[i];
+    const sampleTime = sample.time;
 
     // Add all the frames into a set so it's easier/faster to find the set
     // differences
-    var sampleFrames = new Set();
+    const sampleFrames = new Set();
     sample.frames.forEach(function(frame: {[key: string]: any}) {
       sampleFrames.add(frame['location']);
     });
@@ -49,7 +49,7 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
     // If an event is in the inProgressEvents map, but not in the current sample,
     // then it must have just finished. We add this event to the finishedEvents
     // array and remove it from the inProgressEvents map.
-    var previousSampleTime = (i == 0 ? /* not used */ -1 : samples[i - 1].time);
+    const previousSampleTime = (i == 0 ? /* not used */ -1 : samples[i - 1].time);
     inProgressEvents.forEach(function(startTime, eventName) {
       if (!(sampleFrames.has(eventName))) {
         addFinishedEvent(eventName, startTime, previousSampleTime);
@@ -69,7 +69,7 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
 
   // If anything is still in progress, we need to included it as a finished event
   // since recording ended.
-  var lastSampleTime = samples[samples.length - 1].time;
+  const lastSampleTime = samples[samples.length - 1].time;
   inProgressEvents.forEach(function(startTime, eventName) {
     addFinishedEvent(eventName, startTime, lastSampleTime);
   });

@@ -626,7 +626,7 @@ export class ExpressionTransformer implements StatementVisitor, ExpressionVisito
         expr.value.visitExpression(this, context));
   }
   visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any {
-    var method = ast.builtin || ast.name;
+    const method = ast.builtin || ast.name;
     return new InvokeMethodExpr(
         ast.receiver.visitExpression(this, context), method,
         this.visitAllExpressions(ast.args, context), ast.type);
@@ -841,7 +841,7 @@ export class RecursiveExpressionVisitor implements StatementVisitor, ExpressionV
 
 export function replaceVarInExpression(
     varName: string, newValue: Expression, expression: Expression): Expression {
-  var transformer = new _ReplaceVariableTransformer(varName, newValue);
+  const transformer = new _ReplaceVariableTransformer(varName, newValue);
   return expression.visitExpression(transformer, null);
 }
 
@@ -853,7 +853,7 @@ class _ReplaceVariableTransformer extends ExpressionTransformer {
 }
 
 export function findReadVarNames(stmts: Statement[]): Set<string> {
-  var finder = new _VariableFinder();
+  const finder = new _VariableFinder();
   finder.visitAllStatements(stmts, null);
   return finder.varNames;
 }

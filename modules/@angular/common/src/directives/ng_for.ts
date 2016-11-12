@@ -150,13 +150,13 @@ export class NgFor implements DoCheck, OnChanges {
     }
 
     for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      let viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
+      const viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
     }
 
     changes.forEachIdentityChange((record: any) => {
-      let viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
+      const viewRef = <EmbeddedViewRef<NgForRow>>this._viewContainer.get(record.currentIndex);
       viewRef.context.$implicit = record.item;
     });
   }

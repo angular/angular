@@ -12,7 +12,7 @@ import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
 
 export function main() {
   describe('Node serializer', () => {
-    var parser: HtmlParser;
+    let parser: HtmlParser;
 
     beforeEach(() => { parser = new HtmlParser(); });
 

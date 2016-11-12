@@ -13,7 +13,7 @@ import {BlockType, CssParseError, CssParser, CssToken, ParsedCssResult} from '..
 import {ParseLocation} from '../../src/parse_util';
 
 export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
-  for (var i = 0; i < tokens.length; i++) {
+  for (let i = 0; i < tokens.length; i++) {
     expect(tokens[i].strValue == valuesArr[i]);
   }
 }
@@ -25,8 +25,8 @@ export function main() {
     }
 
     function makeAst(css: string): CssStyleSheetAst {
-      var output = parse(css);
-      var errors = output.errors;
+      const output = parse(css);
+      const errors = output.errors;
       if (errors.length > 0) {
         throw new Error(errors.map((error: CssParseError) => error.msg).join(', '));
       }
@@ -34,45 +34,45 @@ export function main() {
     }
 
     it('should parse CSS into a stylesheet Ast', () => {
-      var styles = '.selector { prop: value123; }';
+      const styles = '.selector { prop: value123; }';
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssSelectorRuleAst>ast.rules[0];
-      var selector = rule.selectors[0];
+      const rule = <CssSelectorRuleAst>ast.rules[0];
+      const selector = rule.selectors[0];
       expect(selector.strValue).toEqual('.selector');
 
-      var block: CssBlockAst = rule.block;
+      const block: CssBlockAst = rule.block;
       expect(block.entries.length).toEqual(1);
 
-      var definition = <CssDefinitionAst>block.entries[0];
+      const definition = <CssDefinitionAst>block.entries[0];
       expect(definition.property.strValue).toEqual('prop');
 
-      var value = <CssStyleValueAst>definition.value;
+      const value = <CssStyleValueAst>definition.value;
       expect(value.tokens[0].strValue).toEqual('value123');
     });
 
     it('should parse multiple CSS selectors sharing the same set of styles', () => {
-      var styles = `
+      const styles = `
         .class, #id, tag, [attr], key + value, * value, :-moz-any-link {
           prop: value123;
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssSelectorRuleAst>ast.rules[0];
+      const rule = <CssSelectorRuleAst>ast.rules[0];
       expect(rule.selectors.length).toBe(7);
 
-      var classRule = rule.selectors[0];
-      var idRule = rule.selectors[1];
-      var tagRule = rule.selectors[2];
-      var attrRule = rule.selectors[3];
-      var plusOpRule = rule.selectors[4];
-      var starOpRule = rule.selectors[5];
-      var mozRule = rule.selectors[6];
+      const classRule = rule.selectors[0];
+      const idRule = rule.selectors[1];
+      const tagRule = rule.selectors[2];
+      const attrRule = rule.selectors[3];
+      const plusOpRule = rule.selectors[4];
+      const starOpRule = rule.selectors[5];
+      const mozRule = rule.selectors[6];
 
       assertTokens(classRule.selectorParts[0].tokens, ['.', 'class']);
       assertTokens(idRule.selectorParts[0].tokens, ['.', 'class']);
@@ -87,13 +87,13 @@ export function main() {
 
       assertTokens(mozRule.selectorParts[0].pseudoSelectors[0].tokens, [':', '-moz-any-link']);
 
-      var style1 = <CssDefinitionAst>rule.block.entries[0];
+      const style1 = <CssDefinitionAst>rule.block.entries[0];
       expect(style1.property.strValue).toEqual('prop');
       assertTokens(style1.value.tokens, ['value123']);
     });
 
     it('should parse keyframe rules', () => {
-      var styles = `
+      const styles = `
         @keyframes rotateMe {
           from {
             transform: rotate(-360deg);
@@ -107,37 +107,37 @@ export function main() {
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssKeyframeRuleAst>ast.rules[0];
+      const rule = <CssKeyframeRuleAst>ast.rules[0];
       expect(rule.name.strValue).toEqual('rotateMe');
 
-      var block = <CssBlockAst>rule.block;
-      var fromRule = <CssKeyframeDefinitionAst>block.entries[0];
+      const block = <CssBlockAst>rule.block;
+      const fromRule = <CssKeyframeDefinitionAst>block.entries[0];
 
       expect(fromRule.name.strValue).toEqual('from');
-      var fromStyle = <CssDefinitionAst>(<CssBlockAst>fromRule.block).entries[0];
+      const fromStyle = <CssDefinitionAst>(<CssBlockAst>fromRule.block).entries[0];
       expect(fromStyle.property.strValue).toEqual('transform');
       assertTokens(fromStyle.value.tokens, ['rotate', '(', '-360', 'deg', ')']);
 
-      var midRule = <CssKeyframeDefinitionAst>block.entries[1];
+      const midRule = <CssKeyframeDefinitionAst>block.entries[1];
 
       expect(midRule.name.strValue).toEqual('50%');
-      var midStyle = <CssDefinitionAst>(<CssBlockAst>midRule.block).entries[0];
+      const midStyle = <CssDefinitionAst>(<CssBlockAst>midRule.block).entries[0];
       expect(midStyle.property.strValue).toEqual('transform');
       assertTokens(midStyle.value.tokens, ['rotate', '(', '0', 'deg', ')']);
 
-      var toRule = <CssKeyframeDefinitionAst>block.entries[2];
+      const toRule = <CssKeyframeDefinitionAst>block.entries[2];
 
       expect(toRule.name.strValue).toEqual('to');
-      var toStyle = <CssDefinitionAst>(<CssBlockAst>toRule.block).entries[0];
+      const toStyle = <CssDefinitionAst>(<CssBlockAst>toRule.block).entries[0];
       expect(toStyle.property.strValue).toEqual('transform');
       assertTokens(toStyle.value.tokens, ['rotate', '(', '360', 'deg', ')']);
     });
 
     it('should parse media queries into a stylesheet Ast', () => {
-      var styles = `
+      const styles = `
         @media all and (max-width:100px) {
           .selector {
             prop: value123;
@@ -145,40 +145,40 @@ export function main() {
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
       expect(ast.rules.length).toEqual(1);
 
-      var rule = <CssMediaQueryRuleAst>ast.rules[0];
+      const rule = <CssMediaQueryRuleAst>ast.rules[0];
       assertTokens(rule.query.tokens, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
 
-      var block = <CssBlockAst>rule.block;
+      const block = <CssBlockAst>rule.block;
       expect(block.entries.length).toEqual(1);
 
-      var rule2 = <CssSelectorRuleAst>block.entries[0];
+      const rule2 = <CssSelectorRuleAst>block.entries[0];
       expect(rule2.selectors[0].strValue).toEqual('.selector');
 
-      var block2 = <CssBlockAst>rule2.block;
+      const block2 = <CssBlockAst>rule2.block;
       expect(block2.entries.length).toEqual(1);
     });
 
     it('should parse inline CSS values', () => {
-      var styles = `
+      const styles = `
         @import url('remote.css');
         @charset "UTF-8";
         @namespace ng url(http://angular.io/namespace/ng);
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var importRule = <CssInlineRuleAst>ast.rules[0];
+      const importRule = <CssInlineRuleAst>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
       assertTokens(importRule.value.tokens, ['url', '(', 'remote', '.', 'css', ')']);
 
-      var charsetRule = <CssInlineRuleAst>ast.rules[1];
+      const charsetRule = <CssInlineRuleAst>ast.rules[1];
       expect(charsetRule.type).toEqual(BlockType.Charset);
       assertTokens(charsetRule.value.tokens, ['UTF-8']);
 
-      var namespaceRule = <CssInlineRuleAst>ast.rules[2];
+      const namespaceRule = <CssInlineRuleAst>ast.rules[2];
       expect(namespaceRule.type).toEqual(BlockType.Namespace);
       assertTokens(
           namespaceRule.value.tokens, ['ng', 'url', '(', 'http://angular.io/namespace/ng', ')']);
@@ -186,7 +186,7 @@ export function main() {
 
     it('should parse CSS values that contain functions and leave the inner function data untokenized',
        () => {
-         var styles = `
+         const styles = `
         .class {
           background: url(matias.css);
           animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
@@ -195,10 +195,10 @@ export function main() {
         }
       `;
 
-         var ast = makeAst(styles);
+         const ast = makeAst(styles);
          expect(ast.rules.length).toEqual(1);
 
-         var defs = (<CssSelectorRuleAst>ast.rules[0]).block.entries;
+         const defs = (<CssSelectorRuleAst>ast.rules[0]).block.entries;
          expect(defs.length).toEqual(4);
 
          assertTokens((<CssDefinitionAst>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
@@ -212,7 +212,7 @@ export function main() {
        });
 
     it('should parse un-named block-level CSS values', () => {
-      var styles = `
+      const styles = `
         @font-face {
           font-family: "Matias";
           font-weight: bold;
@@ -224,19 +224,19 @@ export function main() {
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var fontFaceRule = <CssBlockRuleAst>ast.rules[0];
+      const fontFaceRule = <CssBlockRuleAst>ast.rules[0];
       expect(fontFaceRule.type).toEqual(BlockType.FontFace);
       expect(fontFaceRule.block.entries.length).toEqual(3);
 
-      var viewportRule = <CssBlockRuleAst>ast.rules[1];
+      const viewportRule = <CssBlockRuleAst>ast.rules[1];
       expect(viewportRule.type).toEqual(BlockType.Viewport);
       expect(viewportRule.block.entries.length).toEqual(2);
     });
 
     it('should parse multiple levels of semicolons', () => {
-      var styles = `
+      const styles = `
         ;;;
         @import url('something something')
         ;;;;;;;;
@@ -251,24 +251,24 @@ export function main() {
           ;.selector2{prop:1}}
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var importRule = <CssInlineRuleAst>ast.rules[0];
+      const importRule = <CssInlineRuleAst>ast.rules[0];
       expect(importRule.type).toEqual(BlockType.Import);
       assertTokens(importRule.value.tokens, ['url', '(', 'something something', ')']);
 
-      var fontFaceRule = <CssBlockRuleAst>ast.rules[1];
+      const fontFaceRule = <CssBlockRuleAst>ast.rules[1];
       expect(fontFaceRule.type).toEqual(BlockType.FontFace);
       expect(fontFaceRule.block.entries.length).toEqual(2);
 
-      var mediaQueryRule = <CssMediaQueryRuleAst>ast.rules[2];
+      const mediaQueryRule = <CssMediaQueryRuleAst>ast.rules[2];
       assertTokens(
           mediaQueryRule.query.tokens, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
       expect(mediaQueryRule.block.entries.length).toEqual(2);
     });
 
     it('should throw an error if an unknown @value block rule is parsed', () => {
-      var styles = `
+      const styles = `
         @matias { hello: there; }
       `;
 
@@ -278,22 +278,22 @@ export function main() {
     });
 
     it('should parse empty rules', () => {
-      var styles = `
+      const styles = `
         .empty-rule { }
         .somewhat-empty-rule { /* property: value; */ }
         .non-empty-rule { property: value; }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var rules = ast.rules;
+      const rules = ast.rules;
       expect((<CssSelectorRuleAst>rules[0]).block.entries.length).toEqual(0);
       expect((<CssSelectorRuleAst>rules[1]).block.entries.length).toEqual(0);
       expect((<CssSelectorRuleAst>rules[2]).block.entries.length).toEqual(1);
     });
 
     it('should parse the @document rule', () => {
-      var styles = `
+      const styles = `
         @document url(http://www.w3.org/),
                        url-prefix(http://www.w3.org/Style/),
                        domain(mozilla.org),
@@ -314,18 +314,18 @@ export function main() {
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var rules = ast.rules;
-      var documentRule = <CssBlockDefinitionRuleAst>rules[0];
+      const rules = ast.rules;
+      const documentRule = <CssBlockDefinitionRuleAst>rules[0];
       expect(documentRule.type).toEqual(BlockType.Document);
 
-      var rule = <CssSelectorRuleAst>documentRule.block.entries[0];
+      const rule = <CssSelectorRuleAst>documentRule.block.entries[0];
       expect(rule.strValue).toEqual('body');
     });
 
     it('should parse the @page rule', () => {
-      var styles = `
+      const styles = `
         @page one {
           .selector { prop: value; }
         }
@@ -334,89 +334,89 @@ export function main() {
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var rules = ast.rules;
+      const rules = ast.rules;
 
-      var pageRule1 = <CssBlockDefinitionRuleAst>rules[0];
+      const pageRule1 = <CssBlockDefinitionRuleAst>rules[0];
       expect(pageRule1.query.strValue).toEqual('@page one');
       expect(pageRule1.query.tokens[0].strValue).toEqual('one');
       expect(pageRule1.type).toEqual(BlockType.Page);
 
-      var pageRule2 = <CssBlockDefinitionRuleAst>rules[1];
+      const pageRule2 = <CssBlockDefinitionRuleAst>rules[1];
       expect(pageRule2.query.strValue).toEqual('@page two');
       expect(pageRule2.query.tokens[0].strValue).toEqual('two');
       expect(pageRule2.type).toEqual(BlockType.Page);
 
-      var selectorOne = <CssSelectorRuleAst>pageRule1.block.entries[0];
+      const selectorOne = <CssSelectorRuleAst>pageRule1.block.entries[0];
       expect(selectorOne.strValue).toEqual('.selector');
 
-      var selectorTwo = <CssSelectorRuleAst>pageRule2.block.entries[0];
+      const selectorTwo = <CssSelectorRuleAst>pageRule2.block.entries[0];
       expect(selectorTwo.strValue).toEqual('.selector2');
     });
 
     it('should parse the @supports rule', () => {
-      var styles = `
+      const styles = `
         @supports (animation-name: "rotate") {
           a:hover { animation: rotate 1s; }
         }
       `;
 
-      var ast = makeAst(styles);
+      const ast = makeAst(styles);
 
-      var rules = ast.rules;
+      const rules = ast.rules;
 
-      var supportsRule = <CssBlockDefinitionRuleAst>rules[0];
+      const supportsRule = <CssBlockDefinitionRuleAst>rules[0];
       assertTokens(supportsRule.query.tokens, ['(', 'animation-name', ':', 'rotate', ')']);
       expect(supportsRule.type).toEqual(BlockType.Supports);
 
-      var selectorOne = <CssSelectorRuleAst>supportsRule.block.entries[0];
+      const selectorOne = <CssSelectorRuleAst>supportsRule.block.entries[0];
       expect(selectorOne.strValue).toEqual('a:hover');
     });
 
     it('should collect multiple errors during parsing', () => {
-      var styles = `
+      const styles = `
         .class$value { something: something }
         @custom { something: something }
         #id { cool^: value }
       `;
 
-      var output = parse(styles);
+      const output = parse(styles);
       expect(output.errors.length).toEqual(3);
     });
 
     it('should recover from selector errors and continue parsing', () => {
-      var styles = `
+      const styles = `
         tag& { key: value; }
         .%tag { key: value; }
         #tag$ { key: value; }
       `;
 
-      var output = parse(styles);
-      var errors = output.errors;
-      var ast = output.ast;
+      const output = parse(styles);
+      const errors = output.errors;
+      const ast = output.ast;
 
       expect(errors.length).toEqual(3);
 
       expect(ast.rules.length).toEqual(3);
 
-      var rule1 = <CssSelectorRuleAst>ast.rules[0];
+      const rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors[0].strValue).toEqual('tag&');
       expect(rule1.block.entries.length).toEqual(1);
 
-      var rule2 = <CssSelectorRuleAst>ast.rules[1];
+      const rule2 = <CssSelectorRuleAst>ast.rules[1];
       expect(rule2.selectors[0].strValue).toEqual('.%tag');
       expect(rule2.block.entries.length).toEqual(1);
 
-      var rule3 = <CssSelectorRuleAst>ast.rules[2];
+      const rule3 = <CssSelectorRuleAst>ast.rules[2];
       expect(rule3.selectors[0].strValue).toEqual('#tag$');
       expect(rule3.block.entries.length).toEqual(1);
     });
 
     it('should throw an error when parsing invalid CSS Selectors', () => {
-      var styles = '.class[[prop%=value}] { style: val; }';
-      var output = parse(styles);
-      var errors = output.errors;
+      const styles = '.class[[prop%=value}] { style: val; }';
+      const output = parse(styles);
+      const errors = output.errors;
 
       expect(errors.length).toEqual(3);
 
@@ -428,17 +428,17 @@ export function main() {
     });
 
     it('should throw an error if an attribute selector is not closed properly', () => {
-      var styles = '.class[prop=value { style: val; }';
-      var output = parse(styles);
-      var errors = output.errors;
+      const styles = '.class[prop=value { style: val; }';
+      const output = parse(styles);
+      const errors = output.errors;
 
       expect(errors[0].msg).toMatch(/Unbalanced CSS attribute selector at column 0:12/g);
     });
 
     it('should throw an error if a pseudo function selector is not closed properly', () => {
-      var styles = 'body:lang(en { key:value; }';
-      var output = parse(styles);
-      var errors = output.errors;
+      const styles = 'body:lang(en { key:value; }';
+      const output = parse(styles);
+      const errors = output.errors;
 
       expect(errors[0].msg)
           .toMatch(/Character does not match expected Character value \("{" should match "\)"\)/);
@@ -446,13 +446,13 @@ export function main() {
 
     it('should raise an error when a semi colon is missing from a CSS style/pair that isn\'t the last entry',
        () => {
-         var styles = `.class {
+         const styles = `.class {
         color: red
         background: blue
       }`;
 
-         var output = parse(styles);
-         var errors = output.errors;
+         const output = parse(styles);
+         const errors = output.errors;
 
          expect(errors.length).toEqual(1);
 
@@ -461,62 +461,62 @@ export function main() {
        });
 
     it('should parse the inner value of a :not() pseudo-selector as a CSS selector', () => {
-      var styles = `div:not(.ignore-this-div) {
+      const styles = `div:not(.ignore-this-div) {
         prop: value;
       }`;
 
-      var output = parse(styles);
-      var errors = output.errors;
-      var ast = output.ast;
+      const output = parse(styles);
+      const errors = output.errors;
+      const ast = output.ast;
 
       expect(errors.length).toEqual(0);
 
-      var rule1 = <CssSelectorRuleAst>ast.rules[0];
+      const rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors.length).toEqual(1);
 
-      var simpleSelector = rule1.selectors[0].selectorParts[0];
+      const simpleSelector = rule1.selectors[0].selectorParts[0];
       assertTokens(simpleSelector.tokens, ['div']);
 
-      var pseudoSelector = simpleSelector.pseudoSelectors[0];
+      const pseudoSelector = simpleSelector.pseudoSelectors[0];
       expect(pseudoSelector.name).toEqual('not');
       assertTokens(pseudoSelector.tokens, ['.', 'ignore-this-div']);
     });
 
     it('should parse the inner selectors of a :host-context selector', () => {
-      var styles = `body > :host-context(.a, .b, .c:hover) {
+      const styles = `body > :host-context(.a, .b, .c:hover) {
         prop: value;
       }`;
 
-      var output = parse(styles);
-      var errors = output.errors;
-      var ast = output.ast;
+      const output = parse(styles);
+      const errors = output.errors;
+      const ast = output.ast;
 
       expect(errors.length).toEqual(0);
 
-      var rule1 = <CssSelectorRuleAst>ast.rules[0];
+      const rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.selectors.length).toEqual(1);
 
-      var simpleSelector = rule1.selectors[0].selectorParts[1];
-      var innerSelectors = simpleSelector.pseudoSelectors[0].innerSelectors;
+      const simpleSelector = rule1.selectors[0].selectorParts[1];
+      const innerSelectors = simpleSelector.pseudoSelectors[0].innerSelectors;
 
       assertTokens(innerSelectors[0].selectorParts[0].tokens, ['.', 'a']);
       assertTokens(innerSelectors[1].selectorParts[0].tokens, ['.', 'b']);
 
-      var finalSelector = innerSelectors[2].selectorParts[0];
+      const finalSelector = innerSelectors[2].selectorParts[0];
       assertTokens(finalSelector.tokens, ['.', 'c', ':', 'hover']);
       assertTokens(finalSelector.pseudoSelectors[0].tokens, [':', 'hover']);
     });
 
     it('should raise parse errors when CSS key/value pairs are invalid', () => {
-      var styles = `.class {
+      const styles = `.class {
         background color: value;
         color: value
         font-size;
         font-weight
       }`;
 
-      var output = parse(styles);
-      var errors = output.errors;
+      const output = parse(styles);
+      const errors = output.errors;
 
       expect(errors.length).toEqual(4);
 
@@ -535,30 +535,30 @@ export function main() {
     });
 
     it('should recover from CSS key/value parse errors', () => {
-      var styles = `
+      const styles = `
         .problem-class { background color: red; color: white; }
         .good-boy-class { background-color: red; color: white; }
        `;
 
-      var output = parse(styles);
-      var ast = output.ast;
+      const output = parse(styles);
+      const ast = output.ast;
 
       expect(ast.rules.length).toEqual(2);
 
-      var rule1 = <CssSelectorRuleAst>ast.rules[0];
+      const rule1 = <CssSelectorRuleAst>ast.rules[0];
       expect(rule1.block.entries.length).toEqual(2);
 
-      var style1 = <CssDefinitionAst>rule1.block.entries[0];
+      const style1 = <CssDefinitionAst>rule1.block.entries[0];
       expect(style1.property.strValue).toEqual('background color');
       assertTokens(style1.value.tokens, ['red']);
 
-      var style2 = <CssDefinitionAst>rule1.block.entries[1];
+      const style2 = <CssDefinitionAst>rule1.block.entries[1];
       expect(style2.property.strValue).toEqual('color');
       assertTokens(style2.value.tokens, ['white']);
     });
 
     describe('location offsets', () => {
-      var styles: string;
+      let styles: string;
 
       function assertMatchesOffsetAndChar(
           location: ParseLocation, expectedOffset: number, expectedChar: string): void {
@@ -570,64 +570,64 @@ export function main() {
         styles = '.problem-class { border-top-right: 1px; color: white; }\n';
         styles += '#good-boy-rule_ { background-color: #fe4; color: teal; }';
 
-        var output = parse(styles);
-        var ast = output.ast;
+        const output = parse(styles);
+        const ast = output.ast;
         assertMatchesOffsetAndChar(ast.location.start, 0, '.');
         assertMatchesOffsetAndChar(ast.location.end, 111, '}');
 
-        var rule1 = <CssSelectorRuleAst>ast.rules[0];
+        const rule1 = <CssSelectorRuleAst>ast.rules[0];
         assertMatchesOffsetAndChar(rule1.location.start, 0, '.');
         assertMatchesOffsetAndChar(rule1.location.end, 54, '}');
 
-        var rule2 = <CssSelectorRuleAst>ast.rules[1];
+        const rule2 = <CssSelectorRuleAst>ast.rules[1];
         assertMatchesOffsetAndChar(rule2.location.start, 56, '#');
         assertMatchesOffsetAndChar(rule2.location.end, 111, '}');
 
-        var selector1 = rule1.selectors[0];
+        const selector1 = rule1.selectors[0];
         assertMatchesOffsetAndChar(selector1.location.start, 0, '.');
         assertMatchesOffsetAndChar(selector1.location.end, 1, 'p');  // problem-class
 
-        var selector2 = rule2.selectors[0];
+        const selector2 = rule2.selectors[0];
         assertMatchesOffsetAndChar(selector2.location.start, 56, '#');
         assertMatchesOffsetAndChar(selector2.location.end, 57, 'g');  // good-boy-rule_
 
-        var block1 = rule1.block;
+        const block1 = rule1.block;
         assertMatchesOffsetAndChar(block1.location.start, 15, '{');
         assertMatchesOffsetAndChar(block1.location.end, 54, '}');
 
-        var block2 = rule2.block;
+        const block2 = rule2.block;
         assertMatchesOffsetAndChar(block2.location.start, 72, '{');
         assertMatchesOffsetAndChar(block2.location.end, 111, '}');
 
-        var block1def1 = <CssDefinitionAst>block1.entries[0];
+        const block1def1 = <CssDefinitionAst>block1.entries[0];
         assertMatchesOffsetAndChar(block1def1.location.start, 17, 'b');  // border-top-right
         assertMatchesOffsetAndChar(block1def1.location.end, 36, 'p');    // px
 
-        var block1def2 = <CssDefinitionAst>block1.entries[1];
+        const block1def2 = <CssDefinitionAst>block1.entries[1];
         assertMatchesOffsetAndChar(block1def2.location.start, 40, 'c');  // color
         assertMatchesOffsetAndChar(block1def2.location.end, 47, 'w');    // white
 
-        var block2def1 = <CssDefinitionAst>block2.entries[0];
+        const block2def1 = <CssDefinitionAst>block2.entries[0];
         assertMatchesOffsetAndChar(block2def1.location.start, 74, 'b');  // background-color
         assertMatchesOffsetAndChar(block2def1.location.end, 93, 'f');    // fe4
 
-        var block2def2 = <CssDefinitionAst>block2.entries[1];
+        const block2def2 = <CssDefinitionAst>block2.entries[1];
         assertMatchesOffsetAndChar(block2def2.location.start, 98, 'c');  // color
         assertMatchesOffsetAndChar(block2def2.location.end, 105, 't');   // teal
 
-        var block1value1 = block1def1.value;
+        const block1value1 = block1def1.value;
         assertMatchesOffsetAndChar(block1value1.location.start, 35, '1');
         assertMatchesOffsetAndChar(block1value1.location.end, 36, 'p');
 
-        var block1value2 = block1def2.value;
+        const block1value2 = block1def2.value;
         assertMatchesOffsetAndChar(block1value2.location.start, 47, 'w');
         assertMatchesOffsetAndChar(block1value2.location.end, 47, 'w');
 
-        var block2value1 = block2def1.value;
+        const block2value1 = block2def1.value;
         assertMatchesOffsetAndChar(block2value1.location.start, 92, '#');
         assertMatchesOffsetAndChar(block2value1.location.end, 93, 'f');
 
-        var block2value2 = block2def2.value;
+        const block2value2 = block2def2.value;
         assertMatchesOffsetAndChar(block2value2.location.start, 105, 't');
         assertMatchesOffsetAndChar(block2value2.location.end, 105, 't');
       });
@@ -635,18 +635,18 @@ export function main() {
       it('should collect the source span location of each AST node with media query data', () => {
         styles = '@media (all and max-width: 100px) { a { display:none; } }';
 
-        var output = parse(styles);
-        var ast = output.ast;
+        const output = parse(styles);
+        const ast = output.ast;
 
-        var mediaQuery = <CssMediaQueryRuleAst>ast.rules[0];
+        const mediaQuery = <CssMediaQueryRuleAst>ast.rules[0];
         assertMatchesOffsetAndChar(mediaQuery.location.start, 0, '@');
         assertMatchesOffsetAndChar(mediaQuery.location.end, 56, '}');
 
-        var predicate = mediaQuery.query;
+        const predicate = mediaQuery.query;
         assertMatchesOffsetAndChar(predicate.location.start, 0, '@');
         assertMatchesOffsetAndChar(predicate.location.end, 32, ')');
 
-        var rule = <CssSelectorRuleAst>mediaQuery.block.entries[0];
+        const rule = <CssSelectorRuleAst>mediaQuery.block.entries[0];
         assertMatchesOffsetAndChar(rule.location.start, 36, 'a');
         assertMatchesOffsetAndChar(rule.location.end, 54, '}');
       });
@@ -657,18 +657,18 @@ export function main() {
         styles += '100% { transform: rotate(360deg) scale(2); }';
         styles += '}';
 
-        var output = parse(styles);
-        var ast = output.ast;
+        const output = parse(styles);
+        const ast = output.ast;
 
-        var keyframes = <CssKeyframeRuleAst>ast.rules[0];
+        const keyframes = <CssKeyframeRuleAst>ast.rules[0];
         assertMatchesOffsetAndChar(keyframes.location.start, 0, '@');
         assertMatchesOffsetAndChar(keyframes.location.end, 108, '}');
 
-        var step1 = <CssKeyframeDefinitionAst>keyframes.block.entries[0];
+        const step1 = <CssKeyframeDefinitionAst>keyframes.block.entries[0];
         assertMatchesOffsetAndChar(step1.location.start, 30, 'f');
         assertMatchesOffsetAndChar(step1.location.end, 62, '}');
 
-        var step2 = <CssKeyframeDefinitionAst>keyframes.block.entries[1];
+        const step2 = <CssKeyframeDefinitionAst>keyframes.block.entries[1];
         assertMatchesOffsetAndChar(step2.location.start, 64, '1');
         assertMatchesOffsetAndChar(step2.location.end, 107, '}');
       });
@@ -676,14 +676,14 @@ export function main() {
       it('should collect the source span location of each AST node with an inline rule', () => {
         styles = '@import url(something.css)';
 
-        var output = parse(styles);
-        var ast = output.ast;
+        const output = parse(styles);
+        const ast = output.ast;
 
-        var rule = <CssInlineRuleAst>ast.rules[0];
+        const rule = <CssInlineRuleAst>ast.rules[0];
         assertMatchesOffsetAndChar(rule.location.start, 0, '@');
         assertMatchesOffsetAndChar(rule.location.end, 25, ')');
 
-        var value = rule.value;
+        const value = rule.value;
         assertMatchesOffsetAndChar(value.location.start, 8, 'u');
         assertMatchesOffsetAndChar(value.location.end, 25, ')');
       });
@@ -691,8 +691,8 @@ export function main() {
       it('should property collect the start/end locations with an invalid stylesheet', () => {
         styles = '#id { something: value';
 
-        var output = parse(styles);
-        var ast = output.ast;
+        const output = parse(styles);
+        const ast = output.ast;
 
         assertMatchesOffsetAndChar(ast.location.start, 0, '#');
         assertMatchesOffsetAndChar(ast.location.end, 22, undefined);
@@ -701,7 +701,7 @@ export function main() {
 
     it('should parse minified CSS content properly', () => {
       // this code was taken from the angular.io webpage's CSS code
-      var styles = `
+      const styles = `
 .is-hidden{display:none!important}
 .is-visible{display:block!important}
 .is-visually-hidden{height:1px;width:1px;overflow:hidden;opacity:0.01;position:absolute;bottom:0;right:0;z-index:1}
@@ -712,17 +712,17 @@ export function main() {
 .grid-fluid .c1.na,.grid-fixed .c1.na,.grid-fluid .c2.na,.grid-fixed .c2.na,.grid-fluid .c3.na,.grid-fixed .c3.na,.grid-fluid .c4.na,.grid-fixed .c4.na,.grid-fluid .c5.na,.grid-fixed .c5.na,.grid-fluid .c6.na,.grid-fixed .c6.na,.grid-fluid .c7.na,.grid-fixed .c7.na,.grid-fluid .c8.na,.grid-fixed .c8.na,.grid-fluid .c9.na,.grid-fixed .c9.na,.grid-fluid .c10.na,.grid-fixed .c10.na,.grid-fluid .c11.na,.grid-fixed .c11.na,.grid-fluid .c12.na,.grid-fixed .c12.na{margin-right:0}
        `;
 
-      var output = parse(styles);
-      var errors = output.errors;
+      const output = parse(styles);
+      const errors = output.errors;
       expect(errors.length).toEqual(0);
 
-      var ast = output.ast;
+      const ast = output.ast;
       expect(ast.rules.length).toEqual(8);
     });
 
     it('should parse a snippet of keyframe code from animate.css properly', () => {
       // this code was taken from the angular.io webpage's CSS code
-      var styles = `
+      const styles = `
 @charset "UTF-8";
 
 /*!
@@ -787,14 +787,14 @@ export function main() {
 }
        `;
 
-      var output = parse(styles);
-      var errors = output.errors;
+      const output = parse(styles);
+      const errors = output.errors;
       expect(errors.length).toEqual(0);
 
-      var ast = output.ast;
+      const ast = output.ast;
       expect(ast.rules.length).toEqual(6);
 
-      var finalRule = <CssBlockRuleAst>ast.rules[ast.rules.length - 1];
+      const finalRule = <CssBlockRuleAst>ast.rules[ast.rules.length - 1];
       expect(finalRule.type).toEqual(BlockType.Keyframes);
       expect(finalRule.block.entries.length).toEqual(4);
     });

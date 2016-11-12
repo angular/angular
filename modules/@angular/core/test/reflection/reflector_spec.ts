@@ -67,7 +67,7 @@ class TestObj {
 
 export function main() {
   describe('Reflector', () => {
-    var reflector: Reflector;
+    let reflector: Reflector;
 
     beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
 

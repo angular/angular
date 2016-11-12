@@ -67,17 +67,17 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   writeValue(value: any): void {
     this.value = value;
     if (value == null) return;
-    let values: Array<any> = <Array<any>>value;
+    const values: Array<any> = <Array<any>>value;
     // convert values to ids
-    let ids = values.map((v) => this._getOptionId(v));
+    const ids = values.map((v) => this._getOptionId(v));
     this._optionMap.forEach((opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); });
   }
 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (_: any) => {
-      let selected: Array<any> = [];
+      const selected: Array<any> = [];
       if (_.hasOwnProperty('selectedOptions')) {
-        let options: HTMLCollection = _.selectedOptions;
+        const options: HTMLCollection = _.selectedOptions;
         for (let i = 0; i < options.length; i++) {
           const opt: any = options.item(i);
           const val: any = this._getOptionValue(opt.value);
@@ -86,9 +86,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
       }
       // Degrade on IE
       else {
-        let options: HTMLCollection = <HTMLCollection>_.options;
+        const options: HTMLCollection = <HTMLCollection>_.options;
         for (let i = 0; i < options.length; i++) {
-          let opt: HTMLOption = options.item(i);
+          const opt: HTMLOption = options.item(i);
           if (opt.selected) {
             const val: any = this._getOptionValue(opt.value);
             selected.push(val);
@@ -106,14 +106,14 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /** @internal */
   _registerOption(value: NgSelectMultipleOption): string {
-    let id: string = (this._idCounter++).toString();
+    const id: string = (this._idCounter++).toString();
     this._optionMap.set(id, value);
     return id;
   }
 
   /** @internal */
   _getOptionId(value: any): string {
-    for (let id of Array.from(this._optionMap.keys())) {
+    for (const id of Array.from(this._optionMap.keys())) {
       if (looseIdentical(this._optionMap.get(id)._value, value)) return id;
     }
     return null;

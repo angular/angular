@@ -46,7 +46,7 @@ export class MetadataOverrider {
 
 function removeMetadata(metadata: StringMap, remove: any, references: Map<any, string>) {
   const removeObjects = new Set<string>();
-  for (let prop in remove) {
+  for (const prop in remove) {
     const removeValue = remove[prop];
     if (removeValue instanceof Array) {
       removeValue.forEach(
@@ -56,7 +56,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
     }
   }
 
-  for (let prop in metadata) {
+  for (const prop in metadata) {
     const propValue = metadata[prop];
     if (propValue instanceof Array) {
       metadata[prop] = propValue.filter(
@@ -70,7 +70,7 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
 }
 
 function addMetadata(metadata: StringMap, add: any) {
-  for (let prop in add) {
+  for (const prop in add) {
     const addValue = add[prop];
     const propValue = metadata[prop];
     if (propValue != null && propValue instanceof Array) {
@@ -82,7 +82,7 @@ function addMetadata(metadata: StringMap, add: any) {
 }
 
 function setMetadata(metadata: StringMap, set: any) {
-  for (let prop in set) {
+  for (const prop in set) {
     metadata[prop] = set[prop];
   }
 }
@@ -121,7 +121,7 @@ function _valueProps(obj: any): string[] {
   let proto = obj;
   while (proto = Object.getPrototypeOf(proto)) {
     Object.keys(proto).forEach((protoProp) => {
-      var desc = Object.getOwnPropertyDescriptor(proto, protoProp);
+      const desc = Object.getOwnPropertyDescriptor(proto, protoProp);
       if (!protoProp.startsWith('_') && desc && 'get' in desc) {
         props.push(protoProp);
       }

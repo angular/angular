@@ -207,7 +207,7 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
 
 function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
   const field = createCheckBindingField(builder);
-  var onChangeStatements: o.Statement[] = [
+  const onChangeStatements: o.Statement[] = [
     o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(true)).toStmt(),
     o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).prop(input).set(CURR_VALUE_VAR).toStmt(),
   ];
@@ -219,7 +219,7 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
                                 .toStmt());
   }
 
-  var methodBody: o.Statement[] = createCheckBindingStmt(
+  const methodBody: o.Statement[] = createCheckBindingStmt(
       {currValExpr: CURR_VALUE_VAR, forceUpdate: FORCE_UPDATE_VAR, stmts: []}, field.expression,
       THROW_ON_CHANGE_VAR, onChangeStatements);
   builder.methods.push(new o.ClassMethod(
@@ -430,7 +430,7 @@ export class DirectiveWrapperExpressions {
       dirMeta: CompileDirectiveSummary, hostProps: BoundElementPropertyAst[], usedEvents: string[],
       dirWrapper: o.Expression, view: o.Expression, eventListener: o.Expression): o.Statement[] {
     let needsSubscribe = false;
-    let eventFlags: o.Expression[] = [];
+    const eventFlags: o.Expression[] = [];
     Object.keys(dirMeta.outputs).forEach((propName) => {
       const eventName = dirMeta.outputs[propName];
       const eventUsed = usedEvents.indexOf(eventName) > -1;

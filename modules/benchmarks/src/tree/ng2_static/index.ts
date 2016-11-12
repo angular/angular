@@ -15,8 +15,8 @@ import {buildTree, emptyTree} from '../util';
 import {AppModule, RootTreeComponent} from './tree';
 
 export function main() {
-  var tree: RootTreeComponent;
-  var appRef: ApplicationRef;
+  let tree: RootTreeComponent;
+  let appRef: ApplicationRef;
 
   function destroyDom() {
     tree.data = emptyTree;

@@ -67,7 +67,7 @@ export class ValueTransformer implements ValueVisitor {
     return arr.map(value => visitValue(value, this, context));
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
-    var result: {[key: string]: any} = {};
+    const result: {[key: string]: any} = {};
     Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
     return result;
   }

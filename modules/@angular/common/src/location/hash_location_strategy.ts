@@ -64,19 +64,19 @@ export class HashLocationStrategy extends LocationStrategy {
   path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
-    var path = this._platformLocation.hash;
+    let path = this._platformLocation.hash;
     if (!isPresent(path)) path = '#';
 
     return path.length > 0 ? path.substring(1) : path;
   }
 
   prepareExternalUrl(internal: string): string {
-    var url = Location.joinWithSlash(this._baseHref, internal);
+    const url = Location.joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
@@ -84,7 +84,7 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }

@@ -11,10 +11,10 @@ import {runClickBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 cost benchmark', function() {
 
-  var URL = 'benchmarks/src/costs/index.html';
+  const URL = 'benchmarks/src/costs/index.html';
 
   // Number of components to create in a single iteration
-  var benchmarkSize = 200;
+  const benchmarkSize = 200;
 
   afterEach(verifyNoBrowserErrors);
 

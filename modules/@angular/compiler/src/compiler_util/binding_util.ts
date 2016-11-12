@@ -30,7 +30,7 @@ export function createCheckBindingField(builder: ClassBuilder): CheckBindingFiel
 export function createCheckBindingStmt(
     evalResult: ConvertPropertyBindingResult, fieldExpr: o.ReadPropExpr,
     throwOnChangeVar: o.Expression, actions: o.Statement[]): o.Statement[] {
-  var condition: o.Expression = o.importExpr(resolveIdentifier(Identifiers.checkBinding)).callFn([
+  let condition: o.Expression = o.importExpr(resolveIdentifier(Identifiers.checkBinding)).callFn([
     throwOnChangeVar, fieldExpr, evalResult.currValExpr
   ]);
   if (evalResult.forceUpdate) {

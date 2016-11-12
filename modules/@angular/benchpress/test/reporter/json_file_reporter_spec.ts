@@ -13,7 +13,7 @@ import {isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('file reporter', () => {
-    var loggedFile: any;
+    let loggedFile: any;
 
     function createReporter({sampleId, descriptions, metrics, path}: {
       sampleId: string,
@@ -21,7 +21,7 @@ export function main() {
       metrics: {[key: string]: string},
       path: string
     }) {
-      var providers = [
+      const providers = [
         JsonFileReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)
@@ -49,9 +49,9 @@ export function main() {
              .reportSample(
                  [mv(0, 0, {'a': 3, 'b': 6})],
                  [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
-         var regExp = /somePath\/someId_\d+\.json/;
+         const regExp = /somePath\/someId_\d+\.json/;
          expect(isPresent(loggedFile['filename'].match(regExp))).toBe(true);
-         var parsedContent = JSON.parse(loggedFile['content']);
+         const parsedContent = JSON.parse(loggedFile['content']);
          expect(parsedContent).toEqual({
            'description': {
              'id': 'someId',

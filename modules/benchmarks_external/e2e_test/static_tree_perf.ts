@@ -10,7 +10,7 @@ import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/per
 
 describe('ng1.x tree benchmark', function() {
 
-  var URL = 'benchmarks_external/src/static_tree/tree_benchmark.html';
+  const URL = 'benchmarks_external/src/static_tree/tree_benchmark.html';
 
   afterEach(verifyNoBrowserErrors);
 

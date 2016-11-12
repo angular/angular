@@ -39,7 +39,7 @@ export class ViewContainer {
 
   detectChangesInNestedViews(throwOnChange: boolean): void {
     if (this.nestedViews) {
-      for (var i = 0; i < this.nestedViews.length; i++) {
+      for (let i = 0; i < this.nestedViews.length; i++) {
         this.nestedViews[i].detectChanges(throwOnChange);
       }
     }
@@ -47,7 +47,7 @@ export class ViewContainer {
 
   destroyNestedViews(): void {
     if (this.nestedViews) {
-      for (var i = 0; i < this.nestedViews.length; i++) {
+      for (let i = 0; i < this.nestedViews.length; i++) {
         this.nestedViews[i].destroy();
       }
     }
@@ -55,16 +55,16 @@ export class ViewContainer {
 
   visitNestedViewRootNodes<C>(cb: (node: any, ctx: C) => void, c: C): void {
     if (this.nestedViews) {
-      for (var i = 0; i < this.nestedViews.length; i++) {
+      for (let i = 0; i < this.nestedViews.length; i++) {
         this.nestedViews[i].visitRootNodesInternal(cb, c);
       }
     }
   }
 
   mapNestedViews(nestedViewClass: any, callback: Function): any[] {
-    var result: any[] = [];
+    const result: any[] = [];
     if (this.nestedViews) {
-      for (var i = 0; i < this.nestedViews.length; i++) {
+      for (let i = 0; i < this.nestedViews.length; i++) {
         const nestedView = this.nestedViews[i];
         if (nestedView.clazz === nestedViewClass) {
           result.push(callback(nestedView));
@@ -72,7 +72,7 @@ export class ViewContainer {
       }
     }
     if (this.projectedViews) {
-      for (var i = 0; i < this.projectedViews.length; i++) {
+      for (let i = 0; i < this.projectedViews.length; i++) {
         const projectedView = this.projectedViews[i];
         if (projectedView.clazz === nestedViewClass) {
           result.push(callback(projectedView));
@@ -83,11 +83,11 @@ export class ViewContainer {
   }
 
   moveView(view: AppView<any>, currentIndex: number) {
-    var previousIndex = this.nestedViews.indexOf(view);
+    const previousIndex = this.nestedViews.indexOf(view);
     if (view.type === ViewType.COMPONENT) {
       throw new Error(`Component views can't be moved!`);
     }
-    var nestedViews = this.nestedViews;
+    let nestedViews = this.nestedViews;
     if (nestedViews == null) {
       nestedViews = [];
       this.nestedViews = nestedViews;
@@ -102,7 +102,7 @@ export class ViewContainer {
     if (view.type === ViewType.COMPONENT) {
       throw new Error(`Component views can't be moved!`);
     }
-    var nestedViews = this.nestedViews;
+    let nestedViews = this.nestedViews;
     if (nestedViews == null) {
       nestedViews = [];
       this.nestedViews = nestedViews;

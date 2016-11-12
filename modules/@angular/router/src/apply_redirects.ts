@@ -404,7 +404,7 @@ function addEmptySegmentsToChildrenIfNeeded(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
     children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
-  for (let r of routes) {
+  for (const r of routes) {
     if (emptyPathRedirect(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       res[getOutlet(r)] = new UrlSegmentGroup([], {});
     }
@@ -416,7 +416,7 @@ function createChildrenForEmptySegments(
     routes: Route[], primarySegmentGroup: UrlSegmentGroup): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   res[PRIMARY_OUTLET] = primarySegmentGroup;
-  for (let r of routes) {
+  for (const r of routes) {
     if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
       res[getOutlet(r)] = new UrlSegmentGroup([], {});
     }

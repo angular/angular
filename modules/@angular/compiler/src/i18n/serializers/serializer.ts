@@ -19,7 +19,7 @@ export interface Serializer {
 // Generate a map of placeholder to content indexed by message ids
 export function extractPlaceholders(messageBundle: MessageBundle) {
   const messageMap = messageBundle.getMessageMap();
-  let placeholders: {[id: string]: {[name: string]: string}} = {};
+  const placeholders: {[id: string]: {[name: string]: string}} = {};
 
   Object.keys(messageMap).forEach(msgId => {
     placeholders[msgId] = messageMap[msgId].placeholders;
@@ -31,7 +31,7 @@ export function extractPlaceholders(messageBundle: MessageBundle) {
 // Generate a map of placeholder to message ids indexed by message ids
 export function extractPlaceholderToIds(messageBundle: MessageBundle) {
   const messageMap = messageBundle.getMessageMap();
-  let placeholderToIds: {[id: string]: {[name: string]: string}} = {};
+  const placeholderToIds: {[id: string]: {[name: string]: string}} = {};
 
   Object.keys(messageMap).forEach(msgId => {
     placeholderToIds[msgId] = messageMap[msgId].placeholderToMsgIds;

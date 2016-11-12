@@ -9,7 +9,7 @@
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
-var URL = 'all/playground/src/web_workers/message_broker/index.html';
+const URL = 'all/playground/src/web_workers/message_broker/index.html';
 
 describe('MessageBroker', function() {
 
@@ -33,10 +33,10 @@ describe('MessageBroker', function() {
     browser.get(URL);
     waitForBootstrap();
 
-    var input = element.all(by.css('#echo_input')).first();
+    const input = element.all(by.css('#echo_input')).first();
     input.sendKeys(VALUE);
     element(by.css('#send_echo')).click();
-    var area = element(by.css('#echo_result'));
+    const area = element(by.css('#echo_result'));
     browser.wait(ExpectedConditions.textToBePresentInElement(area, VALUE), 5000);
     expect(area.getText()).toEqual(VALUE);
   });

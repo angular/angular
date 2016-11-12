@@ -43,8 +43,8 @@ export function getResponseURL(xhr: any): string {
 }
 
 export function stringToArrayBuffer(input: String): ArrayBuffer {
-  let view = new Uint16Array(input.length);
-  for (var i = 0, strLen = input.length; i < strLen; i++) {
+  const view = new Uint16Array(input.length);
+  for (let i = 0, strLen = input.length; i < strLen; i++) {
     view[i] = input.charCodeAt(i);
   }
   return view.buffer;

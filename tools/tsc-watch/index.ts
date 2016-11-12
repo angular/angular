@@ -19,11 +19,11 @@ const OFFLINE_COMPILE =
 
 function processOutputEmitterCodeGen(): Promise<number> {
   return new Promise((resolve, reject) => {
-           var outDir = 'dist/all/@angular/compiler/test/';
-           var promises: Promise<any>[] = [];
+           const outDir = 'dist/all/@angular/compiler/test/';
+           const promises: Promise<any>[] = [];
            console.log('Processing codegen...');
            OFFLINE_COMPILE.forEach((file: string) => {
-             var codegen = require('../../all/@angular/compiler/test/' + file + '.js');
+             const codegen = require('../../all/@angular/compiler/test/' + file + '.js');
              if (codegen.emit) {
                console.log(`  ${file} has changed, regenerating...`);
                promises.push(Promise.resolve(codegen.emit()).then((code) => {
@@ -34,10 +34,10 @@ function processOutputEmitterCodeGen(): Promise<number> {
            if (promises.length) {
              Promise.all(promises)
                  .then(() => {
-                   var args =
+                   const args =
                        ['--project', 'tools/cjs-jasmine/tsconfig-output_emitter_codegen.json'];
                    console.log('    compiling changes: tsc ' + args.join(' '));
-                   var tsc = spawn(TSC, args, {stdio: 'pipe'});
+                   const tsc = spawn(TSC, args, {stdio: 'pipe'});
                    tsc.stdout.on('data', (data: any) => process.stdout.write(data));
                    tsc.stderr.on('data', (data: any) => process.stderr.write(data));
                    tsc.on(
@@ -54,8 +54,8 @@ function processOutputEmitterCodeGen(): Promise<number> {
 
 function md(dir: string, folders: string[]) {
   if (folders.length) {
-    var next = folders.shift();
-    var path = dir + '/' + next;
+    const next = folders.shift();
+    const path = dir + '/' + next;
     if (!existsSync(path)) {
       mkdirSync(path);
     }
@@ -63,9 +63,9 @@ function md(dir: string, folders: string[]) {
   }
 }
 
-var tscWatch: TscWatch = null;
-var platform = process.argv.length >= 3 ? process.argv[2] : null;
-var runMode: string = process.argv.length >= 4 ? process.argv[3] : null;
+let tscWatch: TscWatch = null;
+const platform = process.argv.length >= 3 ? process.argv[2] : null;
+const runMode: string = process.argv.length >= 4 ? process.argv[3] : null;
 const BaseConfig = {
   start: 'File change detected. Starting incremental compilation...',
   error: 'error',

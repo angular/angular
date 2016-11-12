@@ -42,11 +42,11 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 export class Xmb implements Serializer {
   write(messageMap: {[k: string]: i18n.Message}): string {
     const visitor = new _Visitor();
-    let rootNode = new xml.Tag(_MESSAGES_TAG);
+    const rootNode = new xml.Tag(_MESSAGES_TAG);
 
     Object.keys(messageMap).forEach((id) => {
       const message = messageMap[id];
-      let attrs: {[k: string]: string} = {id};
+      const attrs: {[k: string]: string} = {id};
 
       if (message.description) {
         attrs['desc'] = message.description;

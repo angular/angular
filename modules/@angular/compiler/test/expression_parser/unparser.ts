@@ -40,7 +40,7 @@ class Unparser implements AstVisitor {
   }
 
   visitChain(ast: Chain, context: any) {
-    var len = ast.expressions.length;
+    const len = ast.expressions.length;
     for (let i = 0; i < len; i++) {
       this._visit(ast.expressions[i]);
       this._expression += i == len - 1 ? ';' : '; ';
@@ -69,7 +69,7 @@ class Unparser implements AstVisitor {
   visitFunctionCall(ast: FunctionCall, context: any) {
     this._visit(ast.target);
     this._expression += '(';
-    var isFirst = true;
+    let isFirst = true;
     ast.args.forEach(arg => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
@@ -108,7 +108,7 @@ class Unparser implements AstVisitor {
 
   visitLiteralArray(ast: LiteralArray, context: any) {
     this._expression += '[';
-    var isFirst = true;
+    let isFirst = true;
     ast.expressions.forEach(expression => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
@@ -120,7 +120,7 @@ class Unparser implements AstVisitor {
 
   visitLiteralMap(ast: LiteralMap, context: any) {
     this._expression += '{';
-    var isFirst = true;
+    let isFirst = true;
     for (let i = 0; i < ast.keys.length; i++) {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
@@ -142,7 +142,7 @@ class Unparser implements AstVisitor {
   visitMethodCall(ast: MethodCall, context: any) {
     this._visit(ast.receiver);
     this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}(` : `.${ast.name}(`;
-    var isFirst = true;
+    let isFirst = true;
     ast.args.forEach(arg => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
@@ -164,7 +164,7 @@ class Unparser implements AstVisitor {
   visitSafeMethodCall(ast: SafeMethodCall, context: any) {
     this._visit(ast.receiver);
     this._expression += `?.${ast.name}(`;
-    var isFirst = true;
+    let isFirst = true;
     ast.args.forEach(arg => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;

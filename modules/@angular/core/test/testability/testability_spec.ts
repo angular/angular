@@ -47,10 +47,10 @@ class MockNgZone extends NgZone {
 
 export function main() {
   describe('Testability', () => {
-    var testability: Testability;
-    var execute: any;
-    var execute2: any;
-    var ngZone: MockNgZone;
+    let testability: Testability;
+    let execute: any;
+    let execute2: any;
+    let ngZone: MockNgZone;
 
     beforeEach(() => {
       ngZone = new MockNgZone();

@@ -126,9 +126,9 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var viewportDirectives = main.debugElement.children[0]
-                                   .childNodes.filter(By.directive(ManualViewportDirective))
-                                   .map(de => de.injector.get(ManualViewportDirective));
+      const viewportDirectives = main.debugElement.children[0]
+                                     .childNodes.filter(By.directive(ManualViewportDirective))
+                                     .map(de => de.injector.get(ManualViewportDirective));
 
       expect(main.nativeElement).toHaveText('(, B)');
       viewportDirectives.forEach(d => d.show());
@@ -170,7 +170,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var viewportDirective =
+      const viewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
@@ -194,7 +194,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var viewportDirective =
+      const viewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
@@ -254,7 +254,7 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var projectDirective: ProjectDirective =
+      const projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
 
@@ -275,10 +275,10 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var sourceDirective: ManualViewportDirective =
+      const sourceDirective: ManualViewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
-      var projectDirective: ProjectDirective =
+      const projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
       expect(main.nativeElement).toHaveText('SIMPLE()START()END');
@@ -301,10 +301,10 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var sourceDirective: ManualViewportDirective =
+      const sourceDirective: ManualViewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
-      var projectDirective: ProjectDirective =
+      const projectDirective: ProjectDirective =
           main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
               ProjectDirective);
       expect(main.nativeElement).toHaveText('(, B)START()END');
@@ -327,7 +327,7 @@ export function main() {
       const main = TestBed.createComponent(MainComp);
 
       main.detectChanges();
-      var manualDirective: ManualViewportDirective =
+      const manualDirective: ManualViewportDirective =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
       expect(main.nativeElement).toHaveText('TREE(0:)');
@@ -350,14 +350,14 @@ export function main() {
 
       expect(main.nativeElement).toHaveText('TREE(0:)');
 
-      var tree = main.debugElement.query(By.directive(Tree));
-      var manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
+      const tree = main.debugElement.query(By.directive(Tree));
+      let manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
           ManualViewportDirective))[0].injector.get(ManualViewportDirective);
       manualDirective.show();
       main.detectChanges();
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
 
-      var tree2 = main.debugElement.query(By.directive(Tree2));
+      const tree2 = main.debugElement.query(By.directive(Tree2));
       manualDirective = tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
           ManualViewportDirective);
       manualDirective.show();
@@ -376,7 +376,7 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var childNodes = getDOM().childNodes(main.nativeElement);
+        const childNodes = getDOM().childNodes(main.nativeElement);
         expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
         expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
         main.destroy();
@@ -395,9 +395,9 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var mainEl = main.nativeElement;
-        var div1 = getDOM().firstChild(mainEl);
-        var div2 = getDOM().createElement('div');
+        const mainEl = main.nativeElement;
+        const div1 = getDOM().firstChild(mainEl);
+        const div2 = getDOM().createElement('div');
         getDOM().setAttribute(div2, 'class', 'redStyle');
         getDOM().appendChild(mainEl, div2);
         expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
@@ -415,9 +415,9 @@ export function main() {
         });
         const main = TestBed.createComponent(MainComp);
 
-        var mainEl = main.nativeElement;
-        var div1 = getDOM().firstChild(mainEl);
-        var div2 = getDOM().createElement('div');
+        const mainEl = main.nativeElement;
+        const div1 = getDOM().firstChild(mainEl);
+        const div2 = getDOM().createElement('div');
         getDOM().appendChild(mainEl, div2);
         expect(getDOM().getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
         expect(getDOM().getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
@@ -433,7 +433,7 @@ export function main() {
 
       expect(main.nativeElement).toHaveText('MAIN()');
 
-      var viewportElement =
+      let viewportElement =
           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
       viewportElement.injector.get(ManualViewportDirective).show();
       expect(main.nativeElement).toHaveText('MAIN(FIRST())');
@@ -483,9 +483,9 @@ export function main() {
       });
       const main = TestBed.createComponent(MainComp);
 
-      var conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
+      const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
 
-      var viewViewportDir =
+      const viewViewportDir =
           conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
               ManualViewportDirective);
 
@@ -496,7 +496,7 @@ export function main() {
 
       expect(main.nativeElement).toHaveText('(AC, D)');
 
-      var contentViewportDir =
+      const contentViewportDir =
           conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
               ManualViewportDirective);
 

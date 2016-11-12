@@ -19,7 +19,7 @@ export function readCommandLine(extraOptions?: {[key: string]: any}) {
   const options: {[key: string]: any} = {
     'bundles': {describe: 'Whether to use the angular bundles or not.', default: false}
   };
-  for (var key in extraOptions) {
+  for (const key in extraOptions) {
     options[key] = extraOptions[key];
   }
 
@@ -35,14 +35,14 @@ export function openBrowser(config: {
   if (config.ignoreBrowserSynchronization) {
     browser.ignoreSynchronization = true;
   }
-  var params = config.params || [];
+  let params = config.params || [];
   if (!params.some((param) => param.name === 'bundles')) {
     params = params.concat([{name: 'bundles', value: cmdArgs.bundles}]);
   }
 
-  var urlParams: string[] = [];
+  const urlParams: string[] = [];
   params.forEach((param) => { urlParams.push(param.name + '=' + param.value); });
-  var url = encodeURI(config.url + '?' + urlParams.join('&'));
+  const url = encodeURI(config.url + '?' + urlParams.join('&'));
   browser.get(url);
   if (config.ignoreBrowserSynchronization) {
     browser.sleep(500);
@@ -57,7 +57,7 @@ export function verifyNoBrowserErrors() {
   // so that the browser logs can be read out!
   browser.executeScript('1+1');
   browser.manage().logs().get('browser').then(function(browserLog: any) {
-    var filteredLog = browserLog.filter(function(logEntry: any) {
+    const filteredLog = browserLog.filter(function(logEntry: any) {
       if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
         console.log('>> ' + logEntry.message);
       }

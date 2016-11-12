@@ -738,11 +738,11 @@ export function main() {
       });
 
       it('should include 2 lines of context in message', () => {
-        let src = '111\n222\n333\nE\n444\n555\n666\n';
-        let file = new ParseSourceFile(src, 'file://');
-        let location = new ParseLocation(file, 12, 123, 456);
-        let span = new ParseSourceSpan(location, location);
-        let error = new lex.TokenError('**ERROR**', null, span);
+        const src = '111\n222\n333\nE\n444\n555\n666\n';
+        const file = new ParseSourceFile(src, 'file://');
+        const location = new ParseLocation(file, 12, 123, 456);
+        const span = new ParseSourceSpan(location, location);
+        const error = new lex.TokenError('**ERROR**', null, span);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });
@@ -766,7 +766,7 @@ export function main() {
 function tokenizeWithoutErrors(
     input: string, tokenizeExpansionForms: boolean = false,
     interpolationConfig?: InterpolationConfig): lex.Token[] {
-  var tokenizeResult = lex.tokenize(
+  const tokenizeResult = lex.tokenize(
       input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms, interpolationConfig);
 
   if (tokenizeResult.errors.length > 0) {

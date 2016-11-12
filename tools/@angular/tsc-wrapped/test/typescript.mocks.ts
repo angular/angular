@@ -23,7 +23,7 @@ export class Host implements ts.LanguageServiceHost {
   getScriptVersion(fileName: string): string { return this.version.toString(); }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot {
-    let content = this.getFileContent(fileName);
+    const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
 
@@ -125,8 +125,8 @@ export class MockSymbol implements ts.Symbol {
 
 export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
-    let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-    let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+    const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+    const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
     console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
   }
   expect(diagnostics.length).toBe(0);

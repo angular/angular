@@ -14,6 +14,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 class MyApp {
 }
 
-var myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
+const myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
 myPlatformFactory().bootstrapModule(MyApp);
 // #enddocregion

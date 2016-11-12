@@ -52,7 +52,7 @@ export class DirectiveNormalizer {
   }
 
   private _fetch(url: string): Promise<string> {
-    var result = this._resourceLoaderCache.get(url);
+    let result = this._resourceLoaderCache.get(url);
     if (!result) {
       result = this._resourceLoader.get(url);
       this._resourceLoaderCache.set(url, result);
@@ -91,7 +91,7 @@ export class DirectiveNormalizer {
 
   normalizeTemplateAsync(prenomData: PrenormalizedTemplateMetadata):
       Promise<CompileTemplateMetadata> {
-    let templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl);
+    const templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl);
     return this._fetch(templateUrl)
         .then((value) => this.normalizeLoadedTemplate(prenomData, value, templateUrl));
   }
@@ -164,7 +164,7 @@ export class DirectiveNormalizer {
     return Promise
         .all(styleUrls.filter((styleUrl) => !loadedStylesheets.has(styleUrl))
                  .map(styleUrl => this._fetch(styleUrl).then((loadedStyle) => {
-                   var stylesheet = this.normalizeStylesheet(
+                   const stylesheet = this.normalizeStylesheet(
                        new CompileStylesheetMetadata({styles: [loadedStyle], moduleUrl: styleUrl}));
                    loadedStylesheets.set(styleUrl, stylesheet);
                    return this._loadMissingExternalStylesheets(
@@ -174,11 +174,11 @@ export class DirectiveNormalizer {
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
-    var allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
-                           .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
+    const allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
+                             .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
 
-    var allStyles = stylesheet.styles.map(style => {
-      var styleWithImports = extractStyleUrls(this._urlResolver, stylesheet.moduleUrl, style);
+    const allStyles = stylesheet.styles.map(style => {
+      const styleWithImports = extractStyleUrls(this._urlResolver, stylesheet.moduleUrl, style);
       allStyleUrls.push(...styleWithImports.styleUrls);
       return styleWithImports.style;
     });
@@ -195,7 +195,7 @@ class TemplatePreparseVisitor implements html.Visitor {
   ngNonBindableStackCount: number = 0;
 
   visitElement(ast: html.Element, context: any): any {
-    var preparsedElement = preparseElement(ast);
+    const preparsedElement = preparseElement(ast);
     switch (preparsedElement.type) {
       case PreparsedElementType.NG_CONTENT:
         if (this.ngNonBindableStackCount === 0) {
@@ -203,7 +203,7 @@ class TemplatePreparseVisitor implements html.Visitor {
         }
         break;
       case PreparsedElementType.STYLE:
-        var textContent = '';
+        let textContent = '';
         ast.children.forEach(child => {
           if (child instanceof html.Text) {
             textContent += child.value;

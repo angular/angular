@@ -287,7 +287,7 @@ export class ShadowCss {
         const parts = m[2].split(',');
         const r: string[] = [];
         for (let i = 0; i < parts.length; i++) {
-          let p = parts[i].trim();
+          const p = parts[i].trim();
           if (!p) break;
           r.push(partReplacer(_polyfillHostNoCombinator, p, m[3]));
         }

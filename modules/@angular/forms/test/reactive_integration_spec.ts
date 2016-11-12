@@ -1826,9 +1826,9 @@ class MyInput implements ControlValueAccessor {
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: AbstractControl) => {
-    var resolve: (result: any) => void;
-    var promise = new Promise(res => { resolve = res; });
-    var res = (c.value == expectedValue) ? null : {'uniqLogin': true};
+    let resolve: (result: any) => void;
+    const promise = new Promise(res => { resolve = res; });
+    const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     resolve(res);
     return promise;
   };

@@ -107,7 +107,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   /** @internal */
   _getOptionId(value: any): string {
-    for (let id of Array.from(this._optionMap.keys())) {
+    for (const id of Array.from(this._optionMap.keys())) {
       if (looseIdentical(this._optionMap.get(id), value)) return id;
     }
     return null;

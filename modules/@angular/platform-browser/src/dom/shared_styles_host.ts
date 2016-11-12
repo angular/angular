@@ -20,7 +20,7 @@ export class SharedStylesHost {
   constructor() {}
 
   addStyles(styles: string[]) {
-    var additions: any[] /** TODO #9100 */ = [];
+    const additions: any[] /** TODO #9100 */ = [];
     styles.forEach(style => {
       if (!this._stylesSet.has(style)) {
         this._stylesSet.add(style);
@@ -45,7 +45,7 @@ export class DomSharedStylesHost extends SharedStylesHost {
   }
   /** @internal */
   _addStylesToHost(styles: string[], host: Node) {
-    for (var i = 0; i < styles.length; i++) {
+    for (let i = 0; i < styles.length; i++) {
       const styleEl = document.createElement('style');
       styleEl.textContent = styles[i];
       host.appendChild(styleEl);

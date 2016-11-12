@@ -9,7 +9,7 @@
 import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/perf_util';
 
 describe('ng1.x largetable benchmark', function() {
-  var URL = 'benchmarks_external/src/largetable/largetable_benchmark.html';
+  const URL = 'benchmarks_external/src/largetable/largetable_benchmark.html';
 
   afterEach(verifyNoBrowserErrors);
 

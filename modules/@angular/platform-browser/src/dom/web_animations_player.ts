@@ -42,8 +42,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._initialized) return;
     this._initialized = true;
 
-    var keyframes = this.keyframes.map(styles => {
-      var formattedKeyframe: {[key: string]: string | number} = {};
+    const keyframes = this.keyframes.map(styles => {
+      const formattedKeyframe: {[key: string]: string | number} = {};
       Object.keys(styles).forEach(prop => {
         const value = styles[prop];
         formattedKeyframe[prop] = value == AUTO_STYLE ? _computeStyle(this.element, prop) : value;

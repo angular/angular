@@ -1169,7 +1169,7 @@ function nodeChildrenAsMap(node: TreeNode<any>) {
 }
 
 function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOutlet {
-  let outlet = outletMap._outlets[route.outlet];
+  const outlet = outletMap._outlets[route.outlet];
   if (!outlet) {
     const componentName = (<any>route.component).name;
     if (route.outlet === PRIMARY_OUTLET) {

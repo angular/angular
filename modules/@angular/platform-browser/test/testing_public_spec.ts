@@ -166,7 +166,7 @@ export function main() {
           it('should allow use of "done"', (done) => {
             inject([FancyService], (service: FancyService) => {
               let count = 0;
-              let id = setInterval(() => {
+              const id = setInterval(() => {
                 count++;
                 if (count > 2) {
                   clearInterval(id);
@@ -201,7 +201,7 @@ export function main() {
     });
 
     describe('using the test injector with modules', () => {
-      let moduleConfig = {
+      const moduleConfig = {
         providers: [FancyService],
         imports: [SomeLibModule],
         declarations: [SomeDirective, SomePipe, CompUsingModuleDirectiveAndPipe],
@@ -221,7 +221,7 @@ export function main() {
 
         it('should use set up directives and pipes', () => {
           const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-          let el = compFixture.debugElement;
+          const el = compFixture.debugElement;
 
           compFixture.detectChanges();
           expect(el.children[0].properties['title']).toBe('transformed someValue');
@@ -257,8 +257,8 @@ export function main() {
            }));
 
         it('should use set up directives and pipes', withModule(moduleConfig, () => {
-             let compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-             let el = compFixture.debugElement;
+             const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+             const el = compFixture.debugElement;
 
              compFixture.detectChanges();
              expect(el.children[0].properties['title']).toBe('transformed someValue');
@@ -278,7 +278,7 @@ export function main() {
 
         it('should allow to createSync components with templateUrl after explicit async compilation',
            () => {
-             let fixture = TestBed.createComponent(CompWithUrlTemplate);
+             const fixture = TestBed.createComponent(CompWithUrlTemplate);
              expect(fixture.nativeElement).toHaveText('from external template\n');
            });
       });
@@ -362,8 +362,8 @@ export function main() {
 
         describe('providers', () => {
           beforeEach(() => {
-            let resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
-                                        .and.returnValue(Promise.resolve('Hello world!'));
+            const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                          .and.returnValue(Promise.resolve('Hello world!'));
             TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
             TestBed.configureCompiler(
                 {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
@@ -372,7 +372,7 @@ export function main() {
           it('should use set up providers', fakeAsync(() => {
                TestBed.compileComponents();
                tick();
-               let compFixture = TestBed.createComponent(CompWithUrlTemplate);
+               const compFixture = TestBed.createComponent(CompWithUrlTemplate);
                expect(compFixture.nativeElement).toHaveText('Hello world!');
              }));
         });
@@ -548,7 +548,7 @@ export function main() {
 
       it('should override a template', async(() => {
            TestBed.overrideComponent(ChildComp, {set: {template: '<span>Mock</span>'}});
-           let componentFixture = TestBed.createComponent(ChildComp);
+           const componentFixture = TestBed.createComponent(ChildComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Mock');
 
@@ -586,7 +586,7 @@ export function main() {
 
       it('should override component dependencies', async(() => {
 
-           let componentFixture = TestBed.createComponent(ParentComp);
+           const componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
          }));

@@ -40,7 +40,7 @@ export function createPureProxy(
     fn: o.Expression, argCount: number, pureProxyProp: o.ReadPropExpr,
     builder: {fields: o.ClassField[], ctorStmts: {push: (stmt: o.Statement) => void}}) {
   builder.fields.push(new o.ClassField(pureProxyProp.name, null));
-  var pureProxyId =
+  const pureProxyId =
       argCount < Identifiers.pureProxies.length ? Identifiers.pureProxies[argCount] : null;
   if (!pureProxyId) {
     throw new Error(`Unsupported number of argument for pure functions: ${argCount}`);

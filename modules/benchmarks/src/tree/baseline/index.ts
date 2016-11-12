@@ -10,7 +10,7 @@ import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
 import {TreeComponent} from './tree';
 
-var tree: TreeComponent;
+let tree: TreeComponent;
 
 function destroyDom() {
   tree.data = emptyTree;

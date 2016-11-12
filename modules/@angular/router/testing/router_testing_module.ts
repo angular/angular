@@ -56,7 +56,7 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
    */
   set stubbedModules(modules: {[path: string]: any}) {
     const res: {[path: string]: any} = {};
-    for (let t of Object.keys(modules)) {
+    for (const t of Object.keys(modules)) {
       res[t] = this.compiler.compileModuleAsync(modules[t]);
     }
     this._stubbedModules = res;

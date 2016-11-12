@@ -12,7 +12,7 @@ import {TreeComponent} from './tree';
 const {patch} = require('incremental-dom');
 
 export function main() {
-  var tree: TreeComponent;
+  let tree: TreeComponent;
 
   function destroyDom() { tree.data = emptyTree; }
 

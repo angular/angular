@@ -12,8 +12,8 @@ import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription
 
 export function main() {
   describe('runner', () => {
-    var injector: ReflectiveInjector;
-    var runner: Runner;
+    let injector: ReflectiveInjector;
+    let runner: Runner;
 
     function createRunner(defaultProviders: any[] = null): Runner {
       if (!defaultProviders) {
@@ -76,7 +76,7 @@ export function main() {
 
     it('should provide Options.EXECUTE',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var execute = () => {};
+         const execute = () => {};
          createRunner().sample({id: 'someId', execute: execute}).then((_) => {
            expect(injector.get(Options.EXECUTE)).toEqual(execute);
            async.done();
@@ -85,7 +85,7 @@ export function main() {
 
     it('should provide Options.PREPARE',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var prepare = () => {};
+         const prepare = () => {};
          createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
            expect(injector.get(Options.PREPARE)).toEqual(prepare);
            async.done();

@@ -53,7 +53,7 @@ export function writeToRenderer(
               .toStmt());
       break;
     case PropertyBindingType.Style:
-      var strValue: o.Expression = renderValue.callMethod('toString', []);
+      let strValue: o.Expression = renderValue.callMethod('toString', []);
       if (isPresent(boundProp.unit)) {
         strValue = strValue.plus(o.literal(boundProp.unit));
       }
@@ -84,8 +84,8 @@ function sanitizedValue(
   if (!securityContextExpression) {
     throw new Error(`internal error, no SecurityContext given ${boundProp.name}`);
   }
-  let ctx = view.prop('viewUtils').prop('sanitizer');
-  let args = [securityContextExpression, renderValue];
+  const ctx = view.prop('viewUtils').prop('sanitizer');
+  const args = [securityContextExpression, renderValue];
   return ctx.callMethod('sanitize', args);
 }
 

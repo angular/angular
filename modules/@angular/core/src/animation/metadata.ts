@@ -183,9 +183,9 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
 export function animate(
     timing: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
                                  null): AnimationAnimateMetadata {
-  var stylesEntry = styles;
+  let stylesEntry = styles;
   if (!isPresent(stylesEntry)) {
-    var EMPTY_STYLE: {[key: string]: string | number} = {};
+    const EMPTY_STYLE: {[key: string]: string | number} = {};
     stylesEntry = new AnimationStyleMetadata([EMPTY_STYLE], 1);
   }
   return new AnimationAnimateMetadata(timing, stylesEntry);
@@ -326,8 +326,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
 export function style(
     tokens: string | {[key: string]: string | number} |
     Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
-  var input: Array<{[key: string]: string | number}|string>;
-  var offset: number = null;
+  let input: Array<{[key: string]: string | number}|string>;
+  let offset: number = null;
   if (typeof tokens === 'string') {
     input = [<string>tokens];
   } else {
@@ -337,7 +337,7 @@ export function style(
       input = [<{[key: string]: string | number}>tokens];
     }
     input.forEach(entry => {
-      var entryOffset = (entry as any /** TODO #9100 */)['offset'];
+      const entryOffset = (entry as any /** TODO #9100 */)['offset'];
       if (isPresent(entryOffset)) {
         offset = offset == null ? parseFloat(entryOffset) : offset;
       }
@@ -564,7 +564,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  */
 export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
     AnimationStateTransitionMetadata {
-  var animationData = Array.isArray(steps) ? new AnimationSequenceMetadata(steps) : steps;
+  const animationData = Array.isArray(steps) ? new AnimationSequenceMetadata(steps) : steps;
   return new AnimationStateTransitionMetadata(stateChangeExpr, animationData);
 }
 

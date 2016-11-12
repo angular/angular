@@ -32,16 +32,16 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
 
 export function main() {
   function makePlayer(): {[key: string]: any} {
-    var someElm = el('<div></div>');
-    var player = new ExtendedWebAnimationsPlayer(someElm, [], {});
+    const someElm = el('<div></div>');
+    const player = new ExtendedWebAnimationsPlayer(someElm, [], {});
     player.init();
     return {'captures': player.domPlayer.captures, 'player': player};
   }
 
   describe('WebAnimationsPlayer', () => {
-    var player: any /** TODO #9100 */, captures: any /** TODO #9100 */;
+    let player: any /** TODO #9100 */, captures: any /** TODO #9100 */;
     beforeEach(() => {
-      var newPlayer = makePlayer();
+      const newPlayer = makePlayer();
       captures = <{[key: string]: any}>newPlayer['captures'];
       player = <WebAnimationsPlayer>newPlayer['player'];
     });
@@ -68,8 +68,8 @@ export function main() {
        () => { expect(captures['onfinish'].length).toEqual(1); });
 
     it('should trigger the subscribe functions when complete', () => {
-      var count = 0;
-      var method = () => { count++; };
+      let count = 0;
+      const method = () => { count++; };
 
       player.onDone(method);
       player.onDone(method);
@@ -81,7 +81,7 @@ export function main() {
     });
 
     it('should finish right away when finish is called directly', () => {
-      var completed = false;
+      let completed = false;
       player.onDone(() => completed = true);
       expect(completed).toEqual(false);
 
@@ -95,15 +95,15 @@ export function main() {
 
     it('should trigger finish when destroy is called if the animation has not finished already',
        () => {
-         var count = 0;
-         var method = () => { count++; };
+         let count = 0;
+         const method = () => { count++; };
 
          player.onDone(method);
          expect(count).toEqual(0);
          player.destroy();
          expect(count).toEqual(1);
 
-         var player2 = makePlayer()['player'];
+         const player2 = makePlayer()['player'];
          player2.onDone(method);
          expect(count).toEqual(1);
          player2.finish();
@@ -119,11 +119,11 @@ export function main() {
       expect(captures['finish'].length).toEqual(1);
       expect(captures['cancel'].length).toEqual(0);
 
-      var next = makePlayer();
-      var player2 = next['player'];
+      const next = makePlayer();
+      const player2 = next['player'];
       player2.parentPlayer = new MockAnimationPlayer();
 
-      var captures2 = next['captures'];
+      const captures2 = next['captures'];
       captures2['cancel'] = [];
 
       player2.finish();
@@ -132,7 +132,7 @@ export function main() {
     });
 
     it('should run the onStart method when started but only once', () => {
-      var calls = 0;
+      let calls = 0;
       player.onStart(() => calls++);
       expect(calls).toEqual(0);
       player.play();

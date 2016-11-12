@@ -9,9 +9,9 @@
 import {DirectiveResolver} from '@angular/compiler';
 import {Directive, Type} from '@angular/core';
 
-var COMPONENT_SELECTOR = /^[\w|-]*$/;
-var SKEWER_CASE = /-(\w)/g;
-var directiveResolver = new DirectiveResolver();
+const COMPONENT_SELECTOR = /^[\w|-]*$/;
+const SKEWER_CASE = /-(\w)/g;
+const directiveResolver = new DirectiveResolver();
 
 export interface AttrProp {
   prop: string;
@@ -32,8 +32,8 @@ export interface ComponentInfo {
 }
 
 export function getComponentInfo(type: Type<any>): ComponentInfo {
-  var resolvedMetadata: Directive = directiveResolver.resolve(type);
-  var selector = resolvedMetadata.selector;
+  const resolvedMetadata: Directive = directiveResolver.resolve(type);
+  let selector = resolvedMetadata.selector;
   if (!selector.match(COMPONENT_SELECTOR)) {
     throw new Error('Only selectors matching element names are supported, got: ' + selector);
   }
@@ -48,13 +48,13 @@ export function getComponentInfo(type: Type<any>): ComponentInfo {
 }
 
 export function parseFields(names: string[]): AttrProp[] {
-  var attrProps: AttrProp[] = [];
+  const attrProps: AttrProp[] = [];
   if (names) {
-    for (var i = 0; i < names.length; i++) {
-      var parts = names[i].split(':');
-      var prop = parts[0].trim();
-      var attr = (parts[1] || parts[0]).trim();
-      var capitalAttr = attr.charAt(0).toUpperCase() + attr.substr(1);
+    for (let i = 0; i < names.length; i++) {
+      const parts = names[i].split(':');
+      const prop = parts[0].trim();
+      const attr = (parts[1] || parts[0]).trim();
+      const capitalAttr = attr.charAt(0).toUpperCase() + attr.substr(1);
       attrProps.push(<AttrProp>{
         prop: prop,
         attr: attr,

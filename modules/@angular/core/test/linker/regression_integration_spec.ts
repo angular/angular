@@ -106,33 +106,33 @@ function declareTests({useJit}: {useJit: boolean}) {
       }
 
       it('should support providers with an OpaqueToken that contains a `.` in the name', () => {
-        var token = new OpaqueToken('a.b');
-        var tokenValue = 1;
+        const token = new OpaqueToken('a.b');
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
       it('should support providers with string token with a `.` in it', () => {
-        var token = 'a.b';
-        var tokenValue = 1;
+        const token = 'a.b';
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
       it('should support providers with an anonymous function', () => {
-        var token = () => true;
-        var tokenValue = 1;
+        const token = () => true;
+        const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
       it('should support providers with an OpaqueToken that has a StringMap as value', () => {
-        var token1 = new OpaqueToken('someToken');
-        var token2 = new OpaqueToken('someToken');
-        var tokenValue1 = {'a': 1};
-        var tokenValue2 = {'a': 1};
+        const token1 = new OpaqueToken('someToken');
+        const token2 = new OpaqueToken('someToken');
+        const tokenValue1 = {'a': 1};
+        const tokenValue2 = {'a': 1};
         const injector = createInjector(
             [{provide: token1, useValue: tokenValue1}, {provide: token2, useValue: tokenValue2}]);
 

@@ -91,12 +91,12 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
 ];
 
 function initializeGenericWorkerRenderer(injector: Injector) {
-  var bus = injector.get(MessageBus);
-  let zone = injector.get(NgZone);
+  const bus = injector.get(MessageBus);
+  const zone = injector.get(NgZone);
   bus.attachToZone(zone);
 
   // initialize message services after the bus has been created
-  let services = injector.get(WORKER_UI_STARTABLE_MESSAGING_SERVICE);
+  const services = injector.get(WORKER_UI_STARTABLE_MESSAGING_SERVICE);
   zone.runGuarded(() => { services.forEach((svc: any) => { svc.start(); }); });
 }
 
@@ -108,7 +108,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
   return () => {
     BrowserDomAdapter.makeCurrent();
     BrowserGetTestability.init();
-    var scriptUri: string;
+    let scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
     } catch (e) {
@@ -116,7 +116,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
           'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
     }
 
-    let instance = injector.get(WebWorkerInstance);
+    const instance = injector.get(WebWorkerInstance);
     spawnWebWorker(scriptUri, instance);
 
     initializeGenericWorkerRenderer(injector);
@@ -145,10 +145,10 @@ function createNgZone(): NgZone {
  * Spawns a new class and initializes the WebWorkerInstance
  */
 function spawnWebWorker(uri: string, instance: WebWorkerInstance): void {
-  var webWorker: Worker = new Worker(uri);
-  var sink = new PostMessageBusSink(webWorker);
-  var source = new PostMessageBusSource(webWorker);
-  var bus = new PostMessageBus(sink, source);
+  const webWorker: Worker = new Worker(uri);
+  const sink = new PostMessageBusSink(webWorker);
+  const source = new PostMessageBusSource(webWorker);
+  const bus = new PostMessageBus(sink, source);
 
   instance.init(webWorker, bus);
 }

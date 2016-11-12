@@ -35,7 +35,7 @@ declare var WorkerGlobalScope: any /** TODO #9100 */;
 // the global "global" var for now.
 declare var global: any /** TODO #9100 */;
 
-var globalScope: BrowserNodeGlobal;
+let globalScope: BrowserNodeGlobal;
 if (typeof window === 'undefined') {
   if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
     // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
@@ -154,7 +154,7 @@ export function setValueOnPath(global: any, path: string, value: any) {
 }
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
-declare let Symbol: any;
+declare const Symbol: any;
 let _symbolIterator: any = null;
 export function getSymbolIterator(): string|symbol {
   if (!_symbolIterator) {
@@ -164,7 +164,7 @@ export function getSymbolIterator(): string|symbol {
       // es6-shim specific logic
       const keys = Object.getOwnPropertyNames(Map.prototype);
       for (let i = 0; i < keys.length; ++i) {
-        let key = keys[i];
+        const key = keys[i];
         if (key !== 'entries' && key !== 'size' &&
             (Map as any).prototype[key] === Map.prototype['entries']) {
           _symbolIterator = key;

@@ -23,7 +23,7 @@ export class NumberFormatter {
         currency?: string,
         currencyAsSymbol?: boolean
       } = {}): string {
-    let options: Intl.NumberFormatOptions = {
+    const options: Intl.NumberFormatOptions = {
       minimumIntegerDigits,
       minimumFractionDigits,
       maximumFractionDigits,
@@ -180,7 +180,7 @@ function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): DateFormatterFn
 const DATE_FORMATTER_CACHE = new Map<string, string[]>();
 
 function dateFormatter(format: string, date: Date, locale: string): string {
-  let fn = PATTERN_ALIASES[format];
+  const fn = PATTERN_ALIASES[format];
 
   if (fn) return fn(date, locale);
 
@@ -206,7 +206,7 @@ function dateFormatter(format: string, date: Date, locale: string): string {
   }
 
   return parts.reduce((text, part) => {
-    let fn = DATE_FORMATS[part];
+    const fn = DATE_FORMATS[part];
     return text + (fn ? fn(date, locale) : partToTime(part));
   }, '');
 }

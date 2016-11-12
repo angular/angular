@@ -118,7 +118,7 @@ export class NgSwitch {
   private _updateDefaultCases(useDefault: boolean) {
     if (this._defaultViews && useDefault !== this._defaultUsed) {
       this._defaultUsed = useDefault;
-      for (var i = 0; i < this._defaultViews.length; i++) {
+      for (let i = 0; i < this._defaultViews.length; i++) {
         const defaultView = this._defaultViews[i];
         defaultView.enforceState(useDefault);
       }

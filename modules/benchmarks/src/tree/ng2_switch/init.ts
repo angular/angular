@@ -14,8 +14,8 @@ import {buildTree, emptyTree} from '../util';
 import {AppModule, TreeComponent} from './tree';
 
 export function init(moduleRef: NgModuleRef<AppModule>) {
-  var tree: TreeComponent;
-  var appRef: ApplicationRef;
+  let tree: TreeComponent;
+  let appRef: ApplicationRef;
 
   function destroyDom() {
     tree.data = emptyTree;

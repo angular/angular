@@ -12,7 +12,7 @@ import {MeasureValues, ReflectiveInjector, SizeValidator} from '../../index';
 
 export function main() {
   describe('size validator', () => {
-    var validator: SizeValidator;
+    let validator: SizeValidator;
 
     function createValidator(size: number) {
       validator =
@@ -35,7 +35,7 @@ export function main() {
 
     it('should return the last sampleSize runs when it has at least the given size', () => {
       createValidator(2);
-      var sample = [mv(0, 0, {'a': 1}), mv(1, 1, {'b': 2}), mv(2, 2, {'c': 3})];
+      const sample = [mv(0, 0, {'a': 1}), mv(1, 1, {'b': 2}), mv(2, 2, {'c': 3})];
       expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
       expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });

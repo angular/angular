@@ -54,18 +54,18 @@ export function generateErrorMessage(
 
 export function findProblemCode(
     input: string, errorValue: string, index: number, column: number): string {
-  var endOfProblemLine = index;
-  var current = charCode(input, index);
+  let endOfProblemLine = index;
+  let current = charCode(input, index);
   while (current > 0 && !isNewline(current)) {
     current = charCode(input, ++endOfProblemLine);
   }
-  var choppedString = input.substring(0, endOfProblemLine);
-  var pointerPadding = '';
-  for (var i = 0; i < column; i++) {
+  const choppedString = input.substring(0, endOfProblemLine);
+  let pointerPadding = '';
+  for (let i = 0; i < column; i++) {
     pointerPadding += ' ';
   }
-  var pointerString = '';
-  for (var i = 0; i < errorValue.length; i++) {
+  let pointerString = '';
+  for (let i = 0; i < errorValue.length; i++) {
     pointerString += '^';
   }
   return choppedString + '\n' + pointerPadding + pointerString + '\n';
@@ -185,16 +185,16 @@ export class CssScanner {
   }
 
   consume(type: CssTokenType, value: string = null): LexedCssResult {
-    var mode = this._currentMode;
+    const mode = this._currentMode;
 
     this.setMode(_trackWhitespace(mode) ? CssLexerMode.ALL_TRACK_WS : CssLexerMode.ALL);
 
-    var previousIndex = this.index;
-    var previousLine = this.line;
-    var previousColumn = this.column;
+    const previousIndex = this.index;
+    const previousLine = this.line;
+    const previousColumn = this.column;
 
-    var next: CssToken;
-    var output = this.scan();
+    let next: CssToken;
+    const output = this.scan();
     if (isPresent(output)) {
       // just incase the inner scan method returned an error
       if (isPresent(output.error)) {
@@ -209,7 +209,7 @@ export class CssScanner {
       next = new CssToken(this.index, this.column, this.line, CssTokenType.EOF, 'end of file');
     }
 
-    var isMatchingType: boolean = false;
+    let isMatchingType: boolean = false;
     if (type == CssTokenType.IdentifierOrNumber) {
       // TODO (matsko): implement array traversal for lookup here
       isMatchingType = next.type == CssTokenType.Number || next.type == CssTokenType.Identifier;
@@ -221,9 +221,9 @@ export class CssScanner {
     // mode so that the parser can recover...
     this.setMode(mode);
 
-    var error: CssScannerError = null;
+    let error: CssScannerError = null;
     if (!isMatchingType || (isPresent(value) && value != next.strValue)) {
-      var errorMessage =
+      let errorMessage =
           CssTokenType[next.type] + ' does not match expected ' + CssTokenType[type] + ' value';
 
       if (isPresent(value)) {
@@ -241,15 +241,15 @@ export class CssScanner {
 
 
   scan(): LexedCssResult {
-    var trackWS = _trackWhitespace(this._currentMode);
+    const trackWS = _trackWhitespace(this._currentMode);
     if (this.index == 0 && !trackWS) {  // first scan
       this.consumeWhitespace();
     }
 
-    var token = this._scan();
+    const token = this._scan();
     if (token == null) return null;
 
-    var error = this._currentError;
+    const error = this._currentError;
     this._currentError = null;
 
     if (!trackWS) {
@@ -260,14 +260,14 @@ export class CssScanner {
 
   /** @internal */
   _scan(): CssToken {
-    var peek = this.peek;
-    var peekPeek = this.peekPeek;
+    let peek = this.peek;
+    let peekPeek = this.peekPeek;
     if (peek == chars.$EOF) return null;
 
     if (isCommentStart(peek, peekPeek)) {
       // even if comments are not tracked we still lex the
       // comment so we can move the pointer forward
-      var commentToken = this.scanComment();
+      const commentToken = this.scanComment();
       if (this._trackComments) {
         return commentToken;
       }
@@ -290,9 +290,9 @@ export class CssScanner {
       return this.scanCssValueFunction();
     }
 
-    var isModifier = peek == chars.$PLUS || peek == chars.$MINUS;
-    var digitA = isModifier ? false : chars.isDigit(peek);
-    var digitB = chars.isDigit(peekPeek);
+    const isModifier = peek == chars.$PLUS || peek == chars.$MINUS;
+    const digitA = isModifier ? false : chars.isDigit(peek);
+    const digitB = chars.isDigit(peekPeek);
     if (digitA || (isModifier && (peekPeek == chars.$PERIOD || digitB)) ||
         (peek == chars.$PERIOD && digitB)) {
       return this.scanNumber();
@@ -319,9 +319,9 @@ export class CssScanner {
       return null;
     }
 
-    var start = this.index;
-    var startingColumn = this.column;
-    var startingLine = this.line;
+    const start = this.index;
+    const startingColumn = this.column;
+    const startingLine = this.line;
 
     this.advance();  // /
     this.advance();  // *
@@ -336,18 +336,18 @@ export class CssScanner {
     this.advance();  // *
     this.advance();  // /
 
-    var str = this.input.substring(start, this.index);
+    const str = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, startingLine, CssTokenType.Comment, str);
   }
 
   scanWhitespace(): CssToken {
-    var start = this.index;
-    var startingColumn = this.column;
-    var startingLine = this.line;
+    const start = this.index;
+    const startingColumn = this.column;
+    const startingLine = this.line;
     while (chars.isWhitespace(this.peek) && this.peek != chars.$EOF) {
       this.advance();
     }
-    var str = this.input.substring(start, this.index);
+    const str = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, startingLine, CssTokenType.Whitespace, str);
   }
 
@@ -357,11 +357,11 @@ export class CssScanner {
       return null;
     }
 
-    var target = this.peek;
-    var start = this.index;
-    var startingColumn = this.column;
-    var startingLine = this.line;
-    var previous = target;
+    const target = this.peek;
+    const start = this.index;
+    const startingColumn = this.column;
+    const startingLine = this.line;
+    let previous = target;
     this.advance();
 
     while (!isCharMatch(target, previous, this.peek)) {
@@ -377,17 +377,17 @@ export class CssScanner {
     }
     this.advance();
 
-    var str = this.input.substring(start, this.index);
+    const str = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, startingLine, CssTokenType.String, str);
   }
 
   scanNumber(): CssToken {
-    var start = this.index;
-    var startingColumn = this.column;
+    const start = this.index;
+    const startingColumn = this.column;
     if (this.peek == chars.$PLUS || this.peek == chars.$MINUS) {
       this.advance();
     }
-    var periodUsed = false;
+    let periodUsed = false;
     while (chars.isDigit(this.peek) || this.peek == chars.$PERIOD) {
       if (this.peek == chars.$PERIOD) {
         if (periodUsed) {
@@ -397,7 +397,7 @@ export class CssScanner {
       }
       this.advance();
     }
-    var strValue = this.input.substring(start, this.index);
+    const strValue = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, this.line, CssTokenType.Number, strValue);
   }
 
@@ -407,19 +407,19 @@ export class CssScanner {
       return null;
     }
 
-    var start = this.index;
-    var startingColumn = this.column;
+    const start = this.index;
+    const startingColumn = this.column;
     while (isIdentifierPart(this.peek)) {
       this.advance();
     }
-    var strValue = this.input.substring(start, this.index);
+    const strValue = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);
   }
 
   scanCssValueFunction(): CssToken {
-    var start = this.index;
-    var startingColumn = this.column;
-    var parenBalance = 1;
+    const start = this.index;
+    const startingColumn = this.column;
+    let parenBalance = 1;
     while (this.peek != chars.$EOF && parenBalance > 0) {
       this.advance();
       if (this.peek == chars.$LPAREN) {
@@ -428,20 +428,20 @@ export class CssScanner {
         parenBalance--;
       }
     }
-    var strValue = this.input.substring(start, this.index);
+    const strValue = this.input.substring(start, this.index);
     return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);
   }
 
   scanCharacter(): CssToken {
-    var start = this.index;
-    var startingColumn = this.column;
+    const start = this.index;
+    const startingColumn = this.column;
     if (this.assertCondition(
             isValidCssCharacter(this.peek, this._currentMode),
             charStr(this.peek) + ' is not a valid CSS character')) {
       return null;
     }
 
-    var c = this.input.substring(start, start + 1);
+    const c = this.input.substring(start, start + 1);
     this.advance();
 
     return new CssToken(start, startingColumn, this.line, CssTokenType.Character, c);
@@ -452,12 +452,12 @@ export class CssScanner {
       return null;
     }
 
-    var start = this.index;
-    var startingColumn = this.column;
+    const start = this.index;
+    const startingColumn = this.column;
     this.advance();
     if (isIdentifierStart(this.peek, this.peekPeek)) {
-      var ident = this.scanIdentifier();
-      var strValue = '@' + ident.strValue;
+      const ident = this.scanIdentifier();
+      const strValue = '@' + ident.strValue;
       return new CssToken(start, startingColumn, this.line, CssTokenType.AtKeyword, strValue);
     } else {
       return this.scanCharacter();
@@ -473,12 +473,12 @@ export class CssScanner {
   }
 
   error(message: string, errorTokenValue: string = null, doNotAdvance: boolean = false): CssToken {
-    var index: number = this.index;
-    var column: number = this.column;
-    var line: number = this.line;
+    const index: number = this.index;
+    const column: number = this.column;
+    const line: number = this.line;
     errorTokenValue = errorTokenValue || String.fromCharCode(this.peek);
-    var invalidToken = new CssToken(index, column, line, CssTokenType.Invalid, errorTokenValue);
-    var errorMessage =
+    const invalidToken = new CssToken(index, column, line, CssTokenType.Invalid, errorTokenValue);
+    const errorMessage =
         generateErrorMessage(this.input, message, errorTokenValue, index, line, column);
     if (!doNotAdvance) {
       this.advance();
@@ -501,7 +501,7 @@ function isCommentEnd(code: number, next: number): boolean {
 }
 
 function isStringStart(code: number, next: number): boolean {
-  var target = code;
+  let target = code;
   if (target == chars.$BACKSLASH) {
     target = next;
   }
@@ -509,7 +509,7 @@ function isStringStart(code: number, next: number): boolean {
 }
 
 function isIdentifierStart(code: number, next: number): boolean {
-  var target = code;
+  let target = code;
   if (target == chars.$MINUS) {
     target = next;
   }

@@ -40,7 +40,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
     this.context = context || new NodeReflectorHostContext(compilerHost);
-    var genPath: string = path.relative(this.basePath, this.genDir);
+    const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
 
@@ -67,13 +67,13 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   };
 
   protected normalizeAssetUrl(url: string): string {
-    let assetUrl = AssetUrl.parse(url);
+    const assetUrl = AssetUrl.parse(url);
     const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
     return this.getCanonicalFileName(path);
   }
 
   protected resolveAssetUrl(url: string, containingFile: string): string {
-    let assetUrl = this.normalizeAssetUrl(url);
+    const assetUrl = this.normalizeAssetUrl(url);
     if (assetUrl) {
       return this.getCanonicalFileName(this.resolve(assetUrl, containingFile));
     }
@@ -110,7 +110,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     // drop extension
     importedFile = importedFile.replace(EXT, '');
 
-    var nodeModulesIndex = importedFile.indexOf(NODE_MODULES);
+    const nodeModulesIndex = importedFile.indexOf(NODE_MODULES);
     const importModule = nodeModulesIndex === -1 ?
         null :
         importedFile.substring(nodeModulesIndex + NODE_MODULES.length);
@@ -141,7 +141,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   private dotRelative(from: string, to: string): string {
-    var rPath: string = path.relative(from, to).replace(/\\/g, '/');
+    const rPath: string = path.relative(from, to).replace(/\\/g, '/');
     return rPath.startsWith('.') ? rPath : './' + rPath;
   }
 
@@ -149,7 +149,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * Moves the path into `genDir` folder while preserving the `node_modules` directory.
    */
   private rewriteGenDirPath(filepath: string) {
-    var nodeModulesIndex = filepath.indexOf(NODE_MODULES);
+    const nodeModulesIndex = filepath.indexOf(NODE_MODULES);
     if (nodeModulesIndex !== -1) {
       // If we are in node_modulse, transplant them into `genDir`.
       return path.join(this.genDir, filepath.substring(nodeModulesIndex));
@@ -172,7 +172,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
     }
 
     try {
-      let assetUrl = this.normalizeAssetUrl(module);
+      const assetUrl = this.normalizeAssetUrl(module);
       if (assetUrl) {
         module = assetUrl;
       }
@@ -288,7 +288,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
       }
       return resolvedModulePath;
     };
-    let metadata = this.getResolverMetadata(filePath);
+    const metadata = this.getResolverMetadata(filePath);
     if (metadata) {
       // If we have metadata for the symbol, this is the original exporting location.
       if (metadata.metadata[symbolName]) {

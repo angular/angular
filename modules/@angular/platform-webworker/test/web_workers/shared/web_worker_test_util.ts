@@ -20,13 +20,13 @@ import {MockEventEmitter} from './mock_event_emitter';
  * Such that whatever goes into one's sink comes out the others source.
  */
 export function createPairedMessageBuses(): PairedMessageBuses {
-  var firstChannels: {[key: string]: MockEventEmitter<any>} = {};
-  var workerMessageBusSink = new MockMessageBusSink(firstChannels);
-  var uiMessageBusSource = new MockMessageBusSource(firstChannels);
+  const firstChannels: {[key: string]: MockEventEmitter<any>} = {};
+  const workerMessageBusSink = new MockMessageBusSink(firstChannels);
+  const uiMessageBusSource = new MockMessageBusSource(firstChannels);
 
-  var secondChannels: {[key: string]: MockEventEmitter<any>} = {};
-  var uiMessageBusSink = new MockMessageBusSink(secondChannels);
-  var workerMessageBusSource = new MockMessageBusSource(secondChannels);
+  const secondChannels: {[key: string]: MockEventEmitter<any>} = {};
+  const uiMessageBusSink = new MockMessageBusSink(secondChannels);
+  const workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
   return new PairedMessageBuses(
       new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
@@ -48,9 +48,9 @@ export function expectBrokerCall(
       expect(args.args.length).toEqual(vals.length);
       vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
     }
-    var promise: Promise<any>|void = null;
+    let promise: Promise<any>|void = null;
     if (isPresent(handler)) {
-      let givenValues = args.args.map((arg) => arg.value);
+      const givenValues = args.args.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {

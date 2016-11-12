@@ -74,7 +74,7 @@ export class MetadataCollector {
     }
 
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
-      let result: ClassMetadata = {__symbolic: 'class'};
+      const result: ClassMetadata = {__symbolic: 'class'};
 
       function getDecorators(decorators: ts.Decorator[]): MetadataSymbolicExpression[] {
         if (decorators && decorators.length)
@@ -102,7 +102,7 @@ export class MetadataCollector {
       let members: MetadataMap = null;
       function recordMember(name: string, metadata: MemberMetadata) {
         if (!members) members = {};
-        let data = members.hasOwnProperty(name) ? members[name] : [];
+        const data = members.hasOwnProperty(name) ? members[name] : [];
         data.push(metadata);
         members[name] = data;
       }
@@ -279,7 +279,7 @@ export class MetadataCollector {
         case ts.SyntaxKind.EnumDeclaration:
           if (node.flags & ts.NodeFlags.Export) {
             const enumDeclaration = <ts.EnumDeclaration>node;
-            let enumValueHolder: {[name: string]: MetadataValue} = {};
+            const enumValueHolder: {[name: string]: MetadataValue} = {};
             const enumName = enumDeclaration.name.text;
             let nextDefaultValue: MetadataValue = 0;
             let writtenMembers = 0;
@@ -321,9 +321,9 @@ export class MetadataCollector {
           break;
         case ts.SyntaxKind.VariableStatement:
           const variableStatement = <ts.VariableStatement>node;
-          for (let variableDeclaration of variableStatement.declarationList.declarations) {
+          for (const variableDeclaration of variableStatement.declarationList.declarations) {
             if (variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
-              let nameNode = <ts.Identifier>variableDeclaration.name;
+              const nameNode = <ts.Identifier>variableDeclaration.name;
               let varValue: MetadataValue;
               if (variableDeclaration.initializer) {
                 varValue = evaluator.evaluateNode(variableDeclaration.initializer);
@@ -530,7 +530,7 @@ function validateMetadata(
       const node = nodeMap.get(entry);
       if (shouldReportNode(node)) {
         if (node) {
-          let {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+          const {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
           throw new Error(
               `${sourceFile.fileName}:${line + 1}:${character + 1}: Error encountered in metadata generated for exported symbol '${name}': \n ${e.message}`);
         }
@@ -543,7 +543,7 @@ function validateMetadata(
 
 // Collect parameter names from a function.
 function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
-  let result: string[] = [];
+  const result: string[] = [];
 
   function addNamesOf(name: ts.Identifier | ts.BindingPattern) {
     if (name.kind == ts.SyntaxKind.Identifier) {
@@ -551,13 +551,13 @@ function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
       result.push(identifier.text);
     } else {
       const bindingPattern = <ts.BindingPattern>name;
-      for (let element of bindingPattern.elements) {
+      for (const element of bindingPattern.elements) {
         addNamesOf(element.name);
       }
     }
   }
 
-  for (let parameter of parameters) {
+  for (const parameter of parameters) {
     addNamesOf(parameter.name);
   }
 

@@ -66,15 +66,15 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
 
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            fixture.detectChanges();
            flushMicrotasks();
 
            expect(driver.log.length).toEqual(1);
 
-           var keyframes2 = driver.log[0]['keyframeLookup'];
+           const keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
            expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
            expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
@@ -95,8 +95,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
 
            cmp.exp = true;
            fixture.detectChanges();
@@ -108,7 +108,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(driver.log.length).toEqual(1);
 
-           var keyframes2 = driver.log[0]['keyframeLookup'];
+           const keyframes2 = driver.log[0]['keyframeLookup'];
            expect(keyframes2.length).toEqual(2);
            expect(keyframes2[0]).toEqual([0, {'opacity': '1'}]);
            expect(keyframes2[1]).toEqual([1, {'opacity': '0'}]);
@@ -134,8 +134,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
                const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-               let fixture = TestBed.createComponent(DummyIfCmp);
-               var cmp = fixture.componentInstance;
+               const fixture = TestBed.createComponent(DummyIfCmp);
+               const cmp = fixture.componentInstance;
                cmp.exp = 'state1';
                fixture.detectChanges();
 
@@ -143,15 +143,15 @@ function declareTests({useJit}: {useJit: boolean}) {
 
                expect(driver.log.length).toEqual(1);
 
-               var animation1 = driver.log[0];
+               const animation1 = driver.log[0];
                expect(animation1['duration']).toEqual(500);
                expect(animation1['delay']).toEqual(1000);
                expect(animation1['easing']).toEqual('ease-out');
 
-               var startingStyles = animation1['startingStyles'];
+               const startingStyles = animation1['startingStyles'];
                expect(startingStyles).toEqual({'backgroundColor': 'red'});
 
-               var kf = animation1['keyframeLookup'];
+               const kf = animation1['keyframeLookup'];
                expect(kf[0]).toEqual([0, {'backgroundColor': 'red'}]);
                expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
              }));
@@ -174,14 +174,14 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
              cmp.exp = true;
              fixture.detectChanges();
 
              expect(driver.log.length).toEqual(1);
 
-             var animation = driver.log[0];
+             const animation = driver.log[0];
              expect(animation['duration']).toEqual(500);
            }));
 
@@ -198,8 +198,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
              cmp.exp = true;
              fixture.detectChanges();
 
@@ -210,7 +210,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              expect(driver.log.length).toEqual(1);
 
-             var animation = driver.log[0];
+             const animation = driver.log[0];
              expect(animation['duration']).toEqual(999);
            }));
 
@@ -228,9 +228,9 @@ function declareTests({useJit}: {useJit: boolean}) {
                }
              });
 
-             var message = '';
+             let message = '';
              try {
-               let fixture = TestBed.createComponent(DummyIfCmp);
+               const fixture = TestBed.createComponent(DummyIfCmp);
              } catch (e) {
                message = e.message;
              }
@@ -257,13 +257,13 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            fixture.detectChanges();
            flushMicrotasks();
 
-           var result = driver.log.pop();
+           let result = driver.log.pop();
            expect(result['duration']).toEqual(500);
            expect(result['startingStyles']).toEqual({'opacity': '0'});
            expect(result['keyframeLookup']).toEqual([[0, {'opacity': '0'}], [1, {'opacity': '1'}]]);
@@ -307,17 +307,17 @@ function declareTests({useJit}: {useJit: boolean}) {
           it('should normalize all CSS style properties to camelCase during compile time if a DOM schema is used',
              fakeAsync(() => {
                const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-               let fixture = TestBed.createComponent(DummyIfCmp);
-               var cmp = fixture.componentInstance;
+               const fixture = TestBed.createComponent(DummyIfCmp);
+               const cmp = fixture.componentInstance;
                cmp.exp = true;
                fixture.detectChanges();
                flushMicrotasks();
 
-               var result = driver.log.pop();
-               var styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
-               var styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
+               const result = driver.log.pop();
+               const styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
+               const styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
 
-               var expectedProps = ['WebkitBorderRadius', 'borderWidth', 'height', 'zIndex'];
+               const expectedProps = ['WebkitBorderRadius', 'borderWidth', 'height', 'zIndex'];
                expect(styleProps1)
                    .toEqual(expectedProps);  // the start/end styles are always balanced
                expect(styleProps2).toEqual(expectedProps);
@@ -326,19 +326,19 @@ function declareTests({useJit}: {useJit: boolean}) {
           it('should normalize all dimensional CSS style values to `px` values if the value is a number',
              fakeAsync(() => {
                const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-               let fixture = TestBed.createComponent(DummyIfCmp);
-               var cmp = fixture.componentInstance;
+               const fixture = TestBed.createComponent(DummyIfCmp);
+               const cmp = fixture.componentInstance;
                cmp.exp = true;
                fixture.detectChanges();
                flushMicrotasks();
 
-               var result = driver.log.pop();
+               const result = driver.log.pop();
 
-               var styleVals1 = result['keyframeLookup'][0][1];
+               const styleVals1 = result['keyframeLookup'][0][1];
                expect(styleVals1['zIndex']).toEqual('20');
                expect(styleVals1['height']).toEqual('200px');
 
-               var styleVals2 = result['keyframeLookup'][1][1];
+               const styleVals2 = result['keyframeLookup'][1][1];
                expect(styleVals2['borderWidth']).toEqual('10px');
                expect(styleVals2['height']).toEqual('111px');
              }));
@@ -368,17 +368,18 @@ function declareTests({useJit}: {useJit: boolean}) {
             it('should not normalize any CSS style properties to camelCase during compile time if a DOM schema is used',
                fakeAsync(() => {
                  const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-                 let fixture = TestBed.createComponent(DummyIfCmp);
-                 var cmp = fixture.componentInstance;
+                 const fixture = TestBed.createComponent(DummyIfCmp);
+                 const cmp = fixture.componentInstance;
                  cmp.exp = true;
                  fixture.detectChanges();
                  flushMicrotasks();
 
-                 var result = driver.log.pop();
-                 var styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
-                 var styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
+                 const result = driver.log.pop();
+                 const styleProps1 = Object.keys(result['keyframeLookup'][0][1]).sort();
+                 const styleProps2 = Object.keys(result['keyframeLookup'][1][1]).sort();
 
-                 var expectedProps = ['-webkit-border-radius', 'border-width', 'height', 'z-index'];
+                 const expectedProps =
+                     ['-webkit-border-radius', 'border-width', 'height', 'z-index'];
                  expect(styleProps1)
                      .toEqual(expectedProps);  // the start/end styles are always balanced
                  expect(styleProps2).toEqual(expectedProps);
@@ -387,19 +388,19 @@ function declareTests({useJit}: {useJit: boolean}) {
             it('should not normalize nay dimensional CSS style values to `px` values if the value is a number',
                fakeAsync(() => {
                  const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-                 let fixture = TestBed.createComponent(DummyIfCmp);
-                 var cmp = fixture.componentInstance;
+                 const fixture = TestBed.createComponent(DummyIfCmp);
+                 const cmp = fixture.componentInstance;
                  cmp.exp = true;
                  fixture.detectChanges();
                  flushMicrotasks();
 
-                 var result = driver.log.pop();
+                 const result = driver.log.pop();
 
-                 var styleVals1 = result['keyframeLookup'][0][1];
+                 const styleVals1 = result['keyframeLookup'][0][1];
                  expect(styleVals1['z-index']).toEqual('20');
                  expect(styleVals1['height']).toEqual('200px');
 
-                 var styleVals2 = result['keyframeLookup'][1][1];
+                 const styleVals2 = result['keyframeLookup'][1][1];
                  expect(styleVals2['border-width']).toEqual('10px');
                  expect(styleVals2['height']).toEqual(111);
                }));
@@ -431,8 +432,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            fixture.detectChanges();
 
@@ -440,24 +441,24 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(driver.log.length).toEqual(2);
 
-           var animation1 = driver.log[0];
+           const animation1 = driver.log[0];
            expect(animation1['duration']).toEqual(999);
            expect(animation1['delay']).toEqual(0);
            expect(animation1['easing']).toEqual(null);
            expect(animation1['startingStyles'])
                .toEqual({'background': 'gold', 'width': '100px', 'height': '111px'});
 
-           var keyframes1 = animation1['keyframeLookup'];
+           const keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'background': 'gold', 'width': '100px'}]);
            expect(keyframes1[1]).toEqual([1, {'background': 'blue', 'width': '200px'}]);
 
-           var animation2 = driver.log[1];
+           const animation2 = driver.log[1];
            expect(animation2['duration']).toEqual(999);
            expect(animation2['delay']).toEqual(0);
            expect(animation2['easing']).toEqual(null);
            expect(animation2['startingStyles']).toEqual({'opacity': '1', 'borderWidth': '100px'});
 
-           var keyframes2 = animation2['keyframeLookup'];
+           const keyframes2 = animation2['keyframeLookup'];
            expect(keyframes2[0]).toEqual([
              0, {'opacity': '1', 'height': '111px', 'borderWidth': '100px'}
            ]);
@@ -467,9 +468,9 @@ function declareTests({useJit}: {useJit: boolean}) {
          }));
 
       describe('groups/sequences', () => {
-        var assertPlaying = (player: MockAnimationDriver, isPlaying: any /** TODO #9100 */) => {
-          var method = 'play';
-          var lastEntry = player.log.length > 0 ? player.log[player.log.length - 1] : null;
+        const assertPlaying = (player: MockAnimationDriver, isPlaying: any /** TODO #9100 */) => {
+          const method = 'play';
+          const lastEntry = player.log.length > 0 ? player.log[player.log.length - 1] : null;
           if (isPresent(lastEntry)) {
             if (isPlaying) {
               expect(lastEntry).toEqual(method);
@@ -500,8 +501,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
 
              cmp.exp = true;
              fixture.detectChanges();
@@ -510,9 +511,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              expect(driver.log.length).toEqual(3);
 
-             var player1 = driver.log[0]['player'];
-             var player2 = driver.log[1]['player'];
-             var player3 = driver.log[2]['player'];
+             const player1 = driver.log[0]['player'];
+             const player2 = driver.log[1]['player'];
+             const player3 = driver.log[2]['player'];
 
              assertPlaying(player1, true);
              assertPlaying(player2, false);
@@ -556,8 +557,8 @@ function declareTests({useJit}: {useJit: boolean}) {
           });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
 
              cmp.exp = true;
              fixture.detectChanges();
@@ -566,11 +567,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              expect(driver.log.length).toEqual(5);
 
-             var player1 = driver.log[0]['player'];
-             var player2 = driver.log[1]['player'];
-             var player3 = driver.log[2]['player'];
-             var player4 = driver.log[3]['player'];
-             var player5 = driver.log[4]['player'];
+             const player1 = driver.log[0]['player'];
+             const player2 = driver.log[1]['player'];
+             const player3 = driver.log[2]['player'];
+             const player4 = driver.log[3]['player'];
+             const player5 = driver.log[4]['player'];
 
              assertPlaying(player1, true);
              assertPlaying(player2, false);
@@ -649,13 +650,13 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
              cmp.exp = true;
              fixture.detectChanges();
              flushMicrotasks();
 
-             var kf = driver.log[0]['keyframeLookup'];
+             const kf = driver.log[0]['keyframeLookup'];
              expect(kf.length).toEqual(4);
              expect(kf[0]).toEqual([0, {'width': '0'}]);
              expect(kf[1]).toEqual([0.25, {'width': '100px'}]);
@@ -688,13 +689,13 @@ function declareTests({useJit}: {useJit: boolean}) {
           });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
              cmp.exp = true;
              fixture.detectChanges();
              flushMicrotasks();
 
-             var kf = driver.log[1]['keyframeLookup'];
+             const kf = driver.log[1]['keyframeLookup'];
              expect(kf.length).toEqual(5);
              expect(kf[0]).toEqual([0, {'color': 'silver', 'backgroundColor': AUTO_STYLE}]);
              expect(kf[1]).toEqual([0.25, {'color': 'gold'}]);
@@ -720,15 +721,15 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
 
            cmp.exp = 'state1';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var enterCompleted = false;
-           var enterPlayer = driver.log[0]['player'];
+           let enterCompleted = false;
+           const enterPlayer = driver.log[0]['player'];
            enterPlayer.onDone(() => enterCompleted = true);
 
            expect(enterCompleted).toEqual(false);
@@ -766,8 +767,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
 
            cmp.exp = true;
            fixture.detectChanges();
@@ -778,7 +779,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            driver.log.forEach(entry => entry['player'].finish());
            driver.log.forEach(entry => {
-             var player = <MockAnimationDriver>entry['player'];
+             const player = <MockAnimationDriver>entry['player'];
              expect(player.log[player.log.length - 2]).toEqual('finish');
              expect(player.log[player.log.length - 1]).toEqual('destroy');
            });
@@ -814,8 +815,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
 
            cmp.exp = 'start';
            cmp.exp2 = 'start';
@@ -830,9 +831,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(driver.log.length).toEqual(1);
 
-           var animation1 = driver.log[0];
-           var keyframes1 = animation1['keyframeLookup'];
-           var toStyles1 = keyframes1[1][1];
+           const animation1 = driver.log[0];
+           const keyframes1 = animation1['keyframeLookup'];
+           const toStyles1 = keyframes1[1][1];
            expect(toStyles1['color']).toEqual('red');
 
            cmp.exp2 = 'end';
@@ -841,9 +842,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(driver.log.length).toEqual(2);
 
-           var animation2 = driver.log[1];
-           var keyframes2 = animation2['keyframeLookup'];
-           var toStyles2 = keyframes2[1][1];
+           const animation2 = driver.log[1];
+           const keyframes2 = animation2['keyframeLookup'];
+           const toStyles2 = keyframes2[1][1];
            expect(toStyles2['color']).toEqual('red');
          }));
 
@@ -861,8 +862,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            fixture.detectChanges();
            flushMicrotasks();
@@ -871,9 +872,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            fixture.detectChanges();
            flushMicrotasks();
 
-           var player = driver.log[0]['player'];
-           var container = fixture.nativeElement;
-           var ifElm = getDOM().querySelector(container, '.my-if');
+           const player = driver.log[0]['player'];
+           const container = fixture.nativeElement;
+           let ifElm = getDOM().querySelector(container, '.my-if');
            expect(ifElm).toBeTruthy();
 
            player.finish();
@@ -899,19 +900,19 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = 'state1';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation1 = driver.log[0];
-           var keyframes1 = animation1['keyframeLookup'];
+           const animation1 = driver.log[0];
+           const keyframes1 = animation1['keyframeLookup'];
            expect(keyframes1[0]).toEqual([0, {'opacity': AUTO_STYLE}]);
            expect(keyframes1[1]).toEqual([1, {'opacity': '0'}]);
 
-           var animation2 = driver.log[1];
-           var keyframes2 = animation2['keyframeLookup'];
+           const animation2 = driver.log[1];
+           const keyframes2 = animation2['keyframeLookup'];
            expect(keyframes2[0]).toEqual([0, {'opacity': '0'}]);
            expect(keyframes2[1]).toEqual([1, {'opacity': '1'}]);
          }));
@@ -939,8 +940,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = 'state1';
            cmp.exp2 = 'state1';
            fixture.detectChanges();
@@ -952,9 +953,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(driver.log.length).toEqual(1);
 
-           var count = 0;
-           var animation1 = driver.log[0];
-           var player1 = animation1['player'];
+           let count = 0;
+           const animation1 = driver.log[0];
+           const player1 = animation1['player'];
            player1.onDone(() => count++);
 
            expect(count).toEqual(0);
@@ -966,8 +967,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(driver.log.length).toEqual(2);
            expect(count).toEqual(0);
 
-           var animation2 = driver.log[1];
-           var player2 = animation2['player'];
+           const animation2 = driver.log[1];
+           const player2 = animation2['player'];
            player2.onDone(() => count++);
 
            expect(count).toEqual(0);
@@ -980,19 +981,19 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('ng directives', () => {
       describe('*ngFor', () => {
-        let tpl = '<div *ngFor="let item of items" @trigger>{{ item }}</div>';
+        const tpl = '<div *ngFor="let item of items" @trigger>{{ item }}</div>';
 
-        let getText = (node: any) => node.innerHTML ? node.innerHTML : node.children[0].data;
+        const getText = (node: any) => node.innerHTML ? node.innerHTML : node.children[0].data;
 
-        let assertParentChildContents = (parent: any, content: string) => {
-          var values: string[] = [];
-          for (var i = 0; i < parent.childNodes.length; i++) {
-            let child = parent.childNodes[i];
+        const assertParentChildContents = (parent: any, content: string) => {
+          const values: string[] = [];
+          for (let i = 0; i < parent.childNodes.length; i++) {
+            const child = parent.childNodes[i];
             if (child['nodeType'] == 1) {
               values.push(getText(child).trim());
             }
           }
-          var value = values.join(' -> ');
+          const value = values.join(' -> ');
           expect(value).toEqual(content);
         };
 
@@ -1006,9 +1007,9 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
-             var parent = fixture.nativeElement;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
+             const parent = fixture.nativeElement;
              cmp.items = [0, 2, 4, 6, 8];
              fixture.detectChanges();
              flushMicrotasks();
@@ -1035,9 +1036,9 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
-             var parent = fixture.nativeElement;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
+             const parent = fixture.nativeElement;
 
              cmp.items = [0, 1, 2, 3, 4];
              fixture.detectChanges();
@@ -1057,9 +1058,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              // move(~), add(+), remove(-)
              // -1, -2, ~3, ~4, ~0, +9
-             var rm0 = driver.log.shift();
-             var rm1 = driver.log.shift();
-             var in0 = driver.log.shift();
+             const rm0 = driver.log.shift();
+             const rm1 = driver.log.shift();
+             const in0 = driver.log.shift();
 
              // we want to assert that the DOM chain is still preserved
              // until the animations are closed
@@ -1101,16 +1102,16 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation = driver.log.pop();
-           var player = <InnerContentTrackingAnimationPlayer>animation['player'];
+           const animation = driver.log.pop();
+           const player = <InnerContentTrackingAnimationPlayer>animation['player'];
            expect(player.capturedInnerText).toEqual('inner child guy');
          }));
 
@@ -1133,16 +1134,16 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
            flushMicrotasks();
            fixture.detectChanges();
 
-           var animation = driver.log.pop();
-           var player = <InnerContentTrackingAnimationPlayer>animation['player'];
+           const animation = driver.log.pop();
+           const player = <InnerContentTrackingAnimationPlayer>animation['player'];
 
            // this is just to confirm that the player is using the parent element
            expect(player.element.className).toEqual('target');
@@ -1165,18 +1166,18 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
            flushMicrotasks();
 
            expect(driver.log.length).toEqual(2);
-           var animation1 = driver.log.pop();
-           var animation2 = driver.log.pop();
-           var player1 = <InnerContentTrackingAnimationPlayer>animation1['player'];
-           var player2 = <InnerContentTrackingAnimationPlayer>animation2['player'];
+           const animation1 = driver.log.pop();
+           const animation2 = driver.log.pop();
+           const player1 = <InnerContentTrackingAnimationPlayer>animation1['player'];
+           const player2 = <InnerContentTrackingAnimationPlayer>animation2['player'];
            expect(player1.playAttempts).toEqual(1);
            expect(player2.playAttempts).toEqual(1);
          }));
@@ -1194,8 +1195,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            fixture.detectChanges();
            flushMicrotasks();
@@ -1207,8 +1208,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            flushMicrotasks();
 
            expect(driver.log.length).toEqual(1);
-           var animation = driver.log.pop();
-           var player = <InnerContentTrackingAnimationPlayer>animation['player'];
+           const animation = driver.log.pop();
+           const player = <InnerContentTrackingAnimationPlayer>animation['player'];
            expect(player.playAttempts).toEqual(1);
          }));
 
@@ -1232,18 +1233,18 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
            flushMicrotasks();
 
            expect(driver.log.length).toEqual(2);
-           var inner: any = driver.log.pop();
-           var innerPlayer: any = <InnerContentTrackingAnimationPlayer>inner['player'];
-           var outer: any = driver.log.pop();
-           var outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
+           const inner: any = driver.log.pop();
+           const innerPlayer: any = <InnerContentTrackingAnimationPlayer>inner['player'];
+           const outer: any = driver.log.pop();
+           const outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
 
            expect(InnerContentTrackingAnimationPlayer.initLog).toEqual([
              outerPlayer.element, innerPlayer.element
@@ -1273,18 +1274,18 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = true;
            cmp.exp2 = true;
            fixture.detectChanges();
            flushMicrotasks();
 
            expect(driver.log.length).toEqual(2);
-           var inner: any = driver.log.pop();
-           var innerPlayer: any = <InnerContentTrackingAnimationPlayer>inner['player'];
-           var outer: any = driver.log.pop();
-           var outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
+           const inner: any = driver.log.pop();
+           const innerPlayer: any = <InnerContentTrackingAnimationPlayer>inner['player'];
+           const outer: any = driver.log.pop();
+           const outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
 
            expect(InnerContentTrackingAnimationPlayer.initLog).toEqual([
              outerPlayer.element, innerPlayer.element
@@ -1307,10 +1308,10 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var isAnimationRunning = false;
-           var calls = 0;
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           let isAnimationRunning = false;
+           let calls = 0;
+           const cmp = fixture.componentInstance;
            cmp.callback = (e: AnimationTransitionEvent) => {
              isAnimationRunning = e.totalTime > 0;
              calls++;
@@ -1345,10 +1346,10 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var isAnimationRunning = false;
-           var calls = 0;
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           let isAnimationRunning = false;
+           let calls = 0;
+           const cmp = fixture.componentInstance;
            cmp.callback = (e: AnimationTransitionEvent) => {
              isAnimationRunning = e.totalTime > 0;
              calls++;
@@ -1367,7 +1368,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(calls).toEqual(1);
 
-           var player = driver.log.shift()['player'];
+           const player = driver.log.shift()['player'];
            player.finish();
 
            expect(calls).toEqual(2);
@@ -1388,9 +1389,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var eventData: AnimationTransitionEvent = null;
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           let eventData: AnimationTransitionEvent = null;
+           const cmp = fixture.componentInstance;
            cmp.callback = (e: AnimationTransitionEvent) => { eventData = e; };
            cmp.exp = 'one';
            fixture.detectChanges();
@@ -1424,10 +1425,10 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var eventData1: AnimationTransitionEvent = null;
-           var eventData2: AnimationTransitionEvent = null;
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           let eventData1: AnimationTransitionEvent = null;
+           let eventData2: AnimationTransitionEvent = null;
+           const cmp = fixture.componentInstance;
            cmp.callback1 = (e: AnimationTransitionEvent) => { eventData1 = e; };
            cmp.callback2 = (e: AnimationTransitionEvent) => { eventData2 = e; };
            cmp.exp = 'one';
@@ -1458,8 +1459,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp2 = 'ignore me';
            cmp.exp = 'one';
 
@@ -1467,7 +1468,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            flushMicrotasks();
            fixture.detectChanges();
 
-           var container = fixture.nativeElement;
+           const container = fixture.nativeElement;
            expect(getDOM().getInnerHTML(container)).toContain('look at me');
          }));
 
@@ -1481,9 +1482,9 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           var message = '';
+           let message = '';
            try {
-             let fixture = TestBed.createComponent(DummyIfCmp);
+             const fixture = TestBed.createComponent(DummyIfCmp);
              fixture.detectChanges();
            } catch (e) {
              message = e.message;
@@ -1503,9 +1504,9 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           var message = '';
+           let message = '';
            try {
-             let fixture = TestBed.createComponent(DummyIfCmp);
+             const fixture = TestBed.createComponent(DummyIfCmp);
              fixture.detectChanges();
            } catch (e) {
              message = e.message;
@@ -1525,9 +1526,9 @@ function declareTests({useJit}: {useJit: boolean}) {
           }
         });
 
-        var message = '';
+        let message = '';
         try {
-          let fixture = TestBed.createComponent(DummyIfCmp);
+          const fixture = TestBed.createComponent(DummyIfCmp);
           fixture.detectChanges();
         } catch (e) {
           message = e.message;
@@ -1547,9 +1548,9 @@ function declareTests({useJit}: {useJit: boolean}) {
           }
         });
 
-        var message = '';
+        let message = '';
         try {
-          let fixture = TestBed.createComponent(DummyIfCmp);
+          const fixture = TestBed.createComponent(DummyIfCmp);
           fixture.detectChanges();
         } catch (e) {
           message = e.message;
@@ -1564,9 +1565,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            TestBed.overrideComponent(
                DummyLoadingCmp, {set: {host: {'(@trigger.done)': 'callback($event)'}}});
 
-           var message = '';
+           let message = '';
            try {
-             let fixture = TestBed.createComponent(DummyLoadingCmp);
+             const fixture = TestBed.createComponent(DummyLoadingCmp);
              fixture.detectChanges();
            } catch (e) {
              message = e.message;
@@ -1598,11 +1599,11 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           var ifCalls = 0;
-           var loadingCalls = 0;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var ifCmp = fixture.componentInstance;
-           var loadingCmp = fixture.debugElement.childNodes[1].componentInstance;
+           let ifCalls = 0;
+           let loadingCalls = 0;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const ifCmp = fixture.componentInstance;
+           const loadingCmp = fixture.debugElement.childNodes[1].componentInstance;
 
            ifCmp.callback = (e: any) => ifCalls++;
            loadingCmp.callback = (e: any) => loadingCalls++;
@@ -1643,11 +1644,11 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
 
-           var startCalls = [0, 0, 0, 0, 0];
-           var doneCalls = [0, 0, 0, 0, 0];
+           const startCalls = [0, 0, 0, 0, 0];
+           const doneCalls = [0, 0, 0, 0, 0];
            cmp.callback = (e: any, index: number, phase: string) => {
              (phase == 'start' ? startCalls : doneCalls)[index] = 1;
            };
@@ -1656,7 +1657,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            fixture.detectChanges();
            flushMicrotasks();
 
-           for (var i = 0; i < cmp.items.length; i++) {
+           for (let i = 0; i < cmp.items.length; i++) {
              expect(startCalls[i]).toEqual(1);
            }
 
@@ -1695,8 +1696,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              });
 
              const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
-             let fixture = TestBed.createComponent(DummyIfCmp);
-             var cmp = fixture.componentInstance;
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             const cmp = fixture.componentInstance;
              cmp.exp = true;
              cmp.exp2 = 'blue';
              fixture.detectChanges();
@@ -1708,8 +1709,8 @@ function declareTests({useJit}: {useJit: boolean}) {
              fixture.detectChanges();
              flushMicrotasks();
 
-             var animation = driver.log.pop();
-             var element = animation['element'];
+             const animation = driver.log.pop();
+             const element = animation['element'];
              (<any>expect(element)).toHaveCssClass('blue');
            }));
       });
@@ -1727,9 +1728,9 @@ function declareTests({useJit}: {useJit: boolean}) {
              }
            });
 
-           var failureMessage = '';
+           let failureMessage = '';
            try {
-             let fixture = TestBed.createComponent(DummyLoadingCmp);
+             const fixture = TestBed.createComponent(DummyLoadingCmp);
            } catch (e) {
              failureMessage = e.message;
            }
@@ -1742,7 +1743,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(
             DummyIfCmp, {set: {animations: [trigger('matias', []), trigger('matias', [])]}});
 
-        var failureMessage = '';
+        let failureMessage = '';
         try {
           const fixture = TestBed.createComponent(DummyLoadingCmp);
         } catch (e) {
@@ -1769,14 +1770,14 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyLoadingCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyLoadingCmp);
+           const cmp = fixture.componentInstance;
            cmp.exp = 'final';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation = driver.log.pop();
-           var kf = animation['keyframeLookup'];
+           const animation = driver.log.pop();
+           const kf = animation['keyframeLookup'];
            expect(kf[1]).toEqual([1, {'background': 'grey'}]);
          }));
 
@@ -1784,7 +1785,7 @@ function declareTests({useJit}: {useJit: boolean}) {
          () => {
            TestBed.overrideComponent(DummyLoadingCmp, {set: {animations: []}});
 
-           var failureMessage = '';
+           let failureMessage = '';
            try {
              const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
            } catch (e) {
@@ -1810,15 +1811,15 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'final';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation = driver.log[0];
-           var player = animation['player'];
+           const animation = driver.log[0];
+           const player = animation['player'];
            player.finish();
 
            expect(getDOM().getStyle(node, 'top')).toEqual('100px');
@@ -1843,15 +1844,15 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'green';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation = driver.log.pop();
-           var kf = animation['keyframeLookup'];
+           let animation = driver.log.pop();
+           let kf = animation['keyframeLookup'];
            expect(kf[1]).toEqual([1, {'background': 'green'}]);
 
            cmp.exp = 'blue';
@@ -1899,14 +1900,14 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'final';
            fixture.detectChanges();
            flushMicrotasks();
 
-           var animation = driver.log[0];
+           const animation = driver.log[0];
            expect(animation['startingStyles']).toEqual({'height': '100px'});
          }));
 
@@ -1927,9 +1928,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
            cmp.exp = 'final';
            fixture.detectChanges();
            flushMicrotasks();
@@ -1956,9 +1957,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
 
            cmp.exp = 'a';
            fixture.detectChanges();
@@ -2012,9 +2013,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
-           var node = getDOM().querySelector(fixture.nativeElement, '.target');
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           const node = getDOM().querySelector(fixture.nativeElement, '.target');
 
            cmp.exp = 'a';
            fixture.detectChanges();
@@ -2059,15 +2060,15 @@ function declareTests({useJit}: {useJit: boolean}) {
            });
 
            const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
-           let fixture = TestBed.createComponent(DummyIfCmp);
-           var cmp = fixture.componentInstance;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
            getDOM().querySelector(fixture.nativeElement, '.target');
 
            cmp.exp = 'final';
            fixture.detectChanges();
 
-           var animation = driver.log.pop();
-           var kf = animation['keyframeLookup'];
+           const animation = driver.log.pop();
+           const kf = animation['keyframeLookup'];
 
            expect(kf[0]).toEqual([0, {'height': '100px', 'opacity': '0', 'width': AUTO_STYLE}]);
 
@@ -2079,12 +2080,12 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('full animation integration tests', () => {
     if (!getDOM().supportsWebAnimation()) return;
 
-    var el: any, testProviders: any[];
+    let el: any, testProviders: any[];
 
     beforeEach(() => {
       destroyPlatform();
 
-      let fakeDoc = getDOM().createHtmlDocument();
+      const fakeDoc = getDOM().createHtmlDocument();
       el = getDOM().createElement('animation-app', fakeDoc);
       getDOM().appendChild(fakeDoc.body, el);
       testProviders = [
@@ -2098,11 +2099,11 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should automatically run change detection when the animation done callback code updates any bindings',
        (asyncDone: Function) => {
          bootstrap(AnimationAppCmp, testProviders).then(ref => {
-           let appRef = <ApplicationRef>ref.injector.get(ApplicationRef);
-           let appCmp: AnimationAppCmp =
+           const appRef = <ApplicationRef>ref.injector.get(ApplicationRef);
+           const appCmp: AnimationAppCmp =
                appRef.components.find(cmp => cmp.componentType === AnimationAppCmp).instance;
-           let driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
-           let zone: NgZone = ref.injector.get(NgZone);
+           const driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
+           const zone: NgZone = ref.injector.get(NgZone);
            let text = '';
            zone.run(() => {
              text = getDOM().getText(el);
@@ -2113,7 +2114,7 @@ function declareTests({useJit}: {useJit: boolean}) {
                text = getDOM().getText(el);
                expect(text).toMatch(/Animation Status: started/);
                expect(text).toMatch(/Animation Time: 555/);
-               var player = driver.players.pop().domPlayer;
+               const player = driver.players.pop().domPlayer;
                getDOM().dispatchEvent(player, getDOM().createEvent('finish'));
                setTimeout(() => {
                  text = getDOM().getText(el);
@@ -2133,7 +2134,7 @@ class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
     super.animate(element, startingStyles, keyframes, duration, delay, easing);
-    var player = new InnerContentTrackingAnimationPlayer(element);
+    const player = new InnerContentTrackingAnimationPlayer(element);
     this.log[this.log.length - 1]['player'] = player;
     return player;
   }
@@ -2155,7 +2156,7 @@ class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
 
   play() {
     this.playAttempts++;
-    var innerElm = this.element.querySelector('.inner');
+    const innerElm = this.element.querySelector('.inner');
     this.capturedInnerText = innerElm ? innerElm.innerText : '';
   }
 }
@@ -2260,7 +2261,7 @@ class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): WebAnimationsPlayer {
-    var player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
+    const player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
     this.players.push(player);
     return player;
   }

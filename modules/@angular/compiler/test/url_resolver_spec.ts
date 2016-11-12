@@ -11,7 +11,7 @@ import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/te
 
 export function main() {
   describe('UrlResolver', () => {
-    var resolver = new UrlResolver();
+    let resolver = new UrlResolver();
 
     describe('absolute base url', () => {
       it('should add a relative path to the base url', () => {
@@ -107,7 +107,7 @@ export function main() {
     });
 
     describe('asset urls', () => {
-      var resolver: UrlResolver;
+      let resolver: UrlResolver;
       beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
 
       it('should resolve package: urls into asset: urls', () => {

@@ -23,7 +23,7 @@ let moduleFactories = new Map<string, NgModuleFactory<any>>();
  * @experimental
  */
 export function registerModuleFactory(id: string, factory: NgModuleFactory<any>) {
-  let existing = moduleFactories.get(id);
+  const existing = moduleFactories.get(id);
   if (existing) {
     throw new Error(`Duplicate module registered for ${id
                     } - ${existing.moduleType.name} vs ${factory.moduleType.name}`);
@@ -42,7 +42,7 @@ export function clearModulesForTest() {
  * @experimental
  */
 export function getModuleFactory(id: string): NgModuleFactory<any> {
-  let factory = moduleFactories.get(id);
+  const factory = moduleFactories.get(id);
   if (!factory) throw new Error(`No module with ID ${id} loaded`);
   return factory;
 }

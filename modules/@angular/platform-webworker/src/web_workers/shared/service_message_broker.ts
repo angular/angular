@@ -61,7 +61,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
       public channel: any /** TODO #9100 */) {
     super();
     this._sink = messageBus.to(channel);
-    var source = messageBus.from(channel);
+    const source = messageBus.from(channel);
     source.subscribe({next: (message: any) => this._handleMessage(message)});
   }
 
@@ -70,7 +70,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
       returnType?: Type<any>): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
-      let numArgs = signature === null ? 0 : signature.length;
+      const numArgs = signature === null ? 0 : signature.length;
       const deserializedArgs: any[] = new Array(numArgs);
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
@@ -85,7 +85,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
   }
 
   private _handleMessage(map: {[key: string]: any}): void {
-    var message = new ReceivedMessage(map);
+    const message = new ReceivedMessage(map);
     if (this._methods.has(message.method)) {
       this._methods.get(message.method)(message);
     }

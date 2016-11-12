@@ -13,18 +13,18 @@ import {describe, expect, it} from '@angular/core/testing/testing_internal';
 export function main() {
   describe('es5 decorators', () => {
     it('should declare directive class', () => {
-      var MyDirective = Directive({}).Class({constructor: function() { this.works = true; }});
+      const MyDirective = Directive({}).Class({constructor: function() { this.works = true; }});
       expect(new MyDirective().works).toEqual(true);
     });
 
     it('should declare Component class', () => {
-      var MyComponent = Component({}).Class({constructor: function() { this.works = true; }});
+      const MyComponent = Component({}).Class({constructor: function() { this.works = true; }});
       expect(new MyComponent().works).toEqual(true);
     });
 
     it('should create type in ES5', () => {
       class MyComponent {};
-      var as: any /** TODO #9100 */;
+      let as: any /** TODO #9100 */;
       (<any>MyComponent).annotations = as = Component({});
       expect(reflector.annotations(MyComponent)).toEqual(as.annotations);
     });

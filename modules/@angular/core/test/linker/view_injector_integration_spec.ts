@@ -228,7 +228,7 @@ export function main() {
         TestBed.configureTestingModule({declarations: [SimpleDirective, NeedsDirective]});
         const el = createComponent('<div simpleDirective needsDirective>');
 
-        var d = el.children[0].injector.get(NeedsDirective);
+        const d = el.children[0].injector.get(NeedsDirective);
 
         expect(d).toBeAnInstanceOf(NeedsDirective);
         expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
@@ -286,7 +286,7 @@ export function main() {
           }
         ];
         TestBed.overrideDirective(SimpleDirective, {add: {providers}});
-        var el = createComponent('<div simpleDirective></div>');
+        const el = createComponent('<div simpleDirective></div>');
         expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
       });
 

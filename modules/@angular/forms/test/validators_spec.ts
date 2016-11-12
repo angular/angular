@@ -156,8 +156,8 @@ export function main() {
     describe('composeAsync', () => {
       function asyncValidator(expected: any /** TODO #9100 */, response: any /** TODO #9100 */) {
         return (c: any /** TODO #9100 */) => {
-          var emitter = new EventEmitter();
-          var res = c.value != expected ? response : null;
+          const emitter = new EventEmitter();
+          const res = c.value != expected ? response : null;
           Promise.resolve(null).then(() => {
             emitter.emit(res);
             // this is required because of a bug in ObservableWrapper
@@ -174,11 +174,11 @@ export function main() {
          () => { expect(Validators.composeAsync(null)).toBeNull(); });
 
       it('should collect errors from all the validators', fakeAsync(() => {
-           var c = Validators.composeAsync([
+           const c = Validators.composeAsync([
              asyncValidator('expected', {'one': true}), asyncValidator('expected', {'two': true})
            ]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);
@@ -198,9 +198,9 @@ export function main() {
          }));
 
       it('should return null when no errors', fakeAsync(() => {
-           var c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
+           const c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('expected'))).then(v => value = v);
            tick(1);
 
@@ -208,9 +208,9 @@ export function main() {
          }));
 
       it('should ignore nulls', fakeAsync(() => {
-           var c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
+           const c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);

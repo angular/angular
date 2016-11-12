@@ -14,8 +14,8 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('title service', () => {
-    var initialTitle = getDOM().getTitle();
-    var titleService = new Title();
+    const initialTitle = getDOM().getTitle();
+    const titleService = new Title();
 
     afterEach(() => { getDOM().setTitle(initialTitle); });
 

@@ -38,7 +38,7 @@ export class JsonFileReporter extends Reporter {
     sortedProps(this._description.metrics).forEach((metricName) => {
       stats[metricName] = formatStats(validSample, metricName);
     });
-    var content = JSON.stringify(
+    const content = JSON.stringify(
         {
           'description': this._description,
           'stats': stats,
@@ -46,7 +46,7 @@ export class JsonFileReporter extends Reporter {
           'validSample': validSample,
         },
         null, 2);
-    var filePath = `${this._path}/${this._description.id}_${this._now().getTime()}.json`;
+    const filePath = `${this._path}/${this._description.id}_${this._now().getTime()}.json`;
     return this._writeFile(filePath, content);
   }
 }

@@ -65,15 +65,15 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     super();
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
-    var source = messageBus.from(channel);
+    const source = messageBus.from(channel);
 
     source.subscribe({next: (message: {[key: string]: any}) => this._handleMessage(message)});
   }
 
   private _generateMessageId(name: string): string {
-    var time: string = stringify(new Date().getTime());
-    var iteration: number = 0;
-    var id: string = name + time + stringify(iteration);
+    const time: string = stringify(new Date().getTime());
+    let iteration: number = 0;
+    let id: string = name + time + stringify(iteration);
     while (isPresent((this as any /** TODO #9100 */)._pending[id])) {
       id = `${name}${time}${iteration}`;
       iteration++;
@@ -82,7 +82,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   runOnService(args: UiArguments, returnType: Type<any>): Promise<any> {
-    var fnArgs: any[] /** TODO #9100 */ = [];
+    const fnArgs: any[] /** TODO #9100 */ = [];
     if (isPresent(args.args)) {
       args.args.forEach(argument => {
         if (argument.type != null) {
@@ -93,8 +93,8 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
       });
     }
 
-    var promise: Promise<any>;
-    var id: string = null;
+    let promise: Promise<any>;
+    let id: string = null;
     if (returnType != null) {
       let completer: PromiseCompleter;
       promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
@@ -117,7 +117,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     }
 
     // TODO(jteplitz602): Create a class for these messages so we don't keep using StringMap #3685
-    var message = {'method': args.method, 'args': fnArgs};
+    const message = {'method': args.method, 'args': fnArgs};
     if (id != null) {
       (message as any /** TODO #9100 */)['id'] = id;
     }
@@ -127,10 +127,10 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
   }
 
   private _handleMessage(message: {[key: string]: any}): void {
-    var data = new MessageData(message);
+    const data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
     if (data.type === 'result' || data.type === 'error') {
-      var id = data.id;
+      const id = data.id;
       if (this._pending.has(id)) {
         if (data.type === 'result') {
           this._pending.get(id).resolve(data.value);

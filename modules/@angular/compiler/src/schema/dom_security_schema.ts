@@ -23,7 +23,7 @@ import {SecurityContext} from '@angular/core';
 export const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
 
 function registerContext(ctx: SecurityContext, specs: string[]) {
-  for (let spec of specs) SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
+  for (const spec of specs) SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
 }
 
 // Case is insignificant below, all element and attribute names are lower-cased for lookup.

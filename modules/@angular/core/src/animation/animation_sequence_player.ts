@@ -36,7 +36,7 @@ export class AnimationSequencePlayer implements AnimationPlayer {
       this._activePlayer = new NoOpAnimationPlayer();
       this._onFinish();
     } else {
-      var player = this._players[this._currentIndex++];
+      const player = this._players[this._currentIndex++];
       player.onDone(() => this._onNext(true));
 
       this._activePlayer = player;

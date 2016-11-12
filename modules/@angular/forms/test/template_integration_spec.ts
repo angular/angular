@@ -510,11 +510,11 @@ export function main() {
            fixture.componentInstance.val = 4;
            fixture.detectChanges();
            tick();
-           let input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input'));
            expect(input.nativeElement.value).toBe('4');
            fixture.detectChanges();
            tick();
-           let newVal = '4';
+           const newVal = '4';
            input.triggerEventHandler('input', {target: {value: newVal}});
            tick();
            // view -> model

@@ -164,7 +164,7 @@ export function main() {
            compiler.compileModuleAsync(SomeModule);
            tick();
 
-           let ngModuleFactory = compiler.compileModuleSync(SomeModule);
+           const ngModuleFactory = compiler.compileModuleSync(SomeModule);
            expect(ngModuleFactory).toBeTruthy();
          }));
     });

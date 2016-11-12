@@ -13,14 +13,14 @@ describe('Model-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  var URL = 'all/playground/src/model_driven_forms/index.html';
+  const URL = 'all/playground/src/model_driven_forms/index.html';
 
   it('should display errors', function() {
     browser.get(URL);
 
-    var form = element.all(by.css('form')).first();
-    var input = element.all(by.css('#creditCard')).first();
-    var firstName = element.all(by.css('#firstName')).first();
+    const form = element.all(by.css('form')).first();
+    const input = element.all(by.css('#creditCard')).first();
+    const firstName = element.all(by.css('#firstName')).first();
 
     input.sendKeys('invalid');
     firstName.click();

@@ -17,10 +17,10 @@ export function main() {
     const scanner = new CssLexer().scan(code, trackComments);
     scanner.setMode(mode);
 
-    var tokens: CssToken[] = [];
-    var output = scanner.scan();
+    const tokens: CssToken[] = [];
+    let output = scanner.scan();
     while (output != null) {
-      var error = output.error;
+      const error = output.error;
       if (isPresent(error)) {
         throw new CssScannerError(error.token, error.rawMessage);
       }
@@ -33,31 +33,31 @@ export function main() {
 
   describe('CssLexer', () => {
     it('should lex newline characters as whitespace when whitespace mode is on', () => {
-      var newlines = ['\n', '\r\n', '\r', '\f'];
+      const newlines = ['\n', '\r\n', '\r', '\f'];
       newlines.forEach((line) => {
-        var token = tokenize(line, false, CssLexerMode.ALL_TRACK_WS)[0];
+        const token = tokenize(line, false, CssLexerMode.ALL_TRACK_WS)[0];
         expect(token.type).toEqual(CssTokenType.Whitespace);
       });
     });
 
     it('should combined newline characters as one newline token when whitespace mode is on', () => {
-      var newlines = ['\n', '\r\n', '\r', '\f'].join('');
-      var tokens = tokenize(newlines, false, CssLexerMode.ALL_TRACK_WS);
+      const newlines = ['\n', '\r\n', '\r', '\f'].join('');
+      const tokens = tokenize(newlines, false, CssLexerMode.ALL_TRACK_WS);
       expect(tokens.length).toEqual(1);
       expect(tokens[0].type).toEqual(CssTokenType.Whitespace);
     });
 
     it('should not consider whitespace or newline values at all when whitespace mode is off',
        () => {
-         var newlines = ['\n', '\r\n', '\r', '\f'].join('');
-         var tokens = tokenize(newlines);
+         const newlines = ['\n', '\r\n', '\r', '\f'].join('');
+         const tokens = tokenize(newlines);
          expect(tokens.length).toEqual(0);
        });
 
     it('should lex simple selectors and their inner properties', () => {
-      var cssCode = '\n' +
+      const cssCode = '\n' +
           '  .selector { my-prop: my-value; }\n';
-      var tokens = tokenize(cssCode);
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Character);
       expect(tokens[0].strValue).toEqual('.');
@@ -85,11 +85,11 @@ export function main() {
     });
 
     it('should capture the column and line values for each token', () => {
-      var cssCode = '#id {\n' +
+      const cssCode = '#id {\n' +
           '  prop:value;\n' +
           '}';
 
-      var tokens = tokenize(cssCode);
+      const tokens = tokenize(cssCode);
 
       // #
       expect(tokens[0].type).toEqual(CssTokenType.Character);
@@ -133,8 +133,8 @@ export function main() {
     });
 
     it('should lex quoted strings and escape accordingly', () => {
-      var cssCode = 'prop: \'some { value } \\\' that is quoted\'';
-      var tokens = tokenize(cssCode);
+      const cssCode = 'prop: \'some { value } \\\' that is quoted\'';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Identifier);
       expect(tokens[1].type).toEqual(CssTokenType.Character);
@@ -147,8 +147,8 @@ export function main() {
     });
 
     it('should lex numbers properly and set them as numbers', () => {
-      var cssCode = '0 1 -2 3.0 -4.001';
-      var tokens = tokenize(cssCode);
+      const cssCode = '0 1 -2 3.0 -4.001';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Number);
       expect(tokens[0].strValue).toEqual('0');
@@ -167,8 +167,8 @@ export function main() {
     });
 
     it('should lex @keywords', () => {
-      var cssCode = '@import()@something';
-      var tokens = tokenize(cssCode);
+      const cssCode = '@import()@something';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.AtKeyword);
       expect(tokens[0].strValue).toEqual('@import');
@@ -184,8 +184,8 @@ export function main() {
     });
 
     it('should still lex a number even if it has a dimension suffix', () => {
-      var cssCode = '40% is 40 percent';
-      var tokens = tokenize(cssCode);
+      const cssCode = '40% is 40 percent';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Number);
       expect(tokens[0].strValue).toEqual('40');
@@ -201,8 +201,8 @@ export function main() {
     });
 
     it('should allow escaped character and unicode character-strings in CSS selectors', () => {
-      var cssCode = '\\123456 .some\\thing \{\}';
-      var tokens = tokenize(cssCode);
+      const cssCode = '\\123456 .some\\thing \{\}';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Identifier);
       expect(tokens[0].strValue).toEqual('\\123456');
@@ -213,8 +213,8 @@ export function main() {
     });
 
     it('should distinguish identifiers and numbers from special characters', () => {
-      var cssCode = 'one*two=-4+three-4-equals_value$';
-      var tokens = tokenize(cssCode);
+      const cssCode = 'one*two=-4+three-4-equals_value$';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].type).toEqual(CssTokenType.Identifier);
       expect(tokens[0].strValue).toEqual('one');
@@ -242,8 +242,8 @@ export function main() {
     });
 
     it('should filter out comments and whitespace by default', () => {
-      var cssCode = '.selector /* comment */ { /* value */ }';
-      var tokens = tokenize(cssCode);
+      const cssCode = '.selector /* comment */ { /* value */ }';
+      const tokens = tokenize(cssCode);
 
       expect(tokens[0].strValue).toEqual('.');
       expect(tokens[1].strValue).toEqual('selector');
@@ -252,9 +252,9 @@ export function main() {
     });
 
     it('should track comments when the flag is set to true', () => {
-      var cssCode = '.selector /* comment */ { /* value */ }';
-      var trackComments = true;
-      var tokens = tokenize(cssCode, trackComments, CssLexerMode.ALL_TRACK_WS);
+      const cssCode = '.selector /* comment */ { /* value */ }';
+      const trackComments = true;
+      const tokens = tokenize(cssCode, trackComments, CssLexerMode.ALL_TRACK_WS);
 
       expect(tokens[0].strValue).toEqual('.');
       expect(tokens[1].strValue).toEqual('selector');
@@ -273,9 +273,9 @@ export function main() {
 
     describe('Selector Mode', () => {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
-        var cssCode = '.class > tag';
+        const cssCode = '.class > tag';
 
-        var capturedMessage: string;
+        let capturedMessage: string;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -299,7 +299,7 @@ export function main() {
       it('should consider attribute selectors as valid input and throw when an invalid modifier is used',
          () => {
            function tokenizeAttr(modifier: string) {
-             var cssCode = 'value' + modifier + '=\'something\'';
+             const cssCode = 'value' + modifier + '=\'something\'';
              return tokenize(cssCode, false, CssLexerMode.ATTRIBUTE_SELECTOR);
            }
 
@@ -338,8 +338,8 @@ export function main() {
       it('should validate pseudo selector identifiers with a reduced subset of valid characters',
          () => {
            function tokenizePseudo(code: string, withArgs = false): CssToken[] {
-             var mode = withArgs ? CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS :
-                                   CssLexerMode.PSEUDO_SELECTOR;
+             const mode = withArgs ? CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS :
+                                     CssLexerMode.PSEUDO_SELECTOR;
              return tokenize(code, false, mode);
            }
 

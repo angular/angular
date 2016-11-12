@@ -24,7 +24,7 @@ describe('WebWorkers Animations', function() {
     browser.get(URL);
 
     waitForBootstrap();
-    let elem = element(by.css(selector + ' .box'));
+    const elem = element(by.css(selector + ' .box'));
     expect(elem.getText()).toEqual('...');
   });
 
@@ -36,7 +36,7 @@ describe('WebWorkers Animations', function() {
     waitForBootstrap();
     element(by.css(selector + ' button')).click();
 
-    let boxElm = element(by.css(selector + ' .box'));
+    const boxElm = element(by.css(selector + ' .box'));
     browser.wait(() => boxElm.getSize().then(sizes => sizes['width'] > 750), 1000);
   });
 

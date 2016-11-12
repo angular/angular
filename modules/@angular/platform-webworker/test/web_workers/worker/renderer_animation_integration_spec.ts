@@ -31,16 +31,16 @@ export function main() {
   function createWebWorkerBrokerFactory(
       messageBuses: PairedMessageBuses, workerSerializer: Serializer, uiSerializer: Serializer,
       domRootRenderer: DomRootRenderer, uiRenderStore: RenderStore): ClientMessageBrokerFactory {
-    var uiMessageBus = messageBuses.ui;
-    var workerMessageBus = messageBuses.worker;
+    const uiMessageBus = messageBuses.ui;
+    const workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var webWorkerBrokerFactory =
+    const webWorkerBrokerFactory =
         new ClientMessageBrokerFactory_(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
-    var renderer = new MessageBasedRenderer(
+    const uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
+    const renderer = new MessageBasedRenderer(
         uiMessageBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRootRenderer);
     renderer.start();
 
@@ -50,10 +50,10 @@ export function main() {
   function createWorkerRenderer(
       workerSerializer: Serializer, uiSerializer: Serializer, domRootRenderer: DomRootRenderer,
       uiRenderStore: RenderStore, workerRenderStore: RenderStore): RootRenderer {
-    var messageBuses = createPairedMessageBuses();
-    var brokerFactory = createWebWorkerBrokerFactory(
+    const messageBuses = createPairedMessageBuses();
+    const brokerFactory = createWebWorkerBrokerFactory(
         messageBuses, workerSerializer, uiSerializer, domRootRenderer, uiRenderStore);
-    var workerRootRenderer = new WebWorkerRootRenderer(
+    const workerRootRenderer = new WebWorkerRootRenderer(
         brokerFactory, messageBuses.worker, workerSerializer, workerRenderStore);
     return new DebugDomRootRenderer(workerRootRenderer);
   }
@@ -62,9 +62,9 @@ export function main() {
     // Don't run on server...
     if (!getDOM().supportsDOMEvents()) return;
 
-    var uiTestBed: TestBed;
-    var uiRenderStore: RenderStore;
-    var workerRenderStore: RenderStore;
+    let uiTestBed: TestBed;
+    let uiRenderStore: RenderStore;
+    let workerRenderStore: RenderStore;
 
     beforeEach(() => {
       uiRenderStore = new RenderStore();
@@ -79,8 +79,8 @@ export function main() {
           {provide: RootRenderer, useExisting: DomRootRenderer}
         ]
       });
-      var uiSerializer = uiTestBed.get(Serializer);
-      var domRootRenderer = uiTestBed.get(DomRootRenderer);
+      const uiSerializer = uiTestBed.get(Serializer);
+      const domRootRenderer = uiTestBed.get(DomRootRenderer);
       workerRenderStore = new RenderStore();
 
       TestBed.configureTestingModule({
@@ -99,7 +99,7 @@ export function main() {
       });
     });
 
-    var uiDriver: MockAnimationDriver;
+    let uiDriver: MockAnimationDriver;
     beforeEach(() => { uiDriver = uiTestBed.get(AnimationDriver) as MockAnimationDriver; });
 
     function retrieveFinalAnimationStepStyles(keyframes: any[]) { return keyframes[1][1]; }
@@ -112,11 +112,11 @@ export function main() {
          fixture.detectChanges();
          flushMicrotasks();
 
-         var step1 = uiDriver.log.shift();
-         var step2 = uiDriver.log.shift();
+         const step1 = uiDriver.log.shift();
+         const step2 = uiDriver.log.shift();
 
-         var step1Styles = retrieveFinalAnimationStepStyles(step1['keyframeLookup']);
-         var step2Styles = retrieveFinalAnimationStepStyles(step2['keyframeLookup']);
+         const step1Styles = retrieveFinalAnimationStepStyles(step1['keyframeLookup']);
+         const step2Styles = retrieveFinalAnimationStepStyles(step2['keyframeLookup']);
 
          expect(step1Styles).toEqual({fontSize: '20px'});
          expect(step2Styles).toEqual({opacity: '1', fontSize: '50px'});
@@ -126,8 +126,8 @@ export function main() {
          fixture.detectChanges();
          flushMicrotasks();
 
-         var step3 = uiDriver.log.shift();
-         var step3Styles = retrieveFinalAnimationStepStyles(step3['keyframeLookup']);
+         const step3 = uiDriver.log.shift();
+         const step3Styles = retrieveFinalAnimationStepStyles(step3['keyframeLookup']);
 
          expect(step3Styles).toEqual({opacity: '0', fontSize: AUTO_STYLE});
        }));
@@ -136,7 +136,7 @@ export function main() {
          const fixture = TestBed.createComponent(AnimationCmp);
          const cmp = fixture.componentInstance;
 
-         var capturedEvent: AnimationTransitionEvent = null;
+         let capturedEvent: AnimationTransitionEvent = null;
          cmp.stateStartFn = event => { capturedEvent = event; };
 
          cmp.state = 'on';
@@ -155,7 +155,7 @@ export function main() {
          const fixture = TestBed.createComponent(AnimationCmp);
          const cmp = fixture.componentInstance;
 
-         var capturedEvent: AnimationTransitionEvent = null;
+         let capturedEvent: AnimationTransitionEvent = null;
          cmp.stateDoneFn = event => { capturedEvent = event; };
 
          cmp.state = 'off';
@@ -236,8 +236,8 @@ export function main() {
          const cmp1 = f1.componentInstance;
          const cmp2 = f2.componentInstance;
 
-         var cmp1Log: {[phaseName: string]: AnimationTransitionEvent} = {};
-         var cmp2Log: {[phaseName: string]: AnimationTransitionEvent} = {};
+         const cmp1Log: {[phaseName: string]: AnimationTransitionEvent} = {};
+         const cmp2Log: {[phaseName: string]: AnimationTransitionEvent} = {};
 
          cmp1.stateStartFn = logFactory(cmp1Log, 'start');
          cmp1.stateDoneFn = logFactory(cmp1Log, 'done');
@@ -280,7 +280,7 @@ export function main() {
          cmp.state = 'off';
          fixture.detectChanges();
 
-         var player = <MockAnimationPlayer>uiDriver.log.shift()['player'];
+         const player = <MockAnimationPlayer>uiDriver.log.shift()['player'];
          expect(player.log.indexOf('destroy') >= 0).toBe(false);
 
          cmp.state = 'on';

@@ -95,12 +95,12 @@ export function main() {
 
     it('should auto detect changes if autoDetectChanges is called', () => {
 
-      let componentFixture = TestBed.createComponent(AutoDetectComp);
+      const componentFixture = TestBed.createComponent(AutoDetectComp);
       expect(componentFixture.ngZone).not.toBeNull();
       componentFixture.autoDetectChanges();
       expect(componentFixture.nativeElement).toHaveText('1');
 
-      let element = componentFixture.debugElement.children[0];
+      const element = componentFixture.debugElement.children[0];
       dispatchEvent(element.nativeElement, 'click');
 
       expect(componentFixture.isStable()).toBe(true);
@@ -110,10 +110,10 @@ export function main() {
     it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
        withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
 
-         let componentFixture = TestBed.createComponent(AutoDetectComp);
+         const componentFixture = TestBed.createComponent(AutoDetectComp);
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
 
          expect(componentFixture.nativeElement).toHaveText('11');
@@ -121,11 +121,11 @@ export function main() {
 
     it('should signal through whenStable when the fixture is stable (autoDetectChanges)',
        async(() => {
-         let componentFixture = TestBed.createComponent(AsyncComp);
+         const componentFixture = TestBed.createComponent(AsyncComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -140,12 +140,12 @@ export function main() {
 
     it('should signal through isStable when the fixture is stable (no autoDetectChanges)',
        async(() => {
-         let componentFixture = TestBed.createComponent(AsyncComp);
+         const componentFixture = TestBed.createComponent(AsyncComp);
 
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -161,11 +161,11 @@ export function main() {
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
        async(() => {
-         let componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+         const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -182,11 +182,11 @@ export function main() {
            '(no autoDetectChanges)',
        async(() => {
 
-         let componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+         const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -204,12 +204,12 @@ export function main() {
            '(autoDetectChanges)',
        async(() => {
 
-         let componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+         const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
 
          componentFixture.autoDetectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -226,11 +226,11 @@ export function main() {
            '(no autoDetectChanges)',
        async(() => {
 
-         let componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
+         const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
 
-         let element = componentFixture.debugElement.children[0];
+         const element = componentFixture.debugElement.children[0];
          dispatchEvent(element.nativeElement, 'click');
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -246,13 +246,13 @@ export function main() {
 
     it('should stabilize after async task in change detection (autoDetectChanges)', async(() => {
 
-         let componentFixture = TestBed.createComponent(AsyncChangeComp);
+         const componentFixture = TestBed.createComponent(AsyncChangeComp);
 
          componentFixture.autoDetectChanges();
          componentFixture.whenStable().then((_) => {
            expect(componentFixture.nativeElement).toHaveText('1');
 
-           let element = componentFixture.debugElement.children[0];
+           const element = componentFixture.debugElement.children[0];
            dispatchEvent(element.nativeElement, 'click');
 
            componentFixture.whenStable().then(
@@ -262,7 +262,7 @@ export function main() {
 
     it('should stabilize after async task in change detection(no autoDetectChanges)', async(() => {
 
-         let componentFixture = TestBed.createComponent(AsyncChangeComp);
+         const componentFixture = TestBed.createComponent(AsyncChangeComp);
          componentFixture.detectChanges();
          componentFixture.whenStable().then((_) => {
            // Run detectChanges again so that stabilized value is reflected in the
@@ -270,7 +270,7 @@ export function main() {
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('1');
 
-           let element = componentFixture.debugElement.children[0];
+           const element = componentFixture.debugElement.children[0];
            dispatchEvent(element.nativeElement, 'click');
            componentFixture.detectChanges();
 
@@ -291,7 +291,7 @@ export function main() {
 
       it('calling autoDetectChanges raises an error', () => {
 
-        let componentFixture = TestBed.createComponent(SimpleComp);
+        const componentFixture = TestBed.createComponent(SimpleComp);
         expect(() => {
           componentFixture.autoDetectChanges();
         }).toThrowError(/Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set/);
@@ -299,7 +299,7 @@ export function main() {
 
       it('should instantiate a component with valid DOM', async(() => {
 
-           let componentFixture = TestBed.createComponent(SimpleComp);
+           const componentFixture = TestBed.createComponent(SimpleComp);
 
            expect(componentFixture.ngZone).toBeNull();
            componentFixture.detectChanges();
@@ -308,7 +308,7 @@ export function main() {
 
       it('should allow changing members of the component', async(() => {
 
-           let componentFixture = TestBed.createComponent(MyIfComp);
+           const componentFixture = TestBed.createComponent(MyIfComp);
 
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('MyIf()');

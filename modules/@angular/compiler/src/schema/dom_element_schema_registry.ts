@@ -245,7 +245,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   constructor() {
     super();
     SCHEMA.forEach(encodedType => {
-      let type: {[property: string]: string} = {};
+      const type: {[property: string]: string} = {};
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
@@ -383,15 +383,15 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
   normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
       {error: string, value: string} {
-    var unit: string = '';
-    var strVal = val.toString().trim();
-    var errorMsg: string = null;
+    let unit: string = '';
+    const strVal = val.toString().trim();
+    let errorMsg: string = null;
 
     if (_isPixelDimensionStyle(camelCaseProp) && val !== 0 && val !== '0') {
       if (typeof val === 'number') {
         unit = 'px';
       } else {
-        let valAndSuffixMatch = val.match(/^[+-]?[\d\.]+([a-z]*)$/);
+        const valAndSuffixMatch = val.match(/^[+-]?[\d\.]+([a-z]*)$/);
         if (valAndSuffixMatch && valAndSuffixMatch[1].length == 0) {
           errorMsg = `Please provide a CSS unit value for ${userProvidedProp}:${val}`;
         }

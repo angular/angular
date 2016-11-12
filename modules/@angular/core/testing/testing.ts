@@ -17,7 +17,7 @@ import {TestBed} from './test_bed';
 
 declare var global: any;
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 // Reset the test providers and the fake async zone before each test.
 if (_global.beforeEach) {

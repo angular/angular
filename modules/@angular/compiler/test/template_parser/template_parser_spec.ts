@@ -32,11 +32,11 @@ const MOCK_SCHEMA_REGISTRY = [{
 }];
 
 export function main() {
-  var ngIf: CompileDirectiveSummary;
-  var parse: (
+  let ngIf: CompileDirectiveSummary;
+  let parse: (
       template: string, directives: CompileDirectiveSummary[], pipes?: CompilePipeSummary[],
       schemas?: SchemaMetadata[]) => TemplateAst[];
-  var console: ArrayConsole;
+  let console: ArrayConsole;
 
   function commonBeforeEach() {
     beforeEach(() => {
@@ -44,9 +44,9 @@ export function main() {
       TestBed.configureCompiler({providers: [{provide: Console, useValue: console}]});
     });
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
-      var someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
-      var someTemplate = new CompileTemplateMetadata({animations: [someAnimation]});
-      var component = CompileDirectiveMetadata.create({
+      const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
+      const someTemplate = new CompileTemplateMetadata({animations: [someAnimation]});
+      const component = CompileDirectiveMetadata.create({
         selector: 'root',
         template: someTemplate,
         type: new CompileTypeMetadata(
@@ -232,8 +232,8 @@ export function main() {
 
     describe('security context', () => {
       function secContext(tpl: string): SecurityContext {
-        let ast = parse(tpl, []);
-        let propBinding = (<ElementAst>ast[0]).inputs[0];
+        const ast = parse(tpl, []);
+        const propBinding = (<ElementAst>ast[0]).inputs[0];
         return propBinding.securityContext;
       }
 
@@ -465,7 +465,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
                () => {
                  const animationEntries = [new CompileAnimationEntryMetadata('prop', [])];
-                 var dirA =
+                 const dirA =
                      CompileDirectiveMetadata
                          .create({
                            selector: 'div',
@@ -484,7 +484,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                });
 
             it('should throw descriptive error when a host binding is not a string expression', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'broken',
@@ -500,7 +500,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should throw descriptive error when a host event is not a string expression', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'broken',
@@ -568,17 +568,17 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
             it('should allow events on explicit embedded templates that are emitted by a directive',
                () => {
-                 var dirA = CompileDirectiveMetadata
-                                .create({
-                                  selector: 'template',
-                                  outputs: ['e'],
-                                  type: new CompileTypeMetadata({
-                                    moduleUrl: someModuleUrl,
-                                    name: 'DirA',
-                                    reference: {} as Type<any>
+                 const dirA = CompileDirectiveMetadata
+                                  .create({
+                                    selector: 'template',
+                                    outputs: ['e'],
+                                    type: new CompileTypeMetadata({
+                                      moduleUrl: someModuleUrl,
+                                      name: 'DirA',
+                                      reference: {} as Type<any>
+                                    })
                                   })
-                                })
-                                .toSummary();
+                                  .toSummary();
                  expect(humanizeTplAst(parse('<template (e)="f"></template>', [dirA]))).toEqual([
                    [EmbeddedTemplateAst],
                    [BoundEventAst, 'e', null, 'f'],
@@ -611,36 +611,36 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           describe('directives', () => {
             it('should order directives by the directives array in the View and match them only once',
                () => {
-                 var dirA = CompileDirectiveMetadata
-                                .create({
-                                  selector: '[a]',
-                                  type: new CompileTypeMetadata({
-                                    moduleUrl: someModuleUrl,
-                                    name: 'DirA',
-                                    reference: {} as Type<any>
+                 const dirA = CompileDirectiveMetadata
+                                  .create({
+                                    selector: '[a]',
+                                    type: new CompileTypeMetadata({
+                                      moduleUrl: someModuleUrl,
+                                      name: 'DirA',
+                                      reference: {} as Type<any>
+                                    })
                                   })
-                                })
-                                .toSummary();
-                 var dirB = CompileDirectiveMetadata
-                                .create({
-                                  selector: '[b]',
-                                  type: new CompileTypeMetadata({
-                                    moduleUrl: someModuleUrl,
-                                    name: 'DirB',
-                                    reference: {} as Type<any>
+                                  .toSummary();
+                 const dirB = CompileDirectiveMetadata
+                                  .create({
+                                    selector: '[b]',
+                                    type: new CompileTypeMetadata({
+                                      moduleUrl: someModuleUrl,
+                                      name: 'DirB',
+                                      reference: {} as Type<any>
+                                    })
                                   })
-                                })
-                                .toSummary();
-                 var dirC = CompileDirectiveMetadata
-                                .create({
-                                  selector: '[c]',
-                                  type: new CompileTypeMetadata({
-                                    moduleUrl: someModuleUrl,
-                                    name: 'DirC',
-                                    reference: {} as Type<any>
+                                  .toSummary();
+                 const dirC = CompileDirectiveMetadata
+                                  .create({
+                                    selector: '[c]',
+                                    type: new CompileTypeMetadata({
+                                      moduleUrl: someModuleUrl,
+                                      name: 'DirC',
+                                      reference: {} as Type<any>
+                                    })
                                   })
-                                })
-                                .toSummary();
+                                  .toSummary();
                  expect(humanizeTplAst(parse('<div a c b a b>', [dirA, dirB, dirC]))).toEqual([
                    [ElementAst, 'div'], [AttrAst, 'a', ''], [AttrAst, 'c', ''], [AttrAst, 'b', ''],
                    [AttrAst, 'a', ''], [AttrAst, 'b', ''], [DirectiveAst, dirA],
@@ -649,7 +649,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                });
 
             it('should locate directives in property bindings', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a=b]',
@@ -657,7 +657,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                             {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
                       })
                       .toSummary();
-              var dirB =
+              const dirB =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[b]',
@@ -673,7 +673,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should locate directives in event bindings', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a]',
@@ -688,7 +688,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse directive host properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -704,7 +704,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse directive host listeners', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -719,7 +719,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse directive properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -735,7 +735,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse renamed directive properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -751,7 +751,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse literal directive properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -767,7 +767,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should favor explicit bound properties over literal properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -784,7 +784,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should support optional directive properties', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: 'div',
@@ -801,7 +801,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           });
 
           describe('providers', () => {
-            var nextProviderId: number;
+            let nextProviderId: number;
 
             function createToken(value: string): CompileTokenMetadata {
               let token: CompileTokenMetadata;
@@ -818,17 +818,17 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             }
 
             function createDep(value: string): CompileDiDependencyMetadata {
-              var isOptional = false;
+              let isOptional = false;
               if (value.startsWith('optional:')) {
                 isOptional = true;
                 value = value.substring(9);
               }
-              var isSelf = false;
+              let isSelf = false;
               if (value.startsWith('self:')) {
                 isSelf = true;
                 value = value.substring(5);
               }
-              var isHost = false;
+              let isHost = false;
               if (value.startsWith('host:')) {
                 isHost = true;
                 value = value.substring(5);
@@ -861,7 +861,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                   deps?: string[],
                   queries?: string[]
                 } = {}): CompileDirectiveSummary {
-              var isComponent = !selector.startsWith('[');
+              const isComponent = !selector.startsWith('[');
               return CompileDirectiveMetadata
                   .create({
                     selector: selector,
@@ -884,96 +884,96 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             beforeEach(() => { nextProviderId = 0; });
 
             it('should provide a component', () => {
-              var comp = createDir('my-comp');
-              var elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
+              const comp = createDir('my-comp');
+              const elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
               expect(elAst.providers.length).toBe(1);
               expect(elAst.providers[0].providerType).toBe(ProviderAstType.Component);
               expect(elAst.providers[0].providers[0].useClass).toBe(comp.type);
             });
 
             it('should provide a directive', () => {
-              var dirA = createDir('[dirA]');
-              var elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
+              const dirA = createDir('[dirA]');
+              const elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
               expect(elAst.providers.length).toBe(1);
               expect(elAst.providers[0].providerType).toBe(ProviderAstType.Directive);
               expect(elAst.providers[0].providers[0].useClass).toBe(dirA.type);
             });
 
             it('should use the public providers of a directive', () => {
-              var provider = createProvider('service');
-              var dirA = createDir('[dirA]', {providers: [provider]});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
+              const provider = createProvider('service');
+              const dirA = createDir('[dirA]', {providers: [provider]});
+              const elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
               expect(elAst.providers.length).toBe(2);
               expect(elAst.providers[1].providerType).toBe(ProviderAstType.PublicService);
               expect(elAst.providers[1].providers).toEqual([provider]);
             });
 
             it('should use the private providers of a component', () => {
-              var provider = createProvider('service');
-              var comp = createDir('my-comp', {viewProviders: [provider]});
-              var elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
+              const provider = createProvider('service');
+              const comp = createDir('my-comp', {viewProviders: [provider]});
+              const elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
               expect(elAst.providers.length).toBe(2);
               expect(elAst.providers[1].providerType).toBe(ProviderAstType.PrivateService);
               expect(elAst.providers[1].providers).toEqual([provider]);
             });
 
             it('should support multi providers', () => {
-              var provider0 = createProvider('service0', {multi: true});
-              var provider1 = createProvider('service1', {multi: true});
-              var provider2 = createProvider('service0', {multi: true});
-              var dirA = createDir('[dirA]', {providers: [provider0, provider1]});
-              var dirB = createDir('[dirB]', {providers: [provider2]});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
+              const provider0 = createProvider('service0', {multi: true});
+              const provider1 = createProvider('service1', {multi: true});
+              const provider2 = createProvider('service0', {multi: true});
+              const dirA = createDir('[dirA]', {providers: [provider0, provider1]});
+              const dirB = createDir('[dirB]', {providers: [provider2]});
+              const elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
               expect(elAst.providers.length).toBe(4);
               expect(elAst.providers[2].providers).toEqual([provider0, provider2]);
               expect(elAst.providers[3].providers).toEqual([provider1]);
             });
 
             it('should overwrite non multi providers', () => {
-              var provider1 = createProvider('service0');
-              var provider2 = createProvider('service1');
-              var provider3 = createProvider('service0');
-              var dirA = createDir('[dirA]', {providers: [provider1, provider2]});
-              var dirB = createDir('[dirB]', {providers: [provider3]});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
+              const provider1 = createProvider('service0');
+              const provider2 = createProvider('service1');
+              const provider3 = createProvider('service0');
+              const dirA = createDir('[dirA]', {providers: [provider1, provider2]});
+              const dirB = createDir('[dirB]', {providers: [provider3]});
+              const elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
               expect(elAst.providers.length).toBe(4);
               expect(elAst.providers[2].providers).toEqual([provider3]);
               expect(elAst.providers[3].providers).toEqual([provider2]);
             });
 
             it('should overwrite component providers by directive providers', () => {
-              var compProvider = createProvider('service0');
-              var dirProvider = createProvider('service0');
-              var comp = createDir('my-comp', {providers: [compProvider]});
-              var dirA = createDir('[dirA]', {providers: [dirProvider]});
-              var elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
+              const compProvider = createProvider('service0');
+              const dirProvider = createProvider('service0');
+              const comp = createDir('my-comp', {providers: [compProvider]});
+              const dirA = createDir('[dirA]', {providers: [dirProvider]});
+              const elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
               expect(elAst.providers.length).toBe(3);
               expect(elAst.providers[2].providers).toEqual([dirProvider]);
             });
 
             it('should overwrite view providers by directive providers', () => {
-              var viewProvider = createProvider('service0');
-              var dirProvider = createProvider('service0');
-              var comp = createDir('my-comp', {viewProviders: [viewProvider]});
-              var dirA = createDir('[dirA]', {providers: [dirProvider]});
-              var elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
+              const viewProvider = createProvider('service0');
+              const dirProvider = createProvider('service0');
+              const comp = createDir('my-comp', {viewProviders: [viewProvider]});
+              const dirA = createDir('[dirA]', {providers: [dirProvider]});
+              const elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
               expect(elAst.providers.length).toBe(3);
               expect(elAst.providers[2].providers).toEqual([dirProvider]);
             });
 
             it('should overwrite directives by providers', () => {
-              var dirProvider = createProvider('type:my-comp');
-              var comp = createDir('my-comp', {providers: [dirProvider]});
-              var elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
+              const dirProvider = createProvider('type:my-comp');
+              const comp = createDir('my-comp', {providers: [dirProvider]});
+              const elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
               expect(elAst.providers.length).toBe(1);
               expect(elAst.providers[0].providers).toEqual([dirProvider]);
             });
 
             it('if mixing multi and non multi providers', () => {
-              var provider0 = createProvider('service0');
-              var provider1 = createProvider('service0', {multi: true});
-              var dirA = createDir('[dirA]', {providers: [provider0]});
-              var dirB = createDir('[dirB]', {providers: [provider1]});
+              const provider0 = createProvider('service0');
+              const provider1 = createProvider('service0', {multi: true});
+              const dirA = createDir('[dirA]', {providers: [provider0]});
+              const dirB = createDir('[dirB]', {providers: [provider1]});
               expect(() => parse('<div dirA dirB>', [dirA, dirB]))
                   .toThrowError(
                       `Template parse errors:\n` +
@@ -981,11 +981,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should sort providers by their DI order', () => {
-              var provider0 = createProvider('service0', {deps: ['type:[dir2]']});
-              var provider1 = createProvider('service1');
-              var dir2 = createDir('[dir2]', {deps: ['service1']});
-              var comp = createDir('my-comp', {providers: [provider0, provider1]});
-              var elAst: ElementAst = <ElementAst>parse('<my-comp dir2>', [comp, dir2])[0];
+              const provider0 = createProvider('service0', {deps: ['type:[dir2]']});
+              const provider1 = createProvider('service1');
+              const dir2 = createDir('[dir2]', {deps: ['service1']});
+              const comp = createDir('my-comp', {providers: [provider0, provider1]});
+              const elAst: ElementAst = <ElementAst>parse('<my-comp dir2>', [comp, dir2])[0];
               expect(elAst.providers.length).toBe(4);
               expect(elAst.providers[0].providers[0].useClass).toEqual(comp.type);
               expect(elAst.providers[1].providers).toEqual([provider1]);
@@ -994,11 +994,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should sort directives by their DI order', () => {
-              var dir0 = createDir('[dir0]', {deps: ['type:my-comp']});
-              var dir1 = createDir('[dir1]', {deps: ['type:[dir0]']});
-              var dir2 = createDir('[dir2]', {deps: ['type:[dir1]']});
-              var comp = createDir('my-comp');
-              var elAst: ElementAst =
+              const dir0 = createDir('[dir0]', {deps: ['type:my-comp']});
+              const dir1 = createDir('[dir1]', {deps: ['type:[dir0]']});
+              const dir2 = createDir('[dir2]', {deps: ['type:[dir1]']});
+              const comp = createDir('my-comp');
+              const elAst: ElementAst =
                   <ElementAst>parse('<my-comp dir2 dir0 dir1>', [comp, dir2, dir0, dir1])[0];
               expect(elAst.providers.length).toBe(4);
               expect(elAst.directives[0].directive).toBe(comp);
@@ -1008,11 +1008,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should mark directives and dependencies of directives as eager', () => {
-              var provider0 = createProvider('service0');
-              var provider1 = createProvider('service1');
-              var dirA =
+              const provider0 = createProvider('service0');
+              const provider1 = createProvider('service1');
+              const dirA =
                   createDir('[dirA]', {providers: [provider0, provider1], deps: ['service0']});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
+              const elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
               expect(elAst.providers.length).toBe(3);
               expect(elAst.providers[0].providers).toEqual([provider0]);
               expect(elAst.providers[0].eager).toBe(true);
@@ -1023,11 +1023,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should mark dependencies on parent elements as eager', () => {
-              var provider0 = createProvider('service0');
-              var provider1 = createProvider('service1');
-              var dirA = createDir('[dirA]', {providers: [provider0, provider1]});
-              var dirB = createDir('[dirB]', {deps: ['service0']});
-              var elAst: ElementAst =
+              const provider0 = createProvider('service0');
+              const provider1 = createProvider('service1');
+              const dirA = createDir('[dirA]', {providers: [provider0, provider1]});
+              const dirB = createDir('[dirB]', {deps: ['service0']});
+              const elAst: ElementAst =
                   <ElementAst>parse('<div dirA><div dirB></div></div>', [dirA, dirB])[0];
               expect(elAst.providers.length).toBe(3);
               expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
@@ -1039,11 +1039,11 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should mark queried providers as eager', () => {
-              var provider0 = createProvider('service0');
-              var provider1 = createProvider('service1');
-              var dirA =
+              const provider0 = createProvider('service0');
+              const provider1 = createProvider('service1');
+              const dirA =
                   createDir('[dirA]', {providers: [provider0, provider1], queries: ['service0']});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
+              const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
               expect(elAst.providers.length).toBe(3);
               expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
               expect(elAst.providers[0].eager).toBe(true);
@@ -1054,10 +1054,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should not mark dependencies accross embedded views as eager', () => {
-              var provider0 = createProvider('service0');
-              var dirA = createDir('[dirA]', {providers: [provider0]});
-              var dirB = createDir('[dirB]', {deps: ['service0']});
-              var elAst: ElementAst =
+              const provider0 = createProvider('service0');
+              const dirA = createDir('[dirA]', {providers: [provider0]});
+              const dirB = createDir('[dirB]', {deps: ['service0']});
+              const elAst: ElementAst =
                   <ElementAst>parse('<div dirA><div *ngIf dirB></div></div>', [dirA, dirB])[0];
               expect(elAst.providers.length).toBe(2);
               expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
@@ -1067,29 +1067,29 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should report missing @Self() deps as errors', () => {
-              var dirA = createDir('[dirA]', {deps: ['self:provider0']});
+              const dirA = createDir('[dirA]', {deps: ['self:provider0']});
               expect(() => parse('<div dirA></div>', [dirA]))
                   .toThrowError(
                       'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
             });
 
             it('should change missing @Self() that are optional to nulls', () => {
-              var dirA = createDir('[dirA]', {deps: ['optional:self:provider0']});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
+              const dirA = createDir('[dirA]', {deps: ['optional:self:provider0']});
+              const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
               expect(elAst.providers[0].providers[0].deps[0].isValue).toBe(true);
               expect(elAst.providers[0].providers[0].deps[0].value).toBe(null);
             });
 
             it('should report missing @Host() deps as errors', () => {
-              var dirA = createDir('[dirA]', {deps: ['host:provider0']});
+              const dirA = createDir('[dirA]', {deps: ['host:provider0']});
               expect(() => parse('<div dirA></div>', [dirA]))
                   .toThrowError(
                       'Template parse errors:\nNo provider for provider0 ("[ERROR ->]<div dirA></div>"): TestComp@0:0');
             });
 
             it('should change missing @Host() that are optional to nulls', () => {
-              var dirA = createDir('[dirA]', {deps: ['optional:host:provider0']});
-              var elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
+              const dirA = createDir('[dirA]', {deps: ['optional:host:provider0']});
+              const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
               expect(elAst.providers[0].providers[0].deps[0].isValue).toBe(true);
               expect(elAst.providers[0].providers[0].deps[0].value).toBe(null);
             });
@@ -1118,7 +1118,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should assign references to directives via exportAs', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a]',
@@ -1165,7 +1165,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                });
 
             it('should assign references with empty value to components', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a]',
@@ -1185,7 +1185,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             });
 
             it('should not locate directives in references', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a]',
@@ -1235,7 +1235,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             });
 
             it('should not locate directives in variables', () => {
-              var dirA =
+              const dirA =
                   CompileDirectiveMetadata
                       .create({
                         selector: '[a]',
@@ -1281,7 +1281,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
             describe('directives', () => {
               it('should locate directives in property bindings', () => {
-                var dirA =
+                const dirA =
                     CompileDirectiveMetadata
                         .create({
                           selector: '[a=b]',
@@ -1290,16 +1290,16 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                           inputs: ['a']
                         })
                         .toSummary();
-                var dirB = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[b]',
-                                 type: new CompileTypeMetadata({
-                                   moduleUrl: someModuleUrl,
-                                   name: 'DirB',
-                                   reference: {} as Type<any>
+                const dirB = CompileDirectiveMetadata
+                                 .create({
+                                   selector: '[b]',
+                                   type: new CompileTypeMetadata({
+                                     moduleUrl: someModuleUrl,
+                                     name: 'DirB',
+                                     reference: {} as Type<any>
+                                   })
                                  })
-                               })
-                               .toSummary();
+                                 .toSummary();
                 expect(humanizeTplAst(parse('<div template="a b" b>', [dirA, dirB]))).toEqual([
                   [EmbeddedTemplateAst], [DirectiveAst, dirA],
                   [BoundDirectivePropertyAst, 'a', 'b'], [ElementAst, 'div'], [AttrAst, 'b', ''],
@@ -1308,32 +1308,32 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
               });
 
               it('should not locate directives in variables', () => {
-                var dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata({
-                                   moduleUrl: someModuleUrl,
-                                   name: 'DirA',
-                                   reference: {} as Type<any>
+                const dirA = CompileDirectiveMetadata
+                                 .create({
+                                   selector: '[a]',
+                                   type: new CompileTypeMetadata({
+                                     moduleUrl: someModuleUrl,
+                                     name: 'DirA',
+                                     reference: {} as Type<any>
+                                   })
                                  })
-                               })
-                               .toSummary();
+                                 .toSummary();
                 expect(humanizeTplAst(parse('<div template="let a=b">', [dirA]))).toEqual([
                   [EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']
                 ]);
               });
 
               it('should not locate directives in references', () => {
-                var dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata({
-                                   moduleUrl: someModuleUrl,
-                                   name: 'DirA',
-                                   reference: {} as Type<any>
+                const dirA = CompileDirectiveMetadata
+                                 .create({
+                                   selector: '[a]',
+                                   type: new CompileTypeMetadata({
+                                     moduleUrl: someModuleUrl,
+                                     name: 'DirA',
+                                     reference: {} as Type<any>
+                                   })
                                  })
-                               })
-                               .toSummary();
+                                 .toSummary();
                 expect(humanizeTplAst(parse('<div ref-a>', [dirA]))).toEqual([
                   [ElementAst, 'div'], [ReferenceAst, 'a', null]
                 ]);
@@ -1358,7 +1358,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         describe('content projection', () => {
-          var compCounter: number;
+          let compCounter: number;
           beforeEach(() => { compCounter = 0; });
 
           function createComp(
@@ -1555,7 +1555,7 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ER
           });
 
           it('should report invalid host property names', () => {
-            var dirA =
+            const dirA =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'div',
@@ -1575,7 +1575,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
 
           it('should not throw on invalid property names if the property is used by a directive',
              () => {
-               var dirA =
+               const dirA =
                    CompileDirectiveMetadata
                        .create({
                          selector: 'div',
@@ -1588,7 +1588,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
              });
 
           it('should not allow more than 1 component per element', () => {
-            var dirA =
+            const dirA =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'div',
@@ -1598,7 +1598,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
                       template: new CompileTemplateMetadata({ngContentSelectors: []})
                     })
                     .toSummary();
-            var dirB =
+            const dirB =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'div',
@@ -1618,7 +1618,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
 
           it('should not allow components or element bindings nor dom events on explicit embedded templates',
              () => {
-               var dirA =
+               const dirA =
                    CompileDirectiveMetadata
                        .create({
                          selector: '[a]',
@@ -1636,7 +1636,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
              });
 
           it('should not allow components or element bindings on inline embedded templates', () => {
-            var dirA =
+            const dirA =
                 CompileDirectiveMetadata
                     .create({
                       selector: '[a]',
@@ -1737,7 +1737,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
         describe('source spans', () => {
           it('should support ng-content', () => {
-            var parsed = parse('<ng-content select="a">', []);
+            const parsed = parse('<ng-content select="a">', []);
             expect(humanizeTplAstSourceSpans(parsed)).toEqual([
               [NgContentAst, '<ng-content select="a">']
             ]);
@@ -1797,7 +1797,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive', () => {
-            var dirA =
+            const dirA =
                 CompileDirectiveMetadata
                     .create({
                       selector: '[a]',
@@ -1805,7 +1805,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
                           {moduleUrl: someModuleUrl, name: 'DirA', reference: {} as Type<any>})
                     })
                     .toSummary();
-            var comp =
+            const comp =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'div',
@@ -1822,7 +1822,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive in namespace', () => {
-            var tagSel =
+            const tagSel =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'circle',
@@ -1830,7 +1830,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
                           {moduleUrl: someModuleUrl, name: 'elDir', reference: {} as Type<any>})
                     })
                     .toSummary();
-            var attrSel =
+            const attrSel =
                 CompileDirectiveMetadata
                     .create({
                       selector: '[href]',
@@ -1852,7 +1852,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive property', () => {
-            var dirA =
+            const dirA =
                 CompileDirectiveMetadata
                     .create({
                       selector: 'div',
@@ -1910,7 +1910,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
         describe('pipes', () => {
           it('should allow pipes that have been defined as dependencies', () => {
-            var testPipe =
+            const testPipe =
                 new CompilePipeMetadata({
                   name: 'test',
                   type: new CompileTypeMetadata(
@@ -1982,12 +1982,12 @@ class TemplateHumanizer implements TemplateAstVisitor {
       private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG){};
 
   visitNgContent(ast: NgContentAst, context: any): any {
-    var res = [NgContentAst];
+    const res = [NgContentAst];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    var res = [EmbeddedTemplateAst];
+    const res = [EmbeddedTemplateAst];
     this.result.push(this._appendContext(ast, res));
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.outputs);
@@ -1998,7 +1998,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitElement(ast: ElementAst, context: any): any {
-    var res = [ElementAst, ast.name];
+    const res = [ElementAst, ast.name];
     this.result.push(this._appendContext(ast, res));
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.inputs);
@@ -2009,22 +2009,23 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitReference(ast: ReferenceAst, context: any): any {
-    var res = [ReferenceAst, ast.name, ast.value];
+    const res = [ReferenceAst, ast.name, ast.value];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitVariable(ast: VariableAst, context: any): any {
-    var res = [VariableAst, ast.name, ast.value];
+    const res = [VariableAst, ast.name, ast.value];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitEvent(ast: BoundEventAst, context: any): any {
-    var res = [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
+    const res =
+        [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
-    var res = [
+    const res = [
       BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
       ast.unit
     ];
@@ -2032,22 +2033,22 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitAttr(ast: AttrAst, context: any): any {
-    var res = [AttrAst, ast.name, ast.value];
+    const res = [AttrAst, ast.name, ast.value];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitBoundText(ast: BoundTextAst, context: any): any {
-    var res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
+    const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitText(ast: TextAst, context: any): any {
-    var res = [TextAst, ast.value];
+    const res = [TextAst, ast.value];
     this.result.push(this._appendContext(ast, res));
     return null;
   }
   visitDirective(ast: DirectiveAst, context: any): any {
-    var res = [DirectiveAst, ast.directive];
+    const res = [DirectiveAst, ast.directive];
     this.result.push(this._appendContext(ast, res));
     templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.hostProperties);
@@ -2055,7 +2056,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    var res = [
+    const res = [
       BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
     ];
     this.result.push(this._appendContext(ast, res));
@@ -2074,7 +2075,7 @@ function sourceInfo(ast: TemplateAst): string {
 }
 
 function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
-  var humanizer = new TemplateContentProjectionHumanizer();
+  const humanizer = new TemplateContentProjectionHumanizer();
   templateVisitAll(humanizer, templateAsts);
   return humanizer.result;
 }

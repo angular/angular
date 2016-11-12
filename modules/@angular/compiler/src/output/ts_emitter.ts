@@ -39,10 +39,10 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 export class TypeScriptEmitter implements OutputEmitter {
   constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
-    var converter = new _TsEmitterVisitor(moduleUrl);
-    var ctx = EmitterVisitorContext.createRoot(exportedVars);
+    const converter = new _TsEmitterVisitor(moduleUrl);
+    const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts: string[] = [];
+    const srcParts: string[] = [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
@@ -233,7 +233,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts =
+    const catchStmts =
         [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
           o.StmtModifier.Final
         ])].concat(stmt.catchStmts);
@@ -244,7 +244,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
-    var typeStr: string;
+    let typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
         typeStr = 'boolean';
@@ -290,7 +290,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name: string;
+    let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';
@@ -321,7 +321,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       throw new Error(`Internal error: unknown identifier ${value}`);
     }
     if (isPresent(value.moduleUrl) && value.moduleUrl != this._moduleUrl) {
-      var prefix = this.importsWithPrefixes.get(value.moduleUrl);
+      let prefix = this.importsWithPrefixes.get(value.moduleUrl);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(value.moduleUrl, prefix);

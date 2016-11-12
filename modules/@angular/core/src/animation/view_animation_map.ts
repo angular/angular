@@ -16,7 +16,7 @@ export class ViewAnimationMap {
   private _allPlayers: AnimationPlayer[] = [];
 
   find(element: any, animationName: string): AnimationPlayer {
-    var playersByAnimation = this._map.get(element);
+    const playersByAnimation = this._map.get(element);
     if (isPresent(playersByAnimation)) {
       return playersByAnimation[animationName];
     }
@@ -29,11 +29,11 @@ export class ViewAnimationMap {
   }
 
   set(element: any, animationName: string, player: AnimationPlayer): void {
-    var playersByAnimation = this._map.get(element);
+    let playersByAnimation = this._map.get(element);
     if (!isPresent(playersByAnimation)) {
       playersByAnimation = {};
     }
-    var existingEntry = playersByAnimation[animationName];
+    const existingEntry = playersByAnimation[animationName];
     if (isPresent(existingEntry)) {
       this.remove(element, animationName);
     }

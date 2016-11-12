@@ -21,24 +21,24 @@ export * from './ng_zone_mock';
 
 export var proxy: ClassDecorator = (t: any) => t;
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 export var afterEach: Function = _global.afterEach;
 export var expect: (actual: any) => jasmine.Matchers = _global.expect;
 
-var jsmBeforeEach = _global.beforeEach;
-var jsmDescribe = _global.describe;
-var jsmDDescribe = _global.fdescribe;
-var jsmXDescribe = _global.xdescribe;
-var jsmIt = _global.it;
-var jsmIIt = _global.fit;
-var jsmXIt = _global.xit;
+const jsmBeforeEach = _global.beforeEach;
+const jsmDescribe = _global.describe;
+const jsmDDescribe = _global.fdescribe;
+const jsmXDescribe = _global.xdescribe;
+const jsmIt = _global.it;
+const jsmIIt = _global.fit;
+const jsmXIt = _global.xit;
 
-var runnerStack: BeforeEachRunner[] = [];
+const runnerStack: BeforeEachRunner[] = [];
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
-var globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+const globalTimeOut = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testBed = getTestBed();
+const testBed = getTestBed();
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
@@ -62,10 +62,10 @@ class BeforeEachRunner {
 jsmBeforeEach(() => { testBed.resetTestingModule(); });
 
 function _describe(jsmFn: Function, ...args: any[]) {
-  var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
-  var runner = new BeforeEachRunner(parentRunner);
+  const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
+  const runner = new BeforeEachRunner(parentRunner);
   runnerStack.push(runner);
-  var suite = jsmFn(...args);
+  const suite = jsmFn(...args);
   runnerStack.pop();
   return suite;
 }
@@ -106,7 +106,7 @@ export function beforeEach(fn: Function): void {
  */
 export function beforeEachProviders(fn: Function): void {
   jsmBeforeEach(() => {
-    var providers = fn();
+    const providers = fn();
     if (!providers) return;
     testBed.configureTestingModule({providers: providers});
   });
@@ -119,11 +119,11 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     debugger;
     throw new Error('Empty Stack!');
   }
-  var runner = runnerStack[runnerStack.length - 1];
-  var timeOut = Math.max(globalTimeOut, testTimeOut);
+  const runner = runnerStack[runnerStack.length - 1];
+  const timeOut = Math.max(globalTimeOut, testTimeOut);
 
   jsmFn(name, (done: any) => {
-    var completerProvider = {
+    const completerProvider = {
       provide: AsyncTestCompleter,
       useFactory: () => {
         // Mark the test as async when an AsyncTestCompleter is injected in an it()
@@ -134,7 +134,7 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     runner.run();
 
     if (testFn.length == 0) {
-      let retVal = testFn();
+      const retVal = testFn();
       if (isPromise(retVal)) {
         // Asynchronous test function that returns a Promise - wait for completion.
         (<Promise<any>>retVal).then(done, done.fail);
@@ -164,7 +164,7 @@ export function iit(name: any, fn: any, timeOut: any = null): void {
 export class SpyObject {
   constructor(type?: any) {
     if (type) {
-      for (let prop in type.prototype) {
+      for (const prop in type.prototype) {
         let m: any = null;
         try {
           m = type.prototype[prop];
@@ -197,7 +197,7 @@ export class SpyObject {
       object = new SpyObject();
     }
 
-    var m = StringMapWrapper.merge(config, overrides);
+    const m = StringMapWrapper.merge(config, overrides);
     Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
     return object;
   }

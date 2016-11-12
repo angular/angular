@@ -87,7 +87,7 @@ export class StageButtonsComponent extends HasStyle {
   }
 
   private _computeStageButtons() {
-    var disabled = true;
+    let disabled = true;
     this.stages = STATUS_LIST
                       .map((status) => {
                         const isCurrent = this._offering.status == status;

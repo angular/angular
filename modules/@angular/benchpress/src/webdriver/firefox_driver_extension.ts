@@ -34,7 +34,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
   }
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
-    var script = 'window.markEnd("' + name + '");';
+    let script = 'window.markEnd("' + name + '");';
     if (isPresent(restartName)) {
       script += 'window.markStart("' + restartName + '");';
     }

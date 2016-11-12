@@ -12,7 +12,7 @@ import {isPresent} from '../src/facade/lang';
 
 export function main() {
   describe('MockResourceLoader', () => {
-    var resourceLoader: MockResourceLoader;
+    let resourceLoader: MockResourceLoader;
 
     beforeEach(() => { resourceLoader = new MockResourceLoader(); });
 
@@ -43,8 +43,8 @@ export function main() {
 
     it('should return a response from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var url = '/foo';
-         var response = 'bar';
+         const url = '/foo';
+         const response = 'bar';
          resourceLoader.when(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -52,8 +52,8 @@ export function main() {
 
     it('should return an error from the definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var url = '/foo';
-         var response: string = null;
+         const url = '/foo';
+         const response: string = null;
          resourceLoader.when(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -61,8 +61,8 @@ export function main() {
 
     it('should return a response from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var url = '/foo';
-         var response = 'bar';
+         const url = '/foo';
+         const response = 'bar';
          resourceLoader.expect(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
@@ -70,16 +70,16 @@ export function main() {
 
     it('should return an error from the expectations',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var url = '/foo';
-         var response: string = null;
+         const url = '/foo';
+         const response: string = null;
          resourceLoader.expect(url, response);
          expectResponse(resourceLoader.get(url), url, response, () => async.done());
          resourceLoader.flush();
        }));
 
     it('should not reuse expectations', () => {
-      var url = '/foo';
-      var response = 'bar';
+      const url = '/foo';
+      const response = 'bar';
       resourceLoader.expect(url, response);
       resourceLoader.get(url);
       resourceLoader.get(url);
@@ -88,7 +88,7 @@ export function main() {
 
     it('should return expectations before definitions',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var url = '/foo';
+         const url = '/foo';
          resourceLoader.when(url, 'when');
          resourceLoader.expect(url, 'expect');
          expectResponse(resourceLoader.get(url), url, 'expect');

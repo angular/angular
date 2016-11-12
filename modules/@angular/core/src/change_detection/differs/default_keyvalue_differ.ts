@@ -37,35 +37,35 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
   }
 
   forEachItem(fn: (r: KeyValueChangeRecord) => void) {
-    var record: KeyValueChangeRecord;
+    let record: KeyValueChangeRecord;
     for (record = this._mapHead; record !== null; record = record._next) {
       fn(record);
     }
   }
 
   forEachPreviousItem(fn: (r: KeyValueChangeRecord) => void) {
-    var record: KeyValueChangeRecord;
+    let record: KeyValueChangeRecord;
     for (record = this._previousMapHead; record !== null; record = record._nextPrevious) {
       fn(record);
     }
   }
 
   forEachChangedItem(fn: (r: KeyValueChangeRecord) => void) {
-    var record: KeyValueChangeRecord;
+    let record: KeyValueChangeRecord;
     for (record = this._changesHead; record !== null; record = record._nextChanged) {
       fn(record);
     }
   }
 
   forEachAddedItem(fn: (r: KeyValueChangeRecord) => void) {
-    var record: KeyValueChangeRecord;
+    let record: KeyValueChangeRecord;
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
       fn(record);
     }
   }
 
   forEachRemovedItem(fn: (r: KeyValueChangeRecord) => void) {
-    var record: KeyValueChangeRecord;
+    let record: KeyValueChangeRecord;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
     }
@@ -85,7 +85,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
 
   check(map: Map<any, any>|{[k: string]: any}): boolean {
     this._reset();
-    let records = this._records;
+    const records = this._records;
     let oldSeqRecord: KeyValueChangeRecord = this._mapHead;
     let lastOldSeqRecord: KeyValueChangeRecord = null;
     let lastNewSeqRecord: KeyValueChangeRecord = null;
@@ -162,7 +162,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
       } else {
         lastRecord._next = null;
       }
-      var nextRecord = record._next;
+      const nextRecord = record._next;
       this._addToRemovals(record);
       lastRecord = record;
       record = nextRecord;
@@ -202,7 +202,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
 
   /** @internal */
   _removeFromSeq(prev: KeyValueChangeRecord, record: KeyValueChangeRecord) {
-    var next = record._next;
+    const next = record._next;
     if (prev === null) {
       this._mapHead = next;
     } else {

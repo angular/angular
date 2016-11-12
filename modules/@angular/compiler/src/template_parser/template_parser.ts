@@ -122,8 +122,8 @@ export class TemplateParser {
       htmlAstWithErrors: ParseTreeResult, component: CompileDirectiveMetadata, template: string,
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
       templateUrl: string): TemplateParseResult {
-    var result: TemplateAst[];
-    var errors = htmlAstWithErrors.errors;
+    let result: TemplateAst[];
+    const errors = htmlAstWithErrors.errors;
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = removeSummaryDuplicates(directives);
       const uniqPipes = removeSummaryDuplicates(pipes);
@@ -819,9 +819,9 @@ function createElementCssSelector(elementName: string, matchableAttrs: string[][
   cssSelector.setElement(elNameNoNs);
 
   for (let i = 0; i < matchableAttrs.length; i++) {
-    let attrName = matchableAttrs[i][0];
-    let attrNameNoNs = splitNsName(attrName)[1];
-    let attrValue = matchableAttrs[i][1];
+    const attrName = matchableAttrs[i][0];
+    const attrNameNoNs = splitNsName(attrName)[1];
+    const attrValue = matchableAttrs[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);
     if (attrName.toLowerCase() == CLASS_ATTR) {

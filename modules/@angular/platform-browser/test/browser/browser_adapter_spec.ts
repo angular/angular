@@ -14,7 +14,7 @@ import {parseCookieValue} from '../../src/browser/browser_adapter';
 export function main() {
   describe('cookies', () => {
     it('parses cookies', () => {
-      let cookie = 'other-cookie=false; xsrf-token=token-value; is_awesome=true; ffo=true;';
+      const cookie = 'other-cookie=false; xsrf-token=token-value; is_awesome=true; ffo=true;';
       expect(parseCookieValue(cookie, 'xsrf-token')).toBe('token-value');
     });
     it('handles encoded keys', () => {

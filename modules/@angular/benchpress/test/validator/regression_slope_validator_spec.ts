@@ -12,7 +12,7 @@ import {MeasureValues, ReflectiveInjector, RegressionSlopeValidator} from '../..
 
 export function main() {
   describe('regression slope validator', () => {
-    var validator: RegressionSlopeValidator;
+    let validator: RegressionSlopeValidator;
 
     function createValidator({size, metric}: {size: number, metric: string}) {
       validator = ReflectiveInjector
@@ -42,14 +42,14 @@ export function main() {
 
     it('should return the last sampleSize runs when the regression slope is ==0', () => {
       createValidator({size: 2, metric: 'script'});
-      var sample = [mv(0, 0, {'script': 1}), mv(1, 1, {'script': 1}), mv(2, 2, {'script': 1})];
+      const sample = [mv(0, 0, {'script': 1}), mv(1, 1, {'script': 1}), mv(2, 2, {'script': 1})];
       expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
       expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });
 
     it('should return the last sampleSize runs when the regression slope is >0', () => {
       createValidator({size: 2, metric: 'script'});
-      var sample = [mv(0, 0, {'script': 1}), mv(1, 1, {'script': 2}), mv(2, 2, {'script': 3})];
+      const sample = [mv(0, 0, {'script': 1}), mv(1, 1, {'script': 2}), mv(2, 2, {'script': 3})];
       expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
       expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });

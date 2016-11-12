@@ -14,18 +14,18 @@ import {createComponent} from './util';
 
 describe('child queries', () => {
   it('should support compiling child queries', () => {
-    var childQueryCompFixture = createComponent(CompWithChildQuery);
-    var debugElement = childQueryCompFixture.debugElement;
-    var compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
+    const childQueryCompFixture = createComponent(CompWithChildQuery);
+    const debugElement = childQueryCompFixture.debugElement;
+    const compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
     expect(childQueryCompFixture.componentInstance.child).toBeDefined();
     expect(childQueryCompFixture.componentInstance.child instanceof CompForChildQuery).toBe(true);
 
   });
 
   it('should support compiling children queries', () => {
-    var childQueryCompFixture = createComponent(CompWithChildQuery);
-    var debugElement = childQueryCompFixture.debugElement;
-    var compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
+    const childQueryCompFixture = createComponent(CompWithChildQuery);
+    const debugElement = childQueryCompFixture.debugElement;
+    const compWithChildren = debugElement.query(By.directive(CompWithChildQuery));
 
     childQueryCompFixture.detectChanges();
 

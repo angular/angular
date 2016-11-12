@@ -30,12 +30,12 @@ class SimpleClass {}
 
 export function main() {
   describe('NgModuleResolver', () => {
-    var resolver: NgModuleResolver;
+    let resolver: NgModuleResolver;
 
     beforeEach(() => { resolver = new NgModuleResolver(); });
 
     it('should read out the metadata from the class', () => {
-      var moduleMetadata = resolver.resolve(SomeModule);
+      const moduleMetadata = resolver.resolve(SomeModule);
       expect(moduleMetadata).toEqual(new NgModule({
         declarations: [SomeClass1],
         imports: [SomeClass2],

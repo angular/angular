@@ -23,7 +23,7 @@ import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
 import {ViewUtils, addToArray} from './view_utils';
 
-var _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
+const _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
 /**
  * @experimental
@@ -150,9 +150,9 @@ export abstract class AppView<T> {
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       return;
     }
-    var hostElement = this.type === ViewType.COMPONENT ? this.parentElement : null;
+    const hostElement = this.type === ViewType.COMPONENT ? this.parentElement : null;
     if (this.disposables) {
-      for (var i = 0; i < this.disposables.length; i++) {
+      for (let i = 0; i < this.disposables.length; i++) {
         this.disposables[i]();
       }
     }
@@ -266,7 +266,7 @@ export abstract class AppView<T> {
       case ViewType.COMPONENT:
         if (this.parentView.type === ViewType.HOST) {
           const nodes = this.parentView._hostProjectableNodes[ngContentIndex] || [];
-          for (var i = 0; i < nodes.length; i++) {
+          for (let i = 0; i < nodes.length; i++) {
             cb(nodes[i], c);
           }
         } else {
@@ -293,7 +293,7 @@ export abstract class AppView<T> {
   dirtyParentQueriesInternal(): void {}
 
   detectChanges(throwOnChange: boolean): void {
-    var s = _scope_check(this.clazz);
+    const s = _scope_check(this.clazz);
     if (this.cdMode === ChangeDetectorStatus.Checked ||
         this.cdMode === ChangeDetectorStatus.Errored ||
         this.cdMode === ChangeDetectorStatus.Detached)
@@ -429,7 +429,7 @@ export class DebugAppView<T> extends AppView<T> {
   }
 
   eventHandler<E, R>(cb: (eventName: string, event?: E) => R): (eventName: string, event?: E) => R {
-    var superHandler = super.eventHandler(cb);
+    const superHandler = super.eventHandler(cb);
     return (eventName: string, event?: any) => {
       this._resetDebug();
       try {

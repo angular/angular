@@ -59,7 +59,9 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
 
   private loadAndCompile(path: string): Promise<NgModuleFactory<any>> {
     let [module, exportName] = path.split(_SEPARATOR);
-    if (exportName === undefined) exportName = 'default';
+    if (exportName === undefined) {
+      exportName = 'default';
+    }
 
     return System.import(module)
         .then((module: any) => module[exportName])

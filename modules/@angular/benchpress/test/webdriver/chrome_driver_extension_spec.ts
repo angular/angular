@@ -14,23 +14,23 @@ import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
   describe('chrome driver extension', () => {
-    var CHROME45_USER_AGENT =
+    const CHROME45_USER_AGENT =
         '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2499.0 Safari/537.36"';
 
-    var log: any[];
-    var extension: ChromeDriverExtension;
+    let log: any[];
+    let extension: ChromeDriverExtension;
 
-    var blinkEvents = new TraceEventFactory('blink.console', 'pid0');
-    var v8Events = new TraceEventFactory('v8', 'pid0');
-    var v8EventsOtherProcess = new TraceEventFactory('v8', 'pid1');
-    var chromeTimelineEvents =
+    const blinkEvents = new TraceEventFactory('blink.console', 'pid0');
+    const v8Events = new TraceEventFactory('v8', 'pid0');
+    const v8EventsOtherProcess = new TraceEventFactory('v8', 'pid1');
+    const chromeTimelineEvents =
         new TraceEventFactory('disabled-by-default-devtools.timeline', 'pid0');
-    var chrome45TimelineEvents = new TraceEventFactory('devtools.timeline', 'pid0');
-    var chromeTimelineV8Events = new TraceEventFactory('devtools.timeline,v8', 'pid0');
-    var chromeBlinkTimelineEvents = new TraceEventFactory('blink,devtools.timeline', 'pid0');
-    var chromeBlinkUserTimingEvents = new TraceEventFactory('blink.user_timing', 'pid0');
-    var benchmarkEvents = new TraceEventFactory('benchmark', 'pid0');
-    var normEvents = new TraceEventFactory('timeline', 'pid0');
+    const chrome45TimelineEvents = new TraceEventFactory('devtools.timeline', 'pid0');
+    const chromeTimelineV8Events = new TraceEventFactory('devtools.timeline,v8', 'pid0');
+    const chromeBlinkTimelineEvents = new TraceEventFactory('blink,devtools.timeline', 'pid0');
+    const chromeBlinkUserTimingEvents = new TraceEventFactory('blink.user_timing', 'pid0');
+    const benchmarkEvents = new TraceEventFactory('benchmark', 'pid0');
+    const normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(
         perfRecords: any[] = null, userAgent: string = null,
@@ -101,7 +101,7 @@ export function main() {
 
     it('should normalize "tdur" to "dur"',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var event: any = chromeTimelineV8Events.create('X', 'FunctionCall', 1100, null);
+         const event: any = chromeTimelineV8Events.create('X', 'FunctionCall', 1100, null);
          event['tdur'] = 5500;
          createExtension([event]).readPerfLog().then((events) => {
            expect(events).toEqual([

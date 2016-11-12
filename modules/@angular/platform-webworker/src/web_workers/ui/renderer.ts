@@ -24,7 +24,7 @@ export class MessageBasedRenderer {
       private _rootRenderer: RootRenderer) {}
 
   start(): void {
-    var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
+    const broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
     this._eventDispatcher = new EventDispatcher(this._bus.to(EVENT_CHANNEL), this._serializer);
 
@@ -228,7 +228,7 @@ export class MessageBasedRenderer {
   }
 
   private _listen(renderer: Renderer, renderElement: any, eventName: string, unlistenId: number) {
-    var unregisterCallback = renderer.listen(
+    const unregisterCallback = renderer.listen(
         renderElement, eventName,
         (event: any /** TODO #9100 */) =>
             this._eventDispatcher.dispatchRenderEvent(renderElement, null, eventName, event));
@@ -237,7 +237,7 @@ export class MessageBasedRenderer {
 
   private _listenGlobal(
       renderer: Renderer, eventTarget: string, eventName: string, unlistenId: number) {
-    var unregisterCallback = renderer.listenGlobal(
+    const unregisterCallback = renderer.listenGlobal(
         eventTarget, eventName,
         (event: any /** TODO #9100 */) =>
             this._eventDispatcher.dispatchRenderEvent(null, eventTarget, eventName, event));
@@ -249,7 +249,7 @@ export class MessageBasedRenderer {
   private _animate(
       renderer: Renderer, element: any, startingStyles: any, keyframes: any[], duration: number,
       delay: number, easing: string, playerId: any) {
-    var player = renderer.animate(element, startingStyles, keyframes, duration, delay, easing);
+    const player = renderer.animate(element, startingStyles, keyframes, duration, delay, easing);
     this._renderStore.store(player, playerId);
   }
 

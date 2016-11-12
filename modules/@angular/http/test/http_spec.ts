@@ -19,12 +19,12 @@ import {MockBackend, MockConnection} from '../testing/mock_backend';
 
 export function main() {
   describe('injectables', () => {
-    var url = 'http://foo.bar';
-    var http: Http;
-    var injector: Injector;
-    var jsonpBackend: MockBackend;
-    var xhrBackend: MockBackend;
-    var jsonp: Jsonp;
+    const url = 'http://foo.bar';
+    let http: Http;
+    let injector: Injector;
+    let jsonpBackend: MockBackend;
+    let xhrBackend: MockBackend;
+    let jsonp: Jsonp;
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -45,8 +45,8 @@ export function main() {
          jsonpBackend = injector.get(JSONPBackend);
          xhrBackend = injector.get(XHRBackend);
 
-         var xhrCreatedConnections = 0;
-         var jsonpCreatedConnections = 0;
+         let xhrCreatedConnections = 0;
+         let jsonpCreatedConnections = 0;
 
          xhrBackend.connections.subscribe(() => {
            xhrCreatedConnections++;
@@ -71,7 +71,7 @@ export function main() {
   });
 
   describe('http', () => {
-    let url = 'http://foo.bar';
+    const url = 'http://foo.bar';
     let http: Http;
     let injector: Injector;
     let backend: MockBackend;
@@ -163,7 +163,7 @@ export function main() {
                expect(c.request.method).toEqual(RequestMethod.Post);
                c.mockRespond(baseResponse);
              });
-             let requestOptions = {method: RequestMethod.Post};
+             const requestOptions = {method: RequestMethod.Post};
              http.request('http://basic.connection', requestOptions).subscribe((res: Response) => {
                expect(res.text()).toBe('base response');
                async.done();
@@ -342,7 +342,7 @@ export function main() {
       describe('searchParams', () => {
         it('should append search params to url',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             var params = new URLSearchParams();
+             const params = new URLSearchParams();
              params.append('q', 'puppies');
              backend.connections.subscribe((c: MockConnection) => {
                expect(c.request.url).toEqual('https://www.google.com?q=puppies');
@@ -404,7 +404,7 @@ export function main() {
     describe('Jsonp', () => {
       describe('.request()', () => {
         it('should throw if url is not a string or Request', () => {
-          var req = <Request>{};
+          const req = <Request>{};
           expect(() => jsonp.request(req))
               .toThrowError('First argument must be a url string or Request instance.');
         });
@@ -439,7 +439,7 @@ export function main() {
 
       it('should be able to consume a buffer containing an ArrayBuffer as any response type',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let arrayBuffer = stringToArrayBuffer('{"response": "ok"}');
+           const arrayBuffer = stringToArrayBuffer('{"response": "ok"}');
            backend.connections.subscribe(
                (c: MockConnection) =>
                    c.mockRespond(new Response(new ResponseOptions({body: arrayBuffer}))));
@@ -453,7 +453,7 @@ export function main() {
 
       it('should be able to consume a buffer containing an Object as any response type',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let simpleObject = {'content': 'ok'};
+           const simpleObject = {'content': 'ok'};
            backend.connections.subscribe(
                (c: MockConnection) =>
                    c.mockRespond(new Response(new ResponseOptions({body: simpleObject}))));
@@ -467,8 +467,8 @@ export function main() {
 
       it('should preserve encoding of ArrayBuffer response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let message = 'é@θЂ';
-           let arrayBuffer = stringToArrayBuffer(message);
+           const message = 'é@θЂ';
+           const arrayBuffer = stringToArrayBuffer(message);
            backend.connections.subscribe(
                (c: MockConnection) =>
                    c.mockRespond(new Response(new ResponseOptions({body: arrayBuffer}))));
@@ -481,7 +481,7 @@ export function main() {
 
       it('should preserve encoding of String response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let message = 'é@θЂ';
+           const message = 'é@θЂ';
            backend.connections.subscribe(
                (c: MockConnection) =>
                    c.mockRespond(new Response(new ResponseOptions({body: message}))));
@@ -493,10 +493,10 @@ export function main() {
 
       it('should have an equivalent response independently of the buffer used',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let message = {'param': 'content'};
+           const message = {'param': 'content'};
 
            backend.connections.subscribe((c: MockConnection) => {
-             let body = (): any => {
+             const body = (): any => {
                switch (c.request.responseType) {
                  case ResponseContentType.Text:
                    return JSON.stringify(message, null, 2);

@@ -244,7 +244,7 @@ _global.beforeEach(function() {
 });
 
 function elementText(n: any): string {
-  var hasNodes = (n: any) => {
+  const hasNodes = (n: any) => {
     const children = getDOM().childNodes(n);
     return children && children.length > 0;
   };

@@ -8,7 +8,7 @@
 
 require('core-js');
 require('reflect-metadata');
-var testHelper = require('../../src/firefox_extension/lib/test_helper.js');
+const testHelper = require('../../src/firefox_extension/lib/test_helper.js');
 
 exports.config = {
   specs: ['spec.js', 'sample_benchmark.js'],

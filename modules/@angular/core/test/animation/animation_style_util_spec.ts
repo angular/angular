@@ -19,15 +19,15 @@ export function main() {
     describe('prepareFinalAnimationStyles', () => {
       it('should set all non-shared styles to the provided null value between the two sets of styles',
          () => {
-           var styles = {opacity: 0, color: 'red'};
-           var newStyles = {background: 'red'};
-           var flag = '*';
-           var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, flag);
+           const styles = {opacity: 0, color: 'red'};
+           const newStyles = {background: 'red'};
+           const flag = '*';
+           const result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, flag);
            expect(result).toEqual({opacity: flag, color: flag, background: 'red'});
          });
 
       it('should handle an empty set of styles', () => {
-        var value = '*';
+        const value = '*';
 
         expect(animationUtils.prepareFinalAnimationStyles({}, {opacity: '0'}, value)).toEqual({
           opacity: '0'
@@ -39,10 +39,10 @@ export function main() {
       });
 
       it('should set all AUTO styles to the null value', () => {
-        var styles = {opacity: 0};
-        var newStyles = {color: '*', border: '*'};
-        var flag = '*';
-        var result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, null);
+        const styles = {opacity: 0};
+        const newStyles = {color: '*', border: '*'};
+        const flag = '*';
+        const result = animationUtils.prepareFinalAnimationStyles(styles, newStyles, null);
         expect(result).toEqual({opacity: null, color: null, border: null});
       });
 
@@ -50,17 +50,17 @@ export function main() {
 
     describe('balanceAnimationKeyframes', () => {
       it('should balance both the starting and final keyframes with thep provided styles', () => {
-        var collectedStyles = {width: 100, height: 200};
+        const collectedStyles = {width: 100, height: 200};
 
-        var finalStyles = {background: 'red', border: '1px solid black'};
+        const finalStyles = {background: 'red', border: '1px solid black'};
 
-        var keyframes = [
+        const keyframes = [
           new AnimationKeyframe(0, new AnimationStyles([{height: 100, opacity: 1}])),
           new AnimationKeyframe(
               1, new AnimationStyles([{background: 'blue', left: '100px', top: '100px'}]))
         ];
 
-        var result =
+        const result =
             animationUtils.balanceAnimationKeyframes(collectedStyles, finalStyles, keyframes);
 
         expect(animationUtils.flattenStyles(result[0].styles.styles)).toEqual({
@@ -85,12 +85,12 @@ export function main() {
       });
 
       it('should perform balancing when no collected and final styles are provided', () => {
-        var keyframes = [
+        const keyframes = [
           new AnimationKeyframe(0, new AnimationStyles([{height: 100, opacity: 1}])),
           new AnimationKeyframe(1, new AnimationStyles([{width: 100}]))
         ];
 
-        var result = animationUtils.balanceAnimationKeyframes({}, {}, keyframes);
+        const result = animationUtils.balanceAnimationKeyframes({}, {}, keyframes);
 
         expect(animationUtils.flattenStyles(result[0].styles.styles))
             .toEqual({'height': 100, 'opacity': 1, 'width': '*'});
@@ -102,9 +102,10 @@ export function main() {
 
     describe('clearStyles', () => {
       it('should set all the style values to "null"', () => {
-        var styles: {[key: string]: string | number} = {'opacity': 0, 'width': 100, 'color': 'red'};
-        var expectedResult: {[key: string]:
-                                 string | number} = {'opacity': null, 'width': null, 'color': null};
+        const styles: {[key: string]:
+                           string | number} = {'opacity': 0, 'width': 100, 'color': 'red'};
+        const expectedResult: {[key: string]: string |
+                                   number} = {'opacity': null, 'width': null, 'color': null};
         expect(animationUtils.clearStyles(styles)).toEqual(expectedResult);
       });
 
@@ -114,11 +115,11 @@ export function main() {
 
     describe('collectAndResolveStyles', () => {
       it('should keep a record of the styles as they are called', () => {
-        var styles1 = [{'opacity': 0, 'width': 100}];
+        const styles1 = [{'opacity': 0, 'width': 100}];
 
-        var styles2 = [{'height': 999, 'opacity': 1}];
+        const styles2 = [{'height': 999, 'opacity': 1}];
 
-        var collection: {[key: string]: string | number} = {};
+        const collection: {[key: string]: string | number} = {};
 
         expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual(styles1);
         expect(collection).toEqual({'opacity': 0, 'width': 100});
@@ -128,11 +129,11 @@ export function main() {
       });
 
       it('should resolve styles if they contain a FILL_STYLE_FLAG value', () => {
-        var styles1 = [{'opacity': 0, 'width': FILL_STYLE_FLAG}];
+        const styles1 = [{'opacity': 0, 'width': FILL_STYLE_FLAG}];
 
-        var styles2 = [{'height': 999, 'opacity': FILL_STYLE_FLAG}];
+        const styles2 = [{'height': 999, 'opacity': FILL_STYLE_FLAG}];
 
-        var collection = {};
+        const collection = {};
 
         expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual([
           {'opacity': 0, 'width': AUTO_STYLE}

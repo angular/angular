@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var CAMEL_CASE_REGEXP = /([A-Z])/g;
-var DASH_CASE_REGEXP = /-([a-z])/g;
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+const DASH_CASE_REGEXP = /-([a-z])/g;
 
 
 export function camelCaseToDashCase(input: string): string {

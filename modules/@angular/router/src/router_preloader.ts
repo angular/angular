@@ -94,7 +94,7 @@ export class RouterPreloader {
 
   private processRoutes(injector: Injector, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];
-    for (let c of routes) {
+    for (const c of routes) {
       // we already have the config loaded, just recurce
       if (c.loadChildren && !c.canLoad && (<any>c)._loadedConfig) {
         const childConfig = (<any>c)._loadedConfig;

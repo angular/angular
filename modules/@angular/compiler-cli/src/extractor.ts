@@ -91,7 +91,7 @@ export class Extractor {
         elementSchemaRegistry, normalizer, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
-    let messageBundle = new compiler.MessageBundle(htmlParser, [], {});
+    const messageBundle = new compiler.MessageBundle(htmlParser, [], {});
 
     return new Extractor(
         options, program, compilerHost, staticReflector, messageBundle, reflectorHost, resolver);

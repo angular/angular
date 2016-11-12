@@ -33,7 +33,7 @@ export function errorHandler(): ErrorHandler {
 
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
-let _postMessage = {
+const _postMessage = {
   postMessage: (message: any, transferrables?: [ArrayBuffer]) => {
     (<any>postMessage)(message, transferrables);
   }
@@ -41,9 +41,9 @@ let _postMessage = {
 
 
 export function createMessageBus(zone: NgZone): MessageBus {
-  let sink = new PostMessageBusSink(_postMessage);
-  let source = new PostMessageBusSource();
-  let bus = new PostMessageBus(sink, source);
+  const sink = new PostMessageBusSink(_postMessage);
+  const source = new PostMessageBusSource();
+  const bus = new PostMessageBus(sink, source);
   bus.attachToZone(zone);
   return bus;
 }

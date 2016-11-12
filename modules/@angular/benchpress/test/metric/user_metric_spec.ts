@@ -12,7 +12,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
 
 export function main() {
-  var wdAdapter: MockDriverAdapter;
+  let wdAdapter: MockDriverAdapter;
 
   function createMetric(
       perfLogs: PerfLogEvent[], perfLogFeatures: PerfLogFeatures,
@@ -25,7 +25,7 @@ export function main() {
       userMetrics = {};
     }
     wdAdapter = new MockDriverAdapter();
-    var providers: Provider[] = [
+    const providers: Provider[] = [
       Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
       {provide: Options.USER_METRICS, useValue: userMetrics},
       {provide: WebDriverAdapter, useValue: wdAdapter}
@@ -45,7 +45,7 @@ export function main() {
     describe('endMeasure', () => {
       it('should stop measuring when all properties have numeric values',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           let metric = createMetric(
+           const metric = createMetric(
                [[]], new PerfLogFeatures(),
                {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});
            metric.beginMeasure()
@@ -71,7 +71,7 @@ class MockDriverAdapter extends WebDriverAdapter {
   executeScript(script: string): any {
     // Just handles `return window.propName` ignores `delete window.propName`.
     if (script.indexOf('return window.') == 0) {
-      let metricName = script.substring('return window.'.length);
+      const metricName = script.substring('return window.'.length);
       return Promise.resolve(this.data[metricName]);
     } else if (script.indexOf('delete window.') == 0) {
       return Promise.resolve(null);

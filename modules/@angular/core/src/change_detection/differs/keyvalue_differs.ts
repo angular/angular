@@ -41,7 +41,7 @@ export class KeyValueDiffers {
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (isPresent(parent)) {
-      var copied = parent.factories.slice();
+      const copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new KeyValueDiffers(factories);
     } else {
@@ -86,7 +86,7 @@ export class KeyValueDiffers {
   }
 
   find(kv: Object): KeyValueDifferFactory {
-    var factory = this.factories.find(f => f.supports(kv));
+    const factory = this.factories.find(f => f.supports(kv));
     if (isPresent(factory)) {
       return factory;
     } else {

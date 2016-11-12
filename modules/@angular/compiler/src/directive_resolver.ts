@@ -121,7 +121,7 @@ export class DirectiveResolver {
       mergedInputs.unshift(...directive.inputs);
     }
 
-    let mergedOutputs: string[] = outputs;
+    const mergedOutputs: string[] = outputs;
 
     if (directive.outputs) {
       const outputNames: string[] =

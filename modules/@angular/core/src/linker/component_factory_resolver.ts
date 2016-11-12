@@ -42,7 +42,7 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
 
   constructor(factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver) {
     for (let i = 0; i < factories.length; i++) {
-      let factory = factories[i];
+      const factory = factories[i];
       this._factories.set(factory.componentType, factory);
     }
   }

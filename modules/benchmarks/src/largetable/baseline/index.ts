@@ -10,7 +10,7 @@ import {bindAction, profile} from '../../util';
 import {buildTable, emptyTable} from '../util';
 import {TableComponent} from './table';
 
-var table: TableComponent;
+let table: TableComponent;
 
 function destroyDom() {
   table.data = emptyTable;

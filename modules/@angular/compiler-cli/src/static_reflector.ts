@@ -88,7 +88,7 @@ export class StaticReflector implements ReflectorReader {
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
     if (!annotations) {
-      let classMetadata = this.getTypeMetadata(type);
+      const classMetadata = this.getTypeMetadata(type);
       if (classMetadata['decorators']) {
         annotations = this.simplify(type, classMetadata['decorators']);
       } else {
@@ -102,11 +102,11 @@ export class StaticReflector implements ReflectorReader {
   public propMetadata(type: StaticSymbol): {[key: string]: any} {
     let propMetadata = this.propertyCache.get(type);
     if (!propMetadata) {
-      let classMetadata = this.getTypeMetadata(type);
-      let members = classMetadata ? classMetadata['members'] : {};
+      const classMetadata = this.getTypeMetadata(type);
+      const members = classMetadata ? classMetadata['members'] : {};
       propMetadata = mapStringMap(members, (propData, propName) => {
-        let prop = (<any[]>propData)
-                       .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+        const prop = (<any[]>propData)
+                         .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         if (prop && prop['decorators']) {
           return this.simplify(type, prop['decorators']);
         } else {
@@ -125,21 +125,21 @@ export class StaticReflector implements ReflectorReader {
     try {
       let parameters = this.parameterCache.get(type);
       if (!parameters) {
-        let classMetadata = this.getTypeMetadata(type);
-        let members = classMetadata ? classMetadata['members'] : null;
-        let ctorData = members ? members['__ctor__'] : null;
+        const classMetadata = this.getTypeMetadata(type);
+        const members = classMetadata ? classMetadata['members'] : null;
+        const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
-          let ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-          let parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
-          let parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
+          const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
+          const parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
+          const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
 
           parameters = [];
           parameterTypes.forEach((paramType, index) => {
-            let nestedResult: any[] = [];
+            const nestedResult: any[] = [];
             if (paramType) {
               nestedResult.push(paramType);
             }
-            let decorators = parameterDecorators ? parameterDecorators[index] : null;
+            const decorators = parameterDecorators ? parameterDecorators[index] : null;
             if (decorators) {
               nestedResult.push(...decorators);
             }
@@ -273,7 +273,7 @@ export class StaticReflector implements ReflectorReader {
       function simplifyCall(expression: any) {
         let callContext: {[name: string]: string}|undefined = undefined;
         if (expression['__symbolic'] == 'call') {
-          let target = expression['expression'];
+          const target = expression['expression'];
           let functionSymbol: StaticSymbol;
           let targetFunction: any;
           if (target) {
@@ -316,7 +316,7 @@ export class StaticReflector implements ReflectorReader {
                 for (let i = 0; i < parameters.length; i++) {
                   functionScope.define(parameters[i], args[i]);
                 }
-                let oldScope = scope;
+                const oldScope = scope;
                 let result: any;
                 try {
                   scope = functionScope.done();
@@ -347,19 +347,19 @@ export class StaticReflector implements ReflectorReader {
           return expression;
         }
         if (expression instanceof Array) {
-          let result: any[] = [];
-          for (let item of (<any>expression)) {
+          const result: any[] = [];
+          for (const item of (<any>expression)) {
             // Check for a spread expression
             if (item && item.__symbolic === 'spread') {
-              let spreadArray = simplify(item.expression);
+              const spreadArray = simplify(item.expression);
               if (Array.isArray(spreadArray)) {
-                for (let spreadItem of spreadArray) {
+                for (const spreadItem of spreadArray) {
                   result.push(spreadItem);
                 }
                 continue;
               }
             }
-            let value = simplify(item);
+            const value = simplify(item);
             if (shouldIgnore(value)) {
               continue;
             }
@@ -466,8 +466,8 @@ export class StaticReflector implements ReflectorReader {
                 return null;
               case 'reference':
                 if (!expression.module) {
-                  let name: string = expression['name'];
-                  let localValue = scope.resolve(name);
+                  const name: string = expression['name'];
+                  const localValue = scope.resolve(name);
                   if (localValue != BindingScope.missing) {
                     return localValue;
                   }
@@ -614,7 +614,7 @@ function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: 
   if (!input) return {};
   const result: {[key: string]: any} = {};
   Object.keys(input).forEach((key) => {
-    let value = transform(input[key], key);
+    const value = transform(input[key], key);
     if (!shouldIgnore(value)) {
       result[key] = value;
     }

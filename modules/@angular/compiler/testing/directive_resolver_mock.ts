@@ -151,8 +151,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
 function flattenArray(tree: any[], out: Array<Type<any>|any[]>): void {
   if (!isPresent(tree)) return;
-  for (var i = 0; i < tree.length; i++) {
-    var item = resolveForwardRef(tree[i]);
+  for (let i = 0; i < tree.length; i++) {
+    const item = resolveForwardRef(tree[i]);
     if (Array.isArray(item)) {
       flattenArray(item, out);
     } else {

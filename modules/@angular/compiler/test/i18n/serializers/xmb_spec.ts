@@ -62,7 +62,7 @@ export function main(): void {
 }
 
 function toXmb(html: string): string {
-  let catalog = new MessageBundle(new HtmlParser, [], {});
+  const catalog = new MessageBundle(new HtmlParser, [], {});
   const serializer = new Xmb();
 
   catalog.updateFromTemplate(html, '', DEFAULT_INTERPOLATION_CONFIG);

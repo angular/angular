@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var q = require('q');
-var FirefoxProfile = require('firefox-profile');
-var jpm = require('jpm/lib/xpi');
-var pathUtil = require('path');
+const q = require('q');
+const FirefoxProfile = require('firefox-profile');
+const jpm = require('jpm/lib/xpi');
+const pathUtil = require('path');
 
-var PERF_ADDON_PACKAGE_JSON_DIR = '..';
+const PERF_ADDON_PACKAGE_JSON_DIR = '..';
 
 exports.getAbsolutePath = function(path: string) {
-  var normalizedPath = pathUtil.normalize(path);
+  const normalizedPath = pathUtil.normalize(path);
   if (pathUtil.resolve(normalizedPath) == normalizedPath) {
     // Already absolute path
     return normalizedPath;
@@ -24,12 +24,12 @@ exports.getAbsolutePath = function(path: string) {
 };
 
 exports.getFirefoxProfile = function(extensionPath: string) {
-  var deferred = q.defer();
+  const deferred = q.defer();
 
-  var firefoxProfile = new FirefoxProfile();
+  const firefoxProfile = new FirefoxProfile();
   firefoxProfile.addExtensions([extensionPath], () => {
     firefoxProfile.encoded((encodedProfile: any) => {
-      var multiCapabilities = [{browserName: 'firefox', firefox_profile: encodedProfile}];
+      const multiCapabilities = [{browserName: 'firefox', firefox_profile: encodedProfile}];
       deferred.resolve(multiCapabilities);
     });
   });
@@ -38,10 +38,10 @@ exports.getFirefoxProfile = function(extensionPath: string) {
 };
 
 exports.getFirefoxProfileWithExtension = function() {
-  var absPackageJsonDir = pathUtil.join(__dirname, PERF_ADDON_PACKAGE_JSON_DIR);
-  var packageJson = require(pathUtil.join(absPackageJsonDir, 'package.json'));
+  const absPackageJsonDir = pathUtil.join(__dirname, PERF_ADDON_PACKAGE_JSON_DIR);
+  const packageJson = require(pathUtil.join(absPackageJsonDir, 'package.json'));
 
-  var savedCwd = process.cwd();
+  const savedCwd = process.cwd();
   process.chdir(absPackageJsonDir);
 
   return jpm(packageJson).then((xpiPath: string) => {

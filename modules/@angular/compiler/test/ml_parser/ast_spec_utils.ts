@@ -12,7 +12,7 @@ import {ParseLocation} from '../../src/parse_util';
 
 export function humanizeDom(parseResult: ParseTreeResult, addSourceSpan: boolean = false): any[] {
   if (parseResult.errors.length > 0) {
-    var errorString = parseResult.errors.join('\n');
+    const errorString = parseResult.errors.join('\n');
     throw new Error(`Unexpected parse errors:\n${errorString}`);
   }
 
@@ -24,7 +24,7 @@ export function humanizeDomSourceSpans(parseResult: ParseTreeResult): any[] {
 }
 
 export function humanizeNodes(nodes: html.Node[], addSourceSpan: boolean = false): any[] {
-  var humanizer = new _Humanizer(addSourceSpan);
+  const humanizer = new _Humanizer(addSourceSpan);
   html.visitAll(humanizer, nodes);
   return humanizer.result;
 }
@@ -40,7 +40,7 @@ class _Humanizer implements html.Visitor {
   constructor(private includeSourceSpan: boolean){};
 
   visitElement(element: html.Element, context: any): any {
-    var res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
+    const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
     this.result.push(res);
     html.visitAll(this, element.attrs);
     html.visitAll(this, element.children);
@@ -48,22 +48,22 @@ class _Humanizer implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
-    var res = this._appendContext(attribute, [html.Attribute, attribute.name, attribute.value]);
+    const res = this._appendContext(attribute, [html.Attribute, attribute.name, attribute.value]);
     this.result.push(res);
   }
 
   visitText(text: html.Text, context: any): any {
-    var res = this._appendContext(text, [html.Text, text.value, this.elDepth]);
+    const res = this._appendContext(text, [html.Text, text.value, this.elDepth]);
     this.result.push(res);
   }
 
   visitComment(comment: html.Comment, context: any): any {
-    var res = this._appendContext(comment, [html.Comment, comment.value, this.elDepth]);
+    const res = this._appendContext(comment, [html.Comment, comment.value, this.elDepth]);
     this.result.push(res);
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    var res = this._appendContext(
+    const res = this._appendContext(
         expansion, [html.Expansion, expansion.switchValue, expansion.type, this.elDepth++]);
     this.result.push(res);
     html.visitAll(this, expansion.cases);
@@ -71,7 +71,7 @@ class _Humanizer implements html.Visitor {
   }
 
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    var res =
+    const res =
         this._appendContext(expansionCase, [html.ExpansionCase, expansionCase.value, this.elDepth]);
     this.result.push(res);
   }

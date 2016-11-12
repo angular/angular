@@ -376,9 +376,9 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         entryComponents?: CompileIdentifierMetadata[],
         template?: CompileTemplateMetadata
       } = {}): CompileDirectiveMetadata {
-    var hostListeners: {[key: string]: string} = {};
-    var hostProperties: {[key: string]: string} = {};
-    var hostAttributes: {[key: string]: string} = {};
+    const hostListeners: {[key: string]: string} = {};
+    const hostProperties: {[key: string]: string} = {};
+    const hostAttributes: {[key: string]: string} = {};
     if (isPresent(host)) {
       Object.keys(host).forEach(key => {
         const value = host[key];
@@ -392,21 +392,21 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
         }
       });
     }
-    var inputsMap: {[key: string]: string} = {};
+    const inputsMap: {[key: string]: string} = {};
     if (isPresent(inputs)) {
       inputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp
-        var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
+        const parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
         inputsMap[parts[0]] = parts[1];
       });
     }
-    var outputsMap: {[key: string]: string} = {};
+    const outputsMap: {[key: string]: string} = {};
     if (isPresent(outputs)) {
       outputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp
-        var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
+        const parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
         outputsMap[parts[0]] = parts[1];
       });
     }
@@ -516,7 +516,7 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
  */
 export function createHostComponentMeta(compMeta: CompileDirectiveMetadata):
     CompileDirectiveMetadata {
-  var template = CssSelector.parse(compMeta.selector)[0].getMatchingElementTemplate();
+  const template = CssSelector.parse(compMeta.selector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
     type: new CompileTypeMetadata({
       reference: Object,

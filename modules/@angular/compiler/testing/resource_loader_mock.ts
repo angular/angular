@@ -67,9 +67,9 @@ export class MockResourceLoader extends ResourceLoader {
   verifyNoOutstandingExpectations() {
     if (this._expectations.length === 0) return;
 
-    var urls: string[] = [];
-    for (var i = 0; i < this._expectations.length; i++) {
-      var expectation = this._expectations[i];
+    const urls: string[] = [];
+    for (let i = 0; i < this._expectations.length; i++) {
+      const expectation = this._expectations[i];
       urls.push(expectation.url);
     }
 
@@ -77,10 +77,10 @@ export class MockResourceLoader extends ResourceLoader {
   }
 
   private _processRequest(request: _PendingRequest) {
-    var url = request.url;
+    const url = request.url;
 
     if (this._expectations.length > 0) {
-      var expectation = this._expectations[0];
+      const expectation = this._expectations[0];
       if (expectation.url == url) {
         ListWrapper.remove(this._expectations, expectation);
         request.complete(expectation.response);
@@ -89,7 +89,7 @@ export class MockResourceLoader extends ResourceLoader {
     }
 
     if (this._definitions.has(url)) {
-      var response = this._definitions.get(url);
+      const response = this._definitions.get(url);
       request.complete(response == null ? null : response);
       return;
     }

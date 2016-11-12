@@ -69,14 +69,14 @@ export class AppComponent {
   copies: number[] = [];
   values: string[] = [];
   constructor() {
-    for (var i = 0; i < 50; i++) {
+    for (let i = 0; i < 50; i++) {
       this.values[i] = `someValue${i}`;
     }
   }
 
   setCopies(count: number) {
     this.copies = [];
-    for (var i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       this.copies.push(i);
     }
   }

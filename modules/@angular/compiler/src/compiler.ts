@@ -142,7 +142,7 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
 }
 
 function _lastDefined<T>(args: T[]): T {
-  for (var i = args.length - 1; i >= 0; i--) {
+  for (let i = args.length - 1; i >= 0; i--) {
     if (args[i] !== undefined) {
       return args[i];
     }
@@ -151,7 +151,7 @@ function _lastDefined<T>(args: T[]): T {
 }
 
 function _mergeArrays(parts: any[][]): any[] {
-  let result: any[] = [];
+  const result: any[] = [];
   parts.forEach((part) => part && result.push(...part));
   return result;
 }

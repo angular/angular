@@ -15,11 +15,11 @@ export class StringMapWrapper {
   static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
     const m: {[key: string]: V} = {};
 
-    for (let k of Object.keys(m1)) {
+    for (const k of Object.keys(m1)) {
       m[k] = m1[k];
     }
 
-    for (let k of Object.keys(m2)) {
+    for (const k of Object.keys(m2)) {
       m[k] = m2[k];
     }
 
@@ -99,8 +99,8 @@ export function areIterablesEqual(
   const iterator2 = b[getSymbolIterator()]();
 
   while (true) {
-    let item1 = iterator1.next();
-    let item2 = iterator2.next();
+    const item1 = iterator1.next();
+    const item2 = iterator2.next();
     if (item1.done && item2.done) return true;
     if (item1.done || item2.done) return false;
     if (!comparator(item1.value, item2.value)) return false;

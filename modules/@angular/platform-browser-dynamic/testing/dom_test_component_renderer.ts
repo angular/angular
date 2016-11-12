@@ -21,11 +21,11 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
   constructor(@Inject(DOCUMENT) private _doc: any /** TODO #9100 */) { super(); }
 
   insertRootElement(rootElId: string) {
-    let rootEl = <HTMLElement>getDOM().firstChild(
+    const rootEl = <HTMLElement>getDOM().firstChild(
         getDOM().content(getDOM().createTemplate(`<div id="${rootElId}"></div>`)));
 
     // TODO(juliemr): can/should this be optional?
-    let oldRoots = getDOM().querySelectorAll(this._doc, '[id^=root]');
+    const oldRoots = getDOM().querySelectorAll(this._doc, '[id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }

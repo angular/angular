@@ -72,7 +72,7 @@ export function main() {
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
              .then((upgrade) => {
-               var ng2Injector = upgrade.injector;
+               const ng2Injector = upgrade.injector;
                expect(ng2Injector.get(Ng1Service)).toBe('ng1 service value');
              });
        }));

@@ -19,10 +19,10 @@ export function main() {
   describe('AsyncPipe', () => {
 
     describe('Observable', () => {
-      var emitter: EventEmitter<any>;
-      var pipe: AsyncPipe;
-      var ref: any;
-      var message = {};
+      let emitter: EventEmitter<any>;
+      let pipe: AsyncPipe;
+      let ref: any;
+      const message = {};
 
       beforeEach(() => {
         emitter = new EventEmitter();
@@ -62,7 +62,7 @@ export function main() {
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
 
-             var newEmitter = new EventEmitter();
+             const newEmitter = new EventEmitter();
              expect(pipe.transform(newEmitter)).toBe(null);
              emitter.emit(message);
 
@@ -104,14 +104,14 @@ export function main() {
     });
 
     describe('Promise', () => {
-      var message = new Object();
-      var pipe: AsyncPipe;
-      var resolve: (result: any) => void;
-      var reject: (error: any) => void;
-      var promise: Promise<any>;
-      var ref: SpyChangeDetectorRef;
+      const message = new Object();
+      let pipe: AsyncPipe;
+      let resolve: (result: any) => void;
+      let reject: (error: any) => void;
+      let promise: Promise<any>;
+      let ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
-      var timer = (getDOM() && browserDetection.isIE) ? 50 : 10;
+      const timer = (getDOM() && browserDetection.isIE) ? 50 : 10;
 
       beforeEach(() => {
         promise = new Promise((res, rej) => {
@@ -154,7 +154,7 @@ export function main() {
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(promise);
 
-             var promise = new Promise<any>(() => {});
+             promise = new Promise<any>(() => {});
              expect(pipe.transform(promise)).toBe(null);
 
              // this should not affect the pipe, so it should return WrappedValue
@@ -168,7 +168,7 @@ export function main() {
 
         it('should request a change detection check upon receiving a new value',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             var markForCheck = ref.spy('markForCheck');
+             const markForCheck = ref.spy('markForCheck');
              pipe.transform(promise);
              resolve(message);
 
@@ -202,14 +202,14 @@ export function main() {
 
     describe('null', () => {
       it('should return null when given null', () => {
-        var pipe = new AsyncPipe(null);
+        const pipe = new AsyncPipe(null);
         expect(pipe.transform(null)).toEqual(null);
       });
     });
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
-        var pipe = new AsyncPipe(null);
+        const pipe = new AsyncPipe(null);
         expect(() => pipe.transform(<any>'some bogus object')).toThrowError();
       });
     });

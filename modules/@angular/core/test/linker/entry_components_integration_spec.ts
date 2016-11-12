@@ -27,7 +27,7 @@ class DummyConsole implements Console {
 
 function declareTests({useJit}: {useJit: boolean}) {
   describe('@Component.entryComponents', function() {
-    var console: DummyConsole;
+    let console: DummyConsole;
     beforeEach(() => {
       console = new DummyConsole();
       TestBed.configureCompiler(
@@ -37,9 +37,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     it('should resolve ComponentFactories from the same component', () => {
       const compFixture = TestBed.createComponent(MainComp);
-      let mainComp: MainComp = compFixture.componentInstance;
+      const mainComp: MainComp = compFixture.componentInstance;
       expect(compFixture.componentRef.injector.get(ComponentFactoryResolver)).toBe(mainComp.cfr);
-      var cf = mainComp.cfr.resolveComponentFactory(ChildComp);
+      const cf = mainComp.cfr.resolveComponentFactory(ChildComp);
       expect(cf.componentType).toBe(ChildComp);
     });
 
@@ -47,9 +47,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule(
           {declarations: [CompWithAnalyzeEntryComponentsProvider, NestedChildComp, ChildComp]});
-      let compFixture = TestBed.createComponent(CompWithAnalyzeEntryComponentsProvider);
-      let mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
-      let cfr: ComponentFactoryResolver =
+      const compFixture = TestBed.createComponent(CompWithAnalyzeEntryComponentsProvider);
+      const mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
+      const cfr: ComponentFactoryResolver =
           compFixture.componentRef.injector.get(ComponentFactoryResolver);
       expect(cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
       expect(cfr.resolveComponentFactory(NestedChildComp).componentType).toBe(NestedChildComp);
@@ -59,8 +59,8 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.overrideComponent(MainComp, {set: {template: '<child></child>'}});
 
       const compFixture = TestBed.createComponent(MainComp);
-      let childCompEl = compFixture.debugElement.children[0];
-      let childComp: ChildComp = childCompEl.componentInstance;
+      const childCompEl = compFixture.debugElement.children[0];
+      const childComp: ChildComp = childCompEl.componentInstance;
       // declared on ChildComp directly
       expect(childComp.cfr.resolveComponentFactory(NestedChildComp).componentType)
           .toBe(NestedChildComp);
@@ -73,8 +73,8 @@ function declareTests({useJit}: {useJit: boolean}) {
       TestBed.overrideComponent(ChildComp, {set: {template: '<ng-content></ng-content>'}});
 
       const compFixture = TestBed.createComponent(MainComp);
-      let nestedChildCompEl = compFixture.debugElement.children[0].children[0];
-      let nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
+      const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
+      const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
       expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp).componentType).toBe(ChildComp);
       expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
           .toThrow(new NoComponentFactoryError(NestedChildComp));

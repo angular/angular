@@ -162,7 +162,7 @@ function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
-var angular: {
+let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
                  void,
   module: (prefix: string, dependencies?: string[]) => IModule,
