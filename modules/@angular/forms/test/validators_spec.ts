@@ -10,13 +10,12 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {AbstractControl, FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
 import {EventEmitter} from '../src/facade/async';
 
 export function main() {
   function validator(key: string, error: any) {
-    return function(c: AbstractControl) {
+    return (c: AbstractControl) => {
       const r: {[k: string]: string} = {};
       r[key] = error;
       return r;
@@ -129,8 +128,12 @@ export function main() {
     });
 
     describe('compose', () => {
-      it('should return null when given null',
-         () => { expect(Validators.compose(null)).toBe(null); });
+      it('should return null when given null', () => expect(Validators.compose(null)).toBe(null));
+
+      it('should accept validators using rest operator', () => {
+        const c = Validators.compose(validator('a', true), validator('b', true));
+        expect(c(new FormControl(''))).toEqual({'a': true, 'b': true});
+      });
 
       it('should collect errors from all the validators', () => {
         const c = Validators.compose([validator('a', true), validator('b', true)]);
@@ -156,14 +159,14 @@ export function main() {
     describe('composeAsync', () => {
       function asyncValidator(expected: any /** TODO #9100 */, response: any /** TODO #9100 */) {
         return (c: any /** TODO #9100 */) => {
-          var emitter = new EventEmitter();
-          var res = c.value != expected ? response : null;
+          const emitter = new EventEmitter();
+          const res = c.value != expected ? response : null;
           Promise.resolve(null).then(() => {
             emitter.emit(res);
             // this is required because of a bug in ObservableWrapper
             // where callComplete can fire before callEmit
             // remove this one the bug is fixed
-            setTimeout(() => { emitter.complete(); }, 0);
+            setTimeout(() => emitter.complete(), 0);
           });
 
           return emitter;
@@ -171,14 +174,27 @@ export function main() {
       }
 
       it('should return null when given null',
-         () => { expect(Validators.composeAsync(null)).toBeNull(); });
+         () => expect(Validators.composeAsync(null)).toBeNull());
+
+      it('should accept validators using rest operator', fakeAsync(() => {
+           const c = Validators.composeAsync(
+               asyncValidator('expected', {'one': true}),
+               asyncValidator('expected', {'two': true}));
+
+           let value: any /** TODO #9100 */ = null;
+           (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
+
+           tick(1);
+
+           expect(value).toEqual({'one': true, 'two': true});
+         }));
 
       it('should collect errors from all the validators', fakeAsync(() => {
-           var c = Validators.composeAsync([
+           const c = Validators.composeAsync([
              asyncValidator('expected', {'one': true}), asyncValidator('expected', {'two': true})
            ]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);
@@ -198,9 +214,9 @@ export function main() {
          }));
 
       it('should return null when no errors', fakeAsync(() => {
-           var c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
+           const c = Validators.composeAsync([asyncValidator('expected', {'one': true})]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('expected'))).then(v => value = v);
            tick(1);
 
@@ -208,9 +224,9 @@ export function main() {
          }));
 
       it('should ignore nulls', fakeAsync(() => {
-           var c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
+           const c = Validators.composeAsync([asyncValidator('expected', {'one': true}), null]);
 
-           var value: any /** TODO #9100 */ = null;
+           let value: any /** TODO #9100 */ = null;
            (<Promise<any>>c(new FormControl('invalid'))).then(v => value = v);
 
            tick(1);
