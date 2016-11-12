@@ -10,8 +10,7 @@ export declare class BaseResponseOptions extends ResponseOptions {
 
 /** @experimental */
 export declare class BrowserXhr {
-    constructor();
-    build(): any;
+    build(request?: Request): any;
 }
 
 /** @experimental */

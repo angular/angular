@@ -77,7 +77,7 @@ class MockBrowserXHR extends BrowserXhr {
 
   dispatchEvent(type: string) { this.callbacks.get(type)({}); }
 
-  build() {
+  build(request?: Request): any {
     const xhr = new MockBrowserXHR();
     existingXHRs.push(xhr);
     return xhr;
@@ -254,6 +254,19 @@ export function main() {
             new Request(base.merge(new RequestOptions({headers}))), new MockBrowserXHR());
         connection.response.subscribe();
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('Accept', 'text/xml');
+      });
+
+      it('should pass Request object into BrowserXhr.build', () => {
+        const body = 'Some body to love';
+        const base = new BaseRequestOptions();
+        const request = new Request(base.merge(new RequestOptions({body: body})));
+        const browserXHR = new MockBrowserXHR();
+        spyOn(browserXHR, 'build').and.callThrough();
+        const connection = new XHRConnection(request, browserXHR);
+
+        expect(browserXHR.build).not.toHaveBeenCalled();
+        connection.response.subscribe();
+        expect(browserXHR.build).toHaveBeenCalledWith(request);
       });
 
       it('should skip content type detection if custom content type header is set', () => {
