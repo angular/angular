@@ -7,12 +7,11 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, Injector, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-
 import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
@@ -1868,6 +1867,34 @@ describe('Integration', () => {
          expect(native.className).toEqual('active');
        })));
 
+    it('should set default "router-link-active" class when the link is active',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [{
+             path: 'link',
+             component: DefaultActiveClassCmp,
+             children:
+                 [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]
+           }]
+         }]);
+
+         router.navigateByUrl('/team/22/link');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link');
+
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.className).toEqual('router-link-active');
+
+         router.navigateByUrl('/team/22/link/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link/simple');
+         expect(native.className).toEqual('router-link-active');
+       })));
+
 
     it('should expose an isActive property', fakeAsync(() => {
          @Component({
@@ -2401,6 +2428,13 @@ class DummyLinkCmp {
   constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
 }
 
+@Component({
+  selector: 'default-active-class-cmp',
+  template: `<router-outlet></router-outlet><a [routerLink]="['./']">link</a>`
+})
+class DefaultActiveClassCmp {
+}
+
 @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
 class RelativeLinkCmp {
 }
@@ -2588,7 +2622,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DefaultActiveClassCmp,
   ],
 
 
@@ -2614,7 +2649,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DefaultActiveClassCmp,
   ],
 
 
@@ -2641,7 +2677,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DefaultActiveClassCmp,
   ]
 })
 class TestModule {

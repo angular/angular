@@ -8,19 +8,23 @@
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, OpaqueToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {ExtraOptions} from './extra_options';
 import {getDOM} from './private_import_platform-browser';
-import {ErrorHandler, Router} from './router';
+import {Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ActivatedRoute} from './router_state';
+import {ROUTER_CONFIGURATION, ROUTER_INITIALIZER} from './router_tokens';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
+
 
 
 /**
@@ -28,12 +32,6 @@ import {flatten} from './utils/collection';
  * @stable
  */
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
-
-/**
- * @whatItDoes Is used in DI to configure the router.
- * @stable
- */
-export const ROUTER_CONFIGURATION = new OpaqueToken('ROUTER_CONFIGURATION');
 
 /**
  * @docsNotRequired
@@ -47,8 +45,8 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      ApplicationRef, UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader,
-      Compiler, ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
+      UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader, Compiler, ROUTES,
+      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
     ]
   },
   RouterOutletMap,
@@ -204,43 +202,10 @@ export function provideRoutes(routes: Routes): any {
   ];
 }
 
-
-/**
- * @whatItDoes Represents options to configure the router.
- *
- * @stable
- */
-export interface ExtraOptions {
-  /**
-   * Makes the router log all its internal events to the console.
-   */
-  enableTracing?: boolean;
-
-  /**
-   * Enables the location strategy that uses the URL fragment instead of the history API.
-   */
-  useHash?: boolean;
-
-  /**
-   * Disables the initial navigation.
-   */
-  initialNavigation?: boolean;
-
-  /**
-   * A custom error handler.
-   */
-  errorHandler?: ErrorHandler;
-
-  /**
-   * Configures a preloading strategy. See {@link PreloadAllModules}.
-   */
-  preloadingStrategy?: any;
-}
-
 export function setupRouter(
-    ref: ApplicationRef, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
-    location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
-    config: Route[][], opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy) {
+    urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
+    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
+    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
       null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(config));
 
@@ -286,13 +251,6 @@ export function initialRouterNavigation(
     }
   };
 }
-
-/**
- * A token for the router initializer that will be called after the app is bootstrapped.
- *
- * @experimental
- */
-export const ROUTER_INITIALIZER = new OpaqueToken('Router Initializer');
 
 export function provideRouterInitializer() {
   return [
