@@ -7,6 +7,7 @@
  */
 
 import {setRootDomAdapter} from '../dom/dom_adapter';
+import {camelCaseToDashCase} from '../dom/util';
 import {global, isBlank, isPresent, setValueOnPath} from '../facade/lang';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
@@ -224,15 +225,22 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasClass(element: any, className: string): boolean {
     return element.classList.contains(className);
   }
-  setStyle(element: any, styleName: string, styleValue: string) {
-    element.style[styleName] = styleValue;
+  setStyle(element: any, styleName: string, styleValue: string): void {
+    if (!hasPriority(styleValue)) {
+      element.style[styleName] = styleValue;
+    } else {
+      // style.setProperty only supports dash-case style names
+      const dashCaseName = toDashCaseStyleName(styleName);
+      // https://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleDeclaration
+      element.style.setProperty(dashCaseName, clearPriority(styleValue), 'important');
+    }
   }
-  removeStyle(element: any, stylename: string) {
+  removeStyle(element: any, styleName: string) {
     // IE requires '' instead of null
     // see https://github.com/angular/angular/issues/7916
-    element.style[stylename] = '';
+    element.style[styleName] = '';
   }
-  getStyle(element: any, stylename: string): string { return element.style[stylename]; }
+  getStyle(element: any, styleName: string): string { return element.style[styleName]; }
   hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
     const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
@@ -408,4 +416,20 @@ export function parseCookieValue(cookieStr: string, name: string): string {
     }
   }
   return null;
+}
+
+const IMPORTANT_RULE: string = '!important';
+function hasPriority(styleValue: string): boolean {
+  return styleValue.endsWith(IMPORTANT_RULE);
+}
+
+function clearPriority(styleValue: string): string {
+  return styleValue.replace(IMPORTANT_RULE, '').trim();
+}
+
+const VENDOR_PREFIXES = ['webkit', 'ms', 'o', 'moz'];
+function toDashCaseStyleName(styleName: string): string {
+  const dashCaseName = camelCaseToDashCase(styleName);
+  const hasVendorPrefix = VENDOR_PREFIXES.some((prefix: string) => dashCaseName.startsWith(prefix));
+  return hasVendorPrefix ? `-${dashCaseName}` : dashCaseName;
 }
