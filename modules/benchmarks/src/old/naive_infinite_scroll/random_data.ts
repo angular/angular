@@ -9,15 +9,15 @@
 import {AAT_STATUS_LIST, Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
 
 export function generateOfferings(count: number): Offering[] {
-  var res = [];
-  for (var i = 0; i < count; i++) {
+  const res = [];
+  for (let i = 0; i < count; i++) {
     res.push(generateOffering(i));
   }
   return res;
 }
 
 export function generateOffering(seed: number): Offering {
-  var res = new Offering();
+  const res = new Offering();
   res.name = generateName(seed++);
   res.company = generateCompany(seed++);
   res.opportunity = generateOpportunity(seed++);
@@ -33,24 +33,24 @@ export function generateOffering(seed: number): Offering {
 }
 
 export function generateCompany(seed: number): Company {
-  var res = new Company();
+  const res = new Company();
   res.name = generateName(seed);
   return res;
 }
 
 export function generateOpportunity(seed: number): Opportunity {
-  var res = new Opportunity();
+  const res = new Opportunity();
   res.name = generateName(seed);
   return res;
 }
 
 export function generateAccount(seed: number): Account {
-  var res = new Account();
+  const res = new Account();
   res.accountId = seed;
   return res;
 }
 
-var names = [
+const names = [
   'Foo', 'Bar', 'Baz', 'Qux', 'Quux', 'Garply', 'Waldo', 'Fred', 'Plugh', 'Xyzzy', 'Thud', 'Cruft',
   'Stuff'
 ];
@@ -59,7 +59,7 @@ function generateName(seed: number): string {
   return names[seed % names.length];
 }
 
-var offsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const offsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function randomDate(seed: number, minDate: CustomDate = null): CustomDate {
   if (minDate == null) {
@@ -69,13 +69,13 @@ function randomDate(seed: number, minDate: CustomDate = null): CustomDate {
   return minDate.addDays(offsets[seed % offsets.length]);
 }
 
-var stringLengths = [5, 7, 9, 11, 13];
-var charCodeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+const stringLengths = [5, 7, 9, 11, 13];
+const charCodeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 function randomString(seed: number): string {
-  var len = stringLengths[seed % 5];
-  var str = '';
-  for (var i = 0; i < len; i++) {
+  const len = stringLengths[seed % 5];
+  let str = '';
+  for (let i = 0; i < len; i++) {
     str += StringWrapper.fromCharCode(97 + charCodeOffsets[seed % 9] + i);
   }
   return str;

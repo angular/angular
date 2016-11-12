@@ -20,11 +20,11 @@ export function main(): void {
     let htmlParser: HtmlParser;
 
     function loadAsText(template: string, xtb: string): {[id: string]: string} {
-      let messageBundle = new MessageBundle(htmlParser, [], {});
+      const messageBundle = new MessageBundle(htmlParser, [], {});
       messageBundle.updateFromTemplate(template, 'url', DEFAULT_INTERPOLATION_CONFIG);
 
       const asAst = serializer.load(xtb, 'url', messageBundle);
-      let asText: {[id: string]: string} = {};
+      const asText: {[id: string]: string} = {};
       Object.keys(asAst).forEach(id => { asText[id] = serializeNodes(asAst[id]).join(''); });
 
       return asText;

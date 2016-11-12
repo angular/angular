@@ -124,7 +124,7 @@ function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
     if (i === 0) {
       const parts = c.split('/');
       for (let j = 0; j < parts.length; ++j) {
-        let cc = parts[j];
+        const cc = parts[j];
 
         if (j == 0 && cc == '.') {  //  './a'
           // skip it
@@ -204,7 +204,7 @@ function updateSegmentGroup(
   const m = prefixedWith(segmentGroup, startIndex, commands);
   const slicedCommands = commands.slice(m.commandIndex);
   if (m.match && m.pathIndex < segmentGroup.segments.length) {
-    var g = new UrlSegmentGroup(segmentGroup.segments.slice(0, m.pathIndex), {});
+    const g = new UrlSegmentGroup(segmentGroup.segments.slice(0, m.pathIndex), {});
     g.children[PRIMARY_OUTLET] =
         new UrlSegmentGroup(segmentGroup.segments.slice(m.pathIndex), segmentGroup.children);
     return updateSegmentGroupChildren(g, 0, slicedCommands);

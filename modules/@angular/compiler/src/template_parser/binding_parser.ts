@@ -251,7 +251,7 @@ export class BindingParser {
     let securityContexts: SecurityContext[];
 
     if (parts.length === 1) {
-      var partValue = parts[0];
+      const partValue = parts[0];
       boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
       securityContexts = calcPossibleSecurityContexts(
           this._schemaRegistry, elementSelector, boundPropertyName, false);

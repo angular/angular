@@ -238,7 +238,7 @@ export function Class(clsDef: ClassDefinition): Type<any> {
     }
   }
 
-  for (let key in clsDef) {
+  for (const key in clsDef) {
     if (key !== 'extends' && key !== 'prototype' && clsDef.hasOwnProperty(key)) {
       proto[key] = applyParams(clsDef[key], key);
     }

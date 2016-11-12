@@ -80,7 +80,7 @@ export class Tsc implements CompilerInterface {
     // The issue is that old typescript only has `readDirectory` while
     // the newer TypeScript has additional `useCaseSensitiveFileNames` and
     // `fileExists`. Inlining will trigger an error of extra parameters.
-    let host = {
+    const host = {
       useCaseSensitiveFileNames: true,
       fileExists: existsSync,
       readDirectory: this.readDirectory
@@ -103,10 +103,10 @@ export class Tsc implements CompilerInterface {
     debug('Checking global diagnostics...');
     check(program.getGlobalDiagnostics());
 
-    let diagnostics: ts.Diagnostic[] = [];
+    const diagnostics: ts.Diagnostic[] = [];
     debug('Type checking...');
 
-    for (let sf of program.getSourceFiles()) {
+    for (const sf of program.getSourceFiles()) {
       diagnostics.push(...ts.getPreEmitDiagnostics(program, sf));
     }
     check(diagnostics);
@@ -117,7 +117,7 @@ export class Tsc implements CompilerInterface {
     const program = ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost);
     debug('Emitting outputs...');
     const emitResult = program.emit();
-    let diagnostics: ts.Diagnostic[] = [];
+    const diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...emitResult.diagnostics);
 
     check(compilerHost.diagnostics);

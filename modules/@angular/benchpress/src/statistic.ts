@@ -12,14 +12,14 @@ export class Statistic {
   }
 
   static calculateMean(samples: number[]) {
-    var total = 0;
+    let total = 0;
     // TODO: use reduce
     samples.forEach(x => total += x);
     return total / samples.length;
   }
 
   static calculateStandardDeviation(samples: number[], mean: number) {
-    var deviation = 0;
+    let deviation = 0;
     // TODO: use reduce
     samples.forEach(x => deviation += Math.pow(x - mean, 2));
     deviation = deviation / (samples.length);
@@ -30,9 +30,9 @@ export class Statistic {
   static calculateRegressionSlope(
       xValues: number[], xMean: number, yValues: number[], yMean: number) {
     // See http://en.wikipedia.org/wiki/Simple_linear_regression
-    var dividendSum = 0;
-    var divisorSum = 0;
-    for (var i = 0; i < xValues.length; i++) {
+    let dividendSum = 0;
+    let divisorSum = 0;
+    for (let i = 0; i < xValues.length; i++) {
       dividendSum += (xValues[i] - xMean) * (yValues[i] - yMean);
       divisorSum += Math.pow(xValues[i] - xMean, 2);
     }

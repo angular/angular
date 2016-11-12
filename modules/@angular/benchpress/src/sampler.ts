@@ -49,7 +49,7 @@ export class Sampler {
   }
 
   private _iterate(lastState: SampleState): Promise<SampleState> {
-    var resultPromise: Promise<SampleState>;
+    let resultPromise: Promise<SampleState>;
     if (this._prepare !== Options.NO_PREPARE) {
       resultPromise = this._driver.waitFor(this._prepare);
     } else {
@@ -64,10 +64,10 @@ export class Sampler {
   }
 
   private _report(state: SampleState, metricValues: {[key: string]: any}): Promise<SampleState> {
-    var measureValues = new MeasureValues(state.completeSample.length, this._now(), metricValues);
-    var completeSample = state.completeSample.concat([measureValues]);
-    var validSample = this._validator.validate(completeSample);
-    var resultPromise = this._reporter.reportMeasureValues(measureValues);
+    const measureValues = new MeasureValues(state.completeSample.length, this._now(), metricValues);
+    const completeSample = state.completeSample.concat([measureValues]);
+    const validSample = this._validator.validate(completeSample);
+    let resultPromise = this._reporter.reportMeasureValues(measureValues);
     if (isPresent(validSample)) {
       resultPromise =
           resultPromise.then((_) => this._reporter.reportSample(completeSample, validSample));

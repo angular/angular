@@ -11,7 +11,7 @@ import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl
 
 export function main() {
   describe('ResourceLoaderImpl', () => {
-    var resourceLoader: ResourceLoaderImpl;
+    let resourceLoader: ResourceLoaderImpl;
 
     // TODO(juliemr): This file currently won't work with dart unit tests run using
     // exclusive it or describe (iit or ddescribe). This is because when
@@ -19,8 +19,8 @@ export function main() {
     // will be relative to here, so url200 should look like
     // static_assets/200.html.
     // We currently have no way of detecting this.
-    var url200 = '/base/modules/@angular/platform-browser/test/browser/static_assets/200.html';
-    var url404 = '/bad/path/404.html';
+    const url200 = '/base/modules/@angular/platform-browser/test/browser/static_assets/200.html';
+    const url404 = '/bad/path/404.html';
 
     beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });
 

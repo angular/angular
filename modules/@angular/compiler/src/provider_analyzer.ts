@@ -54,11 +54,11 @@ export class ProviderElementContext {
       refs: ReferenceAst[], private _sourceSpan: ParseSourceSpan) {
     this._attrs = {};
     attrs.forEach((attrAst) => this._attrs[attrAst.name] = attrAst.value);
-    var directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
+    const directivesMeta = _directiveAsts.map(directiveAst => directiveAst.directive);
     this._allProviders =
         _resolveProvidersFromDirectives(directivesMeta, _sourceSpan, viewContext.errors);
     this._contentQueries = _getContentQueries(directivesMeta);
-    var queriedTokens = new Map<any, boolean>();
+    const queriedTokens = new Map<any, boolean>();
     Array.from(this._allProviders.values()).forEach((provider) => {
       this._addQueryReadsTo(provider.token, queriedTokens);
     });
@@ -91,8 +91,8 @@ export class ProviderElementContext {
   }
 
   get transformedDirectiveAsts(): DirectiveAst[] {
-    var sortedProviderTypes = this.transformProviders.map(provider => provider.token.identifier);
-    var sortedDirectives = this._directiveAsts.slice();
+    const sortedProviderTypes = this.transformProviders.map(provider => provider.token.identifier);
+    const sortedDirectives = this._directiveAsts.slice();
     sortedDirectives.sort(
         (dir1, dir2) => sortedProviderTypes.indexOf(dir1.directive.type) -
             sortedProviderTypes.indexOf(dir2.directive.type));
@@ -111,10 +111,10 @@ export class ProviderElementContext {
   }
 
   private _getQueriesFor(token: CompileTokenMetadata): CompileQueryMetadata[] {
-    var result: CompileQueryMetadata[] = [];
-    var currentEl: ProviderElementContext = this;
-    var distance = 0;
-    var queries: CompileQueryMetadata[];
+    const result: CompileQueryMetadata[] = [];
+    let currentEl: ProviderElementContext = this;
+    let distance = 0;
+    let queries: CompileQueryMetadata[];
     while (currentEl !== null) {
       queries = currentEl._contentQueries.get(token.reference);
       if (isPresent(queries)) {
@@ -136,7 +136,7 @@ export class ProviderElementContext {
   private _getOrCreateLocalProvider(
       requestingProviderType: ProviderAstType, token: CompileTokenMetadata,
       eager: boolean): ProviderAst {
-    var resolvedProvider = this._allProviders.get(token.reference);
+    const resolvedProvider = this._allProviders.get(token.reference);
     if (!resolvedProvider || ((requestingProviderType === ProviderAstType.Directive ||
                                requestingProviderType === ProviderAstType.PublicService) &&
                               resolvedProvider.providerType === ProviderAstType.PrivateService) ||
@@ -145,7 +145,7 @@ export class ProviderElementContext {
          resolvedProvider.providerType === ProviderAstType.Builtin)) {
       return null;
     }
-    var transformedProviderAst = this._transformedProviders.get(token.reference);
+    let transformedProviderAst = this._transformedProviders.get(token.reference);
     if (isPresent(transformedProviderAst)) {
       return transformedProviderAst;
     }
@@ -155,12 +155,12 @@ export class ProviderElementContext {
       return null;
     }
     this._seenProviders.set(token.reference, true);
-    var transformedProviders = resolvedProvider.providers.map((provider) => {
-      var transformedUseValue = provider.useValue;
-      var transformedUseExisting = provider.useExisting;
-      var transformedDeps: CompileDiDependencyMetadata[];
+    const transformedProviders = resolvedProvider.providers.map((provider) => {
+      let transformedUseValue = provider.useValue;
+      let transformedUseExisting = provider.useExisting;
+      let transformedDeps: CompileDiDependencyMetadata[];
       if (isPresent(provider.useExisting)) {
-        var existingDiDep = this._getDependency(
+        const existingDiDep = this._getDependency(
             resolvedProvider.providerType,
             new CompileDiDependencyMetadata({token: provider.useExisting}), eager);
         if (isPresent(existingDiDep.token)) {
@@ -170,11 +170,11 @@ export class ProviderElementContext {
           transformedUseValue = existingDiDep.value;
         }
       } else if (isPresent(provider.useFactory)) {
-        var deps = provider.deps || provider.useFactory.diDeps;
+        const deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
       } else if (isPresent(provider.useClass)) {
-        var deps = provider.deps || provider.useClass.diDeps;
+        const deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
       }
@@ -194,7 +194,7 @@ export class ProviderElementContext {
       requestingProviderType: ProviderAstType, dep: CompileDiDependencyMetadata,
       eager: boolean = null): CompileDiDependencyMetadata {
     if (dep.isAttribute) {
-      var attrValue = this._attrs[dep.token.value];
+      const attrValue = this._attrs[dep.token.value];
       return new CompileDiDependencyMetadata(
           {isValue: true, value: attrValue == null ? null : attrValue});
     }
@@ -230,9 +230,9 @@ export class ProviderElementContext {
   private _getDependency(
       requestingProviderType: ProviderAstType, dep: CompileDiDependencyMetadata,
       eager: boolean = null): CompileDiDependencyMetadata {
-    var currElement: ProviderElementContext = this;
-    var currEager: boolean = eager;
-    var result: CompileDiDependencyMetadata = null;
+    let currElement: ProviderElementContext = this;
+    let currEager: boolean = eager;
+    let result: CompileDiDependencyMetadata = null;
     if (!dep.isSkipSelf) {
       result = this._getLocalDependency(requestingProviderType, dep, eager);
     }
@@ -243,7 +243,7 @@ export class ProviderElementContext {
     } else {
       // check parent elements
       while (!result && isPresent(currElement._parent)) {
-        var prevElement = currElement;
+        const prevElement = currElement;
         currElement = currElement._parent;
         if (prevElement._isViewRoot) {
           currEager = false;
@@ -308,11 +308,11 @@ export class NgModuleProviderAnalyzer {
   }
 
   private _getOrCreateLocalProvider(token: CompileTokenMetadata, eager: boolean): ProviderAst {
-    var resolvedProvider = this._allProviders.get(token.reference);
+    const resolvedProvider = this._allProviders.get(token.reference);
     if (!resolvedProvider) {
       return null;
     }
-    var transformedProviderAst = this._transformedProviders.get(token.reference);
+    let transformedProviderAst = this._transformedProviders.get(token.reference);
     if (isPresent(transformedProviderAst)) {
       return transformedProviderAst;
     }
@@ -322,12 +322,12 @@ export class NgModuleProviderAnalyzer {
       return null;
     }
     this._seenProviders.set(token.reference, true);
-    var transformedProviders = resolvedProvider.providers.map((provider) => {
-      var transformedUseValue = provider.useValue;
-      var transformedUseExisting = provider.useExisting;
-      var transformedDeps: CompileDiDependencyMetadata[];
+    const transformedProviders = resolvedProvider.providers.map((provider) => {
+      let transformedUseValue = provider.useValue;
+      let transformedUseExisting = provider.useExisting;
+      let transformedDeps: CompileDiDependencyMetadata[];
       if (isPresent(provider.useExisting)) {
-        var existingDiDep = this._getDependency(
+        const existingDiDep = this._getDependency(
             new CompileDiDependencyMetadata({token: provider.useExisting}), eager,
             resolvedProvider.sourceSpan);
         if (isPresent(existingDiDep.token)) {
@@ -337,11 +337,11 @@ export class NgModuleProviderAnalyzer {
           transformedUseValue = existingDiDep.value;
         }
       } else if (isPresent(provider.useFactory)) {
-        var deps = provider.deps || provider.useFactory.diDeps;
+        const deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
       } else if (isPresent(provider.useClass)) {
-        var deps = provider.deps || provider.useClass.diDeps;
+        const deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
       }
@@ -360,7 +360,7 @@ export class NgModuleProviderAnalyzer {
   private _getDependency(
       dep: CompileDiDependencyMetadata, eager: boolean = null,
       requestorSourceSpan: ParseSourceSpan): CompileDiDependencyMetadata {
-    var foundLocal = false;
+    let foundLocal = false;
     if (!dep.isSkipSelf && isPresent(dep.token)) {
       // access the injector
       if (dep.token.reference === resolveIdentifierToken(Identifiers.Injector).reference ||
@@ -372,7 +372,7 @@ export class NgModuleProviderAnalyzer {
         foundLocal = true;
       }
     }
-    var result: CompileDiDependencyMetadata = dep;
+    let result: CompileDiDependencyMetadata = dep;
     if (dep.isSelf && !foundLocal) {
       if (dep.isOptional) {
         result = new CompileDiDependencyMetadata({isValue: true, value: null});
@@ -442,9 +442,9 @@ function _normalizeProviders(
 function _resolveProvidersFromDirectives(
     directives: CompileDirectiveSummary[], sourceSpan: ParseSourceSpan,
     targetErrors: ParseError[]): Map<any, ProviderAst> {
-  var providersByToken = new Map<any, ProviderAst>();
+  const providersByToken = new Map<any, ProviderAst>();
   directives.forEach((directive) => {
-    var dirProvider = new CompileProviderMetadata(
+    const dirProvider = new CompileProviderMetadata(
         {token: new CompileTokenMetadata({identifier: directive.type}), useClass: directive.type});
     _resolveProviders(
         [dirProvider],
@@ -453,7 +453,7 @@ function _resolveProvidersFromDirectives(
   });
 
   // Note: directives need to be able to overwrite providers of a component!
-  var directivesWithComponentFirst =
+  const directivesWithComponentFirst =
       directives.filter(dir => dir.isComponent).concat(directives.filter(dir => !dir.isComponent));
   directivesWithComponentFirst.forEach((directive) => {
     _resolveProviders(
@@ -471,7 +471,7 @@ function _resolveProviders(
     sourceSpan: ParseSourceSpan, targetErrors: ParseError[],
     targetProvidersByToken: Map<any, ProviderAst>) {
   providers.forEach((provider) => {
-    var resolvedProvider = targetProvidersByToken.get(provider.token.reference);
+    let resolvedProvider = targetProvidersByToken.get(provider.token.reference);
     if (isPresent(resolvedProvider) && resolvedProvider.multiProvider !== provider.multi) {
       targetErrors.push(new ProviderError(
           `Mixing multi and non multi provider is not possible for token ${resolvedProvider.token.name}`,
@@ -497,7 +497,7 @@ function _resolveProviders(
 
 
 function _getViewQueries(component: CompileDirectiveMetadata): Map<any, CompileQueryMetadata[]> {
-  var viewQueries = new Map<any, CompileQueryMetadata[]>();
+  const viewQueries = new Map<any, CompileQueryMetadata[]>();
   if (isPresent(component.viewQueries)) {
     component.viewQueries.forEach((query) => _addQueryToTokenMap(viewQueries, query));
   }
@@ -506,7 +506,7 @@ function _getViewQueries(component: CompileDirectiveMetadata): Map<any, CompileQ
 
 function _getContentQueries(directives: CompileDirectiveSummary[]):
     Map<any, CompileQueryMetadata[]> {
-  var contentQueries = new Map<any, CompileQueryMetadata[]>();
+  const contentQueries = new Map<any, CompileQueryMetadata[]>();
   directives.forEach(directive => {
     if (isPresent(directive.queries)) {
       directive.queries.forEach((query) => _addQueryToTokenMap(contentQueries, query));
@@ -517,7 +517,7 @@ function _getContentQueries(directives: CompileDirectiveSummary[]):
 
 function _addQueryToTokenMap(map: Map<any, CompileQueryMetadata[]>, query: CompileQueryMetadata) {
   query.selectors.forEach((token: CompileTokenMetadata) => {
-    var entry = map.get(token.reference);
+    let entry = map.get(token.reference);
     if (!entry) {
       entry = [];
       map.set(token.reference, entry);

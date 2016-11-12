@@ -58,7 +58,7 @@ export function convertPropertyBinding(
   }
 
   if (visitor.needsValueUnwrapper) {
-    var initValueUnwrapperStmt = VAL_UNWRAPPER_VAR.callMethod('reset', []).toStmt();
+    const initValueUnwrapperStmt = VAL_UNWRAPPER_VAR.callMethod('reset', []).toStmt();
     stmts.push(initValueUnwrapperStmt);
   }
   stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
@@ -86,14 +86,14 @@ export function convertActionBinding(
   }
   const visitor =
       new _AstToIrVisitor(builder, nameResolver, implicitReceiver, null, bindingId, true);
-  let actionStmts: o.Statement[] = [];
+  const actionStmts: o.Statement[] = [];
   flattenStatements(action.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
-  var lastIndex = actionStmts.length - 1;
-  var preventDefaultVar: o.ReadVarExpr = null;
+  const lastIndex = actionStmts.length - 1;
+  let preventDefaultVar: o.ReadVarExpr = null;
   if (lastIndex >= 0) {
-    var lastStatement = actionStmts[lastIndex];
-    var returnExpr = convertStmtIntoExpression(lastStatement);
+    const lastStatement = actionStmts[lastIndex];
+    const returnExpr = convertStmtIntoExpression(lastStatement);
     if (returnExpr) {
       // Note: We need to cast the result of the method call to dynamic,
       // as it might be a void method!
@@ -112,7 +112,7 @@ export function convertActionBinding(
  */
 export function createSharedBindingVariablesIfNeeded(stmts: o.Statement[]): o.Statement[] {
   const unwrapperStmts: o.Statement[] = [];
-  var readVars = o.findReadVarNames(stmts);
+  const readVars = o.findReadVarNames(stmts);
   if (readVars.has(VAL_UNWRAPPER_VAR.name)) {
     unwrapperStmts.push(
         VAL_UNWRAPPER_VAR
@@ -175,7 +175,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       private bindingId: string, private isAction: boolean) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
-    var op: o.BinaryOperator;
+    let op: o.BinaryOperator;
     switch (ast.operation) {
       case '+':
         op = o.BinaryOperator.Plus;
@@ -303,7 +303,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
-    let parts: any[] = [];
+    const parts: any[] = [];
     for (let i = 0; i < ast.keys.length; i++) {
       parts.push([ast.keys[i], this.visit(ast.values[i], _Mode.Expression)]);
     }
@@ -330,9 +330,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     } else {
       const args = this.visitAll(ast.args, _Mode.Expression);
       let result: any = null;
-      let receiver = this.visit(ast.receiver, _Mode.Expression);
+      const receiver = this.visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
-        var varExpr = this._getLocal(ast.name);
+        const varExpr = this._getLocal(ast.name);
         if (isPresent(varExpr)) {
           result = varExpr.callFn(args);
         }
@@ -354,7 +354,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       let result: any = null;
-      var receiver = this.visit(ast.receiver, _Mode.Expression);
+      const receiver = this.visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
         result = this._getLocal(ast.name);
       }
@@ -366,9 +366,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
-    let receiver: o.Expression = this.visit(ast.receiver, _Mode.Expression);
+    const receiver: o.Expression = this.visit(ast.receiver, _Mode.Expression);
     if (receiver === this._implicitReceiver) {
-      var varExpr = this._getLocal(ast.name);
+      const varExpr = this._getLocal(ast.name);
       if (isPresent(varExpr)) {
         throw new Error('Cannot assign to a reference or variable!');
       }
@@ -580,11 +580,11 @@ function createCachedLiteralArray(builder: ClassBuilder, values: o.Expression[])
   if (values.length === 0) {
     return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
   }
-  var proxyExpr = o.THIS_EXPR.prop(`_arr_${builder.fields.length}`);
-  var proxyParams: o.FnParam[] = [];
-  var proxyReturnEntries: o.Expression[] = [];
-  for (var i = 0; i < values.length; i++) {
-    var paramName = `p${i}`;
+  const proxyExpr = o.THIS_EXPR.prop(`_arr_${builder.fields.length}`);
+  const proxyParams: o.FnParam[] = [];
+  const proxyReturnEntries: o.Expression[] = [];
+  for (let i = 0; i < values.length; i++) {
+    const paramName = `p${i}`;
     proxyParams.push(new o.FnParam(paramName));
     proxyReturnEntries.push(o.variable(paramName));
   }
@@ -605,7 +605,7 @@ function createCachedLiteralMap(
   const proxyParams: o.FnParam[] = [];
   const proxyReturnEntries: [string, o.Expression][] = [];
   const values: o.Expression[] = [];
-  for (var i = 0; i < entries.length; i++) {
+  for (let i = 0; i < entries.length; i++) {
     const paramName = `p${i}`;
     proxyParams.push(new o.FnParam(paramName));
     proxyReturnEntries.push([entries[i][0], o.variable(paramName)]);

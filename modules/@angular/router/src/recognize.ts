@@ -83,7 +83,7 @@ class Recognizer {
   processSegment(
       config: Route[], segmentGroup: UrlSegmentGroup, pathIndex: number, segments: UrlSegment[],
       outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
-    for (let r of config) {
+    for (const r of config) {
       try {
         return this.processSegmentAgainstRoute(r, segmentGroup, pathIndex, segments, outlet);
       } catch (e) {
@@ -188,7 +188,7 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
   const names: {[k: string]: ActivatedRouteSnapshot} = {};
   nodes.forEach(n => {
-    let routeWithSameOutletName = names[n.value.outlet];
+    const routeWithSameOutletName = names[n.value.outlet];
     if (routeWithSameOutletName) {
       const p = routeWithSameOutletName.url.map(s => s.toString()).join('/');
       const c = n.value.url.map(s => s.toString()).join('/');
@@ -251,7 +251,7 @@ function addEmptyPathsToChildrenIfNeeded(
     segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
     children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
-  for (let r of routes) {
+  for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       const s = new UrlSegmentGroup([], {});
       s._sourceSegment = segmentGroup;
@@ -270,7 +270,7 @@ function createChildrenForEmptyPaths(
   primarySegment._sourceSegment = segmentGroup;
   primarySegment._segmentIndexShift = consumedSegments.length;
 
-  for (let r of routes) {
+  for (const r of routes) {
     if (r.path === '' && getOutlet(r) !== PRIMARY_OUTLET) {
       const s = new UrlSegmentGroup([], {});
       s._sourceSegment = segmentGroup;

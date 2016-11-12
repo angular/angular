@@ -50,7 +50,7 @@ export class IterableDiffers {
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (isPresent(parent)) {
-      var copied = parent.factories.slice();
+      const copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new IterableDiffers(factories);
     } else {
@@ -95,7 +95,7 @@ export class IterableDiffers {
   }
 
   find(iterable: any): IterableDifferFactory {
-    var factory = this.factories.find(f => f.supports(iterable));
+    const factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;
     } else {

@@ -13,13 +13,13 @@ import {isPresent} from '../facade/lang';
 @Injectable()
 export class ResourceLoaderImpl extends ResourceLoader {
   get(url: string): Promise<string> {
-    var resolve: (result: any) => void;
-    var reject: (error: any) => void;
+    let resolve: (result: any) => void;
+    let reject: (error: any) => void;
     const promise = new Promise((res, rej) => {
       resolve = res;
       reject = rej;
     });
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'text';
 
@@ -27,10 +27,10 @@ export class ResourceLoaderImpl extends ResourceLoader {
       // responseText is the old-school way of retrieving response (supported by IE8 & 9)
       // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
       // by IE10)
-      var response = xhr.response || xhr.responseText;
+      const response = xhr.response || xhr.responseText;
 
       // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
-      var status = xhr.status === 1223 ? 204 : xhr.status;
+      let status = xhr.status === 1223 ? 204 : xhr.status;
 
       // fix status code when it is 0 (0 status is undocumented).
       // Occurs when accessing file resources or on Android 4.1 stock browser

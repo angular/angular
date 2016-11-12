@@ -21,7 +21,7 @@ class ASTValidator extends RecursiveAstVisitor {
   validate(ast: AST, cb: () => void): void {
     if (!inSpan(ast.span, this.parentSpan)) {
       if (this.parentSpan) {
-        let parentSpan = this.parentSpan as ParseSpan;
+        const parentSpan = this.parentSpan as ParseSpan;
         throw Error(
             `Invalid AST span [expected (${ast.span.start}, ${ast.span.end}) to be in (${parentSpan.start},  ${parentSpan.end}) for ${unparse(ast)}`);
       } else {

@@ -10,7 +10,7 @@ import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/per
 
 describe('ng1.x compiler benchmark', function() {
 
-  var URL = 'benchmarks_external/src/compiler/compiler_benchmark.html';
+  const URL = 'benchmarks_external/src/compiler/compiler_benchmark.html';
 
   afterEach(verifyNoBrowserErrors);
 

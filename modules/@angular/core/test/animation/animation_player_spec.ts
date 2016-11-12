@@ -13,8 +13,8 @@ import {describe, expect, it} from '../../testing/testing_internal';
 export function main() {
   describe('NoOpAnimationPlayer', function() {
     it('should call onDone after the next microtask when constructed', fakeAsync(() => {
-         var player = new NoOpAnimationPlayer();
-         var completed = false;
+         const player = new NoOpAnimationPlayer();
+         let completed = false;
          player.onDone(() => completed = true);
          expect(completed).toEqual(false);
          flushMicrotasks();
@@ -22,7 +22,7 @@ export function main() {
        }));
 
     it('should be able to run each of the player methods', fakeAsync(() => {
-         var player = new NoOpAnimationPlayer();
+         const player = new NoOpAnimationPlayer();
          player.pause();
          player.play();
          player.finish();
@@ -31,8 +31,8 @@ export function main() {
        }));
 
     it('should run the onStart method when started but only once', fakeAsync(() => {
-         var player = new NoOpAnimationPlayer();
-         var calls = 0;
+         const player = new NoOpAnimationPlayer();
+         let calls = 0;
          player.onStart(() => calls++);
          expect(calls).toEqual(0);
          player.play();

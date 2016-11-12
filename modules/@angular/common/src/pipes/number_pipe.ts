@@ -37,7 +37,7 @@ function formatNumber(
   }
 
   if (digits) {
-    let parts = digits.match(_NUMBER_FORMAT_REGEXP);
+    const parts = digits.match(_NUMBER_FORMAT_REGEXP);
     if (parts === null) {
       throw new Error(`${digits} is not a valid digit info for number pipes`);
     }

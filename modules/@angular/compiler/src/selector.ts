@@ -202,7 +202,7 @@ export class SelectorMatcher {
           }
           this._addTerminal(terminalValuesMap, value, selectable);
         } else {
-          let partialMap = matcher._attrValuePartialMap;
+          const partialMap = matcher._attrValuePartialMap;
           let partialValuesMap = partialMap.get(name);
           if (!partialValuesMap) {
             partialValuesMap = new Map<string, SelectorMatcher>();

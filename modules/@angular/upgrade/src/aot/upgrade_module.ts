@@ -53,7 +53,7 @@ export class UpgradeModule {
                 angular.element(element).data(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
-                var $rootScope = $injector.get('$rootScope');
+                const $rootScope = $injector.get('$rootScope');
                 this.ngZone.onMicrotaskEmpty.subscribe(
                     () => this.ngZone.runOutsideAngular(() => $rootScope.$evalAsync()));
               }

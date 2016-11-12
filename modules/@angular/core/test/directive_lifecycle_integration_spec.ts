@@ -32,7 +32,7 @@ export function main() {
 
     it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
        () => {
-         let fixture = TestBed.createComponent(MyComp5);
+         const fixture = TestBed.createComponent(MyComp5);
          fixture.detectChanges();
 
          expect(log.result())

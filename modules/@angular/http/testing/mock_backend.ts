@@ -229,7 +229,7 @@ export class MockBackend implements ConnectionBackend {
     if (!req || !(req instanceof Request)) {
       throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }
-    let connection = new MockConnection(req);
+    const connection = new MockConnection(req);
     this.connections.next(connection);
     return connection;
   }

@@ -133,7 +133,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {
-    var views = this._element.nestedViews;
+    const views = this._element.nestedViews;
     return isPresent(views) ? views.length : 0;
   }
 
@@ -147,7 +147,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
   // to the methods below.
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null, index: number = -1):
       EmbeddedViewRef<C> {
-    var viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
+    const viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
     this.insert(viewRef, index);
     return viewRef;
   }
@@ -159,9 +159,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
   createComponent<C>(
       componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
       projectableNodes: any[][] = null): ComponentRef<C> {
-    var s = this._createComponentInContainerScope();
-    var contextInjector = injector || this._element.parentInjector;
-    var componentRef = componentFactory.create(contextInjector, projectableNodes);
+    const s = this._createComponentInContainerScope();
+    const contextInjector = injector || this._element.parentInjector;
+    const componentRef = componentFactory.create(contextInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);
   }
@@ -171,17 +171,17 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   insert(viewRef: ViewRef, index: number = -1): ViewRef {
-    var s = this._insertScope();
+    const s = this._insertScope();
     if (index == -1) index = this.length;
-    var viewRef_ = <ViewRef_<any>>viewRef;
+    const viewRef_ = <ViewRef_<any>>viewRef;
     this._element.attachView(viewRef_.internalView, index);
     return wtfLeave(s, viewRef_);
   }
 
   move(viewRef: ViewRef, currentIndex: number): ViewRef {
-    var s = this._insertScope();
+    const s = this._insertScope();
     if (currentIndex == -1) return;
-    var viewRef_ = <ViewRef_<any>>viewRef;
+    const viewRef_ = <ViewRef_<any>>viewRef;
     this._element.moveView(viewRef_.internalView, currentIndex);
     return wtfLeave(s, viewRef_);
   }

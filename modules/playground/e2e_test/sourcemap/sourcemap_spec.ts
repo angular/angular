@@ -10,11 +10,11 @@ import * as testUtil from 'e2e_util/e2e_util';
 import {$, browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-var fs = require('fs');
-var sourceMap = require('source-map');
+const fs = require('fs');
+const sourceMap = require('source-map');
 
 describe('sourcemaps', function() {
-  var URL = 'all/playground/src/sourcemap/index.html';
+  const URL = 'all/playground/src/sourcemap/index.html';
 
   it('should map sources', function() {
     browser.get(URL);
@@ -25,8 +25,8 @@ describe('sourcemaps', function() {
     // so that the browser logs can be read out!
     browser.executeScript('1+1');
     browser.manage().logs().get(logging.Type.BROWSER).then(function(logs: any) {
-      var errorLine: number = null;
-      var errorColumn: number = null;
+      let errorLine: number = null;
+      let errorColumn: number = null;
       logs.forEach(function(log: any) {
         const match = log.message.match(/\.createError\s+\(.+:(\d+):(\d+)/m);
         if (match) {
@@ -46,13 +46,13 @@ describe('sourcemaps', function() {
       const sourceMapData =
           new Buffer(content.substring(index + marker.length), 'base64').toString('utf8');
 
-      var decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
+      const decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
 
-      var originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
+      const originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
 
-      var sourceCodeLines = fs.readFileSync('modules/playground/src/sourcemap/index.ts', {
-                                encoding: 'UTF-8'
-                              }).split('\n');
+      const sourceCodeLines = fs.readFileSync('modules/playground/src/sourcemap/index.ts', {
+                                  encoding: 'UTF-8'
+                                }).split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
           .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
     });

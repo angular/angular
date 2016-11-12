@@ -49,7 +49,7 @@ export class ReflectiveProtoInjectorInlineStrategy implements ReflectiveProtoInj
   keyId9: number = null;
 
   constructor(protoEI: ReflectiveProtoInjector, providers: ResolvedReflectiveProvider[]) {
-    var length = providers.length;
+    const length = providers.length;
 
     if (length > 0) {
       this.provider0 = providers[0];
@@ -116,11 +116,11 @@ export class ReflectiveProtoInjectorDynamicStrategy implements ReflectiveProtoIn
   keyIds: number[];
 
   constructor(protoInj: ReflectiveProtoInjector, public providers: ResolvedReflectiveProvider[]) {
-    var len = providers.length;
+    const len = providers.length;
 
     this.keyIds = new Array(len);
 
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       this.keyIds[i] = providers[i].key.id;
     }
   }
@@ -192,8 +192,8 @@ export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrat
   }
 
   getObjByKeyId(keyId: number): any {
-    var p = this.protoStrategy;
-    var inj = this.injector;
+    const p = this.protoStrategy;
+    const inj = this.injector;
 
     if (p.keyId0 === keyId) {
       if (this.obj0 === UNDEFINED) {
@@ -419,7 +419,7 @@ export abstract class ReflectiveInjector implements Injector {
    * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
   static resolveAndCreate(providers: Provider[], parent: Injector = null): ReflectiveInjector {
-    var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
+    const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return ReflectiveInjector.fromResolvedProviders(ResolvedReflectiveProviders, parent);
   }
 
@@ -615,13 +615,13 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   get internalStrategy(): any { return this._strategy; }
 
   resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
-    var ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
+    const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
   }
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
-    var proto = new ReflectiveProtoInjector(providers);
-    var inj = new ReflectiveInjector_(proto);
+    const proto = new ReflectiveProtoInjector(providers);
+    const inj = new ReflectiveInjector_(proto);
     inj._parent = this;
     return inj;
   }
@@ -644,8 +644,8 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
-      var res = new Array(provider.resolvedFactories.length);
-      for (var i = 0; i < provider.resolvedFactories.length; ++i) {
+      const res = new Array(provider.resolvedFactories.length);
+      for (let i = 0; i < provider.resolvedFactories.length; ++i) {
         res[i] = this._instantiate(provider, provider.resolvedFactories[i]);
       }
       return res;
@@ -657,30 +657,30 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   private _instantiate(
       provider: ResolvedReflectiveProvider,
       ResolvedReflectiveFactory: ResolvedReflectiveFactory): any {
-    var factory = ResolvedReflectiveFactory.factory;
-    var deps = ResolvedReflectiveFactory.dependencies;
-    var length = deps.length;
+    const factory = ResolvedReflectiveFactory.factory;
+    const deps = ResolvedReflectiveFactory.dependencies;
+    const length = deps.length;
 
-    var d0: any;
-    var d1: any;
-    var d2: any;
-    var d3: any;
-    var d4: any;
-    var d5: any;
-    var d6: any;
-    var d7: any;
-    var d8: any;
-    var d9: any;
-    var d10: any;
-    var d11: any;
-    var d12: any;
-    var d13: any;
-    var d14: any;
-    var d15: any;
-    var d16: any;
-    var d17: any;
-    var d18: any;
-    var d19: any;
+    let d0: any;
+    let d1: any;
+    let d2: any;
+    let d3: any;
+    let d4: any;
+    let d5: any;
+    let d6: any;
+    let d7: any;
+    let d8: any;
+    let d9: any;
+    let d10: any;
+    let d11: any;
+    let d12: any;
+    let d13: any;
+    let d14: any;
+    let d15: any;
+    let d16: any;
+    let d17: any;
+    let d18: any;
+    let d19: any;
     try {
       d0 = length > 0 ? this._getByReflectiveDependency(provider, deps[0]) : null;
       d1 = length > 1 ? this._getByReflectiveDependency(provider, deps[1]) : null;
@@ -709,7 +709,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       throw e;
     }
 
-    var obj: any;
+    let obj: any;
     try {
       switch (length) {
         case 0:
@@ -822,13 +822,13 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   /** @internal */
   _getByKeySelf(key: ReflectiveKey, notFoundValue: any): any {
-    var obj = this._strategy.getObjByKeyId(key.id);
+    const obj = this._strategy.getObjByKeyId(key.id);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, notFoundValue);
   }
 
   /** @internal */
   _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, lowerBoundVisibility: Object): any {
-    var inj: Injector;
+    let inj: Injector;
 
     if (lowerBoundVisibility instanceof SkipSelf) {
       inj = this._parent;
@@ -837,8 +837,8 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     }
 
     while (inj instanceof ReflectiveInjector_) {
-      var inj_ = <ReflectiveInjector_>inj;
-      var obj = inj_._strategy.getObjByKeyId(key.id);
+      const inj_ = <ReflectiveInjector_>inj;
+      const obj = inj_._strategy.getObjByKeyId(key.id);
       if (obj !== UNDEFINED) return obj;
       inj = inj_._parent;
     }
@@ -859,11 +859,11 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   toString(): string { return this.displayName; }
 }
 
-var INJECTOR_KEY = ReflectiveKey.get(Injector);
+const INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
-  var res: any[] = new Array(injector._proto.numberOfProviders);
-  for (var i = 0; i < injector._proto.numberOfProviders; ++i) {
+  const res: any[] = new Array(injector._proto.numberOfProviders);
+  for (let i = 0; i < injector._proto.numberOfProviders; ++i) {
     res[i] = fn(injector._proto.getProviderAtIndex(i));
   }
   return res;

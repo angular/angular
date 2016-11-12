@@ -38,7 +38,7 @@ export function main() {
     describe('normalizeTemplateSync', () => {
       it('should store the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           let template = normalizer.normalizeTemplateSync({
+           const template = normalizer.normalizeTemplateSync({
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
              encapsulation: null,
@@ -53,7 +53,7 @@ export function main() {
 
       it('should resolve styles on the annotation against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           let template = normalizer.normalizeTemplateSync({
+           const template = normalizer.normalizeTemplateSync({
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
              encapsulation: null,
@@ -67,7 +67,7 @@ export function main() {
 
       it('should resolve styles in the template against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           let template = normalizer.normalizeTemplateSync({
+           const template = normalizer.normalizeTemplateSync({
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
              encapsulation: null,
@@ -81,7 +81,7 @@ export function main() {
 
       it('should use ViewEncapsulation.Emulated by default',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           let template = normalizer.normalizeTemplateSync({
+           const template = normalizer.normalizeTemplateSync({
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
              encapsulation: null,
@@ -98,7 +98,7 @@ export function main() {
              [CompilerConfig, DirectiveNormalizer],
              (config: CompilerConfig, normalizer: DirectiveNormalizer) => {
                config.defaultEncapsulation = ViewEncapsulation.None;
-               let template = normalizer.normalizeTemplateSync({
+               const template = normalizer.normalizeTemplateSync({
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
                  encapsulation: null,
@@ -255,7 +255,7 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/cmp.html', 'a');
-               var prenormMeta = {
+               const prenormMeta = {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
                  templateUrl: 'cmp.html',
@@ -279,8 +279,8 @@ export function main() {
       it('should store the viewEncapsulationin the result',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
 
-           var viewEncapsulation = ViewEncapsulation.Native;
-           var template = normalizer.normalizeLoadedTemplate(
+           const viewEncapsulation = ViewEncapsulation.Native;
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -294,7 +294,7 @@ export function main() {
 
       it('should keep the template as html',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -308,7 +308,7 @@ export function main() {
 
       it('should collect ngContent',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -322,7 +322,7 @@ export function main() {
 
       it('should normalize ngContent wildcard selector',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -337,7 +337,7 @@ export function main() {
 
       it('should collect top level styles in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -351,7 +351,7 @@ export function main() {
 
       it('should collect styles inside in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -365,7 +365,7 @@ export function main() {
 
       it('should collect styleUrls in the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -379,7 +379,7 @@ export function main() {
 
       it('should collect styleUrls in elements',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -393,7 +393,7 @@ export function main() {
 
       it('should ignore link elements with non stylesheet rel attribute',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -407,7 +407,7 @@ export function main() {
 
       it('should ignore link elements with absolute urls but non package: scheme',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -421,7 +421,7 @@ export function main() {
 
       it('should extract @import style urls into styleAbsUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -436,7 +436,7 @@ export function main() {
 
       it('should not resolve relative urls in inline styles',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -450,7 +450,7 @@ export function main() {
 
       it('should resolve relative style urls in styleUrls',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -465,7 +465,7 @@ export function main() {
 
       it('should resolve relative style urls in styleUrls with http directive url',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_HTTP_MODULE_URL,
@@ -480,7 +480,7 @@ export function main() {
 
       it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no styles nor stylesheets',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -494,7 +494,7 @@ export function main() {
 
       it('should ignore ng-content in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -509,7 +509,7 @@ export function main() {
 
       it('should still collect <style> in elements with ngNonBindable',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           var template = normalizer.normalizeLoadedTemplate(
+           const template = normalizer.normalizeLoadedTemplate(
                {
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -526,7 +526,7 @@ export function main() {
 
 function programResourceLoaderSpy(spy: SpyResourceLoader, results: {[key: string]: string}) {
   spy.spy('get').and.callFake((url: string): Promise<any> => {
-    var result = results[url];
+    const result = results[url];
     if (result) {
       return Promise.resolve(result);
     } else {

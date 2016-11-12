@@ -75,7 +75,7 @@ export class HammerGestureConfig {
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
 
-    for (let eventName in this.overrides) {
+    for (const eventName in this.overrides) {
       mc.get(eventName).set(this.overrides[eventName]);
     }
 

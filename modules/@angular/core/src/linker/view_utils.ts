@@ -346,7 +346,7 @@ export function createRenderElement(
     renderer: Renderer, parentElement: any, name: string, attrs: InlineArray<string>,
     debugInfo?: RenderDebugInfo): any {
   const el = renderer.createElement(parentElement, name, debugInfo);
-  for (var i = 0; i < attrs.length; i += 2) {
+  for (let i = 0; i < attrs.length; i += 2) {
     renderer.setElementAttribute(el, attrs.get(i), attrs.get(i + 1));
   }
   return el;
@@ -355,10 +355,10 @@ export function createRenderElement(
 export function selectOrCreateRenderHostElement(
     renderer: Renderer, elementName: string, attrs: InlineArray<string>,
     rootSelectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
-  var hostElement: any;
+  let hostElement: any;
   if (isPresent(rootSelectorOrNode)) {
     hostElement = renderer.selectRootElement(rootSelectorOrNode, debugInfo);
-    for (var i = 0; i < attrs.length; i += 2) {
+    for (let i = 0; i < attrs.length; i += 2) {
       renderer.setElementAttribute(hostElement, attrs.get(i), attrs.get(i + 1));
     }
   } else {
@@ -371,7 +371,7 @@ export function subscribeToRenderElement(
     view: AppView<any>, element: any, eventNamesAndTargets: InlineArray<string>,
     listener: (eventName: string, event: any) => any) {
   const disposables = createEmptyInlineArray(eventNamesAndTargets.length / 2);
-  for (var i = 0; i < eventNamesAndTargets.length; i += 2) {
+  for (let i = 0; i < eventNamesAndTargets.length; i += 2) {
     const eventName = eventNamesAndTargets.get(i);
     const eventTarget = eventNamesAndTargets.get(i + 1);
     let disposable: Function;
@@ -387,7 +387,7 @@ export function subscribeToRenderElement(
 }
 
 function disposeInlineArray(disposables: InlineArray<Function>) {
-  for (var i = 0; i < disposables.length; i++) {
+  for (let i = 0; i < disposables.length; i++) {
     disposables.get(i)();
   }
 }

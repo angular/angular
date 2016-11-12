@@ -76,10 +76,10 @@ export class Request extends Body {
   constructor(requestOptions: RequestArgs) {
     super();
     // TODO: assert that url is present
-    let url = requestOptions.url;
+    const url = requestOptions.url;
     this.url = requestOptions.url;
     if (isPresent(requestOptions.search)) {
-      let search = requestOptions.search.toString();
+      const search = requestOptions.search.toString();
       if (search.length > 0) {
         let prefix = '?';
         if (this.url.indexOf('?') != -1) {

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-var-keyword */
+
 'use strict';
 
 var glob = require('glob');
 require('zone.js/dist/zone-node.js');
 var JasmineRunner = require('jasmine');
 var path = require('path');
-// require('core-js');
 require('zone.js/dist/long-stack-trace-zone.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');

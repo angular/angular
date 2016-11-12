@@ -13,9 +13,9 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('DomSharedStylesHost', () => {
-    var doc: any /** TODO #9100 */;
-    var ssh: DomSharedStylesHost;
-    var someHost: Element;
+    let doc: any /** TODO #9100 */;
+    let ssh: DomSharedStylesHost;
+    let someHost: Element;
     beforeEach(() => {
       doc = getDOM().createHtmlDocument();
       doc.title = '';

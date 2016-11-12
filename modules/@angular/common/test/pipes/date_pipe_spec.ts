@@ -62,7 +62,7 @@ export function main() {
 
     describe('transform', () => {
       it('should format each component correctly', () => {
-        let dateFixtures: any = {
+        const dateFixtures: any = {
           'y': '2015',
           'yy': '15',
           'M': '6',
@@ -75,7 +75,7 @@ export function main() {
           'EEEE': 'Monday'
         };
 
-        let isoStringWithoutTimeFixtures: any = {
+        const isoStringWithoutTimeFixtures: any = {
           'y': '2015',
           'yy': '15',
           'M': '1',
@@ -128,7 +128,7 @@ export function main() {
       });
 
       it('should format common multi component patterns', () => {
-        let dateFixtures: any = {
+        const dateFixtures: any = {
           'EEE, M/d/y': 'Mon, 6/15/2015',
           'EEE, M/d': 'Mon, 6/15',
           'MMM d': 'Jun 15',
@@ -157,7 +157,7 @@ export function main() {
       });
 
       it('should format with pattern aliases', () => {
-        let dateFixtures: any = {
+        const dateFixtures: any = {
           'MM/dd/yyyy': '06/15/2015',
           'fullDate': 'Monday, June 15, 2015',
           'longDate': 'June 15, 2015',

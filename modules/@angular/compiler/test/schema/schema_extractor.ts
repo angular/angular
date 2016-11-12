@@ -58,7 +58,7 @@ export function extractSchema(): Map<string, string[]> {
   const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
   const descMap: Map<string, string[]> = new Map();
-  let visited: {[name: string]: boolean} = {};
+  const visited: {[name: string]: boolean} = {};
 
   // HTML top level
   extractProperties(Node, element, visited, descMap, ELEMENT_IF, '');
@@ -179,7 +179,7 @@ function extractProperties(
   const props: string[] = descMap.has(fullName) ? descMap.get(fullName) : [];
 
   const prototype = type.prototype;
-  let keys = Object.getOwnPropertyNames(prototype);
+  const keys = Object.getOwnPropertyNames(prototype);
 
   keys.sort();
   keys.forEach((name) => {

@@ -8,7 +8,7 @@
 
 import {AnimationPlayer} from './animation_player';
 
-var _queuedAnimations: AnimationPlayer[] = [];
+let _queuedAnimations: AnimationPlayer[] = [];
 
 /** @internal */
 export function queueAnimation(player: AnimationPlayer) {
@@ -26,8 +26,8 @@ export function triggerQueuedAnimations() {
 }
 
 function _triggerAnimations() {
-  for (var i = 0; i < _queuedAnimations.length; i++) {
-    var player = _queuedAnimations[i];
+  for (let i = 0; i < _queuedAnimations.length; i++) {
+    const player = _queuedAnimations[i];
     player.play();
   }
   _queuedAnimations = [];

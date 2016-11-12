@@ -37,7 +37,7 @@ export class DowngradeNg2ComponentAdapter {
   }
 
   bootstrapNg2() {
-    var childInjector = ReflectiveInjector.resolveAndCreate(
+    const childInjector = ReflectiveInjector.resolveAndCreate(
         [{provide: NG1_SCOPE, useValue: this.componentScope}], this.parentInjector);
     this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
@@ -48,14 +48,14 @@ export class DowngradeNg2ComponentAdapter {
   }
 
   setupInputs(): void {
-    var attrs = this.attrs;
-    var inputs = this.info.inputs || [];
-    for (var i = 0; i < inputs.length; i++) {
-      var input = inputs[i];
-      var expr: any /** TODO #9100 */ = null;
+    const attrs = this.attrs;
+    const inputs = this.info.inputs || [];
+    for (let i = 0; i < inputs.length; i++) {
+      const input = inputs[i];
+      let expr: any /** TODO #9100 */ = null;
       if (attrs.hasOwnProperty(input.attr)) {
-        var observeFn = ((prop: any /** TODO #9100 */) => {
-          var prevValue = INITIAL_VALUE;
+        const observeFn = ((prop: any /** TODO #9100 */) => {
+          let prevValue = INITIAL_VALUE;
           return (value: any /** TODO #9100 */) => {
             if (this.inputChanges !== null) {
               this.inputChangeCount++;
@@ -77,7 +77,7 @@ export class DowngradeNg2ComponentAdapter {
         expr = (attrs as any /** TODO #9100 */)[input.bracketParenAttr];
       }
       if (expr != null) {
-        var watchFn =
+        const watchFn =
             ((prop: any /** TODO #9100 */) =>
                  (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
                    if (this.inputChanges != null) {
@@ -90,12 +90,12 @@ export class DowngradeNg2ComponentAdapter {
       }
     }
 
-    var prototype = this.info.type.prototype;
+    const prototype = this.info.type.prototype;
     if (prototype && (<OnChanges>prototype).ngOnChanges) {
       // Detect: OnChanges interface
       this.inputChanges = {};
       this.componentScope.$watch(() => this.inputChangeCount, () => {
-        var inputChanges = this.inputChanges;
+        const inputChanges = this.inputChanges;
         this.inputChanges = {};
         (<OnChanges>this.component).ngOnChanges(inputChanges);
       });
@@ -104,26 +104,26 @@ export class DowngradeNg2ComponentAdapter {
   }
 
   projectContent() {
-    var childNodes = this.childNodes;
-    var parent = this.contentInsertionPoint.parentNode;
+    const childNodes = this.childNodes;
+    const parent = this.contentInsertionPoint.parentNode;
     if (parent) {
-      for (var i = 0, ii = childNodes.length; i < ii; i++) {
+      for (let i = 0, ii = childNodes.length; i < ii; i++) {
         parent.insertBefore(childNodes[i], this.contentInsertionPoint);
       }
     }
   }
 
   setupOutputs() {
-    var attrs = this.attrs;
-    var outputs = this.info.outputs || [];
-    for (var j = 0; j < outputs.length; j++) {
-      var output = outputs[j];
-      var expr: any /** TODO #9100 */ = null;
-      var assignExpr = false;
+    const attrs = this.attrs;
+    const outputs = this.info.outputs || [];
+    for (let j = 0; j < outputs.length; j++) {
+      const output = outputs[j];
+      let expr: any /** TODO #9100 */ = null;
+      let assignExpr = false;
 
-      var bindonAttr =
+      const bindonAttr =
           output.bindonAttr ? output.bindonAttr.substring(0, output.bindonAttr.length - 6) : null;
-      var bracketParenAttr = output.bracketParenAttr ?
+      const bracketParenAttr = output.bracketParenAttr ?
           `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
           null;
 
@@ -140,12 +140,12 @@ export class DowngradeNg2ComponentAdapter {
       }
 
       if (expr != null && assignExpr != null) {
-        var getter = this.parse(expr);
-        var setter = getter.assign;
+        const getter = this.parse(expr);
+        const setter = getter.assign;
         if (assignExpr && !setter) {
           throw new Error(`Expression '${expr}' is not assignable!`);
         }
-        var emitter = this.component[output.prop] as EventEmitter<any>;
+        const emitter = this.component[output.prop] as EventEmitter<any>;
         if (emitter) {
           emitter.subscribe({
             next: assignExpr ?

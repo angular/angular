@@ -65,7 +65,7 @@ export function main() {
 
       it('should add and remove classes based on changes to the expression object', async(() => {
            fixture = createTestComponent('<div [ngClass]="objExpr"></div>');
-           let objExpr = getComponent().objExpr;
+           const objExpr = getComponent().objExpr;
 
            detectChangesAndExpectClassName('foo');
 
@@ -134,7 +134,7 @@ export function main() {
 
       it('should add and remove classes based on changes to the expression', async(() => {
            fixture = createTestComponent('<div [ngClass]="arrExpr"></div>');
-           let arrExpr = getComponent().arrExpr;
+           const arrExpr = getComponent().arrExpr;
            detectChangesAndExpectClassName('foo');
 
            arrExpr.push('bar');
@@ -259,7 +259,7 @@ export function main() {
 
       it('should co-operate with the class attribute', async(() => {
            fixture = createTestComponent('<div [ngClass]="objExpr" class="init foo"></div>');
-           let objExpr = getComponent().objExpr;
+           const objExpr = getComponent().objExpr;
 
            objExpr['bar'] = true;
            detectChangesAndExpectClassName('init foo bar');
@@ -273,7 +273,7 @@ export function main() {
 
       it('should co-operate with the interpolated class attribute', async(() => {
            fixture = createTestComponent(`<div [ngClass]="objExpr" class="{{'init foo'}}"></div>`);
-           let objExpr = getComponent().objExpr;
+           const objExpr = getComponent().objExpr;
 
            objExpr['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
@@ -288,7 +288,7 @@ export function main() {
       it('should co-operate with the class attribute and binding to it', async(() => {
            fixture =
                createTestComponent(`<div [ngClass]="objExpr" class="init" [class]="'foo'"></div>`);
-           let objExpr = getComponent().objExpr;
+           const objExpr = getComponent().objExpr;
 
            objExpr['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
@@ -304,7 +304,7 @@ export function main() {
            const template =
                '<div class="init foo" [ngClass]="objExpr" [class.baz]="condition"></div>';
            fixture = createTestComponent(template);
-           let objExpr = getComponent().objExpr;
+           const objExpr = getComponent().objExpr;
 
            detectChangesAndExpectClassName('init foo baz');
 
@@ -322,7 +322,7 @@ export function main() {
          async(() => {
            const template = '<div class="init" [ngClass]="objExpr" [class]="strExpr"></div>';
            fixture = createTestComponent(template);
-           let cmp = getComponent();
+           const cmp = getComponent();
 
            detectChangesAndExpectClassName('init foo');
 

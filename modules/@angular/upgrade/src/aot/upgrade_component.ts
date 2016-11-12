@@ -103,7 +103,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     const attrs: angular.IAttributes = NOT_SUPPORTED;
     const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
     const directiveRequire = this.getDirectiveRequire(this.directive);
-    let requiredControllers =
+    const requiredControllers =
         this.resolveRequire(this.directive.name, this.$element, directiveRequire);
 
     if (this.directive.bindToController && isMap(directiveRequire)) {
@@ -122,8 +122,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    var childNodes: Node[] = [];
-    var childNode: Node;
+    const childNodes: Node[] = [];
+    let childNode: Node;
     while (childNode = this.element.firstChild) {
       this.element.removeChild(childNode);
       childNodes.push(childNode);
@@ -249,7 +249,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
             bindings.propertyToOutputMap[propName] = propName;
             break;
           default:
-            var json = JSON.stringify(context);
+            let json = JSON.stringify(context);
             throw new Error(
                 `Unexpected mapping '${bindingType}' in '${json}' in '${this.name}' directive.`);
         }
@@ -263,8 +263,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (this.directive.template !== undefined) {
       return this.compileHtml(getOrCall(this.directive.template));
     } else if (this.directive.templateUrl) {
-      var url = getOrCall(this.directive.templateUrl);
-      var html = this.$templateCache.get(url) as string;
+      const url = getOrCall(this.directive.templateUrl);
+      const html = this.$templateCache.get(url) as string;
       if (html !== undefined) {
         return this.compileHtml(html);
       } else {
@@ -288,8 +288,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       controllerType: angular.IController, $scope: angular.IScope,
       $element: angular.IAugmentedJQuery, controllerAs: string) {
     // TODO: Document that we do not pre-assign bindings on the controller instance
-    var locals = {$scope, $element};
-    var controller = this.$controller(controllerType, locals, null, controllerAs);
+    const locals = {$scope, $element};
+    const controller = this.$controller(controllerType, locals, null, controllerAs);
     $element.data(controllerKey(this.directive.name), controller);
     return controller;
   }

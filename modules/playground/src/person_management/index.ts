@@ -18,7 +18,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // ---- model
 
-var _nextId = 1;
+let _nextId = 1;
 class Person {
   personId: number;
   mom: Person;

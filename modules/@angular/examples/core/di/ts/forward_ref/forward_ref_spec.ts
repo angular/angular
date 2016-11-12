@@ -12,7 +12,7 @@ export function main() {
   describe('forwardRef examples', () => {
     it('ForwardRefFn example works', () => {
       // #docregion forward_ref_fn
-      let ref = forwardRef(() => Lock);
+      const ref = forwardRef(() => Lock);
       // #enddocregion
       expect(ref).not.toBeNull();
 
@@ -32,8 +32,8 @@ export function main() {
       // Only at this point Lock is defined.
       class Lock {}
 
-      let injector = ReflectiveInjector.resolveAndCreate([Door, Lock]);
-      let door = injector.get(Door);
+      const injector = ReflectiveInjector.resolveAndCreate([Door, Lock]);
+      const door = injector.get(Door);
       expect(door instanceof Door).toBeTruthy();
       expect(door.lock instanceof Lock).toBeTruthy();
       // #enddocregion
@@ -41,7 +41,7 @@ export function main() {
 
     it('can be unwrapped', () => {
       // #docregion resolve_forward_ref
-      let ref = forwardRef(() => 'refValue');
+      const ref = forwardRef(() => 'refValue');
       expect(resolveForwardRef(ref)).toEqual('refValue');
       expect(resolveForwardRef('regularValue')).toEqual('regularValue');
       // #enddocregion

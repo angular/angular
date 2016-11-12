@@ -20,7 +20,7 @@ import * as untyped from './output_emitter_codegen_untyped';
 import {ExternalClass, codegenStmts} from './output_emitter_util';
 
 export function main() {
-  var outputDefs: any[] /** TODO #9100 */ = [];
+  const outputDefs: any[] /** TODO #9100 */ = [];
   outputDefs.push({
     'getExpressions': () => interpretStatements(codegenStmts, 'getExpressions'),
     'name': 'interpreted'
@@ -43,7 +43,7 @@ export function main() {
   describe('output emitter', () => {
     outputDefs.forEach((outputDef) => {
       describe(`${outputDef['name']}`, () => {
-        var expressions: {[k: string]: any};
+        let expressions: {[k: string]: any};
         beforeEach(() => { expressions = outputDef['getExpressions']()(); });
 
         it('should support literals', () => {
@@ -109,9 +109,9 @@ export function main() {
         });
 
         describe('operators', () => {
-          var ops: {[k: string]: Function};
-          var aObj: any;
-          var bObj: any;
+          let ops: {[k: string]: Function};
+          let aObj: any;
+          let bObj: any;
 
           beforeEach(() => {
             ops = expressions['operators'];
@@ -184,7 +184,7 @@ export function main() {
         it('should support catching errors', () => {
           function someOperation() { throw new Error('Boom!'); }
 
-          var errorAndStack = expressions['catchError'](someOperation);
+          const errorAndStack = expressions['catchError'](someOperation);
           expect(errorAndStack[0].message).toEqual('Boom!');
           // Somehow we don't get stacktraces on ios7...
           if (!browserDetection.isIOS7 && !browserDetection.isIE) {

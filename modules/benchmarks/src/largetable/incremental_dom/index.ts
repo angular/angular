@@ -11,7 +11,7 @@ import {buildTable, emptyTable} from '../util';
 import {TableComponent} from './table';
 
 export function main() {
-  var table: TableComponent;
+  let table: TableComponent;
 
   function destroyDom() { table.data = emptyTable; }
 

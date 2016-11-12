@@ -11,7 +11,7 @@ import {runBenchmark} from '@angular/testing/src/perf_util';
 
 describe('ng2 compiler benchmark', function() {
 
-  var URL = 'benchmarks/src/compiler/compiler_benchmark.html';
+  const URL = 'benchmarks/src/compiler/compiler_benchmark.html';
 
   afterEach(verifyNoBrowserErrors);
 

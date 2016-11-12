@@ -13,7 +13,7 @@ export class TraceEventFactory {
   constructor(private _cat: string, private _pid: string) {}
 
   create(ph: any, name: string, time: number, args: any = null) {
-    var res:
+    const res:
         PerfLogEvent = {'name': name, 'cat': this._cat, 'ph': ph, 'ts': time, 'pid': this._pid};
     if (isPresent(args)) {
       res['args'] = args;
@@ -34,7 +34,7 @@ export class TraceEventFactory {
   }
 
   complete(name: string, time: number, duration: number, args: any = null) {
-    var res = this.create('X', name, time, args);
+    const res = this.create('X', name, time, args);
     res['dur'] = duration;
     return res;
   }

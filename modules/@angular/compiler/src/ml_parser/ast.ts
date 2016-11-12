@@ -67,9 +67,9 @@ export interface Visitor {
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {
-  let result: any[] = [];
+  const result: any[] = [];
 
-  let visit = visitor.visit ?
+  const visit = visitor.visit ?
       (ast: Node) => visitor.visit(ast, context) || ast.visit(visitor, context) :
       (ast: Node) => ast.visit(visitor, context);
   nodes.forEach(ast => {

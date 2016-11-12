@@ -13,7 +13,7 @@ import {beforeEach, describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('AnimationSequencePlayer', function() {
-    var players: any /** TODO #9100 */;
+    let players: any /** TODO #9100 */;
     beforeEach(() => {
       players = [
         new MockAnimationPlayer(),
@@ -22,10 +22,10 @@ export function main() {
       ];
     });
 
-    var assertLastStatus =
+    const assertLastStatus =
         (player: MockAnimationPlayer, status: string, match: boolean, iOffset: number = 0) => {
-          var index = player.log.length - 1 + iOffset;
-          var actual = player.log.length > 0 ? player.log[index] : null;
+          const index = player.log.length - 1 + iOffset;
+          const actual = player.log.length > 0 ? player.log[index] : null;
           if (match) {
             expect(actual).toEqual(status);
           } else {
@@ -33,12 +33,12 @@ export function main() {
           }
         };
 
-    var assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
+    const assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
       assertLastStatus(player, 'play', isPlaying);
     };
 
     it('should pause/play the active player', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
       assertPlaying(players[0], false);
       assertPlaying(players[1], false);
@@ -78,9 +78,9 @@ export function main() {
     });
 
     it('should finish when all players have finished', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
-      var completed = false;
+      let completed = false;
       sequence.onDone(() => completed = true);
       sequence.play();
 
@@ -100,7 +100,7 @@ export function main() {
     });
 
     it('should restart all the players', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
       sequence.play();
 
@@ -122,9 +122,9 @@ export function main() {
     });
 
     it('should finish all the players', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
-      var completed = false;
+      let completed = false;
       sequence.onDone(() => completed = true);
 
       sequence.play();
@@ -144,8 +144,8 @@ export function main() {
 
     it('should not call destroy automatically when finished even if a parent player is present',
        () => {
-         var sequence = new AnimationSequencePlayer(players);
-         var parent = new AnimationSequencePlayer([sequence, new MockAnimationPlayer()]);
+         const sequence = new AnimationSequencePlayer(players);
+         const parent = new AnimationSequencePlayer([sequence, new MockAnimationPlayer()]);
 
          sequence.play();
 
@@ -167,7 +167,7 @@ export function main() {
        });
 
     it('should function without any players', () => {
-      var sequence = new AnimationSequencePlayer([]);
+      const sequence = new AnimationSequencePlayer([]);
       sequence.onDone(() => {});
       sequence.pause();
       sequence.play();
@@ -177,8 +177,8 @@ export function main() {
     });
 
     it('should run the onStart method when started but only once', () => {
-      var player = new AnimationSequencePlayer([]);
-      var calls = 0;
+      const player = new AnimationSequencePlayer([]);
+      let calls = 0;
       player.onStart(() => calls++);
       expect(calls).toEqual(0);
       player.play();
@@ -189,8 +189,8 @@ export function main() {
     });
 
     it('should call onDone after the next microtask if no players are provided', fakeAsync(() => {
-         var sequence = new AnimationSequencePlayer([]);
-         var completed = false;
+         const sequence = new AnimationSequencePlayer([]);
+         let completed = false;
          sequence.onDone(() => completed = true);
          expect(completed).toEqual(false);
          flushMicrotasks();
@@ -199,11 +199,11 @@ export function main() {
 
     it('should not allow the player to be destroyed if it already has been destroyed unless reset',
        fakeAsync(() => {
-         var p1 = new MockAnimationPlayer();
-         var p2 = new MockAnimationPlayer();
-         var innerPlayers = [p1, p2];
+         const p1 = new MockAnimationPlayer();
+         const p2 = new MockAnimationPlayer();
+         const innerPlayers = [p1, p2];
 
-         var sequencePlayer = new AnimationSequencePlayer(innerPlayers);
+         const sequencePlayer = new AnimationSequencePlayer(innerPlayers);
          expect(p1.log[p1.log.length - 1]).not.toContain('destroy');
          expect(p2.log[p2.log.length - 1]).not.toContain('destroy');
 

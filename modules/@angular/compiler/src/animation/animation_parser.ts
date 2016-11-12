@@ -72,11 +72,11 @@ export class AnimationParser {
   }
 
   parseEntry(entry: CompileAnimationEntryMetadata): AnimationEntryParseResult {
-    var errors: AnimationParseError[] = [];
-    var stateStyles: {[key: string]: AnimationStylesAst} = {};
-    var transitions: CompileAnimationStateTransitionMetadata[] = [];
+    const errors: AnimationParseError[] = [];
+    const stateStyles: {[key: string]: AnimationStylesAst} = {};
+    const transitions: CompileAnimationStateTransitionMetadata[] = [];
 
-    var stateDeclarationAsts: AnimationStateDeclarationAst[] = [];
+    const stateDeclarationAsts: AnimationStateDeclarationAst[] = [];
     entry.definitions.forEach(def => {
       if (def instanceof CompileAnimationStateDeclarationMetadata) {
         _parseAnimationDeclarationStates(def, this._schema, errors).forEach(ast => {
@@ -88,10 +88,10 @@ export class AnimationParser {
       }
     });
 
-    var stateTransitionAsts = transitions.map(
+    const stateTransitionAsts = transitions.map(
         transDef => _parseAnimationStateTransition(transDef, stateStyles, this._schema, errors));
 
-    var ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
+    const ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
     return new AnimationEntryParseResult(ast, errors);
   }
 }
@@ -99,9 +99,9 @@ export class AnimationParser {
 function _parseAnimationDeclarationStates(
     stateMetadata: CompileAnimationStateDeclarationMetadata, schema: ElementSchemaRegistry,
     errors: AnimationParseError[]): AnimationStateDeclarationAst[] {
-  var normalizedStyles = _normalizeStyleMetadata(stateMetadata.styles, {}, schema, errors, false);
-  var defStyles = new AnimationStylesAst(normalizedStyles);
-  var states = stateMetadata.stateNameExpr.split(/\s*,\s*/);
+  const normalizedStyles = _normalizeStyleMetadata(stateMetadata.styles, {}, schema, errors, false);
+  const defStyles = new AnimationStylesAst(normalizedStyles);
+  const states = stateMetadata.stateNameExpr.split(/\s*,\s*/);
   return states.map(state => new AnimationStateDeclarationAst(state, defStyles));
 }
 
@@ -109,19 +109,19 @@ function _parseAnimationStateTransition(
     transitionStateMetadata: CompileAnimationStateTransitionMetadata,
     stateStyles: {[key: string]: AnimationStylesAst}, schema: ElementSchemaRegistry,
     errors: AnimationParseError[]): AnimationStateTransitionAst {
-  var styles = new StylesCollection();
-  var transitionExprs: AnimationStateTransitionExpression[] = [];
-  var transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
+  const styles = new StylesCollection();
+  const transitionExprs: AnimationStateTransitionExpression[] = [];
+  const transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
   transitionStates.forEach(
       expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
-  var entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
-  var animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
-  var animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
+  const entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
+  const animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
+  const animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
   if (errors.length == 0) {
     _fillAnimationAstStartingKeyframes(animationAst, styles, errors);
   }
 
-  var stepsAst: AnimationWithStepsAst = (animationAst instanceof AnimationWithStepsAst) ?
+  const stepsAst: AnimationWithStepsAst = (animationAst instanceof AnimationWithStepsAst) ?
       animationAst :
       new AnimationSequenceAst([animationAst]);
 
@@ -143,22 +143,22 @@ function _parseAnimationAlias(alias: string, errors: AnimationParseError[]): str
 
 function _parseAnimationTransitionExpr(
     eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
-  var expressions: AnimationStateTransitionExpression[] = [];
+  const expressions: AnimationStateTransitionExpression[] = [];
   if (eventStr[0] == ':') {
     eventStr = _parseAnimationAlias(eventStr, errors);
   }
-  var match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
+  const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (!isPresent(match) || match.length < 4) {
     errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
     return expressions;
   }
 
-  var fromState = match[1];
-  var separator = match[2];
-  var toState = match[3];
+  const fromState = match[1];
+  const separator = match[2];
+  const toState = match[3];
   expressions.push(new AnimationStateTransitionExpression(fromState, toState));
 
-  var isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
+  const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
   if (separator[0] == '<' && !isFullAnyStateExpr) {
     expressions.push(new AnimationStateTransitionExpression(toState, fromState));
   }
@@ -174,7 +174,7 @@ function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     schema: ElementSchemaRegistry, errors: AnimationParseError[],
     permitStateReferences: boolean): {[key: string]: string | number}[] {
-  var normalizedStyles: {[key: string]: string | number}[] = [];
+  const normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (typeof styleEntry === 'string') {
       if (permitStateReferences) {
@@ -184,13 +184,13 @@ function _normalizeStyleMetadata(
             `State based animations cannot contain references to other states`));
       }
     } else {
-      var stylesObj = <Styles>styleEntry;
-      var normalizedStylesObj: Styles = {};
+      const stylesObj = <Styles>styleEntry;
+      const normalizedStylesObj: Styles = {};
       Object.keys(stylesObj).forEach(propName => {
-        var normalizedProp = schema.normalizeAnimationStyleProperty(propName);
-        var normalizedOutput =
+        const normalizedProp = schema.normalizeAnimationStyleProperty(propName);
+        const normalizedOutput =
             schema.normalizeAnimationStyleValue(normalizedProp, propName, stylesObj[propName]);
-        var normalizationError = normalizedOutput['error'];
+        const normalizationError = normalizedOutput['error'];
         if (normalizationError) {
           errors.push(new AnimationParseError(normalizationError));
         }
@@ -205,7 +205,7 @@ function _normalizeStyleMetadata(
 function _normalizeStyleSteps(
     entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata {
-  var steps = _normalizeStyleStepEntry(entry, stateStyles, schema, errors);
+  const steps = _normalizeStyleStepEntry(entry, stateStyles, schema, errors);
   return (entry instanceof CompileAnimationGroupMetadata) ?
       new CompileAnimationGroupMetadata(steps) :
       new CompileAnimationSequenceMetadata(steps);
@@ -214,8 +214,8 @@ function _normalizeStyleSteps(
 function _mergeAnimationStyles(
     stylesList: any[], newItem: {[key: string]: string | number} | string) {
   if (typeof newItem === 'object' && newItem !== null && stylesList.length > 0) {
-    var lastIndex = stylesList.length - 1;
-    var lastItem = stylesList[lastIndex];
+    const lastIndex = stylesList.length - 1;
+    const lastItem = stylesList[lastIndex];
     if (typeof lastItem === 'object' && lastItem !== null) {
       stylesList[lastIndex] = StringMapWrapper.merge(
           <{[key: string]: string | number}>lastItem, <{[key: string]: string | number}>newItem);
@@ -228,15 +228,15 @@ function _mergeAnimationStyles(
 function _normalizeStyleStepEntry(
     entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata[] {
-  var steps: CompileAnimationMetadata[];
+  let steps: CompileAnimationMetadata[];
   if (entry instanceof CompileAnimationWithStepsMetadata) {
     steps = entry.steps;
   } else {
     return [entry];
   }
 
-  var newSteps: CompileAnimationMetadata[] = [];
-  var combinedStyles: Styles[];
+  const newSteps: CompileAnimationMetadata[] = [];
+  let combinedStyles: Styles[];
   steps.forEach(step => {
     if (step instanceof CompileAnimationStyleMetadata) {
       // this occurs when a style step is followed by a previous style step
@@ -262,7 +262,7 @@ function _normalizeStyleStepEntry(
       if (step instanceof CompileAnimationAnimateMetadata) {
         // we do not recurse into CompileAnimationAnimateMetadata since
         // those style steps are not going to be squashed
-        var animateStyleValue = (<CompileAnimationAnimateMetadata>step).styles;
+        const animateStyleValue = (<CompileAnimationAnimateMetadata>step).styles;
         if (animateStyleValue instanceof CompileAnimationStyleMetadata) {
           animateStyleValue.styles =
               _normalizeStyleMetadata(animateStyleValue, stateStyles, schema, errors, true);
@@ -272,7 +272,7 @@ function _normalizeStyleStepEntry(
           });
         }
       } else if (step instanceof CompileAnimationWithStepsMetadata) {
-        let innerSteps = _normalizeStyleStepEntry(step, stateStyles, schema, errors);
+        const innerSteps = _normalizeStyleStepEntry(step, stateStyles, schema, errors);
         step = step instanceof CompileAnimationGroupMetadata ?
             new CompileAnimationGroupMetadata(innerSteps) :
             new CompileAnimationSequenceMetadata(innerSteps);
@@ -294,12 +294,12 @@ function _normalizeStyleStepEntry(
 function _resolveStylesFromState(
     stateName: string, stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]) {
-  var styles: Styles[] = [];
+  const styles: Styles[] = [];
   if (stateName[0] != ':') {
     errors.push(new AnimationParseError(`Animation states via styles must be prefixed with a ":"`));
   } else {
-    var normalizedStateName = stateName.substring(1);
-    var value = stateStyles[normalizedStateName];
+    const normalizedStateName = stateName.substring(1);
+    const value = stateStyles[normalizedStateName];
     if (!isPresent(value)) {
       errors.push(new AnimationParseError(
           `Unable to apply styles due to missing a state: "${normalizedStateName}"`));
@@ -322,8 +322,8 @@ function _parseAnimationKeyframes(
     keyframeSequence: CompileAnimationKeyframesSequenceMetadata, currentTime: number,
     collectedStyles: StylesCollection, stateStyles: {[key: string]: AnimationStylesAst},
     errors: AnimationParseError[]): AnimationKeyframeAst[] {
-  var totalEntries = keyframeSequence.steps.length;
-  var totalOffsets = 0;
+  const totalEntries = keyframeSequence.steps.length;
+  let totalOffsets = 0;
   keyframeSequence.steps.forEach(step => totalOffsets += (isPresent(step.offset) ? 1 : 0));
 
   if (totalOffsets > 0 && totalOffsets < totalEntries) {
@@ -332,15 +332,15 @@ function _parseAnimationKeyframes(
     totalOffsets = totalEntries;
   }
 
-  var limit = totalEntries - 1;
-  var margin = totalOffsets == 0 ? (1 / limit) : 0;
-  var rawKeyframes: any[] /** TODO #9100 */ = [];
-  var index = 0;
-  var doSortKeyframes = false;
-  var lastOffset = 0;
+  let limit = totalEntries - 1;
+  const margin = totalOffsets == 0 ? (1 / limit) : 0;
+  const rawKeyframes: any[] /** TODO #9100 */ = [];
+  let index = 0;
+  let doSortKeyframes = false;
+  let lastOffset = 0;
   keyframeSequence.steps.forEach(styleMetadata => {
-    var offset = styleMetadata.offset;
-    var keyframeStyles: Styles = {};
+    let offset = styleMetadata.offset;
+    const keyframeStyles: Styles = {};
     styleMetadata.styles.forEach(entry => {
       Object.keys(entry).forEach(prop => {
         if (prop != 'offset') {
@@ -364,23 +364,23 @@ function _parseAnimationKeyframes(
     rawKeyframes.sort((a, b) => a[0] <= b[0] ? -1 : 1);
   }
 
-  var firstKeyframe = rawKeyframes[0];
+  let firstKeyframe = rawKeyframes[0];
   if (firstKeyframe[0] != _INITIAL_KEYFRAME) {
     rawKeyframes.splice(0, 0, firstKeyframe = [_INITIAL_KEYFRAME, {}]);
   }
 
-  var firstKeyframeStyles = firstKeyframe[1];
+  const firstKeyframeStyles = firstKeyframe[1];
   limit = rawKeyframes.length - 1;
-  var lastKeyframe = rawKeyframes[limit];
+  let lastKeyframe = rawKeyframes[limit];
   if (lastKeyframe[0] != _TERMINAL_KEYFRAME) {
     rawKeyframes.push(lastKeyframe = [_TERMINAL_KEYFRAME, {}]);
     limit++;
   }
 
-  var lastKeyframeStyles = lastKeyframe[1];
+  const lastKeyframeStyles = lastKeyframe[1];
   for (let i = 1; i <= limit; i++) {
-    let entry = rawKeyframes[i];
-    let styles = entry[1];
+    const entry = rawKeyframes[i];
+    const styles = entry[1];
 
     Object.keys(styles).forEach(prop => {
       if (!isPresent(firstKeyframeStyles[prop])) {
@@ -390,8 +390,8 @@ function _parseAnimationKeyframes(
   }
 
   for (let i = limit - 1; i >= 0; i--) {
-    let entry = rawKeyframes[i];
-    let styles = entry[1];
+    const entry = rawKeyframes[i];
+    const styles = entry[1];
 
     Object.keys(styles).forEach(prop => {
       if (!isPresent(lastKeyframeStyles[prop])) {
@@ -407,21 +407,21 @@ function _parseAnimationKeyframes(
 function _parseTransitionAnimation(
     entry: CompileAnimationMetadata, currentTime: number, collectedStyles: StylesCollection,
     stateStyles: {[key: string]: AnimationStylesAst}, errors: AnimationParseError[]): AnimationAst {
-  var ast: any /** TODO #9100 */;
-  var playTime = 0;
-  var startingTime = currentTime;
+  let ast: any /** TODO #9100 */;
+  let playTime = 0;
+  const startingTime = currentTime;
   if (entry instanceof CompileAnimationWithStepsMetadata) {
-    var maxDuration = 0;
-    var steps: any[] /** TODO #9100 */ = [];
-    var isGroup = entry instanceof CompileAnimationGroupMetadata;
-    var previousStyles: any /** TODO #9100 */;
+    let maxDuration = 0;
+    const steps: any[] /** TODO #9100 */ = [];
+    const isGroup = entry instanceof CompileAnimationGroupMetadata;
+    let previousStyles: any /** TODO #9100 */;
     entry.steps.forEach(entry => {
       // these will get picked up by the next step...
-      var time = isGroup ? startingTime : currentTime;
+      const time = isGroup ? startingTime : currentTime;
       if (entry instanceof CompileAnimationStyleMetadata) {
         entry.styles.forEach(stylesEntry => {
           // by this point we know that we only have stringmap values
-          var map = stylesEntry as Styles;
+          const map = stylesEntry as Styles;
           Object.keys(map).forEach(
               prop => { collectedStyles.insertAtTime(prop, time, map[prop]); });
         });
@@ -429,26 +429,26 @@ function _parseTransitionAnimation(
         return;
       }
 
-      var innerAst = _parseTransitionAnimation(entry, time, collectedStyles, stateStyles, errors);
+      const innerAst = _parseTransitionAnimation(entry, time, collectedStyles, stateStyles, errors);
       if (isPresent(previousStyles)) {
         if (entry instanceof CompileAnimationWithStepsMetadata) {
-          let startingStyles = new AnimationStylesAst(previousStyles);
+          const startingStyles = new AnimationStylesAst(previousStyles);
           steps.push(new AnimationStepAst(startingStyles, [], 0, 0, ''));
         } else {
-          var innerStep = <AnimationStepAst>innerAst;
+          const innerStep = <AnimationStepAst>innerAst;
           innerStep.startingStyles.styles.push(...previousStyles);
         }
         previousStyles = null;
       }
 
-      var astDuration = innerAst.playTime;
+      const astDuration = innerAst.playTime;
       currentTime += astDuration;
       playTime += astDuration;
       maxDuration = Math.max(astDuration, maxDuration);
       steps.push(innerAst);
     });
     if (isPresent(previousStyles)) {
-      let startingStyles = new AnimationStylesAst(previousStyles);
+      const startingStyles = new AnimationStylesAst(previousStyles);
       steps.push(new AnimationStepAst(startingStyles, [], 0, 0, ''));
     }
     if (isGroup) {
@@ -459,18 +459,18 @@ function _parseTransitionAnimation(
       ast = new AnimationSequenceAst(steps);
     }
   } else if (entry instanceof CompileAnimationAnimateMetadata) {
-    var timings = _parseTimeExpression(entry.timings, errors);
-    var styles = entry.styles;
+    const timings = _parseTimeExpression(entry.timings, errors);
+    const styles = entry.styles;
 
-    var keyframes: any /** TODO #9100 */;
+    let keyframes: any /** TODO #9100 */;
     if (styles instanceof CompileAnimationKeyframesSequenceMetadata) {
       keyframes =
           _parseAnimationKeyframes(styles, currentTime, collectedStyles, stateStyles, errors);
     } else {
-      let styleData = <CompileAnimationStyleMetadata>styles;
-      let offset = _TERMINAL_KEYFRAME;
-      let styleAst = new AnimationStylesAst(styleData.styles as Styles[]);
-      var keyframe = new AnimationKeyframeAst(offset, styleAst);
+      const styleData = <CompileAnimationStyleMetadata>styles;
+      const offset = _TERMINAL_KEYFRAME;
+      const styleAst = new AnimationStylesAst(styleData.styles as Styles[]);
+      const keyframe = new AnimationKeyframeAst(offset, styleAst);
       keyframes = [keyframe];
     }
 
@@ -499,10 +499,10 @@ function _fillAnimationAstStartingKeyframes(
     ast: AnimationAst, collectedStyles: StylesCollection, errors: AnimationParseError[]): void {
   // steps that only contain style will not be filled
   if ((ast instanceof AnimationStepAst) && ast.keyframes.length > 0) {
-    var keyframes = ast.keyframes;
+    const keyframes = ast.keyframes;
     if (keyframes.length == 1) {
-      var endKeyframe = keyframes[0];
-      var startKeyframe = _createStartKeyframeFromEndKeyframe(
+      const endKeyframe = keyframes[0];
+      const startKeyframe = _createStartKeyframeFromEndKeyframe(
           endKeyframe, ast.startTime, ast.playTime, collectedStyles, errors);
       ast.keyframes = [startKeyframe, endKeyframe];
     }
@@ -513,10 +513,10 @@ function _fillAnimationAstStartingKeyframes(
 
 function _parseTimeExpression(
     exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
-  var regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
-  var duration: number;
-  var delay: number = 0;
-  var easing: string = null;
+  const regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
+  let duration: number;
+  let delay: number = 0;
+  let easing: string = null;
   if (typeof exp === 'string') {
     const matches = exp.match(regex);
     if (matches === null) {
@@ -524,24 +524,24 @@ function _parseTimeExpression(
       return new _AnimationTimings(0, 0, null);
     }
 
-    var durationMatch = parseFloat(matches[1]);
-    var durationUnit = matches[2];
+    let durationMatch = parseFloat(matches[1]);
+    const durationUnit = matches[2];
     if (durationUnit == 's') {
       durationMatch *= _ONE_SECOND;
     }
     duration = Math.floor(durationMatch);
 
-    var delayMatch = matches[3];
-    var delayUnit = matches[4];
+    const delayMatch = matches[3];
+    const delayUnit = matches[4];
     if (isPresent(delayMatch)) {
-      var delayVal: number = parseFloat(delayMatch);
+      let delayVal: number = parseFloat(delayMatch);
       if (isPresent(delayUnit) && delayUnit == 's') {
         delayVal *= _ONE_SECOND;
       }
       delay = Math.floor(delayVal);
     }
 
-    var easingVal = matches[5];
+    const easingVal = matches[5];
     if (!isBlank(easingVal)) {
       easing = easingVal;
     }
@@ -555,15 +555,15 @@ function _parseTimeExpression(
 function _createStartKeyframeFromEndKeyframe(
     endKeyframe: AnimationKeyframeAst, startTime: number, duration: number,
     collectedStyles: StylesCollection, errors: AnimationParseError[]): AnimationKeyframeAst {
-  var values: Styles = {};
-  var endTime = startTime + duration;
+  const values: Styles = {};
+  const endTime = startTime + duration;
   endKeyframe.styles.styles.forEach((styleData: Styles) => {
     Object.keys(styleData).forEach(prop => {
       const val = styleData[prop];
       if (prop == 'offset') return;
 
-      var resultIndex = collectedStyles.indexOfAtOrBeforeTime(prop, startTime);
-      var resultEntry: any /** TODO #9100 */, nextEntry: any /** TODO #9100 */,
+      const resultIndex = collectedStyles.indexOfAtOrBeforeTime(prop, startTime);
+      let resultEntry: any /** TODO #9100 */, nextEntry: any /** TODO #9100 */,
           value: any /** TODO #9100 */;
       if (isPresent(resultIndex)) {
         resultEntry = collectedStyles.getByIndex(prop, resultIndex);

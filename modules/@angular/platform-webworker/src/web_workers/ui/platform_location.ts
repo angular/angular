@@ -54,8 +54,8 @@ export class MessageBasedPlatformLocation {
 
 
   private _sendUrlChangeEvent(e: Event): void {
-    let loc = this._serializer.serialize(this._platformLocation.location, LocationType);
-    let serializedEvent = {'type': e.type};
+    const loc = this._serializer.serialize(this._platformLocation.location, LocationType);
+    const serializedEvent = {'type': e.type};
     this._channelSink.emit({'event': serializedEvent, 'location': loc});
   }
 

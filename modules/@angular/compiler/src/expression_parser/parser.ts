@@ -53,7 +53,7 @@ export class Parser {
   parseBinding(
       input: string, location: any,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
-    var ast = this._parseBindingAst(input, location, interpolationConfig);
+    const ast = this._parseBindingAst(input, location, interpolationConfig);
     return new ASTWithSource(ast, input, location, this.errors);
   }
 
@@ -77,7 +77,7 @@ export class Parser {
       input: string, location: string, interpolationConfig: InterpolationConfig): AST {
     // Quotes expressions use 3rd-party expression language. We don't want to use
     // our lexer or parser for that, so we check for that ahead of time.
-    var quote = this._parseQuote(input, location);
+    const quote = this._parseQuote(input, location);
 
     if (isPresent(quote)) {
       return quote;
@@ -94,11 +94,11 @@ export class Parser {
 
   private _parseQuote(input: string, location: any): AST {
     if (isBlank(input)) return null;
-    var prefixSeparatorIndex = input.indexOf(':');
+    const prefixSeparatorIndex = input.indexOf(':');
     if (prefixSeparatorIndex == -1) return null;
-    var prefix = input.substring(0, prefixSeparatorIndex).trim();
+    const prefix = input.substring(0, prefixSeparatorIndex).trim();
     if (!isIdentifier(prefix)) return null;
-    var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+    const uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
     return new Quote(new ParseSpan(0, input.length), prefix, uninterpretedExpression, location);
   }
 
@@ -120,10 +120,10 @@ export class Parser {
   parseInterpolation(
       input: string, location: any,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
-    let split = this.splitInterpolation(input, location, interpolationConfig);
+    const split = this.splitInterpolation(input, location, interpolationConfig);
     if (split == null) return null;
 
-    let expressions: AST[] = [];
+    const expressions: AST[] = [];
 
     for (let i = 0; i < split.expressions.length; ++i) {
       const expressionText = split.expressions[i];
@@ -155,7 +155,7 @@ export class Parser {
     const offsets: number[] = [];
     let offset = 0;
     for (let i = 0; i < parts.length; i++) {
-      var part: string = parts[i];
+      const part: string = parts[i];
       if (i % 2 === 0) {
         // fixed string
         strings.push(part);
@@ -189,7 +189,7 @@ export class Parser {
   }
 
   private _commentStart(input: string): number {
-    var outerQuote: number = null;
+    let outerQuote: number = null;
     for (let i = 0; i < input.length - 1; i++) {
       const char = input.charCodeAt(i);
       const nextChar = input.charCodeAt(i + 1);
@@ -207,8 +207,8 @@ export class Parser {
 
   private _checkNoInterpolation(
       input: string, location: any, interpolationConfig: InterpolationConfig): void {
-    var regexp = _createInterpolateRegExp(interpolationConfig);
-    var parts = input.split(regexp);
+    const regexp = _createInterpolateRegExp(interpolationConfig);
+    const parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
           `Got interpolation (${interpolationConfig.start}${interpolationConfig.end}) where expression was expected`,
@@ -220,8 +220,8 @@ export class Parser {
 
   private _findInterpolationErrorColumn(
       parts: string[], partInErrIdx: number, interpolationConfig: InterpolationConfig): number {
-    var errLocation = '';
-    for (var j = 0; j < partInErrIdx; j++) {
+    let errLocation = '';
+    for (let j = 0; j < partInErrIdx; j++) {
       errLocation += j % 2 === 0 ?
           parts[j] :
           `${interpolationConfig.start}${parts[j]}${interpolationConfig.end}`;
@@ -244,7 +244,7 @@ export class _ParseAST {
       private offset: number) {}
 
   peek(offset: number): Token {
-    var i = this.index + offset;
+    const i = this.index + offset;
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
@@ -290,7 +290,7 @@ export class _ParseAST {
   }
 
   expectIdentifierOrKeyword(): string {
-    var n = this.next;
+    const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`);
       return '';
@@ -300,7 +300,7 @@ export class _ParseAST {
   }
 
   expectIdentifierOrKeywordOrString(): string {
-    var n = this.next;
+    const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
       return '';
@@ -310,10 +310,10 @@ export class _ParseAST {
   }
 
   parseChain(): AST {
-    var exprs: AST[] = [];
+    const exprs: AST[] = [];
     const start = this.inputIndex;
     while (this.index < this.tokens.length) {
-      var expr = this.parsePipe();
+      const expr = this.parsePipe();
       exprs.push(expr);
 
       if (this.optionalCharacter(chars.$SEMICOLON)) {
@@ -332,15 +332,15 @@ export class _ParseAST {
   }
 
   parsePipe(): AST {
-    var result = this.parseExpression();
+    let result = this.parseExpression();
     if (this.optionalOperator('|')) {
       if (this.parseAction) {
         this.error('Cannot have a pipe in an action expression');
       }
 
       do {
-        var name = this.expectIdentifierOrKeyword();
-        var args: AST[] = [];
+        const name = this.expectIdentifierOrKeyword();
+        const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
@@ -361,8 +361,8 @@ export class _ParseAST {
       const yes = this.parsePipe();
       let no: AST;
       if (!this.optionalCharacter(chars.$COLON)) {
-        var end = this.inputIndex;
-        var expression = this.input.substring(start, end);
+        const end = this.inputIndex;
+        const expression = this.input.substring(start, end);
         this.error(`Conditional expression ${expression} requires all 3 expressions`);
         no = new EmptyExpr(this.span(start));
       } else {
@@ -398,7 +398,7 @@ export class _ParseAST {
     // '==','!=','===','!=='
     let result = this.parseRelational();
     while (this.next.type == TokenType.Operator) {
-      let operator = this.next.strValue;
+      const operator = this.next.strValue;
       switch (operator) {
         case '==':
         case '===':
@@ -418,7 +418,7 @@ export class _ParseAST {
     // '<', '>', '<=', '>='
     let result = this.parseAdditive();
     while (this.next.type == TokenType.Operator) {
-      let operator = this.next.strValue;
+      const operator = this.next.strValue;
       switch (operator) {
         case '<':
         case '>':
@@ -591,7 +591,7 @@ export class _ParseAST {
   }
 
   parseExpressionList(terminator: number): AST[] {
-    let result: AST[] = [];
+    const result: AST[] = [];
     if (!this.next.isCharacter(terminator)) {
       do {
         result.push(this.parsePipe());
@@ -601,14 +601,14 @@ export class _ParseAST {
   }
 
   parseLiteralMap(): LiteralMap {
-    let keys: string[] = [];
-    let values: AST[] = [];
+    const keys: string[] = [];
+    const values: AST[] = [];
     const start = this.inputIndex;
     this.expectCharacter(chars.$LBRACE);
     if (!this.optionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
-        var key = this.expectIdentifierOrKeywordOrString();
+        const key = this.expectIdentifierOrKeywordOrString();
         keys.push(key);
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
@@ -628,7 +628,7 @@ export class _ParseAST {
       const args = this.parseCallArguments();
       this.expectCharacter(chars.$RPAREN);
       this.rparensExpected--;
-      let span = this.span(start);
+      const span = this.span(start);
       return isSafe ? new SafeMethodCall(span, receiver, id, args) :
                       new MethodCall(span, receiver, id, args);
 
@@ -647,7 +647,7 @@ export class _ParseAST {
             return new EmptyExpr(this.span(start));
           }
 
-          let value = this.parseConditional();
+          const value = this.parseConditional();
           return new PropertyWrite(this.span(start), receiver, id, value);
         } else {
           return new PropertyRead(this.span(start), receiver, id);
@@ -658,7 +658,7 @@ export class _ParseAST {
 
   parseCallArguments(): BindingPipe[] {
     if (this.next.isCharacter(chars.$RPAREN)) return [];
-    var positionals: AST[] = [];
+    const positionals: AST[] = [];
     do {
       positionals.push(this.parsePipe());
     } while (this.optionalCharacter(chars.$COMMA));
@@ -683,16 +683,16 @@ export class _ParseAST {
   }
 
   parseTemplateBindings(): TemplateBindingParseResult {
-    let bindings: TemplateBinding[] = [];
+    const bindings: TemplateBinding[] = [];
     let prefix: string = null;
-    let warnings: string[] = [];
+    const warnings: string[] = [];
     while (this.index < this.tokens.length) {
       const start = this.inputIndex;
       const keyIsVar: boolean = this.peekKeywordLet();
       if (keyIsVar) {
         this.advance();
       }
-      var key = this.expectTemplateBindingKey();
+      let key = this.expectTemplateBindingKey();
       if (!keyIsVar) {
         if (prefix == null) {
           prefix = key;
@@ -701,8 +701,8 @@ export class _ParseAST {
         }
       }
       this.optionalCharacter(chars.$COLON);
-      var name: string = null;
-      var expression: ASTWithSource = null;
+      let name: string = null;
+      let expression: ASTWithSource = null;
       if (keyIsVar) {
         if (this.optionalOperator('=')) {
           name = this.expectTemplateBindingKey();
@@ -765,7 +765,7 @@ export class _ParseAST {
 
 class SimpleExpressionChecker implements AstVisitor {
   static check(ast: AST): string[] {
-    var s = new SimpleExpressionChecker();
+    const s = new SimpleExpressionChecker();
     ast.visit(s);
     return s.errors;
   }

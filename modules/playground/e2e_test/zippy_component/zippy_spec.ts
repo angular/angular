@@ -14,12 +14,12 @@ describe('Zippy Component', function() {
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
-    var URL = 'all/playground/src/zippy_component/index.html';
+    const URL = 'all/playground/src/zippy_component/index.html';
 
     beforeEach(function() { browser.get(URL); });
 
     it('should change the zippy title depending on it\'s state', function() {
-      var zippyTitle = element(by.css('.zippy__title'));
+      const zippyTitle = element(by.css('.zippy__title'));
 
       expect(zippyTitle.getText()).toEqual('▾ Details');
       zippyTitle.click();

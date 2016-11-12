@@ -97,9 +97,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
         const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
-        let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.componentInstance;
-        let trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
+        const e = fixture.debugElement.children[0].nativeElement;
+        const ci = fixture.componentInstance;
+        const trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
         ci.ctxProp = trusted;
         fixture.detectChanges();
         expect(getDOM().getProperty(e, 'href')).toEqual('javascript:alert(1)');
@@ -111,8 +111,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
         const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
-        let trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
-        let ci = fixture.componentInstance;
+        const trusted = sanitizer.bypassSecurityTrustScript('javascript:alert(1)');
+        const ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         expect(() => fixture.detectChanges()).toThrowError(/Required a safe URL, got a Script/);
       });
@@ -123,9 +123,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(SecuredComponent);
         const sanitizer: DomSanitizer = getTestBed().get(DomSanitizer);
 
-        let e = fixture.debugElement.children[0].nativeElement;
-        let trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');
-        let ci = fixture.componentInstance;
+        const e = fixture.debugElement.children[0].nativeElement;
+        const trusted = sanitizer.bypassSecurityTrustUrl('bar/baz');
+        const ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         fixture.detectChanges();
         expect(getDOM().getProperty(e, 'href')).toMatch(/SafeValue(%20| )must(%20| )use/);
@@ -134,8 +134,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     describe('sanitizing', () => {
       function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>, isAttribute: boolean) {
-        let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.componentInstance;
+        const e = fixture.debugElement.children[0].nativeElement;
+        const ci = fixture.componentInstance;
         ci.ctxProp = 'hello';
         fixture.detectChanges();
         // In the browser, reading href returns an absolute URL. On the server side,
@@ -201,8 +201,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.componentInstance;
+        const e = fixture.debugElement.children[0].nativeElement;
+        const ci = fixture.componentInstance;
         // Make sure binding harmless values works.
         ci.ctxProp = 'red';
         fixture.detectChanges();
@@ -229,8 +229,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        let e = fixture.debugElement.children[0].nativeElement;
-        let ci = fixture.componentInstance;
+        const e = fixture.debugElement.children[0].nativeElement;
+        const ci = fixture.componentInstance;
         // Make sure binding harmless values works.
         ci.ctxProp = 'some <p>text</p>';
         fixture.detectChanges();

@@ -44,20 +44,20 @@ export class MockLocationStrategy extends LocationStrategy {
   pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var externalUrl = this.prepareExternalUrl(url);
+    const externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push(externalUrl);
   }
 
   replaceState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var externalUrl = this.prepareExternalUrl(url);
+    const externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
@@ -68,7 +68,7 @@ export class MockLocationStrategy extends LocationStrategy {
   back(): void {
     if (this.urlChanges.length > 0) {
       this.urlChanges.pop();
-      var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
+      const nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
       this.simulatePopState(nextUrl);
     }
   }

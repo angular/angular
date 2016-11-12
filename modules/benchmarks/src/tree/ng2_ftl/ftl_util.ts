@@ -92,7 +92,7 @@ export class FtlViewContainerRef implements ViewContainerRef {
   }
 
   get(index: number): any {
-    var result = this._firstView;
+    let result = this._firstView;
     while (index > 0 && result) {
       result = result.next;
       index--;
@@ -166,7 +166,7 @@ export class FtlViewContainerRef implements ViewContainerRef {
   }
 
   remove(index?: number): void {
-    var view: FtlView<any> = <any>this.detach(index);
+    const view: FtlView<any> = <any>this.detach(index);
     view.destroyInternal();
   }
 }

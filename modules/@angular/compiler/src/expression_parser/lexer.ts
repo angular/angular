@@ -137,7 +137,8 @@ class _Scanner {
   }
 
   scanToken(): Token {
-    var input = this.input, length = this.length, peek = this.peek, index = this.index;
+    const input = this.input, length = this.length;
+    let peek = this.peek, index = this.index;
 
     // Skip whitespace.
     while (peek <= chars.$SPACE) {
@@ -160,7 +161,7 @@ class _Scanner {
     if (isIdentifierStart(peek)) return this.scanIdentifier();
     if (chars.isDigit(peek)) return this.scanNumber(index);
 
-    var start: number = index;
+    const start: number = index;
     switch (peek) {
       case chars.$PERIOD:
         this.advance();
@@ -235,7 +236,7 @@ class _Scanner {
       start: number, one: string, twoCode: number, two: string, threeCode?: number,
       three?: string): Token {
     this.advance();
-    var str: string = one;
+    let str: string = one;
     if (this.peek == twoCode) {
       this.advance();
       str += two;
@@ -248,16 +249,16 @@ class _Scanner {
   }
 
   scanIdentifier(): Token {
-    var start: number = this.index;
+    const start: number = this.index;
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
-    var str: string = this.input.substring(start, this.index);
+    const str: string = this.input.substring(start, this.index);
     return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, str) :
                                         newIdentifierToken(start, str);
   }
 
   scanNumber(start: number): Token {
-    var simple: boolean = (this.index === start);
+    let simple: boolean = (this.index === start);
     this.advance();  // Skip initial digit.
     while (true) {
       if (chars.isDigit(this.peek)) {
@@ -286,7 +287,7 @@ class _Scanner {
 
     let buffer: string = '';
     let marker: number = this.index;
-    let input: string = this.input;
+    const input: string = this.input;
 
     while (this.peek != quote) {
       if (this.peek == chars.$BACKSLASH) {
@@ -337,7 +338,7 @@ function isIdentifierStart(code: number): boolean {
 
 export function isIdentifier(input: string): boolean {
   if (input.length == 0) return false;
-  var scanner = new _Scanner(input);
+  const scanner = new _Scanner(input);
   if (!isIdentifierStart(scanner.peek)) return false;
   scanner.advance();
   while (scanner.peek !== chars.$EOF) {

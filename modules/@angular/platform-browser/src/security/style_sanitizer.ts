@@ -66,7 +66,7 @@ function hasBalancedQuotes(value: string) {
   let outsideSingle = true;
   let outsideDouble = true;
   for (let i = 0; i < value.length; i++) {
-    let c = value.charAt(i);
+    const c = value.charAt(i);
     if (c === '\'' && outsideDouble) {
       outsideSingle = !outsideSingle;
     } else if (c === '"' && outsideSingle) {

@@ -16,10 +16,10 @@ import {isPresent} from '../src/facade/lang';
 export function main() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
-      var resolve: (result: any) => void;
-      var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
-      var res = c.value != expected ? {'async': true} : null;
+      let resolve: (result: any) => void;
+      const promise = new Promise(res => { resolve = res; });
+      const t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
+      const res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -32,7 +32,7 @@ export function main() {
   }
 
   function asyncValidatorReturningObservable(c: FormControl) {
-    var e = new EventEmitter();
+    const e = new EventEmitter();
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }
@@ -92,8 +92,8 @@ export function main() {
         const simpleValidator = (c: FormGroup) =>
             c.controls['one'].value != 'correct' ? {'broken': true} : null;
 
-        var c = new FormControl(null);
-        var g = new FormGroup({'one': c}, simpleValidator);
+        const c = new FormControl(null);
+        const g = new FormGroup({'one': c}, simpleValidator);
 
         c.setValue('correct');
 

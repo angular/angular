@@ -25,7 +25,7 @@ export const WORKER_UI_LOCATION_PROVIDERS: Provider[] = [
 
 function initUiLocation(injector: Injector): () => void {
   return () => {
-    let zone = injector.get(NgZone);
+    const zone = injector.get(NgZone);
 
     zone.runGuarded(() => injector.get(MessageBasedPlatformLocation).start());
   };

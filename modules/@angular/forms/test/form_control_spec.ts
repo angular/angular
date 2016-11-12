@@ -17,10 +17,10 @@ import {FormArray} from '../src/model';
 export function main() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: FormControl) => {
-      var resolve: (result: any) => void;
-      var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
-      var res = c.value != expected ? {'async': true} : null;
+      let resolve: (result: any) => void;
+      const promise = new Promise(res => { resolve = res; });
+      const t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
+      const res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -33,7 +33,7 @@ export function main() {
   }
 
   function asyncValidatorReturningObservable(c: FormControl) {
-    var e = new EventEmitter();
+    const e = new EventEmitter();
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }
@@ -616,9 +616,9 @@ export function main() {
          }));
 
       it('should fire an event after the status has been updated to pending', fakeAsync(() => {
-           var c = new FormControl('old', Validators.required, asyncValidator('expected'));
+           const c = new FormControl('old', Validators.required, asyncValidator('expected'));
 
-           var log: any[] /** TODO #9100 */ = [];
+           const log: any[] /** TODO #9100 */ = [];
            c.valueChanges.subscribe({next: (value: any) => log.push(`value: '${value}'`)});
 
            c.statusChanges.subscribe({next: (status: any) => log.push(`status: '${status}'`)});

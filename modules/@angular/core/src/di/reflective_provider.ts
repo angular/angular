@@ -235,7 +235,7 @@ function _extractToken(
   let upperBoundVisibility: any = null;
 
   for (let i = 0; i < metadata.length; ++i) {
-    let paramMetadata = metadata[i];
+    const paramMetadata = metadata[i];
 
     if (paramMetadata instanceof Type) {
       token = paramMetadata;

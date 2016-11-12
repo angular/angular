@@ -34,9 +34,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     this._channelSource = bus.from(ROUTER_CHANNEL);
     this._channelSource.subscribe({
       next: (msg: {[key: string]: any}) => {
-        var listeners: Array<Function> = null;
+        let listeners: Array<Function> = null;
         if (msg.hasOwnProperty('event')) {
-          let type: string = msg['event']['type'];
+          const type: string = msg['event']['type'];
           if (type === 'popstate') {
             listeners = this._popStateListeners;
           } else if (type === 'hashchange') {
@@ -44,7 +44,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
           }
 
           if (listeners !== null) {
-            let e = deserializeGenericEvent(msg['event']);
+            const e = deserializeGenericEvent(msg['event']);
             // There was a popState or hashChange event, so the location object thas been updated
             this._location = this._serializer.deserialize(msg['location'], LocationType);
             listeners.forEach((fn: Function) => fn(e));
@@ -56,9 +56,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   /** @internal **/
   init(): Promise<boolean> {
-    var args: UiArguments = new UiArguments('getLocation');
+    const args: UiArguments = new UiArguments('getLocation');
 
-    var locationPromise: Promise<LocationType> = this._broker.runOnService(args, LocationType);
+    const locationPromise: Promise<LocationType> = this._broker.runOnService(args, LocationType);
     return locationPromise.then(
         (val: LocationType):
             boolean => {
@@ -108,32 +108,32 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
     this._location.pathname = newPath;
 
-    var fnArgs = [new FnArg(newPath, PRIMITIVE)];
-    var args = new UiArguments('setPathname', fnArgs);
+    const fnArgs = [new FnArg(newPath, PRIMITIVE)];
+    const args = new UiArguments('setPathname', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   pushState(state: any, title: string, url: string): void {
-    var fnArgs =
+    const fnArgs =
         [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
-    var args = new UiArguments('pushState', fnArgs);
+    const args = new UiArguments('pushState', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   replaceState(state: any, title: string, url: string): void {
-    var fnArgs =
+    const fnArgs =
         [new FnArg(state, PRIMITIVE), new FnArg(title, PRIMITIVE), new FnArg(url, PRIMITIVE)];
-    var args = new UiArguments('replaceState', fnArgs);
+    const args = new UiArguments('replaceState', fnArgs);
     this._broker.runOnService(args, null);
   }
 
   forward(): void {
-    var args = new UiArguments('forward');
+    const args = new UiArguments('forward');
     this._broker.runOnService(args, null);
   }
 
   back(): void {
-    var args = new UiArguments('back');
+    const args = new UiArguments('back');
     this._broker.runOnService(args, null);
   }
 }

@@ -68,7 +68,7 @@ export class KeyRegistry {
       return this._allKeys.get(token);
     }
 
-    var newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
+    const newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
     this._allKeys.set(token, newKey);
     return newKey;
   }
@@ -76,4 +76,4 @@ export class KeyRegistry {
   get numberOfKeys(): number { return this._allKeys.size; }
 }
 
-var _globalKeyRegistry = new KeyRegistry();
+const _globalKeyRegistry = new KeyRegistry();

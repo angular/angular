@@ -139,7 +139,7 @@ export function bindDirectiveInputs(
   });
   const isOnPushComp = directiveAst.directive.isComponent &&
       !isDefaultChangeDetectionStrategy(directiveAst.directive.changeDetection);
-  let directiveDetectChangesExpr = DirectiveWrapperExpressions.ngDoCheck(
+  const directiveDetectChangesExpr = DirectiveWrapperExpressions.ngDoCheck(
       directiveWrapperInstance, o.THIS_EXPR, compileElement.renderNode,
       DetectChangesVars.throwOnChange);
   const directiveDetectChangesStmt = isOnPushComp ?

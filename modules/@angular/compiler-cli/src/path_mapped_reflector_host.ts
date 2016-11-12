@@ -34,7 +34,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
   getCanonicalFileName(fileName: string): string {
     if (!fileName) return fileName;
     // NB: the rootDirs should have been sorted longest-first
-    for (let dir of this.options.rootDirs || []) {
+    for (const dir of this.options.rootDirs || []) {
       if (fileName.indexOf(dir) === 0) {
         fileName = fileName.substring(dir.length);
       }
@@ -86,7 +86,7 @@ export class PathMappedReflectorHost extends ReflectorHost {
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 
-    let importModuleName = importedFile.replace(EXT, '');
+    const importModuleName = importedFile.replace(EXT, '');
     const parts = importModuleName.split(path.sep).filter(p => !!p);
     let foundRelativeImport: string;
     for (let index = parts.length - 1; index >= 0; index--) {

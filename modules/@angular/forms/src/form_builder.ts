@@ -67,13 +67,13 @@ export class FormBuilder {
   array(
       controlsConfig: any[], validator: ValidatorFn = null,
       asyncValidator: AsyncValidatorFn = null): FormArray {
-    var controls = controlsConfig.map(c => this._createControl(c));
+    const controls = controlsConfig.map(c => this._createControl(c));
     return new FormArray(controls, validator, asyncValidator);
   }
 
   /** @internal */
   _reduceControls(controlsConfig: {[k: string]: any}): {[key: string]: AbstractControl} {
-    var controls: {[key: string]: AbstractControl} = {};
+    const controls: {[key: string]: AbstractControl} = {};
     Object.keys(controlsConfig).forEach(controlName => {
       controls[controlName] = this._createControl(controlsConfig[controlName]);
     });

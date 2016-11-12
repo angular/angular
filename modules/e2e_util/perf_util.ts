@@ -38,7 +38,7 @@ export function runBenchmark(config: {
 }): Promise<any> {
   openBrowser(config);
 
-  var description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
+  const description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
   config.params.forEach((param) => { description[param.name] = param.value; });
   return runner.sample({
     id: config.id,
@@ -56,7 +56,7 @@ function createBenchpressRunner(): Runner {
   }
   const resultsFolder = './dist/benchmark_results';
   fs.ensureDirSync(resultsFolder);
-  let providers: Provider[] = [
+  const providers: Provider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
     {provide: Options.FORCE_GC, useValue: cmdArgs['force-gc']},
     {provide: Options.DEFAULT_DESCRIPTION, useValue: {'runId': runId}}, JsonFileReporter.PROVIDERS,

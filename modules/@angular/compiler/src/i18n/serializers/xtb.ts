@@ -43,7 +43,7 @@ export class Xtb implements Serializer {
 
     // Convert the string messages to html ast
     // TODO(vicb): map error message back to the original message in xtb
-    let messageMap: {[id: string]: ml.Node[]} = {};
+    const messageMap: {[id: string]: ml.Node[]} = {};
     const parseErrors: ParseError[] = [];
 
     Object.keys(messages).forEach((id) => {

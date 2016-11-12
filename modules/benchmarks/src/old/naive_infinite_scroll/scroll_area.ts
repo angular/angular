@@ -48,9 +48,9 @@ export class ScrollAreaComponent {
   }
 
   onScroll(evt) {
-    var scrollTop = 0;
+    let scrollTop = 0;
     if (evt != null) {
-      var scrollDiv = evt.target;
+      const scrollDiv = evt.target;
       if (this.paddingDiv == null) {
         this.paddingDiv = scrollDiv.querySelector('#padding');
       }
@@ -60,9 +60,9 @@ export class ScrollAreaComponent {
       }
       scrollTop = scrollDiv.scrollTop;
     }
-    var iStart = Math.floor(scrollTop / ITEM_HEIGHT);
-    var iEnd = Math.min(iStart + VISIBLE_ITEMS + 1, this._fullList.length);
-    var padding = iStart * ITEM_HEIGHT;
+    const iStart = Math.floor(scrollTop / ITEM_HEIGHT);
+    const iEnd = Math.min(iStart + VISIBLE_ITEMS + 1, this._fullList.length);
+    const padding = iStart * ITEM_HEIGHT;
     if (this.innerDiv != null) {
       this.innerDiv.style.setProperty('height', `${HEIGHT - padding}px`);
     }

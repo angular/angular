@@ -16,7 +16,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
 export function main() {
   describe('HtmlParser', () => {
-    var parser: HtmlParser;
+    let parser: HtmlParser;
 
     beforeEach(() => { parser = new HtmlParser(); });
 
@@ -193,7 +193,7 @@ export function main() {
         });
 
         it('should match closing tags case sensitive', () => {
-          let errors = parser.parse('<DiV><P></p></dIv>', 'TestComp').errors;
+          const errors = parser.parse('<DiV><P></p></dIv>', 'TestComp').errors;
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
             ['p', 'Unexpected closing tag "p"', '0:8'],
@@ -279,7 +279,7 @@ export function main() {
 
       describe('expansion forms', () => {
         it('should parse out expansion forms', () => {
-          let parsed = parser.parse(
+          const parsed = parser.parse(
               `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
               'TestComp', true);
 
@@ -291,7 +291,7 @@ export function main() {
             [html.ExpansionCase, '=1', 2],
             [html.Text, 'after', 1],
           ]);
-          let cases = (<any>parsed.rootNodes[0]).children[1].cases;
+          const cases = (<any>parsed.rootNodes[0]).children[1].cases;
 
           expect(humanizeDom(new ParseTreeResult(cases[0].expression, []))).toEqual([
             [html.Text, 'You have ', 0],
@@ -305,14 +305,14 @@ export function main() {
         });
 
         it('should parse out nested expansion forms', () => {
-          let parsed = parser.parse(
+          const parsed = parser.parse(
               `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp', true);
           expect(humanizeDom(parsed)).toEqual([
             [html.Expansion, 'messages.length', 'plural', 0],
             [html.ExpansionCase, '=0', 1],
           ]);
 
-          let firstCase = (<any>parsed.rootNodes[0]).cases[0];
+          const firstCase = (<any>parsed.rootNodes[0]).cases[0];
 
           expect(humanizeDom(new ParseTreeResult(firstCase.expression, []))).toEqual([
             [html.Expansion, 'p.gender', 'select', 0],
@@ -322,21 +322,21 @@ export function main() {
         });
 
         it('should error when expansion form is not closed', () => {
-          let p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
+          const p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:34']
           ]);
         });
 
         it('should error when expansion case is not closed', () => {
-          let p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
+          const p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:29']
           ]);
         });
 
         it('should error when invalid html in the case', () => {
-          let p = parser.parse(`{messages.length, plural, =0 {<b/>}`, 'TestComp', true);
+          const p = parser.parse(`{messages.length, plural, =0 {<b/>}`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([
             ['b', 'Only void and foreign elements can be self closed "b"', '0:30']
           ]);
@@ -358,7 +358,7 @@ export function main() {
         });
 
         it('should set the start and end source spans', () => {
-          let node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
+          const node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 
           expect(node.startSourceSpan.start.offset).toEqual(0);
           expect(node.startSourceSpan.end.offset).toEqual(5);
@@ -456,19 +456,19 @@ export function main() {
 
       describe('errors', () => {
         it('should report unexpected closing tags', () => {
-          let errors = parser.parse('<div></p></div>', 'TestComp').errors;
+          const errors = parser.parse('<div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([['p', 'Unexpected closing tag "p"', '0:5']]);
         });
 
         it('should report subsequent open tags without proper close tag', () => {
-          let errors = parser.parse('<div</div>', 'TestComp').errors;
+          const errors = parser.parse('<div</div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([['div', 'Unexpected closing tag "div"', '0:4']]);
         });
 
         it('should report closing tag for void elements', () => {
-          let errors = parser.parse('<input></input>', 'TestComp').errors;
+          const errors = parser.parse('<input></input>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             ['input', 'Void elements do not have end tags "input"', '0:7']
@@ -476,7 +476,7 @@ export function main() {
         });
 
         it('should report self closing html element', () => {
-          let errors = parser.parse('<p />', 'TestComp').errors;
+          const errors = parser.parse('<p />', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             ['p', 'Only void and foreign elements can be self closed "p"', '0:0']
@@ -484,7 +484,7 @@ export function main() {
         });
 
         it('should report self closing custom element', () => {
-          let errors = parser.parse('<my-cmp />', 'TestComp').errors;
+          const errors = parser.parse('<my-cmp />', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0']
@@ -492,7 +492,7 @@ export function main() {
         });
 
         it('should also report lexer errors', () => {
-          let errors = parser.parse('<!-err--><div></p></div>', 'TestComp').errors;
+          const errors = parser.parse('<!-err--><div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(2);
           expect(humanizeErrors(errors)).toEqual([
             [TokenType.COMMENT_START, 'Unexpected character "e"', '0:3'],

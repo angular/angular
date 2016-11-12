@@ -10,7 +10,7 @@ import {runClickBenchmark, verifyNoBrowserErrors} from '@angular/testing/src/per
 
 describe('polymer tree benchmark', function() {
 
-  var URL = 'benchmarks_external/src/tree/polymer/index.html';
+  const URL = 'benchmarks_external/src/tree/polymer/index.html';
 
   afterEach(verifyNoBrowserErrors);
 

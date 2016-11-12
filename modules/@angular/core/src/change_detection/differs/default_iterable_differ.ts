@@ -21,7 +21,7 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
   }
 }
 
-var trackByIdentity = (index: number, item: any) => item;
+const trackByIdentity = (index: number, item: any) => item;
 
 /**
  * @stable
@@ -55,7 +55,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   get length(): number { return this._length; }
 
   forEachItem(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._itHead; record !== null; record = record._next) {
       fn(record);
     }
@@ -63,20 +63,20 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
   forEachOperation(
       fn: (item: CollectionChangeRecord, previousIndex: number, currentIndex: number) => void) {
-    var nextIt = this._itHead;
-    var nextRemove = this._removalsHead;
-    var addRemoveOffset = 0;
-    var moveOffsets: number[] = null;
+    let nextIt = this._itHead;
+    let nextRemove = this._removalsHead;
+    let addRemoveOffset = 0;
+    let moveOffsets: number[] = null;
     while (nextIt || nextRemove) {
       // Figure out which is the next record to process
       // Order: remove, add, move
-      let record = !nextRemove ||
+      const record = !nextRemove ||
               nextIt &&
                   nextIt.currentIndex < getPreviousIndex(nextRemove, addRemoveOffset, moveOffsets) ?
           nextIt :
           nextRemove;
-      var adjPreviousIndex = getPreviousIndex(record, addRemoveOffset, moveOffsets);
-      var currentIndex = record.currentIndex;
+      const adjPreviousIndex = getPreviousIndex(record, addRemoveOffset, moveOffsets);
+      const currentIndex = record.currentIndex;
 
       // consume the item, and adjust the addRemoveOffset and update moveDistance if necessary
       if (record === nextRemove) {
@@ -89,17 +89,17 @@ export class DefaultIterableDiffer implements IterableDiffer {
         } else {
           // INVARIANT:  currentIndex < previousIndex
           if (!moveOffsets) moveOffsets = [];
-          let localMovePreviousIndex = adjPreviousIndex - addRemoveOffset;
-          let localCurrentIndex = currentIndex - addRemoveOffset;
+          const localMovePreviousIndex = adjPreviousIndex - addRemoveOffset;
+          const localCurrentIndex = currentIndex - addRemoveOffset;
           if (localMovePreviousIndex != localCurrentIndex) {
-            for (var i = 0; i < localMovePreviousIndex; i++) {
-              var offset = i < moveOffsets.length ? moveOffsets[i] : (moveOffsets[i] = 0);
-              var index = offset + i;
+            for (let i = 0; i < localMovePreviousIndex; i++) {
+              const offset = i < moveOffsets.length ? moveOffsets[i] : (moveOffsets[i] = 0);
+              const index = offset + i;
               if (localCurrentIndex <= index && index < localMovePreviousIndex) {
                 moveOffsets[i] = offset + 1;
               }
             }
-            var previousIndex = record.previousIndex;
+            const previousIndex = record.previousIndex;
             moveOffsets[previousIndex] = localCurrentIndex - localMovePreviousIndex;
           }
         }
@@ -112,35 +112,35 @@ export class DefaultIterableDiffer implements IterableDiffer {
   }
 
   forEachPreviousItem(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._previousItHead; record !== null; record = record._nextPrevious) {
       fn(record);
     }
   }
 
   forEachAddedItem(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
       fn(record);
     }
   }
 
   forEachMovedItem(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._movesHead; record !== null; record = record._nextMoved) {
       fn(record);
     }
   }
 
   forEachRemovedItem(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
     }
   }
 
   forEachIdentityChange(fn: Function) {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._identityChangesHead; record !== null; record = record._nextIdentityChange) {
       fn(record);
     }
@@ -165,11 +165,11 @@ export class DefaultIterableDiffer implements IterableDiffer {
   check(collection: any): boolean {
     this._reset();
 
-    var record: CollectionChangeRecord = this._itHead;
-    var mayBeDirty: boolean = false;
-    var index: number;
-    var item: any;
-    var itemTrackBy: any;
+    let record: CollectionChangeRecord = this._itHead;
+    let mayBeDirty: boolean = false;
+    let index: number;
+    let item: any;
+    let itemTrackBy: any;
     if (Array.isArray(collection)) {
       const list = collection;
       this._length = collection.length;
@@ -233,8 +233,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
    */
   _reset() {
     if (this.isDirty) {
-      var record: CollectionChangeRecord;
-      var nextRecord: CollectionChangeRecord;
+      let record: CollectionChangeRecord;
+      let nextRecord: CollectionChangeRecord;
 
       for (record = this._previousItHead = this._itHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
@@ -271,7 +271,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   _mismatch(record: CollectionChangeRecord, item: any, itemTrackBy: any, index: number):
       CollectionChangeRecord {
     // The previous record after which we will append the current one.
-    var previousRecord: CollectionChangeRecord;
+    let previousRecord: CollectionChangeRecord;
 
     if (record === null) {
       previousRecord = this._itTail;
@@ -336,7 +336,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
    */
   _verifyReinsertion(record: CollectionChangeRecord, item: any, itemTrackBy: any, index: number):
       CollectionChangeRecord {
-    var reinsertRecord: CollectionChangeRecord =
+    const reinsertRecord: CollectionChangeRecord =
         this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy);
     if (reinsertRecord !== null) {
       record = this._reinsertAfter(reinsertRecord, record._prev, index);
@@ -357,7 +357,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
   _truncate(record: CollectionChangeRecord) {
     // Anything after that needs to be removed;
     while (record !== null) {
-      var nextRecord: CollectionChangeRecord = record._next;
+      const nextRecord: CollectionChangeRecord = record._next;
       this._addToRemovals(this._unlink(record));
       record = nextRecord;
     }
@@ -388,8 +388,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
     if (this._unlinkedRecords !== null) {
       this._unlinkedRecords.remove(record);
     }
-    var prev = record._prevRemoved;
-    var next = record._nextRemoved;
+    const prev = record._prevRemoved;
+    const next = record._nextRemoved;
 
     if (prev === null) {
       this._removalsHead = next;
@@ -442,7 +442,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     // assert(record._next === null);
     // assert(record._prev === null);
 
-    var next: CollectionChangeRecord = prevRecord === null ? this._itHead : prevRecord._next;
+    const next: CollectionChangeRecord = prevRecord === null ? this._itHead : prevRecord._next;
     // todo(vicb)
     // assert(next != record);
     // assert(prevRecord != record);
@@ -479,8 +479,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
       this._linkedRecords.remove(record);
     }
 
-    var prev = record._prev;
-    var next = record._next;
+    const prev = record._prev;
+    const next = record._next;
 
     // todo(vicb)
     // assert((record._prev = null) === null);
@@ -559,22 +559,22 @@ export class DefaultIterableDiffer implements IterableDiffer {
 
 
   toString(): string {
-    var list: any[] /** TODO #9100 */ = [];
+    const list: any[] /** TODO #9100 */ = [];
     this.forEachItem((record: any /** TODO #9100 */) => list.push(record));
 
-    var previous: any[] /** TODO #9100 */ = [];
+    const previous: any[] /** TODO #9100 */ = [];
     this.forEachPreviousItem((record: any /** TODO #9100 */) => previous.push(record));
 
-    var additions: any[] /** TODO #9100 */ = [];
+    const additions: any[] /** TODO #9100 */ = [];
     this.forEachAddedItem((record: any /** TODO #9100 */) => additions.push(record));
 
-    var moves: any[] /** TODO #9100 */ = [];
+    const moves: any[] /** TODO #9100 */ = [];
     this.forEachMovedItem((record: any /** TODO #9100 */) => moves.push(record));
 
-    var removals: any[] /** TODO #9100 */ = [];
+    const removals: any[] /** TODO #9100 */ = [];
     this.forEachRemovedItem((record: any /** TODO #9100 */) => removals.push(record));
 
-    var identityChanges: any[] /** TODO #9100 */ = [];
+    const identityChanges: any[] /** TODO #9100 */ = [];
     this.forEachIdentityChange((record: any /** TODO #9100 */) => identityChanges.push(record));
 
     return 'collection: ' + list.join(', ') + '\n' +
@@ -655,7 +655,7 @@ class _DuplicateItemRecordList {
   // Returns a CollectionChangeRecord having CollectionChangeRecord.trackById == trackById and
   // CollectionChangeRecord.currentIndex >= afterIndex
   get(trackById: any, afterIndex: number): CollectionChangeRecord {
-    var record: CollectionChangeRecord;
+    let record: CollectionChangeRecord;
     for (record = this._head; record !== null; record = record._nextDup) {
       if ((afterIndex === null || afterIndex < record.currentIndex) &&
           looseIdentical(record.trackById, trackById)) {
@@ -680,8 +680,8 @@ class _DuplicateItemRecordList {
     //  return false;
     //});
 
-    var prev: CollectionChangeRecord = record._prevDup;
-    var next: CollectionChangeRecord = record._nextDup;
+    const prev: CollectionChangeRecord = record._prevDup;
+    const next: CollectionChangeRecord = record._nextDup;
     if (prev === null) {
       this._head = next;
     } else {
@@ -746,9 +746,9 @@ class _DuplicateMap {
 }
 
 function getPreviousIndex(item: any, addRemoveOffset: number, moveOffsets: number[]): number {
-  var previousIndex = item.previousIndex;
+  const previousIndex = item.previousIndex;
   if (previousIndex === null) return previousIndex;
-  var moveOffset = 0;
+  let moveOffset = 0;
   if (moveOffsets && previousIndex < moveOffsets.length) {
     moveOffset = moveOffsets[previousIndex];
   }

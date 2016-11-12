@@ -11,13 +11,13 @@ import {browser, by, element} from 'protractor';
 
 describe('SVG', function() {
 
-  var URL = 'all/playground/src/svg/index.html';
+  const URL = 'all/playground/src/svg/index.html';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });
 
   it('should display SVG component contents', function() {
-    var svgText = element.all(by.css('g text')).get(0);
+    const svgText = element.all(by.css('g text')).get(0);
     expect(svgText.getText()).toEqual('Hello');
   });
 

@@ -37,7 +37,7 @@ export class RootTreeComponent {
 
 function createModule(): any {
   const components: any[] = [RootTreeComponent];
-  for (var i = 0; i <= maxDepth; i++) {
+  for (let i = 0; i <= maxDepth; i++) {
     components.push(createTreeComponent(i, i === maxDepth));
   }
 

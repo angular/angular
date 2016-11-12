@@ -16,16 +16,16 @@ export function main() {
 }
 
 function afterBootstrap(ref: PlatformRef) {
-  let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
-  var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
+  const brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
+  const broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
 
   document.getElementById('send_echo').addEventListener('click', (e) => {
-    var val = (<HTMLInputElement>document.getElementById('echo_input')).value;
+    const val = (<HTMLInputElement>document.getElementById('echo_input')).value;
     // TODO(jteplitz602): Replace default constructors with real constructors
     // once they're in the .d.ts file (#3926)
-    var args = new UiArguments('echo');
+    const args = new UiArguments('echo');
     args.method = 'echo';
-    var fnArg = new FnArg(val, PRIMITIVE);
+    const fnArg = new FnArg(val, PRIMITIVE);
     fnArg.value = val;
     fnArg.type = PRIMITIVE;
     args.args = [fnArg];

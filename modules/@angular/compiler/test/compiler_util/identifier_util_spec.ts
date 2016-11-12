@@ -23,7 +23,7 @@ export function main() {
 
     function createArgs(count: number): o.Expression[] {
       const result: o.Expression[] = [];
-      for (var i = 0; i < count; i++) {
+      for (let i = 0; i < count; i++) {
         result.push(o.NULL_EXPR);
       }
       return result;
@@ -40,19 +40,19 @@ export function main() {
     });
 
     it('should work for arrays of length 3 - 4', () => {
-      for (var i = 3; i <= 4; i++) {
+      for (let i = 3; i <= 4; i++) {
         check(i, Identifiers.inlineArrays[2]);
       }
     });
 
     it('should work for arrays of length 5 - 8', () => {
-      for (var i = 5; i <= 8; i++) {
+      for (let i = 5; i <= 8; i++) {
         check(i, Identifiers.inlineArrays[3]);
       }
     });
 
     it('should work for arrays of length 9 - 16', () => {
-      for (var i = 9; i <= 16; i++) {
+      for (let i = 9; i <= 16; i++) {
         check(i, Identifiers.inlineArrays[4]);
       }
     });

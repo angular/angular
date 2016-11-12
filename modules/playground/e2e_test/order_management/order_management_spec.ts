@@ -10,7 +10,7 @@ import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser} from 'protractor';
 
 describe('Order Management CRUD', function() {
-  var URL = 'all/playground/src/order_management/index.html';
+  const URL = 'all/playground/src/order_management/index.html';
 
   it('should work', function() {
     browser.get(URL);

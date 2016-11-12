@@ -45,22 +45,22 @@ export class XHRConnection implements Connection {
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
-      let _xhr: XMLHttpRequest = browserXHR.build();
+      const _xhr: XMLHttpRequest = browserXHR.build();
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
       if (isPresent(req.withCredentials)) {
         _xhr.withCredentials = req.withCredentials;
       }
       // load event handler
-      let onLoad = () => {
+      const onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
         // response/responseType properties were introduced in ResourceLoader Level2 spec (supported
         // by IE10)
         let body = _xhr.response === undefined ? _xhr.responseText : _xhr.response;
         // Implicitly strip a potential XSSI prefix.
         if (typeof body === 'string') body = body.replace(XSSI_PREFIX, '');
-        let headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
+        const headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
-        let url = getResponseURL(_xhr);
+        const url = getResponseURL(_xhr);
 
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
@@ -72,13 +72,13 @@ export class XHRConnection implements Connection {
           status = body ? 200 : 0;
         }
 
-        let statusText = _xhr.statusText || 'OK';
+        const statusText = _xhr.statusText || 'OK';
 
-        var responseOptions = new ResponseOptions({body, status, headers, statusText, url});
+        let responseOptions = new ResponseOptions({body, status, headers, statusText, url});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
-        let response = new Response(responseOptions);
+        const response = new Response(responseOptions);
         response.ok = isSuccess(status);
         if (response.ok) {
           responseObserver.next(response);
@@ -89,8 +89,8 @@ export class XHRConnection implements Connection {
         responseObserver.error(response);
       };
       // error event handler
-      let onError = (err: any) => {
-        var responseOptions = new ResponseOptions({
+      const onError = (err: any) => {
+        let responseOptions = new ResponseOptions({
           body: err,
           type: ResponseType.Error,
           status: _xhr.status,
@@ -161,7 +161,7 @@ export class XHRConnection implements Connection {
         _xhr.setRequestHeader('content-type', 'text/plain');
         break;
       case ContentType.BLOB:
-        var blob = req.blob();
+        let blob = req.blob();
         if (blob.type) {
           _xhr.setRequestHeader('content-type', blob.type);
         }
@@ -186,7 +186,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
       private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
 
   configureRequest(req: Request) {
-    let xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
+    const xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
     if (xsrfToken) {
       req.headers.set(this._headerName, xsrfToken);
     }

@@ -123,7 +123,7 @@ function bootstrap(cmpType: any, providers: Provider[] = []): Promise<any> {
 }
 
 export function main() {
-  var fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
+  let fakeDoc: any /** TODO #9100 */, el: any /** TODO #9100 */, el2: any /** TODO #9100 */,
       testProviders: Provider[], lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
@@ -151,8 +151,8 @@ export function main() {
 
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
-         var logger = new MockConsole();
-         var errorHandler = new ErrorHandler(false);
+         const logger = new MockConsole();
+         const errorHandler = new ErrorHandler(false);
          errorHandler._console = logger as any;
          bootstrap(HelloRootDirectiveIsNotCmp, [
            {provide: ErrorHandler, useValue: errorHandler}
@@ -165,8 +165,8 @@ export function main() {
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var logger = new MockConsole();
-         var errorHandler = new ErrorHandler(false);
+         const logger = new MockConsole();
+         const errorHandler = new ErrorHandler(false);
          errorHandler._console = logger as any;
          bootstrap(HelloRootCmp, [
            {provide: ErrorHandler, useValue: errorHandler}
@@ -180,11 +180,11 @@ export function main() {
     if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var logger = new MockConsole();
-           var errorHandler = new ErrorHandler(false);
+           const logger = new MockConsole();
+           const errorHandler = new ErrorHandler(false);
            errorHandler._console = logger as any;
 
-           var refPromise =
+           const refPromise =
                bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason: any) => {
              expect(reason.message)
@@ -195,11 +195,11 @@ export function main() {
 
       it('should invoke the default exception handler when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var logger = new MockConsole();
-           var errorHandler = new ErrorHandler(false);
+           const logger = new MockConsole();
+           const errorHandler = new ErrorHandler(false);
            errorHandler._console = logger as any;
 
-           var refPromise =
+           const refPromise =
                bootstrap(HelloRootCmp, [{provide: ErrorHandler, useValue: errorHandler}]);
            refPromise.then(null, (reason) => {
              expect(logger.res.join(''))
@@ -211,12 +211,12 @@ export function main() {
     }
 
     it('should create an injector promise', () => {
-      var refPromise = bootstrap(HelloRootCmp, testProviders);
+      const refPromise = bootstrap(HelloRootCmp, testProviders);
       expect(refPromise).not.toBe(null);
     });
 
     it('should display hello world', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise = bootstrap(HelloRootCmp, testProviders);
+         const refPromise = bootstrap(HelloRootCmp, testProviders);
          refPromise.then((ref) => {
            expect(el).toHaveText('hello world!');
            async.done();
@@ -230,7 +230,7 @@ export function main() {
          }
          bootstrap(HelloRootCmp, testProviders)
              .then((ref: ComponentRef<HelloRootCmp>) => {
-               let compiler: Compiler = ref.injector.get(Compiler);
+               const compiler: Compiler = ref.injector.get(Compiler);
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
@@ -242,8 +242,8 @@ export function main() {
 
     it('should support multiple calls to bootstrap',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise1 = bootstrap(HelloRootCmp, testProviders);
-         var refPromise2 = bootstrap(HelloRootCmp2, testProviders);
+         const refPromise1 = bootstrap(HelloRootCmp, testProviders);
+         const refPromise2 = bootstrap(HelloRootCmp2, testProviders);
          Promise.all([refPromise1, refPromise2]).then((refs) => {
            expect(el).toHaveText('hello world!');
            expect(el2).toHaveText('hello world, again!');
@@ -271,7 +271,7 @@ export function main() {
 
     it('should make the provided bindings available to the application component',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise = bootstrap(
+         const refPromise = bootstrap(
              HelloRootCmp3, [testProviders, {provide: 'appBinding', useValue: 'BoundValue'}]);
 
          refPromise.then((ref) => {
@@ -282,7 +282,7 @@ export function main() {
 
     it('should avoid cyclic dependencies when root component requires Lifecycle through DI',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise = bootstrap(HelloRootCmp4, testProviders);
+         const refPromise = bootstrap(HelloRootCmp4, testProviders);
 
          refPromise.then((ref) => {
            const appRef = ref.injector.get(ApplicationRef);
@@ -293,7 +293,7 @@ export function main() {
 
     it('should run platform initializers',
        inject([Log, AsyncTestCompleter], (log: Log, async: AsyncTestCompleter) => {
-         let p = createPlatformFactory(platformBrowserDynamic, 'someName', [
+         const p = createPlatformFactory(platformBrowserDynamic, 'someName', [
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
            {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true}
          ])();
@@ -319,12 +319,12 @@ export function main() {
 
     it('should register each application with the testability registry',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         var refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
-         var refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
+         const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
+         const refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
 
          Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
-           var registry = refs[0].injector.get(TestabilityRegistry);
-           var testabilities =
+           const registry = refs[0].injector.get(TestabilityRegistry);
+           const testabilities =
                [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
            Promise.all(testabilities).then((testabilities: Testability[]) => {
              expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);

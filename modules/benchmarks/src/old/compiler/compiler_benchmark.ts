@@ -21,7 +21,7 @@ import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): any[] {
-  var multiplyTemplatesBy = getIntParameter('elements');
+  const multiplyTemplatesBy = getIntParameter('elements');
   return [
     {
       provide: DirectiveResolver,
@@ -42,7 +42,7 @@ function _createBindings(): any[] {
 export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings()).then((ref) => {
-    var app = ref.instance;
+    const app = ref.instance;
     bindAction('#compileNoBindings', measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
     bindAction(
         '#compileWithBindings', measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
@@ -51,13 +51,13 @@ export function main() {
 
 function measureWrapper(func, desc) {
   return function() {
-    var begin = new Date();
+    const begin = new Date();
     print(`[${desc}] Begin...`);
-    var onSuccess = function(_) {
-      var elapsedMs = new Date().getTime() - begin.getTime();
+    const onSuccess = function(_) {
+      const elapsedMs = new Date().getTime() - begin.getTime();
       print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
-    var onError = function(e) { DOM.logError(e); };
+    const onError = function(e) { DOM.logError(e); };
     PromiseWrapper.then(func(), onSuccess, onError);
   };
 }
@@ -74,9 +74,9 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
   }
 
   private _fillCache(component: Type) {
-    var view = super.resolve(component);
-    var multipliedTemplates = new Array(this._multiplyBy);
-    for (var i = 0; i < this._multiplyBy; ++i) {
+    const view = super.resolve(component);
+    const multipliedTemplates = new Array(this._multiplyBy);
+    for (let i = 0; i < this._multiplyBy; ++i) {
       multipliedTemplates[i] = view.template;
     }
     this._cache.set(

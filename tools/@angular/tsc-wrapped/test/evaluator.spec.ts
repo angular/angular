@@ -15,7 +15,7 @@ import {Symbols} from '../src/symbols';
 import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
 
 describe('Evaluator', () => {
-  let documentRegistry = ts.createDocumentRegistry();
+  const documentRegistry = ts.createDocumentRegistry();
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;

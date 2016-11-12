@@ -27,7 +27,7 @@ export class RenderStore {
   }
 
   remove(obj: any): void {
-    var index = this._lookupByObject.get(obj);
+    const index = this._lookupByObject.get(obj);
     this._lookupByObject.delete(obj);
     this._lookupById.delete(index);
   }

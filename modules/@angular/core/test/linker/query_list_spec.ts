@@ -15,8 +15,8 @@ import {iterateListLike} from '../../src/facade/collection';
 
 export function main() {
   describe('QueryList', () => {
-    var queryList: QueryList<string>;
-    var log: string;
+    let queryList: QueryList<string>;
+    let log: string;
     beforeEach(() => {
       queryList = new QueryList<string>();
       log = '';
@@ -103,7 +103,7 @@ export function main() {
 
     it('should support toString', () => {
       queryList.reset(['one', 'two']);
-      var listString = queryList.toString();
+      const listString = queryList.toString();
       expect(listString.indexOf('one') != -1).toBeTruthy();
       expect(listString.indexOf('two') != -1).toBeTruthy();
     });
@@ -123,7 +123,7 @@ export function main() {
     if (getDOM().supportsDOMEvents()) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
-             var fires = 0;
+             let fires = 0;
              queryList.changes.subscribe({next: (_) => { fires += 1; }});
 
              queryList.notifyOnChanges();
@@ -138,7 +138,7 @@ export function main() {
            }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             var recorded: any /** TODO #9100 */;
+             let recorded: any /** TODO #9100 */;
              queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
 
              queryList.reset(['one']);

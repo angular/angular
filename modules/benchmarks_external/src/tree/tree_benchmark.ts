@@ -32,18 +32,18 @@ angular.module('app', [])
                  '$compile',
                  '$parse',
                  function($compile, $parse) {
-                   var transcludeFn;
+                   const transcludeFn;
                    return {
                      compile: function(element, attrs) {
-                       var expr = $parse('!!' + attrs.treeIf);
-                       var template = '<tree data="' + attrs.treeIf + '"></tree>';
-                       var transclude;
+                       const expr = $parse('!!' + attrs.treeIf);
+                       const template = '<tree data="' + attrs.treeIf + '"></tree>';
+                       let transclude;
                        return function($scope, $element, $attrs) {
                          if (!transclude) {
                            transclude = $compile(template);
                          }
-                         var childScope;
-                         var childElement;
+                         let childScope;
+                         let childElement;
                          $scope.$watch(expr, function(newValue) {
                            if (childScope) {
                              childScope.$destroy();
@@ -70,8 +70,8 @@ angular.module('app', [])
     .run([
       '$rootScope',
       function($rootScope) {
-        var count = 0;
-        var maxDepth = getIntParameter('depth');
+        let count = 0;
+        const maxDepth = getIntParameter('depth');
 
         bindAction('#destroyDom', destroyDom);
         bindAction('#createDom', createDom);
@@ -81,7 +81,7 @@ angular.module('app', [])
         }
 
         function createDom() {
-          var values = count++ % 2 == 0 ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
+          const values = count++ % 2 == 0 ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
                                           ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
 
           $rootScope.$apply(function() { $rootScope.initData = buildTree(maxDepth, values, 0); });

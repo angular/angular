@@ -18,7 +18,7 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
 export function main() {
   describe('fake async', () => {
     it('should run synchronous code', () => {
-      var ran = false;
+      let ran = false;
       fakeAsync(() => { ran = true; })();
 
       expect(ran).toEqual(true);
@@ -42,7 +42,7 @@ export function main() {
     });
 
     it('should flush microtasks before returning', () => {
-      var thenRan = false;
+      let thenRan = false;
 
       fakeAsync(() => { resolvedPromise.then(_ => { thenRan = true; }); })();
 
@@ -55,7 +55,7 @@ export function main() {
 
     describe('Promise', () => {
       it('should run asynchronous code', fakeAsync(() => {
-           var thenRan = false;
+           let thenRan = false;
            resolvedPromise.then((_) => { thenRan = true; });
 
            expect(thenRan).toEqual(false);
@@ -65,7 +65,7 @@ export function main() {
          }));
 
       it('should run chained thens', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
            resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
@@ -76,7 +76,7 @@ export function main() {
          }));
 
       it('should run Promise created in Promise', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
            resolvedPromise.then((_) => {
              log.add(1);
@@ -106,7 +106,7 @@ export function main() {
 
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
-           var ran = false;
+           let ran = false;
            setTimeout(() => { ran = true; }, 0);
 
            expect(ran).toEqual(false);
@@ -117,7 +117,7 @@ export function main() {
 
 
       it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
-           var ran = false;
+           let ran = false;
            setTimeout(() => { ran = true; }, 10);
 
            tick(6);
@@ -128,7 +128,7 @@ export function main() {
          }));
 
       it('should run queued timer only once', fakeAsync(() => {
-           var cycles = 0;
+           let cycles = 0;
            setTimeout(() => { cycles++; }, 10);
 
            tick(10);
@@ -142,8 +142,8 @@ export function main() {
          }));
 
       it('should not run cancelled timer', fakeAsync(() => {
-           var ran = false;
-           var id = setTimeout(() => { ran = true; }, 10);
+           let ran = false;
+           const id = setTimeout(() => { ran = true; }, 10);
            clearTimeout(id);
 
            tick(10);
@@ -163,8 +163,8 @@ export function main() {
       });
 
       it('should run periodic timers', fakeAsync(() => {
-           var cycles = 0;
-           var id = setInterval(() => { cycles++; }, 10);
+           let cycles = 0;
+           const id = setInterval(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -178,8 +178,8 @@ export function main() {
          }));
 
       it('should not run cancelled periodic timer', fakeAsync(() => {
-           var ran = false;
-           var id = setInterval(() => { ran = true; }, 10);
+           let ran = false;
+           const id = setInterval(() => { ran = true; }, 10);
            clearInterval(id);
 
            tick(10);
@@ -187,8 +187,8 @@ export function main() {
          }));
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-           var cycles = 0;
-           var id: any /** TODO #9100 */;
+           let cycles = 0;
+           let id: any /** TODO #9100 */;
 
            id = setInterval(() => {
              cycles++;
@@ -203,8 +203,8 @@ export function main() {
          }));
 
       it('should clear periodic timers', fakeAsync(() => {
-           var cycles = 0;
-           var id = setInterval(() => { cycles++; }, 10);
+           let cycles = 0;
+           const id = setInterval(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -221,13 +221,13 @@ export function main() {
          }));
 
       it('should process microtasks before timers', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
            resolvedPromise.then((_) => log.add('microtask'));
 
            setTimeout(() => log.add('timer'), 9);
 
-           var id = setInterval(() => log.add('periodic timer'), 10);
+           const id = setInterval(() => log.add('periodic timer'), 10);
 
            expect(log.result()).toEqual('');
 
@@ -237,7 +237,7 @@ export function main() {
          }));
 
       it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
            resolvedPromise.then((_) => log.add('microtask'));
 
@@ -246,7 +246,7 @@ export function main() {
              resolvedPromise.then((_) => log.add('t microtask'));
            }, 9);
 
-           var id = setInterval(() => {
+           const id = setInterval(() => {
              log.add('periodic timer');
              resolvedPromise.then((_) => log.add('pt microtask'));
            }, 10);
@@ -302,7 +302,7 @@ export function main() {
 
     it('should allow fakeAsync zone to retroactively set a zoneSpec outside of fakeAsync', () => {
       ProxyZoneSpec.assertPresent();
-      var state: string = 'not run';
+      let state: string = 'not run';
       const testZone = Zone.current.fork({name: 'test-zone'});
       (fakeAsync(() => {
         testZone.run(() => {

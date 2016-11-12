@@ -11,7 +11,7 @@ import {global} from '../facade/lang';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
-var _jsonpConnections: {[key: string]: any} = null;
+let _jsonpConnections: {[key: string]: any} = null;
 
 function _getJsonpConnections(): {[key: string]: any} {
   if (_jsonpConnections === null) {
@@ -25,7 +25,7 @@ function _getJsonpConnections(): {[key: string]: any} {
 export class BrowserJsonp {
   // Construct a <script> element with the specified URL
   build(url: string): any {
-    let node = document.createElement('script');
+    const node = document.createElement('script');
     node.src = url;
     return node;
   }
@@ -35,12 +35,12 @@ export class BrowserJsonp {
   requestCallback(id: string): string { return `${JSONP_HOME}.${id}.finished`; }
 
   exposeConnection(id: string, connection: any) {
-    let connections = _getJsonpConnections();
+    const connections = _getJsonpConnections();
     connections[id] = connection;
   }
 
   removeConnection(id: string) {
-    var connections = _getJsonpConnections();
+    const connections = _getJsonpConnections();
     connections[id] = null;
   }
 

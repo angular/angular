@@ -21,7 +21,7 @@ export class MockContext implements ReflectorHostContext {
   directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
 
   readFile(fileName: string): string|undefined {
-    let data = this.getEntry(fileName);
+    const data = this.getEntry(fileName);
     if (typeof data === 'string') {
       return data;
     }
@@ -29,9 +29,9 @@ export class MockContext implements ReflectorHostContext {
   }
 
   writeFile(fileName: string, data: string): void {
-    let parts = fileName.split('/');
-    let name = parts.pop();
-    let entry = this.getEntry(parts);
+    const parts = fileName.split('/');
+    const name = parts.pop();
+    const entry = this.getEntry(parts);
     if (entry && typeof entry !== 'string') {
       entry[name] = data;
     }
@@ -48,11 +48,11 @@ export class MockContext implements ReflectorHostContext {
     parts = normalize(parts);
     let current = this.files;
     while (parts.length) {
-      let part = parts.shift();
+      const part = parts.shift();
       if (typeof current === 'string') {
         return undefined;
       }
-      let next = (<Directory>current)[part];
+      const next = (<Directory>current)[part];
       if (next === undefined) {
         return undefined;
       }
@@ -72,9 +72,9 @@ export class MockContext implements ReflectorHostContext {
 }
 
 function normalize(parts: string[]): string[] {
-  let result: string[] = [];
+  const result: string[] = [];
   while (parts.length) {
-    let part = parts.shift();
+    const part = parts.shift();
     switch (part) {
       case '.':
         break;
@@ -102,7 +102,7 @@ export class MockCompilerHost implements ts.CompilerHost {
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: (message: string) => void): ts.SourceFile {
-    let sourceText = this.context.readFile(fileName);
+    const sourceText = this.context.readFile(fileName);
     if (sourceText) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {

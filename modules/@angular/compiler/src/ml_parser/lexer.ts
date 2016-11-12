@@ -321,23 +321,23 @@ class _Tokenizer {
     const start = this._getLocation();
     this._advance();
     if (this._attemptCharCode(chars.$HASH)) {
-      let isHex = this._attemptCharCode(chars.$x) || this._attemptCharCode(chars.$X);
-      let numberStart = this._getLocation().offset;
+      const isHex = this._attemptCharCode(chars.$x) || this._attemptCharCode(chars.$X);
+      const numberStart = this._getLocation().offset;
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
       if (this._peek != chars.$SEMICOLON) {
         throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
       this._advance();
-      let strNum = this._input.substring(numberStart, this._index - 1);
+      const strNum = this._input.substring(numberStart, this._index - 1);
       try {
-        let charCode = parseInt(strNum, isHex ? 16 : 10);
+        const charCode = parseInt(strNum, isHex ? 16 : 10);
         return String.fromCharCode(charCode);
       } catch (e) {
-        let entity = this._input.substring(start.offset + 1, this._index - 1);
+        const entity = this._input.substring(start.offset + 1, this._index - 1);
         throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
       }
     } else {
-      let startPosition = this._savePosition();
+      const startPosition = this._savePosition();
       this._attemptCharCodeUntilFn(isNamedEntityEnd);
       if (this._peek != chars.$SEMICOLON) {
         this._restorePosition(startPosition);
@@ -420,7 +420,7 @@ class _Tokenizer {
   }
 
   private _consumeTagOpen(start: ParseLocation) {
-    let savedPos = this._savePosition();
+    const savedPos = this._savePosition();
     let tagName: string;
     let lowercaseTagName: string;
     try {
@@ -490,18 +490,18 @@ class _Tokenizer {
 
   private _consumeAttributeValue() {
     this._beginToken(TokenType.ATTR_VALUE);
-    var value: string;
+    let value: string;
     if (this._peek === chars.$SQ || this._peek === chars.$DQ) {
-      var quoteChar = this._peek;
+      const quoteChar = this._peek;
       this._advance();
-      var parts: string[] = [];
+      const parts: string[] = [];
       while (this._peek !== quoteChar) {
         parts.push(this._readChar(true));
       }
       value = parts.join('');
       this._advance();
     } else {
-      var valueStart = this._index;
+      const valueStart = this._index;
       this._requireCharCodeUntilFn(isNameEnd, 1);
       value = this._input.substring(valueStart, this._index);
     }
@@ -519,7 +519,7 @@ class _Tokenizer {
   private _consumeTagClose(start: ParseLocation) {
     this._beginToken(TokenType.TAG_CLOSE, start);
     this._attemptCharCodeUntilFn(isNotWhitespace);
-    let prefixAndName = this._consumePrefixAndName();
+    const prefixAndName = this._consumePrefixAndName();
     this._attemptCharCodeUntilFn(isNotWhitespace);
     this._requireCharCode(chars.$GT);
     this._endToken(prefixAndName);
@@ -539,7 +539,7 @@ class _Tokenizer {
     this._attemptCharCodeUntilFn(isNotWhitespace);
 
     this._beginToken(TokenType.RAW_TEXT, this._getLocation());
-    let type = this._readUntil(chars.$COMMA);
+    const type = this._readUntil(chars.$COMMA);
     this._endToken([type], this._getLocation());
     this._requireCharCode(chars.$COMMA);
     this._attemptCharCodeUntilFn(isNotWhitespace);
@@ -623,7 +623,7 @@ class _Tokenizer {
   }
 
   private _readUntil(char: number): string {
-    let start = this._index;
+    const start = this._index;
     this._attemptUntilChar(char);
     return this._input.substring(start, this._index);
   }
@@ -633,7 +633,7 @@ class _Tokenizer {
     this._index = position[1];
     this._column = position[2];
     this._line = position[3];
-    let nbTokens = position[4];
+    const nbTokens = position[4];
     if (nbTokens < this.tokens.length) {
       // remove any extra tokens
       this.tokens = this.tokens.slice(0, nbTokens);
@@ -696,10 +696,10 @@ function toUpperCaseCharCode(code: number): number {
 }
 
 function mergeTextTokens(srcTokens: Token[]): Token[] {
-  let dstTokens: Token[] = [];
+  const dstTokens: Token[] = [];
   let lastDstToken: Token;
   for (let i = 0; i < srcTokens.length; i++) {
-    let token = srcTokens[i];
+    const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
       lastDstToken.parts[0] += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;

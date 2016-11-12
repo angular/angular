@@ -66,13 +66,13 @@ export class JSONPConnection_ extends JSONPConnection {
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
 
       this.readyState = ReadyState.Loading;
-      let id = this._id = _dom.nextRequestID();
+      const id = this._id = _dom.nextRequestID();
 
       _dom.exposeConnection(id, this);
 
       // Workaround Dart
       // url = url.replace(/=JSONP_CALLBACK(&|$)/, `generated method`);
-      let callback = _dom.requestCallback(this._id);
+      const callback = _dom.requestCallback(this._id);
       let url: string = req.url;
       if (url.indexOf('=JSONP_CALLBACK&') > -1) {
         url = url.replace('=JSONP_CALLBACK&', `=${callback}&`);
@@ -80,9 +80,9 @@ export class JSONPConnection_ extends JSONPConnection {
         url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }
 
-      let script = this._script = _dom.build(url);
+      const script = this._script = _dom.build(url);
 
-      let onLoad = (event: Event) => {
+      const onLoad = (event: Event) => {
         if (this.readyState === ReadyState.Cancelled) return;
         this.readyState = ReadyState.Done;
         _dom.cleanup(script);
@@ -105,7 +105,7 @@ export class JSONPConnection_ extends JSONPConnection {
         responseObserver.complete();
       };
 
-      let onError = (error: Error) => {
+      const onError = (error: Error) => {
         if (this.readyState === ReadyState.Cancelled) return;
         this.readyState = ReadyState.Done;
         _dom.cleanup(script);

@@ -19,7 +19,7 @@ export function main() {
     beforeEach(() => { b = new FormBuilder(); });
 
     it('should create controls from a value', () => {
-      var g = b.group({'login': 'some value'});
+      const g = b.group({'login': 'some value'});
 
       expect(g.controls['login'].value).toEqual('some value');
     });
@@ -32,7 +32,7 @@ export function main() {
     });
 
     it('should create controls from an array', () => {
-      var g = b.group(
+      const g = b.group(
           {'login': ['some value'], 'password': ['some value', syncValidator, asyncValidator]});
 
       expect(g.controls['login'].value).toEqual('some value');
@@ -42,7 +42,7 @@ export function main() {
     });
 
     it('should use controls', () => {
-      var g = b.group({'login': b.control('some value', syncValidator, asyncValidator)});
+      const g = b.group({'login': b.control('some value', syncValidator, asyncValidator)});
 
       expect(g.controls['login'].value).toEqual('some value');
       expect(g.controls['login'].validator).toBe(syncValidator);
@@ -50,7 +50,7 @@ export function main() {
     });
 
     it('should create groups with a custom validator', () => {
-      var g = b.group(
+      const g = b.group(
           {'login': 'some value'}, {'validator': syncValidator, 'asyncValidator': asyncValidator});
 
       expect(g.validator).toBe(syncValidator);
@@ -58,8 +58,8 @@ export function main() {
     });
 
     it('should create control arrays', () => {
-      var c = b.control('three');
-      var a = b.array(
+      const c = b.control('three');
+      const a = b.array(
           ['one', ['two', syncValidator], c, b.array(['four'])], syncValidator, asyncValidator);
 
       expect(a.value).toEqual(['one', 'two', 'three', ['four']]);

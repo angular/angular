@@ -26,8 +26,8 @@ class SomeComponent {
 
 export function main() {
   describe('bootstrap', () => {
-    var mockConsole: MockConsole;
-    var fakeDoc: Document;
+    let mockConsole: MockConsole;
+    let fakeDoc: Document;
 
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
@@ -74,7 +74,7 @@ export function main() {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
 
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
-           var cdRef = <any>new SpyChangeDetectorRef();
+           const cdRef = <any>new SpyChangeDetectorRef();
            try {
              ref.registerChangeDetector(cdRef);
              cdRef.spy('detectChanges').and.callFake(() => ref.tick());
@@ -126,14 +126,14 @@ export function main() {
     });
 
     describe('bootstrapModule', () => {
-      var defaultPlatform: PlatformRef;
+      let defaultPlatform: PlatformRef;
       beforeEach(
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
 
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           let promise: Promise<any> = new Promise((res) => { resolve = res; });
-           var initializerDone = false;
+           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           let initializerDone = false;
            setTimeout(() => {
              resolve(true);
              initializerDone = true;
@@ -214,13 +214,13 @@ export function main() {
     });
 
     describe('bootstrapModuleFactory', () => {
-      var defaultPlatform: PlatformRef;
+      let defaultPlatform: PlatformRef;
       beforeEach(
           inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           let promise: Promise<any> = new Promise((res) => { resolve = res; });
-           var initializerDone = false;
+           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           let initializerDone = false;
            setTimeout(() => {
              resolve(true);
              initializerDone = true;

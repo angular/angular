@@ -100,7 +100,7 @@ export class RuntimeCompiler implements Compiler {
   }
 
   private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
-    var loadingPromises: Promise<any>[] = [];
+    const loadingPromises: Promise<any>[] = [];
     const {ngModule, loading} = this._metadataResolver.loadNgModuleMetadata(mainModule, isSync);
     loadingPromises.push(loading);
     // Note: the loadingPromise for a module only includes the loading of the exported directives
@@ -122,7 +122,7 @@ export class RuntimeCompiler implements Compiler {
       // Always provide a bound Compiler
       const extraProviders = [this._metadataResolver.getProviderMetadata(new ProviderMeta(
           Compiler, {useFactory: () => new ModuleBoundCompiler(this, moduleMeta.type.reference)}))];
-      var compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
+      const compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
       compileResult.dependencies.forEach((dep) => {
         dep.placeholder.reference =
             this._assertComponentKnown(dep.comp.reference, true).proxyComponentFactory;
@@ -192,7 +192,7 @@ export class RuntimeCompiler implements Compiler {
     this._compiledNgModuleCache.delete(type);
     this._metadataResolver.clearCacheFor(type);
     this._compiledHostTemplateCache.delete(type);
-    var compiledTemplate = this._compiledTemplateCache.get(type);
+    const compiledTemplate = this._compiledTemplateCache.get(type);
     if (compiledTemplate) {
       this._compiledTemplateCache.delete(type);
     }
@@ -211,11 +211,11 @@ export class RuntimeCompiler implements Compiler {
       throw new Error(
           `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
     }
-    var compiledTemplate = this._compiledHostTemplateCache.get(compType);
+    let compiledTemplate = this._compiledHostTemplateCache.get(compType);
     if (!compiledTemplate) {
-      var compMeta = this._metadataResolver.getDirectiveMetadata(compType);
+      const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
-      var hostMeta = createHostComponentMeta(compMeta);
+      const hostMeta = createHostComponentMeta(compMeta);
       compiledTemplate = new CompiledTemplate(
           true, compMeta.selector, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
@@ -225,7 +225,7 @@ export class RuntimeCompiler implements Compiler {
 
   private _createCompiledTemplate(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata): CompiledTemplate {
-    var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.reference);
+    let compiledTemplate = this._compiledTemplateCache.get(compMeta.type.reference);
     if (!compiledTemplate) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
@@ -297,17 +297,17 @@ export class RuntimeCompiler implements Compiler {
     compileResult.dependencies.forEach((dep) => {
       let depTemplate: CompiledTemplate;
       if (dep instanceof ViewClassDependency) {
-        let vfd = <ViewClassDependency>dep;
+        const vfd = <ViewClassDependency>dep;
         depTemplate = this._assertComponentKnown(vfd.comp.reference, false);
         vfd.placeholder.reference = depTemplate.proxyViewClass;
         vfd.placeholder.name = `View_${vfd.comp.name}`;
       } else if (dep instanceof ComponentFactoryDependency) {
-        let cfd = <ComponentFactoryDependency>dep;
+        const cfd = <ComponentFactoryDependency>dep;
         depTemplate = this._assertComponentKnown(cfd.comp.reference, true);
         cfd.placeholder.reference = depTemplate.proxyComponentFactory;
         cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       } else if (dep instanceof DirectiveWrapperDependency) {
-        let dwd = <DirectiveWrapperDependency>dep;
+        const dwd = <DirectiveWrapperDependency>dep;
         dwd.placeholder.reference = this._assertDirectiveWrapper(dwd.dir.reference);
       }
     });
@@ -328,8 +328,8 @@ export class RuntimeCompiler implements Compiler {
   private _resolveStylesCompileResult(
       result: CompiledStylesheet, externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>) {
     result.dependencies.forEach((dep, i) => {
-      var nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl);
-      var nestedStylesArr = this._resolveAndEvalStylesCompileResult(
+      const nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl);
+      const nestedStylesArr = this._resolveAndEvalStylesCompileResult(
           nestedCompileResult, externalStylesheetsByModuleUrl);
       dep.valuePlaceholder.reference = nestedStylesArr;
       dep.valuePlaceholder.name = `importedStyles${i}`;

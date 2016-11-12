@@ -19,7 +19,7 @@
 
   function benchmarksBootstrap() {
     // check query param
-    var useBundles = location.search.indexOf('bundles=false') == -1;
+    const useBundles = location.search.indexOf('bundles=false') == -1;
     if (useBundles) {
       System.config({
         map: {

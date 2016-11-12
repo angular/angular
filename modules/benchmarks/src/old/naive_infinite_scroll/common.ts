@@ -49,10 +49,10 @@ export class CustomDate {
   }
 
   addDays(days: number): CustomDate {
-    var newDay = this.day + days;
-    var newMonth = this.month + Math.floor(newDay / 30);
+    let newDay = this.day + days;
+    const newMonth = this.month + Math.floor(newDay / 30);
     newDay = newDay % 30;
-    var newYear = this.year + Math.floor(newMonth / 12);
+    const newYear = this.year + Math.floor(newMonth / 12);
     return new CustomDate(newYear, newMonth, newDay);
   }
 
@@ -68,10 +68,10 @@ export class RawEntity {
     if (key.indexOf('.') == -1) {
       return this._data[key];
     }
-    var pieces = key.split('.');
-    var last = pieces[pieces.length - 1];
+    const pieces = key.split('.');
+    const last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
-    var target = this._resolve(pieces, this);
+    const target = this._resolve(pieces, this);
     if (target == null) {
       return null;
     }
@@ -83,10 +83,10 @@ export class RawEntity {
       this._data[key] = value;
       return;
     }
-    var pieces = key.split('.');
-    var last = pieces[pieces.length - 1];
+    const pieces = key.split('.');
+    const last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
-    var target = this._resolve(pieces, this);
+    const target = this._resolve(pieces, this);
     target[last] = value;
   }
 
@@ -94,16 +94,16 @@ export class RawEntity {
     if (!StringWrapper.contains(key, '.')) {
       return this._data.delete(key);
     }
-    var pieces = key.split('.');
-    var last = pieces[pieces.length - 1];
+    const pieces = key.split('.');
+    const last = pieces[pieces.length - 1];
     pieces.length = pieces.length - 1;
-    var target = this._resolve(pieces, this);
+    const target = this._resolve(pieces, this);
     return target.remove(last);
   }
 
   private _resolve(pieces, start) {
-    var cur = start;
-    for (var i = 0; i < pieces.length; i++) {
+    let cur = start;
+    for (let i = 0; i < pieces.length; i++) {
       cur = cur[pieces[i]];
       if (cur == null) {
         return null;

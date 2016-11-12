@@ -201,7 +201,7 @@ export function main() {
     it('should list all component child elements', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
-      var childEls = fixture.debugElement.children;
+      const childEls = fixture.debugElement.children;
 
       // The root component has 3 elements in its view.
       expect(childEls.length).toEqual(3);
@@ -209,18 +209,18 @@ export function main() {
       expect(getDOM().hasClass(childEls[1].nativeElement, 'parent')).toBe(true);
       expect(getDOM().hasClass(childEls[2].nativeElement, 'child-comp-class')).toBe(true);
 
-      var nested = childEls[0].children;
+      const nested = childEls[0].children;
       expect(nested.length).toEqual(1);
       expect(getDOM().hasClass(nested[0].nativeElement, 'parentnested')).toBe(true);
 
-      var childComponent = childEls[2];
+      const childComponent = childEls[2];
 
-      var childCompChildren = childComponent.children;
+      const childCompChildren = childComponent.children;
       expect(childCompChildren.length).toEqual(2);
       expect(getDOM().hasClass(childCompChildren[0].nativeElement, 'child')).toBe(true);
       expect(getDOM().hasClass(childCompChildren[1].nativeElement, 'child')).toBe(true);
 
-      var childNested = childCompChildren[0].children;
+      const childNested = childCompChildren[0].children;
       expect(childNested.length).toEqual(1);
       expect(getDOM().hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
     });
@@ -229,14 +229,14 @@ export function main() {
       fixture = TestBed.createComponent(ConditionalParentComp);
       fixture.detectChanges();
 
-      var childEls = fixture.debugElement.children;
+      const childEls = fixture.debugElement.children;
 
       // The root component has 2 elements in its view.
       expect(childEls.length).toEqual(2);
       expect(getDOM().hasClass(childEls[0].nativeElement, 'parent')).toBe(true);
       expect(getDOM().hasClass(childEls[1].nativeElement, 'cond-content-comp-class')).toBe(true);
 
-      var conditionalContentComp = childEls[1];
+      const conditionalContentComp = childEls[1];
 
       expect(conditionalContentComp.children.length).toEqual(0);
 
@@ -250,11 +250,11 @@ export function main() {
       fixture = TestBed.createComponent(UsingFor);
       fixture.detectChanges();
 
-      var childEls = fixture.debugElement.children;
+      const childEls = fixture.debugElement.children;
       expect(childEls.length).toEqual(4);
 
       // The 4th child is the <ul>
-      var list = childEls[3];
+      const list = childEls[3];
 
       expect(list.children.length).toEqual(3);
     });
@@ -262,7 +262,7 @@ export function main() {
     it('should list element attributes', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
-      var bankElem = fixture.debugElement.children[0];
+      const bankElem = fixture.debugElement.children[0];
 
       expect(bankElem.attributes['bank']).toEqual('RBC');
       expect(bankElem.attributes['account']).toEqual('4747');
@@ -271,7 +271,7 @@ export function main() {
     it('should list element classes', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
-      var bankElem = fixture.debugElement.children[0];
+      const bankElem = fixture.debugElement.children[0];
 
       expect(bankElem.classes['closed']).toBe(true);
       expect(bankElem.classes['open']).toBe(false);
@@ -280,7 +280,7 @@ export function main() {
     it('should list element styles', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
-      var bankElem = fixture.debugElement.children[0];
+      const bankElem = fixture.debugElement.children[0];
 
       expect(bankElem.styles['width']).toEqual('200px');
       expect(bankElem.styles['color']).toEqual('red');
@@ -290,7 +290,7 @@ export function main() {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
-      var childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
+      const childTestEls = fixture.debugElement.queryAll(By.css('child-comp'));
 
       expect(childTestEls.length).toBe(1);
       expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
@@ -300,7 +300,7 @@ export function main() {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
-      var childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
+      const childTestEls = fixture.debugElement.queryAll(By.directive(MessageDir));
 
       expect(childTestEls.length).toBe(4);
       expect(getDOM().hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);

@@ -8,7 +8,7 @@
 
 declare var global: any;
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 /**
  * Wraps a test function in an asynchronous test zone. The test will automatically
@@ -57,7 +57,7 @@ export function async(fn: Function): (done: any) => any {
 
 function runInTestZone(fn: Function, finishCallback: Function, failCallback: Function) {
   const currentZone = Zone.current;
-  var AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
+  const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   if (AsyncTestZoneSpec === undefined) {
     throw new Error(
         'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
@@ -79,7 +79,7 @@ function runInTestZone(fn: Function, finishCallback: Function, failCallback: Fun
   const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
   const previousDelegate = proxyZoneSpec.getDelegate();
   proxyZone.parent.run(() => {
-    var testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
+    const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
         () => {
           // Need to restore the original zone.
           currentZone.run(() => {

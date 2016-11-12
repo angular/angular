@@ -34,8 +34,8 @@ export class SpyLocation implements Location {
   path(): string { return this._history[this._historyIndex].path; }
 
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    var givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-    var currPath =
+    const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    const currPath =
         this.path().endsWith('/') ? this.path().substring(0, this.path().length - 1) : this.path();
 
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
@@ -66,12 +66,12 @@ export class SpyLocation implements Location {
     this._history.push(new LocationState(path, query));
     this._historyIndex = this._history.length - 1;
 
-    var locationState = this._history[this._historyIndex - 1];
+    const locationState = this._history[this._historyIndex - 1];
     if (locationState.path == path && locationState.query == query) {
       return;
     }
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push(url);
     this._subject.emit({'url': url, 'pop': false});
   }
@@ -79,7 +79,7 @@ export class SpyLocation implements Location {
   replaceState(path: string, query: string = '') {
     path = this.prepareExternalUrl(path);
 
-    var history = this._history[this._historyIndex];
+    const history = this._history[this._historyIndex];
     if (history.path == path && history.query == query) {
       return;
     }
@@ -87,7 +87,7 @@ export class SpyLocation implements Location {
     history.path = path;
     history.query = query;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push('replace: ' + url);
   }
 

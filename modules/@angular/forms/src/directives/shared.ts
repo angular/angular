@@ -152,9 +152,9 @@ export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
   if (!valueAccessors) return null;
 
-  var defaultAccessor: ControlValueAccessor;
-  var builtinAccessor: ControlValueAccessor;
-  var customAccessor: ControlValueAccessor;
+  let defaultAccessor: ControlValueAccessor;
+  let builtinAccessor: ControlValueAccessor;
+  let customAccessor: ControlValueAccessor;
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;

@@ -34,11 +34,11 @@ interface Events {
 
 export interface Scope { (...args: any[] /** TODO #9100 */): any; }
 
-var trace: Trace;
-var events: Events;
+let trace: Trace;
+let events: Events;
 
 export function detectWTF(): boolean {
-  var wtf: WTF = (global as any /** TODO #9100 */)['wtf'];
+  const wtf: WTF = (global as any /** TODO #9100 */)['wtf'];
   if (wtf) {
     trace = wtf['trace'];
     if (trace) {

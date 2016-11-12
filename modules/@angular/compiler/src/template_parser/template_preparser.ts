@@ -21,13 +21,13 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  var selectAttr: string = null;
-  var hrefAttr: string = null;
-  var relAttr: string = null;
-  var nonBindable = false;
-  var projectAs: string = null;
+  let selectAttr: string = null;
+  let hrefAttr: string = null;
+  let relAttr: string = null;
+  let nonBindable = false;
+  let projectAs: string = null;
   ast.attrs.forEach(attr => {
-    let lcAttrName = attr.name.toLowerCase();
+    const lcAttrName = attr.name.toLowerCase();
     if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
     } else if (lcAttrName == LINK_STYLE_HREF_ATTR) {
@@ -43,8 +43,8 @@ export function preparseElement(ast: html.Element): PreparsedElement {
     }
   });
   selectAttr = normalizeNgContentSelect(selectAttr);
-  var nodeName = ast.name.toLowerCase();
-  var type = PreparsedElementType.OTHER;
+  const nodeName = ast.name.toLowerCase();
+  let type = PreparsedElementType.OTHER;
   if (splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (nodeName == STYLE_ELEMENT) {

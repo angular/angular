@@ -74,12 +74,12 @@ export function main() {
           .toEqual('<p alt="% &amp; &#34; !">Hello</p>');  // NB: quote encoded as ASCII &#34;.
     });
     t.describe('should strip dangerous elements', () => {
-      let dangerousTags = [
+      const dangerousTags = [
         'frameset', 'form', 'param', 'object', 'embed', 'textarea', 'input', 'button', 'option',
         'select', 'script', 'style', 'link', 'base', 'basefont'
       ];
 
-      for (let tag of dangerousTags) {
+      for (const tag of dangerousTags) {
         t.it(
             `${tag}`, () => { t.expect(sanitizeHtml(`<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
       }
@@ -88,9 +88,9 @@ export function main() {
       });
     });
     t.describe('should strip dangerous attributes', () => {
-      let dangerousAttrs = ['id', 'name', 'style'];
+      const dangerousAttrs = ['id', 'name', 'style'];
 
-      for (let attr of dangerousAttrs) {
+      for (const attr of dangerousAttrs) {
         t.it(`${attr}`, () => {
           t.expect(sanitizeHtml(`<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
         });

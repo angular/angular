@@ -34,7 +34,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (!userAgent) {
       return -1;
     }
-    var v = userAgent.split(/Chrom(e|ium)\//g)[2];
+    let v = userAgent.split(/Chrom(e|ium)\//g)[2];
     if (!v) {
       return -1;
     }
@@ -52,7 +52,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
-    var script = `console.timeEnd('${name}');`;
+    let script = `console.timeEnd('${name}');`;
     if (restartName) {
       script += `console.time('${restartName}');`;
     }
@@ -67,9 +67,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('1+1')
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
-          var events: PerfLogEvent[] = [];
+          const events: PerfLogEvent[] = [];
           entries.forEach(entry => {
-            var message = JSON.parse(entry['message'])['message'];
+            const message = JSON.parse(entry['message'])['message'];
             if (message['method'] === 'Tracing.dataCollected') {
               events.push(message['params']);
             }
@@ -95,8 +95,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   private _convertEvent(event: {[key: string]: any}, categories: string[]) {
-    var name = event['name'];
-    var args = event['args'];
+    const name = event['name'];
+    const args = event['args'];
     if (this._isEvent(categories, name, ['blink.console'])) {
       return normalizeEvent(event, {'name': name});
     } else if (this._isEvent(
@@ -109,7 +109,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
       //               new surfaces framework (not broadly enabled yet)
       //   3rd choice: BenchmarkInstrumentation::ImplThreadRenderingStats - fallback event that is
       //               always available if something is rendered
-      var frameCount = event['args']['data']['frame_count'];
+      const frameCount = event['args']['data']['frame_count'];
       if (frameCount > 1) {
         throw new Error('multi-frame render stats not supported');
       }
@@ -122,14 +122,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
             categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
-      var normArgs = {
+      const normArgs = {
         'majorGc': true,
         'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
                                                                   args['usedHeapSizeBefore']
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MinorGC')) {
-      var normArgs = {
+      const normArgs = {
         'majorGc': false,
         'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
                                                                   args['usedHeapSizeBefore']
@@ -151,11 +151,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
         this._isEvent(categories, name, ['devtools.timeline'], 'Paint')) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline'], 'ResourceReceivedData')) {
-      let normArgs = {'encodedDataLength': args['data']['encodedDataLength']};
+      const normArgs = {'encodedDataLength': args['data']['encodedDataLength']};
       return normalizeEvent(event, {'name': 'receivedData', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['devtools.timeline'], 'ResourceSendRequest')) {
-      let data = args['data'];
-      let normArgs = {'url': data['url'], 'method': data['requestMethod']};
+      const data = args['data'];
+      const normArgs = {'url': data['url'], 'method': data['requestMethod']};
       return normalizeEvent(event, {'name': 'sendRequest', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['blink.user_timing'], 'navigationStart')) {
       return normalizeEvent(event, {'name': 'navigationStart'});
@@ -168,7 +168,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
   private _isEvent(
       eventCategories: string[], eventName: string, expectedCategories: string[],
       expectedName: string = null): boolean {
-    var hasCategories = expectedCategories.reduce(
+    const hasCategories = expectedCategories.reduce(
         (value, cat) => value && eventCategories.indexOf(cat) !== -1, true);
     return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
   }
@@ -183,7 +183,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
 }
 
 function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): PerfLogEvent {
-  var ph = chromeEvent['ph'].toUpperCase();
+  let ph = chromeEvent['ph'].toUpperCase();
   if (ph === 'S') {
     ph = 'B';
   } else if (ph === 'F') {
@@ -192,16 +192,16 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): 
     // mark events from navigation timing
     ph = 'I';
   }
-  var result: {[key: string]: any} =
+  const result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};
   if (ph === 'X') {
-    var dur = chromeEvent['dur'];
+    let dur = chromeEvent['dur'];
     if (dur === undefined) {
       dur = chromeEvent['tdur'];
     }
     result['dur'] = !dur ? 0.0 : dur / 1000;
   }
-  for (let prop in data) {
+  for (const prop in data) {
     result[prop] = data[prop];
   }
   return result;

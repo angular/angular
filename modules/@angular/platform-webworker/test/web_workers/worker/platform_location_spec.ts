@@ -19,10 +19,10 @@ import {SpyMessageBroker} from './spies';
 
 export function main() {
   describe('WebWorkerPlatformLocation', () => {
-    var uiBus: MessageBus = null;
-    var workerBus: MessageBus = null;
-    var broker: any = null;
-    var TEST_LOCATION = new LocationType(
+    let uiBus: MessageBus = null;
+    let workerBus: MessageBus = null;
+    let broker: any = null;
+    const TEST_LOCATION = new LocationType(
         'http://www.example.com', 'http', 'example.com', 'example.com', '80', '/', '', '',
         'http://www.example.com');
 
@@ -33,12 +33,12 @@ export function main() {
           return Promise.resolve(loc);
         }
       });
-      var factory = new MockMessageBrokerFactory(broker);
+      const factory = new MockMessageBrokerFactory(broker);
       return new WebWorkerPlatformLocation(factory, workerBus, null);
     }
 
     function testPushOrReplaceState(pushState: boolean) {
-      let platformLocation = createWebWorkerPlatformLocation(null);
+      const platformLocation = createWebWorkerPlatformLocation(null);
       const TITLE = 'foo';
       const URL = 'http://www.example.com/foo';
       expectBrokerCall(broker, pushState ? 'pushState' : 'replaceState', [null, TITLE, URL]);
@@ -50,7 +50,7 @@ export function main() {
     }
 
     beforeEach(() => {
-      var buses = createPairedMessageBuses();
+      const buses = createPairedMessageBuses();
       uiBus = buses.ui;
       workerBus = buses.worker;
       workerBus.initChannel('ng-Router');
@@ -59,27 +59,27 @@ export function main() {
     });
 
     it('should throw if getBaseHrefFromDOM is called', () => {
-      let platformLocation = createWebWorkerPlatformLocation(null);
+      const platformLocation = createWebWorkerPlatformLocation(null);
       expect(() => platformLocation.getBaseHrefFromDOM()).toThrowError();
     });
 
     it('should get location on init', () => {
-      let platformLocation = createWebWorkerPlatformLocation(null);
+      const platformLocation = createWebWorkerPlatformLocation(null);
       expectBrokerCall(broker, 'getLocation');
       platformLocation.init();
     });
 
     it('should throw if set pathname is called before init finishes', () => {
-      let platformLocation = createWebWorkerPlatformLocation(null);
+      const platformLocation = createWebWorkerPlatformLocation(null);
       platformLocation.init();
       expect(() => platformLocation.pathname = 'TEST').toThrowError();
     });
 
     it('should send pathname to render thread',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
+         const platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
          platformLocation.init().then((_) => {
-           let PATHNAME = '/test';
+           const PATHNAME = '/test';
            expectBrokerCall(broker, 'setPathname', [PATHNAME]);
            platformLocation.pathname = PATHNAME;
            async.done();

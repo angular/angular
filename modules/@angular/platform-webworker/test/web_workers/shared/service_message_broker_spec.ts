@@ -26,7 +26,7 @@ export function main() {
   beforeEachProviders(() => [Serializer, {provide: ON_WEB_WORKER, useValue: true}, RenderStore]);
 
   describe('UIMessageBroker', () => {
-    var messageBuses: any /** TODO #9100 */;
+    let messageBuses: any /** TODO #9100 */;
 
     beforeEach(() => {
       messageBuses = createPairedMessageBuses();
@@ -35,7 +35,7 @@ export function main() {
     });
     it('should call registered method with correct arguments',
        inject([Serializer], (serializer: Serializer) => {
-         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
+         const broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE, PRIMITIVE], (arg1, arg2) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            expect(arg2).toEqual(PASSED_ARG_2);
@@ -45,7 +45,7 @@ export function main() {
        }));
 
     it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
-         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
+         const broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return new Promise((res, rej) => {

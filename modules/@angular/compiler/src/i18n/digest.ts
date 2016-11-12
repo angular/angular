@@ -27,7 +27,8 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
-    let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    const strCases =
+        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     return `{${icu.expression}, ${icu.type}, ${strCases.join(', ')}}`;
   }
 

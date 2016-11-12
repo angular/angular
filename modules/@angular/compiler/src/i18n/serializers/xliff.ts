@@ -41,7 +41,7 @@ export class Xliff implements Serializer {
     Object.keys(messageMap).forEach((id) => {
       const message = messageMap[id];
 
-      let transUnit = new xml.Tag(_UNIT_TAG, {id: id, datatype: 'html'});
+      const transUnit = new xml.Tag(_UNIT_TAG, {id: id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
           new xml.CR(8), new xml.Tag(_TARGET_TAG));
@@ -93,7 +93,7 @@ export class Xliff implements Serializer {
 
     // Convert the string messages to html ast
     // TODO(vicb): map error message back to the original message in xtb
-    let messageMap: {[id: string]: ml.Node[]} = {};
+    const messageMap: {[id: string]: ml.Node[]} = {};
     const parseErrors: ParseError[] = [];
 
     Object.keys(messages).forEach((id) => {

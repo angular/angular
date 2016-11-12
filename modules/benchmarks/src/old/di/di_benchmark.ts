@@ -12,7 +12,7 @@ import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_ca
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {bindAction, getIntParameter, microBenchmark} from '@angular/testing/src/benchmark_util';
 
-var count = 0;
+let count = 0;
 
 function setupReflector() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
@@ -20,48 +20,48 @@ function setupReflector() {
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
-  var iterations = getIntParameter('iterations');
+  const iterations = getIntParameter('iterations');
 
   // This benchmark does not use bootstrap and needs to create a reflector
   setupReflector();
-  var bindings = [A, B, C, D, E];
-  var injector = ReflectiveInjector.resolveAndCreate(bindings);
+  const bindings = [A, B, C, D, E];
+  const injector = ReflectiveInjector.resolveAndCreate(bindings);
 
-  var D_KEY = ReflectiveKey.get(D);
-  var E_KEY = ReflectiveKey.get(E);
-  var childInjector = injector.resolveAndCreateChild([])
-                          .resolveAndCreateChild([])
-                          .resolveAndCreateChild([])
-                          .resolveAndCreateChild([])
-                          .resolveAndCreateChild([]);
+  const D_KEY = ReflectiveKey.get(D);
+  const E_KEY = ReflectiveKey.get(E);
+  const childInjector = injector.resolveAndCreateChild([])
+                            .resolveAndCreateChild([])
+                            .resolveAndCreateChild([])
+                            .resolveAndCreateChild([])
+                            .resolveAndCreateChild([]);
 
-  var variousProviders = [A, {provide: B, useClass: C}, [D, [E]], {provide: F, useValue: 6}];
+  const variousProviders = [A, {provide: B, useClass: C}, [D, [E]], {provide: F, useValue: 6}];
 
-  var variousProvidersResolved = ReflectiveInjector.resolve(variousProviders);
+  const variousProvidersResolved = ReflectiveInjector.resolve(variousProviders);
 
   function getByToken() {
-    for (var i = 0; i < iterations; ++i) {
+    for (let i = 0; i < iterations; ++i) {
       injector.get(D);
       injector.get(E);
     }
   }
   function getByKey() {
-    for (var i = 0; i < iterations; ++i) {
+    for (let i = 0; i < iterations; ++i) {
       injector.get(D_KEY);
       injector.get(E_KEY);
     }
   }
 
   function getChild() {
-    for (var i = 0; i < iterations; ++i) {
+    for (let i = 0; i < iterations; ++i) {
       childInjector.get(D);
       childInjector.get(E);
     }
   }
 
   function instantiate() {
-    for (var i = 0; i < iterations; ++i) {
-      var child = injector.resolveAndCreateChild([E]);
+    for (let i = 0; i < iterations; ++i) {
+      const child = injector.resolveAndCreateChild([E]);
       child.get(E);
     }
   }
@@ -70,7 +70,7 @@ export function main() {
    * Creates an injector with a variety of provider types.
    */
   function createVariety() {
-    for (var i = 0; i < iterations; ++i) {
+    for (let i = 0; i < iterations; ++i) {
       ReflectiveInjector.resolveAndCreate(variousProviders);
     }
   }
@@ -79,7 +79,7 @@ export function main() {
    * Same as [createVariety] but resolves providers ahead of time.
    */
   function createVarietyResolved() {
-    for (var i = 0; i < iterations; ++i) {
+    for (let i = 0; i < iterations; ++i) {
       ReflectiveInjector.fromResolvedProviders(variousProvidersResolved);
     }
   }

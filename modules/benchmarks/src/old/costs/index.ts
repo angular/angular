@@ -14,16 +14,16 @@ import {BrowserModule, bootstrap} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
-var testList = null;
+let testList = null;
 
 export function main() {
-  var size = getIntParameter('size');
+  const size = getIntParameter('size');
   testList = new Array(size);
 
   platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
-    var injector = ref.injector;
-    var app: AppComponent = ref.instance;
-    var appRef = injector.get(ApplicationRef);
+    const injector = ref.injector;
+    const app: AppComponent = ref.instance;
+    const appRef = injector.get(ApplicationRef);
 
     bindAction('#reset', function() {
       app.reset();

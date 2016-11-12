@@ -39,4 +39,4 @@ export class MultiReporter extends Reporter {
   }
 }
 
-var _CHILDREN = new OpaqueToken('MultiReporter.children');
+const _CHILDREN = new OpaqueToken('MultiReporter.children');

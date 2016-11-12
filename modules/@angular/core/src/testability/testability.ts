@@ -176,4 +176,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = new _NoopGetTestability();
+let _testabilityGetter: GetTestability = new _NoopGetTestability();

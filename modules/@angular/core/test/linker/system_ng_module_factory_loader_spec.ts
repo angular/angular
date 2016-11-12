@@ -34,17 +34,17 @@ export function main() {
     afterEach(() => { (global as any).System = oldSystem; });
 
     it('loads a default factory by appending the factory suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler());
+         const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test').then(contents => { expect(contents).toBe('test module factory'); });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler());
+         const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test#Named').then(contents => {
            expect(contents).toBe('test NamedNgFactory');
          });
        }));
     it('loads a named factory with a configured prefix and suffix', async(() => {
-         let loader = new SystemJsNgModuleLoader(new Compiler(), {
+         const loader = new SystemJsNgModuleLoader(new Compiler(), {
            factoryPathPrefix: 'prefixed/',
            factoryPathSuffix: '/suffixed',
          });

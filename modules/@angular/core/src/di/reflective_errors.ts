@@ -14,8 +14,8 @@ import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 
 function findFirstClosedCycle(keys: any[]): any[] {
-  var res: any[] = [];
-  for (var i = 0; i < keys.length; ++i) {
+  const res: any[] = [];
+  for (let i = 0; i < keys.length; ++i) {
     if (res.indexOf(keys[i]) > -1) {
       res.push(keys[i]);
       return res;
@@ -166,7 +166,7 @@ export class InstantiationError extends WrappedError {
   }
 
   get message(): string {
-    var first = stringify(this.keys[0].token);
+    const first = stringify(this.keys[0].token);
     return `${this.originalError.message}: Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
   }
 
@@ -225,9 +225,9 @@ export class NoAnnotationError extends BaseError {
   }
 
   private static _genMessage(typeOrFunc: Type<any>|Function, params: any[][]) {
-    var signature: string[] = [];
-    for (var i = 0, ii = params.length; i < ii; i++) {
-      var parameter = params[i];
+    const signature: string[] = [];
+    for (let i = 0, ii = params.length; i < ii; i++) {
+      const parameter = params[i];
       if (!parameter || parameter.length == 0) {
         signature.push('?');
       } else {

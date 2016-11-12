@@ -16,10 +16,10 @@ import {Validators} from '../src/validators';
 export function main() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
-      var resolve: (result: any) => void;
-      var promise = new Promise(res => { resolve = res; });
-      var t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
-      var res = c.value != expected ? {'async': true} : null;
+      let resolve: (result: any) => void;
+      const promise = new Promise(res => { resolve = res; });
+      const t = isPresent((timeouts as any)[c.value]) ? (timeouts as any)[c.value] : 0;
+      const res = c.value != expected ? {'async': true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -527,8 +527,8 @@ export function main() {
         const simpleValidator = (c: FormArray) =>
             c.controls[0].value != 'correct' ? {'broken': true} : null;
 
-        var c = new FormControl(null);
-        var g = new FormArray([c], simpleValidator);
+        const c = new FormControl(null);
+        const g = new FormArray([c], simpleValidator);
 
         c.setValue('correct');
 
@@ -633,7 +633,7 @@ export function main() {
 
       it('should fire an event after the control\'s observable fired an event',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           var controlCallbackIsCalled = false;
+           let controlCallbackIsCalled = false;
 
 
            c1.valueChanges.subscribe({next: (value: any) => { controlCallbackIsCalled = true; }});

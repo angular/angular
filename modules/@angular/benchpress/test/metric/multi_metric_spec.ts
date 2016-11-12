@@ -11,12 +11,12 @@ import {Metric, MultiMetric, ReflectiveInjector} from '../../index';
 
 export function main() {
   function createMetric(ids: any[]) {
-    var m = ReflectiveInjector
-                .resolveAndCreate([
-                  ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
-                  MultiMetric.provideWith(ids)
-                ])
-                .get(MultiMetric);
+    const m = ReflectiveInjector
+                  .resolveAndCreate([
+                    ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
+                    MultiMetric.provideWith(ids)
+                  ])
+                  .get(MultiMetric);
     return Promise.resolve(m);
   }
 
@@ -56,13 +56,13 @@ class MockMetric extends Metric {
   beginMeasure(): Promise<string> { return Promise.resolve(`${this._id}_beginMeasure`); }
 
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
-    var result: {[key: string]: any} = {};
+    const result: {[key: string]: any} = {};
     result[this._id] = {'restart': restart};
     return Promise.resolve(result);
   }
 
   describe(): {[key: string]: string} {
-    var result: {[key: string]: string} = {};
+    const result: {[key: string]: string} = {};
     result[this._id] = 'describe';
     return result;
   }

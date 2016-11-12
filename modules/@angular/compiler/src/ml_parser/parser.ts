@@ -121,7 +121,7 @@ class _TreeBuilder {
 
     // read =
     while (this._peek.type === lex.TokenType.EXPANSION_CASE_VALUE) {
-      let expCase = this._parseExpansionCase();
+      const expCase = this._parseExpansionCase();
       if (!expCase) return;  // error
       cases.push(expCase);
     }

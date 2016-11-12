@@ -16,7 +16,7 @@ export class MockAnimationDriver extends AnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string): AnimationPlayer {
-    var player = new MockAnimationPlayer();
+    const player = new MockAnimationPlayer();
     this.log.push({
       'element': element,
       'startingStyles': _serializeStyles(startingStyles),
@@ -36,7 +36,7 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 }
 
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
-  var flatStyles: {[key: string]: any} = {};
+  const flatStyles: {[key: string]: any} = {};
   styles.styles.forEach((entry: {[key: string]: string | number;}) => {
     Object.keys(entry).forEach(prop => { flatStyles[prop] = entry[prop]; });
   });

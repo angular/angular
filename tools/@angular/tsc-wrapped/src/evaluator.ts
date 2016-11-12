@@ -78,7 +78,7 @@ export function errorSymbol(
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
-      let {line, character} =
+      const {line, character} =
           ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
       result = {__symbolic: 'error', message, line, character};
     };
@@ -260,7 +260,7 @@ export class Evaluator {
           // Handle spread expressions
           if (isMetadataSymbolicSpreadExpression(value)) {
             if (Array.isArray(value.expression)) {
-              for (let spreadValue of value.expression) {
+              for (const spreadValue of value.expression) {
                 arr.push(spreadValue);
               }
               return;
@@ -389,7 +389,7 @@ export class Evaluator {
                 return {__symbolic: 'select', expression: left, member: qualifiedName.right.text};
               } else {
                 const identifier = <ts.Identifier>typeNameNode;
-                let symbol = this.symbols.resolve(identifier.text);
+                const symbol = this.symbols.resolve(identifier.text);
                 if (isMetadataError(symbol) || isMetadataSymbolicReferenceExpression(symbol)) {
                   return recordEntry(symbol, node);
                 }

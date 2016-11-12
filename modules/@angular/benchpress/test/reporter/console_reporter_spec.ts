@@ -14,8 +14,8 @@ import {isBlank, isPresent} from '../../src/facade/lang';
 
 export function main() {
   describe('console reporter', () => {
-    var reporter: ConsoleReporter;
-    var log: string[];
+    let reporter: ConsoleReporter;
+    let log: string[];
 
     function createReporter(
         {columnWidth = null, sampleId = null, descriptions = null, metrics = null}: {
@@ -31,7 +31,7 @@ export function main() {
       if (sampleId == null) {
         sampleId = 'null';
       }
-      var providers: Provider[] = [
+      const providers: Provider[] = [
         ConsoleReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics)

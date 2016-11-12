@@ -13,7 +13,7 @@ import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 export function main() {
   describe('Number pipes', () => {
     describe('DecimalPipe', () => {
-      var pipe: DecimalPipe;
+      let pipe: DecimalPipe;
 
       beforeEach(() => { pipe = new DecimalPipe('en-US'); });
 
@@ -44,7 +44,7 @@ export function main() {
     });
 
     describe('PercentPipe', () => {
-      var pipe: PercentPipe;
+      let pipe: PercentPipe;
 
       beforeEach(() => { pipe = new PercentPipe('en-US'); });
 
@@ -60,7 +60,7 @@ export function main() {
     });
 
     describe('CurrencyPipe', () => {
-      var pipe: CurrencyPipe;
+      let pipe: CurrencyPipe;
 
       beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
 

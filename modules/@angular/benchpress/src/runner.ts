@@ -45,7 +45,7 @@ export class Runner {
     providers?: Provider[],
     userMetrics?: {[key: string]: string}
   }): Promise<SampleState> {
-    var sampleProviders: Provider[] = [
+    const sampleProviders: Provider[] = [
       _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
       {provide: Options.EXECUTE, useValue: execute}
     ];
@@ -62,33 +62,33 @@ export class Runner {
       sampleProviders.push(providers);
     }
 
-    var inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
-    var adapter: WebDriverAdapter = inj.get(WebDriverAdapter);
+    const inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
+    const adapter: WebDriverAdapter = inj.get(WebDriverAdapter);
 
     return Promise
         .all([adapter.capabilities(), adapter.executeScript('return window.navigator.userAgent;')])
         .then((args) => {
-          var capabilities = args[0];
-          var userAgent = args[1];
+          const capabilities = args[0];
+          const userAgent = args[1];
 
           // This might still create instances twice. We are creating a new injector with all the
           // providers.
           // Only WebDriverAdapter is reused.
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
-          var injector = ReflectiveInjector.resolveAndCreate([
+          const injector = ReflectiveInjector.resolveAndCreate([
             sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
             {provide: Options.USER_AGENT, useValue: userAgent},
             {provide: WebDriverAdapter, useValue: adapter}
           ]);
 
-          var sampler = injector.get(Sampler);
+          const sampler = injector.get(Sampler);
           return sampler.sample();
         });
   }
 }
 
-var _DEFAULT_PROVIDERS = [
+const _DEFAULT_PROVIDERS = [
   Options.DEFAULT_PROVIDERS,
   Sampler.PROVIDERS,
   ConsoleReporter.PROVIDERS,

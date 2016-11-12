@@ -603,9 +603,9 @@ export class CompileMetadataResolver {
   private _getDependenciesMetadata(typeOrFunc: Type<any>|Function, dependencies: any[]):
       cpl.CompileDiDependencyMetadata[] {
     let hasUnknownDeps = false;
-    let params = dependencies || this._reflector.parameters(typeOrFunc) || [];
+    const params = dependencies || this._reflector.parameters(typeOrFunc) || [];
 
-    let dependenciesMetadata: cpl.CompileDiDependencyMetadata[] = params.map((param) => {
+    const dependenciesMetadata: cpl.CompileDiDependencyMetadata[] = params.map((param) => {
       let isAttribute = false;
       let isHost = false;
       let isSelf = false;
@@ -651,7 +651,7 @@ export class CompileMetadataResolver {
     });
 
     if (hasUnknownDeps) {
-      let depsTokens =
+      const depsTokens =
           dependenciesMetadata.map((dep) => dep ? stringify(dep.token) : '?').join(', ');
       throw new Error(
           `Can't resolve all parameters for ${stringify(typeOrFunc)}: (${depsTokens}).`);
@@ -690,7 +690,7 @@ export class CompileMetadataResolver {
       if (Array.isArray(provider)) {
         compileProvider = this._getProvidersMetadata(provider, targetEntryComponents, debugInfo);
       } else if (provider instanceof cpl.ProviderMeta) {
-        let tokenMeta = this._getTokenMetadata(provider.token);
+        const tokenMeta = this._getTokenMetadata(provider.token);
         if (tokenMeta.reference ===
             resolveIdentifierToken(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS).reference) {
           targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
@@ -792,7 +792,7 @@ export class CompileMetadataResolver {
 
   private _getQueryMetadata(q: Query, propertyName: string, typeOrFunc: Type<any>|Function):
       cpl.CompileQueryMetadata {
-    var selectors: cpl.CompileTokenMetadata[];
+    let selectors: cpl.CompileTokenMetadata[];
     if (typeof q.selector === 'string') {
       selectors =
           this._queryVarBindings(q.selector).map(varName => this._getTokenMetadata(varName));

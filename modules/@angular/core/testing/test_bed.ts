@@ -255,7 +255,7 @@ export class TestBed implements Injector {
     }
     if (!this._moduleWithComponentFactories) {
       try {
-        let moduleType = this._createCompilerAndModule();
+        const moduleType = this._createCompilerAndModule();
         this._moduleWithComponentFactories =
             this._compiler.compileModuleAndAllComponentsSync(moduleType);
       } catch (e) {

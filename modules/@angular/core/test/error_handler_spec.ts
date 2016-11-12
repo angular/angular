@@ -24,8 +24,8 @@ class _CustomException {
 
 export function main() {
   function errorToString(error: any) {
-    var logger = new MockConsole();
-    var errorHandler = new ErrorHandler(false);
+    const logger = new MockConsole();
+    const errorHandler = new ErrorHandler(false);
     errorHandler._console = logger as any;
     errorHandler.handleError(error);
     return logger.res.join('\n');
@@ -41,29 +41,29 @@ export function main() {
 
   describe('ErrorHandler', () => {
     it('should output exception', () => {
-      var e = errorToString(new Error('message!'));
+      const e = errorToString(new Error('message!'));
       expect(e).toContain('message!');
     });
 
     it('should output stackTrace', () => {
-      var error = new Error('message!');
-      var stack = getStack(error);
+      const error = new Error('message!');
+      const stack = getStack(error);
       if (stack) {
-        var e = errorToString(error);
+        const e = errorToString(error);
         expect(e).toContain(stack);
       }
     });
 
     describe('context', () => {
       it('should print nested context', () => {
-        var cause = new Error('message!');
-        var stack = getStack(cause);
-        var context = {
+        const cause = new Error('message!');
+        const stack = getStack(cause);
+        const context = {
           source: 'context!',
           toString() { return 'Context'; }
         } as any as DebugContext;
-        var original = new ViewWrappedError(cause, context);
-        var e = errorToString(new WrappedError('message', original));
+        const original = new ViewWrappedError(cause, context);
+        const e = errorToString(new WrappedError('message', original));
         expect(e).toEqual(
             stack ? `EXCEPTION: message caused by: Error in context! caused by: message!
 ORIGINAL EXCEPTION: message!
@@ -80,27 +80,27 @@ Context`);
 
     describe('original exception', () => {
       it('should print original exception message if available (original is Error)', () => {
-        var realOriginal = new Error('inner');
-        var original = new WrappedError('wrapped', realOriginal);
-        var e = errorToString(new WrappedError('wrappedwrapped', original));
+        const realOriginal = new Error('inner');
+        const original = new WrappedError('wrapped', realOriginal);
+        const e = errorToString(new WrappedError('wrappedwrapped', original));
         expect(e).toContain('inner');
       });
 
       it('should print original exception message if available (original is not Error)', () => {
-        var realOriginal = new _CustomException();
-        var original = new WrappedError('wrapped', realOriginal);
-        var e = errorToString(new WrappedError('wrappedwrapped', original));
+        const realOriginal = new _CustomException();
+        const original = new WrappedError('wrapped', realOriginal);
+        const e = errorToString(new WrappedError('wrappedwrapped', original));
         expect(e).toContain('custom');
       });
     });
 
     describe('original stack', () => {
       it('should print original stack if available', () => {
-        var realOriginal = new Error('inner');
-        var stack = getStack(realOriginal);
+        const realOriginal = new Error('inner');
+        const stack = getStack(realOriginal);
         if (stack) {
-          var original = new WrappedError('wrapped', realOriginal);
-          var e = errorToString(new WrappedError('wrappedwrapped', original));
+          const original = new WrappedError('wrapped', realOriginal);
+          const e = errorToString(new WrappedError('wrappedwrapped', original));
           expect(e).toContain(stack);
         }
       });

@@ -18,7 +18,7 @@ export function main() {
    * Tests the PostMessageBus
    */
   describe('MessageBus', () => {
-    var bus: MessageBus;
+    let bus: MessageBus;
 
     beforeEach(() => { bus = createConnectedMessageBus(); });
 
@@ -28,14 +28,14 @@ export function main() {
          const MESSAGE = 'Test message';
          bus.initChannel(CHANNEL, false);
 
-         var fromEmitter = bus.from(CHANNEL);
+         const fromEmitter = bus.from(CHANNEL);
          fromEmitter.subscribe({
            next: (message: any) => {
              expect(message).toEqual(MESSAGE);
              async.done();
            }
          });
-         var toEmitter = bus.to(CHANNEL);
+         const toEmitter = bus.to(CHANNEL);
          toEmitter.emit(MESSAGE);
        }));
 
@@ -45,8 +45,8 @@ export function main() {
          const NUM_LISTENERS = 2;
          bus.initChannel(CHANNEL, false);
 
-         var callCount = 0;
-         var emitHandler = (message: any) => {
+         let callCount = 0;
+         const emitHandler = (message: any) => {
            expect(message).toEqual(MESSAGE);
            callCount++;
            if (callCount == NUM_LISTENERS) {
@@ -54,12 +54,12 @@ export function main() {
            }
          };
 
-         for (var i = 0; i < NUM_LISTENERS; i++) {
-           var emitter = bus.from(CHANNEL);
+         for (let i = 0; i < NUM_LISTENERS; i++) {
+           const emitter = bus.from(CHANNEL);
            emitter.subscribe({next: emitHandler});
          }
 
-         var toEmitter = bus.to(CHANNEL);
+         const toEmitter = bus.to(CHANNEL);
          toEmitter.emit(MESSAGE);
        }));
 
@@ -69,11 +69,11 @@ export function main() {
          const CHANNEL_TWO = 'CHANNEL 2';
          const MESSAGE_ONE = 'This is a message on CHANNEL 1';
          const MESSAGE_TWO = 'This is a message on CHANNEL 2';
-         var callCount = 0;
+         let callCount = 0;
          bus.initChannel(CHANNEL_ONE, false);
          bus.initChannel(CHANNEL_TWO, false);
 
-         var firstFromEmitter = bus.from(CHANNEL_ONE);
+         const firstFromEmitter = bus.from(CHANNEL_ONE);
          firstFromEmitter.subscribe({
            next: (message: any) => {
              expect(message).toEqual(MESSAGE_ONE);
@@ -83,7 +83,7 @@ export function main() {
              }
            }
          });
-         var secondFromEmitter = bus.from(CHANNEL_TWO);
+         const secondFromEmitter = bus.from(CHANNEL_TWO);
          secondFromEmitter.subscribe({
            next: (message: any) => {
              expect(message).toEqual(MESSAGE_TWO);
@@ -94,16 +94,16 @@ export function main() {
            }
          });
 
-         var firstToEmitter = bus.to(CHANNEL_ONE);
+         const firstToEmitter = bus.to(CHANNEL_ONE);
          firstToEmitter.emit(MESSAGE_ONE);
 
-         var secondToEmitter = bus.to(CHANNEL_TWO);
+         const secondToEmitter = bus.to(CHANNEL_TWO);
          secondToEmitter.emit(MESSAGE_TWO);
        }));
   });
 
   describe('PostMessageBusSink', () => {
-    var bus: MessageBus;
+    let bus: MessageBus;
     const CHANNEL = 'Test Channel';
 
     function setup(runInZone: boolean, zone: NgZone) {
@@ -125,7 +125,7 @@ export function main() {
                  bus = createConnectedMessageBus();
                  setup(true, zone);
 
-                 var wasCalled = false;
+                 let wasCalled = false;
                  bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
                  bus.to(CHANNEL).emit('hi');
 
@@ -147,7 +147,7 @@ export function main() {
          bus = createConnectedMessageBus();
          setup(false, zone);
 
-         var wasCalled = false;
+         let wasCalled = false;
          bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
          bus.to(CHANNEL).emit('hi');
 

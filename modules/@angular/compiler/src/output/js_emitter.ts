@@ -17,10 +17,10 @@ import {ImportGenerator} from './path_util';
 export class JavaScriptEmitter implements OutputEmitter {
   constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
-    var converter = new JsEmitterVisitor(moduleUrl);
-    var ctx = EmitterVisitorContext.createRoot(exportedVars);
+    const converter = new JsEmitterVisitor(moduleUrl);
+    const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts: string[] = [];
+    const srcParts: string[] = [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
@@ -42,7 +42,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
       throw new Error(`Internal error: unknown identifier ${ast.value}`);
     }
     if (isPresent(ast.value.moduleUrl) && ast.value.moduleUrl != this._moduleUrl) {
-      var prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);
+      let prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(ast.value.moduleUrl, prefix);

@@ -10,8 +10,8 @@ import {verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('ng2 largetable benchmark', function() {
 
-  var URL = 'benchmarks/src/page_load/page_load.html';
-  var runner = global['benchpressRunner'];
+  const URL = 'benchmarks/src/page_load/page_load.html';
+  const runner = global['benchpressRunner'];
 
   afterEach(verifyNoBrowserErrors);
 

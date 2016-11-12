@@ -48,7 +48,7 @@ export function main() {
         'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
         'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
-      for (let url of validUrls) {
+      for (const url of validUrls) {
         t.it(`valid ${url}`, () => t.expect(sanitizeUrl(url)).toEqual(url));
       }
     });
@@ -72,7 +72,7 @@ export function main() {
         'data:text/javascript;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
         'data:application/x-msdownload;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
-      for (let url of invalidUrls) {
+      for (const url of invalidUrls) {
         t.it(`valid ${url}`, () => t.expect(sanitizeUrl(url)).toMatch(/^unsafe:/));
       }
     });
@@ -99,7 +99,7 @@ export function main() {
         'http://angular.io/images/test.png?maxage, http://angular.io/images/test.png?maxage',
         'http://angular.io/images/test.png?maxage=234, http://angular.io/images/test.png?maxage=234',
       ];
-      for (let srcset of validSrcsets) {
+      for (const srcset of validSrcsets) {
         t.it(`valid ${srcset}`, () => t.expect(sanitizeSrcset(srcset)).toEqual(srcset));
       }
     });
@@ -109,7 +109,7 @@ export function main() {
         'ht:tp://angular.io/images/test.png',
         'http://angular.io/images/test.png, ht:tp://angular.io/images/test.png',
       ];
-      for (let srcset of invalidSrcsets) {
+      for (const srcset of invalidSrcsets) {
         t.it(`valid ${srcset}`, () => t.expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));
       }
     });

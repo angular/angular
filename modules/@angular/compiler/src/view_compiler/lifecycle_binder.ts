@@ -16,15 +16,15 @@ import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
 import {DetectChangesVars} from './constants';
 
-var STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.LiteralExpr(0));
-var NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
+const STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.LiteralExpr(0));
+const NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
 export function bindDirectiveAfterContentLifecycleCallbacks(
     directiveMeta: CompileDirectiveSummary, directiveInstance: o.Expression,
     compileElement: CompileElement) {
-  var view = compileElement.view;
-  var lifecycleHooks = directiveMeta.type.lifecycleHooks;
-  var afterContentLifecycleCallbacksMethod = view.afterContentLifecycleCallbacksMethod;
+  const view = compileElement.view;
+  const lifecycleHooks = directiveMeta.type.lifecycleHooks;
+  const afterContentLifecycleCallbacksMethod = view.afterContentLifecycleCallbacksMethod;
   afterContentLifecycleCallbacksMethod.resetDebugInfo(
       compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentInit) !== -1) {
@@ -40,9 +40,9 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
 export function bindDirectiveAfterViewLifecycleCallbacks(
     directiveMeta: CompileDirectiveSummary, directiveInstance: o.Expression,
     compileElement: CompileElement) {
-  var view = compileElement.view;
-  var lifecycleHooks = directiveMeta.type.lifecycleHooks;
-  var afterViewLifecycleCallbacksMethod = view.afterViewLifecycleCallbacksMethod;
+  const view = compileElement.view;
+  const lifecycleHooks = directiveMeta.type.lifecycleHooks;
+  const afterViewLifecycleCallbacksMethod = view.afterViewLifecycleCallbacksMethod;
   afterViewLifecycleCallbacksMethod.resetDebugInfo(
       compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewInit) !== -1) {
@@ -67,7 +67,7 @@ export function bindDirectiveWrapperLifecycleCallbacks(
 
 export function bindInjectableDestroyLifecycleCallbacks(
     provider: ProviderAst, providerInstance: o.Expression, compileElement: CompileElement) {
-  var onDestroyMethod = compileElement.view.destroyMethod;
+  const onDestroyMethod = compileElement.view.destroyMethod;
   onDestroyMethod.resetDebugInfo(compileElement.nodeIndex, compileElement.sourceAst);
   if (provider.providerType !== ProviderAstType.Directive &&
       provider.providerType !== ProviderAstType.Component &&
@@ -78,7 +78,7 @@ export function bindInjectableDestroyLifecycleCallbacks(
 
 export function bindPipeDestroyLifecycleCallbacks(
     pipeMeta: CompilePipeSummary, pipeInstance: o.Expression, view: CompileView) {
-  var onDestroyMethod = view.destroyMethod;
+  const onDestroyMethod = view.destroyMethod;
   if (pipeMeta.type.lifecycleHooks.indexOf(LifecycleHooks.OnDestroy) !== -1) {
     onDestroyMethod.addStmt(pipeInstance.callMethod('ngOnDestroy', []).toStmt());
   }

@@ -12,9 +12,9 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {ServerModule, platformDynamicServer} from '@angular/platform-server';
 
 function writeBody(html: string): any {
-  var dom = getDOM();
-  var doc = dom.defaultDoc();
-  var body = dom.querySelector(doc, 'body');
+  const dom = getDOM();
+  const doc = dom.defaultDoc();
+  const body = dom.querySelector(doc, 'body');
   dom.setInnerHTML(body, html);
   return body;
 }
@@ -37,7 +37,7 @@ export function main() {
     afterEach(() => destroyPlatform());
 
     it('should bootstrap', async(() => {
-         var body = writeBody('<app></app>');
+         const body = writeBody('<app></app>');
          platformDynamicServer().bootstrapModule(ExampleModule).then(() => {
            expect(getDOM().getText(body)).toEqual('Works!');
          });

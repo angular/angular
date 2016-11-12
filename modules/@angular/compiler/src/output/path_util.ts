@@ -7,7 +7,7 @@
  */
 
 // asset:<package-name>/<realm>/<path-to-module>
-var _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/;
+const _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/;
 
 /**
  * Interface that defines how import statements should be generated.

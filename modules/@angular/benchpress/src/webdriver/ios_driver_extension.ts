@@ -25,7 +25,7 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 
   timeEnd(name: string, restartName: string = null): Promise<any> {
-    var script = `console.timeEnd('${name}');`;
+    let script = `console.timeEnd('${name}');`;
     if (isPresent(restartName)) {
       script += `console.time('${restartName}');`;
     }
@@ -39,9 +39,9 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript('1+1')
         .then((_) => this._driver.logs('performance'))
         .then((entries) => {
-          var records: any[] = [];
+          const records: any[] = [];
           entries.forEach(entry => {
-            var message = JSON.parse(entry['message'])['message'];
+            const message = JSON.parse(entry['message'])['message'];
             if (message['method'] === 'Timeline.eventRecorded') {
               records.push(message['params']['record']);
             }
@@ -56,11 +56,11 @@ export class IOsDriverExtension extends WebDriverExtension {
       events = [];
     }
     records.forEach((record) => {
-      var endEvent: PerfLogEvent = null;
-      var type = record['type'];
-      var data = record['data'];
-      var startTime = record['startTime'];
-      var endTime = record['endTime'];
+      let endEvent: PerfLogEvent = null;
+      const type = record['type'];
+      const data = record['data'];
+      const startTime = record['startTime'];
+      const endTime = record['endTime'];
 
       if (type === 'FunctionCall' && (data == null || data['scriptName'] !== 'InjectedScript')) {
         events.push(createStartEvent('script', startTime));
@@ -95,7 +95,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 
 function createEvent(
     ph: 'X' | 'B' | 'E' | 'B' | 'E', name: string, time: number, args: any = null) {
-  var result: PerfLogEvent = {
+  const result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,
     'ts': time,

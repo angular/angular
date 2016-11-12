@@ -11,11 +11,11 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionS
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
 import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
 
-var APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
-var VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
-var CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
+const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
+const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
+const CD_MODULE_URL = assetUrl('core', 'change_detection/change_detection');
 
-var ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core', 'animation/animation_style_util');
+const ANIMATION_STYLE_UTIL_ASSET_URL = assetUrl('core', 'animation/animation_style_util');
 
 export interface IdentifierSpec {
   name: string;

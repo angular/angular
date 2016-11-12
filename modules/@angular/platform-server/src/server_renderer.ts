@@ -24,7 +24,7 @@ export class ServerRootRenderer {
       public animationDriver: AnimationDriver, @Inject(APP_ID) public appId: string,
       private _zone: NgZone) {}
   renderComponent(componentProto: RenderComponentType): Renderer {
-    var renderer = this.registeredComponents.get(componentProto.id);
+    let renderer = this.registeredComponents.get(componentProto.id);
     if (!renderer) {
       renderer = new ServerRenderer(
           this, componentProto, this.animationDriver, `${this.appId}-${componentProto.id}`,
@@ -57,7 +57,7 @@ export class ServerRenderer implements Renderer {
   }
 
   selectRootElement(selectorOrNode: string|any, debugInfo: RenderDebugInfo): Element {
-    var el: any /** TODO #9100 */;
+    let el: any /** TODO #9100 */;
     if (typeof selectorOrNode === 'string') {
       el = getDOM().querySelector(this._rootRenderer.document, selectorOrNode);
       if (isBlank(el)) {
@@ -71,9 +71,9 @@ export class ServerRenderer implements Renderer {
   }
 
   createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
-    var el: any;
+    let el: any;
     if (isNamespaced(name)) {
-      var nsAndName = splitNamespace(name);
+      const nsAndName = splitNamespace(name);
       el = getDOM().createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]);
     } else {
       el = getDOM().createElement(name);
@@ -88,7 +88,7 @@ export class ServerRenderer implements Renderer {
   }
 
   createViewRoot(hostElement: any): any {
-    var nodesParent: any /** TODO #9100 */;
+    let nodesParent: any /** TODO #9100 */;
     if (isPresent(this._hostAttr)) {
       getDOM().setAttribute(hostElement, this._hostAttr, '');
     }
@@ -97,7 +97,7 @@ export class ServerRenderer implements Renderer {
   }
 
   createTemplateAnchor(parentElement: any, debugInfo: RenderDebugInfo): any {
-    var comment = getDOM().createComment(TEMPLATE_COMMENT_TEXT);
+    const comment = getDOM().createComment(TEMPLATE_COMMENT_TEXT);
     if (isPresent(parentElement)) {
       getDOM().appendChild(parentElement, comment);
     }
@@ -105,7 +105,7 @@ export class ServerRenderer implements Renderer {
   }
 
   createText(parentElement: any, value: string, debugInfo: RenderDebugInfo): any {
-    var node = getDOM().createTextNode(value);
+    const node = getDOM().createTextNode(value);
     if (isPresent(parentElement)) {
       getDOM().appendChild(parentElement, node);
     }
@@ -120,7 +120,7 @@ export class ServerRenderer implements Renderer {
   attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
 
   detachView(viewRootNodes: any[]) {
-    for (var i = 0; i < viewRootNodes.length; i++) {
+    for (let i = 0; i < viewRootNodes.length; i++) {
       getDOM().remove(viewRootNodes[i]);
     }
   }
@@ -130,13 +130,13 @@ export class ServerRenderer implements Renderer {
   listen(renderElement: any, name: string, callback: Function): Function {
     // Note: We are not using the EventsPlugin here as this is not needed
     // to run our tests.
-    var outsideHandler = (event: any) => this._zone.runGuarded(() => callback(event));
+    const outsideHandler = (event: any) => this._zone.runGuarded(() => callback(event));
     return this._zone.runOutsideAngular(
         () => getDOM().onAndCancel(renderElement, name, outsideHandler));
   }
 
   listenGlobal(target: string, name: string, callback: Function): Function {
-    var renderElement = getDOM().getGlobalEventTarget(target);
+    const renderElement = getDOM().getGlobalEventTarget(target);
     return this.listen(renderElement, name, callback);
   }
 
@@ -172,7 +172,7 @@ export class ServerRenderer implements Renderer {
     if (getDOM().isCommentNode(renderElement)) {
       const existingBindings =
           getDOM().getText(renderElement).replace(/\n/g, '').match(TEMPLATE_BINDINGS_EXP);
-      var parsedBindings = JSON.parse(existingBindings[1]);
+      const parsedBindings = JSON.parse(existingBindings[1]);
       (parsedBindings as any /** TODO #9100 */)[propertyName] = propertyValue;
       getDOM().setText(
           renderElement,
@@ -213,15 +213,15 @@ export class ServerRenderer implements Renderer {
 }
 
 function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  var parent = getDOM().parentElement(sibling);
+  const parent = getDOM().parentElement(sibling);
   if (nodes.length > 0 && isPresent(parent)) {
-    var nextSibling = getDOM().nextSibling(sibling);
+    const nextSibling = getDOM().nextSibling(sibling);
     if (isPresent(nextSibling)) {
-      for (var i = 0; i < nodes.length; i++) {
+      for (let i = 0; i < nodes.length; i++) {
         getDOM().insertBefore(nextSibling, nodes[i]);
       }
     } else {
-      for (var i = 0; i < nodes.length; i++) {
+      for (let i = 0; i < nodes.length; i++) {
         getDOM().appendChild(parent, nodes[i]);
       }
     }
@@ -229,14 +229,14 @@ function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TO
 }
 
 function appendNodes(parent: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {
-  for (var i = 0; i < nodes.length; i++) {
+  for (let i = 0; i < nodes.length; i++) {
     getDOM().appendChild(parent, nodes[i]);
   }
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
   return (event: any /** TODO #9100 */) => {
-    var allowDefaultBehavior = eventHandler(event);
+    const allowDefaultBehavior = eventHandler(event);
     if (allowDefaultBehavior === false) {
       // TODO(tbosch): move preventDefault into event plugins...
       getDOM().preventDefault(event);

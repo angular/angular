@@ -11,9 +11,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_in
 
 export function main() {
   describe('UpperCasePipe', () => {
-    var upper: string;
-    var lower: string;
-    var pipe: UpperCasePipe;
+    let upper: string;
+    let lower: string;
+    let pipe: UpperCasePipe;
 
     beforeEach(() => {
       lower = 'something';
@@ -24,14 +24,14 @@ export function main() {
     describe('transform', () => {
 
       it('should return uppercase', () => {
-        var val = pipe.transform(lower);
+        const val = pipe.transform(lower);
         expect(val).toEqual(upper);
       });
 
       it('should uppercase when there is a new value', () => {
-        var val = pipe.transform(lower);
+        const val = pipe.transform(lower);
         expect(val).toEqual(upper);
-        var val2 = pipe.transform('wat');
+        const val2 = pipe.transform('wat');
         expect(val2).toEqual('WAT');
       });
 

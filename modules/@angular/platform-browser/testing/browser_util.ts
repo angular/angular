@@ -90,21 +90,21 @@ export function normalizeCSS(css: string): string {
       .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
-var _singleTagWhitelist = ['br', 'hr', 'input'];
+const _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
-  var result = '';
+  let result = '';
   if (getDOM().isElementNode(el)) {
-    var tagName = getDOM().tagName(el).toLowerCase();
+    const tagName = getDOM().tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    var attributeMap = getDOM().attributeMap(el);
-    var keys: string[] = Array.from(attributeMap.keys()).sort();
+    const attributeMap = getDOM().attributeMap(el);
+    const keys: string[] = Array.from(attributeMap.keys()).sort();
     for (let i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var attValue = attributeMap.get(key);
+      const key = keys[i];
+      const attValue = attributeMap.get(key);
       if (typeof attValue !== 'string') {
         result += ` ${key}`;
       } else {
@@ -114,8 +114,8 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     result += '>';
 
     // Children
-    var childrenRoot = getDOM().templateAwareRoot(el);
-    var children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
+    const childrenRoot = getDOM().templateAwareRoot(el);
+    const children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }

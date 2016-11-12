@@ -13,7 +13,7 @@ import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src
 
 export function main() {
   describe('preparseElement', () => {
-    var htmlParser: HtmlParser;
+    let htmlParser: HtmlParser;
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));
 
     function preparse(html: string): PreparsedElement {

@@ -15,9 +15,9 @@ import {beforeEach, describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('ActiveAnimationsPlayersMap', function() {
-    var playersMap: any /** TODO #9100 */;
-    var elementNode: any /** TODO #9100 */;
-    var animationName = 'animationName';
+    let playersMap: any /** TODO #9100 */;
+    let elementNode: any /** TODO #9100 */;
+    const animationName = 'animationName';
 
     beforeEach(() => {
       playersMap = new ViewAnimationMap();
@@ -30,7 +30,7 @@ export function main() {
     });
 
     it('should register a player an allow it to be accessed', () => {
-      var player = new MockAnimationPlayer();
+      const player = new MockAnimationPlayer();
       playersMap.set(elementNode, animationName, player);
 
       expect(playersMap.find(elementNode, animationName)).toBe(player);
@@ -40,7 +40,7 @@ export function main() {
     });
 
     it('should remove a registered player when remove() is called', () => {
-      var player = new MockAnimationPlayer();
+      const player = new MockAnimationPlayer();
       playersMap.set(elementNode, animationName, player);
       expect(playersMap.find(elementNode, animationName)).toBe(player);
       expect(countPlayers(playersMap)).toEqual(1);
@@ -50,8 +50,8 @@ export function main() {
     });
 
     it('should allow multiple players to be registered on the same element', () => {
-      var player1 = new MockAnimationPlayer();
-      var player2 = new MockAnimationPlayer();
+      const player1 = new MockAnimationPlayer();
+      const player2 = new MockAnimationPlayer();
       playersMap.set(elementNode, 'myAnimation1', player1);
       playersMap.set(elementNode, 'myAnimation2', player2);
       expect(countPlayers(playersMap)).toEqual(2);
@@ -59,8 +59,8 @@ export function main() {
     });
 
     it('should only allow one player to be set for a given element/animationName pair', () => {
-      var player1 = new MockAnimationPlayer();
-      var player2 = new MockAnimationPlayer();
+      const player1 = new MockAnimationPlayer();
+      const player2 = new MockAnimationPlayer();
       playersMap.set(elementNode, animationName, player1);
       expect(playersMap.find(elementNode, animationName)).toBe(player1);
       expect(countPlayers(playersMap)).toEqual(1);

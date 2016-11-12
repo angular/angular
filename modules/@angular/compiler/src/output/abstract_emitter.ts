@@ -78,7 +78,7 @@ export class EmitterVisitorContext {
   }
 
   toSource(): any {
-    var lines = this._lines;
+    let lines = this._lines;
     if (lines[lines.length - 1].parts.length === 0) {
       lines = lines.slice(0, lines.length - 1);
     }
@@ -118,7 +118,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(`if (`);
     stmt.condition.visitExpression(this, ctx);
     ctx.print(`) {`);
-    var hasElseCase = isPresent(stmt.falseCase) && stmt.falseCase.length > 0;
+    const hasElseCase = isPresent(stmt.falseCase) && stmt.falseCase.length > 0;
     if (stmt.trueCase.length <= 1 && !hasElseCase) {
       ctx.print(` `);
       this.visitAllStatements(stmt.trueCase, ctx);
@@ -149,13 +149,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitCommentStmt(stmt: o.CommentStmt, ctx: EmitterVisitorContext): any {
-    var lines = stmt.comment.split('\n');
+    const lines = stmt.comment.split('\n');
     lines.forEach((line) => { ctx.println(`// ${line}`); });
     return null;
   }
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
-    var lineWasEmpty = ctx.lineIsEmpty();
+    const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
       ctx.print('(');
     }
@@ -167,7 +167,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitWriteKeyExpr(expr: o.WriteKeyExpr, ctx: EmitterVisitorContext): any {
-    var lineWasEmpty = ctx.lineIsEmpty();
+    const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
       ctx.print('(');
     }
@@ -182,7 +182,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitWritePropExpr(expr: o.WritePropExpr, ctx: EmitterVisitorContext): any {
-    var lineWasEmpty = ctx.lineIsEmpty();
+    const lineWasEmpty = ctx.lineIsEmpty();
     if (!lineWasEmpty) {
       ctx.print('(');
     }
@@ -196,7 +196,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
   visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: EmitterVisitorContext): any {
     expr.receiver.visitExpression(this, ctx);
-    var name = expr.name;
+    let name = expr.name;
     if (isPresent(expr.builtin)) {
       name = this.getBuiltinMethodName(expr.builtin);
       if (isBlank(name)) {
@@ -220,7 +220,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
-    var varName = ast.name;
+    let varName = ast.name;
     if (isPresent(ast.builtin)) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
@@ -282,7 +282,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
-    var opStr: string;
+    let opStr: string;
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
         opStr = '==';
@@ -354,7 +354,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
-    var useNewLine = ast.entries.length > 1;
+    const useNewLine = ast.entries.length > 1;
     ctx.print(`[`, useNewLine);
     ctx.incIndent();
     this.visitAllExpressions(ast.entries, ctx, ',', useNewLine);
@@ -363,7 +363,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
-    var useNewLine = ast.entries.length > 1;
+    const useNewLine = ast.entries.length > 1;
     ctx.print(`{`, useNewLine);
     ctx.incIndent();
     this.visitAllObjects(entry => {
@@ -385,7 +385,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitAllObjects<T>(
       handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext, separator: string,
       newLine: boolean = false): void {
-    for (var i = 0; i < expressions.length; i++) {
+    for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
         ctx.print(separator, newLine);
       }
@@ -406,7 +406,7 @@ export function escapeIdentifier(
   if (isBlank(input)) {
     return null;
   }
-  var body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
+  const body = input.replace(_SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
     if (match[0] == '$') {
       return escapeDollar ? '\\$' : '$';
     } else if (match[0] == '\n') {
@@ -417,13 +417,13 @@ export function escapeIdentifier(
       return `\\${match[0]}`;
     }
   });
-  let requiresQuotes = alwaysQuote || !_LEGAL_IDENTIFIER_RE.test(body);
+  const requiresQuotes = alwaysQuote || !_LEGAL_IDENTIFIER_RE.test(body);
   return requiresQuotes ? `'${body}'` : body;
 }
 
 function _createIndent(count: number): string {
-  var res = '';
-  for (var i = 0; i < count; i++) {
+  let res = '';
+  for (let i = 0; i < count; i++) {
     res += '  ';
   }
   return res;

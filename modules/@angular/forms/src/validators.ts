@@ -140,7 +140,7 @@ export class Validators {
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
-      let promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
+      const promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
       return Promise.all(promises).then(_mergeErrors);
     };
   }

@@ -12,7 +12,7 @@ import {discardPeriodicTasks, fakeAsync, tick} from '@angular/core/testing';
 // #docregion basic
 describe('this test', () => {
   it('looks async but is synchronous', <any>fakeAsync((): void => {
-       var flag = false;
+       let flag = false;
        setTimeout(() => { flag = true; }, 100);
        expect(flag).toBe(false);
        tick(50);

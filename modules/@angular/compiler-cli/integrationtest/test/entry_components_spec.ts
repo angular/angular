@@ -15,8 +15,8 @@ import {createComponent} from './util';
 
 describe('content projection', () => {
   it('should support entryComponents in components', () => {
-    var compFixture = createComponent(CompWithEntryComponents);
-    var cf = compFixture.componentInstance.cfr.resolveComponentFactory(BasicComp);
+    const compFixture = createComponent(CompWithEntryComponents);
+    const cf = compFixture.componentInstance.cfr.resolveComponentFactory(BasicComp);
     expect(cf.componentType).toBe(BasicComp);
   });
 

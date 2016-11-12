@@ -8,7 +8,7 @@
 
 import {afterEach, beforeEach, beforeEachProviders, describe, inject, it, xdescribe, xit} from '@angular/core/testing/testing_internal';
 
-var db: any;
+let db: any;
 class MyService {}
 class MyMockService implements MyService {}
 

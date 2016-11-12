@@ -740,8 +740,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-             var ng1 = element.querySelector('ng1');
-             var ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('ng1');
+             const ng1Controller = angular.element(ng1).controller('ng1');
 
              expect(multiTrim(element.textContent)).toBe('Inside: - | Outside: foo, bar');
 
@@ -910,10 +910,10 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             var ng1s = element.querySelectorAll('ng1');
-             var ng1Controller0 = angular.element(ng1s[0]).controller('ng1');
-             var ng1Controller1 = angular.element(ng1s[1]).controller('ng1');
-             var ng1Controller2 = angular.element(ng1s[2]).controller('ng1');
+             const ng1s = element.querySelectorAll('ng1');
+             const ng1Controller0 = angular.element(ng1s[0]).controller('ng1');
+             const ng1Controller1 = angular.element(ng1s[1]).controller('ng1');
+             const ng1Controller2 = angular.element(ng1s[2]).controller('ng1');
 
              expect(multiTrim(element.textContent))
                  .toBe(
@@ -997,8 +997,8 @@ export function main() {
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             var ng1 = element.querySelector('[ng1]');
-             var ng1Controller = angular.element(ng1).controller('ng1');
+             const ng1 = element.querySelector('[ng1]');
+             const ng1Controller = angular.element(ng1).controller('ng1');
 
              expect(multiTrim(element.textContent))
                  .toBe('ng1 - Data: [1,2,3] - Length: 3 | ng2 - Data: 1,2,3 - Length: 3');
@@ -2338,7 +2338,6 @@ export function main() {
       it('should call `$onDestroy()` on controller', async(() => {
            const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
            const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
-           let ng2ComponentInstance: Ng2Component;
 
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {
@@ -2432,7 +2431,6 @@ export function main() {
 
       it('should not call `$onDestroy()` on scope', async(() => {
            const scopeOnDestroy = jasmine.createSpy('scopeOnDestroy');
-           let ng2ComponentInstance: Ng2Component;
 
            // Define `ng1Directive`
            const ng1DirectiveA: angular.IDirective = {

@@ -17,7 +17,7 @@ import * as ts from 'typescript';
 const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticReflector', () => {
-  let noContext = new StaticSymbol('', '');
+  const noContext = new StaticSymbol('', '');
   let host: StaticReflectorHost;
   let reflector: StaticReflector;
 
@@ -31,36 +31,37 @@ describe('StaticReflector', () => {
   }
 
   it('should get annotations for NgFor', () => {
-    let NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
-    let annotations = reflector.annotations(NgFor);
+    const NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
+    const annotations = reflector.annotations(NgFor);
     expect(annotations.length).toEqual(1);
-    let annotation = annotations[0];
+    const annotation = annotations[0];
     expect(annotation.selector).toEqual('[ngFor][ngForOf]');
     expect(annotation.inputs).toEqual(['ngForTrackBy', 'ngForOf', 'ngForTemplate']);
   });
 
   it('should get constructor for NgFor', () => {
-    let NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
-    let ViewContainerRef =
+    const NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
+    const ViewContainerRef =
         host.findDeclaration('angular2/src/core/linker/view_container_ref', 'ViewContainerRef');
-    let TemplateRef = host.findDeclaration('angular2/src/core/linker/template_ref', 'TemplateRef');
-    let IterableDiffers = host.findDeclaration(
+    const TemplateRef =
+        host.findDeclaration('angular2/src/core/linker/template_ref', 'TemplateRef');
+    const IterableDiffers = host.findDeclaration(
         'angular2/src/core/change_detection/differs/iterable_differs', 'IterableDiffers');
-    let ChangeDetectorRef = host.findDeclaration(
+    const ChangeDetectorRef = host.findDeclaration(
         'angular2/src/core/change_detection/change_detector_ref', 'ChangeDetectorRef');
 
-    let parameters = reflector.parameters(NgFor);
+    const parameters = reflector.parameters(NgFor);
     expect(parameters).toEqual([
       [ViewContainerRef], [TemplateRef], [IterableDiffers], [ChangeDetectorRef]
     ]);
   });
 
   it('should get annotations for HeroDetailComponent', () => {
-    let HeroDetailComponent =
+    const HeroDetailComponent =
         host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
-    let annotations = reflector.annotations(HeroDetailComponent);
+    const annotations = reflector.annotations(HeroDetailComponent);
     expect(annotations.length).toEqual(1);
-    let annotation = annotations[0];
+    const annotation = annotations[0];
     expect(annotation.selector).toEqual('my-hero-detail');
     expect(annotation.animations).toEqual([trigger('myAnimation', [
       state('state1', style({'background': 'white'})),
@@ -73,40 +74,40 @@ describe('StaticReflector', () => {
   });
 
   it('should throw and exception for unsupported metadata versions', () => {
-    let e = host.findDeclaration('src/version-error', 'e');
+    const e = host.findDeclaration('src/version-error', 'e');
     expect(() => reflector.annotations(e))
         .toThrow(new Error(
             'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 1'));
   });
 
   it('should get and empty annotation list for an unknown class', () => {
-    let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
-    let annotations = reflector.annotations(UnknownClass);
+    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const annotations = reflector.annotations(UnknownClass);
     expect(annotations).toEqual([]);
   });
 
   it('should get propMetadata for HeroDetailComponent', () => {
-    let HeroDetailComponent =
+    const HeroDetailComponent =
         host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
-    let props = reflector.propMetadata(HeroDetailComponent);
+    const props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
     expect(props['onMouseOver']).toEqual([new HostListener('mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
-    let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
-    let properties = reflector.propMetadata(UnknownClass);
+    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const properties = reflector.propMetadata(UnknownClass);
     expect(properties).toEqual({});
   });
 
   it('should get empty parameters list for an unknown class ', () => {
-    let UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
-    let parameters = reflector.parameters(UnknownClass);
+    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const parameters = reflector.parameters(UnknownClass);
     expect(parameters).toEqual([]);
   });
 
   it('should provide context for errors reported by the collector', () => {
-    let SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
+    const SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
     expect(() => reflector.annotations(SomeClass))
         .toThrow(new Error(
             'Error encountered resolving symbol values statically. A reasonable error message (position 13:34 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
@@ -128,7 +129,7 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify an object to a copy of the object', () => {
-    let expr = {a: 1, b: 2, c: 3};
+    const expr = {a: 1, b: 2, c: 3};
     expect(simplify(noContext, expr)).toEqual(expr);
   });
 
@@ -292,7 +293,7 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify an object index', () => {
-    let expr = {__symbolic: 'select', expression: {a: 1, b: 2, c: 3}, member: 'b'};
+    const expr = {__symbolic: 'select', expression: {a: 1, b: 2, c: 3}, member: 'b'};
     expect(simplify(noContext, expr)).toBe(2);
   });
 
@@ -373,7 +374,7 @@ describe('StaticReflector', () => {
   });
 
   it('should be able to get metadata from a ts file', () => {
-    let metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
+    const metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
     expect(metadata).toEqual({
       __symbolic: 'module',
       version: 1,
@@ -404,7 +405,7 @@ describe('StaticReflector', () => {
   });
 
   it('should be able to get metadata for a class containing a custom decorator', () => {
-    let props = reflector.propMetadata(
+    const props = reflector.propMetadata(
         host.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
     expect(props).toEqual({foo: []});
   });
@@ -477,8 +478,8 @@ class MockReflectorHost implements StaticReflectorHost {
   getCanonicalFileName(fileName: string): string { return fileName; }
 
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    var cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
-    var result = this.staticTypeCache.get(cacheKey);
+    const cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
+    let result = this.staticTypeCache.get(cacheKey);
     if (!result) {
       result = new StaticSymbol(declarationFile, name, members);
       this.staticTypeCache.set(cacheKey, result);
@@ -491,7 +492,7 @@ class MockReflectorHost implements StaticReflectorHost {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
 
     function resolvePath(pathParts: string[]): string {
-      let result: string[] = [];
+      const result: string[] = [];
       pathParts.forEach((part, index) => {
         switch (part) {
           case '':
@@ -510,9 +511,9 @@ class MockReflectorHost implements StaticReflectorHost {
     function pathTo(from: string, to: string): string {
       let result = to;
       if (to.startsWith('.')) {
-        let fromParts = splitPath(from);
+        const fromParts = splitPath(from);
         fromParts.pop();  // remove the file name.
-        let toParts = splitPath(to);
+        const toParts = splitPath(to);
         result = resolvePath(fromParts.concat(toParts));
       }
       return result;
@@ -530,7 +531,7 @@ class MockReflectorHost implements StaticReflectorHost {
   }
 
   getMetadataFor(moduleId: string): any {
-    let data: {[key: string]: any} = {
+    const data: {[key: string]: any} = {
       '/tmp/angular2/src/common/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
         'version': 1,
@@ -1072,11 +1073,11 @@ class MockReflectorHost implements StaticReflectorHost {
 
 
     if (data[moduleId] && moduleId.match(TS_EXT)) {
-      let text = data[moduleId];
+      const text = data[moduleId];
       if (typeof text === 'string') {
-        let sf = ts.createSourceFile(
+        const sf = ts.createSourceFile(
             moduleId, data[moduleId], ts.ScriptTarget.ES5, /* setParentNodes */ true);
-        let diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
+        const diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
         if (diagnostics && diagnostics.length) {
           throw Error(`Error encountered during parse of file ${moduleId}`);
         }

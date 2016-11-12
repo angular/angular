@@ -13,13 +13,13 @@ const Key = protractor.Key;
 
 describe('key_events', function() {
 
-  var URL = 'all/playground/src/key_events/index.html?bundles=false';
+  const URL = 'all/playground/src/key_events/index.html?bundles=false';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });
 
   it('should display correct key names', function() {
-    var firstArea = element.all(by.css('.sample-area')).get(0);
+    const firstArea = element.all(by.css('.sample-area')).get(0);
     expect(firstArea.getText()).toEqual('(none)');
 
     // testing different key categories:
@@ -61,19 +61,19 @@ describe('key_events', function() {
   });
 
   it('should correctly react to the specified key', function() {
-    var secondArea = element.all(by.css('.sample-area')).get(1);
+    const secondArea = element.all(by.css('.sample-area')).get(1);
     secondArea.sendKeys(Key.SHIFT, Key.ENTER);
     expect(secondArea.getText()).toEqual('You pressed shift.enter!');
   });
 
   it('should not react to incomplete keys', function() {
-    var secondArea = element.all(by.css('.sample-area')).get(1);
+    const secondArea = element.all(by.css('.sample-area')).get(1);
     secondArea.sendKeys(Key.ENTER);
     expect(secondArea.getText()).toEqual('');
   });
 
   it('should not react to keys with more modifiers', function() {
-    var secondArea = element.all(by.css('.sample-area')).get(1);
+    const secondArea = element.all(by.css('.sample-area')).get(1);
     secondArea.sendKeys(Key.CONTROL, Key.SHIFT, Key.ENTER);
     expect(secondArea.getText()).toEqual('');
   });

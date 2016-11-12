@@ -16,7 +16,7 @@ export class BrowserGetTestability implements GetTestability {
 
   addToWindow(registry: TestabilityRegistry): void {
     global.getAngularTestability = (elem: any, findInAncestors: boolean = true) => {
-      var testability = registry.findTestabilityInTree(elem, findInAncestors);
+      const testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
         throw new Error('Could not find testability for element.');
       }
@@ -27,11 +27,11 @@ export class BrowserGetTestability implements GetTestability {
 
     global.getAllAngularRootElements = () => registry.getAllRootElements();
 
-    var whenAllStable = (callback: any /** TODO #9100 */) => {
-      var testabilities = global.getAllAngularTestabilities();
-      var count = testabilities.length;
-      var didWork = false;
-      var decrement = function(didWork_: any /** TODO #9100 */) {
+    const whenAllStable = (callback: any /** TODO #9100 */) => {
+      const testabilities = global.getAllAngularTestabilities();
+      let count = testabilities.length;
+      let didWork = false;
+      const decrement = function(didWork_: any /** TODO #9100 */) {
         didWork = didWork || didWork_;
         count--;
         if (count == 0) {
@@ -54,7 +54,7 @@ export class BrowserGetTestability implements GetTestability {
     if (elem == null) {
       return null;
     }
-    var t = registry.getTestability(elem);
+    const t = registry.getTestability(elem);
     if (isPresent(t)) {
       return t;
     } else if (!findInAncestors) {
