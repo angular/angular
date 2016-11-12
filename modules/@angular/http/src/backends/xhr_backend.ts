@@ -8,19 +8,16 @@
 
 import {Injectable} from '@angular/core';
 import {__platform_browser_private__} from '@angular/platform-browser';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
-import {isPresent} from '../facade/lang';
 import {Headers} from '../headers';
 import {getResponseURL, isSuccess} from '../http_utils';
 import {Connection, ConnectionBackend, XSRFStrategy} from '../interfaces';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
-
 import {BrowserXhr} from './browser_xhr';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -47,7 +44,7 @@ export class XHRConnection implements Connection {
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
       const _xhr: XMLHttpRequest = browserXHR.build();
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
-      if (isPresent(req.withCredentials)) {
+      if (req.withCredentials != null) {
         _xhr.withCredentials = req.withCredentials;
       }
       // load event handler
@@ -75,7 +72,7 @@ export class XHRConnection implements Connection {
         const statusText = _xhr.statusText || 'OK';
 
         let responseOptions = new ResponseOptions({body, status, headers, statusText, url});
-        if (isPresent(baseResponseOptions)) {
+        if (baseResponseOptions != null) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
         const response = new Response(responseOptions);
@@ -96,7 +93,7 @@ export class XHRConnection implements Connection {
           status: _xhr.status,
           statusText: _xhr.statusText,
         });
-        if (isPresent(baseResponseOptions)) {
+        if (baseResponseOptions != null) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
         responseObserver.error(new Response(responseOptions));
@@ -104,12 +101,12 @@ export class XHRConnection implements Connection {
 
       this.setDetectedContentType(req, _xhr);
 
-      if (isPresent(req.headers)) {
+      if (req.headers != null) {
         req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
       }
 
       // Select the correct buffer type to store the response
-      if (isPresent(req.responseType) && isPresent(_xhr.responseType)) {
+      if (req.responseType != null && _xhr.responseType != null) {
         switch (req.responseType) {
           case ResponseContentType.ArrayBuffer:
             _xhr.responseType = 'arraybuffer';
@@ -141,9 +138,9 @@ export class XHRConnection implements Connection {
     });
   }
 
-  setDetectedContentType(req: any /** TODO #9100 */, _xhr: any /** TODO #9100 */) {
+  setDetectedContentType(req: any /** TODO #9100 */, _xhr: XMLHttpRequest) {
     // Skip if a custom Content-Type header is provided
-    if (isPresent(req.headers) && isPresent(req.headers.get('Content-Type'))) {
+    if (req.headers != null && req.headers.get('Content-Type') != null) {
       return;
     }
 
@@ -161,7 +158,7 @@ export class XHRConnection implements Connection {
         _xhr.setRequestHeader('content-type', 'text/plain');
         break;
       case ContentType.BLOB:
-        let blob = req.blob();
+        const blob = req.blob();
         if (blob.type) {
           _xhr.setRequestHeader('content-type', blob.type);
         }
@@ -185,7 +182,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
   constructor(
       private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
 
-  configureRequest(req: Request) {
+  configureRequest(req: Request): void {
     const xsrfToken = __platform_browser_private__.getDOM().getCookie(this._cookieName);
     if (xsrfToken) {
       req.headers.set(this._headerName, xsrfToken);
