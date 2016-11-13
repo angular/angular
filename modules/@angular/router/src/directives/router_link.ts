@@ -89,11 +89,13 @@ import {UrlTree} from '../url_tree';
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
-  private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
   @Input() preserveFragment: boolean;
+  @Input() skipLocationChange: boolean;
+  @Input() replaceUrl: boolean;
+  private commands: any[] = [];
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -120,7 +122,9 @@ export class RouterLink {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment)
+      preserveFragment: toBool(this.preserveFragment),
+      skipLocationChange: toBool(this.skipLocationChange),
+      replaceUrl: toBool(this.replaceUrl),
     });
   }
 }
@@ -138,12 +142,14 @@ export class RouterLink {
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() target: string;
-  private commands: any[] = [];
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() routerLinkOptions: {preserveQueryParams: boolean, preserveFragment: boolean};
   @Input() preserveQueryParams: boolean;
   @Input() preserveFragment: boolean;
+  @Input() skipLocationChange: boolean;
+  @Input() replaceUrl: boolean;
+  private commands: any[] = [];
   private subscription: Subscription;
 
   // the url displayed on the anchor element.
@@ -195,7 +201,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment)
+      preserveFragment: toBool(this.preserveFragment),
+      skipLocationChange: toBool(this.skipLocationChange),
+      replaceUrl: toBool(this.replaceUrl),
     });
   }
 }
