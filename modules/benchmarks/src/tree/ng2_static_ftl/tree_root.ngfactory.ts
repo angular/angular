@@ -51,7 +51,9 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
   detectChangesInternal(throwOnChange: boolean): void {
     this._TreeRootComponent_0_4_View.detectChangesInternal(throwOnChange);
   }
-  destroyInternal(): void { this._TreeRootComponent_0_4_View.destroyInternal(); }
+  destroyInternal(): void {
+    this._TreeRootComponent_0_4_View.destroyInternal();
+  }
   injectorGetInternal(token: any, requestNodeIndex: number, notFoundResult: any): any {
     if (((token === import3.TreeRootComponent) && (0 === requestNodeIndex))) {
       return this._TreeRootComponent_0_4;
@@ -132,10 +134,14 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
     this.init([].concat([this._el_0]), [this._el_0], []);
     return (null as any);
   }
-  destroyInternal() { this._TreeComponent0_0_4View.destroyInternal(); }
+  destroyInternal() {
+    this._TreeComponent0_0_4View.destroyInternal();
+  }
   detectChangesInternal(throwOnChange: boolean): void {
     this._TreeComponent0_0_4View.updateData(this.parentView.context.data);
     this._TreeComponent0_0_4View.detectChangesInternal(throwOnChange);
   }
-  visitRootNodesInternal(cb: any, context: any) { cb(this._el_0, context); }
+  visitRootNodesInternal(cb: any, context: any) {
+    cb(this._el_0, context);
+  }
 }

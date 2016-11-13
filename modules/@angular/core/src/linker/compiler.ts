@@ -60,12 +60,16 @@ export class Compiler {
    * in `entryComponents`
    * have to be inlined. Otherwise throws a {@link ComponentStillLoadingError}.
    */
-  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
+    throw _throwError();
+  }
 
   /**
    * Compiles the given NgModule and all of its components
    */
-  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
+    throw _throwError();
+  }
 
   /**
    * Same as {@link compileModuleSync} but also creates ComponentFactories for all components.

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader, platformCoreDynamic} from '@angular/compiler';
-import {COMPILER_OPTIONS, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
+import {platformCoreDynamic, ResourceLoader} from '@angular/compiler';
+import {COMPILER_OPTIONS, createPlatformFactory, PlatformRef, Provider} from '@angular/core';
+
 import {ResourceLoaderImpl} from './private_import_platform-browser-dynamic';
 
 

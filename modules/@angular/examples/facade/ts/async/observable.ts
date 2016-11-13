@@ -12,7 +12,9 @@ import {Subscriber} from 'rxjs/Subscriber';
 
 const obs = new Observable<number>((obs: Subscriber<number>) => {
   let i = 0;
-  setInterval(() => { obs.next(++i); }, 1000);
+  setInterval(() => {
+    obs.next(++i);
+  }, 1000);
 });
 obs.subscribe(i => console.log(`${i} seconds elapsed`));
 // #enddocregion

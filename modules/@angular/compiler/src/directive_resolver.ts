@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Injectable, Input, Output, Query, Type, resolveForwardRef} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Injectable, Input, Output, Query, resolveForwardRef, Type} from '@angular/core';
 
 import {StringMapWrapper} from './facade/collection';
 import {stringify} from './facade/lang';
-import {ReflectorReader, reflector} from './private_import_core';
+import {reflector, ReflectorReader} from './private_import_core';
 import {splitAtColon} from './util';
 
 /*
@@ -99,7 +99,9 @@ export class DirectiveResolver {
     return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
-  private _extractPublicName(def: string) { return splitAtColon(def, [null, def])[1].trim(); }
+  private _extractPublicName(def: string) {
+    return splitAtColon(def, [null, def])[1].trim();
+  }
 
   private _merge(
       directive: Directive, inputs: string[], outputs: string[], host: {[key: string]: string},
@@ -130,8 +132,8 @@ export class DirectiveResolver {
       outputs.forEach((outputDef: string) => {
         const publicName = this._extractPublicName(outputDef);
         if (outputNames.indexOf(publicName) > -1) {
-          throw new Error(
-              `Output event '${publicName}' defined multiple times in '${stringify(directiveType)}'`);
+          throw new Error(`Output event '${publicName}' defined multiple times in '${stringify(
+              directiveType)}'`);
         }
       });
       mergedOutputs.unshift(...directive.outputs);

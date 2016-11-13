@@ -27,8 +27,9 @@ export function main() {
       pipe = new I18nPluralPipe(localization);
     });
 
-    it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(I18nPluralPipe).pure).toEqual(true); });
+    it('should be marked as pure', () => {
+      expect(new PipeResolver().resolve(I18nPluralPipe).pure).toEqual(true);
+    });
 
     describe('transform', () => {
       it('should return 0 text if value is 0', () => {
@@ -56,13 +57,16 @@ export function main() {
         expect(val).toEqual('');
       });
 
-      it('should not support bad arguments',
-         () => { expect(() => pipe.transform(0, <any>'hey')).toThrowError(); });
+      it('should not support bad arguments', () => {
+        expect(() => pipe.transform(0, <any>'hey')).toThrowError();
+      });
     });
 
   });
 }
 
 class TestLocalization extends NgLocalization {
-  getPluralCategory(value: number): string { return value > 1 && value < 6 ? 'many' : 'other'; }
+  getPluralCategory(value: number): string {
+    return value > 1 && value < 6 ? 'many' : 'other';
+  }
 }

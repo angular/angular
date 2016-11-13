@@ -11,7 +11,7 @@ import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
 import {isBlank, isPresent, stringify} from './facade/lang';
 import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from './private_import_core';
-import {NAMESPACE_URIS, SharedStylesHost, flattenStyles, getDOM, isNamespaced, shimContentAttribute, shimHostAttribute, splitNamespace} from './private_import_platform-browser';
+import {flattenStyles, getDOM, isNamespaced, NAMESPACE_URIS, SharedStylesHost, shimContentAttribute, shimHostAttribute, splitNamespace} from './private_import_platform-browser';
 
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
 const TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/;
@@ -117,7 +117,9 @@ export class ServerRenderer implements Renderer {
     appendNodes(parentElement, nodes);
   }
 
-  attachViewAfter(node: any, viewRootNodes: any[]) { moveNodesAfterSibling(node, viewRootNodes); }
+  attachViewAfter(node: any, viewRootNodes: any[]) {
+    moveNodesAfterSibling(node, viewRootNodes);
+  }
 
   detachView(viewRootNodes: any[]) {
     for (let i = 0; i < viewRootNodes.length; i++) {
@@ -202,7 +204,9 @@ export class ServerRenderer implements Renderer {
     getDOM().invoke(renderElement, methodName, args);
   }
 
-  setText(renderNode: any, text: string): void { getDOM().setText(renderNode, text); }
+  setText(renderNode: any, text: string): void {
+    getDOM().setText(renderNode, text);
+  }
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],

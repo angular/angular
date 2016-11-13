@@ -35,7 +35,7 @@ import * as lifecycle_hooks from './metadata/lifecycle_hooks';
 import * as metadata_view from './metadata/view';
 import * as reflection from './reflection/reflection';
 // We need to import this name separately from the above wildcard, because this symbol is exposed.
-import {Reflector} from './reflection/reflection'; // tslint:disable-line
+import {Reflector} from './reflection/reflection';  // tslint:disable-line
 import * as reflection_capabilities from './reflection/reflection_capabilities';
 import * as reflector_reader from './reflection/reflector_reader';
 import * as reflection_types from './reflection/types';

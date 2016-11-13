@@ -17,7 +17,7 @@ import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst} from '../template_parser/template_ast';
 
 import {CompileMethod} from './compile_method';
-import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
+import {addQueryToTokenMap, CompileQuery, createQueryList} from './compile_query';
 import {CompileView, CompileViewRootNode} from './compile_view';
 import {InjectMethodVars, ViewProperties} from './constants';
 import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
@@ -28,9 +28,13 @@ export class CompileNode {
       public parent: CompileElement, public view: CompileView, public nodeIndex: number,
       public renderNode: o.Expression, public sourceAst: TemplateAst) {}
 
-  isNull(): boolean { return !this.renderNode; }
+  isNull(): boolean {
+    return !this.renderNode;
+  }
 
-  isRootElement(): boolean { return this.view != this.parent.view; }
+  isRootElement(): boolean {
+    return this.view != this.parent.view;
+  }
 }
 
 export class CompileElement extends CompileNode {
@@ -215,7 +219,9 @@ export class CompileElement extends CompileNode {
     for (let i = 0; i < this._directives.length; i++) {
       const directive = this._directives[i];
       const directiveInstance = this.instances.get(identifierToken(directive.type).reference);
-      directive.queries.forEach((queryMeta) => { this._addQuery(queryMeta, directiveInstance); });
+      directive.queries.forEach((queryMeta) => {
+        this._addQuery(queryMeta, directiveInstance);
+      });
     }
     const queriesWithReads: _QueryWithRead[] = [];
     Array.from(this._resolvedProviders.values()).forEach((resolvedProvider) => {

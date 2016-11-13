@@ -55,16 +55,24 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
     }
   }
 
-  getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
+  getDistributedNodes(el: HTMLElement): Node[] {
+    return (<any>el).getDistributedNodes();
+  }
   resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
   }
-  supportsDOMEvents(): boolean { return true; }
+  supportsDOMEvents(): boolean {
+    return true;
+  }
   supportsNativeShadowDOM(): boolean {
     return typeof(<any>this.defaultDoc().body).createShadowRoot === 'function';
   }
-  getAnimationPrefix(): string { return this._animationPrefix ? this._animationPrefix : ''; }
-  getTransitionEnd(): string { return this._transitionEnd ? this._transitionEnd : ''; }
+  getAnimationPrefix(): string {
+    return this._animationPrefix ? this._animationPrefix : '';
+  }
+  getTransitionEnd(): string {
+    return this._transitionEnd ? this._transitionEnd : '';
+  }
   supportsAnimation(): boolean {
     return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
   }

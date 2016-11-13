@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from '@angular/core';
+import {animate, AUTO_STYLE, Component, state, style, transition, trigger} from '@angular/core';
 
 @Component({
   selector: 'animate-cmp',
@@ -30,8 +30,16 @@ import {AUTO_STYLE, Component, animate, state, style, transition, trigger} from 
 })
 export class AnimateCmp {
   stateExpression: string;
-  constructor() { this.setAsClosed(); }
-  setAsSomethingElse() { this.stateExpression = 'something'; }
-  setAsOpen() { this.stateExpression = 'open'; }
-  setAsClosed() { this.stateExpression = 'closed'; }
+  constructor() {
+    this.setAsClosed();
+  }
+  setAsSomethingElse() {
+    this.stateExpression = 'something';
+  }
+  setAsOpen() {
+    this.stateExpression = 'open';
+  }
+  setAsClosed() {
+    this.stateExpression = 'closed';
+  }
 }

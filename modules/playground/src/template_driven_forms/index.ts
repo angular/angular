@@ -77,7 +77,9 @@ class ShowError {
   controlPath: string;
   errorTypes: string[];
 
-  constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
+  constructor(@Host() formDir: NgForm) {
+    this.formDir = formDir;
+  }
 
   get errorMessage(): string {
     const form: FormGroup = this.formDir.form;

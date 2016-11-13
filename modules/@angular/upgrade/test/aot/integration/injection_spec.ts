@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, OpaqueToken, destroyPlatform} from '@angular/core';
+import {destroyPlatform, NgModule, OpaqueToken} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/angular_js';
-import {UpgradeModule, downgradeInjectable} from '@angular/upgrade/static';
+import {downgradeInjectable, UpgradeModule} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 

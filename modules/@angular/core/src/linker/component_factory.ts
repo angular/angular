@@ -31,32 +31,44 @@ export abstract class ComponentRef<C> {
   /**
    * Location of the Host Element of this Component Instance.
    */
-  get location(): ElementRef { return unimplemented(); }
+  get location(): ElementRef {
+    return unimplemented();
+  }
 
   /**
    * The injector on which the component instance exists.
    */
-  get injector(): Injector { return unimplemented(); }
+  get injector(): Injector {
+    return unimplemented();
+  }
 
   /**
    * The instance of the Component.
    */
-  get instance(): C { return unimplemented(); };
+  get instance(): C {
+    return unimplemented();
+  };
 
   /**
    * The {@link ViewRef} of the Host View of this Component instance.
    */
-  get hostView(): ViewRef { return unimplemented(); };
+  get hostView(): ViewRef {
+    return unimplemented();
+  };
 
   /**
    * The {@link ChangeDetectorRef} of the Component instance.
    */
-  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); }
+  get changeDetectorRef(): ChangeDetectorRef {
+    return unimplemented();
+  }
 
   /**
    * The component type.
    */
-  get componentType(): Type<any> { return unimplemented(); }
+  get componentType(): Type<any> {
+    return unimplemented();
+  }
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -75,15 +87,31 @@ export class ComponentRef_<C> extends ComponentRef<C> {
       private _component: C) {
     super();
   }
-  get location(): ElementRef { return new ElementRef(this._nativeElement); }
-  get injector(): Injector { return this._parentView.injector(this._index); }
-  get instance(): C { return this._component; };
-  get hostView(): ViewRef { return this._parentView.ref; };
-  get changeDetectorRef(): ChangeDetectorRef { return this._parentView.ref; };
-  get componentType(): Type<any> { return <any>this._component.constructor; }
+  get location(): ElementRef {
+    return new ElementRef(this._nativeElement);
+  }
+  get injector(): Injector {
+    return this._parentView.injector(this._index);
+  }
+  get instance(): C {
+    return this._component;
+  };
+  get hostView(): ViewRef {
+    return this._parentView.ref;
+  };
+  get changeDetectorRef(): ChangeDetectorRef {
+    return this._parentView.ref;
+  };
+  get componentType(): Type<any> {
+    return <any>this._component.constructor;
+  }
 
-  destroy(): void { this._parentView.detachAndDestroy(); }
-  onDestroy(callback: Function): void { this.hostView.onDestroy(callback); }
+  destroy(): void {
+    this._parentView.detachAndDestroy();
+  }
+  onDestroy(callback: Function): void {
+    this.hostView.onDestroy(callback);
+  }
 }
 
 /**
@@ -99,7 +127,9 @@ export class ComponentFactory<C> {
       public selector: string, private _viewClass: Type<AppView<any>>,
       private _componentType: Type<any>) {}
 
-  get componentType(): Type<any> { return this._componentType; }
+  get componentType(): Type<any> {
+    return this._componentType;
+  }
 
   /**
    * Creates a new component.

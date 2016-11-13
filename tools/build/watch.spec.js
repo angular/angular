@@ -145,13 +145,18 @@ function mockTimeout() {
 
   return {
     mocks: {setTimeout: mockSetTimeout, clearTimeout: mockClearTimeout},
-    flush: flush, get pending() { return events.length; }
+    flush: flush,
+    get pending() {
+      return events.length;
+    }
   };
 
   function mockSetTimeout(fn, delay) {
     delay = delay || 0;
     events.push({time: now + delay, fn: fn, id: id});
-    events.sort(function(a, b) { return a.time - b.time; });
+    events.sort(function(a, b) {
+      return a.time - b.time;
+    });
     return id++;
   }
 

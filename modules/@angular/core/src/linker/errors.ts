@@ -46,8 +46,8 @@ import {DebugContext} from './debug_context';
  */
 export class ExpressionChangedAfterItHasBeenCheckedError extends BaseError {
   constructor(oldValue: any, currValue: any) {
-    let msg =
-        `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+    let msg = `Expression has changed after it was checked. Previous value: '${oldValue
+              }'. Current value: '${currValue}'.`;
     if (oldValue === UNINITIALIZED) {
       msg +=
           ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -85,5 +85,7 @@ export class ViewWrappedError extends WrappedError {
  * @stable
  */
 export class ViewDestroyedError extends BaseError {
-  constructor(details: string) { super(`Attempt to use a destroyed view: ${details}`); }
+  constructor(details: string) {
+    super(`Attempt to use a destroyed view: ${details}`);
+  }
 }

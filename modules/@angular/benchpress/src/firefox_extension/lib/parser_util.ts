@@ -75,7 +75,9 @@ export function convertPerfProfileToEvents(perfProfile: any): any[] {
   });
 
   // Remove all the unknown categories.
-  return finishedEvents.filter(function(event) { return event['name'] != 'unknown'; });
+  return finishedEvents.filter(function(event) {
+    return event['name'] != 'unknown';
+  });
 }
 
 // TODO: this is most likely not exhaustive.

@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, TemplateRef} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -18,14 +18,18 @@ export function main() {
   describe('ngFor', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -362,16 +366,24 @@ export function main() {
 }
 
 class Foo {
-  toString() { return 'foo'; }
+  toString() {
+    return 'foo';
+  }
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   @ContentChild(TemplateRef) contentTpl: TemplateRef<Object>;
   items: any[] = [1, 2];
-  trackById(index: number, item: any): string { return item['id']; }
-  trackByIndex(index: number, item: any): number { return index; }
-  trackByContext(): void { thisArg = this; }
+  trackById(index: number, item: any): string {
+    return item['id'];
+  }
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+  trackByContext(): void {
+    thisArg = this;
+  }
 }
 
 @Component({selector: 'outer-cmp', template: ''})

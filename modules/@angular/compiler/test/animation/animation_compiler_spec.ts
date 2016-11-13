@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationMetadata, animate, sequence, style, transition, trigger} from '@angular/core';
+import {animate, AnimationMetadata, sequence, style, transition, trigger} from '@angular/core';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+
 import {AnimationCompiler, AnimationEntryCompileResult} from '../../src/animation/animation_compiler';
 import {AnimationParser} from '../../src/animation/animation_parser';
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';

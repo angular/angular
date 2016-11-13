@@ -144,7 +144,9 @@ export function main() {
   function createLoggingSpiesFromProto(clazz: Type<any>, log: any[]) {
     const proto = clazz.prototype;
     Object.keys(proto).forEach((method) => {
-      proto[method] = (...args: any[]) => { log.push([method, args]); };
+      proto[method] = (...args: any[]) => {
+        log.push([method, args]);
+      };
     });
   }
 }

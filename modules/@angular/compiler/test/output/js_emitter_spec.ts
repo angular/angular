@@ -193,13 +193,16 @@ export function main() {
       ].join('\n'));
     });
 
-    it('should support support throwing',
-       () => { expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;'); });
+    it('should support support throwing', () => {
+      expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;');
+    });
 
     describe('classes', () => {
       let callSomeMethod: o.Statement;
 
-      beforeEach(() => { callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt(); });
+      beforeEach(() => {
+        callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt();
+      });
 
       it('should support declaring classes', () => {
         expect(emitStmt(new o.ClassStmt('SomeClass', null, [], [], null, [

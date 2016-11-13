@@ -63,11 +63,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     return <DomAnimatePlayer>element.animate(keyframes, options);
   }
 
-  get domPlayer() { return this._player; }
+  get domPlayer() {
+    return this._player;
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
   play(): void {
     this.init();
@@ -97,14 +103,18 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._started = false;
   }
 
-  private _resetDomPlayerState() { this._player.cancel(); }
+  private _resetDomPlayerState() {
+    this._player.cancel();
+  }
 
   restart(): void {
     this.reset();
     this.play();
   }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
   destroy(): void {
     if (!this._destroyed) {
@@ -114,11 +124,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
   }
 
-  get totalTime(): number { return this._duration; }
+  get totalTime(): number {
+    return this._duration;
+  }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.totalTime; }
+  setPosition(p: number): void {
+    this._player.currentTime = p * this.totalTime;
+  }
 
-  getPosition(): number { return this._player.currentTime / this.totalTime; }
+  getPosition(): number {
+    return this._player.currentTime / this.totalTime;
+  }
 }
 
 function _computeStyle(element: any, prop: string): string {

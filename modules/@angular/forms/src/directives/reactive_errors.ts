@@ -27,7 +27,8 @@ export class ReactiveErrors {
 
        Option 1:  Update the parent to be formGroupName (reactive form strategy)
 
-        ${Examples.formGroupName}
+        ${Examples
+            .formGroupName}
 
         Option 2: Use ngModel instead of formControlName (template-driven strategy)
 

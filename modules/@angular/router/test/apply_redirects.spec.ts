@@ -12,20 +12,24 @@ import {of } from 'rxjs/observable/of';
 import {applyRedirects} from '../src/apply_redirects';
 import {Routes} from '../src/config';
 import {LoadedRouterConfig} from '../src/router_config_loader';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {DefaultUrlSerializer, equalSegments, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 describe('applyRedirects', () => {
 
   it('should return the same url tree when no redirects', () => {
     checkRedirect(
         [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
-        '/a/b', (t: UrlTree) => { compareTrees(t, tree('/a/b')); });
+        '/a/b', (t: UrlTree) => {
+          compareTrees(t, tree('/a/b'));
+        });
   });
 
   it('should add new segments when needed', () => {
     checkRedirect(
         [{path: 'a/b', redirectTo: 'a/b/c'}, {path: '**', component: ComponentC}], '/a/b',
-        (t: UrlTree) => { compareTrees(t, tree('/a/b/c')); });
+        (t: UrlTree) => {
+          compareTrees(t, tree('/a/b/c'));
+        });
   });
 
   it('should handle positional parameters', () => {
@@ -34,7 +38,9 @@ describe('applyRedirects', () => {
           {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'},
           {path: '**', component: ComponentC}
         ],
-        '/a/1/b/2', (t: UrlTree) => { compareTrees(t, tree('/newa/1/newb/2')); });
+        '/a/1/b/2', (t: UrlTree) => {
+          compareTrees(t, tree('/newa/1/newb/2'));
+        });
   });
 
   it('should throw when cannot handle a positional parameter', () => {
@@ -48,7 +54,9 @@ describe('applyRedirects', () => {
   it('should pass matrix parameters', () => {
     checkRedirect(
         [{path: 'a/:id', redirectTo: 'd/a/:id/e'}, {path: '**', component: ComponentC}],
-        '/a;p1=1/1;p2=2', (t: UrlTree) => { compareTrees(t, tree('/d/a;p1=1/1;p2=2/e')); });
+        '/a;p1=1/1;p2=2', (t: UrlTree) => {
+          compareTrees(t, tree('/d/a;p1=1/1;p2=2/e'));
+        });
   });
 
   it('should handle preserve secondary routes', () => {
@@ -57,7 +65,9 @@ describe('applyRedirects', () => {
           {path: 'a/:id', redirectTo: 'd/a/:id/e'},
           {path: 'c/d', component: ComponentA, outlet: 'aux'}, {path: '**', component: ComponentC}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/d/a/1/e(aux:c/d)')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          compareTrees(t, tree('/d/a/1/e(aux:c/d)'));
+        });
   });
 
   it('should redirect secondary routes', () => {
@@ -67,7 +77,9 @@ describe('applyRedirects', () => {
           {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'},
           {path: '**', component: ComponentC, outlet: 'aux'}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/a/1(aux:f/c/d/e)')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          compareTrees(t, tree('/a/1(aux:f/c/d/e)'));
+        });
   });
 
   it('should use the configuration of the route redirected to', () => {
@@ -82,7 +94,9 @@ describe('applyRedirects', () => {
           },
           {path: 'c', redirectTo: 'a'}
         ],
-        'c/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+        'c/b', (t: UrlTree) => {
+          compareTrees(t, tree('a/b'));
+        });
   });
 
   it('should support redirects with both main and aux', () => {
@@ -96,7 +110,9 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc)')); });
+        'a/(b//aux:b)', (t: UrlTree) => {
+          compareTrees(t, tree('a/(bb//aux:cc)'));
+        });
   });
 
   it('should support redirects with both main and aux (with a nested redirect)', () => {
@@ -115,7 +131,9 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc/d', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc/dd)')); });
+        'a/(b//aux:b)', (t: UrlTree) => {
+          compareTrees(t, tree('a/(bb//aux:cc/dd)'));
+        });
   });
 
   it('should redirect wild cards', () => {
@@ -124,7 +142,9 @@ describe('applyRedirects', () => {
           {path: '404', component: ComponentA},
           {path: '**', redirectTo: '/404'},
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/404')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => {
+          compareTrees(t, tree('/404'));
+        });
   });
 
   it('should support absolute redirects', () => {
@@ -137,7 +157,9 @@ describe('applyRedirects', () => {
           },
           {path: '**', component: ComponentC}
         ],
-        '/a/b/1', (t: UrlTree) => { compareTrees(t, tree('/absolute/1')); });
+        '/a/b/1', (t: UrlTree) => {
+          compareTrees(t, tree('/absolute/1'));
+        });
   });
 
   describe('lazy loading', () => {
@@ -210,7 +232,9 @@ describe('applyRedirects', () => {
 
       applyRedirects(<any>injector, <any>loader, tree('a/b'), config)
           .subscribe(
-              () => { throw 'Should not reach'; },
+              () => {
+                throw 'Should not reach';
+              },
               (e) => {
                 expect(e.message).toEqual(
                     `Cannot load children because the guard of the route "path: 'a'" returned false`);
@@ -236,7 +260,12 @@ describe('applyRedirects', () => {
 
       applyRedirects(<any>injector, <any>loader, tree('a/b'), config)
           .subscribe(
-              () => { throw 'Should not reach'; }, (e) => { expect(e).toEqual('someError'); });
+              () => {
+                throw 'Should not reach';
+              },
+              (e) => {
+                expect(e).toEqual('someError');
+              });
     });
 
     it('should work with objects implementing the CanLoad interface', () => {
@@ -253,7 +282,12 @@ describe('applyRedirects', () => {
 
       applyRedirects(<any>injector, <any>loader, tree('a/b'), config)
           .subscribe(
-              (r) => { compareTrees(r, tree('/a/b')); }, (e) => { throw 'Should not reach'; });
+              (r) => {
+                compareTrees(r, tree('/a/b'));
+              },
+              (e) => {
+                throw 'Should not reach';
+              });
 
     });
 
@@ -297,7 +331,9 @@ describe('applyRedirects', () => {
                 compareTrees(r, tree('a'));
                 expect((<any>config[0])._loadedConfig).toBe(loadedConfig);
               },
-              (e) => { throw 'Should not reach'; });
+              (e) => {
+                throw 'Should not reach';
+              });
     });
 
     it('should load the configuration of a wildcard route', () => {
@@ -358,7 +394,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          'b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          'b', (t: UrlTree) => {
+            compareTrees(t, tree('a/b'));
+          });
     });
 
     it('redirect from an empty path should work (absolute redirect)', () => {
@@ -373,7 +411,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: '/a/b'}
           ],
-          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          '', (t: UrlTree) => {
+            compareTrees(t, tree('a/b'));
+          });
     });
 
     it('should redirect empty path route only when terminal', () => {
@@ -390,8 +430,12 @@ describe('applyRedirects', () => {
 
       applyRedirects(null, null, tree('b'), config)
           .subscribe(
-              (_) => { throw 'Should not be reached'; },
-              e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\''); });
+              (_) => {
+                throw 'Should not be reached';
+              },
+              e => {
+                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\'');
+              });
     });
 
     it('redirect from an empty path should work (nested case)', () => {
@@ -404,7 +448,9 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          '', (t: UrlTree) => {
+            compareTrees(t, tree('a/b'));
+          });
     });
 
     it('redirect to an empty path should work', () => {
@@ -413,7 +459,9 @@ describe('applyRedirects', () => {
             {path: '', component: ComponentA, children: [{path: 'b', component: ComponentB}]},
             {path: 'a', redirectTo: ''}
           ],
-          'a/b', (t: UrlTree) => { compareTrees(t, tree('b')); });
+          'a/b', (t: UrlTree) => {
+            compareTrees(t, tree('b'));
+          });
     });
 
     describe('aux split is in the middle', () => {
@@ -427,7 +475,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a/b', (t: UrlTree) => {
+              compareTrees(t, tree('a/(b//aux:c)'));
+            });
       });
 
       it('should create a new url segment (terminal)', () => {
@@ -440,7 +490,9 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+            'a/b', (t: UrlTree) => {
+              compareTrees(t, tree('a/b'));
+            });
       });
     });
 
@@ -455,7 +507,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a', (t: UrlTree) => {
+              compareTrees(t, tree('a/(b//aux:c)'));
+            });
       });
 
       it('should create a new child (terminal)', () => {
@@ -468,7 +522,9 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a', (t: UrlTree) => {
+              compareTrees(t, tree('a/(b//aux:c)'));
+            });
       });
 
       it('should work only only primary outlet', () => {
@@ -480,7 +536,9 @@ describe('applyRedirects', () => {
                 {path: 'c', component: ComponentC, outlet: 'aux'}
               ]
             }],
-            'a/(aux:c)', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a/(aux:c)', (t: UrlTree) => {
+              compareTrees(t, tree('a/(b//aux:c)'));
+            });
       });
     });
 
@@ -500,7 +558,9 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/(d//aux:e)', (t: UrlTree) => { compareTrees(t, tree('a/(b/d//aux:c/e)')); });
+            'a/(d//aux:e)', (t: UrlTree) => {
+              compareTrees(t, tree('a/(b/d//aux:c/e)'));
+            });
       });
 
       it('should not create a new child (terminal)', () => {
@@ -520,8 +580,12 @@ describe('applyRedirects', () => {
 
         applyRedirects(null, null, tree('a/(d//aux:e)'), config)
             .subscribe(
-                (_) => { throw 'Should not be reached'; },
-                e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\''); });
+                (_) => {
+                  throw 'Should not be reached';
+                },
+                e => {
+                  expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\'');
+                });
       });
     });
   });
@@ -530,7 +594,9 @@ describe('applyRedirects', () => {
     it('should not error when no children matching and no url is left', () => {
       checkRedirect(
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
-          '/a', (t: UrlTree) => { compareTrees(t, tree('a')); });
+          '/a', (t: UrlTree) => {
+            compareTrees(t, tree('a'));
+          });
     });
 
     it('should not error when no children matching and no url is left (aux routes)', () => {
@@ -544,7 +610,9 @@ describe('applyRedirects', () => {
               {path: 'c', component: ComponentC, outlet: 'aux'},
             ]
           }],
-          '/a', (t: UrlTree) => { compareTrees(t, tree('a/(aux:c)')); });
+          '/a', (t: UrlTree) => {
+            compareTrees(t, tree('a/(aux:c)'));
+          });
     });
 
     it('should error when no children matching and some url is left', () => {
@@ -552,8 +620,12 @@ describe('applyRedirects', () => {
           null, null, tree('/a/c'),
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}])
           .subscribe(
-              (_) => { throw 'Should not be reached'; },
-              e => { expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\''); });
+              (_) => {
+                throw 'Should not be reached';
+              },
+              e => {
+                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\'');
+              });
     });
   });
 
@@ -573,13 +645,17 @@ describe('applyRedirects', () => {
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
           }],
-          '/a/1/b', (t: UrlTree) => { compareTrees(t, tree('a/1/b')); });
+          '/a/1/b', (t: UrlTree) => {
+            compareTrees(t, tree('a/1/b'));
+          });
     });
   });
 });
 
 function checkRedirect(config: Routes, url: string, callback: any): void {
-  applyRedirects(null, null, tree(url), config).subscribe(callback, e => { throw e; });
+  applyRedirects(null, null, tree(url), config).subscribe(callback, e => {
+    throw e;
+  });
 }
 
 function tree(url: string): UrlTree {

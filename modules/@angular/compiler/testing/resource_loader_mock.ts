@@ -43,7 +43,9 @@ export class MockResourceLoader extends ResourceLoader {
    * unlike expectations, unused definitions do not cause `verifyNoOutstandingExpectations`
    * to return an error.
    */
-  when(url: string, response: string) { this._definitions.set(url, response); }
+  when(url: string, response: string) {
+    this._definitions.set(url, response);
+  }
 
   /**
    * Process pending requests and verify there are no outstanding expectations. Also fails
@@ -118,7 +120,9 @@ class _PendingRequest {
     }
   }
 
-  getPromise(): Promise<string> { return this.promise; }
+  getPromise(): Promise<string> {
+    return this.promise;
+  }
 }
 
 class _Expectation {

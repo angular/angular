@@ -68,7 +68,8 @@ Promise
     .then(function() {
       // Finally, load all spec files.
       // This will run the tests directly.
-      return Promise.all(
-          allSpecFiles.map(function(moduleName) { return System.import(moduleName); }));
+      return Promise.all(allSpecFiles.map(function(moduleName) {
+        return System.import(moduleName);
+      }));
     })
     .then(__karma__.start, __karma__.error);

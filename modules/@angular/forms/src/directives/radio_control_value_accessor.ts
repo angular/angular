@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -89,8 +89,7 @@ export class RadioControlRegistry {
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
-export class RadioControlValueAccessor implements ControlValueAccessor,
-    OnDestroy, OnInit {
+export class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
   /** @internal */
   _state: boolean;
   /** @internal */
@@ -114,7 +113,9 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
     this._registry.add(this._control, this);
   }
 
-  ngOnDestroy(): void { this._registry.remove(this); }
+  ngOnDestroy(): void {
+    this._registry.remove(this);
+  }
 
   writeValue(value: any): void {
     this._state = value === this.value;
@@ -129,9 +130,13 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
     };
   }
 
-  fireUncheck(value: any): void { this.writeValue(value); }
+  fireUncheck(value: any): void {
+    this.writeValue(value);
+  }
 
-  registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => {}): void {
+    this.onTouched = fn;
+  }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

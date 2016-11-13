@@ -7,7 +7,7 @@
  */
 import {APP_BASE_HREF} from '@angular/common';
 import {ApplicationRef, Component, NgModule} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Router, RouterModule, Routes} from '@angular/router';
 
@@ -36,7 +36,9 @@ export class RouterInitTestModule {
 describe('RouterModule', () => {
   describe('RouterInitializer', () => {
 
-    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterInitTestModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [RouterInitTestModule]});
+    });
 
     beforeEach(inject([DOCUMENT], function(doc: HTMLDocument) {
 

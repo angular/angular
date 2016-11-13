@@ -7,7 +7,7 @@
  */
 
 import {APP_ID} from '../application_tokens';
-import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
+import {devModeEqual, SimpleChange} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
 import {isPresent, looseIdentical} from '../facade/lang';
@@ -24,7 +24,9 @@ export class ViewUtils {
   sanitizer: Sanitizer;
   private _nextCompTypeId: number = 0;
 
-  constructor(private _renderer: RootRenderer, sanitizer: Sanitizer) { this.sanitizer = sanitizer; }
+  constructor(private _renderer: RootRenderer, sanitizer: Sanitizer) {
+    this.sanitizer = sanitizer;
+  }
 
   /** @internal */
   renderComponent(renderComponentType: RenderComponentType): Renderer {
@@ -354,7 +356,7 @@ export function createRenderElement(
 
 export function selectOrCreateRenderHostElement(
     renderer: Renderer, elementName: string, attrs: InlineArray<string>,
-    rootSelectorOrNode: string | any, debugInfo?: RenderDebugInfo): any {
+    rootSelectorOrNode: string|any, debugInfo?: RenderDebugInfo): any {
   let hostElement: any;
   if (isPresent(rootSelectorOrNode)) {
     hostElement = renderer.selectRootElement(rootSelectorOrNode, debugInfo);
@@ -418,7 +420,9 @@ function createEmptyInlineArray<T>(length: number): InlineArray<T> {
 
 class InlineArray0 implements InlineArray<any> {
   length = 0;
-  get(index: number): any { return undefined; }
+  get(index: number): any {
+    return undefined;
+  }
   set(index: number, value: any): void {}
 }
 
@@ -639,10 +643,16 @@ export class InlineArrayDynamic<T> implements InlineArray<T> {
   private _values: any[];
   // Note: We still take the length argument so this class can be created
   // in the same ways as the other classes!
-  constructor(public length: number, ...values: any[]) { this._values = values; }
+  constructor(public length: number, ...values: any[]) {
+    this._values = values;
+  }
 
-  get(index: number) { return this._values[index]; }
-  set(index: number, value: T) { this._values[index] = value; }
+  get(index: number) {
+    return this._values[index];
+  }
+  set(index: number, value: T) {
+    this._values[index] = value;
+  }
 }
 
 export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();

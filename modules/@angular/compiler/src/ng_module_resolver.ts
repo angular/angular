@@ -9,7 +9,7 @@
 import {Injectable, NgModule, Type} from '@angular/core';
 
 import {isPresent, stringify} from './facade/lang';
-import {ReflectorReader, reflector} from './private_import_core';
+import {reflector, ReflectorReader} from './private_import_core';
 
 function _isNgModuleMetadata(obj: any): obj is NgModule {
   return obj instanceof NgModule;
@@ -22,7 +22,9 @@ function _isNgModuleMetadata(obj: any): obj is NgModule {
 export class NgModuleResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
-  isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
+  isNgModule(type: any) {
+    return this._reflector.annotations(type).some(_isNgModuleMetadata);
+  }
 
   resolve(type: Type<any>, throwIfNotFound = true): NgModule {
     const ngModuleMeta: NgModule = this._reflector.annotations(type).find(_isNgModuleMetadata);

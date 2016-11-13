@@ -38,6 +38,8 @@ export class Tab {
 export class ContentChildComp {
   shouldShow = true;
 
-  toggle() { this.shouldShow = !this.shouldShow; }
+  toggle() {
+    this.shouldShow = !this.shouldShow;
+  }
 }
 // #enddocregion

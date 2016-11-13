@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('selectControl example', () => {
@@ -22,8 +23,9 @@ describe('selectControl example', () => {
     p = element(by.css('p'));
   });
 
-  it('should initially select the placeholder option',
-     () => { expect(options.get(0).getAttribute('selected')).toBe('true'); });
+  it('should initially select the placeholder option', () => {
+    expect(options.get(0).getAttribute('selected')).toBe('true');
+  });
 
   it('should update the model when the value changes in the UI', () => {
     select.click();

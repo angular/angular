@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self, forwardRef} from '@angular/core';
-import {ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveInjector_, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
+import {forwardRef, Inject, Injectable, Injector, Optional, Provider, ReflectiveInjector, ReflectiveKey, Self} from '@angular/core';
+import {ReflectiveInjector_, ReflectiveInjectorDynamicStrategy, ReflectiveInjectorInlineStrategy, ReflectiveProtoInjector} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -16,7 +16,9 @@ import {isPresent, stringify} from '../../src/facade/lang';
 class Engine {}
 
 class BrokenEngine {
-  constructor() { throw new Error('Broken Engine'); }
+  constructor() {
+    throw new Error('Broken Engine');
+  }
 }
 
 class DashboardSoftware {}
@@ -31,13 +33,17 @@ class TurboEngine extends Engine {}
 @Injectable()
 class Car {
   engine: Engine;
-  constructor(engine: Engine) { this.engine = engine; }
+  constructor(engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
 class CarWithOptionalEngine {
   engine: any /** TODO #9100 */;
-  constructor(@Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
@@ -53,13 +59,17 @@ class CarWithDashboard {
 @Injectable()
 class SportsCar extends Car {
   engine: Engine;
-  constructor(engine: Engine) { super(engine); }
+  constructor(engine: Engine) {
+    super(engine);
+  }
 }
 
 @Injectable()
 class CarWithInject {
   engine: Engine;
-  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
@@ -160,7 +170,9 @@ export function main() {
       });
 
       it('should provide to a factory', () => {
-        function sportsCarFactory(e: any /** TODO #9100 */) { return new SportsCar(e); }
+        function sportsCarFactory(e: any /** TODO #9100 */) {
+          return new SportsCar(e);
+        }
 
         const injector =
             createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -171,7 +183,9 @@ export function main() {
       });
 
       it('should throw when using a factory with more than 20 dependencies', () => {
-        function factoryWithTooManyArgs() { return new Car(null); }
+        function factoryWithTooManyArgs() {
+          return new Car(null);
+        }
 
         const injector = createInjector([
           Engine, {
@@ -304,16 +318,16 @@ export function main() {
       it('should show the full path when no provider', () => {
         const injector = createInjector([CarWithDashboard, Engine, Dashboard]);
         expect(() => injector.get(CarWithDashboard))
-            .toThrowError(
-                `No provider for DashboardSoftware! (${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware)`);
+            .toThrowError(`No provider for DashboardSoftware! (${stringify(
+                CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware)`);
       });
 
       it('should throw when trying to instantiate a cyclic dependency', () => {
         const injector = createInjector([Car, {provide: Engine, useClass: CyclicEngine}]);
 
         expect(() => injector.get(Car))
-            .toThrowError(
-                `Cannot instantiate cyclic dependency! (${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)})`);
+            .toThrowError(`Cannot instantiate cyclic dependency! (${stringify(Car)} -> ${stringify(
+                Engine)} -> ${stringify(Car)})`);
       });
 
       it('should show the full path when error happens in a constructor', () => {

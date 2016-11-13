@@ -22,9 +22,13 @@ export class SpyChangeDetectorRef extends SpyObject {
 export class SpyIterableDifferFactory extends SpyObject {}
 
 export class SpyElementRef extends SpyObject {
-  constructor() { super(ElementRef); }
+  constructor() {
+    super(ElementRef);
+  }
 }
 
 export class SpyDomAdapter extends SpyObject {
-  constructor() { super(DomAdapter); }
+  constructor() {
+    super(DomAdapter);
+  }
 }

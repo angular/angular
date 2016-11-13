@@ -34,8 +34,9 @@ export function main() {
         expect(val2).toEqual('wat');
       });
 
-      it('should not support other objects',
-         () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
+      it('should not support other objects', () => {
+        expect(() => pipe.transform(<any>{})).toThrowError();
+      });
     });
 
   });

@@ -7,7 +7,7 @@
  */
 
 import {PlatformRef} from '@angular/core';
-import {ClientMessageBrokerFactory, FnArg, PRIMITIVE, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
+import {bootstrapWorkerUi, ClientMessageBrokerFactory, FnArg, PRIMITIVE, UiArguments} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 

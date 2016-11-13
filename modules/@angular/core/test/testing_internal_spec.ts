@@ -10,13 +10,21 @@ import {SpyObject} from '@angular/core/testing/testing_internal';
 
 class TestObj {
   prop: any;
-  constructor(prop: any) { this.prop = prop; }
-  someFunc(): number { return -1; }
-  someComplexFunc(a: any) { return a; }
+  constructor(prop: any) {
+    this.prop = prop;
+  }
+  someFunc(): number {
+    return -1;
+  }
+  someComplexFunc(a: any) {
+    return a;
+  }
 }
 
 class SpyTestObj extends SpyObject {
-  constructor() { super(TestObj); }
+  constructor() {
+    super(TestObj);
+  }
 }
 
 export function main() {
@@ -75,10 +83,13 @@ export function main() {
     describe('spy objects', () => {
       let spyObj: any;
 
-      beforeEach(() => { spyObj = new SpyTestObj(); });
+      beforeEach(() => {
+        spyObj = new SpyTestObj();
+      });
 
-      it('should return a new spy func with no calls',
-         () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
+      it('should return a new spy func with no calls', () => {
+        expect(spyObj.spy('someFunc')).not.toHaveBeenCalled();
+      });
 
       it('should record function calls', () => {
         spyObj.spy('someFunc').and.callFake((a: any, b: any) => a + b);
@@ -110,8 +121,9 @@ export function main() {
         expect(s.b()).toEqual(2);
       });
 
-      it('should create spys for all methods',
-         () => { expect(() => spyObj.someFunc()).not.toThrow(); });
+      it('should create spys for all methods', () => {
+        expect(() => spyObj.someFunc()).not.toThrow();
+      });
     });
   });
 }

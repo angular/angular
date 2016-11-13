@@ -23,7 +23,9 @@ export class Pane {
 export class Tab {
   @ContentChildren(Pane) panes: QueryList<Pane>;
 
-  get serializedPanes(): string { return this.panes ? this.panes.map(p => p.id).join(', ') : ''; }
+  get serializedPanes(): string {
+    return this.panes ? this.panes.map(p => p.id).join(', ') : '';
+  }
 }
 
 @Component({
@@ -41,6 +43,8 @@ export class Tab {
 export class ContentChildrenComp {
   shouldShow = false;
 
-  show() { this.shouldShow = true; }
+  show() {
+    this.shouldShow = true;
+  }
 }
 // #enddocregion

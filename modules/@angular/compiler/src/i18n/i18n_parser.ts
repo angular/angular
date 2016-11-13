@@ -86,7 +86,9 @@ class _I18nVisitor implements html.Visitor {
     return this._visitTextWithInterpolation(text.value, text.sourceSpan);
   }
 
-  visitComment(comment: html.Comment, context: any): i18n.Node { return null; }
+  visitComment(comment: html.Comment, context: any): i18n.Node {
+    return null;
+  }
 
   visitExpansion(icu: html.Expansion, context: any): i18n.Node {
     this._icuDepth++;

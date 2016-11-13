@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, forwardRef, Input, OnChanges, SimpleChanges} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
 import {AbstractControl} from '../model';
@@ -64,7 +64,9 @@ export class RequiredValidator implements Validator {
   private _onChange: () => void;
 
   @Input()
-  get required(): boolean { return this._required; }
+  get required(): boolean {
+    return this._required;
+  }
 
   set required(value: boolean) {
     this._required = isPresent(value) && `${value}` !== 'false';
@@ -75,7 +77,9 @@ export class RequiredValidator implements Validator {
     return this.required ? Validators.required(c) : null;
   }
 
-  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) {
+    this._onChange = fn;
+  }
 }
 
 /**
@@ -114,8 +118,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
   providers: [MIN_LENGTH_VALIDATOR],
   host: {'[attr.minlength]': 'minlength? minlength : null'}
 })
-export class MinLengthValidator implements Validator,
-    OnChanges {
+export class MinLengthValidator implements Validator, OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
@@ -136,7 +139,9 @@ export class MinLengthValidator implements Validator,
     return this.minlength == null ? null : this._validator(c);
   }
 
-  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) {
+    this._onChange = fn;
+  }
 }
 
 /**
@@ -164,8 +169,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
   providers: [MAX_LENGTH_VALIDATOR],
   host: {'[attr.maxlength]': 'maxlength? maxlength : null'}
 })
-export class MaxLengthValidator implements Validator,
-    OnChanges {
+export class MaxLengthValidator implements Validator, OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
@@ -186,7 +190,9 @@ export class MaxLengthValidator implements Validator,
     return isPresent(this.maxlength) ? this._validator(c) : null;
   }
 
-  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) {
+    this._onChange = fn;
+  }
 }
 
 
@@ -215,14 +221,15 @@ export const PATTERN_VALIDATOR: any = {
   providers: [PATTERN_VALIDATOR],
   host: {'[attr.pattern]': 'pattern ? pattern : null'}
 })
-export class PatternValidator implements Validator,
-    OnChanges {
+export class PatternValidator implements Validator, OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
   @Input() pattern: string;
 
-  private _createValidator() { this._validator = Validators.pattern(this.pattern); }
+  private _createValidator() {
+    this._validator = Validators.pattern(this.pattern);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['pattern']) {
@@ -235,5 +242,7 @@ export class PatternValidator implements Validator,
     return this.pattern ? this._validator(c) : null;
   }
 
-  registerOnValidatorChange(fn: () => void) { this._onChange = fn; }
+  registerOnValidatorChange(fn: () => void) {
+    this._onChange = fn;
+  }
 }

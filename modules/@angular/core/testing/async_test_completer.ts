@@ -16,9 +16,15 @@ export class AsyncTestCompleter {
     this._resolve = res;
     this._reject = rej;
   });
-  done(value?: any) { this._resolve(value); }
+  done(value?: any) {
+    this._resolve(value);
+  }
 
-  fail(error?: any, stackTrace?: string) { this._reject(error); }
+  fail(error?: any, stackTrace?: string) {
+    this._reject(error);
+  }
 
-  get promise(): Promise<any> { return this._promise; }
+  get promise(): Promise<any> {
+    return this._promise;
+  }
 }

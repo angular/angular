@@ -39,7 +39,9 @@ export class AnimationEntryAst extends AnimationAst {
 }
 
 export class AnimationStateDeclarationAst extends AnimationStateAst {
-  constructor(public stateName: string, public styles: AnimationStylesAst) { super(); }
+  constructor(public stateName: string, public styles: AnimationStylesAst) {
+    super();
+  }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationStateDeclaration(this, context);
   }
@@ -72,32 +74,42 @@ export class AnimationStepAst extends AnimationAst {
 }
 
 export class AnimationStylesAst extends AnimationAst {
-  constructor(public styles: Array<{[key: string]: string | number}>) { super(); }
+  constructor(public styles: Array<{[key: string]: string | number}>) {
+    super();
+  }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationStyles(this, context);
   }
 }
 
 export class AnimationKeyframeAst extends AnimationAst {
-  constructor(public offset: number, public styles: AnimationStylesAst) { super(); }
+  constructor(public offset: number, public styles: AnimationStylesAst) {
+    super();
+  }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationKeyframe(this, context);
   }
 }
 
 export abstract class AnimationWithStepsAst extends AnimationAst {
-  constructor(public steps: AnimationAst[]) { super(); }
+  constructor(public steps: AnimationAst[]) {
+    super();
+  }
 }
 
 export class AnimationGroupAst extends AnimationWithStepsAst {
-  constructor(steps: AnimationAst[]) { super(steps); }
+  constructor(steps: AnimationAst[]) {
+    super(steps);
+  }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationGroup(this, context);
   }
 }
 
 export class AnimationSequenceAst extends AnimationWithStepsAst {
-  constructor(steps: AnimationAst[]) { super(steps); }
+  constructor(steps: AnimationAst[]) {
+    super(steps);
+  }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationSequence(this, context);
   }

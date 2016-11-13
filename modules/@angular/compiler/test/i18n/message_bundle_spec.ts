@@ -20,7 +20,9 @@ export function main(): void {
     describe('Messages', () => {
       let messages: MessageBundle;
 
-      beforeEach(() => { messages = new MessageBundle(new HtmlParser, [], {}); });
+      beforeEach(() => {
+        messages = new MessageBundle(new HtmlParser, [], {});
+      });
 
       it('should extract the message to the catalog', () => {
         messages.updateFromTemplate(
@@ -50,7 +52,9 @@ class _TestSerializer implements Serializer {
         .join('//');
   }
 
-  load(content: string, url: string, placeholders: {}): {} { return null; }
+  load(content: string, url: string, placeholders: {}): {} {
+    return null;
+  }
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {

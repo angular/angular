@@ -16,8 +16,8 @@ import {Identifiers, identifierToken, resolveIdentifier} from '../identifiers';
 import {createClassStmt} from '../output/class_builder';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
-import {ChangeDetectorStatus, ViewType, isDefaultChangeDetectionStrategy} from '../private_import_core';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {ChangeDetectorStatus, isDefaultChangeDetectionStrategy, ViewType} from '../private_import_core';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView, CompileViewRootNode, CompileViewRootNodeType} from './compile_view';
@@ -65,7 +65,9 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       public targetDependencies:
           Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 
-  private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
+  private _isRootNode(parent: CompileElement): boolean {
+    return parent.view !== this.view;
+  }
 
   private _addRootNodeAndProject(node: CompileNode) {
     const projectedNode = _getOuterContainerOrSelf(node);
@@ -283,16 +285,28 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     return null;
   }
 
-  visitAttr(ast: AttrAst, ctx: any): any { return null; }
-  visitDirective(ast: DirectiveAst, ctx: any): any { return null; }
+  visitAttr(ast: AttrAst, ctx: any): any {
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, ctx: any): any {
+    return null;
+  }
   visitEvent(ast: BoundEventAst, eventTargetAndNames: Map<string, BoundEventAst>): any {
     return null;
   }
 
-  visitReference(ast: ReferenceAst, ctx: any): any { return null; }
-  visitVariable(ast: VariableAst, ctx: any): any { return null; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
+  visitReference(ast: ReferenceAst, ctx: any): any {
+    return null;
+  }
+  visitVariable(ast: VariableAst, ctx: any): any {
+    return null;
+  }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    return null;
+  }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
+    return null;
+  }
 }
 
 /**
@@ -338,7 +352,9 @@ function _isNgContainer(node: CompileNode, view: CompileView): boolean {
 function _mergeHtmlAndDirectiveAttrs(
     declaredHtmlAttrs: {[key: string]: string}, directives: CompileDirectiveSummary[]): string[] {
   const mapResult: {[key: string]: string} = {};
-  Object.keys(declaredHtmlAttrs).forEach(key => { mapResult[key] = declaredHtmlAttrs[key]; });
+  Object.keys(declaredHtmlAttrs).forEach(key => {
+    mapResult[key] = declaredHtmlAttrs[key];
+  });
   directives.forEach(directiveMeta => {
     Object.keys(directiveMeta.hostAttributes).forEach(name => {
       const value = directiveMeta.hostAttributes[name];
@@ -349,14 +365,17 @@ function _mergeHtmlAndDirectiveAttrs(
   const arrResult: string[] = [];
   // Note: We need to sort to get a defined output order
   // for tests and for caching generated artifacts...
-  Object.keys(mapResult).sort().forEach(
-      (attrName) => { arrResult.push(attrName, mapResult[attrName]); });
+  Object.keys(mapResult).sort().forEach((attrName) => {
+    arrResult.push(attrName, mapResult[attrName]);
+  });
   return arrResult;
 }
 
 function _readHtmlAttrs(attrs: AttrAst[]): {[key: string]: string} {
   const htmlAttrs: {[key: string]: string} = {};
-  attrs.forEach((ast) => { htmlAttrs[ast.name] = ast.value; });
+  attrs.forEach((ast) => {
+    htmlAttrs[ast.name] = ast.value;
+  });
   return htmlAttrs;
 }
 
@@ -505,8 +524,9 @@ function generateDestroyMethod(view: CompileView): o.Statement[] {
   view.viewContainers.forEach((viewContainer) => {
     stmts.push(viewContainer.callMethod('destroyNestedViews', []).toStmt());
   });
-  view.viewChildren.forEach(
-      (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
+  view.viewChildren.forEach((viewChild) => {
+    stmts.push(viewChild.callMethod('destroy', []).toStmt());
+  });
   stmts.push(...view.destroyMethod.finish());
   return stmts;
 }

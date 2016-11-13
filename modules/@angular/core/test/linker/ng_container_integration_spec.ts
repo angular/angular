@@ -14,8 +14,12 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -158,7 +162,9 @@ class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterContentInit: number;
 
-  ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+  ngAfterContentInit() {
+    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
@@ -166,7 +172,9 @@ class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number;
 
-  ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+  ngAfterViewInit() {
+    this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})

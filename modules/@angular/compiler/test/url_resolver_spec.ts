@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {createOfflineCompileUrlResolver, UrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
@@ -108,7 +108,9 @@ export function main() {
 
     describe('asset urls', () => {
       let resolver: UrlResolver;
-      beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
+      beforeEach(() => {
+        resolver = createOfflineCompileUrlResolver();
+      });
 
       it('should resolve package: urls into asset: urls', () => {
         expect(resolver.resolve(null, 'package:somePkg/somePath'))

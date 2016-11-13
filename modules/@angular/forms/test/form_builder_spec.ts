@@ -10,13 +10,19 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_in
 import {FormBuilder} from '@angular/forms';
 
 export function main() {
-  function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
-  function asyncValidator(_: any /** TODO #9100 */) { return Promise.resolve(null); }
+  function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ {
+    return null;
+  }
+  function asyncValidator(_: any /** TODO #9100 */) {
+    return Promise.resolve(null);
+  }
 
   describe('Form Builder', () => {
     let b: FormBuilder;
 
-    beforeEach(() => { b = new FormBuilder(); });
+    beforeEach(() => {
+      b = new FormBuilder();
+    });
 
     it('should create controls from a value', () => {
       const g = b.group({'login': 'some value'});

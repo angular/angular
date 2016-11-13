@@ -10,7 +10,7 @@ import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFac
 
 import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, createHostComponentMeta, ProviderMeta} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
@@ -51,7 +51,9 @@ export class RuntimeCompiler implements Compiler {
       private _directiveWrapperCompiler: DirectiveWrapperCompiler,
       private _compilerConfig: CompilerConfig, private _animationParser: AnimationParser) {}
 
-  get injector(): Injector { return this._injector; }
+  get injector(): Injector {
+    return this._injector;
+  }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._compileModuleAndComponents(moduleType, true).syncResult;
@@ -208,8 +210,8 @@ export class RuntimeCompiler implements Compiler {
   private _createCompiledHostTemplate(compType: Type<any>, ngModule: CompileNgModuleMetadata):
       CompiledTemplate {
     if (!ngModule) {
-      throw new Error(
-          `Component ${stringify(compType)} is not part of any NgModule or the module has not been imported into your module.`);
+      throw new Error(`Component ${stringify(
+          compType)} is not part of any NgModule or the module has not been imported into your module.`);
     }
     let compiledTemplate = this._compiledHostTemplateCache.get(compType);
     if (!compiledTemplate) {
@@ -240,8 +242,8 @@ export class RuntimeCompiler implements Compiler {
     const compiledTemplate = isHost ? this._compiledHostTemplateCache.get(compType) :
                                       this._compiledTemplateCache.get(compType);
     if (!compiledTemplate) {
-      throw new Error(
-          `Illegal state: Compiled view for component ${stringify(compType)} (host: ${isHost}) does not exist!`);
+      throw new Error(`Illegal state: Compiled view for component ${stringify(
+          compType)} (host: ${isHost}) does not exist!`);
     }
     return compiledTemplate;
   }
@@ -277,8 +279,9 @@ export class RuntimeCompiler implements Compiler {
     const compMeta = template.compMeta;
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
     const stylesCompileResult = this._styleCompiler.compileComponent(compMeta);
-    stylesCompileResult.externalStylesheets.forEach(
-        (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r); });
+    stylesCompileResult.externalStylesheets.forEach((r) => {
+      externalStylesheetsByModuleUrl.set(r.meta.moduleUrl, r);
+    });
     this._resolveStylesCompileResult(
         stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
     const parsedAnimations = this._animationParser.parseComponent(compMeta);
@@ -319,7 +322,10 @@ export class RuntimeCompiler implements Compiler {
       viewClass = interpretStatements(statements, compileResult.viewClassVar);
     } else {
       viewClass = jitStatements(
-          `/${template.ngModule.type.name}/${template.compType.name}/${template.isHost?'host':'component'}.ngfactory.js`,
+          `/${template.ngModule.type.name}/${template.compType.name}/${template.isHost ?
+              'host' :
+              'component'
+              }.ngfactory.js`,
           statements, compileResult.viewClassVar);
     }
     template.compiled(viewClass);
@@ -390,7 +396,9 @@ function assertComponent(meta: CompileDirectiveMetadata) {
 class ModuleBoundCompiler implements Compiler {
   constructor(private _delegate: RuntimeCompiler, private _ngModule: Type<any>) {}
 
-  get _injector(): Injector { return this._delegate.injector; }
+  get _injector(): Injector {
+    return this._delegate.injector;
+  }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._delegate.compileModuleSync(moduleType);
@@ -411,10 +419,14 @@ class ModuleBoundCompiler implements Compiler {
   /**
    * Clears all caches
    */
-  clearCache(): void { this._delegate.clearCache(); }
+  clearCache(): void {
+    this._delegate.clearCache();
+  }
 
   /**
    * Clears the cache for the given component/ngModule.
    */
-  clearCacheFor(type: Type<any>) { this._delegate.clearCacheFor(type); }
+  clearCacheFor(type: Type<any>) {
+    this._delegate.clearCacheFor(type);
+  }
 }

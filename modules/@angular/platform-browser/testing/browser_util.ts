@@ -21,11 +21,17 @@ export class BrowserDetection {
     return getDOM() ? getDOM().getUserAgent() : '';
   }
 
-  static setup() { browserDetection = new BrowserDetection(null); }
+  static setup() {
+    browserDetection = new BrowserDetection(null);
+  }
 
-  constructor(ua: string) { this._overrideUa = ua; }
+  constructor(ua: string) {
+    this._overrideUa = ua;
+  }
 
-  get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
+  get isFirefox(): boolean {
+    return this._ua.indexOf('Firefox') > -1;
+  }
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
@@ -33,9 +39,13 @@ export class BrowserDetection {
         this._ua.indexOf('IEMobile') == -1;
   }
 
-  get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
+  get isEdge(): boolean {
+    return this._ua.indexOf('Edge') > -1;
+  }
 
-  get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
+  get isIE(): boolean {
+    return this._ua.indexOf('Trident') > -1;
+  }
 
   get isWebkit(): boolean {
     return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
@@ -47,7 +57,9 @@ export class BrowserDetection {
         this._ua.indexOf('IEMobile') == -1;
   }
 
-  get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
+  get isSlow(): boolean {
+    return this.isAndroid || this.isIE || this.isIOS7;
+  }
 
   // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
   // This detector is needed in tests to make the difference between:

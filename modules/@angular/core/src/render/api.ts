@@ -25,12 +25,24 @@ export class RenderComponentType {
 }
 
 export abstract class RenderDebugInfo {
-  get injector(): Injector { return unimplemented(); }
-  get component(): any { return unimplemented(); }
-  get providerTokens(): any[] { return unimplemented(); }
-  get references(): {[key: string]: any} { return unimplemented(); }
-  get context(): any { return unimplemented(); }
-  get source(): string { return unimplemented(); }
+  get injector(): Injector {
+    return unimplemented();
+  }
+  get component(): any {
+    return unimplemented();
+  }
+  get providerTokens(): any[] {
+    return unimplemented();
+  }
+  get references(): {[key: string]: any} {
+    return unimplemented();
+  }
+  get context(): any {
+    return unimplemented();
+  }
+  get source(): string {
+    return unimplemented();
+  }
 }
 
 export interface DirectRenderer {

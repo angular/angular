@@ -33,7 +33,9 @@ export class NavigationCancelingError extends Error {
     super(message);
     this.stack = (<any>new Error(message)).stack;
   }
-  toString(): string { return this.message; }
+  toString(): string {
+    return this.message;
+  }
 }
 
 export function defaultUrlMatcher(

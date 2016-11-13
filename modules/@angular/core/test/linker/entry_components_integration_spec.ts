@@ -14,15 +14,21 @@ import {Console} from '../../src/console';
 
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 class DummyConsole implements Console {
   public warnings: string[] = [];
 
   log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
+  warn(message: string) {
+    this.warnings.push(message);
+  }
 }
 
 function declareTests({useJit}: {useJit: boolean}) {

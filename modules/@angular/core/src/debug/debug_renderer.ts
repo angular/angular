@@ -40,7 +40,9 @@ export class DebugDomRenderer implements Renderer {
     return nativeEl;
   }
 
-  createViewRoot(hostElement: any): any { return this._delegate.createViewRoot(hostElement); }
+  createViewRoot(hostElement: any): any {
+    return this._delegate.createViewRoot(hostElement);
+  }
 
   createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any {
     const comment = this._delegate.createTemplateAnchor(parentElement, debugInfo);
@@ -60,7 +62,9 @@ export class DebugDomRenderer implements Renderer {
     const debugParent = getDebugNode(parentElement);
     if (isPresent(debugParent) && debugParent instanceof DebugElement) {
       const debugElement = debugParent;
-      nodes.forEach((node) => { debugElement.addChild(getDebugNode(node)); });
+      nodes.forEach((node) => {
+        debugElement.addChild(getDebugNode(node));
+      });
     }
     this._delegate.projectNodes(parentElement, nodes);
   }
@@ -90,7 +94,9 @@ export class DebugDomRenderer implements Renderer {
 
   destroyView(hostElement: any, viewAllNodes: any[]) {
     viewAllNodes = viewAllNodes || [];
-    viewAllNodes.forEach((node) => { removeDebugNodeFromIndex(getDebugNode(node)); });
+    viewAllNodes.forEach((node) => {
+      removeDebugNodeFromIndex(getDebugNode(node));
+    });
     this._delegate.destroyView(hostElement, viewAllNodes);
   }
 
@@ -146,7 +152,9 @@ export class DebugDomRenderer implements Renderer {
     this._delegate.invokeElementMethod(renderElement, methodName, args);
   }
 
-  setText(renderNode: any, text: string) { this._delegate.setText(renderNode, text); }
+  setText(renderNode: any, text: string) {
+    this._delegate.setText(renderNode, text);
+  }
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],

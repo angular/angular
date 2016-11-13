@@ -18,7 +18,7 @@ import * as import8 from '@angular/core/src/metadata/view';
 import * as import0 from '@angular/core/src/render/api';
 import * as import12 from '@angular/core/src/security';
 
-import {FtlEmbeddedView, FtlTemplateRef, FtlView, FtlViewContainerRef, createAnchorAndAppend, createElementAndAppend, createTextAndAppend} from './ftl_util';
+import {createAnchorAndAppend, createElementAndAppend, createTextAndAppend, FtlEmbeddedView, FtlTemplateRef, FtlView, FtlViewContainerRef} from './ftl_util';
 import {NgIfWrapper} from './ng_if.ngfactory';
 import * as import3 from './tree';
 
@@ -105,8 +105,12 @@ class _View_TreeComponent1 implements FtlEmbeddedView<any> {
     this._TreeComponent_0_4.updateData(throwOnChange, this.parent.context.data.right);
     this._TreeComponent_0_4.detectChangesInternal(throwOnChange);
   }
-  visitRootNodes(cb: (...args: any[]) => void, ctx: any) { cb(this._node0, ctx); }
-  destroyInternal() { this._TreeComponent_0_4.destroyInternal(); }
+  visitRootNodes(cb: (...args: any[]) => void, ctx: any) {
+    cb(this._node0, ctx);
+  }
+  destroyInternal() {
+    this._TreeComponent_0_4.destroyInternal();
+  }
 }
 
 class _View_TreeComponent2 implements FtlEmbeddedView<any> {
@@ -122,6 +126,10 @@ class _View_TreeComponent2 implements FtlEmbeddedView<any> {
     this._TreeComponent_0_4.updateData(throwOnChange, this.parent.context.data.left);
     this._TreeComponent_0_4.detectChangesInternal(throwOnChange);
   }
-  visitRootNodes(cb: (...args: any[]) => void, ctx: any) { cb(this._node0, ctx); }
-  destroyInternal() { this._TreeComponent_0_4.destroyInternal(); }
+  visitRootNodes(cb: (...args: any[]) => void, ctx: any) {
+    cb(this._node0, ctx);
+  }
+  destroyInternal() {
+    this._TreeComponent_0_4.destroyInternal();
+  }
 }

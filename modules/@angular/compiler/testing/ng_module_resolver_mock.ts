@@ -13,7 +13,9 @@ import {Compiler, Injectable, Injector, NgModule, Type} from '@angular/core';
 export class MockNgModuleResolver extends NgModuleResolver {
   private _ngModules = new Map<Type<any>, NgModule>();
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector) {
+    super();
+  }
 
   /**
    * Overrides the {@link NgModule} for a module.
@@ -33,7 +35,11 @@ export class MockNgModuleResolver extends NgModuleResolver {
     return this._ngModules.get(type) || super.resolve(type, throwIfNotFound);
   }
 
-  private get _compiler(): Compiler { return this._injector.get(Compiler); }
+  private get _compiler(): Compiler {
+    return this._injector.get(Compiler);
+  }
 
-  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
+  private _clearCacheFor(component: Type<any>) {
+    this._compiler.clearCacheFor(component);
+  }
 }

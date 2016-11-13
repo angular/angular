@@ -44,7 +44,9 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
   detectChangesInternal(throwOnChange: boolean): void {
     this._TreeComponent_0_4.detectChangesInternal(throwOnChange);
   }
-  destroyInternal(): void { this._TreeComponent_0_4.destroyInternal(); }
+  destroyInternal(): void {
+    this._TreeComponent_0_4.destroyInternal();
+  }
   injectorGetInternal(token: any, requestNodeIndex: number, notFoundResult: any): any {
     if (((token === import3.TreeComponent) && (0 === requestNodeIndex))) {
       return this._TreeComponent_0_4;

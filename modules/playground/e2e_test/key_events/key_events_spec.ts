@@ -16,7 +16,9 @@ describe('key_events', function() {
   const URL = 'all/playground/src/key_events/index.html?bundles=false';
 
   afterEach(verifyNoBrowserErrors);
-  beforeEach(() => { browser.get(URL); });
+  beforeEach(() => {
+    browser.get(URL);
+  });
 
   it('should display correct key names', function() {
     const firstArea = element.all(by.css('.sample-area')).get(0);

@@ -17,13 +17,16 @@ export function main() {
     let s1: any[], s2: any[], s3: any[], s4: any[];
     let matched: any[];
 
-    function reset() { matched = []; }
+    function reset() {
+      matched = [];
+    }
 
     beforeEach(() => {
       reset();
       s1 = s2 = s3 = s4 = null;
-      selectableCollector =
-          (selector: CssSelector, context: any) => { matched.push(selector, context); };
+      selectableCollector = (selector: CssSelector, context: any) => {
+        matched.push(selector, context);
+      };
       matcher = new SelectorMatcher();
     });
 

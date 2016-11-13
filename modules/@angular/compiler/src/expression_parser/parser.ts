@@ -12,8 +12,8 @@ import * as chars from '../chars';
 import {escapeRegExp, isBlank, isPresent} from '../facade/lang';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
-import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
+import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 
 export class SplitInterpolation {
@@ -211,7 +211,8 @@ export class Parser {
     const parts = input.split(regexp);
     if (parts.length > 1) {
       this._reportError(
-          `Got interpolation (${interpolationConfig.start}${interpolationConfig.end}) where expression was expected`,
+          `Got interpolation (${interpolationConfig.start}${interpolationConfig.end
+          }) where expression was expected`,
           input,
           `at column ${this._findInterpolationErrorColumn(parts, 1, interpolationConfig)} in`,
           location);
@@ -248,16 +249,22 @@ export class _ParseAST {
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
-  get next(): Token { return this.peek(0); }
+  get next(): Token {
+    return this.peek(0);
+  }
 
   get inputIndex(): number {
     return (this.index < this.tokens.length) ? this.next.index + this.offset :
                                                this.inputLength + this.offset;
   }
 
-  span(start: number) { return new ParseSpan(start, this.inputIndex); }
+  span(start: number) {
+    return new ParseSpan(start, this.inputIndex);
+  }
 
-  advance() { this.index++; }
+  advance() {
+    this.index++;
+  }
 
   optionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
@@ -268,7 +275,9 @@ export class _ParseAST {
     }
   }
 
-  peekKeywordLet(): boolean { return this.next.isKeywordLet(); }
+  peekKeywordLet(): boolean {
+    return this.next.isKeywordLet();
+  }
 
   expectCharacter(code: number) {
     if (this.optionalCharacter(code)) return;
@@ -351,7 +360,9 @@ export class _ParseAST {
     return result;
   }
 
-  parseExpression(): AST { return this.parseConditional(); }
+  parseExpression(): AST {
+    return this.parseConditional();
+  }
 
   parseConditional(): AST {
     const start = this.inputIndex;
@@ -790,9 +801,13 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitFunctionCall(ast: FunctionCall, context: any) {}
 
-  visitLiteralArray(ast: LiteralArray, context: any) { this.visitAll(ast.expressions); }
+  visitLiteralArray(ast: LiteralArray, context: any) {
+    this.visitAll(ast.expressions);
+  }
 
-  visitLiteralMap(ast: LiteralMap, context: any) { this.visitAll(ast.values); }
+  visitLiteralMap(ast: LiteralMap, context: any) {
+    this.visitAll(ast.values);
+  }
 
   visitBinary(ast: Binary, context: any) {}
 
@@ -800,13 +815,17 @@ class SimpleExpressionChecker implements AstVisitor {
 
   visitConditional(ast: Conditional, context: any) {}
 
-  visitPipe(ast: BindingPipe, context: any) { this.errors.push('pipes'); }
+  visitPipe(ast: BindingPipe, context: any) {
+    this.errors.push('pipes');
+  }
 
   visitKeyedRead(ast: KeyedRead, context: any) {}
 
   visitKeyedWrite(ast: KeyedWrite, context: any) {}
 
-  visitAll(asts: any[]): any[] { return asts.map(node => node.visit(this)); }
+  visitAll(asts: any[]): any[] {
+    return asts.map(node => node.visit(this));
+  }
 
   visitChain(ast: Chain, context: any) {}
 

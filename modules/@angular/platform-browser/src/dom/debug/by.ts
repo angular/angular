@@ -27,7 +27,9 @@ export class By {
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
-  static all(): Predicate<DebugElement> { return (debugElement) => true; }
+  static all(): Predicate<DebugElement> {
+    return (debugElement) => true;
+  }
 
   /**
    * Match elements by the given CSS selector.

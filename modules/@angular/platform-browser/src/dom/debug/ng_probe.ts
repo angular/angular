@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, DebugNode, NgZone, Optional, Provider, RootRenderer, getDebugNode, isDevMode} from '@angular/core';
+import {ApplicationRef, DebugNode, getDebugNode, isDevMode, NgZone, Optional, Provider, RootRenderer} from '@angular/core';
 
 import {StringMapWrapper} from '../../facade/collection';
 import {DebugDomRootRenderer} from '../../private_import_core';

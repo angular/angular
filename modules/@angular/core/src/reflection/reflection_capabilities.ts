@@ -15,11 +15,17 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
-  constructor(reflect?: any) { this._reflect = reflect || global.Reflect; }
+  constructor(reflect?: any) {
+    this._reflect = reflect || global.Reflect;
+  }
 
-  isReflectionEnabled(): boolean { return true; }
+  isReflectionEnabled(): boolean {
+    return true;
+  }
 
-  factory<T>(t: Type<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
+  factory<T>(t: Type<T>): (args: any[]) => T {
+    return (...args: any[]) => new t(...args);
+  }
 
   /** @internal */
   _zipTypesAndAnnotations(paramTypes: any[], paramAnnotations: any[]): any[][] {
@@ -132,7 +138,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return type instanceof Type && lcProperty in type.prototype;
   }
 
-  getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
+  getter(name: string): GetterFn {
+    return <GetterFn>new Function('o', 'return o.' + name + ';');
+  }
 
   setter(name: string): SetterFn {
     return <SetterFn>new Function('o', 'v', 'return o.' + name + ' = v;');
@@ -154,8 +162,12 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return `./${stringify(type)}`;
   }
 
-  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any { return runtime; }
-  resolveEnum(enumIdentifier: any, name: string): any { return enumIdentifier[name]; }
+  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
+    return runtime;
+  }
+  resolveEnum(enumIdentifier: any, name: string): any {
+    return enumIdentifier[name];
+  }
 }
 
 function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {

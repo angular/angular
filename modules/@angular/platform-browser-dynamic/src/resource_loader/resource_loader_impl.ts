@@ -46,7 +46,9 @@ export class ResourceLoaderImpl extends ResourceLoader {
       }
     };
 
-    xhr.onerror = function() { reject(`Failed to load ${url}`); };
+    xhr.onerror = function() {
+      reject(`Failed to load ${url}`);
+    };
 
     xhr.send();
     return promise;

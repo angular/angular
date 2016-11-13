@@ -35,7 +35,9 @@ export class JavaScriptEmitter implements OutputEmitter {
 class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   importsWithPrefixes = new Map<string, string>();
 
-  constructor(private _moduleUrl: string) { super(); }
+  constructor(private _moduleUrl: string) {
+    super();
+  }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     if (isBlank(ast.value.name)) {

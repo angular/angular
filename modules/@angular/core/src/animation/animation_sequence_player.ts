@@ -22,7 +22,9 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   public parentPlayer: AnimationPlayer = null;
 
   constructor(private _players: AnimationPlayer[]) {
-    this._players.forEach(player => { player.parentPlayer = this; });
+    this._players.forEach(player => {
+      player.parentPlayer = this;
+    });
     this._onNext(false);
   }
 
@@ -54,13 +56,21 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this._players.forEach(player => player.init()); }
+  init(): void {
+    this._players.forEach(player => player.init());
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  hasStarted() { return this._started; }
+  hasStarted() {
+    return this._started;
+  }
 
   play(): void {
     if (!isPresent(this.parentPlayer)) {
@@ -74,7 +84,9 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     this._activePlayer.play();
   }
 
-  pause(): void { this._activePlayer.pause(); }
+  pause(): void {
+    this._activePlayer.pause();
+  }
 
   restart(): void {
     this.reset();
@@ -104,7 +116,11 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p: any /** TODO #9100 */): void { this._players[0].setPosition(p); }
+  setPosition(p: any /** TODO #9100 */): void {
+    this._players[0].setPosition(p);
+  }
 
-  getPosition(): number { return this._players[0].getPosition(); }
+  getPosition(): number {
+    return this._players[0].getPosition();
+  }
 }

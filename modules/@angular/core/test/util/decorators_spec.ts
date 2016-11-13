@@ -88,15 +88,24 @@ export function main() {
         const MyClass = (<any>TestDecorator({marker: 'test-works'})).Class(<any>{
           extends: Class(<any>{
             constructor: function() {},
-            extendWorks: function() { return 'extend ' + this.arg; }
+            extendWorks: function() {
+              return 'extend ' + this.arg;
+            }
           }),
-          constructor: [String, function(arg: any) { this.arg = arg; }],
+          constructor: [
+            String,
+            function(arg: any) {
+              this.arg = arg;
+            }
+          ],
           methodA: [
             i0 = new Inject(String),
             [i1 = Inject(String), Number],
             function(a: any, b: any) {},
           ],
-          works: function() { return this.arg; },
+          works: function() {
+            return this.arg;
+          },
           prototype: 'IGNORE'
         });
 
@@ -116,7 +125,9 @@ export function main() {
 
       describe('errors', () => {
         it('should ensure that last constructor is required', () => {
-          expect(() => { (<Function>Class)({}); })
+          expect(() => {
+            (<Function>Class)({});
+          })
               .toThrowError(
                   'Only Function or Array is supported in Class definition for key \'constructor\' is \'undefined\'');
         });
@@ -130,7 +141,9 @@ export function main() {
 
 
         it('should ensure that last position is function', () => {
-          expect(() => { Class({constructor: []}); })
+          expect(() => {
+            Class({constructor: []});
+          })
               .toThrowError(
                   'Last position of Class method array must be Function in key constructor was \'undefined\'');
         });
@@ -144,13 +157,17 @@ export function main() {
         });
 
         it('should ensure that only Function|Arrays are supported', () => {
-          expect(() => { Class({constructor: function() {}, method: <any>'non_function'}); })
+          expect(() => {
+            Class({constructor: function() {}, method: <any>'non_function'});
+          })
               .toThrowError(
                   'Only Function or Array is supported in Class definition for key \'method\' is \'non_function\'');
         });
 
         it('should ensure that extends is a Function', () => {
-          expect(() => { Class({extends: <any>'non_type', constructor: function() {}}); })
+          expect(() => {
+            Class({extends: <any>'non_type', constructor: function() {}});
+          })
               .toThrowError(
                   'Class definition \'extends\' property must be a constructor function was: non_type');
         });

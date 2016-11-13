@@ -52,8 +52,9 @@ export function main() {
             ]);
       });
 
-      it('should not create a message for empty elements',
-         () => { expect(extract('<div i18n="m|d"></div>')).toEqual([]); });
+      it('should not create a message for empty elements', () => {
+        expect(extract('<div i18n="m|d"></div>')).toEqual([]);
+      });
 
       it('should ignore implicit elements in translatable elements', () => {
         expect(extract('<div i18n="m|d"><p></p></div>', ['p'])).toEqual([
@@ -111,8 +112,9 @@ export function main() {
             ]);
       });
 
-      it('should not create a message for empty blocks',
-         () => { expect(extract(`<!-- i18n: meaning1|desc1 --><!-- /i18n -->`)).toEqual([]); });
+      it('should not create a message for empty blocks', () => {
+        expect(extract(`<!-- i18n: meaning1|desc1 --><!-- /i18n -->`)).toEqual([]);
+      });
     });
 
     describe('ICU messages', () => {
@@ -151,8 +153,9 @@ export function main() {
             ]);
       });
 
-      it('should not extract ICU messages outside of i18n sections',
-         () => { expect(extract('{count, plural, =0 {text}}')).toEqual([]); });
+      it('should not extract ICU messages outside of i18n sections', () => {
+        expect(extract('{count, plural, =0 {text}}')).toEqual([]);
+      });
 
       it('should ignore nested ICU messages', () => {
         expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>'))
@@ -234,8 +237,9 @@ export function main() {
             ]);
       });
 
-      it('should not create a message for empty attributes',
-         () => { expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]); });
+      it('should not create a message for empty attributes', () => {
+        expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]);
+      });
     });
 
     describe('implicit elements', () => {

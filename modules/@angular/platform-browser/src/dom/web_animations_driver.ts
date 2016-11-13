@@ -60,8 +60,11 @@ function _populateStyles(
     element: any, styles: AnimationStyles,
     defaultStyles: {[key: string]: string | number}): {[key: string]: string | number} {
   const data: {[key: string]: string | number} = {};
-  styles.styles.forEach(
-      (entry) => { Object.keys(entry).forEach(prop => { data[prop] = entry[prop]; }); });
+  styles.styles.forEach((entry) => {
+    Object.keys(entry).forEach(prop => {
+      data[prop] = entry[prop];
+    });
+  });
   Object.keys(defaultStyles).forEach(prop => {
     if (!isPresent(data[prop])) {
       data[prop] = defaultStyles[prop];

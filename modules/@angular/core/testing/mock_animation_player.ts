@@ -29,13 +29,21 @@ export class MockAnimationPlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this.log.push('init'); }
+  init(): void {
+    this.log.push('init');
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  hasStarted() { return this._started; }
+  hasStarted() {
+    return this._started;
+  }
 
   play(): void {
     if (!this.hasStarted()) {
@@ -46,11 +54,17 @@ export class MockAnimationPlayer implements AnimationPlayer {
     this.log.push('play');
   }
 
-  pause(): void { this.log.push('pause'); }
+  pause(): void {
+    this.log.push('pause');
+  }
 
-  restart(): void { this.log.push('restart'); }
+  restart(): void {
+    this.log.push('restart');
+  }
 
-  finish(): void { this._onFinish(); }
+  finish(): void {
+    this._onFinish();
+  }
 
   reset(): void {
     this.log.push('reset');
@@ -68,5 +82,7 @@ export class MockAnimationPlayer implements AnimationPlayer {
   }
 
   setPosition(p: any /** TODO #9100 */): void {}
-  getPosition(): number { return 0; }
+  getPosition(): number {
+    return 0;
+  }
 }

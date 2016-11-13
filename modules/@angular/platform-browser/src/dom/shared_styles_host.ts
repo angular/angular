@@ -33,7 +33,9 @@ export class SharedStylesHost {
 
   onStylesAdded(additions: string[]) {}
 
-  getAllStyles(): string[] { return this._styles; }
+  getAllStyles(): string[] {
+    return this._styles;
+  }
 }
 
 @Injectable()
@@ -55,9 +57,13 @@ export class DomSharedStylesHost extends SharedStylesHost {
     this._addStylesToHost(this._styles, hostNode);
     this._hostNodes.add(hostNode);
   }
-  removeHost(hostNode: Node) { this._hostNodes.delete(hostNode); }
+  removeHost(hostNode: Node) {
+    this._hostNodes.delete(hostNode);
+  }
 
   onStylesAdded(additions: string[]) {
-    this._hostNodes.forEach((hostNode) => { this._addStylesToHost(additions, hostNode); });
+    this._hostNodes.forEach((hostNode) => {
+      this._addStylesToHost(additions, hostNode);
+    });
   }
 }

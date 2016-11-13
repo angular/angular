@@ -23,7 +23,7 @@ import {WebWorkerRootRenderer} from '@angular/platform-webworker/src/web_workers
 
 import {platformBrowserDynamicTesting} from '../../../../platform-browser-dynamic/testing';
 import {dispatchEvent} from '../../../../platform-browser/testing/browser_util';
-import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -218,5 +218,7 @@ class MyComp2 {
     this.ctxBoolProp = false;
   }
 
-  throwError() { throw 'boom'; }
+  throwError() {
+    throw 'boom';
+  }
 }

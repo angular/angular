@@ -14,7 +14,9 @@ import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
 
 export class ProviderError extends ParseError {
-  constructor(message: string, span: ParseSourceSpan) { super(span, message); }
+  constructor(message: string, span: ParseSourceSpan) {
+    super(span, message);
+  }
 }
 
 export class ProviderViewContext {
@@ -99,7 +101,9 @@ export class ProviderElementContext {
     return sortedDirectives;
   }
 
-  get transformedHasViewContainer(): boolean { return this._hasViewContainer; }
+  get transformedHasViewContainer(): boolean {
+    return this._hasViewContainer;
+  }
 
   private _addQueryReadsTo(token: CompileTokenMetadata, queryReadTokens: Map<any, boolean>) {
     this._getQueriesFor(token).forEach((query) => {
@@ -474,7 +478,8 @@ function _resolveProviders(
     let resolvedProvider = targetProvidersByToken.get(provider.token.reference);
     if (isPresent(resolvedProvider) && resolvedProvider.multiProvider !== provider.multi) {
       targetErrors.push(new ProviderError(
-          `Mixing multi and non multi provider is not possible for token ${resolvedProvider.token.name}`,
+          `Mixing multi and non multi provider is not possible for token ${resolvedProvider.token
+              .name}`,
           sourceSpan));
     }
     if (!resolvedProvider) {

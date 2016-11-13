@@ -15,7 +15,9 @@ import {IterableDiffer, IterableDifferFactory, TrackByFn} from './iterable_diffe
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
-  supports(obj: Object): boolean { return isListLikeIterable(obj); }
+  supports(obj: Object): boolean {
+    return isListLikeIterable(obj);
+  }
   create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): DefaultIterableDiffer {
     return new DefaultIterableDiffer(trackByFn);
   }
@@ -50,9 +52,13 @@ export class DefaultIterableDiffer implements IterableDiffer {
     this._trackByFn = this._trackByFn || trackByIdentity;
   }
 
-  get collection() { return this._collection; }
+  get collection() {
+    return this._collection;
+  }
 
-  get length(): number { return this._length; }
+  get length(): number {
+    return this._length;
+  }
 
   forEachItem(fn: Function) {
     let record: CollectionChangeRecord;
@@ -738,11 +744,17 @@ class _DuplicateMap {
     return record;
   }
 
-  get isEmpty(): boolean { return this.map.size === 0; }
+  get isEmpty(): boolean {
+    return this.map.size === 0;
+  }
 
-  clear() { this.map.clear(); }
+  clear() {
+    this.map.clear();
+  }
 
-  toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
+  toString(): string {
+    return '_DuplicateMap(' + stringify(this.map) + ')';
+  }
 }
 
 function getPreviousIndex(item: any, addRemoveOffset: number, moveOffsets: number[]): number {

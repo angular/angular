@@ -28,13 +28,17 @@ export interface Node { visit(visitor: Visitor, context?: any): any; }
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitText(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitText(this, context);
+  }
 }
 
 export class Container implements Node {
   constructor(public children: Node[], public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitContainer(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitContainer(this, context);
+  }
 }
 
 export class Icu implements Node {
@@ -42,7 +46,9 @@ export class Icu implements Node {
       public expression: string, public type: string, public cases: {[k: string]: Node},
       public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitIcu(this, context);
+  }
 }
 
 export class TagPlaceholder implements Node {
@@ -51,19 +57,25 @@ export class TagPlaceholder implements Node {
       public closeName: string, public children: Node[], public isVoid: boolean,
       public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitTagPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitTagPlaceholder(this, context);
+  }
 }
 
 export class Placeholder implements Node {
   constructor(public value: string, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitPlaceholder(this, context);
+  }
 }
 
 export class IcuPlaceholder implements Node {
   constructor(public value: Icu, public name: string = '', public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitIcuPlaceholder(this, context);
+  }
 }
 
 export interface Visitor {

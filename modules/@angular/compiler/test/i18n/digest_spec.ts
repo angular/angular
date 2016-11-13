@@ -12,14 +12,17 @@ import {sha1} from '../../src/i18n/digest';
 
 export function main(): void {
   describe('sha1', () => {
-    it('should work on emnpty strings',
-       () => { expect(sha1('')).toEqual('da39a3ee5e6b4b0d3255bfef95601890afd80709'); });
+    it('should work on emnpty strings', () => {
+      expect(sha1('')).toEqual('da39a3ee5e6b4b0d3255bfef95601890afd80709');
+    });
 
-    it('should returns the sha1 of "hello world"',
-       () => { expect(sha1('abc')).toEqual('a9993e364706816aba3e25717850c26c9cd0d89d'); });
+    it('should returns the sha1 of "hello world"', () => {
+      expect(sha1('abc')).toEqual('a9993e364706816aba3e25717850c26c9cd0d89d');
+    });
 
-    it('should returns the sha1 of unicode strings',
-       () => { expect(sha1('你好，世界')).toEqual('3becb03b015ed48050611c8d7afe4b88f70d5a20'); });
+    it('should returns the sha1 of unicode strings', () => {
+      expect(sha1('你好，世界')).toEqual('3becb03b015ed48050611c8d7afe4b88f70d5a20');
+    });
 
     it('should support arbitrary string size', () => {
       // node.js reference code:

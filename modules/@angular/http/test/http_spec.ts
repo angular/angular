@@ -7,13 +7,13 @@
  */
 
 import {Injector, ReflectiveInjector} from '@angular/core';
-import {TestBed, getTestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {getTestBed, TestBed} from '@angular/core/testing';
+import {afterEach, AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
+import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, Jsonp, JSONPBackend, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
 
@@ -106,8 +106,9 @@ export function main() {
 
     describe('Http', () => {
       describe('.request()', () => {
-        it('should return an Observable',
-           () => { expect(http.request(url)).toBeAnInstanceOf(Observable); });
+        it('should return an Observable', () => {
+          expect(http.request(url)).toBeAnInstanceOf(Observable);
+        });
 
 
         it('should accept a fully-qualified request as its only parameter',
@@ -175,8 +176,13 @@ export function main() {
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                     () => { async.done(); });
+                     (res: Response) => {
+                       expect(res.text()).toBe('base response');
+                     },
+                     null,
+                     () => {
+                       async.done();
+                     });
            }));
 
         it('should perform multiple get requests and complete the responses',
@@ -188,8 +194,13 @@ export function main() {
              });
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null,
-                     () => { async.done(); });
+                     (res: Response) => {
+                       expect(res.text()).toBe('base response');
+                     },
+                     null,
+                     () => {
+                       async.done();
+                     });
            }));
 
         it('should throw if url is not a string or Request', () => {

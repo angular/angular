@@ -181,5 +181,7 @@ export class RequestOptions {
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
-  constructor() { super({method: RequestMethod.Get, headers: new Headers()}); }
+  constructor() {
+    super({method: RequestMethod.Get, headers: new Headers()});
+  }
 }

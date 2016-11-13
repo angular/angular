@@ -25,9 +25,13 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  * @experimental
  **/
 export class QueryEncoder {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(k: string): string {
+    return standardEncoding(k);
+  }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(v: string): string {
+    return standardEncoding(v);
+  }
 }
 
 function standardEncoding(v: string): string {
@@ -91,7 +95,9 @@ export class URLSearchParams {
     return clone;
   }
 
-  has(param: string): boolean { return this.paramsMap.has(param); }
+  has(param: string): boolean {
+    return this.paramsMap.has(param);
+  }
 
   get(param: string): string {
     const storedParam = this.paramsMap.get(param);
@@ -99,7 +105,9 @@ export class URLSearchParams {
     return Array.isArray(storedParam) ? storedParam[0] : null;
   }
 
-  getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
+  getAll(param: string): string[] {
+    return this.paramsMap.get(param) || [];
+  }
 
   set(param: string, val: string) {
     if (val === void 0 || val === null) {
@@ -180,5 +188,7 @@ export class URLSearchParams {
     return paramsList.join('&');
   }
 
-  delete (param: string): void { this.paramsMap.delete(param); }
+  delete (param: string): void {
+    this.paramsMap.delete(param);
+  }
 }

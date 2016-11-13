@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformRef, PlatformRef_, createPlatformFactory} from './application_ref';
+import {createPlatformFactory, PlatformRef, PlatformRef_} from './application_ref';
 import {Console} from './console';
 import {Provider} from './di';
 import {Reflector, reflector} from './reflection/reflection';

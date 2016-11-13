@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DirectiveResolver} from '@angular/compiler';
-import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef} from '@angular/core';
+import {AnimationEntryMetadata, Compiler, Component, Directive, Injectable, Injector, Provider, resolveForwardRef, Type} from '@angular/core';
 
 import {isPresent} from './facade/lang';
 import {ViewMetadata} from './private_import_core';
@@ -26,11 +26,17 @@ export class MockDirectiveResolver extends DirectiveResolver {
   private _inlineTemplates = new Map<Type<any>, string>();
   private _animations = new Map<Type<any>, AnimationEntryMetadata[]>();
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector) {
+    super();
+  }
 
-  private get _compiler(): Compiler { return this._injector.get(Compiler); }
+  private get _compiler(): Compiler {
+    return this._injector.get(Compiler);
+  }
 
-  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
+  private _clearCacheFor(component: Type<any>) {
+    this._compiler.clearCacheFor(component);
+  }
 
   resolve(type: Type<any>, throwIfNotFound = true): Directive {
     let metadata = this._directives.get(type);

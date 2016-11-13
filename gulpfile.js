@@ -155,7 +155,9 @@ gulp.task('lint', ['format:enforce', 'tools:build'], () => {
       .pipe(tslint.report({emitError: true}));
 });
 
-gulp.task('tools:build', (done) => { tsc('tools/', done); });
+gulp.task('tools:build', (done) => {
+  tsc('tools/', done);
+});
 
 // Check for circular dependency in the source code
 gulp.task('check-cycle', (done) => {
@@ -164,7 +166,9 @@ gulp.task('check-cycle', (done) => {
   const dependencyObject = madge(['dist/all/'], {
     format: 'cjs',
     extensions: ['.js'],
-    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, '//'); }
+    onParseFile: function(data) {
+      data.src = data.src.replace(/\/\* circular \*\//g, '//');
+    }
   });
   const circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {

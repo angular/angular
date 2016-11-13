@@ -22,11 +22,15 @@ export class Title {
    * Get the title of the current HTML document.
    * @returns {string}
    */
-  getTitle(): string { return getDOM().getTitle(); }
+  getTitle(): string {
+    return getDOM().getTitle();
+  }
 
   /**
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { getDOM().setTitle(newTitle); }
+  setTitle(newTitle: string) {
+    getDOM().setTitle(newTitle);
+  }
 }

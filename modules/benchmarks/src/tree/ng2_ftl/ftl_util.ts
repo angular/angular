@@ -41,7 +41,9 @@ export type FtlEmbeddedViewRef<C> = FtlView<C>;
 
 export class FtlTemplateRef<C> implements TemplateRef<C> {
   constructor(private _index: number, private _view: FtlView<any>) {}
-  get elementRef(): ElementRef { return unimplemented(); }
+  get elementRef(): ElementRef {
+    return unimplemented();
+  }
   createEmbeddedView(context: C): any {
     return this._view.createEmbeddedView(context, this._index);
   }
@@ -63,13 +65,19 @@ export class FtlViewContainerRef implements ViewContainerRef {
   }
 
   // TODO(tbosch): don't allow this API in FTL mode!
-  get element(): ElementRef { return <ElementRef>unimplemented(); }
+  get element(): ElementRef {
+    return <ElementRef>unimplemented();
+  }
 
   // TODO(tbosch): don't allow this API in FTL mode!
-  get injector(): Injector { return <Injector>unimplemented(); }
+  get injector(): Injector {
+    return <Injector>unimplemented();
+  }
 
   // TODO(tbosch): don't allow this API in FTL mode!
-  get parentInjector(): Injector { return <Injector>unimplemented(); }
+  get parentInjector(): Injector {
+    return <Injector>unimplemented();
+  }
 
   destroyInternal() {
     let view = this._firstView;
@@ -100,7 +108,9 @@ export class FtlViewContainerRef implements ViewContainerRef {
     return result;
   }
 
-  get length(): number { return this._length; };
+  get length(): number {
+    return this._length;
+  };
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): any {
     const view = templateRef.createEmbeddedView(context);

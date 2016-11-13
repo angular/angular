@@ -8,9 +8,9 @@
 
 import {Injectable} from '@angular/core';
 import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
+import {take} from 'rxjs/operator/take';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subject} from 'rxjs/Subject';
-import {take} from 'rxjs/operator/take';
 
 
 /**
@@ -217,7 +217,9 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe((c: MockConnection) => c.readyState = 4); }
+  resolveAllConnections() {
+    this.connections.subscribe((c: MockConnection) => c.readyState = 4);
+  }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new

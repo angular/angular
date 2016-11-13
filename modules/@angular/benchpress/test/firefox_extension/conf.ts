@@ -17,5 +17,7 @@ exports.config = {
 
   jasmineNodeOpts: {showColors: true, defaultTimeoutInterval: 1200000},
 
-  getMultiCapabilities: function() { return testHelper.getFirefoxProfileWithExtension(); }
+  getMultiCapabilities: function() {
+    return testHelper.getFirefoxProfileWithExtension();
+  }
 };

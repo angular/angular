@@ -253,8 +253,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
         this.element.appendChild(clonedElement[i]);
       }
     }, {
-      parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
-                                cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }
+      parentBoundTranscludeFn:
+          (scope: any /** TODO #9100 */, cloneAttach: any /** TODO #9100 */) => {
+            cloneAttach(childNodes);
+          }
     });
     if (this.destinationObj.$onInit) {
       this.destinationObj.$onInit();
@@ -338,7 +340,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       }
       return deps;
     }
-    throw new Error(
-        `Directive '${this.directive.name}' require syntax unrecognized: ${this.directive.require}`);
+    throw new Error(`Directive '${this.directive.name
+                    }' require syntax unrecognized: ${this.directive.require}`);
   }
 }

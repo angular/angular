@@ -224,7 +224,7 @@ export function main() {
     ];
 
     browsers.forEach((browser: {[key: string]: any}) => {
-      it(`should detect ${browser[ 'name']}`, () => {
+      it(`should detect ${browser['name']}`, () => {
         const bd = new BrowserDetection(<string>browser['ua']);
         expect(bd.isFirefox).toBe(browser['isFirefox']);
         expect(bd.isAndroid).toBe(browser['isAndroid']);

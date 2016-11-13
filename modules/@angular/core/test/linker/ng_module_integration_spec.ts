@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../src/facade/lang';
@@ -18,7 +18,9 @@ import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 class Engine {}
 
 class BrokenEngine {
-  constructor() { throw new Error('Broken Engine'); }
+  constructor() {
+    throw new Error('Broken Engine');
+  }
 }
 
 class DashboardSoftware {}
@@ -33,13 +35,17 @@ class TurboEngine extends Engine {}
 @Injectable()
 class Car {
   engine: Engine;
-  constructor(engine: Engine) { this.engine = engine; }
+  constructor(engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
 class CarWithOptionalEngine {
   engine: Engine;
-  constructor(@Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
@@ -55,13 +61,17 @@ class CarWithDashboard {
 @Injectable()
 class SportsCar extends Car {
   engine: Engine;
-  constructor(engine: Engine) { super(engine); }
+  constructor(engine: Engine) {
+    super(engine);
+  }
 }
 
 @Injectable()
 class CarWithInject {
   engine: Engine;
-  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) engine: Engine) {
+    this.engine = engine;
+  }
 }
 
 @Injectable()
@@ -87,7 +97,9 @@ class SomeDirective {
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -98,13 +110,19 @@ class DummyConsole implements Console {
   public warnings: string[] = [];
 
   log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
+  warn(message: string) {
+    this.warnings.push(message);
+  }
 }
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -141,8 +159,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         expect(() => createModule(SomeModule))
-            .toThrowError(
-                `Can't export directive ${stringify(SomeDirective)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
+            .toThrowError(`Can't export directive ${stringify(SomeDirective)} from ${stringify(
+                SomeModule)} as it was neither declared nor imported!`);
       });
 
       it('should error when exporting a pipe that was neither declared nor imported', () => {
@@ -151,8 +169,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         }
 
         expect(() => createModule(SomeModule))
-            .toThrowError(
-                `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
+            .toThrowError(`Can't export pipe ${stringify(SomePipe)} from ${stringify(
+                SomeModule)} as it was neither declared nor imported!`);
       });
 
       it('should error if a directive is declared in more than 1 module', () => {
@@ -168,9 +186,12 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => createModule(Module2))
             .toThrowError(
-                `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+                `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(
+                    Module1)} and ${stringify(Module2)}! ` +
+                `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(
+                    Module1)} and ${stringify(Module2)}. ` +
+                `You can also create a new NgModule that exports and includes ${stringify(
+                    SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
       });
 
       it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
@@ -185,9 +206,12 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(() => createModule(Module2))
                .toThrowError(
-                   `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                   `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                   `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+                   `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(
+                       Module1)} and ${stringify(Module2)}! ` +
+                   `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(
+                       Module1)} and ${stringify(Module2)}. ` +
+                   `You can also create a new NgModule that exports and includes ${stringify(
+                       SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
          });
 
       it('should error if a pipe is declared in more than 1 module', () => {
@@ -203,9 +227,12 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(() => createModule(Module2))
             .toThrowError(
-                `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+                `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
+                    Module1)} and ${stringify(Module2)}! ` +
+                `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
+                    Module1)} and ${stringify(Module2)}. ` +
+                `You can also create a new NgModule that exports and includes ${stringify(
+                    SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
       });
 
       it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
@@ -220,9 +247,12 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(() => createModule(Module2))
                .toThrowError(
-                   `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                   `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                   `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+                   `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
+                       Module1)} and ${stringify(Module2)}! ` +
+                   `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
+                       Module1)} and ${stringify(Module2)}. ` +
+                   `You can also create a new NgModule that exports and includes ${stringify(
+                       SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
          });
 
     });
@@ -609,8 +639,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         return createModule(SomeModule, parent).injector;
       }
 
-      it('should provide the module',
-         () => { expect(createInjector([]).get(moduleType)).toBeAnInstanceOf(moduleType); });
+      it('should provide the module', () => {
+        expect(createInjector([]).get(moduleType)).toBeAnInstanceOf(moduleType);
+      });
 
       it('should instantiate a class without dependencies', () => {
         const injector = createInjector([Engine]);
@@ -662,7 +693,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should provide to a factory', () => {
-        function sportsCarFactory(e: Engine) { return new SportsCar(e); }
+        function sportsCarFactory(e: Engine) {
+          return new SportsCar(e);
+        }
 
         const injector =
             createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -871,7 +904,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
           @NgModule()
           class ImportedModule {
-            constructor() { created = true; }
+            constructor() {
+              created = true;
+            }
           }
 
           @NgModule({imports: [ImportedModule]})
@@ -901,7 +936,9 @@ function declareTests({useJit}: {useJit: boolean}) {
           let destroyed = false;
 
           class SomeInjectable {
-            ngOnDestroy() { destroyed = true; }
+            ngOnDestroy() {
+              destroyed = true;
+            }
           }
 
           @NgModule({providers: [SomeInjectable]})
@@ -918,7 +955,9 @@ function declareTests({useJit}: {useJit: boolean}) {
           let created = false;
 
           class SomeInjectable {
-            constructor() { created = true; }
+            constructor() {
+              created = true;
+            }
             ngOnDestroy() {}
           }
 

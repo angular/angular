@@ -40,15 +40,18 @@ export class DirectiveNormalizer {
       private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
       private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
-  clearCache() { this._resourceLoaderCache.clear(); }
+  clearCache() {
+    this._resourceLoaderCache.clear();
+  }
 
   clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
     if (!normalizedDirective.isComponent) {
       return;
     }
     this._resourceLoaderCache.delete(normalizedDirective.template.templateUrl);
-    normalizedDirective.template.externalStylesheets.forEach(
-        (stylesheet) => { this._resourceLoaderCache.delete(stylesheet.moduleUrl); });
+    normalizedDirective.template.externalStylesheets.forEach((stylesheet) => {
+      this._resourceLoaderCache.delete(stylesheet.moduleUrl);
+    });
   }
 
   private _fetch(url: string): Promise<string> {
@@ -227,9 +230,19 @@ class TemplatePreparseVisitor implements html.Visitor {
     return null;
   }
 
-  visitComment(ast: html.Comment, context: any): any { return null; }
-  visitAttribute(ast: html.Attribute, context: any): any { return null; }
-  visitText(ast: html.Text, context: any): any { return null; }
-  visitExpansion(ast: html.Expansion, context: any): any { return null; }
-  visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
+  visitComment(ast: html.Comment, context: any): any {
+    return null;
+  }
+  visitAttribute(ast: html.Attribute, context: any): any {
+    return null;
+  }
+  visitText(ast: html.Text, context: any): any {
+    return null;
+  }
+  visitExpansion(ast: html.Expansion, context: any): any {
+    return null;
+  }
+  visitExpansionCase(ast: html.ExpansionCase, context: any): any {
+    return null;
+  }
 }

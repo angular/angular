@@ -14,8 +14,9 @@ export function main() {
     const pipe: I18nSelectPipe = new I18nSelectPipe();
     const mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};
 
-    it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(I18nSelectPipe).pure).toEqual(true); });
+    it('should be marked as pure', () => {
+      expect(new PipeResolver().resolve(I18nSelectPipe).pure).toEqual(true);
+    });
 
     describe('transform', () => {
       it('should return the "male" text if value is "male"', () => {
@@ -28,16 +29,18 @@ export function main() {
         expect(val).toEqual('Invite her.');
       });
 
-      it('should return the "other" text if value is neither "male" nor "female"',
-         () => { expect(pipe.transform('Anything else', mapping)).toEqual('Invite them.'); });
+      it('should return the "other" text if value is neither "male" nor "female"', () => {
+        expect(pipe.transform('Anything else', mapping)).toEqual('Invite them.');
+      });
 
       it('should return an empty text if value is null or undefined', () => {
         expect(pipe.transform(null, mapping)).toEqual('');
         expect(pipe.transform(void 0, mapping)).toEqual('');
       });
 
-      it('should throw on bad arguments',
-         () => { expect(() => pipe.transform('male', <any>'hey')).toThrowError(); });
+      it('should throw on bad arguments', () => {
+        expect(() => pipe.transform('male', <any>'hey')).toThrowError();
+      });
     });
 
   });

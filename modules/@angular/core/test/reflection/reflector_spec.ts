@@ -62,14 +62,18 @@ class ClassWithoutDecorators {
 class TestObj {
   constructor(public a: any, public b: any) {}
 
-  identity(arg: any) { return arg; }
+  identity(arg: any) {
+    return arg;
+  }
 }
 
 export function main() {
   describe('Reflector', () => {
     let reflector: Reflector;
 
-    beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
+    beforeEach(() => {
+      reflector = new Reflector(new ReflectionCapabilities());
+    });
 
     describe('factory', () => {
       it('should create a factory for the given type', () => {

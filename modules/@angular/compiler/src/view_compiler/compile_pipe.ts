@@ -55,7 +55,9 @@ export class CompilePipe {
                                        .toStmt());
   }
 
-  get pure(): boolean { return this.meta.pure; }
+  get pure(): boolean {
+    return this.meta.pure;
+  }
 
   private _call(callingView: CompileView, args: o.Expression[]): o.Expression {
     if (this.meta.pure) {
@@ -88,8 +90,8 @@ function _findPipeMeta(view: CompileView, name: string): CompilePipeSummary {
     }
   }
   if (!pipeMeta) {
-    throw new Error(
-        `Illegal state: Could not find pipe ${name} although the parser should have detected this error!`);
+    throw new Error(`Illegal state: Could not find pipe ${name
+                    } although the parser should have detected this error!`);
   }
   return pipeMeta;
 }

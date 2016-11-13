@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 export function main() {
   describe('binding to CSS class list', () => {
@@ -18,9 +18,13 @@ export function main() {
       expect(fixture.debugElement.children[0].nativeElement.className).toEqual(classes);
     }
 
-    function getComponent(): TestComponent { return fixture.debugElement.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.debugElement.componentInstance;
+    }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -348,7 +352,9 @@ class TestComponent {
   objExpr: {[klass: string]: any} = {'foo': true, 'bar': false};
   strExpr = 'foo';
 
-  constructor() { this.setExpr.add('foo'); }
+  constructor() {
+    this.setExpr.add('foo');
+  }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

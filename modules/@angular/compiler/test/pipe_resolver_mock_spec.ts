@@ -14,8 +14,9 @@ export function main() {
   describe('MockPipeResolver', () => {
     let pipeResolver: MockPipeResolver;
 
-    beforeEach(inject(
-        [Injector], (injector: Injector) => { pipeResolver = new MockPipeResolver(injector); }));
+    beforeEach(inject([Injector], (injector: Injector) => {
+      pipeResolver = new MockPipeResolver(injector);
+    }));
 
     describe('Pipe overriding', () => {
       it('should fallback to the default PipeResolver when templates are not overridden', () => {

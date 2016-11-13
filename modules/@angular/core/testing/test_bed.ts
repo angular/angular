@@ -80,7 +80,9 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  static resetTestEnvironment() { getTestBed().resetTestEnvironment(); }
+  static resetTestEnvironment() {
+    getTestBed().resetTestEnvironment();
+  }
 
   static resetTestingModule(): typeof TestBed {
     getTestBed().resetTestingModule();
@@ -110,7 +112,9 @@ export class TestBed implements Injector {
    * It is necessary to call this function
    * as fetching urls is asynchronous.
    */
-  static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
+  static compileComponents(): Promise<any> {
+    return getTestBed().compileComponents();
+  }
 
   static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed {
     getTestBed().overrideModule(ngModule, override);
@@ -261,7 +265,8 @@ export class TestBed implements Injector {
       } catch (e) {
         if (e.compType) {
           throw new Error(
-              `This test module uses the component ${stringify(e.compType)} which is using a "templateUrl", but they were never compiled. ` +
+              `This test module uses the component ${stringify(
+                  e.compType)} which is using a "templateUrl", but they were never compiled. ` +
               `Please call "TestBed.compileComponents" before your test.`);
         } else {
           throw e;
@@ -347,8 +352,8 @@ export class TestBed implements Injector {
     const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
         (compFactory) => compFactory.componentType === component);
     if (!componentFactory) {
-      throw new Error(
-          `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
+      throw new Error(`Cannot create the component ${stringify(
+          component)} as it was not imported into the testing module!`);
     }
     const noNgZone = this.get(ComponentFixtureNoNgZone, false);
     const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);

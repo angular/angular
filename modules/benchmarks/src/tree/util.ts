@@ -21,7 +21,9 @@ export class TreeNode {
 
   // Needed for Polymer as it does not support ternary nor modulo operator
   // in expressions
-  get style(): string { return this.depth % 2 === 0 ? 'background-color: grey' : ''; }
+  get style(): string {
+    return this.depth % 2 === 0 ? 'background-color: grey' : '';
+  }
 }
 
 let treeCreateCount: number;

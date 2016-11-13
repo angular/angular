@@ -95,7 +95,9 @@ export class CssScannerError extends BaseError {
     this.rawMessage = message;
   }
 
-  toString(): string { return this.message; }
+  toString(): string {
+    return this.message;
+  }
 }
 
 function _trackWhitespace(mode: CssLexerMode) {
@@ -130,7 +132,9 @@ export class CssScanner {
     this.advance();
   }
 
-  getMode(): CssLexerMode { return this._currentMode; }
+  getMode(): CssLexerMode {
+    return this._currentMode;
+  }
 
   setMode(mode: CssLexerMode) {
     if (this._currentMode != mode) {

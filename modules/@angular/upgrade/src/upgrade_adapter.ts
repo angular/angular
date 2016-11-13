@@ -428,7 +428,9 @@ export class UpgradeAdapter {
     const windowAngular = (window as any /** TODO #???? */)['angular'];
     windowAngular.resumeBootstrap = undefined;
 
-    ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
+    ngZone.run(() => {
+      angular.bootstrap(element, [this.idPrefix], config);
+    });
     ng1BootstrapPromise = new Promise((resolve) => {
       if (windowAngular.resumeBootstrap) {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
@@ -519,7 +521,9 @@ export class UpgradeAdapter {
    * ```
    */
   public downgradeNg2Provider(token: any): Function {
-    const factory = function(injector: Injector) { return injector.get(token); };
+    const factory = function(injector: Injector) {
+      return injector.get(token);
+    };
     (<any>factory).$inject = [NG2_INJECTOR];
     return factory;
   }
@@ -593,7 +597,9 @@ export class UpgradeAdapterRef {
    * The `ready` callback function is invoked inside the Angular v2 zone, therefore it does not
    * require a call to `$apply()`.
    */
-  public ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void) { this._readyFn = fn; }
+  public ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void) {
+    this._readyFn = fn;
+  }
 
   /**
    * Dispose of running hybrid AngularJS v1 / Angular v2 application.

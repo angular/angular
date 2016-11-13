@@ -30,7 +30,9 @@ export function main() {
     });
 
     describe('parseFields', () => {
-      it('should process nulls', () => { expect(parseFields(null)).toEqual([]); });
+      it('should process nulls', () => {
+        expect(parseFields(null)).toEqual([]);
+      });
 
       it('should process values', () => {
         expect(parseFields([' name ', ' prop :  attr '])).toEqual([

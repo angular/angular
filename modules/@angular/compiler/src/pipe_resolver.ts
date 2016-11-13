@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Pipe, Type, resolveForwardRef} from '@angular/core';
+import {Injectable, Pipe, resolveForwardRef, Type} from '@angular/core';
 
 import {isPresent, stringify} from './facade/lang';
-import {ReflectorReader, reflector} from './private_import_core';
+import {reflector, ReflectorReader} from './private_import_core';
 
 function _isPipeMetadata(type: any): boolean {
   return type instanceof Pipe;

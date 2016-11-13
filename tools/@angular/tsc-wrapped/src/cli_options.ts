@@ -7,7 +7,9 @@
  */
 export class CliOptions {
   public basePath: string;
-  constructor({basePath = null}: {basePath?: string}) { this.basePath = basePath; }
+  constructor({basePath = null}: {basePath?: string}) {
+    this.basePath = basePath;
+  }
 }
 
 export class I18nExtractionCliOptions extends CliOptions {

@@ -34,5 +34,7 @@ import {Injectable} from './metadata';
 export class OpaqueToken {
   constructor(private _desc: string) {}
 
-  toString(): string { return `Token ${this._desc}`; }
+  toString(): string {
+    return `Token ${this._desc}`;
+  }
 }

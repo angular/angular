@@ -50,16 +50,22 @@ class BeforeEachRunner {
 
   constructor(private _parent: BeforeEachRunner) {}
 
-  beforeEach(fn: Function): void { this._fns.push(fn); }
+  beforeEach(fn: Function): void {
+    this._fns.push(fn);
+  }
 
   run(): void {
     if (this._parent) this._parent.run();
-    this._fns.forEach((fn) => { fn(); });
+    this._fns.forEach((fn) => {
+      fn();
+    });
   }
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testBed.resetTestingModule(); });
+jsmBeforeEach(() => {
+  testBed.resetTestingModule();
+});
 
 function _describe(jsmFn: Function, ...args: any[]) {
   const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -188,7 +194,9 @@ export class SpyObject {
     return (this as any)[name];
   }
 
-  prop(name: string, value: any) { (this as any)[name] = value; }
+  prop(name: string, value: any) {
+    (this as any)[name] = value;
+  }
 
   static stub(object: any = null, config: any = null, overrides: any = null) {
     if (!(object instanceof SpyObject)) {
@@ -198,7 +206,9 @@ export class SpyObject {
     }
 
     const m = StringMapWrapper.merge(config, overrides);
-    Object.keys(m).forEach(key => { object.spy(key).and.returnValue(m[key]); });
+    Object.keys(m).forEach(key => {
+      object.spy(key).and.returnValue(m[key]);
+    });
     return object;
   }
 }

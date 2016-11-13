@@ -8,7 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {Component} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 
@@ -17,10 +17,15 @@ import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 // Components for the tests.
 class FancyService {
   value: string = 'real value';
-  getAsyncValue() { return Promise.resolve('async value'); }
+  getAsyncValue() {
+    return Promise.resolve('async value');
+  }
   getTimeoutValue() {
-    return new Promise(
-        (resolve, reject) => { setTimeout(() => { resolve('timeout value'); }, 10); });
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('timeout value');
+      }, 10);
+    });
   }
 }
 
@@ -42,15 +47,21 @@ export function main() {
     describe('using the async helper', () => {
       let actuallyDone: boolean;
 
-      beforeEach(() => { actuallyDone = false; });
+      beforeEach(() => {
+        actuallyDone = false;
+      });
 
-      afterEach(() => { expect(actuallyDone).toEqual(true); });
+      afterEach(() => {
+        expect(actuallyDone).toEqual(true);
+      });
 
       it('should run async tests with ResourceLoaders', async(() => {
            const resourceLoader = new ResourceLoaderImpl();
            resourceLoader
                .get('/base/modules/@angular/platform-browser/test/static_assets/test.html')
-               .then(() => { actuallyDone = true; });
+               .then(() => {
+                 actuallyDone = true;
+               });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader.
     });
@@ -70,7 +81,9 @@ export function main() {
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
              let value: any /** TODO #9100 */;
-             service.getAsyncValue().then(function(val: any /** TODO #9100 */) { value = val; });
+             service.getAsyncValue().then(function(val: any /** TODO #9100 */) {
+               value = val;
+             });
              tick();
              expect(value).toEqual('async value');
            })));
@@ -89,15 +102,21 @@ export function main() {
         });
         originalJasmineIt = jasmine.getEnv().it;
         jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
-          const done = () => { resolve(null); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
+          const done = () => {
+            resolve(null);
+          };
+          (<any>done).fail = (err: any /** TODO #9100 */) => {
+            reject(err);
+          };
           fn(done);
           return null;
         };
         return promise;
       };
 
-      const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
+      const restoreJasmineIt = () => {
+        jasmine.getEnv().it = originalJasmineIt;
+      };
 
       it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
         const itPromise = patchJasmineIt();
@@ -108,7 +127,9 @@ export function main() {
            }));
 
         itPromise.then(
-            () => { done.fail('Expected test to fail, but it did not'); },
+            () => {
+              done.fail('Expected test to fail, but it did not');
+            },
             (err: any) => {
               expect(err.message)
                   .toEqual('Uncaught (in promise): Failed to load non-existant.html');

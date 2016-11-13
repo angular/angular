@@ -8,7 +8,7 @@
 
 import {NgZone} from '@angular/core';
 import {withModule} from '@angular/core/testing/test_bed';
-import {AsyncTestCompleter, MockNgZone, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it, MockNgZone} from '@angular/core/testing/testing_internal';
 import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
 
 import {createConnectedMessageBus} from './message_bus_util';
@@ -20,7 +20,9 @@ export function main() {
   describe('MessageBus', () => {
     let bus: MessageBus;
 
-    beforeEach(() => { bus = createConnectedMessageBus(); });
+    beforeEach(() => {
+      bus = createConnectedMessageBus();
+    });
 
     it('should pass messages in the same channel from sink to source',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -115,7 +117,9 @@ export function main() {
      * Flushes pending messages and then runs the given function.
      */
     // TODO(mlaval): timeout is fragile, test to be rewritten
-    function flushMessages(fn: () => void) { setTimeout(fn, 50); }
+    function flushMessages(fn: () => void) {
+      setTimeout(fn, 50);
+    }
 
     it('should buffer messages and wait for the zone to exit before sending',
        withModule({providers: [{provide: NgZone, useClass: MockNgZone}]})
@@ -126,7 +130,11 @@ export function main() {
                  setup(true, zone);
 
                  let wasCalled = false;
-                 bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
+                 bus.from(CHANNEL).subscribe({
+                   next: (message: any) => {
+                     wasCalled = true;
+                   }
+                 });
                  bus.to(CHANNEL).emit('hi');
 
 
@@ -148,7 +156,11 @@ export function main() {
          setup(false, zone);
 
          let wasCalled = false;
-         bus.from(CHANNEL).subscribe({next: (message: any) => { wasCalled = true; }});
+         bus.from(CHANNEL).subscribe({
+           next: (message: any) => {
+             wasCalled = true;
+           }
+         });
          bus.to(CHANNEL).emit('hi');
 
          flushMessages(() => {

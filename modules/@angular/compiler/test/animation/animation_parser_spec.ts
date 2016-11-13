@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationMetadata, animate, group, keyframes, sequence, style, transition, trigger} from '@angular/core';
+import {animate, AnimationMetadata, group, keyframes, sequence, style, transition, trigger} from '@angular/core';
 import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -20,8 +20,9 @@ export function main() {
   describe('parseAnimationEntry', () => {
     const combineStyles = (styles: AnimationStylesAst): {[key: string]: string | number} => {
       const flatStyles: {[key: string]: string | number} = {};
-      styles.styles.forEach(
-          entry => Object.keys(entry).forEach(prop => { flatStyles[prop] = entry[prop]; }));
+      styles.styles.forEach(entry => Object.keys(entry).forEach(prop => {
+        flatStyles[prop] = entry[prop];
+      }));
       return flatStyles;
     };
 
@@ -55,8 +56,9 @@ export function main() {
       return parser.parseEntry(compiledAnimationEntry);
     };
 
-    const getAnimationAstFromEntryAst =
-        (ast: AnimationEntryAst) => { return ast.stateTransitions[0].animation; };
+    const getAnimationAstFromEntryAst = (ast: AnimationEntryAst) => {
+      return ast.stateTransitions[0].animation;
+    };
 
     const parseAnimationAst = (data: AnimationMetadata[]) =>
         getAnimationAstFromEntryAst(parseAnimation(data).ast);

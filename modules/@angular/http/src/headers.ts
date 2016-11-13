@@ -121,12 +121,16 @@ export class Headers {
   /**
    * Checks for existence of header by given name.
    */
-  has(name: string): boolean { return this._headers.has(name.toLowerCase()); }
+  has(name: string): boolean {
+    return this._headers.has(name.toLowerCase());
+  }
 
   /**
    * Returns the names of the headers
    */
-  keys(): string[] { return Array.from(this._normalizedNames.values()); }
+  keys(): string[] {
+    return Array.from(this._normalizedNames.values());
+  }
 
   /**
    * Sets or overrides header value for given name.
@@ -145,7 +149,9 @@ export class Headers {
   /**
    * Returns values of all headers.
    */
-  values(): string[][] { return Array.from(this._headers.values()); }
+  values(): string[][] {
+    return Array.from(this._headers.values());
+  }
 
   /**
    * Returns string of all headers.
@@ -173,7 +179,9 @@ export class Headers {
   /**
    * This method is not implemented.
    */
-  entries() { throw new Error('"entries" method is not implemented on Headers class'); }
+  entries() {
+    throw new Error('"entries" method is not implemented on Headers class');
+  }
 
   private mayBeSetNormalizedName(name: string): void {
     const lcName = name.toLowerCase();

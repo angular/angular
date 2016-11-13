@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TreeNode, emptyTree} from '../util';
+import {emptyTree, TreeNode} from '../util';
 
 export class TreeComponent { data: TreeNode = emptyTree; }
 

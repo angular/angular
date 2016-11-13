@@ -19,11 +19,17 @@ export {GetterFn, MethodFn, SetterFn} from './types';
  * to power dependency injection and compilation.
  */
 export class Reflector extends ReflectorReader {
-  constructor(public reflectionCapabilities: PlatformReflectionCapabilities) { super(); }
+  constructor(public reflectionCapabilities: PlatformReflectionCapabilities) {
+    super();
+  }
 
-  updateCapabilities(caps: PlatformReflectionCapabilities) { this.reflectionCapabilities = caps; }
+  updateCapabilities(caps: PlatformReflectionCapabilities) {
+    this.reflectionCapabilities = caps;
+  }
 
-  factory(type: Type<any>): Function { return this.reflectionCapabilities.factory(type); }
+  factory(type: Type<any>): Function {
+    return this.reflectionCapabilities.factory(type);
+  }
 
   parameters(typeOrFunc: Type<any>): any[][] {
     return this.reflectionCapabilities.parameters(typeOrFunc);
@@ -41,13 +47,21 @@ export class Reflector extends ReflectorReader {
     return this.reflectionCapabilities.hasLifecycleHook(type, lcProperty);
   }
 
-  getter(name: string): GetterFn { return this.reflectionCapabilities.getter(name); }
+  getter(name: string): GetterFn {
+    return this.reflectionCapabilities.getter(name);
+  }
 
-  setter(name: string): SetterFn { return this.reflectionCapabilities.setter(name); }
+  setter(name: string): SetterFn {
+    return this.reflectionCapabilities.setter(name);
+  }
 
-  method(name: string): MethodFn { return this.reflectionCapabilities.method(name); }
+  method(name: string): MethodFn {
+    return this.reflectionCapabilities.method(name);
+  }
 
-  importUri(type: any): string { return this.reflectionCapabilities.importUri(type); }
+  importUri(type: any): string {
+    return this.reflectionCapabilities.importUri(type);
+  }
 
   resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
     return this.reflectionCapabilities.resolveIdentifier(name, moduleUrl, runtime);

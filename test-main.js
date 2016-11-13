@@ -83,8 +83,12 @@ System.import('@angular/core/testing')
                              }));
     })
     .then(
-        function() { __karma__.start(); },
-        function(error) { __karma__.error(error.stack || error); });
+        function() {
+          __karma__.start();
+        },
+        function(error) {
+          __karma__.error(error.stack || error);
+        });
 
 
 function onlySpecFiles(path) {

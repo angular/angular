@@ -8,7 +8,7 @@
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {Component} from '@angular/core';
-import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {async, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {CachedResourceLoader} from '../../src/resource_loader/resource_loader_cache';
@@ -45,13 +45,17 @@ export function main() {
     it('should resolve the Promise with the cached file content on success', async(() => {
          setTemplateCache({'test.html': '<div>Hello</div>'});
          resourceLoader = new CachedResourceLoader();
-         resourceLoader.get('test.html').then((text) => { expect(text).toBe('<div>Hello</div>'); });
+         resourceLoader.get('test.html').then((text) => {
+           expect(text).toBe('<div>Hello</div>');
+         });
        }));
 
     it('should reject the Promise on failure', async(() => {
          resourceLoader = new CachedResourceLoader();
          resourceLoader.get('unknown.html')
-             .then((text) => { throw new Error('Not expected to succeed.'); })
+             .then((text) => {
+               throw new Error('Not expected to succeed.');
+             })
              .catch((error) => {/** success */});
        }));
 

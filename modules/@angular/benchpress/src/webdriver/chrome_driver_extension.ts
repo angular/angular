@@ -45,7 +45,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() { return this._driver.executeScript('window.gc()'); }
+  gc() {
+    return this._driver.executeScript('window.gc()');
+  }
 
   timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);
@@ -163,7 +165,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] { return categories.split(','); }
+  private _parseCategories(categories: string): string[] {
+    return categories.split(',');
+  }
 
   private _isEvent(
       eventCategories: string[], eventName: string, expectedCategories: string[],

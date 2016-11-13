@@ -30,19 +30,29 @@ export class DebugNode {
     this.listeners = [];
   }
 
-  get injector(): Injector { return this._debugInfo ? this._debugInfo.injector : null; }
+  get injector(): Injector {
+    return this._debugInfo ? this._debugInfo.injector : null;
+  }
 
-  get componentInstance(): any { return this._debugInfo ? this._debugInfo.component : null; }
+  get componentInstance(): any {
+    return this._debugInfo ? this._debugInfo.component : null;
+  }
 
-  get context(): any { return this._debugInfo ? this._debugInfo.context : null; }
+  get context(): any {
+    return this._debugInfo ? this._debugInfo.context : null;
+  }
 
   get references(): {[key: string]: any} {
     return this._debugInfo ? this._debugInfo.references : null;
   }
 
-  get providerTokens(): any[] { return this._debugInfo ? this._debugInfo.providerTokens : null; }
+  get providerTokens(): any[] {
+    return this._debugInfo ? this._debugInfo.providerTokens : null;
+  }
 
-  get source(): string { return this._debugInfo ? this._debugInfo.source : null; }
+  get source(): string {
+    return this._debugInfo ? this._debugInfo.source : null;
+  }
 }
 
 /**

@@ -9,7 +9,7 @@
 import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
-import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
+import {defaultIterableDiffers, defaultKeyValueDiffers, IterableDiffers, KeyValueDiffers} from './change_detection/change_detection';
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
 import {ViewUtils} from './linker/view_utils';

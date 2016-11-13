@@ -15,14 +15,18 @@ export function main() {
   describe('NgSwitch', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -128,7 +132,9 @@ export function main() {
 
         @Directive({selector: '[test]'})
         class TestDirective {
-          constructor(@Attribute('test') test: string) { log.push(test); }
+          constructor(@Attribute('test') test: string) {
+            log.push(test);
+          }
         }
 
         const template = '<div [ngSwitch]="switchValue">' +

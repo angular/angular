@@ -17,7 +17,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 
 import * as typed from './output_emitter_codegen_typed';
 import * as untyped from './output_emitter_codegen_untyped';
-import {ExternalClass, codegenStmts} from './output_emitter_util';
+import {codegenStmts, ExternalClass} from './output_emitter_util';
 
 export function main() {
   const outputDefs: any[] /** TODO #9100 */ = [];
@@ -44,7 +44,9 @@ export function main() {
     outputDefs.forEach((outputDef) => {
       describe(`${outputDef['name']}`, () => {
         let expressions: {[k: string]: any};
-        beforeEach(() => { expressions = outputDef['getExpressions']()(); });
+        beforeEach(() => {
+          expressions = outputDef['getExpressions']()();
+        });
 
         it('should support literals', () => {
           expect(expressions['stringLiteral']).toEqual('Hello World!');
@@ -94,7 +96,9 @@ export function main() {
           expect(expressions['conditionalFalse']).toEqual('false');
         });
 
-        it('should support not', () => { expect(expressions['not']).toEqual(true); });
+        it('should support not', () => {
+          expect(expressions['not']).toEqual(true);
+        });
 
         it('should support reading external identifiers', () => {
           expect(expressions['externalTestIdentifier']).toBe(ExternalClass);
@@ -147,11 +151,21 @@ export function main() {
             expect(ops['!=='](1, 1)).toBe(false);
             expect(ops['!=='](0, 1)).toBe(true);
           });
-          it('should support -', () => { expect(ops['-'](3, 2)).toEqual(1); });
-          it('should support +', () => { expect(ops['+'](1, 2)).toEqual(3); });
-          it('should support /', () => { expect(ops['/'](6, 2)).toEqual(3); });
-          it('should support *', () => { expect(ops['*'](2, 3)).toEqual(6); });
-          it('should support %', () => { expect(ops['%'](3, 2)).toEqual(1); });
+          it('should support -', () => {
+            expect(ops['-'](3, 2)).toEqual(1);
+          });
+          it('should support +', () => {
+            expect(ops['+'](1, 2)).toEqual(3);
+          });
+          it('should support /', () => {
+            expect(ops['/'](6, 2)).toEqual(3);
+          });
+          it('should support *', () => {
+            expect(ops['*'](2, 3)).toEqual(6);
+          });
+          it('should support %', () => {
+            expect(ops['%'](3, 2)).toEqual(1);
+          });
           it('should support &&', () => {
             expect(ops['&&'](true, true)).toBe(true);
             expect(ops['&&'](true, false)).toBe(false);
@@ -178,11 +192,14 @@ export function main() {
           });
         });
 
-        it('should support throwing errors',
-           () => { expect(expressions['throwError']).toThrowError('someError'); });
+        it('should support throwing errors', () => {
+          expect(expressions['throwError']).toThrowError('someError');
+        });
 
         it('should support catching errors', () => {
-          function someOperation() { throw new Error('Boom!'); }
+          function someOperation() {
+            throw new Error('Boom!');
+          }
 
           const errorAndStack = expressions['catchError'](someOperation);
           expect(errorAndStack[0].message).toEqual('Boom!');

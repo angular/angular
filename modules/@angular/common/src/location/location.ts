@@ -122,12 +122,16 @@ export class Location {
   /**
    * Navigates forward in the platform's history.
    */
-  forward(): void { this._platformStrategy.forward(); }
+  forward(): void {
+    this._platformStrategy.forward();
+  }
 
   /**
    * Navigates back in the platform's history.
    */
-  back(): void { this._platformStrategy.back(); }
+  back(): void {
+    this._platformStrategy.back();
+  }
 
   /**
    * Subscribe to the platform's `popState` events.

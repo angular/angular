@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, AnimationTransitionEvent, Component, Injector, animate, state, style, transition, trigger} from '@angular/core';
+import {animate, AnimationTransitionEvent, AUTO_STYLE, Component, Injector, state, style, transition, trigger} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
-import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
 import {AnimationDriver} from '@angular/platform-browser/src/dom/animation_driver';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -25,7 +25,7 @@ import {MessageBasedRenderer} from '@angular/platform-webworker/src/web_workers/
 import {WebWorkerRootRenderer} from '@angular/platform-webworker/src/web_workers/worker/renderer';
 
 import {platformBrowserDynamicTesting} from '../../../../platform-browser-dynamic/testing';
-import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 
 export function main() {
   function createWebWorkerBrokerFactory(
@@ -100,9 +100,13 @@ export function main() {
     });
 
     let uiDriver: MockAnimationDriver;
-    beforeEach(() => { uiDriver = uiTestBed.get(AnimationDriver) as MockAnimationDriver; });
+    beforeEach(() => {
+      uiDriver = uiTestBed.get(AnimationDriver) as MockAnimationDriver;
+    });
 
-    function retrieveFinalAnimationStepStyles(keyframes: any[]) { return keyframes[1][1]; }
+    function retrieveFinalAnimationStepStyles(keyframes: any[]) {
+      return keyframes[1][1];
+    }
 
     it('should trigger an animation and animate styles', fakeAsync(() => {
          const fixture = TestBed.createComponent(AnimationCmp);
@@ -137,7 +141,9 @@ export function main() {
          const cmp = fixture.componentInstance;
 
          let capturedEvent: AnimationTransitionEvent = null;
-         cmp.stateStartFn = event => { capturedEvent = event; };
+         cmp.stateStartFn = event => {
+           capturedEvent = event;
+         };
 
          cmp.state = 'on';
 
@@ -156,7 +162,9 @@ export function main() {
          const cmp = fixture.componentInstance;
 
          let capturedEvent: AnimationTransitionEvent = null;
-         cmp.stateDoneFn = event => { capturedEvent = event; };
+         cmp.stateDoneFn = event => {
+           capturedEvent = event;
+         };
 
          cmp.state = 'off';
 
@@ -228,7 +236,9 @@ export function main() {
          function logFactory(
              log: {[phaseName: string]: AnimationTransitionEvent},
              phaseName: string): (event: AnimationTransitionEvent) => any {
-           return (event: AnimationTransitionEvent) => { log[phaseName] = event; };
+           return (event: AnimationTransitionEvent) => {
+             log[phaseName] = event;
+           };
          }
 
          const f1 = TestBed.createComponent(AnimationCmp);

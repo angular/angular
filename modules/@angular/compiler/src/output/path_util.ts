@@ -13,7 +13,9 @@ const _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/;
  * Interface that defines how import statements should be generated.
  */
 export abstract class ImportGenerator {
-  static parseAssetUrl(url: string): AssetUrl { return AssetUrl.parse(url); }
+  static parseAssetUrl(url: string): AssetUrl {
+    return AssetUrl.parse(url);
+  }
 
   abstract getImportPath(moduleUrlStr: string, importedUrlStr: string): string;
 }

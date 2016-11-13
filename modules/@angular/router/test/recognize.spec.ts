@@ -9,7 +9,7 @@
 import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
-import {PRIMARY_OUTLET, Params} from '../src/shared';
+import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 
 describe('recognize', () => {
@@ -678,8 +678,9 @@ describe('recognize', () => {
   describe('fragment', () => {
     it('should support fragment', () => {
       const config = [{path: 'a', component: ComponentA}];
-      checkRecognize(
-          config, 'a#f1', (s: RouterStateSnapshot) => { expect(s.root.fragment).toEqual('f1'); });
+      checkRecognize(config, 'a#f1', (s: RouterStateSnapshot) => {
+        expect(s.root.fragment).toEqual('f1');
+      });
     });
   });
 
@@ -702,7 +703,9 @@ describe('recognize', () => {
 });
 
 function checkRecognize(config: Routes, url: string, callback: any): void {
-  recognize(RootComponent, config, tree(url), url).subscribe(callback, e => { throw e; });
+  recognize(RootComponent, config, tree(url), url).subscribe(callback, e => {
+    throw e;
+  });
 }
 
 function checkActivatedRoute(

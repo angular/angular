@@ -62,7 +62,9 @@ class SomeDirectiveWithSetterProps {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
   @Output('renamed')
-  get a(): any { return null; }
+  get a(): any {
+    return null;
+  }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
@@ -135,7 +137,9 @@ export function main() {
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 
-    beforeEach(() => { resolver = new DirectiveResolver(); });
+    beforeEach(() => {
+      resolver = new DirectiveResolver();
+    });
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
@@ -175,7 +179,9 @@ export function main() {
       });
 
       it('should throw if duplicate inputs (with rename)', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedInputs); })
+        expect(() => {
+          resolver.resolve(SomeDirectiveWithDuplicateRenamedInputs);
+        })
             .toThrowError(
                 `Input 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedInputs'`);
       });
@@ -193,13 +199,17 @@ export function main() {
       });
 
       it('should throw if duplicate outputs', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateOutputs); })
+        expect(() => {
+          resolver.resolve(SomeDirectiveWithDuplicateOutputs);
+        })
             .toThrowError(
                 `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateOutputs'`);
       });
 
       it('should throw if duplicate outputs (with rename)', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedOutputs); })
+        expect(() => {
+          resolver.resolve(SomeDirectiveWithDuplicateRenamedOutputs);
+        })
             .toThrowError(
                 `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedOutputs'`);
       });

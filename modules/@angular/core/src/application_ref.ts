@@ -21,7 +21,7 @@ import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
+import {wtfCreateScope, wtfLeave, WtfScopeFn} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
 import {NgZone} from './zone/ng_zone';
@@ -208,14 +208,18 @@ export abstract class PlatformRef {
    * Retrieve the platform {@link Injector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
-  get injector(): Injector { throw unimplemented(); };
+  get injector(): Injector {
+    throw unimplemented();
+  };
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
    */
   abstract destroy(): void;
 
-  get destroyed(): boolean { throw unimplemented(); }
+  get destroyed(): boolean {
+    throw unimplemented();
+  }
 }
 
 function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () => any): any {
@@ -243,13 +247,21 @@ export class PlatformRef_ extends PlatformRef {
   private _destroyListeners: Function[] = [];
   private _destroyed: boolean = false;
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector) {
+    super();
+  }
 
-  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
+  onDestroy(callback: () => void): void {
+    this._destroyListeners.push(callback);
+  }
 
-  get injector(): Injector { return this._injector; }
+  get injector(): Injector {
+    return this._injector;
+  }
 
-  get destroyed() { return this._destroyed; }
+  get destroyed() {
+    return this._destroyed;
+  }
 
   destroy() {
     if (this._destroyed) {
@@ -282,7 +294,11 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
-      ngZone.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
+      ngZone.onError.subscribe({
+        next: (error: any) => {
+          exceptionHandler.handleError(error);
+        }
+      });
       return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         return initStatus.donePromise.then(() => {
@@ -328,7 +344,9 @@ export class PlatformRef_ extends PlatformRef {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
       throw new Error(
-          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+          `The module ${stringify(
+              moduleRef.instance
+                  .constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
           `Please define one of these.`);
     }
   }
@@ -372,12 +390,16 @@ export abstract class ApplicationRef {
    * Get a list of component types registered to this application.
    * This list is populated even before the component is created.
    */
-  get componentTypes(): Type<any>[] { return <Type<any>[]>unimplemented(); };
+  get componentTypes(): Type<any>[] {
+    return <Type<any>[]>unimplemented();
+  };
 
   /**
    * Get a list of components registered to this application.
    */
-  get components(): ComponentRef<any>[] { return <ComponentRef<any>[]>unimplemented(); };
+  get components(): ComponentRef<any>[] {
+    return <ComponentRef<any>[]>unimplemented();
+  };
 }
 
 @Injectable()
@@ -402,8 +424,13 @@ export class ApplicationRef_ extends ApplicationRef {
     super();
     this._enforceNoNewChanges = isDevMode();
 
-    this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+    this._zone.onMicrotaskEmpty.subscribe({
+      next: () => {
+        this._zone.run(() => {
+          this.tick();
+        });
+      }
+    });
   }
 
   registerChangeDetector(changeDetector: ChangeDetectorRef): void {
@@ -427,7 +454,9 @@ export class ApplicationRef_ extends ApplicationRef {
     }
     this._rootComponentTypes.push(componentFactory.componentType);
     const compRef = componentFactory.create(this._injector, [], componentFactory.selector);
-    compRef.onDestroy(() => { this._unloadComponent(compRef); });
+    compRef.onDestroy(() => {
+      this._unloadComponent(compRef);
+    });
     const testability = compRef.injector.get(Testability, null);
     if (testability) {
       compRef.injector.get(TestabilityRegistry)
@@ -486,7 +515,11 @@ export class ApplicationRef_ extends ApplicationRef {
     this._rootComponents.slice().forEach((component) => component.destroy());
   }
 
-  get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
+  get componentTypes(): Type<any>[] {
+    return this._rootComponentTypes;
+  }
 
-  get components(): ComponentRef<any>[] { return this._rootComponents; }
+  get components(): ComponentRef<any>[] {
+    return this._rootComponents;
+  }
 }

@@ -35,9 +35,15 @@ class Person {
     this.personId = _nextId++;
   }
 
-  get age(): number { return 2015 - this.yearOfBirth; }
-  get fullName(): string { return `${this.firstName} ${this.lastName}`; }
-  get friendNames(): string { return this.friends.map(f => f.fullName).join(', '); }
+  get age(): number {
+    return 2015 - this.yearOfBirth;
+  }
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+  get friendNames(): string {
+    return this.friends.map(f => f.fullName).join(', ');
+  }
 }
 
 
@@ -104,7 +110,9 @@ class DataService {
 })
 class FullNameComponent {
   constructor(private _service: DataService) {}
-  get person(): Person { return this._service.currentPerson; }
+  get person(): Person {
+    return this._service.currentPerson;
+  }
 }
 
 @Component({
@@ -151,7 +159,9 @@ class FullNameComponent {
 })
 class PersonsDetailComponent {
   constructor(private _service: DataService) {}
-  get person(): Person { return this._service.currentPerson; }
+  get person(): Person {
+    return this._service.currentPerson;
+  }
 }
 
 @Component({
@@ -172,9 +182,13 @@ class PersonsDetailComponent {
 class PersonsComponent {
   persons: Person[];
 
-  constructor(private _service: DataService) { this.persons = _service.persons; }
+  constructor(private _service: DataService) {
+    this.persons = _service.persons;
+  }
 
-  select(person: Person): void { this._service.currentPerson = person; }
+  select(person: Person): void {
+    this._service.currentPerson = person;
+  }
 }
 
 
@@ -192,8 +206,12 @@ class PersonsComponent {
 class PersonManagementApplication {
   mode: string;
 
-  switchToEditName(): void { this.mode = 'editName'; }
-  switchToPersonList(): void { this.mode = 'personList'; }
+  switchToEditName(): void {
+    this.mode = 'editName';
+  }
+  switchToPersonList(): void {
+    this.mode = 'personList';
+  }
 }
 
 @NgModule({

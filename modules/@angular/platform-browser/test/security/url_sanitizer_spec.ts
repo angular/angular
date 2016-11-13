@@ -21,7 +21,9 @@ export function main() {
       originalLog = getDOM().log;  // Monkey patch DOM.log.
       getDOM().log = (msg) => logMsgs.push(msg);
     });
-    t.afterEach(() => { getDOM().log = originalLog; });
+    t.afterEach(() => {
+      getDOM().log = originalLog;
+    });
 
     t.it('reports unsafe URLs', () => {
       t.expect(sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');

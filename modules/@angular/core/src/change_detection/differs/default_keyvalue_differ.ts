@@ -15,9 +15,13 @@ import {KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
 export class DefaultKeyValueDifferFactory implements KeyValueDifferFactory {
   constructor() {}
-  supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
+  supports(obj: any): boolean {
+    return obj instanceof Map || isJsObject(obj);
+  }
 
-  create(cdRef: ChangeDetectorRef): KeyValueDiffer { return new DefaultKeyValueDiffer(); }
+  create(cdRef: ChangeDetectorRef): KeyValueDiffer {
+    return new DefaultKeyValueDiffer();
+  }
 }
 
 export class DefaultKeyValueDiffer implements KeyValueDiffer {

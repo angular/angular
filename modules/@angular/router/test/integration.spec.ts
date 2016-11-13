@@ -8,12 +8,12 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {Component, Injector, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -75,18 +75,24 @@ describe('Integration', () => {
       @Component({template: '<router-outlet></router-outlet>'})
       class Parent {
         constructor(route: ActivatedRoute) {
-          route.params.subscribe((s: any) => { log.push(s); });
+          route.params.subscribe((s: any) => {
+            log.push(s);
+          });
         }
       }
 
       @Component({template: 'child1'})
       class Child1 {
-        ngOnDestroy() { log.push('child1 destroy'); }
+        ngOnDestroy() {
+          log.push('child1 destroy');
+        }
       }
 
       @Component({template: 'child2'})
       class Child2 {
-        constructor() { log.push('child2 constructor'); }
+        constructor() {
+          log.push('child2 constructor');
+        }
       }
 
       @NgModule({
@@ -238,7 +244,9 @@ describe('Integration', () => {
        @Component({template: `record`})
        class RecordLocationCmp {
          private storedPath: string;
-         constructor(loc: Location) { this.storedPath = loc.path(); }
+         constructor(loc: Location) {
+           this.storedPath = loc.path();
+         }
        }
 
        @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
@@ -732,9 +740,13 @@ describe('Integration', () => {
          activations: any[] = [];
          deactivations: any[] = [];
 
-         recordActivate(component: any): void { this.activations.push(component); }
+         recordActivate(component: any): void {
+           this.activations.push(component);
+         }
 
-         recordDeactivate(component: any): void { this.deactivations.push(component); }
+         recordDeactivate(component: any): void {
+           this.deactivations.push(component);
+         }
        }
 
        TestBed.configureTestingModule({declarations: [Container]});
@@ -783,7 +795,9 @@ describe('Integration', () => {
 
   describe('data', () => {
     class ResolveSix implements Resolve<TeamCmp> {
-      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
+      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number {
+        return 6;
+      }
     }
 
     beforeEach(() => {
@@ -1243,7 +1257,9 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
+        beforeEach(() => {
+          TestBed.configureTestingModule({providers: [AlwaysTrue]});
+        });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -1264,7 +1280,9 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanActivate',
               useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return Observable.create((observer: any) => { observer.next(false); });
+                return Observable.create((observer: any) => {
+                  observer.next(false);
+                });
               }
             }]
           });
@@ -1321,7 +1339,9 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'alwaysFalse',
-              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return false;
+              }
             }]
           });
         });
@@ -1515,7 +1535,9 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
+        beforeEach(() => {
+          TestBed.configureTestingModule({providers: [AlwaysTrue]});
+        });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -1540,7 +1562,9 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanDeactivate',
               useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return Observable.create((observer: any) => { observer.next(false); });
+                return Observable.create((observer: any) => {
+                  observer.next(false);
+                });
               }
             }]
           });
@@ -1700,7 +1724,9 @@ describe('Integration', () => {
 
       class Logger {
         logs: string[] = [];
-        add(thing: string) { this.logs.push(thing); }
+        add(thing: string) {
+          this.logs.push(thing);
+        }
       }
 
       beforeEach(() => {
@@ -2073,7 +2099,9 @@ describe('Integration', () => {
       class TestModule {
       }
 
-      beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
+      beforeEach(() => {
+        TestBed.configureTestingModule({imports: [TestModule]});
+      });
 
       it('should use the injector of the lazily-loaded configuration',
          fakeAsync(inject(
@@ -2398,7 +2426,9 @@ class AbsoluteLinkCmp {
 })
 class DummyLinkCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
+  constructor(route: ActivatedRoute) {
+    this.exact = (<any>route.snapshot.params).exact === 'true';
+  }
 }
 
 @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
@@ -2523,7 +2553,9 @@ class LinkInNgIf {
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
+  constructor(route: ActivatedRoute) {
+    this.exact = (<any>route.snapshot.params).exact === 'true';
+  }
 }
 
 @Component({selector: 'cmp', template: ''})

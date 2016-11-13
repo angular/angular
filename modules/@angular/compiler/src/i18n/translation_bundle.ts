@@ -22,7 +22,11 @@ export class TranslationBundle {
     return new TranslationBundle(serializer.load(content, url, messageBundle));
   }
 
-  get(id: string): html.Node[] { return this._messageMap[id]; }
+  get(id: string): html.Node[] {
+    return this._messageMap[id];
+  }
 
-  has(id: string): boolean { return id in this._messageMap; }
+  has(id: string): boolean {
+    return id in this._messageMap;
+  }
 }

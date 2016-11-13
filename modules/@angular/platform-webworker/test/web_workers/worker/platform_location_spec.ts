@@ -13,7 +13,7 @@ import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/mes
 import {LocationType} from '@angular/platform-webworker/src/web_workers/shared/serialized_types';
 import {WebWorkerPlatformLocation} from '@angular/platform-webworker/src/web_workers/worker/platform_location';
 
-import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, expectBrokerCall, MockMessageBrokerFactory} from '../shared/web_worker_test_util';
 
 import {SpyMessageBroker} from './spies';
 
@@ -86,8 +86,12 @@ export function main() {
          });
        }));
 
-    it('should send pushState to render thread', () => { testPushOrReplaceState(true); });
+    it('should send pushState to render thread', () => {
+      testPushOrReplaceState(true);
+    });
 
-    it('should send replaceState to render thread', () => { testPushOrReplaceState(false); });
+    it('should send replaceState to render thread', () => {
+      testPushOrReplaceState(false);
+    });
   });
 }

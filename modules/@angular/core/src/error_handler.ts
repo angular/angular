@@ -45,7 +45,9 @@ export class ErrorHandler {
    */
   rethrowError: boolean;
 
-  constructor(rethrowError: boolean = true) { this.rethrowError = rethrowError; }
+  constructor(rethrowError: boolean = true) {
+    this.rethrowError = rethrowError;
+  }
 
   handleError(error: any): void {
     const originalError = this._findOriginalError(error);

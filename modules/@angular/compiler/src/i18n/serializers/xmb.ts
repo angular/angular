@@ -78,7 +78,9 @@ export class Xmb implements Serializer {
 }
 
 class _Visitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
+  visitText(text: i18n.Text, context?: any): xml.Node[] {
+    return [new xml.Text(text.value)];
+  }
 
   visitContainer(container: i18n.Container, context?: any): xml.Node[] {
     const nodes: xml.Node[] = [];

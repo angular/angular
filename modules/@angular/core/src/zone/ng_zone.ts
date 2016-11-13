@@ -112,7 +112,9 @@ export class NgZone {
     this.forkInnerZoneWithAngularBehavior();
   }
 
-  static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
+  static isInAngularZone(): boolean {
+    return Zone.current.get('isAngularZone') === true;
+  }
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
@@ -137,13 +139,17 @@ export class NgZone {
    *
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
-  run(fn: () => any): any { return this.inner.run(fn); }
+  run(fn: () => any): any {
+    return this.inner.run(fn);
+  }
 
   /**
    * Same as `run`, except that synchronous errors are caught and forwarded via `onError` and not
    * rethrown.
    */
-  runGuarded(fn: () => any): any { return this.inner.runGuarded(fn); }
+  runGuarded(fn: () => any): any {
+    return this.inner.runGuarded(fn);
+  }
 
   /**
    * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
@@ -157,40 +163,56 @@ export class NgZone {
    *
    * Use {@link run} to reenter the Angular zone and do work that updates the application model.
    */
-  runOutsideAngular(fn: () => any): any { return this.outer.run(fn); }
+  runOutsideAngular(fn: () => any): any {
+    return this.outer.run(fn);
+  }
 
   /**
    * Notifies when code enters Angular Zone. This gets fired first on VM Turn.
    */
-  get onUnstable(): EventEmitter<any> { return this._onUnstable; }
+  get onUnstable(): EventEmitter<any> {
+    return this._onUnstable;
+  }
 
   /**
    * Notifies when there is no more microtasks enqueue in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
-  get onMicrotaskEmpty(): EventEmitter<any> { return this._onMicrotaskEmpty; }
+  get onMicrotaskEmpty(): EventEmitter<any> {
+    return this._onMicrotaskEmpty;
+  }
 
   /**
    * Notifies when the last `onMicrotaskEmpty` has run and there are no more microtasks, which
    * implies we are about to relinquish VM turn.
    * This event gets called just once.
    */
-  get onStable(): EventEmitter<any> { return this._onStable; }
+  get onStable(): EventEmitter<any> {
+    return this._onStable;
+  }
 
   /**
    * Notify that an error has been delivered.
    */
-  get onError(): EventEmitter<any> { return this._onErrorEvents; }
+  get onError(): EventEmitter<any> {
+    return this._onErrorEvents;
+  }
 
   /**
    * Whether there are no outstanding microtasks or macrotasks.
    */
-  get isStable(): boolean { return this._isStable; }
+  get isStable(): boolean {
+    return this._isStable;
+  }
 
-  get hasPendingMicrotasks(): boolean { return this._hasPendingMicrotasks; }
+  get hasPendingMicrotasks(): boolean {
+    return this._hasPendingMicrotasks;
+  }
 
-  get hasPendingMacrotasks(): boolean { return this._hasPendingMacrotasks; }
+  get hasPendingMacrotasks(): boolean {
+    return this._hasPendingMacrotasks;
+  }
 
   private checkStable() {
     if (this._nesting == 0 && !this._hasPendingMicrotasks && !this._isStable) {
@@ -275,7 +297,11 @@ export class NgZone {
     this.checkStable();
   }
 
-  private setHasMacrotask(hasMacrotasks: boolean) { this._hasPendingMacrotasks = hasMacrotasks; }
+  private setHasMacrotask(hasMacrotasks: boolean) {
+    this._hasPendingMacrotasks = hasMacrotasks;
+  }
 
-  private triggerError(error: any) { this._onErrorEvents.emit(error); }
+  private triggerError(error: any) {
+    this._onErrorEvents.emit(error);
+  }
 }

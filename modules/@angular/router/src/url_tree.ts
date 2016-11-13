@@ -123,7 +123,9 @@ export class UrlTree {
   /**
    * @docsNotRequired
    */
-  toString(): string { return new DefaultUrlSerializer().serialize(this); }
+  toString(): string {
+    return new DefaultUrlSerializer().serialize(this);
+  }
 }
 
 /**
@@ -166,17 +168,23 @@ export class UrlSegmentGroup {
   /**
    * Return true if the segment has child segments
    */
-  hasChildren(): boolean { return this.numberOfChildren > 0; }
+  hasChildren(): boolean {
+    return this.numberOfChildren > 0;
+  }
 
   /**
    * Returns the number of child sements.
    */
-  get numberOfChildren(): number { return Object.keys(this.children).length; }
+  get numberOfChildren(): number {
+    return Object.keys(this.children).length;
+  }
 
   /**
    * @docsNotRequired
    */
-  toString(): string { return serializePaths(this); }
+  toString(): string {
+    return serializePaths(this);
+  }
 }
 
 
@@ -220,7 +228,9 @@ export class UrlSegment {
   /**
    * @docsNotRequired
    */
-  toString(): string { return serializePath(this); }
+  toString(): string {
+    return serializePath(this);
+  }
 }
 
 export function equalSegments(a: UrlSegment[], b: UrlSegment[]): boolean {
@@ -372,7 +382,7 @@ function serializeParams(params: {[key: string]: string}): string {
 
 function serializeQueryParams(params: {[key: string]: string}): string {
   const strs = pairs(params).map(p => `${encode(p.first)}=${encode(p.second)}`);
-  return strs.length > 0 ? `?${strs.join("&")}` : '';
+  return strs.length > 0 ? `?${strs.join('&')}` : '';
 }
 
 class Pair<A, B> {
@@ -411,9 +421,13 @@ function matchUrlQueryParamValue(str: string): string {
 
 class UrlParser {
   private remaining: string;
-  constructor(private url: string) { this.remaining = url; }
+  constructor(private url: string) {
+    this.remaining = url;
+  }
 
-  peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  peekStartsWith(str: string): boolean {
+    return this.remaining.startsWith(str);
+  }
 
   capture(str: string): void {
     if (!this.remaining.startsWith(str)) {

@@ -20,10 +20,14 @@ export class RouterOutletMap {
   /**
    * Adds an outlet to this map.
    */
-  registerOutlet(name: string, outlet: RouterOutlet): void { this._outlets[name] = outlet; }
+  registerOutlet(name: string, outlet: RouterOutlet): void {
+    this._outlets[name] = outlet;
+  }
 
   /**
    * Removes an outlet from this map.
    */
-  removeOutlet(name: string): void { this._outlets[name] = undefined; }
+  removeOutlet(name: string): void {
+    this._outlets[name] = undefined;
+  }
 }

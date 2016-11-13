@@ -9,7 +9,7 @@
 import {describe, expect, it} from '../../../core/testing/testing_internal';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {ExpansionResult, expandNodes} from '../../src/ml_parser/icu_ast_expander';
+import {expandNodes, ExpansionResult} from '../../src/ml_parser/icu_ast_expander';
 import {ParseError} from '../../src/parse_util';
 
 import {humanizeNodes} from './ast_spec_utils';

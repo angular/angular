@@ -7,7 +7,7 @@
  */
 
 import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 
 import {Router, RouterModule} from '../index';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '../src/router_preloader';

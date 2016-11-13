@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Renderer} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -41,8 +41,12 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
   writeValue(value: any): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', value);
   }
-  registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
-  registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+  registerOnChange(fn: (_: any) => {}): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: () => {}): void {
+    this.onTouched = fn;
+  }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

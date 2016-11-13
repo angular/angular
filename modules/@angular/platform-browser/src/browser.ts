@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, createPlatformFactory, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability} from '@angular/core';
 
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';

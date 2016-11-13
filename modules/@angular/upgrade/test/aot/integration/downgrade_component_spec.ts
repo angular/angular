@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, NgModule, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, EventEmitter, NgModule, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/angular_js';
-import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {downgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 import {bootstrap, html, multiTrim} from '../test_helpers';
 
@@ -72,8 +72,8 @@ export function main() {
                }
                const actualValue = changes[prop].currentValue;
                if (actualValue != value) {
-                 throw new Error(
-                     `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
+                 throw new Error(`Expected changes record for'${prop}' to be '${value
+                                 }' but was '${actualValue}'`);
                }
              };
 
@@ -147,7 +147,9 @@ export function main() {
          let destroyed = false;
          @Component({selector: 'ng2', template: 'test'})
          class Ng2Component implements OnDestroy {
-           ngOnDestroy() { destroyed = true; }
+           ngOnDestroy() {
+             destroyed = true;
+           }
          }
 
          @NgModule({
@@ -159,12 +161,13 @@ export function main() {
            ngDoBootstrap() {}
          }
 
-         const ng1Module =
-             angular.module('ng1', [])
-                 .directive(
-                     'ng1',
-                     () => { return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'}; })
-                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+         const ng1Module = angular.module('ng1', [])
+                               .directive(
+                                   'ng1',
+                                   () => {
+                                     return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'};
+                                   })
+                               .directive('ng2', downgradeComponent({component: Ng2Component}));
          const element = html('<ng1></ng1>');
          platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
            const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;

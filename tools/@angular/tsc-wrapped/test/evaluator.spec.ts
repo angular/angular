@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {Evaluator} from '../src/evaluator';
 import {Symbols} from '../src/symbols';
 
-import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
+import {Directory, expectNoDiagnostics, findVar, Host} from './typescript.mocks';
 
 describe('Evaluator', () => {
   const documentRegistry = ts.createDocumentRegistry();

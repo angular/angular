@@ -8,7 +8,8 @@
 
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {PRIMARY_OUTLET, Params} from './shared';
+
+import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
@@ -374,24 +375,24 @@ function validateNode(route: Route): void {
     throw new Error(`Invalid route configuration: Array cannot be specified`);
   }
   if (route.component === undefined && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
-    throw new Error(
-        `Invalid route configuration of route '${route.path}': a componentless route cannot have a named outlet set`);
+    throw new Error(`Invalid route configuration of route '${route.path
+                    }': a componentless route cannot have a named outlet set`);
   }
   if (!!route.redirectTo && !!route.children) {
-    throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and children cannot be used together`);
+    throw new Error(`Invalid configuration of route '${route.path
+                    }': redirectTo and children cannot be used together`);
   }
   if (!!route.redirectTo && !!route.loadChildren) {
-    throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and loadChildren cannot be used together`);
+    throw new Error(`Invalid configuration of route '${route.path
+                    }': redirectTo and loadChildren cannot be used together`);
   }
   if (!!route.children && !!route.loadChildren) {
-    throw new Error(
-        `Invalid configuration of route '${route.path}': children and loadChildren cannot be used together`);
+    throw new Error(`Invalid configuration of route '${route.path
+                    }': children and loadChildren cannot be used together`);
   }
   if (!!route.redirectTo && !!route.component) {
-    throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and component cannot be used together`);
+    throw new Error(`Invalid configuration of route '${route.path
+                    }': redirectTo and component cannot be used together`);
   }
   if (!!route.path && !!route.matcher) {
     throw new Error(
@@ -400,7 +401,8 @@ function validateNode(route: Route): void {
   if (route.redirectTo === undefined && !route.component && !route.children &&
       !route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
+        `Invalid configuration of route '${route.path
+        }': one of the following must be provided (component or redirectTo or children or loadChildren)`);
   }
   if (route.path === undefined) {
     throw new Error(`Invalid route configuration: routes must have path specified`);
@@ -413,10 +415,11 @@ function validateNode(route: Route): void {
     const exp =
         `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
     throw new Error(
-        `Invalid route configuration of route '{path: "${route.path}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
+        `Invalid route configuration of route '{path: "${route.path
+        }", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
   }
   if (route.pathMatch !== undefined && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
-    throw new Error(
-        `Invalid configuration of route '${route.path}': pathMatch can only be set to 'prefix' or 'full'`);
+    throw new Error(`Invalid configuration of route '${route.path
+                    }': pathMatch can only be set to 'prefix' or 'full'`);
   }
 }

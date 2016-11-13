@@ -51,9 +51,13 @@ export function main() {
 }
 
 class MockMetric extends Metric {
-  constructor(private _id: string) { super(); }
+  constructor(private _id: string) {
+    super();
+  }
 
-  beginMeasure(): Promise<string> { return Promise.resolve(`${this._id}_beginMeasure`); }
+  beginMeasure(): Promise<string> {
+    return Promise.resolve(`${this._id}_beginMeasure`);
+  }
 
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     const result: {[key: string]: any} = {};

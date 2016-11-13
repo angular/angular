@@ -9,7 +9,7 @@
 import {Injector} from '../di/injector';
 import {unimplemented} from '../facade/errors';
 import {isPresent} from '../facade/lang';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
+import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
@@ -42,11 +42,17 @@ export abstract class ViewContainerRef {
    * Anchor element that specifies the location of this container in the containing View.
    * <!-- TODO: rename to anchorElement -->
    */
-  get element(): ElementRef { return <ElementRef>unimplemented(); }
+  get element(): ElementRef {
+    return <ElementRef>unimplemented();
+  }
 
-  get injector(): Injector { return <Injector>unimplemented(); }
+  get injector(): Injector {
+    return <Injector>unimplemented();
+  }
 
-  get parentInjector(): Injector { return <Injector>unimplemented(); }
+  get parentInjector(): Injector {
+    return <Injector>unimplemented();
+  }
 
   /**
    * Destroys all Views in this container.
@@ -61,7 +67,9 @@ export abstract class ViewContainerRef {
   /**
    * Returns the number of Views currently attached to this container.
    */
-  get length(): number { return <number>unimplemented(); };
+  get length(): number {
+    return <number>unimplemented();
+  };
 
   /**
    * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
@@ -131,17 +139,25 @@ export abstract class ViewContainerRef {
 export class ViewContainerRef_ implements ViewContainerRef {
   constructor(private _element: ViewContainer) {}
 
-  get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
+  get(index: number): ViewRef {
+    return this._element.nestedViews[index].ref;
+  }
   get length(): number {
     const views = this._element.nestedViews;
     return isPresent(views) ? views.length : 0;
   }
 
-  get element(): ElementRef { return this._element.elementRef; }
+  get element(): ElementRef {
+    return this._element.elementRef;
+  }
 
-  get injector(): Injector { return this._element.injector; }
+  get injector(): Injector {
+    return this._element.injector;
+  }
 
-  get parentInjector(): Injector { return this._element.parentInjector; }
+  get parentInjector(): Injector {
+    return this._element.parentInjector;
+  }
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.

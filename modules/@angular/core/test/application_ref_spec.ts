@@ -16,7 +16,7 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {ServerModule} from '@angular/platform-server';
 
-import {TestBed, async, inject, withModule} from '../testing';
+import {async, inject, TestBed, withModule} from '../testing';
 
 import {SpyChangeDetectorRef} from './spies';
 
@@ -40,7 +40,7 @@ export function main() {
 
     function createModule(providers?: any[]): Type<any>;
     function createModule(options: CreateModuleOptions): Type<any>;
-    function createModule(providersOrOptions: any[] | CreateModuleOptions): Type<any> {
+    function createModule(providersOrOptions: any[]|CreateModuleOptions): Type<any> {
       let options: CreateModuleOptions = {};
       if (providersOrOptions instanceof Array) {
         options = {providers: providersOrOptions};
@@ -71,7 +71,9 @@ export function main() {
     }
 
     describe('ApplicationRef', () => {
-      beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
+      beforeEach(() => {
+        TestBed.configureTestingModule({imports: [createModule()]});
+      });
 
       it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
            const cdRef = <any>new SpyChangeDetectorRef();
@@ -92,7 +94,9 @@ export function main() {
             providers: [{
               provide: APP_BOOTSTRAP_LISTENER,
               multi: true,
-              useValue: (compRef: any) => { capturedCompRefs.push(compRef); }
+              useValue: (compRef: any) => {
+                capturedCompRefs.push(compRef);
+              }
             }]
           });
         });
@@ -127,12 +131,15 @@ export function main() {
 
     describe('bootstrapModule', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(
-          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+        defaultPlatform = _platform;
+      }));
 
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           const promise: Promise<any> = new Promise((res) => {
+             resolve = res;
+           });
            let initializerDone = false;
            setTimeout(() => {
              resolve(true);
@@ -142,13 +149,20 @@ export function main() {
            defaultPlatform
                .bootstrapModule(
                    createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
-               .then(_ => { expect(initializerDone).toBe(true); });
+               .then(_ => {
+                 expect(initializerDone).toBe(true);
+               });
          }));
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
            defaultPlatform
-               .bootstrapModule(createModule(
-                   [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
+               .bootstrapModule(createModule([{
+                 provide: APP_INITIALIZER,
+                 useValue: () => {
+                   throw 'Test';
+                 },
+                 multi: true
+               }]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
                  // Note: if the modules throws an error during construction,
@@ -215,11 +229,14 @@ export function main() {
 
     describe('bootstrapModuleFactory', () => {
       let defaultPlatform: PlatformRef;
-      beforeEach(
-          inject([PlatformRef], (_platform: PlatformRef) => { defaultPlatform = _platform; }));
+      beforeEach(inject([PlatformRef], (_platform: PlatformRef) => {
+        defaultPlatform = _platform;
+      }));
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           const promise: Promise<any> = new Promise((res) => {
+             resolve = res;
+           });
            let initializerDone = false;
            setTimeout(() => {
              resolve(true);
@@ -238,8 +255,13 @@ export function main() {
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
            const compilerFactory: CompilerFactory =
                defaultPlatform.injector.get(CompilerFactory, null);
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule([{
+             provide: APP_INITIALIZER,
+             useValue: () => {
+               throw 'Test';
+             },
+             multi: true
+           }]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
            // Note: if the modules throws an error during construction,
            // we don't have an injector and therefore no way of
@@ -270,6 +292,10 @@ class MyComp6 {
 
 class MockConsole {
   res: any[] = [];
-  log(s: any): void { this.res.push(s); }
-  error(s: any): void { this.res.push(s); }
+  log(s: any): void {
+    this.res.push(s);
+  }
+  error(s: any): void {
+    this.res.push(s);
+  }
 }

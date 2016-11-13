@@ -23,9 +23,15 @@ export class MockDomAnimatePlayer implements DomAnimatePlayer {
     this.captures[method].push(data);
   }
 
-  cancel(): void { this._capture('cancel', null); }
-  play(): void { this._capture('play', null); }
-  pause(): void { this._capture('pause', null); }
+  cancel(): void {
+    this._capture('cancel', null);
+  }
+  play(): void {
+    this._capture('play', null);
+  }
+  pause(): void {
+    this._capture('pause', null);
+  }
   finish(): void {
     this._capture('finish', null);
     this._onfinish();
@@ -34,12 +40,16 @@ export class MockDomAnimatePlayer implements DomAnimatePlayer {
     this._capture('onfinish', fn);
     this._onfinish = fn;
   }
-  get onfinish(): Function { return this._onfinish; }
+  get onfinish(): Function {
+    return this._onfinish;
+  }
   set position(val: number) {
     this._capture('position', val);
     this._position = val;
   }
-  get position(): number { return this._position; }
+  get position(): number {
+    return this._position;
+  }
   addEventListener(eventName: string, handler: (event: any) => any): any {
     if (eventName == 'finish') {
       this.onfinish = handler;

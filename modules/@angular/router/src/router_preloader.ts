@@ -8,7 +8,6 @@
 
 import {Compiler, Injectable, Injector, NgModuleFactoryLoader} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
 import {_catch} from 'rxjs/operator/catch';
@@ -16,6 +15,7 @@ import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
+import {Subscription} from 'rxjs/Subscription';
 
 import {Route, Routes} from './config';
 import {NavigationEnd, Router} from './router';
@@ -57,7 +57,9 @@ export class PreloadAllModules implements PreloadingStrategy {
  * @experimental
  */
 export class NoPreloading implements PreloadingStrategy {
-  preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
+  preload(route: Route, fn: () => Observable<any>): Observable<any> {
+    return of (null);
+  }
 }
 
 /**
@@ -88,9 +90,13 @@ export class RouterPreloader {
     this.subscription = concatMap.call(navigations, () => this.preload()).subscribe((v: any) => {});
   }
 
-  preload(): Observable<any> { return this.processRoutes(this.injector, this.router.config); }
+  preload(): Observable<any> {
+    return this.processRoutes(this.injector, this.router.config);
+  }
 
-  ngOnDestroy() { this.subscription.unsubscribe(); }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
   private processRoutes(injector: Injector, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];

@@ -51,7 +51,9 @@ class ShowError {
   controlPath: string;
   errorTypes: string[];
 
-  constructor(@Host() formDir: FormGroupDirective) { this.formDir = formDir; }
+  constructor(@Host() formDir: FormGroupDirective) {
+    this.formDir = formDir;
+  }
 
   get errorMessage(): string {
     const form: FormGroup = this.formDir.form;

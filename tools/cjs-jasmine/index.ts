@@ -75,7 +75,9 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
 jrunner.configureDefaultReporter({showColors: process.argv.indexOf('--no-color') === -1});
 
-jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
+jrunner.onComplete(function(passed: boolean) {
+  process.exit(passed ? 0 : 1);
+});
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('./test-cjs-main.js');

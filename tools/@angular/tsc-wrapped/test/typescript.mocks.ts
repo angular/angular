@@ -18,18 +18,26 @@ export class Host implements ts.LanguageServiceHost {
     };
   }
 
-  getScriptFileNames(): string[] { return this.scripts; }
+  getScriptFileNames(): string[] {
+    return this.scripts;
+  }
 
-  getScriptVersion(fileName: string): string { return this.version.toString(); }
+  getScriptVersion(fileName: string): string {
+    return this.version.toString();
+  }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot {
     const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
 
-  getCurrentDirectory(): string { return '/'; }
+  getCurrentDirectory(): string {
+    return '/';
+  }
 
-  getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
+  getDefaultLibFileName(options: ts.CompilerOptions): string {
+    return 'lib.d.ts';
+  }
 
   overrideFile(fileName: string, content: string) {
     this.overrides.set(fileName, content);
@@ -63,20 +71,48 @@ export class MockNode implements ts.Node {
   constructor(
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
-  getSourceFile(): ts.SourceFile { return null; }
-  getChildCount(sourceFile?: ts.SourceFile): number { return 0 }
-  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null; }
-  getChildren(sourceFile?: ts.SourceFile): ts.Node[] { return []; }
-  getStart(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullStart(): number { return 0; }
-  getEnd(): number { return 0; }
-  getWidth(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullWidth(): number { return 0; }
-  getLeadingTriviaWidth(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullText(sourceFile?: ts.SourceFile): string { return ''; }
-  getText(sourceFile?: ts.SourceFile): string { return ''; }
-  getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
-  getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
+  getSourceFile(): ts.SourceFile {
+    return null;
+  }
+  getChildCount(sourceFile?: ts.SourceFile): number {
+    return 0
+  }
+  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node {
+    return null;
+  }
+  getChildren(sourceFile?: ts.SourceFile): ts.Node[] {
+    return [];
+  }
+  getStart(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullStart(): number {
+    return 0;
+  }
+  getEnd(): number {
+    return 0;
+  }
+  getWidth(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullWidth(): number {
+    return 0;
+  }
+  getLeadingTriviaWidth(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullText(sourceFile?: ts.SourceFile): string {
+    return '';
+  }
+  getText(sourceFile?: ts.SourceFile): string {
+    return '';
+  }
+  getFirstToken(sourceFile?: ts.SourceFile): ts.Node {
+    return null;
+  }
+  getLastToken(sourceFile?: ts.SourceFile): ts.Node {
+    return null;
+  }
 }
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
@@ -115,12 +151,22 @@ export class MockSymbol implements ts.Symbol {
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
       public flags: ts.SymbolFlags = 0) {}
 
-  getFlags(): ts.SymbolFlags { return this.flags; }
-  getName(): string { return this.name; }
-  getDeclarations(): ts.Declaration[] { return [this.node]; }
-  getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
+  getFlags(): ts.SymbolFlags {
+    return this.flags;
+  }
+  getName(): string {
+    return this.name;
+  }
+  getDeclarations(): ts.Declaration[] {
+    return [this.node];
+  }
+  getDocumentationComment(): ts.SymbolDisplayPart[] {
+    return [];
+  }
 
-  static of (name: string): MockSymbol { return new MockSymbol(name); }
+  static of (name: string): MockSymbol {
+    return new MockSymbol(name);
+  }
 }
 
 export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {

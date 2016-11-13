@@ -27,8 +27,12 @@ declare type Styles = {
 };
 
 export class AnimationParseError extends ParseError {
-  constructor(message: string) { super(null, message); }
-  toString(): string { return `${this.msg}`; }
+  constructor(message: string) {
+    super(null, message);
+  }
+  toString(): string {
+    return `${this.msg}`;
+  }
 }
 
 export class AnimationEntryParseResult {
@@ -49,15 +53,17 @@ export class AnimationParser {
       const triggerName = ast.name;
       if (animationTriggerNames.has(triggerName)) {
         result.errors.push(new AnimationParseError(
-            `The animation trigger "${triggerName}" has already been registered for the ${componentName} component`));
+            `The animation trigger "${triggerName
+            }" has already been registered for the ${componentName} component`));
       } else {
         animationTriggerNames.add(triggerName);
       }
       if (result.errors.length > 0) {
-        let errorMessage =
-            `- Unable to parse the animation sequence for "${triggerName}" on the ${componentName} component due to the following errors:`;
-        result.errors.forEach(
-            (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
+        let errorMessage = `- Unable to parse the animation sequence for "${triggerName
+                           }" on the ${componentName} component due to the following errors:`;
+        result.errors.forEach((error: AnimationParseError) => {
+          errorMessage += '\n-- ' + error.msg;
+        });
         errors.push(errorMessage);
       }
       return ast;
@@ -112,8 +118,9 @@ function _parseAnimationStateTransition(
   const styles = new StylesCollection();
   const transitionExprs: AnimationStateTransitionExpression[] = [];
   const transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
-  transitionStates.forEach(
-      expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
+  transitionStates.forEach(expr => {
+    transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors));
+  });
   const entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   const animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
   const animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
@@ -165,8 +172,8 @@ function _parseAnimationTransitionExpr(
   return expressions;
 }
 
-function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnimationMetadata[]):
-    CompileAnimationMetadata {
+function _normalizeAnimationEntry(entry: CompileAnimationMetadata|
+                                  CompileAnimationMetadata[]): CompileAnimationMetadata {
   return Array.isArray(entry) ? new CompileAnimationSequenceMetadata(entry) : entry;
 }
 
@@ -212,7 +219,7 @@ function _normalizeStyleSteps(
 }
 
 function _mergeAnimationStyles(
-    stylesList: any[], newItem: {[key: string]: string | number} | string) {
+    stylesList: any[], newItem: {[key: string]: string | number}|string) {
   if (typeof newItem === 'object' && newItem !== null && stylesList.length > 0) {
     const lastIndex = stylesList.length - 1;
     const lastItem = stylesList[lastIndex];
@@ -248,7 +255,9 @@ function _normalizeStyleStepEntry(
       }
       _normalizeStyleMetadata(
           <CompileAnimationStyleMetadata>step, stateStyles, schema, errors, true)
-          .forEach(entry => { _mergeAnimationStyles(combinedStyles, entry); });
+          .forEach(entry => {
+            _mergeAnimationStyles(combinedStyles, entry);
+          });
     } else {
       // it is important that we create a metadata entry of the combined styles
       // before we go on an process the animate, sequence or group metadata steps.
@@ -422,8 +431,9 @@ function _parseTransitionAnimation(
         entry.styles.forEach(stylesEntry => {
           // by this point we know that we only have stringmap values
           const map = stylesEntry as Styles;
-          Object.keys(map).forEach(
-              prop => { collectedStyles.insertAtTime(prop, time, map[prop]); });
+          Object.keys(map).forEach(prop => {
+            collectedStyles.insertAtTime(prop, time, map[prop]);
+          });
         });
         previousStyles = entry.styles;
         return;
@@ -481,8 +491,9 @@ function _parseTransitionAnimation(
 
     keyframes.forEach(
         (keyframe: any /** TODO #9100 */) => keyframe.styles.styles.forEach(
-            (entry: any /** TODO #9100 */) => Object.keys(entry).forEach(
-                prop => { collectedStyles.insertAtTime(prop, currentTime, entry[prop]); })));
+            (entry: any /** TODO #9100 */) => Object.keys(entry).forEach(prop => {
+              collectedStyles.insertAtTime(prop, currentTime, entry[prop]);
+            })));
   } else {
     // if the code reaches this stage then an error
     // has already been populated within the _normalizeStyleSteps()
@@ -512,7 +523,7 @@ function _fillAnimationAstStartingKeyframes(
 }
 
 function _parseTimeExpression(
-    exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
+    exp: string|number, errors: AnimationParseError[]): _AnimationTimings {
   const regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
   let duration: number;
   let delay: number = 0;
@@ -578,7 +589,8 @@ function _createStartKeyframeFromEndKeyframe(
 
       if (isPresent(nextEntry) && !nextEntry.matches(endTime, val)) {
         errors.push(new AnimationParseError(
-            `The animated CSS property "${prop}" unexpectedly changes between steps "${resultEntry.time}ms" and "${endTime}ms" at "${nextEntry.time}ms"`));
+            `The animated CSS property "${prop}" unexpectedly changes between steps "${resultEntry
+                .time}ms" and "${endTime}ms" at "${nextEntry.time}ms"`));
       }
 
       values[prop] = value;

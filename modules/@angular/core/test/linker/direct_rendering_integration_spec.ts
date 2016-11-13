@@ -9,7 +9,7 @@
 import {Component, Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {DirectRenderer} from '@angular/core/src/render/api';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DIRECT_DOM_RENDERER, DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/matchers';

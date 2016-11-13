@@ -18,7 +18,9 @@ import {getDOM} from './private_import_platform-browser';
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc: any /** TODO #9100 */) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any /** TODO #9100 */) {
+    super();
+  }
 
   insertRootElement(rootElId: string) {
     const rootEl = <HTMLElement>getDOM().firstChild(

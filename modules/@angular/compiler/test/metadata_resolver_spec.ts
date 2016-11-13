@@ -9,7 +9,7 @@
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation} from '@angular/core';
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {async, inject, TestBed} from '@angular/core/testing';
 
 import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
@@ -20,7 +20,9 @@ import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
-    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+    });
 
     it('should throw on the get... methods if the module has not been loaded yet',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
@@ -71,8 +73,8 @@ export function main() {
          }
 
          expect(() => resolver.loadNgModuleMetadata(SomeModule, true))
-             .toThrowError(
-                 `Can't compile synchronously as ${stringify(ComponentWithExternalResources)} is still being loaded!`);
+             .toThrowError(`Can't compile synchronously as ${stringify(
+                 ComponentWithExternalResources)} is still being loaded!`);
        }));
 
     it('should read external metadata when sync=false',
@@ -356,9 +358,9 @@ class ComponentWithExternalResources {
   styles: ['someStyle'],
   interpolation: ['{{', '}}']
 })
-class ComponentWithEverythingInline implements OnChanges,
-    OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
-    AfterViewChecked {
+class ComponentWithEverythingInline implements OnChanges, OnInit, DoCheck, OnDestroy,
+                                               AfterContentInit, AfterContentChecked, AfterViewInit,
+                                               AfterViewChecked {
   ngOnChanges(changes: SimpleChanges): void {}
   ngOnInit(): void {}
   ngDoCheck(): void {}

@@ -10,9 +10,9 @@ import {SchemaMetadata} from '@angular/core';
 
 import {AnimationCompiler} from './animation/animation_compiler';
 import {AnimationParser} from './animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, createHostComponentMeta, StaticSymbol} from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from './directive_wrapper_compiler';
+import {DirectiveWrapperCompiler, DirectiveWrapperCompileResult} from './directive_wrapper_compiler';
 import {ListWrapper} from './facade/collection';
 import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
 import {CompileMetadataResolver} from './metadata_resolver';
@@ -21,7 +21,7 @@ import {OutputEmitter} from './output/abstract_emitter';
 import * as o from './output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from './style_compiler';
 import {TemplateParser} from './template_parser/template_parser';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from './view_compiler/view_compiler';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompiler, ViewCompileResult} from './view_compiler/view_compiler';
 
 export class SourceModule {
   constructor(public fileUrl: string, public moduleUrl: string, public source: string) {}
@@ -96,7 +96,9 @@ export class OfflineCompiler {
       private _localeId: string, private _translationFormat: string,
       private _animationParser: AnimationParser) {}
 
-  clearCache() { this._metadataResolver.clearCache(); }
+  clearCache() {
+    this._metadataResolver.clearCache();
+  }
 
   compileModules(staticSymbols: StaticSymbol[], options: {transitiveModules: boolean}):
       Promise<SourceModule[]> {

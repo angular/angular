@@ -15,11 +15,17 @@ export class Symbols {
 
   constructor(private sourceFile: ts.SourceFile) {}
 
-  resolve(name: string): MetadataValue|undefined { return this.symbols.get(name); }
+  resolve(name: string): MetadataValue|undefined {
+    return this.symbols.get(name);
+  }
 
-  define(name: string, value: MetadataValue) { this.symbols.set(name, value); }
+  define(name: string, value: MetadataValue) {
+    this.symbols.set(name, value);
+  }
 
-  has(name: string): boolean { return this.symbols.has(name); }
+  has(name: string): boolean {
+    return this.symbols.has(name);
+  }
 
   private get symbols(): Map<string, MetadataValue> {
     let result = this._symbols;

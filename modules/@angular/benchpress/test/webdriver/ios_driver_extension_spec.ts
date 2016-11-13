@@ -171,7 +171,9 @@ function internalScriptRecord(startTime: number, endTime: number) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  constructor(private _log: any[], private _perfRecords: any[]) { super(); }
+  constructor(private _log: any[], private _perfRecords: any[]) {
+    super();
+  }
 
   executeScript(script: string) {
     this._log.push(['executeScript', script]);

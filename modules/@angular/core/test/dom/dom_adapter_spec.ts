@@ -67,8 +67,9 @@ export function main() {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());
 
-        it('should return null if base element is absent',
-           () => { expect(getDOM().getBaseHref()).toBeNull(); });
+        it('should return null if base element is absent', () => {
+          expect(getDOM().getBaseHref()).toBeNull();
+        });
 
         it('should return the value of the base element', () => {
           const baseEl = getDOM().createElement('base');

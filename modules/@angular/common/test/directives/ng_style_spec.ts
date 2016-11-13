@@ -8,19 +8,23 @@
 
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 export function main() {
   describe('NgStyle', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function expectNativeEl(fixture: ComponentFixture<any>): any {
       return expect(fixture.debugElement.children[0].nativeElement);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});

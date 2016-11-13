@@ -43,9 +43,13 @@ export class BoundProperty {
       public name: string, public expression: ASTWithSource, public type: BoundPropertyType,
       public sourceSpan: ParseSourceSpan) {}
 
-  get isLiteral() { return this.type === BoundPropertyType.LITERAL_ATTR; }
+  get isLiteral() {
+    return this.type === BoundPropertyType.LITERAL_ATTR;
+  }
 
-  get isAnimation() { return this.type === BoundPropertyType.ANIMATION; }
+  get isAnimation() {
+    return this.type === BoundPropertyType.ANIMATION;
+  }
 }
 
 /**
@@ -71,7 +75,9 @@ export class BindingParser {
           this.parsePropertyBinding(propName, expression, true, sourceSpan, [], boundProps);
         } else {
           this._reportError(
-              `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host property binding "${propName
+              }" needs to be a string representing an expression but got "${expression
+              }" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -89,7 +95,9 @@ export class BindingParser {
           this.parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
         } else {
           this._reportError(
-              `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host listener "${propName
+              }" needs to be a string representing an expression but got "${expression
+              }" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -141,8 +149,9 @@ export class BindingParser {
           this._checkPipes(binding.expression, sourceSpan);
         }
       });
-      bindingsResult.warnings.forEach(
-          (warning) => { this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING); });
+      bindingsResult.warnings.forEach((warning) => {
+        this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING);
+      });
       return bindingsResult.templateBindings;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -319,13 +328,15 @@ export class BindingParser {
 
         default:
           this._reportError(
-              `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
+              `The provided animation output phase value "${phase}" for "@${eventName
+              }" is not supported (use start or done)`,
               sourceSpan);
           break;
       }
     } else {
       this._reportError(
-          `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
+          `The animation trigger output event (@${eventName
+          }) is missing its phase value name (start or done are currently supported)`,
           sourceSpan);
     }
   }

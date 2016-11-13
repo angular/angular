@@ -8,21 +8,25 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('NgTemplateOutlet', () => {
     let fixture: ComponentFixture<any>;
 
-    function setTplRef(value: any): void { fixture.componentInstance.currentTplRef = value; }
+    function setTplRef(value: any): void {
+      fixture.componentInstance.currentTplRef = value;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({

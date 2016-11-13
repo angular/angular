@@ -119,7 +119,9 @@ export function main() {
 
         @Injectable()
         class NeedsDependency {
-          constructor(@SkipSelf() public dependency: Dependency) { this.dependency = dependency; }
+          constructor(@SkipSelf() public dependency: Dependency) {
+            this.dependency = dependency;
+          }
         }
 
         const parent = ReflectiveInjector.resolveAndCreate([Dependency]);

@@ -52,7 +52,9 @@ export class TestingCompilerImpl implements TestingCompiler {
   constructor(
       private _compiler: RuntimeCompiler, private _directiveResolver: MockDirectiveResolver,
       private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver) {}
-  get injector(): Injector { return this._compiler.injector; }
+  get injector(): Injector {
+    return this._compiler.injector;
+  }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return this._compiler.compileModuleSync(moduleType);
@@ -89,8 +91,12 @@ export class TestingCompilerImpl implements TestingCompiler {
     const oldMetadata = this._pipeResolver.resolve(pipe, false);
     this._pipeResolver.setPipe(pipe, this._overrider.overrideMetadata(Pipe, oldMetadata, override));
   }
-  clearCache(): void { this._compiler.clearCache(); }
-  clearCacheFor(type: Type<any>) { this._compiler.clearCacheFor(type); }
+  clearCache(): void {
+    this._compiler.clearCache();
+  }
+  clearCacheFor(type: Type<any>) {
+    this._compiler.clearCacheFor(type);
+  }
 }
 
 /**

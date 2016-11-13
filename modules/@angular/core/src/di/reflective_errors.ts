@@ -167,10 +167,13 @@ export class InstantiationError extends WrappedError {
 
   get message(): string {
     const first = stringify(this.keys[0].token);
-    return `${this.originalError.message}: Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
+    return `${this.originalError.message}: Error during instantiation of ${first
+                                        }!${constructResolvingPath(this.keys)}.`;
   }
 
-  get causeKey(): ReflectiveKey { return this.keys[0]; }
+  get causeKey(): ReflectiveKey {
+    return this.keys[0];
+  }
 }
 
 /**
@@ -256,7 +259,9 @@ export class NoAnnotationError extends BaseError {
  * @stable
  */
 export class OutOfBoundsError extends BaseError {
-  constructor(index: number) { super(`Index ${index} is out-of-bounds.`); }
+  constructor(index: number) {
+    super(`Index ${index} is out-of-bounds.`);
+  }
 }
 
 // TODO: add a working example after alpha38 is released

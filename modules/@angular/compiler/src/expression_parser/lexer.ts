@@ -7,8 +7,9 @@
  */
 
 import {Injectable} from '@angular/core';
+
 import * as chars from '../chars';
-import {NumberWrapper, isPresent} from '../facade/lang';
+import {isPresent, NumberWrapper} from '../facade/lang';
 
 export enum TokenType {
   Character,
@@ -45,35 +46,57 @@ export class Token {
     return this.type == TokenType.Character && this.numValue == code;
   }
 
-  isNumber(): boolean { return this.type == TokenType.Number; }
+  isNumber(): boolean {
+    return this.type == TokenType.Number;
+  }
 
-  isString(): boolean { return this.type == TokenType.String; }
+  isString(): boolean {
+    return this.type == TokenType.String;
+  }
 
   isOperator(operater: string): boolean {
     return this.type == TokenType.Operator && this.strValue == operater;
   }
 
-  isIdentifier(): boolean { return this.type == TokenType.Identifier; }
+  isIdentifier(): boolean {
+    return this.type == TokenType.Identifier;
+  }
 
-  isKeyword(): boolean { return this.type == TokenType.Keyword; }
+  isKeyword(): boolean {
+    return this.type == TokenType.Keyword;
+  }
 
-  isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
+  isKeywordLet(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'let';
+  }
 
-  isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }
+  isKeywordNull(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'null';
+  }
 
   isKeywordUndefined(): boolean {
     return this.type == TokenType.Keyword && this.strValue == 'undefined';
   }
 
-  isKeywordTrue(): boolean { return this.type == TokenType.Keyword && this.strValue == 'true'; }
+  isKeywordTrue(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'true';
+  }
 
-  isKeywordFalse(): boolean { return this.type == TokenType.Keyword && this.strValue == 'false'; }
+  isKeywordFalse(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'false';
+  }
 
-  isKeywordThis(): boolean { return this.type == TokenType.Keyword && this.strValue == 'this'; }
+  isKeywordThis(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'this';
+  }
 
-  isError(): boolean { return this.type == TokenType.Error; }
+  isError(): boolean {
+    return this.type == TokenType.Error;
+  }
 
-  toNumber(): number { return this.type == TokenType.Number ? this.numValue : -1; }
+  toNumber(): number {
+    return this.type == TokenType.Number ? this.numValue : -1;
+  }
 
   toString(): string {
     switch (this.type) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, Host, Inject, Injectable, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, Host, Inject, Injectable, ModuleWithProviders, Optional, Provider, Query, resolveForwardRef, SchemaMetadata, Self, SkipSelf, Type} from '@angular/core';
 
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
@@ -18,10 +18,10 @@ import {Identifiers, resolveIdentifierToken} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ComponentStillLoadingError, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from './private_import_core';
+import {ComponentStillLoadingError, LIFECYCLE_HOOKS_VALUES, reflector, ReflectorReader} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {getUrlScheme} from './url_resolver';
-import {MODULE_SUFFIX, SyncAsyncResult, ValueTransformer, sanitizeIdentifier, visitValue} from './util';
+import {MODULE_SUFFIX, sanitizeIdentifier, SyncAsyncResult, ValueTransformer, visitValue} from './util';
 
 
 
@@ -262,7 +262,8 @@ export class CompileMetadataResolver {
     const dirMeta = this._directiveCache.get(directiveType);
     if (!dirMeta) {
       throw new Error(
-          `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringify(directiveType)}.`);
+          `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringify(
+              directiveType)}.`);
     }
     return dirMeta;
   }
@@ -271,14 +272,19 @@ export class CompileMetadataResolver {
     const dirSummary = this._directiveSummaryCache.get(dirType);
     if (!dirSummary) {
       throw new Error(
-          `Illegal state: getDirectiveSummary can only be called after loadNgModuleMetadata for a module that imports it. Directive ${stringify(dirType)}.`);
+          `Illegal state: getDirectiveSummary can only be called after loadNgModuleMetadata for a module that imports it. Directive ${stringify(
+              dirType)}.`);
     }
     return dirSummary;
   }
 
-  isDirective(type: any) { return this._directiveResolver.isDirective(type); }
+  isDirective(type: any) {
+    return this._directiveResolver.isDirective(type);
+  }
 
-  isPipe(type: any) { return this._pipeResolver.isPipe(type); }
+  isPipe(type: any) {
+    return this._pipeResolver.isPipe(type);
+  }
 
   /**
    * Gets the metadata for the given module.
@@ -288,7 +294,8 @@ export class CompileMetadataResolver {
     const modMeta = this._ngModuleCache.get(moduleType);
     if (!modMeta) {
       throw new Error(
-          `Illegal state: getNgModuleMetadata can only be called after loadNgModuleMetadata. Module ${stringify(moduleType)}.`);
+          `Illegal state: getNgModuleMetadata can only be called after loadNgModuleMetadata. Module ${stringify(
+              moduleType)}.`);
     }
     return modMeta;
   }
@@ -353,13 +360,13 @@ export class CompileMetadataResolver {
         if (importedModuleType) {
           const importedModuleSummary = this._loadNgModuleSummary(importedModuleType, isSync);
           if (!importedModuleSummary) {
-            throw new Error(
-                `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
+            throw new Error(`Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(
+                importedType)}' imported by the module '${stringify(moduleType)}'`);
           }
           importedModules.push(importedModuleSummary);
         } else {
-          throw new Error(
-              `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
+          throw new Error(`Unexpected value '${stringify(
+              importedType)}' imported by the module '${stringify(moduleType)}'`);
         }
       });
     }
@@ -367,8 +374,8 @@ export class CompileMetadataResolver {
     if (meta.exports) {
       flattenAndDedupeArray(meta.exports).forEach((exportedType) => {
         if (!isValidType(exportedType)) {
-          throw new Error(
-              `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
+          throw new Error(`Unexpected value '${stringify(
+              exportedType)}' exported by the module '${stringify(moduleType)}'`);
         }
         const exportedModuleSummary = this._loadNgModuleSummary(exportedType, isSync);
         if (exportedModuleSummary) {
@@ -386,8 +393,8 @@ export class CompileMetadataResolver {
     if (meta.declarations) {
       flattenAndDedupeArray(meta.declarations).forEach((declaredType) => {
         if (!isValidType(declaredType)) {
-          throw new Error(
-              `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
+          throw new Error(`Unexpected value '${stringify(
+              declaredType)}' declared by the module '${stringify(moduleType)}'`);
         }
         const declaredIdentifier =
             this._getIdentifierMetadata(declaredType, staticTypeModuleUrl(declaredType));
@@ -407,8 +414,8 @@ export class CompileMetadataResolver {
           this._addTypeToModule(declaredType, moduleType);
           this._loadPipeMetadata(declaredType);
         } else {
-          throw new Error(
-              `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`);
+          throw new Error(`Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(
+              declaredType)}' declared by the module '${stringify(moduleType)}'`);
         }
       });
     }
@@ -421,8 +428,9 @@ export class CompileMetadataResolver {
       } else if (transitiveModule.pipesSet.has(exportedId.reference)) {
         exportedPipes.push(exportedId);
       } else {
-        throw new Error(
-            `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringify(exportedId.reference)} from ${stringify(moduleType)} as it was neither declared nor imported!`);
+        throw new Error(`Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringify(
+            exportedId
+                .reference)} from ${stringify(moduleType)} as it was neither declared nor imported!`);
       }
     });
 
@@ -442,8 +450,8 @@ export class CompileMetadataResolver {
     if (meta.bootstrap) {
       const typeMetadata = flattenAndDedupeArray(meta.bootstrap).map(type => {
         if (!isValidType(type)) {
-          throw new Error(
-              `Unexpected value '${stringify(type)}' used in the bootstrap property of module '${stringify(moduleType)}'`);
+          throw new Error(`Unexpected value '${stringify(
+              type)}' used in the bootstrap property of module '${stringify(moduleType)}'`);
         }
         return this._getTypeMetadata(type, staticTypeModuleUrl(type));
       });
@@ -505,9 +513,12 @@ export class CompileMetadataResolver {
     const oldModule = this._ngModuleOfTypes.get(type);
     if (oldModule && oldModule !== moduleType) {
       throw new Error(
-          `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(oldModule)} and ${stringify(moduleType)}! ` +
-          `Please consider moving ${stringify(type)} to a higher module that imports ${stringify(oldModule)} and ${stringify(moduleType)}. ` +
-          `You can also create a new NgModule that exports and includes ${stringify(type)} then import that NgModule in ${stringify(oldModule)} and ${stringify(moduleType)}.`);
+          `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(
+              oldModule)} and ${stringify(moduleType)}! ` +
+          `Please consider moving ${stringify(type)} to a higher module that imports ${stringify(
+              oldModule)} and ${stringify(moduleType)}. ` +
+          `You can also create a new NgModule that exports and includes ${stringify(
+              type)} then import that NgModule in ${stringify(oldModule)} and ${stringify(moduleType)}.`);
     }
     this._ngModuleOfTypes.set(type, moduleType);
   }
@@ -570,7 +581,8 @@ export class CompileMetadataResolver {
     const pipeMeta = this._pipeCache.get(pipeType);
     if (!pipeMeta) {
       throw new Error(
-          `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringify(pipeType)}.`);
+          `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringify(
+              pipeType)}.`);
     }
     return pipeMeta;
   }
@@ -579,7 +591,8 @@ export class CompileMetadataResolver {
     const pipeSummary = this._pipeSummaryCache.get(pipeType);
     if (!pipeSummary) {
       throw new Error(
-          `Illegal state: getPipeSummary can only be called after loadNgModuleMetadata for a module that imports it. Pipe ${stringify(pipeType)}.`);
+          `Illegal state: getPipeSummary can only be called after loadNgModuleMetadata for a module that imports it. Pipe ${stringify(
+              pipeType)}.`);
     }
     return pipeSummary;
   }
@@ -716,7 +729,10 @@ export class CompileMetadataResolver {
                 .join(', ');
 
         throw new Error(
-            `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
+            `Invalid ${debugInfo ?
+                debugInfo :
+                'provider'
+                } - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
       }
       if (compileProvider) {
         compileProviders.push(compileProvider);
@@ -788,7 +804,9 @@ export class CompileMetadataResolver {
     return res;
   }
 
-  private _queryVarBindings(selector: any): string[] { return selector.split(/\s*,\s*/); }
+  private _queryVarBindings(selector: any): string[] {
+    return selector.split(/\s*,\s*/);
+  }
 
   private _getQueryMetadata(q: Query, propertyName: string, typeOrFunc: Type<any>|Function):
       cpl.CompileQueryMetadata {
@@ -798,8 +816,8 @@ export class CompileMetadataResolver {
           this._queryVarBindings(q.selector).map(varName => this._getTokenMetadata(varName));
     } else {
       if (!q.selector) {
-        throw new Error(
-            `Can't construct a query for the property "${propertyName}" of "${stringify(typeOrFunc)}" since the query selector wasn't defined.`);
+        throw new Error(`Can't construct a query for the property "${propertyName}" of "${stringify(
+            typeOrFunc)}" since the query selector wasn't defined.`);
       }
       selectors = [this._getTokenMetadata(q.selector)];
     }
@@ -892,7 +910,8 @@ function componentModuleUrl(
     return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
   } else if (moduleId !== null && moduleId !== void 0) {
     throw new Error(
-        `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
+        `moduleId should be a string in "${stringify(
+            type)}". See https://goo.gl/wIDDiL for more information.\n` +
         `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
   }
 

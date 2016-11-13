@@ -64,7 +64,9 @@
     }
 
     // BOOTSTRAP the app!
-    System.import('index').then(function(m: any) { m.main(); }, console.error.bind(console));
+    System.import('index').then(function(m: any) {
+      m.main();
+    }, console.error.bind(console));
   }
 
   function writeScriptTag(scriptUrl: string, onload?: string) {

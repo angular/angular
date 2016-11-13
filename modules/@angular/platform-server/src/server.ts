@@ -8,7 +8,7 @@
 
 import {PlatformLocation} from '@angular/common';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, NgModule, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {createPlatformFactory, Injectable, isDevMode, NgModule, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RootRenderer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';
@@ -21,16 +21,36 @@ function notSupported(feature: string): Error {
 }
 
 class ServerPlatformLocation extends PlatformLocation {
-  getBaseHrefFromDOM(): string { throw notSupported('getBaseHrefFromDOM'); };
-  onPopState(fn: any): void { notSupported('onPopState'); };
-  onHashChange(fn: any): void { notSupported('onHashChange'); };
-  get pathname(): string { throw notSupported('pathname'); }
-  get search(): string { throw notSupported('search'); }
-  get hash(): string { throw notSupported('hash'); }
-  replaceState(state: any, title: string, url: string): void { notSupported('replaceState'); };
-  pushState(state: any, title: string, url: string): void { notSupported('pushState'); };
-  forward(): void { notSupported('forward'); };
-  back(): void { notSupported('back'); };
+  getBaseHrefFromDOM(): string {
+    throw notSupported('getBaseHrefFromDOM');
+  };
+  onPopState(fn: any): void {
+    notSupported('onPopState');
+  };
+  onHashChange(fn: any): void {
+    notSupported('onHashChange');
+  };
+  get pathname(): string {
+    throw notSupported('pathname');
+  }
+  get search(): string {
+    throw notSupported('search');
+  }
+  get hash(): string {
+    throw notSupported('hash');
+  }
+  replaceState(state: any, title: string, url: string): void {
+    notSupported('replaceState');
+  };
+  pushState(state: any, title: string, url: string): void {
+    notSupported('pushState');
+  };
+  forward(): void {
+    notSupported('forward');
+  };
+  back(): void {
+    notSupported('back');
+  };
 }
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [

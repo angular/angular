@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventHandlerVars, convertActionBinding} from '../compiler_util/expression_converter';
+import {convertActionBinding, EventHandlerVars} from '../compiler_util/expression_converter';
 import {createInlineArray} from '../compiler_util/identifier_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import {Identifiers, resolveIdentifier} from '../identifiers';
@@ -36,9 +36,13 @@ export function bindOutputs(
 function collectEvents(
     boundEvents: BoundEventAst[], directives: DirectiveAst[]): Map<string, EventSummary> {
   const usedEvents = new Map<string, EventSummary>();
-  boundEvents.forEach((event) => { usedEvents.set(event.fullName, event); });
+  boundEvents.forEach((event) => {
+    usedEvents.set(event.fullName, event);
+  });
   directives.forEach((dirAst) => {
-    dirAst.hostEvents.forEach((event) => { usedEvents.set(event.fullName, event); });
+    dirAst.hostEvents.forEach((event) => {
+      usedEvents.set(event.fullName, event);
+    });
   });
   return usedEvents;
 }

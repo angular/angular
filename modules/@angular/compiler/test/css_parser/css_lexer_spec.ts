@@ -143,7 +143,9 @@ export function main() {
     });
 
     it('should treat attribute operators as regular characters', () => {
-      tokenize('^|~+*').forEach((token) => { expect(token.type).toEqual(CssTokenType.Character); });
+      tokenize('^|~+*').forEach((token) => {
+        expect(token.type).toEqual(CssTokenType.Character);
+      });
     });
 
     it('should lex numbers properly and set them as numbers', () => {
@@ -310,7 +312,9 @@ export function main() {
            expect(tokenizeAttr('~').length).toEqual(4);
            expect(tokenizeAttr('').length).toEqual(3);
 
-           expect(() => { tokenizeAttr('+'); }).toThrow();
+           expect(() => {
+             tokenizeAttr('+');
+           }).toThrow();
          });
     });
 
@@ -328,9 +332,13 @@ export function main() {
         expect(tokenizeQuery('print and ((prop: value) or (prop2: value2))').length).toEqual(15);
         expect(tokenizeQuery('(content: \'something $ crazy inside &\')').length).toEqual(5);
 
-        expect(() => { tokenizeQuery('(max-height: 10 + 20)'); }).toThrow();
+        expect(() => {
+          tokenizeQuery('(max-height: 10 + 20)');
+        }).toThrow();
 
-        expect(() => { tokenizeQuery('(max-height: fifty < 100)'); }).toThrow();
+        expect(() => {
+          tokenizeQuery('(max-height: fifty < 100)');
+        }).toThrow();
       });
     });
 
@@ -347,9 +355,13 @@ export function main() {
            expect(tokenizePseudo('focus').length).toEqual(1);
            expect(tokenizePseudo('lang(en-us)', true).length).toEqual(4);
 
-           expect(() => { tokenizePseudo('lang(something:broken)', true); }).toThrow();
+           expect(() => {
+             tokenizePseudo('lang(something:broken)', true);
+           }).toThrow();
 
-           expect(() => { tokenizePseudo('not(.selector)', true); }).toThrow();
+           expect(() => {
+             tokenizePseudo('not(.selector)', true);
+           }).toThrow();
          });
     });
 
