@@ -2670,21 +2670,15 @@
       "dev": true
     },
     "clang-format": {
-      "version": "1.0.41",
-      "from": "clang-format@1.0.41",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.41.tgz",
+      "version": "1.0.45",
+      "from": "clang-format@latest",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.45.tgz",
       "dev": true,
       "dependencies": {
         "async": {
           "version": "1.5.2",
           "from": "async@>=1.5.2 <2.0.0",
           "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.0.3",
-          "from": "glob@>=7.0.0 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.3.tgz",
           "dev": true
         }
       }
@@ -4006,12 +4000,6 @@
           "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.0-rc4.tgz",
           "dev": true
         },
-        "fs.realpath": {
-          "version": "1.0.0",
-          "from": "fs.realpath@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz",
-          "dev": true
-        },
         "fstream": {
           "version": "1.0.10",
           "from": "fstream@>=1.0.2 <2.0.0",
@@ -4055,12 +4043,6 @@
               "dev": true
             }
           }
-        },
-        "glob": {
-          "version": "7.0.5",
-          "from": "glob@>=7.0.5 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.5.tgz",
-          "dev": true
         },
         "graceful-fs": {
           "version": "4.1.4",
@@ -4114,12 +4096,6 @@
           "version": "1.1.1",
           "from": "http-signature@>=1.1.0 <1.2.0",
           "resolved": "https://registry.npmjs.org/http-signature/-/http-signature-1.1.1.tgz",
-          "dev": true
-        },
-        "inflight": {
-          "version": "1.0.5",
-          "from": "inflight@>=1.0.4 <2.0.0",
-          "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.5.tgz",
           "dev": true
         },
         "inherits": {
@@ -4290,12 +4266,6 @@
           "version": "1.3.3",
           "from": "once@>=1.3.0 <2.0.0",
           "resolved": "https://registry.npmjs.org/once/-/once-1.3.3.tgz",
-          "dev": true
-        },
-        "path-is-absolute": {
-          "version": "1.0.0",
-          "from": "path-is-absolute@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.0.tgz",
           "dev": true
         },
         "pinkie": {
@@ -4656,18 +4626,10 @@
       "dev": true
     },
     "glob": {
-      "version": "4.5.3",
-      "from": "glob@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/glob/-/glob-4.5.3.tgz",
-      "dev": true,
-      "dependencies": {
-        "minimatch": {
-          "version": "2.0.10",
-          "from": "minimatch@>=2.0.1 <3.0.0",
-          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-2.0.10.tgz",
-          "dev": true
-        }
-      }
+      "version": "7.1.1",
+      "from": "glob@>=7.0.0 <8.0.0",
+      "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
+      "dev": true
     },
     "glob-base": {
       "version": "0.3.0",
@@ -4687,6 +4649,12 @@
       "resolved": "https://registry.npmjs.org/glob-stream/-/glob-stream-3.1.18.tgz",
       "dev": true,
       "dependencies": {
+        "glob": {
+          "version": "4.5.3",
+          "from": "glob@>=4.3.1 <5.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-4.5.3.tgz",
+          "dev": true
+        },
         "minimatch": {
           "version": "2.0.10",
           "from": "minimatch@>=2.0.1 <3.0.0",
@@ -4711,15 +4679,7 @@
       "version": "5.0.0",
       "from": "globby@>=5.0.0 <6.0.0",
       "resolved": "https://registry.npmjs.org/globby/-/globby-5.0.0.tgz",
-      "dev": true,
-      "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "from": "glob@^7.0.3",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-          "dev": true
-        }
-      }
+      "dev": true
     },
     "globule": {
       "version": "0.1.0",
@@ -5655,12 +5615,6 @@
           "version": "0.5.3",
           "from": "batch@>=0.5.3 <0.6.0",
           "resolved": "https://registry.npmjs.org/batch/-/batch-0.5.3.tgz",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.0.3",
-          "from": "glob@>=7.0.0 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.3.tgz",
           "dev": true
         },
         "graceful-fs": {
@@ -6793,12 +6747,6 @@
           "version": "6.0.46",
           "from": "@types/node@>=6.0.46 <7.0.0",
           "resolved": "https://registry.npmjs.org/@types/node/-/node-6.0.46.tgz",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.1.1",
-          "from": "glob@>=7.0.3 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
           "dev": true
         },
         "mime-db": {
@@ -7982,12 +7930,6 @@
       "resolved": "https://registry.npmjs.org/tslint/-/tslint-3.15.1.tgz",
       "dev": true,
       "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "from": "glob@>=7.0.3 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-          "dev": true
-        },
         "resolve": {
           "version": "1.1.7",
           "from": "resolve@>=1.1.7 <2.0.0",
