@@ -450,13 +450,19 @@ export function main() {
         });
 
         it('should support a prefix', () => {
-          const source = 'let person of people';
-          const prefix = 'ngFor';
-          const bindings = parseTemplateBindings(source, null, prefix);
+          let source = 'let person of people';
+          let prefix = 'ngFor';
+          let bindings = parseTemplateBindings(source, null, prefix);
           expect(keyValues(bindings)).toEqual([
             'ngFor', 'let person=$implicit', 'ngForOf=people in null'
           ]);
           expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+
+          source = 'title: exp';
+          prefix = 'bsPane';
+          bindings = parseTemplateBindings(source, null, prefix);
+          expect(keys(bindings)).toEqual(['bsPane', 'bsPaneTitle']);
+          expect(exprSources(bindings)).toEqual([null, 'exp']);
         });
       });
     });

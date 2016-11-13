@@ -693,7 +693,7 @@ export class _ParseAST {
         this.advance();
       }
       let key = this.expectTemplateBindingKey();
-      if (!keyIsVar) {
+      if (key && !keyIsVar) {
         if (prefix == null) {
           prefix = key;
         } else {
@@ -709,11 +709,15 @@ export class _ParseAST {
         } else {
           name = '\$implicit';
         }
-      } else if (this.next !== EOF && !this.peekKeywordLet()) {
-        const start = this.inputIndex;
-        const ast = this.parsePipe();
-        const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
-        expression = new ASTWithSource(ast, source, this.location, this.errors);
+      } else {
+        const expressionRequired = this.optionalCharacter(chars.$COLON);
+        if (expressionRequired || (this.next !== EOF && !this.peekKeywordLet() &&
+                                   !this.peek(1).isCharacter(chars.$COLON))) {
+          const start = this.inputIndex;
+          const ast = this.parsePipe();
+          const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
+          expression = new ASTWithSource(ast, source, this.location, this.errors);
+        }
       }
       bindings.push(new TemplateBinding(this.span(start), key, keyIsVar, name, expression));
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
