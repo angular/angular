@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, beforeEachProviders, describe, expect, inject, it, SpyObject} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
 
 import {BrowserXhr} from '../../src/backends/browser_xhr';
@@ -54,29 +54,49 @@ class MockBrowserXHR extends BrowserXhr {
     this.responseType = '';
   }
 
-  setStatusCode(status: number) { this.status = status; }
+  setStatusCode(status: number) {
+    this.status = status;
+  }
 
-  setStatusText(statusText: string) { this.statusText = statusText; }
+  setStatusText(statusText: string) {
+    this.statusText = statusText;
+  }
 
-  setResponse(value: string) { this.response = value; }
+  setResponse(value: string) {
+    this.response = value;
+  }
 
-  setResponseText(value: string) { this.responseText = value; }
+  setResponseText(value: string) {
+    this.responseText = value;
+  }
 
-  setResponseURL(value: string) { this.responseURL = value; }
+  setResponseURL(value: string) {
+    this.responseURL = value;
+  }
 
-  setResponseHeaders(value: string) { this.responseHeaders = value; }
+  setResponseHeaders(value: string) {
+    this.responseHeaders = value;
+  }
 
-  getAllResponseHeaders() { return this.responseHeaders || ''; }
+  getAllResponseHeaders() {
+    return this.responseHeaders || '';
+  }
 
   getResponseHeader(key: string) {
     return Headers.fromResponseHeaderString(this.responseHeaders).get(key);
   }
 
-  addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
+  addEventListener(type: string, cb: Function) {
+    this.callbacks.set(type, cb);
+  }
 
-  removeEventListener(type: string, cb: Function) { this.callbacks.delete(type); }
+  removeEventListener(type: string, cb: Function) {
+    this.callbacks.delete(type);
+  }
 
-  dispatchEvent(type: string) { this.callbacks.get(type)({}); }
+  dispatchEvent(type: string) {
+    this.callbacks.get(type)({});
+  }
 
   build() {
     const xhr = new MockBrowserXHR();
@@ -103,7 +123,9 @@ export function main() {
       sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
     }));
 
-    afterEach(() => { existingXHRs = []; });
+    afterEach(() => {
+      existingXHRs = [];
+    });
 
     describe('creating a connection', () => {
       @Injectable()
@@ -112,8 +134,9 @@ export function main() {
       }
       beforeEachProviders(() => [{provide: XSRFStrategy, useClass: NoopXsrfStrategy}]);
 
-      it('succeeds',
-         () => { expect(() => backend.createConnection(sampleRequest)).not.toThrow(); });
+      it('succeeds', () => {
+        expect(() => backend.createConnection(sampleRequest)).not.toThrow();
+      });
     });
 
     const getDOM = __platform_browser_private__.getDOM;
@@ -165,8 +188,13 @@ export function main() {
                sampleRequest, new MockBrowserXHR(),
                new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(
-               (res: Response) => { expect(res.type).toBe(ResponseType.Error); }, null,
-               () => { async.done(); });
+               (res: Response) => {
+                 expect(res.type).toBe(ResponseType.Error);
+               },
+               null,
+               () => {
+                 async.done();
+               });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
@@ -423,7 +451,9 @@ export function main() {
                  nextCalled = true;
                  expect(res.status).toBe(statusCode);
                },
-               errRes => { errorCalled = true; },
+               errRes => {
+                 errorCalled = true;
+               },
                () => {
                  expect(nextCalled).toBe(true);
                  expect(errorCalled).toBe(false);
@@ -456,7 +486,9 @@ export function main() {
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
-               res => { throw 'should not be called'; },
+               res => {
+                 throw 'should not be called';
+               },
                errRes => {
                  expect(errRes.ok).toBe(false);
                  async.done();
@@ -475,13 +507,17 @@ export function main() {
                sampleRequest, new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
 
            connection.response.subscribe(
-               (res: Response) => { nextCalled = true; },
+               (res: Response) => {
+                 nextCalled = true;
+               },
                errRes => {
                  expect(errRes.status).toBe(statusCode);
                  expect(nextCalled).toBe(false);
                  async.done();
                },
-               () => { throw 'should not be called'; });
+               () => {
+                 throw 'should not be called';
+               });
 
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');

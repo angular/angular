@@ -22,7 +22,9 @@ export function main() {
       originalLog = getDOM().log;  // Monkey patch DOM.log.
       getDOM().log = (msg) => logMsgs.push(msg);
     });
-    t.afterEach(() => { getDOM().log = originalLog; });
+    t.afterEach(() => {
+      getDOM().log = originalLog;
+    });
 
     t.it('serializes nested structures', () => {
       t.expect(sanitizeHtml('<div alt="x"><p>a</p>b<b>c<a alt="more">d</a></b>e</div>'))
@@ -80,8 +82,9 @@ export function main() {
       ];
 
       for (const tag of dangerousTags) {
-        t.it(
-            `${tag}`, () => { t.expect(sanitizeHtml(`<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
+        t.it(`${tag}`, () => {
+          t.expect(sanitizeHtml(`<${tag}>evil!</${tag}>`)).toEqual('evil!');
+        });
       }
       t.it(`swallows frame entirely`, () => {
         t.expect(sanitizeHtml(`<frame>evil!</frame>`)).not.toContain('<frame>');

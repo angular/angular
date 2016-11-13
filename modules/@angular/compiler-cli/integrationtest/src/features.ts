@@ -7,7 +7,7 @@
  */
 
 import * as common from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, NgModule, OpaqueToken, Output} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, Inject, NgModule, OpaqueToken, Output} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
 import {wrapInArray} from './funcs';
@@ -62,7 +62,9 @@ export class CompUsingCustomElements {
 })
 export class CompConsumingEvents {
   handleDomEventVoid(e: any): void {}
-  handleDomEventPreventDefault(e: any): boolean { return false; }
+  handleDomEventPreventDefault(e: any): boolean {
+    return false;
+  }
   handleDirEvent(e: any): void {}
 }
 

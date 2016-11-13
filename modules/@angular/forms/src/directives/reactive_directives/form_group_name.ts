@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf} from '@angular/core';
 
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -175,17 +175,25 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     }
   }
 
-  get control(): FormArray { return this.formDirective.getFormArray(this); }
+  get control(): FormArray {
+    return this.formDirective.getFormArray(this);
+  }
 
   get formDirective(): FormGroupDirective {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
-  get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] {
+    return controlPath(this.name, this._parent);
+  }
 
-  get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn {
+    return composeValidators(this._validators);
+  }
 
-  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
+  get asyncValidator(): AsyncValidatorFn {
+    return composeAsyncValidators(this._asyncValidators);
+  }
 
   private _checkParentType(): void {
     if (_hasInvalidParent(this._parent)) {

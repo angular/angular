@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockAnimationPlayer, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {beforeEach, describe, expect, it, MockAnimationPlayer} from '@angular/core/testing/testing_internal';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
@@ -22,7 +22,9 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
     super(element, keyframes, options);
   }
 
-  get domPlayer() { return this._overriddenDomPlayer; }
+  get domPlayer() {
+    return this._overriddenDomPlayer;
+  }
 
   /** @internal */
   _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
@@ -64,12 +66,15 @@ export function main() {
       expect(captures['finish'].length).toEqual(1);
     });
 
-    it('should make use of the onfinish function',
-       () => { expect(captures['onfinish'].length).toEqual(1); });
+    it('should make use of the onfinish function', () => {
+      expect(captures['onfinish'].length).toEqual(1);
+    });
 
     it('should trigger the subscribe functions when complete', () => {
       let count = 0;
-      const method = () => { count++; };
+      const method = () => {
+        count++;
+      };
 
       player.onDone(method);
       player.onDone(method);
@@ -96,7 +101,9 @@ export function main() {
     it('should trigger finish when destroy is called if the animation has not finished already',
        () => {
          let count = 0;
-         const method = () => { count++; };
+         const method = () => {
+           count++;
+         };
 
          player.onDone(method);
          expect(count).toEqual(0);

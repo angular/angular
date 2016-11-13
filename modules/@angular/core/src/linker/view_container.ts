@@ -30,12 +30,20 @@ export class ViewContainer {
       public index: number, public parentIndex: number, public parentView: AppView<any>,
       public nativeElement: any) {}
 
-  get elementRef(): ElementRef { return new ElementRef(this.nativeElement); }
+  get elementRef(): ElementRef {
+    return new ElementRef(this.nativeElement);
+  }
 
-  get vcRef(): ViewContainerRef_ { return new ViewContainerRef_(this); }
+  get vcRef(): ViewContainerRef_ {
+    return new ViewContainerRef_(this);
+  }
 
-  get parentInjector(): Injector { return this.parentView.injector(this.parentIndex); }
-  get injector(): Injector { return this.parentView.injector(this.index); }
+  get parentInjector(): Injector {
+    return this.parentView.injector(this.parentIndex);
+  }
+  get injector(): Injector {
+    return this.parentView.injector(this.index);
+  }
 
   detectChangesInNestedViews(throwOnChange: boolean): void {
     if (this.nestedViews) {

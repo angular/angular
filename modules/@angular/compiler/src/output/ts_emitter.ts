@@ -16,8 +16,7 @@ import {ImportGenerator} from './path_util';
 
 const _debugModuleUrl = 'asset://debug/lib';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
-    string {
+export function debugOutputAstAsTypeScript(ast: o.Statement|o.Expression|o.Type|any[]): string {
   const converter = new _TsEmitterVisitor(_debugModuleUrl);
   const ctx = EmitterVisitorContext.createRoot([]);
   const asts: any[] = Array.isArray(ast) ? ast : [ast];
@@ -47,7 +46,8 @@ export class TypeScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}';`);
+          `ort * as ${prefix} from '${this._importGenerator.getImportPath(
+              moduleUrl, importedModuleUrl)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
@@ -55,7 +55,9 @@ export class TypeScriptEmitter implements OutputEmitter {
 }
 
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
-  constructor(private _moduleUrl: string) { super(false); }
+  constructor(private _moduleUrl: string) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
 

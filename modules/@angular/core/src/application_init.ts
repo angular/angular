@@ -37,13 +37,19 @@ export class ApplicationInitStatus {
         }
       }
     }
-    this._donePromise = Promise.all(asyncInitPromises).then(() => { this._done = true; });
+    this._donePromise = Promise.all(asyncInitPromises).then(() => {
+      this._done = true;
+    });
     if (asyncInitPromises.length === 0) {
       this._done = true;
     }
   }
 
-  get done(): boolean { return this._done; }
+  get done(): boolean {
+    return this._done;
+  }
 
-  get donePromise(): Promise<any> { return this._donePromise; }
+  get donePromise(): Promise<any> {
+    return this._donePromise;
+  }
 }

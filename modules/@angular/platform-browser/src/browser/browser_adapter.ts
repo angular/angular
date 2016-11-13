@@ -69,12 +69,24 @@ const _chromeNumKeyPadMap = {
  */
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  parse(templateHtml: string) { throw new Error('parse not implemented'); }
-  static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  hasProperty(element: Node, name: string): boolean { return name in element; }
-  setProperty(el: Node, name: string, value: any) { (<any>el)[name] = value; }
-  getProperty(el: Node, name: string): any { return (<any>el)[name]; }
-  invoke(el: Node, methodName: string, args: any[]): any { (<any>el)[methodName](...args); }
+  parse(templateHtml: string) {
+    throw new Error('parse not implemented');
+  }
+  static makeCurrent() {
+    setRootDomAdapter(new BrowserDomAdapter());
+  }
+  hasProperty(element: Node, name: string): boolean {
+    return name in element;
+  }
+  setProperty(el: Node, name: string, value: any) {
+    (<any>el)[name] = value;
+  }
+  getProperty(el: Node, name: string): any {
+    return (<any>el)[name];
+  }
+  invoke(el: Node, methodName: string, args: any[]): any {
+    (<any>el)[methodName](...args);
+  }
 
   // TODO(tbosch): move this into a separate environment class once we have it
   logError(error: string): void {
@@ -102,21 +114,33 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
   }
 
-  get attrToPropMap(): any { return _attrToPropMap; }
+  get attrToPropMap(): any {
+    return _attrToPropMap;
+  }
 
-  query(selector: string): any { return document.querySelector(selector); }
+  query(selector: string): any {
+    return document.querySelector(selector);
+  }
   querySelector(el: Element, selector: string): HTMLElement {
     return el.querySelector(selector) as HTMLElement;
   }
-  querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
-  on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
+  querySelectorAll(el: any, selector: string): any[] {
+    return el.querySelectorAll(selector);
+  }
+  on(el: Node, evt: any, listener: any) {
+    el.addEventListener(evt, listener, false);
+  }
   onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
     // https://code.google.com/p/dart/issues/detail?id=17406
-    return () => { el.removeEventListener(evt, listener, false); };
+    return () => {
+      el.removeEventListener(evt, listener, false);
+    };
   }
-  dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
+  dispatchEvent(el: Node, evt: any) {
+    el.dispatchEvent(evt);
+  }
   createMouseEvent(eventType: string): MouseEvent {
     const evt: MouseEvent = document.createEvent('MouseEvent');
     evt.initEvent(eventType, true, true);
@@ -134,14 +158,24 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isPrevented(evt: Event): boolean {
     return evt.defaultPrevented || isPresent(evt.returnValue) && !evt.returnValue;
   }
-  getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
+  getInnerHTML(el: HTMLElement): string {
+    return el.innerHTML;
+  }
   getTemplateContent(el: Node): Node {
     return 'content' in el && el instanceof HTMLTemplateElement ? el.content : null;
   }
-  getOuterHTML(el: HTMLElement): string { return el.outerHTML; }
-  nodeName(node: Node): string { return node.nodeName; }
-  nodeValue(node: Node): string { return node.nodeValue; }
-  type(node: HTMLInputElement): string { return node.type; }
+  getOuterHTML(el: HTMLElement): string {
+    return el.outerHTML;
+  }
+  nodeName(node: Node): string {
+    return node.nodeName;
+  }
+  nodeValue(node: Node): string {
+    return node.nodeValue;
+  }
+  type(node: HTMLInputElement): string {
+    return node.type;
+  }
   content(node: Node): Node {
     if (this.hasProperty(node, 'content')) {
       return (<any>node).content;
@@ -149,10 +183,18 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return node;
     }
   }
-  firstChild(el: Node): Node { return el.firstChild; }
-  nextSibling(el: Node): Node { return el.nextSibling; }
-  parentElement(el: Node): Node { return el.parentNode; }
-  childNodes(el: any): Node[] { return el.childNodes; }
+  firstChild(el: Node): Node {
+    return el.firstChild;
+  }
+  nextSibling(el: Node): Node {
+    return el.nextSibling;
+  }
+  parentElement(el: Node): Node {
+    return el.parentNode;
+  }
+  childNodes(el: any): Node[] {
+    return el.childNodes;
+  }
   childNodesAsList(el: Node): any[] {
     const childNodes = el.childNodes;
     const res = new Array(childNodes.length);
@@ -166,38 +208,68 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       el.removeChild(el.firstChild);
     }
   }
-  appendChild(el: Node, node: Node) { el.appendChild(node); }
-  removeChild(el: Node, node: Node) { el.removeChild(node); }
-  replaceChild(el: Node, newChild: Node, oldChild: Node) { el.replaceChild(newChild, oldChild); }
+  appendChild(el: Node, node: Node) {
+    el.appendChild(node);
+  }
+  removeChild(el: Node, node: Node) {
+    el.removeChild(node);
+  }
+  replaceChild(el: Node, newChild: Node, oldChild: Node) {
+    el.replaceChild(newChild, oldChild);
+  }
   remove(node: Node): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
     return node;
   }
-  insertBefore(el: Node, node: Node) { el.parentNode.insertBefore(node, el); }
+  insertBefore(el: Node, node: Node) {
+    el.parentNode.insertBefore(node, el);
+  }
   insertAllBefore(el: Node, nodes: Node[]) {
     nodes.forEach((n: any) => el.parentNode.insertBefore(n, el));
   }
-  insertAfter(el: Node, node: any) { el.parentNode.insertBefore(node, el.nextSibling); }
-  setInnerHTML(el: Element, value: string) { el.innerHTML = value; }
-  getText(el: Node): string { return el.textContent; }
-  setText(el: Node, value: string) { el.textContent = value; }
-  getValue(el: any): string { return el.value; }
-  setValue(el: any, value: string) { el.value = value; }
-  getChecked(el: any): boolean { return el.checked; }
-  setChecked(el: any, value: boolean) { el.checked = value; }
-  createComment(text: string): Comment { return document.createComment(text); }
+  insertAfter(el: Node, node: any) {
+    el.parentNode.insertBefore(node, el.nextSibling);
+  }
+  setInnerHTML(el: Element, value: string) {
+    el.innerHTML = value;
+  }
+  getText(el: Node): string {
+    return el.textContent;
+  }
+  setText(el: Node, value: string) {
+    el.textContent = value;
+  }
+  getValue(el: any): string {
+    return el.value;
+  }
+  setValue(el: any, value: string) {
+    el.value = value;
+  }
+  getChecked(el: any): boolean {
+    return el.checked;
+  }
+  setChecked(el: any, value: boolean) {
+    el.checked = value;
+  }
+  createComment(text: string): Comment {
+    return document.createComment(text);
+  }
   createTemplate(html: any): HTMLElement {
     const t = document.createElement('template');
     t.innerHTML = html;
     return t;
   }
-  createElement(tagName: string, doc = document): HTMLElement { return doc.createElement(tagName); }
+  createElement(tagName: string, doc = document): HTMLElement {
+    return doc.createElement(tagName);
+  }
   createElementNS(ns: string, tagName: string, doc = document): Element {
     return doc.createElementNS(ns, tagName);
   }
-  createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
+  createTextNode(text: string, doc = document): Text {
+    return doc.createTextNode(text);
+  }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     const el = <HTMLScriptElement>doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
@@ -208,19 +280,33 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     this.appendChild(style, this.createTextNode(css));
     return style;
   }
-  createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
-  getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
-  getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
-  clone(node: Node): Node { return node.cloneNode(true); }
+  createShadowRoot(el: HTMLElement): DocumentFragment {
+    return (<any>el).createShadowRoot();
+  }
+  getShadowRoot(el: HTMLElement): DocumentFragment {
+    return (<any>el).shadowRoot;
+  }
+  getHost(el: HTMLElement): HTMLElement {
+    return (<any>el).host;
+  }
+  clone(node: Node): Node {
+    return node.cloneNode(true);
+  }
   getElementsByClassName(element: any, name: string): HTMLElement[] {
     return element.getElementsByClassName(name);
   }
   getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  classList(element: any): any[] { return Array.prototype.slice.call(element.classList, 0); }
-  addClass(element: any, className: string) { element.classList.add(className); }
-  removeClass(element: any, className: string) { element.classList.remove(className); }
+  classList(element: any): any[] {
+    return Array.prototype.slice.call(element.classList, 0);
+  }
+  addClass(element: any, className: string) {
+    element.classList.add(className);
+  }
+  removeClass(element: any, className: string) {
+    element.classList.remove(className);
+  }
   hasClass(element: any, className: string): boolean {
     return element.classList.contains(className);
   }
@@ -232,12 +318,16 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     // see https://github.com/angular/angular/issues/7916
     element.style[stylename] = '';
   }
-  getStyle(element: any, stylename: string): string { return element.style[stylename]; }
+  getStyle(element: any, stylename: string): string {
+    return element.style[stylename];
+  }
   hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
     const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
   }
-  tagName(element: any): string { return element.tagName; }
+  tagName(element: any): string {
+    return element.tagName;
+  }
   attributeMap(element: any): Map<string, string> {
     const res = new Map<string, string>();
     const elAttrs = element.attributes;
@@ -259,19 +349,27 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getAttributeNS(element: Element, ns: string, name: string): string {
     return element.getAttributeNS(ns, name);
   }
-  setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
+  setAttribute(element: Element, name: string, value: string) {
+    element.setAttribute(name, value);
+  }
   setAttributeNS(element: Element, ns: string, name: string, value: string) {
     element.setAttributeNS(ns, name, value);
   }
-  removeAttribute(element: Element, attribute: string) { element.removeAttribute(attribute); }
+  removeAttribute(element: Element, attribute: string) {
+    element.removeAttribute(attribute);
+  }
   removeAttributeNS(element: Element, ns: string, name: string) {
     element.removeAttributeNS(ns, name);
   }
-  templateAwareRoot(el: Node): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+  templateAwareRoot(el: Node): any {
+    return this.isTemplateElement(el) ? this.content(el) : el;
+  }
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
-  defaultDoc(): HTMLDocument { return document; }
+  defaultDoc(): HTMLDocument {
+    return document;
+  }
   getBoundingClientRect(el: Element): any {
     try {
       return el.getBoundingClientRect();
@@ -279,8 +377,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }
-  getTitle(): string { return document.title; }
-  setTitle(newTitle: string) { document.title = newTitle || ''; }
+  getTitle(): string {
+    return document.title;
+  }
+  setTitle(newTitle: string) {
+    document.title = newTitle || '';
+  }
   elementMatches(n: any, selector: string): boolean {
     if (n instanceof HTMLElement) {
       return n.matches && n.matches(selector) ||
@@ -293,16 +395,30 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isTemplateElement(el: Node): boolean {
     return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
   }
-  isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
-  isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
-  isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
+  isTextNode(node: Node): boolean {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+  isCommentNode(node: Node): boolean {
+    return node.nodeType === Node.COMMENT_NODE;
+  }
+  isElementNode(node: Node): boolean {
+    return node.nodeType === Node.ELEMENT_NODE;
+  }
   hasShadowRoot(node: any): boolean {
     return isPresent(node.shadowRoot) && node instanceof HTMLElement;
   }
-  isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
-  importIntoDoc(node: Node): any { return document.importNode(this.templateAwareRoot(node), true); }
-  adoptNode(node: Node): any { return document.adoptNode(node); }
-  getHref(el: Element): string { return (<any>el).href; }
+  isShadowRoot(node: any): boolean {
+    return node instanceof DocumentFragment;
+  }
+  importIntoDoc(node: Node): any {
+    return document.importNode(this.templateAwareRoot(node), true);
+  }
+  adoptNode(node: Node): any {
+    return document.adoptNode(node);
+  }
+  getHref(el: Element): string {
+    return (<any>el).href;
+  }
   getEventKey(event: any): string {
     let key = event.key;
     if (isBlank(key)) {
@@ -337,23 +453,35 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return document.body;
     }
   }
-  getHistory(): History { return window.history; }
-  getLocation(): Location { return window.location; }
+  getHistory(): History {
+    return window.history;
+  }
+  getLocation(): Location {
+    return window.location;
+  }
   getBaseHref(): string {
     const href = getBaseElementHref();
     return isBlank(href) ? null : relativePath(href);
   }
-  resetBaseElement(): void { baseElement = null; }
-  getUserAgent(): string { return window.navigator.userAgent; }
+  resetBaseElement(): void {
+    baseElement = null;
+  }
+  getUserAgent(): string {
+    return window.navigator.userAgent;
+  }
   setData(element: Element, name: string, value: string) {
     this.setAttribute(element, 'data-' + name, value);
   }
   getData(element: Element, name: string): string {
     return this.getAttribute(element, 'data-' + name);
   }
-  getComputedStyle(element: any): any { return getComputedStyle(element); }
+  getComputedStyle(element: any): any {
+    return getComputedStyle(element);
+  }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
+  setGlobalVar(path: string, value: any) {
+    setValueOnPath(global, path, value);
+  }
   supportsWebAnimation(): boolean {
     return typeof(<any>Element).prototype['animate'] === 'function';
   }
@@ -364,9 +492,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
                                                           new Date().getTime();
   }
 
-  supportsCookies(): boolean { return true; }
+  supportsCookies(): boolean {
+    return true;
+  }
 
-  getCookie(name: string): string { return parseCookieValue(document.cookie, name); }
+  getCookie(name: string): string {
+    return parseCookieValue(document.cookie, name);
+  }
 
   setCookie(name: string, value: string) {
     // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does

@@ -21,7 +21,9 @@ class Greet {
 @Component({selector: 'page', template: 'Title: {{title}}'})
 class Page {
   title: string;
-  constructor(@Attribute('title') title: string) { this.title = title; }
+  constructor(@Attribute('title') title: string) {
+    this.title = title;
+  }
 }
 // #enddocregion
 
@@ -46,6 +48,8 @@ class InputDirective {
 // #docregion pipe
 @Pipe({name: 'lowercase'})
 class Lowercase {
-  transform(v: string, args: any[]) { return v.toLowerCase(); }
+  transform(v: string, args: any[]) {
+    return v.toLowerCase();
+  }
 }
 // #enddocregion

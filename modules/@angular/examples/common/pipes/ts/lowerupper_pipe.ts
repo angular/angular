@@ -19,6 +19,8 @@ import {Component} from '@angular/core';
 })
 export class LowerUpperPipeComponent {
   value: string;
-  change(value: string) { this.value = value; }
+  change(value: string) {
+    this.value = value;
+  }
 }
 // #enddocregion

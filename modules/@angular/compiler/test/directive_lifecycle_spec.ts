@@ -19,8 +19,9 @@ export function main() {
           expect(hasLifecycleHook(Hooks.OnChanges, DirectiveWithOnChangesMethod)).toBe(true);
         });
 
-        it('should be false otherwise',
-           () => { expect(hasLifecycleHook(Hooks.OnChanges, DirectiveNoHooks)).toBe(false); });
+        it('should be false otherwise', () => {
+          expect(hasLifecycleHook(Hooks.OnChanges, DirectiveNoHooks)).toBe(false);
+        });
       });
 
       describe('ngOnDestroy', () => {
@@ -28,16 +29,19 @@ export function main() {
           expect(hasLifecycleHook(Hooks.OnDestroy, DirectiveWithOnDestroyMethod)).toBe(true);
         });
 
-        it('should be false otherwise',
-           () => { expect(hasLifecycleHook(Hooks.OnDestroy, DirectiveNoHooks)).toBe(false); });
+        it('should be false otherwise', () => {
+          expect(hasLifecycleHook(Hooks.OnDestroy, DirectiveNoHooks)).toBe(false);
+        });
       });
 
       describe('ngOnInit', () => {
-        it('should be true when the directive has the ngOnInit method',
-           () => { expect(hasLifecycleHook(Hooks.OnInit, DirectiveWithOnInitMethod)).toBe(true); });
+        it('should be true when the directive has the ngOnInit method', () => {
+          expect(hasLifecycleHook(Hooks.OnInit, DirectiveWithOnInitMethod)).toBe(true);
+        });
 
-        it('should be false otherwise',
-           () => { expect(hasLifecycleHook(Hooks.OnInit, DirectiveNoHooks)).toBe(false); });
+        it('should be false otherwise', () => {
+          expect(hasLifecycleHook(Hooks.OnInit, DirectiveNoHooks)).toBe(false);
+        });
       });
 
       describe('ngDoCheck', () => {
@@ -45,8 +49,9 @@ export function main() {
           expect(hasLifecycleHook(Hooks.DoCheck, DirectiveWithOnCheckMethod)).toBe(true);
         });
 
-        it('should be false otherwise',
-           () => { expect(hasLifecycleHook(Hooks.DoCheck, DirectiveNoHooks)).toBe(false); });
+        it('should be false otherwise', () => {
+          expect(hasLifecycleHook(Hooks.DoCheck, DirectiveNoHooks)).toBe(false);
+        });
       });
 
       describe('ngAfterContentInit', () => {
@@ -79,8 +84,9 @@ export function main() {
               .toBe(true);
         });
 
-        it('should be false otherwise',
-           () => { expect(hasLifecycleHook(Hooks.AfterViewInit, DirectiveNoHooks)).toBe(false); });
+        it('should be false otherwise', () => {
+          expect(hasLifecycleHook(Hooks.AfterViewInit, DirectiveNoHooks)).toBe(false);
+        });
       });
 
       describe('ngAfterViewChecked', () => {

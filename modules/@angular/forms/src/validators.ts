@@ -118,7 +118,9 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: AbstractControl): {[key: string]: boolean} { return null; }
+  static nullValidator(c: AbstractControl): {[key: string]: boolean} {
+    return null;
+  }
 
   /**
    * Compose multiple validators into a single function that returns the union

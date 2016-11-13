@@ -22,7 +22,11 @@ var BROWSER_OPTIONS = {
 };
 
 exports.config = {
-  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
+  onPrepare: function() {
+    beforeEach(function() {
+      browser.ignoreSynchronization = false;
+    });
+  },
   allScriptsTimeout: 11000,
   specs: ['dist/examples/**/e2e_test/*_spec.js'],
   capabilities: process.env.TRAVIS ? BROWSER_OPTIONS.ChromeOnTravis : BROWSER_OPTIONS.LocalChrome,
@@ -32,7 +36,9 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 60000,
-    print: function(msg) { console.log(msg); },
+    print: function(msg) {
+      console.log(msg);
+    },
   },
   useAllAngular2AppRoots: true
 };

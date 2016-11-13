@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
-import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
+import {convertActionBinding, convertPropertyBinding, EventHandlerVars} from './compiler_util/expression_converter';
 import {triggerAnimation, writeToRenderer} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
 import {Parser} from './expression_parser/parser';
@@ -19,7 +19,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from './ml_parser/interpolation_config';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse_util';
-import {Console, LifecycleHooks, isDefaultChangeDetectionStrategy} from './private_import_core';
+import {Console, isDefaultChangeDetectionStrategy, LifecycleHooks} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {BindingParser} from './template_parser/binding_parser';
 import {BoundElementPropertyAst, BoundEventAst} from './template_parser/template_ast';
@@ -53,7 +53,9 @@ const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap
  */
 @Injectable()
 export class DirectiveWrapperCompiler {
-  static dirWrapperClassName(id: CompileIdentifierMetadata) { return `Wrapper_${id.name}`; }
+  static dirWrapperClassName(id: CompileIdentifierMetadata) {
+    return `Wrapper_${id.name}`;
+  }
 
   constructor(
       private compilerConfig: CompilerConfig, private _exprParser: Parser,

@@ -18,9 +18,13 @@ export class XmlTagDefinition implements TagDefinition {
   ignoreFirstLf: boolean = false;
   canSelfClose: boolean = true;
 
-  requireExtraParent(currentParent: string): boolean { return false; }
+  requireExtraParent(currentParent: string): boolean {
+    return false;
+  }
 
-  isClosedByChild(name: string): boolean { return false; }
+  isClosedByChild(name: string): boolean {
+    return false;
+  }
 }
 
 const _TAG_DEFINITION = new XmlTagDefinition();

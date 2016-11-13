@@ -185,7 +185,9 @@ export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrat
       public injector: ReflectiveInjector_,
       public protoStrategy: ReflectiveProtoInjectorInlineStrategy) {}
 
-  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
+  resetConstructionCounter(): void {
+    this.injector._constructionCounter = 0;
+  }
 
   instantiateProvider(provider: ResolvedReflectiveProvider): any {
     return this.injector._new(provider);
@@ -273,7 +275,9 @@ export class ReflectiveInjectorInlineStrategy implements ReflectiveInjectorStrat
     throw new OutOfBoundsError(index);
   }
 
-  getMaxNumberOfObjects(): number { return _MAX_CONSTRUCTION_COUNTER; }
+  getMaxNumberOfObjects(): number {
+    return _MAX_CONSTRUCTION_COUNTER;
+  }
 }
 
 
@@ -286,7 +290,9 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
     this.objs = new Array(protoStrategy.providers.length).fill(UNDEFINED);
   }
 
-  resetConstructionCounter(): void { this.injector._constructionCounter = 0; }
+  resetConstructionCounter(): void {
+    this.injector._constructionCounter = 0;
+  }
 
   instantiateProvider(provider: ResolvedReflectiveProvider): any {
     return this.injector._new(provider);
@@ -316,7 +322,9 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
     return this.objs[index];
   }
 
-  getMaxNumberOfObjects(): number { return this.objs.length; }
+  getMaxNumberOfObjects(): number {
+    return this.objs.length;
+  }
 }
 
 /**
@@ -467,7 +475,9 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(child.parent).toBe(parent);
    * ```
    */
-  get parent(): Injector { return unimplemented(); }
+  get parent(): Injector {
+    return unimplemented();
+  }
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.
@@ -496,7 +506,9 @@ export abstract class ReflectiveInjector implements Injector {
    * because it needs to resolve the passed-in providers first.
    * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
-  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector { return unimplemented(); }
+  resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
+    return unimplemented();
+  }
 
   /**
    * Creates a child injector from previously resolved providers.
@@ -551,7 +563,9 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
    * ```
    */
-  resolveAndInstantiate(provider: Provider): any { return unimplemented(); }
+  resolveAndInstantiate(provider: Provider): any {
+    return unimplemented();
+  }
 
   /**
    * Instantiates an object using a resolved provider in the context of the injector.
@@ -577,7 +591,9 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(car).not.toBe(injector.instantiateResolved(carProvider));
    * ```
    */
-  instantiateResolved(provider: ResolvedReflectiveProvider): any { return unimplemented(); }
+  instantiateResolved(provider: ResolvedReflectiveProvider): any {
+    return unimplemented();
+  }
 
   abstract get(token: any, notFoundValue?: any): any;
 }
@@ -603,16 +619,22 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._getByKey(ReflectiveKey.get(token), null, null, notFoundValue);
   }
 
-  getAt(index: number): any { return this._strategy.getObjAtIndex(index); }
+  getAt(index: number): any {
+    return this._strategy.getObjAtIndex(index);
+  }
 
-  get parent(): Injector { return this._parent; }
+  get parent(): Injector {
+    return this._parent;
+  }
 
   /**
    * @internal
    * Internal. Do not use.
    * We return `any` not to export the InjectorStrategy type.
    */
-  get internalStrategy(): any { return this._strategy; }
+  get internalStrategy(): any {
+    return this._strategy;
+  }
 
   resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
@@ -780,8 +802,8 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
               d19);
           break;
         default:
-          throw new Error(
-              `Cannot instantiate '${provider.key.displayName}' because it has more than 20 dependencies`);
+          throw new Error(`Cannot instantiate '${provider.key.displayName
+                          }' because it has more than 20 dependencies`);
       }
     } catch (e) {
       throw new InstantiationError(this, e, e.stack, provider.key);
@@ -856,7 +878,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return `ReflectiveInjector(providers: [${providers}])`;
   }
 
-  toString(): string { return this.displayName; }
+  toString(): string {
+    return this.displayName;
+  }
 }
 
 const INJECTOR_KEY = ReflectiveKey.get(Injector);

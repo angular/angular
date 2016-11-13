@@ -9,9 +9,9 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes} from '@angular/router';
+import {NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer} from '@angular/router';
 
-import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
+import {flatten, ROUTER_PROVIDERS, ROUTES} from './private_import_router';
 
 
 
@@ -65,7 +65,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
+  get stubbedModules(): {[path: string]: any} {
+    return this._stubbedModules;
+  }
 
   constructor(private compiler: Compiler) {}
 

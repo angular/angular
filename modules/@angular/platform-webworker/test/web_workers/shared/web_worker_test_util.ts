@@ -46,7 +46,9 @@ export function expectBrokerCall(
     expect(args.method).toEqual(methodName);
     if (isPresent(vals)) {
       expect(args.args.length).toEqual(vals.length);
-      vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
+      vals.forEach((v, i) => {
+        expect(v).toEqual(args.args[i].value);
+      });
     }
     let promise: Promise<any>|void = null;
     if (isPresent(handler)) {
@@ -117,21 +119,31 @@ export class MockMessageBusSink implements MessageBusSink {
  * Runs syncronously, and does not support running within the zone.
  */
 export class MockMessageBus extends MessageBus {
-  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) { super(); }
+  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) {
+    super();
+  }
 
   initChannel(channel: string, runInZone = true) {
     this.sink.initChannel(channel, runInZone);
     this.source.initChannel(channel, runInZone);
   }
 
-  to(channel: string): MockEventEmitter<any> { return this.sink.to(channel); }
+  to(channel: string): MockEventEmitter<any> {
+    return this.sink.to(channel);
+  }
 
-  from(channel: string): MockEventEmitter<any> { return this.source.from(channel); }
+  from(channel: string): MockEventEmitter<any> {
+    return this.source.from(channel);
+  }
 
   attachToZone(zone: NgZone) {}
 }
 
 export class MockMessageBrokerFactory extends ClientMessageBrokerFactory_ {
-  constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
-  createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
+  constructor(private _messageBroker: ClientMessageBroker) {
+    super(null, null);
+  }
+  createMessageBroker(channel: string, runInZone = true) {
+    return this._messageBroker;
+  }
 }

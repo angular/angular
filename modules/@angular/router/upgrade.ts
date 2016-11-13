@@ -7,7 +7,7 @@
  */
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, OpaqueToken} from '@angular/core';
-import {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, Router, RouterPreloader} from '@angular/router';
+import {ExtraOptions, Router, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterPreloader} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 
@@ -52,7 +52,9 @@ export function initialRouterNavigation(
     if (opts.initialNavigation === false) {
       router.setUpLocationChangeListener();
     } else {
-      setTimeout(() => { router.initialNavigation(); }, 0);
+      setTimeout(() => {
+        router.initialNavigation();
+      }, 0);
     }
 
     // History.pushState does not fire onPopState, so the angular2 location

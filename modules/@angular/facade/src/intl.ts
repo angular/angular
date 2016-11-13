@@ -125,11 +125,15 @@ function digitModifier(inner: DateFormatterFn): DateFormatterFn {
 }
 
 function hourClockExtractor(inner: DateFormatterFn): DateFormatterFn {
-  return function(date: Date, locale: string): string { return inner(date, locale).split(' ')[1]; };
+  return function(date: Date, locale: string): string {
+    return inner(date, locale).split(' ')[1];
+  };
 }
 
 function hourExtractor(inner: DateFormatterFn): DateFormatterFn {
-  return function(date: Date, locale: string): string { return inner(date, locale).split(' ')[0]; };
+  return function(date: Date, locale: string): string {
+    return inner(date, locale).split(' ')[0];
+  };
 }
 
 function intlDateFormat(date: Date, locale: string, options: Intl.DateTimeFormatOptions): string {

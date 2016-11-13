@@ -18,7 +18,9 @@ export function main() {
   describe('HtmlParser', () => {
     let parser: HtmlParser;
 
-    beforeEach(() => { parser = new HtmlParser(); });
+    beforeEach(() => {
+      parser = new HtmlParser();
+    });
 
     describe('parse', () => {
       describe('text nodes', () => {
@@ -82,7 +84,9 @@ export function main() {
               '<div><embed></div>', '<div><hr></div>', '<div><img></div>', '<div><input></div>',
               '<object><param>/<object>', '<audio><source></audio>', '<audio><track></audio>',
               '<p><wbr></p>',
-             ].forEach((html) => { expect(parser.parse(html, 'TestComp').errors).toEqual([]); });
+             ].forEach((html) => {
+               expect(parser.parse(html, 'TestComp').errors).toEqual([]);
+             });
            });
 
         it('should close void elements on text nodes', () => {
@@ -411,7 +415,9 @@ export function main() {
               parser.parse('<div id="foo"><span id="bar">a</span><span>b</span></div>', 'TestComp');
           const accumulator: html.Node[] = [];
           const visitor = new class {
-            visit(node: html.Node, context: any) { accumulator.push(node); }
+            visit(node: html.Node, context: any) {
+              accumulator.push(node);
+            }
             visitElement(element: html.Element, context: any): any {
               html.visitAll(this, element.attrs);
               html.visitAll(this, element.children);
@@ -434,13 +440,21 @@ export function main() {
 
         it('should skip typed visit if visit() returns a truthy value', () => {
           const visitor = new class {
-            visit(node: html.Node, context: any) { return true; }
-            visitElement(element: html.Element, context: any): any { throw Error('Unexpected'); }
+            visit(node: html.Node, context: any) {
+              return true;
+            }
+            visitElement(element: html.Element, context: any): any {
+              throw Error('Unexpected');
+            }
             visitAttribute(attribute: html.Attribute, context: any): any {
               throw Error('Unexpected');
             }
-            visitText(text: html.Text, context: any): any { throw Error('Unexpected'); }
-            visitComment(comment: html.Comment, context: any): any { throw Error('Unexpected'); }
+            visitText(text: html.Text, context: any): any {
+              throw Error('Unexpected');
+            }
+            visitComment(comment: html.Comment, context: any): any {
+              throw Error('Unexpected');
+            }
             visitExpansion(expansion: html.Expansion, context: any): any {
               throw Error('Unexpected');
             }

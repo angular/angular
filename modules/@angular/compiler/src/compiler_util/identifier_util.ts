@@ -8,7 +8,7 @@
 
 import {CompileTokenMetadata} from '../compile_metadata';
 import {isPresent} from '../facade/lang';
-import {IdentifierSpec, Identifiers, resolveEnumIdentifier, resolveIdentifier} from '../identifiers';
+import {Identifiers, IdentifierSpec, resolveEnumIdentifier, resolveIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 
 export function createDiTokenExpression(token: CompileTokenMetadata): o.Expression {

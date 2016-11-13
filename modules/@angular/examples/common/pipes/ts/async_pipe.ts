@@ -25,11 +25,15 @@ export class AsyncPromisePipeComponent {
 
   private resolve: Function = null;
 
-  constructor() { this.reset(); }
+  constructor() {
+    this.reset();
+  }
 
   reset() {
     this.arrived = false;
-    this.greeting = new Promise<string>((resolve, reject) => { this.resolve = resolve; });
+    this.greeting = new Promise<string>((resolve, reject) => {
+      this.resolve = resolve;
+    });
   }
 
   clicked() {
@@ -64,6 +68,9 @@ function setInterval(fn: Function, delay: number) {
   while (rootZone.parent) {
     rootZone = rootZone.parent;
   }
-  rootZone.run(
-      () => { window.setInterval(function() { zone.run(fn, this, arguments as any); }, delay); });
+  rootZone.run(() => {
+    window.setInterval(function() {
+      zone.run(fn, this, arguments as any);
+    }, delay);
+  });
 }

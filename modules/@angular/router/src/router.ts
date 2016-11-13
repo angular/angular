@@ -10,8 +10,6 @@ import {Location} from '@angular/common';
 import {Compiler, ComponentFactoryResolver, Injector, NgModuleFactoryLoader, ReflectiveInjector, Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
@@ -21,6 +19,8 @@ import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 
 import {applyRedirects} from './apply_redirects';
 import {Data, ResolveData, Routes, validateConfig} from './config';
@@ -30,10 +30,10 @@ import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
-import {NavigationCancelingError, PRIMARY_OUTLET, Params} from './shared';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve, RouterState, RouterStateSnapshot} from './router_state';
+import {NavigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
@@ -155,7 +155,9 @@ export class NavigationStart {
       public url: string) {}
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -177,7 +179,8 @@ export class NavigationEnd {
 
   /** @docsNotRequired */
   toString(): string {
-    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
+    return `NavigationEnd(id: ${this.id}, url: '${this.url
+        }', urlAfterRedirects: '${this.urlAfterRedirects}')`;
   }
 }
 
@@ -199,7 +202,9 @@ export class NavigationCancel {
       public reason: string) {}
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -245,7 +250,8 @@ export class RoutesRecognized {
 
   /** @docsNotRequired */
   toString(): string {
-    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    return `RoutesRecognized(id: ${this.id}, url: '${this.url
+        }', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
 }
 
@@ -379,17 +385,23 @@ export class Router {
   /**
    * Returns the current route state.
    */
-  get routerState(): RouterState { return this.currentRouterState; }
+  get routerState(): RouterState {
+    return this.currentRouterState;
+  }
 
   /**
    * Returns the current url.
    */
-  get url(): string { return this.serializeUrl(this.currentUrlTree); }
+  get url(): string {
+    return this.serializeUrl(this.currentUrlTree);
+  }
 
   /**
    * Returns an observable of route events
    */
-  get events(): Observable<Event> { return this.routerEvents; }
+  get events(): Observable<Event> {
+    return this.routerEvents;
+  }
 
   /**
    * Resets the configuration used for navigation and generating links.
@@ -413,12 +425,16 @@ export class Router {
   /**
    * @docsNotRequired
    */
-  ngOnDestroy() { this.dispose(); }
+  ngOnDestroy() {
+    this.dispose();
+  }
 
   /**
    * Disposes of the router.
    */
-  dispose(): void { this.locationSubscription.unsubscribe(); }
+  dispose(): void {
+    this.locationSubscription.unsubscribe();
+  }
 
   /**
    * Applies an array of commands to the current url tree and creates a new url tree.
@@ -533,12 +549,16 @@ export class Router {
   /**
    * Serializes a {@link UrlTree} into a string.
    */
-  serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
+  serializeUrl(url: UrlTree): string {
+    return this.urlSerializer.serialize(url);
+  }
 
   /**
    * Parses a string into a {@link UrlTree}.
    */
-  parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+  parseUrl(url: string): UrlTree {
+    return this.urlSerializer.parse(url);
+  }
 
   /**
    * Returns if the url is activated or not.
@@ -775,7 +795,9 @@ export class Router {
 
 class CanActivate {
   constructor(public path: ActivatedRouteSnapshot[]) {}
-  get route(): ActivatedRouteSnapshot { return this.path[this.path.length - 1]; }
+  get route(): ActivatedRouteSnapshot {
+    return this.path[this.path.length - 1];
+  }
 }
 
 class CanDeactivate {
@@ -1020,8 +1042,9 @@ class ActivateRoutes {
       futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>,
       outletMap: RouterOutletMap): void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(currNode);
-    futureNode.children.forEach(
-        c => { this.activateRoutes(c, prevChildren[c.value.outlet], outletMap); });
+    futureNode.children.forEach(c => {
+      this.activateRoutes(c, prevChildren[c.value.outlet], outletMap);
+    });
   }
 
   deactivateRoutes(
@@ -1088,10 +1111,9 @@ class ActivateRoutes {
 
   private placeComponentIntoOutlet(
       outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
-    const resolved = <any[]>[{provide: ActivatedRoute, useValue: future}, {
-      provide: RouterOutletMap,
-      useValue: outletMap
-    }];
+    const resolved = <any[]>[
+      {provide: ActivatedRoute, useValue: future}, {provide: RouterOutletMap, useValue: outletMap}
+    ];
 
     const config = parentLoadedConfig(future.snapshot);
 

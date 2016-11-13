@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, OpaqueToken, Optional, Renderer, Type, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, OpaqueToken, Optional, Renderer, Type} from '@angular/core';
 
 import {isPrimitive, looseIdentical} from '../facade/lang';
 
@@ -70,7 +70,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     const values: Array<any> = <Array<any>>value;
     // convert values to ids
     const ids = values.map((v) => this._getOptionId(v));
-    this._optionMap.forEach((opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); });
+    this._optionMap.forEach((opt, o) => {
+      opt._setSelected(ids.indexOf(o.toString()) > -1);
+    });
   }
 
   registerOnChange(fn: (value: any) => any): void {
@@ -98,7 +100,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
       fn(selected);
     };
   }
-  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => any): void {
+    this.onTouched = fn;
+  }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);

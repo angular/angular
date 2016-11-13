@@ -36,11 +36,13 @@ export function main() {
         ]);
       });
 
-      it('should not create a message for empty elements',
-         () => { expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]); });
+      it('should not create a message for empty elements', () => {
+        expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]);
+      });
 
-      it('should not create a message for plain elements',
-         () => { expect(_humanizeMessages('<div></div>')).toEqual([]); });
+      it('should not create a message for plain elements', () => {
+        expect(_humanizeMessages('<div></div>')).toEqual([]);
+      });
 
       it('should suppoprt void elements', () => {
         expect(_humanizeMessages('<div i18n="m|d"><p><br></p></div>')).toEqual([
@@ -111,8 +113,9 @@ export function main() {
             ]);
       });
 
-      it('should not create a message for empty attributes',
-         () => { expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]); });
+      it('should not create a message for empty attributes', () => {
+        expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]);
+      });
     });
 
     describe('interpolation', () => {

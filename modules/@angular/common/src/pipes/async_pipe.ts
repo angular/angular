@@ -19,17 +19,28 @@ interface SubscriptionStrategy {
 
 class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: any, updateLatestValue: any): any {
-    return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
+    return async.subscribe({
+      next: updateLatestValue,
+      error: (e: any) => {
+        throw e;
+      }
+    });
   }
 
-  dispose(subscription: any): void { subscription.unsubscribe(); }
+  dispose(subscription: any): void {
+    subscription.unsubscribe();
+  }
 
-  onDestroy(subscription: any): void { subscription.unsubscribe(); }
+  onDestroy(subscription: any): void {
+    subscription.unsubscribe();
+  }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): any {
-    return async.then(updateLatestValue, e => { throw e; });
+    return async.then(updateLatestValue, e => {
+      throw e;
+    });
   }
 
   dispose(subscription: any): void {}

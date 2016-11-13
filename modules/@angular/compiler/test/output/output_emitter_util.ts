@@ -16,8 +16,12 @@ import {ViewType} from '@angular/core/src/linker/view_type';
 
 export class ExternalClass {
   changeable: any;
-  constructor(public data: any) { this.changeable = data; }
-  someMethod(a: any /** TODO #9100 */) { return {'param': a, 'data': this.data}; }
+  constructor(public data: any) {
+    this.changeable = data;
+  }
+  someMethod(a: any /** TODO #9100 */) {
+    return {'param': a, 'data': this.data};
+  }
 }
 
 const testDataIdentifier = new CompileIdentifierMetadata({

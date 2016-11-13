@@ -65,7 +65,9 @@ export class CompileMethod {
     this._newState = new _DebugState(nodeIndex, templateAst);
   }
 
-  push(...stmts: o.Statement[]) { this.addStmts(stmts); }
+  push(...stmts: o.Statement[]) {
+    this.addStmts(stmts);
+  }
 
   addStmt(stmt: o.Statement) {
     this._updateDebugContextIfNeeded();
@@ -77,7 +79,11 @@ export class CompileMethod {
     this._bodyStatements.push(...stmts);
   }
 
-  finish(): o.Statement[] { return this._bodyStatements; }
+  finish(): o.Statement[] {
+    return this._bodyStatements;
+  }
 
-  isEmpty(): boolean { return this._bodyStatements.length === 0; }
+  isEmpty(): boolean {
+    return this._bodyStatements.length === 0;
+  }
 }

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, asNativeElements, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../../src/facade/lang';
@@ -202,8 +202,8 @@ export function main() {
         const template = '<has-null-query-condition></has-null-query-condition>';
         TestBed.overrideComponent(MyCompBroken0, {set: {template}});
         expect(() => TestBed.createComponent(MyCompBroken0))
-            .toThrowError(
-                `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
+            .toThrowError(`Can't construct a query for the property "errorTrigger" of "${stringify(
+                HasNullQueryCondition)}" since the query selector wasn't defined.`);
       });
     });
 
@@ -539,7 +539,9 @@ class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterContentInit: number;
 
-  ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+  ngAfterContentInit() {
+    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
@@ -547,7 +549,9 @@ class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number;
 
-  ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+  ngAfterViewInit() {
+    this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-content-child', template: ''})
@@ -561,12 +565,18 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
     this.logs.push(['setter', value ? value.text : null]);
   }
 
-  get child() { return this._child; }
+  get child() {
+    return this._child;
+  }
   logs: any[] /** TODO #9100 */ = [];
 
-  ngAfterContentInit() { this.logs.push(['init', this.child ? this.child.text : null]); }
+  ngAfterContentInit() {
+    this.logs.push(['init', this.child ? this.child.text : null]);
+  }
 
-  ngAfterContentChecked() { this.logs.push(['check', this.child ? this.child.text : null]); }
+  ngAfterContentChecked() {
+    this.logs.push(['check', this.child ? this.child.text : null]);
+  }
 }
 
 @Component({selector: 'needs-view-child', template: `<div *ngIf="shouldShow" text="foo"></div>`})
@@ -582,12 +592,18 @@ class NeedsViewChild implements AfterViewInit, AfterViewChecked {
     this.logs.push(['setter', value ? value.text : null]);
   }
 
-  get child() { return this._child; }
+  get child() {
+    return this._child;
+  }
   logs: any[] /** TODO #9100 */ = [];
 
-  ngAfterViewInit() { this.logs.push(['init', this.child ? this.child.text : null]); }
+  ngAfterViewInit() {
+    this.logs.push(['init', this.child ? this.child.text : null]);
+  }
 
-  ngAfterViewChecked() { this.logs.push(['check', this.child ? this.child.text : null]); }
+  ngAfterViewChecked() {
+    this.logs.push(['check', this.child ? this.child.text : null]);
+  }
 }
 
 function createTestCmp<T>(type: Type<T>, template: string): ComponentFixture<T> {
@@ -754,7 +770,9 @@ class NeedsViewContainerWithRead {
   @ViewChild('nonExisting', {read: ViewContainerRef}) nonExistingVar: ViewContainerRef;
   @ContentChild(TemplateRef) template: TemplateRef<Object>;
 
-  createView() { this.vc.createEmbeddedView(this.template); }
+  createView() {
+    this.vc.createEmbeddedView(this.template);
+  }
 }
 
 @Component({selector: 'has-null-query-condition', template: '<div></div>'})
@@ -782,7 +800,11 @@ class ManualProjecting {
   @ContentChildren(TextDirective)
   query: QueryList<TextDirective>;
 
-  create() { this.vc.createEmbeddedView(this.template); }
+  create() {
+    this.vc.createEmbeddedView(this.template);
+  }
 
-  destroy() { this.vc.clear(); }
+  destroy() {
+    this.vc.clear();
+  }
 }

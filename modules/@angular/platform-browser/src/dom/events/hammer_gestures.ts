@@ -85,7 +85,9 @@ export class HammerGestureConfig {
 
 @Injectable()
 export class HammerGesturesPlugin extends EventManagerPlugin {
-  constructor(@Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) { super(); }
+  constructor(@Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) {
+    super();
+  }
 
   supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
@@ -107,12 +109,16 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       // Creating the manager bind events, must be done outside of angular
       const mc = this._config.buildHammer(element);
       const callback = function(eventObj: HammerInput) {
-        zone.runGuarded(function() { handler(eventObj); });
+        zone.runGuarded(function() {
+          handler(eventObj);
+        });
       };
       mc.on(eventName, callback);
       return () => mc.off(eventName, callback);
     });
   }
 
-  isCustomEvent(eventName: string): boolean { return this._config.events.indexOf(eventName) > -1; }
+  isCustomEvent(eventName: string): boolean {
+    return this._config.events.indexOf(eventName) > -1;
+  }
 }

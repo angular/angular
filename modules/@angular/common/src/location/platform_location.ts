@@ -37,9 +37,15 @@ export abstract class PlatformLocation {
   abstract onPopState(fn: LocationChangeListener): void;
   abstract onHashChange(fn: LocationChangeListener): void;
 
-  get pathname(): string { return null; }
-  get search(): string { return null; }
-  get hash(): string { return null; }
+  get pathname(): string {
+    return null;
+  }
+  get search(): string {
+    return null;
+  }
+  get hash(): string {
+    return null;
+  }
 
   abstract replaceState(state: any, title: string, url: string): void;
 

@@ -10,8 +10,8 @@ import {existsSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import AngularCompilerOptions from './options';
 import {TsickleHost} from './compiler_host';
+import AngularCompilerOptions from './options';
 
 /**
  * Our interface to the TypeScript standard compiler.

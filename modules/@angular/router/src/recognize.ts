@@ -8,13 +8,13 @@
 
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
+import {Observer} from 'rxjs/Observer';
 
 import {Data, ResolveData, Route, Routes, UrlMatchResult} from './config';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
-import {PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from './router_state';
+import {defaultUrlMatcher, Params, PRIMARY_OUTLET} from './shared';
+import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
@@ -179,7 +179,9 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
   if (!res) throw new NoMatch();
 
   const posParams: {[n: string]: string} = {};
-  forEach(res.posParams, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
+  forEach(res.posParams, (v: UrlSegment, k: string) => {
+    posParams[k] = v.path;
+  });
   const parameters = merge(posParams, res.consumed[res.consumed.length - 1].parameters);
 
   return {consumedSegments: res.consumed, lastChild: res.consumed.length, parameters};

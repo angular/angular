@@ -10,7 +10,7 @@ import {AnimationEntryMetadata} from '../animation/metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../type';
-import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 
 import {ViewEncapsulation} from './view';
 

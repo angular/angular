@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ComponentFactory, Host, Inject, Injectable, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf} from '@angular/core';
+import {ComponentFactory, Host, Inject, Injectable, Injector, NgModule, NO_ERRORS_SCHEMA, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -17,7 +17,7 @@ import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
 import {Renderer} from '@angular/core/src/render';
-import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
+import {async, fakeAsync, getTestBed, TestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -28,15 +28,21 @@ import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({useJit: useJit});
+    });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
@@ -795,8 +801,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            expect(dir.control).toEqual('one');
 
-           dir.controlChange.subscribe(
-               {next: () => { expect(fixture.componentInstance.ctxProp).toEqual('two'); }});
+           dir.controlChange.subscribe({
+             next: () => {
+               expect(fixture.componentInstance.ctxProp).toEqual('two');
+             }
+           });
 
            dir.triggerChange('two');
          }));
@@ -921,7 +930,9 @@ function declareTests({useJit}: {useJit: boolean}) {
           id = 'one';
           receivedArgs: any[];
 
-          doIt(...args: any[]) { this.receivedArgs = args; }
+          doIt(...args: any[]) {
+            this.receivedArgs = args;
+          }
         }
 
         const fixture =
@@ -1268,8 +1279,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
 
         expect(() => TestBed.createComponent(MyComp))
-            .toThrowError(
-                `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'`);
+            .toThrowError(`Unexpected value '${stringify(
+                SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'`);
       });
 
       it('should report a meaningful error when a component is missing view annotation', () => {
@@ -1713,7 +1724,9 @@ class ComponentWithCustomInterpolationB {
 @Injectable()
 class MyService {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'simple-imp-cmp', template: ''})
@@ -1739,13 +1752,17 @@ class DynamicViewport {
     this.componentFactory = componentFactoryResolver.resolveComponentFactory(ChildCompUsingService);
   }
 
-  create() { this.vc.createComponent(this.componentFactory, this.vc.length, this.injector); }
+  create() {
+    this.vc.createComponent(this.componentFactory, this.vc.length, this.injector);
+  }
 }
 
 @Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
 class MyDir {
   dirProp: string;
-  constructor() { this.dirProp = ''; }
+  constructor() {
+    this.dirProp = '';
+  }
 }
 
 @Directive({selector: '[title]', inputs: ['title']})
@@ -1774,7 +1791,9 @@ class PushCmp {
   numberOfChecks: number;
   prop: any;
 
-  constructor() { this.numberOfChecks = 0; }
+  constructor() {
+    this.numberOfChecks = 0;
+  }
 
   noop() {}
 
@@ -1805,7 +1824,9 @@ class PushCmpWithRef {
     return 'fixed';
   }
 
-  propagate() { this.ref.markForCheck(); }
+  propagate() {
+    this.ref.markForCheck();
+  }
 }
 
 @Component({
@@ -1829,7 +1850,9 @@ class PushCmpWithAsyncPipe {
   promise: Promise<any>;
 
   constructor() {
-    this.promise = new Promise((resolve) => { this.resolve = resolve; });
+    this.promise = new Promise((resolve) => {
+      this.resolve = resolve;
+    });
   }
 
   get field() {
@@ -1843,7 +1866,11 @@ class MyComp {
   ctxProp: string;
   ctxNumProp: number;
   ctxBoolProp: boolean;
-  toStringThrow = {toString: function() { throw 'boom'; }};
+  toStringThrow = {
+    toString: function() {
+      throw 'boom';
+    }
+  };
 
   constructor() {
     this.ctxProp = 'initial value';
@@ -1851,7 +1878,9 @@ class MyComp {
     this.ctxBoolProp = false;
   }
 
-  throwError() { throw 'boom'; }
+  throwError() {
+    throw 'boom';
+  }
 }
 
 @Component({
@@ -1877,7 +1906,9 @@ class ChildCompNoTemplate {
 @Component({selector: 'child-cmp-svc', template: '{{ctxProp}}'})
 class ChildCompUsingService {
   ctxProp: string;
-  constructor(service: MyService) { this.ctxProp = service.greeting; }
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
+  }
 }
 
 @Directive({selector: 'some-directive'})
@@ -1892,7 +1923,9 @@ class SomeDirectiveMissingAnnotation {}
 })
 class CompWithHost {
   myHost: SomeDirective;
-  constructor(@Host() someComp: SomeDirective) { this.myHost = someComp; }
+  constructor(@Host() someComp: SomeDirective) {
+    this.myHost = someComp;
+  }
 }
 
 @Component({selector: '[child-cmp2]', viewProviders: [MyService]})
@@ -1935,7 +1968,9 @@ class NoContext {
 @Pipe({name: 'double'})
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
-  transform(value: any) { return `${value}${value}`; }
+  transform(value: any) {
+    return `${value}${value}`;
+  }
 }
 
 @Directive({selector: '[emitter]', outputs: ['event']})
@@ -1948,7 +1983,9 @@ class DirectiveEmittingEvent {
     this.event = new EventEmitter();
   }
 
-  fireEvent(msg: string) { this.event.emit(msg); }
+  fireEvent(msg: string) {
+    this.event.emit(msg);
+  }
 }
 
 @Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
@@ -1959,16 +1996,22 @@ class DirectiveUpdatingHostAttributes {
 class DirectiveUpdatingHostProperties {
   id: string;
 
-  constructor() { this.id = 'one'; }
+  constructor() {
+    this.id = 'one';
+  }
 }
 
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
 class DirectiveListeningEvent {
   msg: string;
 
-  constructor() { this.msg = ''; }
+  constructor() {
+    this.msg = '';
+  }
 
-  onEvent(msg: string) { this.msg = msg; }
+  onEvent(msg: string) {
+    this.msg = msg;
+  }
 }
 
 @Directive({
@@ -1982,17 +2025,27 @@ class DirectiveListeningEvent {
 })
 class DirectiveListeningDomEvent {
   eventTypes: string[] = [];
-  onEvent(eventType: string) { this.eventTypes.push(eventType); }
-  onWindowEvent(eventType: string) { this.eventTypes.push('window_' + eventType); }
-  onDocumentEvent(eventType: string) { this.eventTypes.push('document_' + eventType); }
-  onBodyEvent(eventType: string) { this.eventTypes.push('body_' + eventType); }
+  onEvent(eventType: string) {
+    this.eventTypes.push(eventType);
+  }
+  onWindowEvent(eventType: string) {
+    this.eventTypes.push('window_' + eventType);
+  }
+  onDocumentEvent(eventType: string) {
+    this.eventTypes.push('document_' + eventType);
+  }
+  onBodyEvent(eventType: string) {
+    this.eventTypes.push('body_' + eventType);
+  }
 }
 
 let globalCounter = 0;
 @Directive({selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
 class DirectiveListeningDomEventOther {
   eventType: string;
-  constructor() { this.eventType = ''; }
+  constructor() {
+    this.eventType = '';
+  }
   onEvent(eventType: string) {
     globalCounter++;
     this.eventType = 'other_' + eventType;
@@ -2001,12 +2054,16 @@ class DirectiveListeningDomEventOther {
 
 @Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
 class DirectiveListeningDomEventPrevent {
-  onEvent(event: any) { return false; }
+  onEvent(event: any) {
+    return false;
+  }
 }
 
 @Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
 class DirectiveListeningDomEventNoPrevent {
-  onEvent(event: any) { return true; }
+  onEvent(event: any) {
+    return true;
+  }
 }
 
 @Directive({selector: '[id]', inputs: ['id']})
@@ -2047,7 +2104,9 @@ class PrivateImpl extends PublicApi {
 
 @Directive({selector: '[needs-public-api]'})
 class NeedsPublicApi {
-  constructor(@Host() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
+  constructor(@Host() api: PublicApi) {
+    expect(api instanceof PrivateImpl).toBe(true);
+  }
 }
 
 class ToolbarContext {
@@ -2057,13 +2116,17 @@ class ToolbarContext {
 @Directive({selector: '[toolbarpart]'})
 class ToolbarPart {
   templateRef: TemplateRef<ToolbarContext>;
-  constructor(templateRef: TemplateRef<ToolbarContext>) { this.templateRef = templateRef; }
+  constructor(templateRef: TemplateRef<ToolbarContext>) {
+    this.templateRef = templateRef;
+  }
 }
 
 @Directive({selector: '[toolbarVc]', inputs: ['toolbarVc']})
 class ToolbarViewContainer {
   vc: ViewContainerRef;
-  constructor(vc: ViewContainerRef) { this.vc = vc; }
+  constructor(vc: ViewContainerRef) {
+    this.vc = vc;
+  }
 
   set toolbarVc(part: ToolbarPart) {
     this.vc.createEmbeddedView(part.templateRef, new ToolbarContext('From toolbar'), 0);
@@ -2078,7 +2141,9 @@ class ToolbarComponent {
   @ContentChildren(ToolbarPart) query: QueryList<ToolbarPart>;
   ctxProp: string;
 
-  constructor() { this.ctxProp = 'hello world'; }
+  constructor() {
+    this.ctxProp = 'hello world';
+  }
 }
 
 @Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
@@ -2086,7 +2151,9 @@ class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
   control: any = null;
 
-  triggerChange(value: any) { this.controlChange.emit(value); }
+  triggerChange(value: any) {
+    this.controlChange.emit(value);
+  }
 }
 
 @Injectable()
@@ -2135,7 +2202,9 @@ class DirectiveProvidingInjectableInHostAndView {
 class DirectiveConsumingInjectable {
   injectable: any;
 
-  constructor(@Host() @Inject(InjectableService) injectable: any) { this.injectable = injectable; }
+  constructor(@Host() @Inject(InjectableService) injectable: any) {
+    this.injectable = injectable;
+  }
 }
 
 
@@ -2175,7 +2244,9 @@ class EventBus {
 class GrandParentProvidingEventBus {
   bus: EventBus;
 
-  constructor(bus: EventBus) { this.bus = bus; }
+  constructor(bus: EventBus) {
+    this.bus = bus;
+  }
 }
 
 function createParentBus(peb: EventBus) {
@@ -2201,7 +2272,9 @@ class ParentProvidingEventBus {
 class ChildConsumingEventBus {
   bus: EventBus;
 
-  constructor(@SkipSelf() bus: EventBus) { this.bus = bus; }
+  constructor(@SkipSelf() bus: EventBus) {
+    this.bus = bus;
+  }
 }
 
 @Directive({selector: '[someImpvp]', inputs: ['someImpvp']})
@@ -2255,7 +2328,9 @@ class OtherDuplicateDir {
 
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
-  constructor() { throw new Error('BOOM'); }
+  constructor() {
+    throw new Error('BOOM');
+  }
 }
 
 @Component({
@@ -2275,9 +2350,13 @@ class DirectiveWithPropDecorators {
 
   @HostBinding('attr.my-attr') myAttr: string;
   @HostListener('click', ['$event.target'])
-  onClick(target: any) { this.target = target; }
+  onClick(target: any) {
+    this.target = target;
+  }
 
-  fireEvent(msg: any) { this.event.emit(msg); }
+  fireEvent(msg: any) {
+    this.event.emit(msg);
+  }
 }
 
 @Component({selector: 'some-cmp'})

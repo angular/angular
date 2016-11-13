@@ -92,7 +92,9 @@ export function extractSchema(): Map<string, string[]> {
 
   types.sort();
 
-  types.forEach(type => { extractRecursiveProperties(visited, descMap, (window as any)[type]); });
+  types.forEach(type => {
+    extractRecursiveProperties(visited, descMap, (window as any)[type]);
+  });
 
   // Add elements missed by Chrome auto-detection
   Object.keys(MISSING_FROM_CHROME).forEach(elHierarchy => {

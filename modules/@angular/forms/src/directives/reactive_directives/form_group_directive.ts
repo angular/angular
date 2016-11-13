@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {ListWrapper} from '../../facade/collection';
@@ -66,8 +66,7 @@ export const formDirectiveProvider: any = {
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   exportAs: 'ngForm'
 })
-export class FormGroupDirective extends ControlContainer implements Form,
-    OnChanges {
+export class FormGroupDirective extends ControlContainer implements Form, OnChanges {
   private _submitted: boolean = false;
   private _oldForm: FormGroup;
   directives: FormControlName[] = [];
@@ -90,13 +89,21 @@ export class FormGroupDirective extends ControlContainer implements Form,
     }
   }
 
-  get submitted(): boolean { return this._submitted; }
+  get submitted(): boolean {
+    return this._submitted;
+  }
 
-  get formDirective(): Form { return this; }
+  get formDirective(): Form {
+    return this;
+  }
 
-  get control(): FormGroup { return this.form; }
+  get control(): FormGroup {
+    return this.form;
+  }
 
-  get path(): string[] { return []; }
+  get path(): string[] {
+    return [];
+  }
 
   addControl(dir: FormControlName): FormControl {
     const ctrl: any = this.form.get(dir.path);
@@ -106,9 +113,13 @@ export class FormGroupDirective extends ControlContainer implements Form,
     return ctrl;
   }
 
-  getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
+  getControl(dir: FormControlName): FormControl {
+    return <FormControl>this.form.get(dir.path);
+  }
 
-  removeControl(dir: FormControlName): void { ListWrapper.remove(this.directives, dir); }
+  removeControl(dir: FormControlName): void {
+    ListWrapper.remove(this.directives, dir);
+  }
 
   addFormGroup(dir: FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
@@ -118,7 +129,9 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   removeFormGroup(dir: FormGroupName): void {}
 
-  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
+  getFormGroup(dir: FormGroupName): FormGroup {
+    return <FormGroup>this.form.get(dir.path);
+  }
 
   addFormArray(dir: FormArrayName): void {
     const ctrl: any = this.form.get(dir.path);
@@ -128,7 +141,9 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   removeFormArray(dir: FormArrayName): void {}
 
-  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
+  getFormArray(dir: FormArrayName): FormArray {
+    return <FormArray>this.form.get(dir.path);
+  }
 
   updateModel(dir: FormControlName, value: any): void {
     const ctrl  = <FormControl>this.form.get(dir.path);
@@ -141,7 +156,9 @@ export class FormGroupDirective extends ControlContainer implements Form,
     return false;
   }
 
-  onReset(): void { this.resetForm(); }
+  onReset(): void {
+    this.resetForm();
+  }
 
   resetForm(value: any = undefined): void {
     this.form.reset(value);

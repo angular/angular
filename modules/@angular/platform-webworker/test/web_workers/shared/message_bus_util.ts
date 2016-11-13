@@ -31,5 +31,7 @@ class MockPostMessage {
     }
   }
 
-  postMessage(data: any, transfer?: [ArrayBuffer]): void { this._listener(<any>{data: data}); }
+  postMessage(data: any, transfer?: [ArrayBuffer]): void {
+    this._listener(<any>{data: data});
+  }
 }

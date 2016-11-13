@@ -13,7 +13,9 @@ import {SpyObject} from '@angular/core/testing/testing_internal';
 import {global} from '../../../src/facade/lang';
 
 export class SpyApplicationRef extends SpyObject {
-  constructor() { super(ApplicationRef_); }
+  constructor() {
+    super(ApplicationRef_);
+  }
 }
 
 export class SpyComponentRef extends SpyObject {

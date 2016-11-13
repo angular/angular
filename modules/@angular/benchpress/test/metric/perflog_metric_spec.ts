@@ -359,7 +359,9 @@ export function main() {
                  [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
                  {captureFrames: true})
                  .catch((err): any => {
-                   expect(() => { throw err; }).toThrowError('missing end event for frame capture');
+                   expect(() => {
+                     throw err;
+                   }).toThrowError('missing end event for frame capture');
                    async.done();
                  });
            }));
@@ -384,7 +386,9 @@ export function main() {
         it('should throw if trying to capture when frame capture is disabled',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate([eventFactory.markStart('frameCapture', 3)]).catch((err) => {
-               expect(() => { throw err; })
+               expect(() => {
+                 throw err;
+               })
                    .toThrowError(
                        'found start event for frame capture, but frame capture was not requested in benchpress');
                async.done();
@@ -395,7 +399,9 @@ export function main() {
         it('should throw if frame capture is enabled, but nothing is captured',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              aggregate([], {captureFrames: true}).catch((err): any => {
-               expect(() => { throw err; })
+               expect(() => {
+                 throw err;
+               })
                    .toThrowError(
                        'frame capture requested in benchpress, but no start event was found');
                async.done();
@@ -680,7 +686,9 @@ class MockDriverExtension extends WebDriverExtension {
     return Promise.resolve(null);
   }
 
-  perfLogFeatures(): PerfLogFeatures { return this._perfLogFeatures; }
+  perfLogFeatures(): PerfLogFeatures {
+    return this._perfLogFeatures;
+  }
 
   readPerfLog(): Promise<any> {
     this._commandLog.push('readPerfLog');

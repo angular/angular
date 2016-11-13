@@ -7,7 +7,7 @@
  */
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
-import {HostListener, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {animate, group, HostListener, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -475,10 +475,13 @@ class MockReflectorHost implements StaticReflectorHost {
     };
   }
 
-  getCanonicalFileName(fileName: string): string { return fileName; }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
 
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    const cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
+    const cacheKey = `${declarationFile}:${name}${members ? '.' + members.join('.') : ''
+                                                                                      }`;
     let result = this.staticTypeCache.get(cacheKey);
     if (!result) {
       result = new StaticSymbol(declarationFile, name, members);
@@ -489,7 +492,9 @@ class MockReflectorHost implements StaticReflectorHost {
 
   // In tests, assume that symbols are not re-exported
   findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol {
-    function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
+    function splitPath(path: string): string[] {
+      return path.split(/\/|\\/g);
+    }
 
     function resolvePath(pathParts: string[]): string {
       const result: string[] = [];

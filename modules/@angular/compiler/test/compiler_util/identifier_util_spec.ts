@@ -57,7 +57,8 @@ export function main() {
       }
     });
 
-    it('should work for arrays of length > 16',
-       () => { check(17, Identifiers.InlineArrayDynamic); });
+    it('should work for arrays of length > 16', () => {
+      check(17, Identifiers.InlineArrayDynamic);
+    });
   });
 }

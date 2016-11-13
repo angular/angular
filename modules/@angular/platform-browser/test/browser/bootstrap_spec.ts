@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Input, NgModule, OnDestroy, Pipe, PLATFORM_INITIALIZER, Provider} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, beforeEachProviders, describe, iit, inject, it, Log} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -23,7 +23,9 @@ import {stringify} from '../../src/facade/lang';
 @Component({selector: 'hello-app', template: '{{greeting}} world!'})
 class HelloRootCmp {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
@@ -34,7 +36,9 @@ class HelloRootCmpContent {
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
 class HelloRootCmp2 {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'hello-app', template: ''})
@@ -50,7 +54,9 @@ class HelloRootCmp3 {
 class HelloRootCmp4 {
   appRef: any /** TODO #9100 */;
 
-  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
+    this.appRef = appRef;
+  }
 }
 
 @Component({selector: 'hello-app'})
@@ -64,9 +70,13 @@ class HelloRootDirectiveIsNotCmp {
 @Component({selector: 'hello-app', template: ''})
 class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
-  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) { this.appRef = appRef; }
+  constructor(@Inject(ApplicationRef) appRef: ApplicationRef) {
+    this.appRef = appRef;
+  }
 
-  ngOnDestroy(): void { this.appRef.tick(); }
+  ngOnDestroy(): void {
+    this.appRef.tick();
+  }
 }
 
 @Component({selector: 'hello-app', templateUrl: './sometemplate.html'})
@@ -82,7 +92,9 @@ class SomeDirective {
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'hello-app', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -96,7 +108,9 @@ class HelloCmpUsingCustomElement {
 
 class MockConsole {
   res: any[] = [];
-  error(s: any): void { this.res.push(s); }
+  error(s: any): void {
+    this.res.push(s);
+  }
 }
 
 
@@ -104,7 +118,9 @@ class DummyConsole implements Console {
   public warnings: string[] = [];
 
   log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
+  warn(message: string) {
+    this.warnings.push(message);
+  }
 }
 
 
@@ -129,7 +145,9 @@ export function main() {
   describe('bootstrap factory method', () => {
     let compilerConsole: DummyConsole;
 
-    beforeEachProviders(() => { return [Log]; });
+    beforeEachProviders(() => {
+      return [Log];
+    });
 
     beforeEach(() => {
       destroyPlatform();
@@ -157,8 +175,8 @@ export function main() {
          bootstrap(HelloRootDirectiveIsNotCmp, [
            {provide: ErrorHandler, useValue: errorHandler}
          ]).catch((e) => {
-           expect(e.message).toBe(
-               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
+           expect(e.message).toBe(`Could not compile '${stringify(
+               HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
            done.done();
          });
        }));

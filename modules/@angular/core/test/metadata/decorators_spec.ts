@@ -13,12 +13,20 @@ import {describe, expect, it} from '@angular/core/testing/testing_internal';
 export function main() {
   describe('es5 decorators', () => {
     it('should declare directive class', () => {
-      const MyDirective = Directive({}).Class({constructor: function() { this.works = true; }});
+      const MyDirective = Directive({}).Class({
+        constructor: function() {
+          this.works = true;
+        }
+      });
       expect(new MyDirective().works).toEqual(true);
     });
 
     it('should declare Component class', () => {
-      const MyComponent = Component({}).Class({constructor: function() { this.works = true; }});
+      const MyComponent = Component({}).Class({
+        constructor: function() {
+          this.works = true;
+        }
+      });
       expect(new MyComponent().works).toEqual(true);
     });
 

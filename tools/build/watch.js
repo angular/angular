@@ -24,7 +24,9 @@ function watch(globs, opts, tasks) {
     if (!Array.isArray(tasks)) tasks = [tasks];
     tasks = tasks.slice();
     tasks.push(tasksDone);
-    runTasks = function runTaskSequence() { runSequence.apply(null, tasks); };
+    runTasks = function runTaskSequence() {
+      runSequence.apply(null, tasks);
+    };
   } else {
     var sync = tasks.length === 0;
     runTasks = function runCallback() {
@@ -48,8 +50,9 @@ function watch(globs, opts, tasks) {
   var delay = opts.delay;
   if (delay === undefined) delay = 100;
 
-  var watcher =
-      chokidar.watch(globs, opts).on('all', handleEvent).on('error', function(err) { throw err; });
+  var watcher = chokidar.watch(globs, opts).on('all', handleEvent).on('error', function(err) {
+    throw err;
+  });
 
   var log =
       function watchLogger(triggerCount) {

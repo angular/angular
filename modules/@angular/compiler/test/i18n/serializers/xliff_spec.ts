@@ -92,7 +92,9 @@ export function main(): void {
 
     const asAst = serializer.load(xliff, 'url', messageBundle);
     const asText: {[id: string]: string} = {};
-    Object.keys(asAst).forEach(id => { asText[id] = serializeNodes(asAst[id]).join(''); });
+    Object.keys(asAst).forEach(id => {
+      asText[id] = serializeNodes(asAst[id]).join('');
+    });
 
     return asText;
   }
@@ -106,7 +108,9 @@ export function main(): void {
 
 
     describe('write', () => {
-      it('should write a valid xliff file', () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
+      it('should write a valid xliff file', () => {
+        expect(toXliff(HTML)).toEqual(WRITE_XLIFF);
+      });
     });
 
     describe('load', () => {

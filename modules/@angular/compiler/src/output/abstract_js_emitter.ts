@@ -12,7 +12,9 @@ import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitor
 import * as o from './output_ast';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
-  constructor() { super(false); }
+  constructor() {
+    super(false);
+  }
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     this._visitClassConstructor(stmt, ctx);

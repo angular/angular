@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {isMetadataGlobalReferenceExpression} from '../src/schema';
 import {Symbols} from '../src/symbols';
 
-import {Directory, Host, expectNoDiagnostics} from './typescript.mocks';
+import {Directory, expectNoDiagnostics, Host} from './typescript.mocks';
 
 describe('Symbols', () => {
   let symbols: Symbols;

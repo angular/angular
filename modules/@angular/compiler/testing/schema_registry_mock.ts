@@ -26,15 +26,21 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     return value === void 0 ? true : value;
   }
 
-  allKnownElementNames(): string[] { return Object.keys(this.existingElements); }
+  allKnownElementNames(): string[] {
+    return Object.keys(this.existingElements);
+  }
 
   securityContext(selector: string, property: string, isAttribute: boolean): SecurityContext {
     return SecurityContext.NONE;
   }
 
-  getMappedPropName(attrName: string): string { return this.attrPropMapping[attrName] || attrName; }
+  getMappedPropName(attrName: string): string {
+    return this.attrPropMapping[attrName] || attrName;
+  }
 
-  getDefaultComponentElementName(): string { return 'ng-component'; }
+  getDefaultComponentElementName(): string {
+    return 'ng-component';
+  }
 
   validateProperty(name: string): {error: boolean, msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
@@ -55,7 +61,9 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  normalizeAnimationStyleProperty(propName: string): string { return propName; }
+  normalizeAnimationStyleProperty(propName: string): string {
+    return propName;
+  }
   normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
       {error: string, value: string} {
     return {error: null, value: val.toString()};

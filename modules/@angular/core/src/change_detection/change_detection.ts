@@ -12,7 +12,7 @@ import {IterableDifferFactory, IterableDiffers} from './differs/iterable_differs
 import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 
 export {SimpleChanges} from '../metadata/lifecycle_hooks';
-export {SimpleChange, UNINITIALIZED, ValueUnwrapper, WrappedValue, devModeEqual, looseIdentical} from './change_detection_util';
+export {devModeEqual, looseIdentical, SimpleChange, UNINITIALIZED, ValueUnwrapper, WrappedValue} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
 export {CollectionChangeRecord, DefaultIterableDifferFactory} from './differs/default_iterable_differ';

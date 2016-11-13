@@ -8,7 +8,7 @@
 
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -52,13 +52,17 @@ export function main() {
 
 @Directive({selector: '[test-dec]'})
 class TestDirective {
-  constructor(el: ElementRef) { getDOM().addClass(el.nativeElement, 'compiled'); }
+  constructor(el: ElementRef) {
+    getDOM().addClass(el.nativeElement, 'compiled');
+  }
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   text: string;
-  constructor() { this.text = 'foo'; }
+  constructor() {
+    this.text = 'foo';
+  }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

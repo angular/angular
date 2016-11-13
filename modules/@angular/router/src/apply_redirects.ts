@@ -8,9 +8,9 @@
 
 import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 import {from} from 'rxjs/observable/from';
 import {of } from 'rxjs/observable/of';
+import {Observer} from 'rxjs/Observer';
 import {_catch} from 'rxjs/operator/catch';
 import {concatAll} from 'rxjs/operator/concatAll';
 import {first} from 'rxjs/operator/first';
@@ -20,7 +20,7 @@ import {EmptyError} from 'rxjs/util/EmptyError';
 
 import {Route, Routes, UrlMatchResult} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
-import {NavigationCancelingError, PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
+import {defaultUrlMatcher, NavigationCancelingError, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 
@@ -45,7 +45,8 @@ function absoluteRedirect(segments: UrlSegment[]): Observable<UrlSegmentGroup> {
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
   return new Observable<LoadedRouterConfig>(
       (obs: Observer<LoadedRouterConfig>) => obs.error(new NavigationCancelingError(
-          `Cannot load children because the guard of the route "path: '${route.path}'" returned false`)));
+          `Cannot load children because the guard of the route "path: '${route.path
+          }'" returned false`)));
 }
 
 

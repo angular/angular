@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {MetadataCollector} from '../src/collector';
 import {ClassMetadata, ConstructorMetadata, ModuleMetadata} from '../src/schema';
 
-import {Directory, Host, expectValidSources} from './typescript.mocks';
+import {Directory, expectValidSources, Host} from './typescript.mocks';
 
 describe('Collector', () => {
   const documentRegistry = ts.createDocumentRegistry();
@@ -49,7 +49,9 @@ describe('Collector', () => {
     collector = new MetadataCollector();
   });
 
-  it('should not have errors in test data', () => { expectValidSources(service, program); });
+  it('should not have errors in test data', () => {
+    expectValidSources(service, program);
+  });
 
   it('should return undefined for modules that have no metadata', () => {
     const sourceFile = program.getSourceFile('app/hero.ts');

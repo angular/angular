@@ -8,7 +8,7 @@
 
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
@@ -30,7 +30,9 @@ describe('RouterState & Snapshot', () => {
       state = new RouterStateSnapshot('url', root);
     });
 
-    it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
+    it('should return first child', () => {
+      expect(state.root.firstChild).toBe(b);
+    });
 
     it('should return children', () => {
       const cc = state.root.children;
@@ -72,7 +74,9 @@ describe('RouterState & Snapshot', () => {
       state = new RouterState(root, <any>null);
     });
 
-    it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
+    it('should return first child', () => {
+      expect(state.root.firstChild).toBe(b);
+    });
 
     it('should return children', () => {
       const cc = state.root.children;
@@ -129,7 +133,9 @@ describe('RouterState & Snapshot', () => {
 
     let route: ActivatedRoute;
 
-    beforeEach(() => { route = createActivatedRoute('a'); });
+    beforeEach(() => {
+      route = createActivatedRoute('a');
+    });
 
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const queryParams = {};
@@ -147,7 +153,9 @@ describe('RouterState & Snapshot', () => {
       route._futureSnapshot = secondPlace;
 
       let hasSeenDataChange = false;
-      route.data.forEach((data) => { hasSeenDataChange = true; });
+      route.data.forEach((data) => {
+        hasSeenDataChange = true;
+      });
       advanceActivatedRoute(route);
       expect(hasSeenDataChange).toEqual(true);
     });

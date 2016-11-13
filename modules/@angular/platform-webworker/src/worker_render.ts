@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, Injectable, Injector, NgZone, OpaqueToken, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {createPlatformFactory, ErrorHandler, Injectable, Injector, isDevMode, NgZone, OpaqueToken, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RootRenderer, Testability} from '@angular/core';
 import {AnimationDriver, DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
 
 import {APP_ID_RANDOM_PROVIDER} from './private_import_core';
-import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, WebAnimationsDriver, getDOM} from './private_import_platform-browser';
+import {BROWSER_SANITIZATION_PROVIDERS, BrowserDomAdapter, BrowserGetTestability, DomEventsPlugin, DomRootRenderer, DomRootRenderer_, DomSharedStylesHost, getDOM, HammerGesturesPlugin, KeyEventsPlugin, SharedStylesHost, WebAnimationsDriver} from './private_import_platform-browser';
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
@@ -97,7 +97,11 @@ function initializeGenericWorkerRenderer(injector: Injector) {
 
   // initialize message services after the bus has been created
   const services = injector.get(WORKER_UI_STARTABLE_MESSAGING_SERVICE);
-  zone.runGuarded(() => { services.forEach((svc: any) => { svc.start(); }); });
+  zone.runGuarded(() => {
+    services.forEach((svc: any) => {
+      svc.start();
+    });
+  });
 }
 
 function messageBusFactory(instance: WebWorkerInstance): MessageBus {

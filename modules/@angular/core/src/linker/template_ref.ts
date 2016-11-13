@@ -38,7 +38,9 @@ export abstract class TemplateRef<C> {
    *
    */
   // TODO(i): rename to anchor or location
-  get elementRef(): ElementRef { return null; }
+  get elementRef(): ElementRef {
+    return null;
+  }
 
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
@@ -55,5 +57,7 @@ export class TemplateRef_<C> extends TemplateRef<C> {
     return view.ref;
   }
 
-  get elementRef(): ElementRef { return new ElementRef(this._nativeElement); }
+  get elementRef(): ElementRef {
+    return new ElementRef(this._nativeElement);
+  }
 }

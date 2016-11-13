@@ -23,9 +23,13 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
-  supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
+  supports(eventName: string): boolean {
+    return KeyEventsPlugin.parseEventName(eventName) != null;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName);

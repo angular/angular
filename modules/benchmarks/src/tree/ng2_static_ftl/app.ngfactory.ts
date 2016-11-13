@@ -312,7 +312,9 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
     }
     return notFoundResult;
   }
-  destroyInternal(): void { this._ApplicationRef__9.ngOnDestroy(); }
+  destroyInternal(): void {
+    this._ApplicationRef__9.ngOnDestroy();
+  }
 }
 export const AppModuleNgFactory: import0.NgModuleFactory<import1.AppModule> =
     new import0.NgModuleFactory(AppModuleInjector, import1.AppModule);

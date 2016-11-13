@@ -99,8 +99,8 @@ export class IterableDiffers {
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new Error(
-          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
+      throw new Error(`Cannot find a differ supporting object '${iterable
+                      }' of type '${getTypeNameForDebugging(iterable)}'`);
     }
   }
 }

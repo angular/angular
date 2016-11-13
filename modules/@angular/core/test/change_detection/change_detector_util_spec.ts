@@ -50,8 +50,9 @@ export function main() {
         expect(devModeEqual(null, new Object())).toBe(false);
       });
 
-      it('should return true for other objects',
-         () => { expect(devModeEqual(new Object(), new Object())).toBe(true); });
+      it('should return true for other objects', () => {
+        expect(devModeEqual(new Object(), new Object())).toBe(true);
+      });
     });
   });
 }

@@ -81,9 +81,13 @@ export class CssSelector {
         this.notSelectors.length === 0;
   }
 
-  hasElementSelector(): boolean { return !!this.element; }
+  hasElementSelector(): boolean {
+    return !!this.element;
+  }
 
-  setElement(element: string = null) { this.element = element; }
+  setElement(element: string = null) {
+    this.element = element;
+  }
 
   /** Gets a template string for an element that matches the selector. */
   getMatchingElementTemplate(): string {
@@ -105,7 +109,9 @@ export class CssSelector {
     this.attrs.push(name, value && value.toLowerCase() || '');
   }
 
-  addClassName(name: string) { this.classNames.push(name.toLowerCase()); }
+  addClassName(name: string) {
+    this.classNames.push(name.toLowerCase());
+  }
 
   toString(): string {
     let res: string = this.element || '';
@@ -116,7 +122,8 @@ export class CssSelector {
       for (let i = 0; i < this.attrs.length; i += 2) {
         const name = this.attrs[i];
         const value = this.attrs[i + 1];
-        res += `[${name}${value ? '=' + value : ''}]`;
+        res += `[${name}${value ? '=' + value : ''
+                                                }]`;
       }
     }
     this.notSelectors.forEach(notSelector => res += `:not(${notSelector})`);

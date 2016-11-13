@@ -12,7 +12,7 @@ import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import {print} from '../../src/facade/lang';
 import {assetUrl} from '../../src/identifiers';
 
-import {SimpleJsImportGenerator, codegenExportsVars, codegenStmts} from './output_emitter_util';
+import {codegenExportsVars, codegenStmts, SimpleJsImportGenerator} from './output_emitter_util';
 
 export function getExpressions(): any {
   throw new Error('unimplemented');

@@ -14,12 +14,16 @@ import {ErrorHandler} from '../src/error_handler';
 
 class MockConsole {
   res: any[] = [];
-  error(s: any): void { this.res.push(s); }
+  error(s: any): void {
+    this.res.push(s);
+  }
 }
 
 class _CustomException {
   context = 'some context';
-  toString(): string { return 'custom'; }
+  toString(): string {
+    return 'custom';
+  }
 }
 
 export function main() {
@@ -60,7 +64,9 @@ export function main() {
         const stack = getStack(cause);
         const context = {
           source: 'context!',
-          toString() { return 'Context'; }
+          toString() {
+            return 'Context';
+          }
         } as any as DebugContext;
         const original = new ViewWrappedError(cause, context);
         const e = errorToString(new WrappedError('message', original));

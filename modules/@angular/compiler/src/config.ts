@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, isDevMode} from '@angular/core';
+import {isDevMode, ViewEncapsulation} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
 import {Identifiers, resolveIdentifier} from './identifiers';
@@ -52,16 +52,30 @@ export class CompilerConfig {
  * to help tree shaking.
  */
 export abstract class RenderTypes {
-  get renderer(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderText(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderElement(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderComment(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderNode(): CompileIdentifierMetadata { return unimplemented(); }
-  get renderEvent(): CompileIdentifierMetadata { return unimplemented(); }
+  get renderer(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
+  get renderText(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
+  get renderElement(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
+  get renderComment(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
+  get renderNode(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
+  get renderEvent(): CompileIdentifierMetadata {
+    return unimplemented();
+  }
 }
 
 export class DefaultRenderTypes implements RenderTypes {
-  get renderer() { return resolveIdentifier(Identifiers.Renderer); };
+  get renderer() {
+    return resolveIdentifier(Identifiers.Renderer);
+  };
   renderText: any = null;
   renderElement: any = null;
   renderComment: any = null;

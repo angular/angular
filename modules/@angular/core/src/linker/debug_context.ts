@@ -29,7 +29,9 @@ export class DebugContext implements RenderDebugInfo {
     return isPresent(this._nodeIndex) ? this._view.staticNodeDebugInfos[this._nodeIndex] : null;
   }
 
-  get context() { return this._view.context; }
+  get context() {
+    return this._view.context;
+  }
   get component() {
     const staticNodeInfo = this._staticNodeInfo;
     if (isPresent(staticNodeInfo) && isPresent(staticNodeInfo.componentToken)) {
@@ -44,7 +46,9 @@ export class DebugContext implements RenderDebugInfo {
     }
     return componentView.parentElement;
   }
-  get injector(): Injector { return this._view.injector(this._nodeIndex); }
+  get injector(): Injector {
+    return this._view.injector(this._nodeIndex);
+  }
   get renderNode(): any {
     if (isPresent(this._nodeIndex) && this._view.allNodes) {
       return this._view.allNodes[this._nodeIndex];

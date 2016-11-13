@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Testability, destroyPlatform} from '@angular/core';
+import {destroyPlatform, NgModule, Testability} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -28,14 +28,18 @@ export function main() {
 
     it('should handle deferred bootstrap', fakeAsync(() => {
          let applicationRunning = false;
-         const ng1Module = angular.module('ng1', []).run(() => { applicationRunning = true; });
+         const ng1Module = angular.module('ng1', []).run(() => {
+           applicationRunning = true;
+         });
 
          const element = html('<div></div>');
          window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
 
-         setTimeout(() => { (<any>window).angular.resumeBootstrap(); }, 100);
+         setTimeout(() => {
+           (<any>window).angular.resumeBootstrap();
+         }, 100);
 
          expect(applicationRunning).toEqual(false);
          tick(100);
@@ -53,7 +57,9 @@ export function main() {
            let ng2Stable = false;
            let ng1Stable = false;
 
-           angular.getTestability(element).whenStable(() => { ng1Stable = true; });
+           angular.getTestability(element).whenStable(() => {
+             ng1Stable = true;
+           });
 
            setTimeout(() => {
              ng2Stable = true;

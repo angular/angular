@@ -7,7 +7,7 @@
  */
 
 // #docregion Component
-import {Component, NgModule, animate, state, style, transition, trigger} from '@angular/core';
+import {animate, Component, NgModule, state, style, transition, trigger} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
@@ -43,9 +43,15 @@ import {BrowserModule} from '@angular/platform-browser';
 })
 export class MyExpandoCmp {
   stateExpression: string;
-  constructor() { this.collapse(); }
-  expand() { this.stateExpression = 'expanded'; }
-  collapse() { this.stateExpression = 'collapsed'; }
+  constructor() {
+    this.collapse();
+  }
+  expand() {
+    this.stateExpression = 'expanded';
+  }
+  collapse() {
+    this.stateExpression = 'collapsed';
+  }
 }
 
 @NgModule({imports: [BrowserModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})

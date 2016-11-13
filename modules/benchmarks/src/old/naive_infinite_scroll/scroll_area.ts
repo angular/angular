@@ -9,7 +9,7 @@
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 
-import {HEIGHT, ITEMS, ITEM_HEIGHT, Offering, ROW_WIDTH, VIEW_PORT_HEIGHT, VISIBLE_ITEMS} from './common';
+import {HEIGHT, ITEM_HEIGHT, ITEMS, Offering, ROW_WIDTH, VIEW_PORT_HEIGHT, VISIBLE_ITEMS} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
 

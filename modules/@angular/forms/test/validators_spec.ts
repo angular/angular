@@ -37,31 +37,39 @@ export function main() {
 
   describe('Validators', () => {
     describe('required', () => {
-      it('should error on an empty string',
-         () => { expect(Validators.required(new FormControl(''))).toEqual({'required': true}); });
+      it('should error on an empty string', () => {
+        expect(Validators.required(new FormControl(''))).toEqual({'required': true});
+      });
 
-      it('should error on null',
-         () => { expect(Validators.required(new FormControl(null))).toEqual({'required': true}); });
+      it('should error on null', () => {
+        expect(Validators.required(new FormControl(null))).toEqual({'required': true});
+      });
 
-      it('should not error on a non-empty string',
-         () => { expect(Validators.required(new FormControl('not empty'))).toBeNull(); });
+      it('should not error on a non-empty string', () => {
+        expect(Validators.required(new FormControl('not empty'))).toBeNull();
+      });
 
-      it('should accept zero as valid',
-         () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
+      it('should accept zero as valid', () => {
+        expect(Validators.required(new FormControl(0))).toBeNull();
+      });
     });
 
     describe('minLength', () => {
-      it('should not error on an empty string',
-         () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });
+      it('should not error on an empty string', () => {
+        expect(Validators.minLength(2)(new FormControl(''))).toBeNull();
+      });
 
-      it('should not error on null',
-         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
+      it('should not error on null', () => {
+        expect(Validators.minLength(2)(new FormControl(null))).toBeNull();
+      });
 
-      it('should not error on undefined',
-         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
+      it('should not error on undefined', () => {
+        expect(Validators.minLength(2)(new FormControl(null))).toBeNull();
+      });
 
-      it('should not error on valid strings',
-         () => { expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull(); });
+      it('should not error on valid strings', () => {
+        expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull();
+      });
 
       it('should error on short strings', () => {
         expect(Validators.minLength(2)(new FormControl('a'))).toEqual({
@@ -71,14 +79,17 @@ export function main() {
     });
 
     describe('maxLength', () => {
-      it('should not error on an empty string',
-         () => { expect(Validators.maxLength(2)(new FormControl(''))).toBeNull(); });
+      it('should not error on an empty string', () => {
+        expect(Validators.maxLength(2)(new FormControl(''))).toBeNull();
+      });
 
-      it('should not error on null',
-         () => { expect(Validators.maxLength(2)(new FormControl(null))).toBeNull(); });
+      it('should not error on null', () => {
+        expect(Validators.maxLength(2)(new FormControl(null))).toBeNull();
+      });
 
-      it('should not error on valid strings',
-         () => { expect(Validators.maxLength(2)(new FormControl('aa'))).toBeNull(); });
+      it('should not error on valid strings', () => {
+        expect(Validators.maxLength(2)(new FormControl('aa'))).toBeNull();
+      });
 
       it('should error on long strings', () => {
         expect(Validators.maxLength(2)(new FormControl('aaa'))).toEqual({
@@ -88,17 +99,21 @@ export function main() {
     });
 
     describe('pattern', () => {
-      it('should not error on an empty string',
-         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(''))).toBeNull(); });
+      it('should not error on an empty string', () => {
+        expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(''))).toBeNull();
+      });
 
-      it('should not error on null',
-         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
+      it('should not error on null', () => {
+        expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull();
+      });
 
-      it('should not error on undefined',
-         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
+      it('should not error on undefined', () => {
+        expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull();
+      });
 
-      it('should not error on null value and "null" pattern',
-         () => { expect(Validators.pattern('null')(new FormControl(null))).toBeNull(); });
+      it('should not error on null value and "null" pattern', () => {
+        expect(Validators.pattern('null')(new FormControl(null))).toBeNull();
+      });
 
       it('should not error on valid strings',
          () => expect(Validators.pattern('[a-zA-Z ]*')(new FormControl('aaAA'))).toBeNull());
@@ -129,8 +144,9 @@ export function main() {
     });
 
     describe('compose', () => {
-      it('should return null when given null',
-         () => { expect(Validators.compose(null)).toBe(null); });
+      it('should return null when given null', () => {
+        expect(Validators.compose(null)).toBe(null);
+      });
 
       it('should collect errors from all the validators', () => {
         const c = Validators.compose([validator('a', true), validator('b', true)]);
@@ -163,15 +179,18 @@ export function main() {
             // this is required because of a bug in ObservableWrapper
             // where callComplete can fire before callEmit
             // remove this one the bug is fixed
-            setTimeout(() => { emitter.complete(); }, 0);
+            setTimeout(() => {
+              emitter.complete();
+            }, 0);
           });
 
           return emitter;
         };
       }
 
-      it('should return null when given null',
-         () => { expect(Validators.composeAsync(null)).toBeNull(); });
+      it('should return null when given null', () => {
+        expect(Validators.composeAsync(null)).toBeNull();
+      });
 
       it('should collect errors from all the validators', fakeAsync(() => {
            const c = Validators.composeAsync([

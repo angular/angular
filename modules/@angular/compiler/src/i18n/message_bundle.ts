@@ -40,11 +40,16 @@ export class MessageBundle {
       return i18nParserResult.errors;
     }
 
-    i18nParserResult.messages.forEach(
-        (message) => { this._messageMap[digestMessage(message)] = message; });
+    i18nParserResult.messages.forEach((message) => {
+      this._messageMap[digestMessage(message)] = message;
+    });
   }
 
-  getMessageMap(): {[id: string]: Message} { return this._messageMap; }
+  getMessageMap(): {[id: string]: Message} {
+    return this._messageMap;
+  }
 
-  write(serializer: Serializer): string { return serializer.write(this._messageMap); }
+  write(serializer: Serializer): string {
+    return serializer.write(this._messageMap);
+  }
 }

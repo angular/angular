@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {TableCell, emptyTable} from '../util';
+import {emptyTable, TableCell} from '../util';
 
 @Component({
   selector: 'largetable',
@@ -25,7 +25,9 @@ export class TableComponent {
   @Input()
   data: TableCell[][] = emptyTable;
 
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 }
 
 @NgModule({imports: [BrowserModule], bootstrap: [TableComponent], declarations: [TableComponent]})

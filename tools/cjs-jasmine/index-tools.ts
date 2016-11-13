@@ -42,15 +42,21 @@ if (globsIndex < 0) {
   args = process.argv.slice(globsIndex + 1);
 }
 
-var specFiles = args.map(function(globstr: string) { return glob.sync(globstr, {cwd: toolsDir}); })
+var specFiles = args.map(function(globstr: string) {
+                      return glob.sync(globstr, {cwd: toolsDir});
+                    })
                     .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), []);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 
 jrunner.configureDefaultReporter({showColors: process.argv.indexOf('--no-color') === -1});
 
-jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
+jrunner.onComplete(function(passed: boolean) {
+  process.exit(passed ? 0 : 1);
+});
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
-specFiles.forEach((file: string) => { toolsDirRequire(file); });
+specFiles.forEach((file: string) => {
+  toolsDirRequire(file);
+});
 jrunner.execute();

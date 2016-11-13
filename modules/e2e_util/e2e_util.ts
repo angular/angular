@@ -41,7 +41,9 @@ export function openBrowser(config: {
   }
 
   const urlParams: string[] = [];
-  params.forEach((param) => { urlParams.push(param.name + '=' + param.value); });
+  params.forEach((param) => {
+    urlParams.push(param.name + '=' + param.value);
+  });
   const url = encodeURI(config.url + '?' + urlParams.join('&'));
   browser.get(url);
   if (config.ignoreBrowserSynchronization) {

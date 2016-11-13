@@ -13,7 +13,9 @@ import {EventManagerPlugin} from './event_manager';
 export class DomEventsPlugin extends EventManagerPlugin {
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
-  supports(eventName: string): boolean { return true; }
+  supports(eventName: string): boolean {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     element.addEventListener(eventName, handler as any, false);

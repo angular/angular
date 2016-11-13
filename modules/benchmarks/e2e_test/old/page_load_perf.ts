@@ -29,7 +29,9 @@ describe('ng2 largetable benchmark', function() {
             benchpress.bind(benchpress.RegressionSlopeValidator.SAMPLE_SIZE).toValue(2),
             benchpress.bind(benchpress.RegressionSlopeValidator.METRIC).toValue('someConstant')
           ],
-          execute: () => { browser.get(URL); }
+          execute: () => {
+            browser.get(URL);
+          }
         })
         .then(report => {
           expect(report.completeSample.map(val => val.values.someConstant)

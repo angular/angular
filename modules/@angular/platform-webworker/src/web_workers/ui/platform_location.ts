@@ -59,5 +59,7 @@ export class MessageBasedPlatformLocation {
     this._channelSink.emit({'event': serializedEvent, 'location': loc});
   }
 
-  private _setPathname(pathname: string): void { this._platformLocation.pathname = pathname; }
+  private _setPathname(pathname: string): void {
+    this._platformLocation.pathname = pathname;
+  }
 }

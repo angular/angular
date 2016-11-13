@@ -37,7 +37,9 @@ export abstract class AnimationStateMetadata {}
  * @experimental Animation support is experimental.
  */
 export class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
-  constructor(public stateNameExpr: string, public styles: AnimationStyleMetadata) { super(); }
+  constructor(public stateNameExpr: string, public styles: AnimationStyleMetadata) {
+    super();
+  }
 }
 
 /**
@@ -48,7 +50,9 @@ export class AnimationStateDeclarationMetadata extends AnimationStateMetadata {
  * @experimental Animation support is experimental.
  */
 export class AnimationStateTransitionMetadata extends AnimationStateMetadata {
-  constructor(public stateChangeExpr: string, public steps: AnimationMetadata) { super(); }
+  constructor(public stateChangeExpr: string, public steps: AnimationMetadata) {
+    super();
+  }
 }
 
 /**
@@ -64,7 +68,9 @@ export abstract class AnimationMetadata {}
  * @experimental Animation support is experimental.
  */
 export class AnimationKeyframesSequenceMetadata extends AnimationMetadata {
-  constructor(public steps: AnimationStyleMetadata[]) { super(); }
+  constructor(public steps: AnimationStyleMetadata[]) {
+    super();
+  }
 }
 
 /**
@@ -100,8 +106,12 @@ export class AnimationAnimateMetadata extends AnimationMetadata {
  * @experimental Animation support is experimental.
  */
 export abstract class AnimationWithStepsMetadata extends AnimationMetadata {
-  constructor() { super(); }
-  get steps(): AnimationMetadata[] { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  constructor() {
+    super();
+  }
+  get steps(): AnimationMetadata[] {
+    throw new Error('NOT IMPLEMENTED: Base Class');
+  }
 }
 
 /**
@@ -112,8 +122,12 @@ export abstract class AnimationWithStepsMetadata extends AnimationMetadata {
  * @experimental Animation support is experimental.
  */
 export class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
-  constructor(private _steps: AnimationMetadata[]) { super(); }
-  get steps(): AnimationMetadata[] { return this._steps; }
+  constructor(private _steps: AnimationMetadata[]) {
+    super();
+  }
+  get steps(): AnimationMetadata[] {
+    return this._steps;
+  }
 }
 
 /**
@@ -124,8 +138,12 @@ export class AnimationSequenceMetadata extends AnimationWithStepsMetadata {
  * @experimental Animation support is experimental.
  */
 export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
-  constructor(private _steps: AnimationMetadata[]) { super(); }
-  get steps(): AnimationMetadata[] { return this._steps; }
+  constructor(private _steps: AnimationMetadata[]) {
+    super();
+  }
+  get steps(): AnimationMetadata[] {
+    return this._steps;
+  }
 }
 
 /**
@@ -181,8 +199,8 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
  * @experimental Animation support is experimental.
  */
 export function animate(
-    timing: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
-                                 null): AnimationAnimateMetadata {
+    timing: string|number, styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata =
+                               null): AnimationAnimateMetadata {
   let stylesEntry = styles;
   if (!isPresent(stylesEntry)) {
     const EMPTY_STYLE: {[key: string]: string | number} = {};
@@ -323,9 +341,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
  *
  * @experimental Animation support is experimental.
  */
-export function style(
-    tokens: string | {[key: string]: string | number} |
-    Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
+export function style(tokens: string|{[key: string]: string | number}|
+                      Array<string|{[key: string]: string | number}>): AnimationStyleMetadata {
   let input: Array<{[key: string]: string | number}|string>;
   let offset: number = null;
   if (typeof tokens === 'string') {
@@ -562,7 +579,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *
  * @experimental Animation support is experimental.
  */
-export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
+export function transition(stateChangeExpr: string, steps: AnimationMetadata|AnimationMetadata[]):
     AnimationStateTransitionMetadata {
   const animationData = Array.isArray(steps) ? new AnimationSequenceMetadata(steps) : steps;
   return new AnimationStateTransitionMetadata(stateChangeExpr, animationData);

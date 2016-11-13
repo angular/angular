@@ -109,8 +109,9 @@ export function main() {
         expect(animationUtils.clearStyles(styles)).toEqual(expectedResult);
       });
 
-      it('should handle an empty set of styles',
-         () => { expect(animationUtils.clearStyles({})).toEqual({}); });
+      it('should handle an empty set of styles', () => {
+        expect(animationUtils.clearStyles({})).toEqual({});
+      });
     });
 
     describe('collectAndResolveStyles', () => {

@@ -18,7 +18,9 @@ import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
   public log: {[key: string]: any}[] = [];
 
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   /** @internal */
   _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {

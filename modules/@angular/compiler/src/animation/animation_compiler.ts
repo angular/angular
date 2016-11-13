@@ -135,8 +135,11 @@ class _AnimationBuilder implements AnimationAstVisitor {
   visitAnimationStateDeclaration(
       ast: AnimationStateDeclarationAst, context: _AnimationBuilderContext): void {
     const flatStyles: {[key: string]: string | number} = {};
-    _getStylesArray(ast).forEach(
-        entry => { Object.keys(entry).forEach(key => { flatStyles[key] = entry[key]; }); });
+    _getStylesArray(ast).forEach(entry => {
+      Object.keys(entry).forEach(key => {
+        flatStyles[key] = entry[key];
+      });
+    });
     context.stateMap.registerState(ast.stateName, flatStyles);
   }
 
@@ -307,7 +310,9 @@ class _AnimationBuilder implements AnimationAstVisitor {
       let variableValue = EMPTY_MAP;
       if (isPresent(value)) {
         const styleMap: any[] = [];
-        Object.keys(value).forEach(key => { styleMap.push([key, o.literal(value[key])]); });
+        Object.keys(value).forEach(key => {
+          styleMap.push([key, o.literal(value[key])]);
+        });
         variableValue = o.literalMap(styleMap);
       }
       lookupMap.push([stateName, variableValue]);
@@ -329,7 +334,9 @@ class _AnimationBuilderContext {
 
 class _AnimationBuilderStateMap {
   private _states: {[key: string]: {[prop: string]: string | number}} = {};
-  get states() { return this._states; }
+  get states() {
+    return this._states;
+  }
   registerState(name: string, value: {[prop: string]: string | number} = null): void {
     const existingEntry = this._states[name];
     if (!existingEntry) {

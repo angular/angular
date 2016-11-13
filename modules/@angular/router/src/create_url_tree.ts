@@ -7,7 +7,7 @@
  */
 
 import {ActivatedRoute} from './router_state';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, shallowEqual} from './utils/collection';
 

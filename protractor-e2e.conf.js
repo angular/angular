@@ -24,7 +24,11 @@ var BROWSER_OPTIONS = {
 };
 
 exports.config = {
-  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
+  onPrepare: function() {
+    beforeEach(function() {
+      browser.ignoreSynchronization = false;
+    });
+  },
   allScriptsTimeout: 11000,
   specs: ['dist/all/**/e2e_test/**/*_spec.js'],
   exclude: [
@@ -36,7 +40,12 @@ exports.config = {
   directConnect: true,
   baseUrl: 'http://localhost:8000/',
   framework: 'jasmine2',
-  jasmineNodeOpts:
-      {showColors: true, defaultTimeoutInterval: 60000, print: function(msg) { console.log(msg) }},
+  jasmineNodeOpts: {
+    showColors: true,
+    defaultTimeoutInterval: 60000,
+    print: function(msg) {
+      console.log(msg)
+    }
+  },
   useAllAngular2AppRoots: true,
 };

@@ -39,10 +39,14 @@ export class NgTemplateOutlet implements OnChanges {
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   @Input()
-  set ngOutletContext(context: Object) { this._context = context; }
+  set ngOutletContext(context: Object) {
+    this._context = context;
+  }
 
   @Input()
-  set ngTemplateOutlet(templateRef: TemplateRef<Object>) { this._templateRef = templateRef; }
+  set ngTemplateOutlet(templateRef: TemplateRef<Object>) {
+    this._templateRef = templateRef;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this._viewRef) {

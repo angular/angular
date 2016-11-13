@@ -11,8 +11,9 @@ import {StringMapWrapper} from '../src/collection';
 export function main() {
   describe('StringMapWrapper', () => {
     describe('equals', () => {
-      it('should return true when comparing empty maps',
-         () => { expect(StringMapWrapper.equals({}, {})).toBe(true); });
+      it('should return true when comparing empty maps', () => {
+        expect(StringMapWrapper.equals({}, {})).toBe(true);
+      });
 
       it('should return true when comparing the same map', () => {
         const m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};

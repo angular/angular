@@ -37,7 +37,9 @@ export function main() {
       sampleResponse2 = new Response(new ResponseOptions({body: 'response2'}));
     });
 
-    it('should create a new MockBackend', () => { expect(backend).toBeAnInstanceOf(MockBackend); });
+    it('should create a new MockBackend', () => {
+      expect(backend).toBeAnInstanceOf(MockBackend);
+    });
 
     it('should create a new MockConnection', () => {
       expect(backend.createConnection(sampleRequest1)).toBeAnInstanceOf(MockConnection);
@@ -51,7 +53,9 @@ export function main() {
     it('should allow responding after subscription',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
          connection.mockRespond(sampleResponse1);
        }));
 
@@ -59,20 +63,26 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
          connection.mockRespond(sampleResponse1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
        }));
 
     it('should allow responding after subscription with an error',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(null, () => { async.done(); });
+         connection.response.subscribe(null, () => {
+           async.done();
+         });
          connection.mockError(new Error('nope'));
        }));
 
     it('should not throw when there are no unresolved requests',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
          connection.mockRespond(sampleResponse1);
          backend.verifyNoPendingRequests();
        }));
@@ -80,7 +90,9 @@ export function main() {
     xit('should throw when there are unresolved requests',
         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
           const connection: MockConnection = backend.createConnection(sampleRequest1);
-          connection.response.subscribe(() => { async.done(); });
+          connection.response.subscribe(() => {
+            async.done();
+          });
           backend.verifyNoPendingRequests();
         }));
 
@@ -88,7 +100,9 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection1: MockConnection = backend.createConnection(sampleRequest1);
          const connection2: MockConnection = backend.createConnection(sampleRequest1);
-         connection1.response.subscribe(() => { async.done(); });
+         connection1.response.subscribe(() => {
+           async.done();
+         });
          connection2.response.subscribe(() => {});
          connection2.mockRespond(sampleResponse1);
          connection1.mockRespond(sampleResponse1);

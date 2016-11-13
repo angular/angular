@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, animate, keyframes, state, style, transition, trigger} from '@angular/core';
+import {animate, Component, keyframes, state, style, transition, trigger} from '@angular/core';
 
 @Component({
   host: {
@@ -86,7 +86,9 @@ export class AnimateApp {
     alert(`backgroundAnimation has ${phase} from ${data['fromState']} to ${data['toState']}`);
   }
 
-  get state() { return this._state; }
+  get state() {
+    return this._state;
+  }
   set state(s) {
     this._state = s;
     if (s == 'void') {

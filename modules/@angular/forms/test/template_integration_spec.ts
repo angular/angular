@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, forwardRef} from '@angular/core';
-import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, forwardRef, Input} from '@angular/core';
+import {async, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -354,8 +354,9 @@ export function main() {
            fixture.detectChanges();
            tick();
 
-           form.get('name').valueChanges.subscribe(
-               () => { expect(form.get('name').dirty).toBe(true); });
+           form.get('name').valueChanges.subscribe(() => {
+             expect(form.get('name').dirty).toBe(true);
+           });
 
            const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
            inputEl.value = 'newValue';
@@ -378,8 +379,9 @@ export function main() {
 
            expect(form.get('name').pristine).toBe(false);
 
-           form.get('name').valueChanges.subscribe(
-               () => { expect(form.get('name').pristine).toBe(true); });
+           form.get('name').valueChanges.subscribe(() => {
+             expect(form.get('name').pristine).toBe(true);
+           });
 
            dispatchEvent(formEl, 'reset');
          }));
@@ -1090,13 +1092,19 @@ class NgModelCustomComp implements ControlValueAccessor {
   @Input('disabled') isDisabled: boolean = false;
   changeFn: (value: any) => void;
 
-  writeValue(value: any) { this.model = value; }
+  writeValue(value: any) {
+    this.model = value;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.changeFn = fn;
+  }
 
   registerOnTouched() {}
 
-  setDisabledState(isDisabled: boolean) { this.isDisabled = isDisabled; }
+  setDisabledState(isDisabled: boolean) {
+    this.isDisabled = isDisabled;
+  }
 }
 
 @Component({
@@ -1151,7 +1159,9 @@ class NgModelMultipleValidators {
   ]
 })
 class NgAsyncValidator implements Validator {
-  validate(c: AbstractControl) { return Promise.resolve(null); }
+  validate(c: AbstractControl) {
+    return Promise.resolve(null);
+  }
 }
 
 @Component({

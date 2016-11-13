@@ -133,7 +133,7 @@ class Unparser implements AstVisitor {
 
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {
     if (typeof ast.value === 'string') {
-      this._expression += `"${ast.value.replace( Unparser._quoteRegExp,  '\"')}"`;
+      this._expression += `"${ast.value.replace(Unparser._quoteRegExp, '\"')}"`;
     } else {
       this._expression += `${ast.value}`;
     }
@@ -177,7 +177,9 @@ class Unparser implements AstVisitor {
     this._expression += `${ast.prefix}:${ast.uninterpretedExpression}`;
   }
 
-  private _visit(ast: AST) { ast.visit(this); }
+  private _visit(ast: AST) {
+    ast.visit(this);
+  }
 }
 
 const sharedUnparser = new Unparser();

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, Injectable, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {Compiler, COMPILER_OPTIONS, CompilerFactory, CompilerOptions, createPlatformFactory, Inject, Injectable, isDevMode, Optional, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation} from '@angular/core';
 
 import {AnimationParser} from './animation/animation_parser';
 import {CompilerConfig} from './config';
@@ -21,7 +21,7 @@ import {HtmlParser} from './ml_parser/html_parser';
 import {NgModuleCompiler} from './ng_module_compiler';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {Console, ReflectionCapabilities, Reflector, ReflectorReader, reflector} from './private_import_core';
+import {Console, ReflectionCapabilities, Reflector, reflector, ReflectorReader} from './private_import_core';
 import {ResourceLoader} from './resource_loader';
 import {RuntimeCompiler} from './runtime_compiler';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';

@@ -9,15 +9,15 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {TreeNode, emptyTree, maxDepth} from '../util';
+import {emptyTree, maxDepth, TreeNode} from '../util';
 
 function createTreeComponent(level: number, isLeaf: boolean) {
-  const nextTreeEl = `tree${level+1}`;
+  const nextTreeEl = `tree${level + 1}`;
   let template =
       `<span [style.backgroundColor]="data.depth % 2 ? '' : 'grey'"> {{data.value}} </span>`;
   if (!isLeaf) {
-    template +=
-        `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
+    template += `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl
+                } [data]='data.left'></${nextTreeEl}>`;
   }
 
   @Component({selector: `tree${level}`, template: template})

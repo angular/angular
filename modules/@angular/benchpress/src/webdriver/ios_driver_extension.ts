@@ -16,9 +16,13 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 export class IOsDriverExtension extends WebDriverExtension {
   static PROVIDERS = [IOsDriverExtension];
 
-  constructor(private _driver: WebDriverAdapter) { super(); }
+  constructor(private _driver: WebDriverAdapter) {
+    super();
+  }
 
-  gc(): Promise<any> { throw new Error('Force GC is not supported on iOS'); }
+  gc(): Promise<any> {
+    throw new Error('Force GC is not supported on iOS');
+  }
 
   timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);
@@ -86,15 +90,16 @@ export class IOsDriverExtension extends WebDriverExtension {
     return events;
   }
 
-  perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true}); }
+  perfLogFeatures(): PerfLogFeatures {
+    return new PerfLogFeatures({render: true});
+  }
 
   supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browserName'].toLowerCase() === 'safari';
   }
 }
 
-function createEvent(
-    ph: 'X' | 'B' | 'E' | 'B' | 'E', name: string, time: number, args: any = null) {
+function createEvent(ph: 'X'|'B'|'E'|'B'|'E', name: string, time: number, args: any = null) {
   const result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,

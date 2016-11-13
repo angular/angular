@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable, Input} from '@angular/core';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
+import {async, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -15,7 +15,9 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 @Injectable()
 class SimpleComp {
   simpleBinding: string;
-  constructor() { this.simpleBinding = 'Simple'; }
+  constructor() {
+    this.simpleBinding = 'Simple';
+  }
 }
 
 @Component({
@@ -31,7 +33,9 @@ class MyIfComp {
 class AutoDetectComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -39,7 +43,9 @@ class AsyncComp {
   text: string = '1';
 
   click() {
-    Promise.resolve(null).then((_) => { this.text += '1'; });
+    Promise.resolve(null).then((_) => {
+      this.text += '1';
+    });
   }
 }
 
@@ -49,7 +55,9 @@ class AsyncChildComp {
 
   @Input()
   set text(value: string) {
-    Promise.resolve(null).then((_) => { this.localText = value; });
+    Promise.resolve(null).then((_) => {
+      this.localText = value;
+    });
   }
 }
 
@@ -60,7 +68,9 @@ class AsyncChildComp {
 class AsyncChangeComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-timeout-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -68,7 +78,9 @@ class AsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { this.text += '1'; }, 10);
+    setTimeout(() => {
+      this.text += '1';
+    }, 10);
   }
 }
 
@@ -78,7 +90,11 @@ class NestedAsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { setTimeout(() => { this.text += '1'; }, 10); }, 10);
+    setTimeout(() => {
+      setTimeout(() => {
+        this.text += '1';
+      }, 10);
+    }, 10);
   }
 }
 
@@ -255,8 +271,9 @@ export function main() {
            const element = componentFixture.debugElement.children[0];
            dispatchEvent(element.nativeElement, 'click');
 
-           componentFixture.whenStable().then(
-               (_) => { expect(componentFixture.nativeElement).toHaveText('11'); });
+           componentFixture.whenStable().then((_) => {
+             expect(componentFixture.nativeElement).toHaveText('11');
+           });
          });
        }));
 

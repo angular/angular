@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
-import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../src/localization';
+import {getPluralCategory, NgLocaleLocalization, NgLocalization} from '../src/localization';
 
 
 export function main() {

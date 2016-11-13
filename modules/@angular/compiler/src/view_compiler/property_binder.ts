@@ -9,7 +9,7 @@
 import {SecurityContext} from '@angular/core';
 
 import {createCheckBindingField, createCheckBindingStmt} from '../compiler_util/binding_util';
-import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
+import {convertPropertyBinding, ConvertPropertyBindingResult} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {triggerAnimation, writeToRenderer} from '../compiler_util/render_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
@@ -18,6 +18,7 @@ import * as o from '../output/output_ast';
 import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
+
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
 import {DetectChangesVars} from './constants';
@@ -99,7 +100,8 @@ export function bindDirectiveHostProps(
                 break;
               default:
                 throw new Error(
-                    `Illegal state: Only property / attribute bindings can have an unknown security context! Binding ${boundProp.name}`);
+                    `Illegal state: Only property / attribute bindings can have an unknown security context! Binding ${boundProp
+                        .name}`);
             }
             return createEnumExpression(Identifiers.SecurityContext, ctx);
           });

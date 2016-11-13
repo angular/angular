@@ -1860,15 +1860,11 @@
       "dev": true
     },
     "clang-format": {
-      "version": "1.0.41",
+      "version": "1.0.45",
       "dev": true,
       "dependencies": {
         "async": {
           "version": "1.5.2",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.0.3",
           "dev": true
         }
       }
@@ -2768,10 +2764,6 @@
           "version": "1.0.0-rc4",
           "dev": true
         },
-        "fs.realpath": {
-          "version": "1.0.0",
-          "dev": true
-        },
         "fstream": {
           "version": "1.0.10",
           "dev": true
@@ -2801,10 +2793,6 @@
               "dev": true
             }
           }
-        },
-        "glob": {
-          "version": "7.0.5",
-          "dev": true
         },
         "graceful-fs": {
           "version": "4.1.4",
@@ -2840,10 +2828,6 @@
         },
         "http-signature": {
           "version": "1.1.1",
-          "dev": true
-        },
-        "inflight": {
-          "version": "1.0.5",
           "dev": true
         },
         "inherits": {
@@ -2958,10 +2942,6 @@
         },
         "once": {
           "version": "1.3.3",
-          "dev": true
-        },
-        "path-is-absolute": {
-          "version": "1.0.0",
           "dev": true
         },
         "pinkie": {
@@ -3208,14 +3188,8 @@
       "dev": true
     },
     "glob": {
-      "version": "4.5.3",
-      "dev": true,
-      "dependencies": {
-        "minimatch": {
-          "version": "2.0.10",
-          "dev": true
-        }
-      }
+      "version": "7.1.1",
+      "dev": true
     },
     "glob-base": {
       "version": "0.3.0",
@@ -3229,6 +3203,10 @@
       "version": "3.1.18",
       "dev": true,
       "dependencies": {
+        "glob": {
+          "version": "4.5.3",
+          "dev": true
+        },
         "minimatch": {
           "version": "2.0.10",
           "dev": true
@@ -3245,13 +3223,7 @@
     },
     "globby": {
       "version": "5.0.0",
-      "dev": true,
-      "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "dev": true
-        }
-      }
+      "dev": true
     },
     "globule": {
       "version": "0.1.0",
@@ -3887,10 +3859,6 @@
       "dependencies": {
         "batch": {
           "version": "0.5.3",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.0.3",
           "dev": true
         },
         "graceful-fs": {
@@ -4663,10 +4631,6 @@
         },
         "@types/node": {
           "version": "6.0.46",
-          "dev": true
-        },
-        "glob": {
-          "version": "7.1.1",
           "dev": true
         },
         "mime-db": {
@@ -5474,10 +5438,6 @@
       "version": "3.15.1",
       "dev": true,
       "dependencies": {
-        "glob": {
-          "version": "7.1.1",
-          "dev": true
-        },
         "resolve": {
           "version": "1.1.7",
           "dev": true

@@ -19,7 +19,7 @@ import {ViewType} from '../private_import_core';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
-import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
+import {addQueryToTokenMap, CompileQuery, createQueryList} from './compile_query';
 import {getPropertyInView, getViewClassName} from './util';
 
 export enum CompileViewRootNodeType {
@@ -122,8 +122,9 @@ export class CompileView implements NameResolver {
       });
     }
     this.viewQueries = viewQueries;
-    templateVariableBindings.forEach(
-        (entry) => { this.locals.set(entry[1], o.THIS_EXPR.prop('context').prop(entry[0])); });
+    templateVariableBindings.forEach((entry) => {
+      this.locals.set(entry[1], o.THIS_EXPR.prop('context').prop(entry[0]));
+    });
 
     if (!this.declarationElement.isNull()) {
       this.declarationElement.setEmbeddedView(this);

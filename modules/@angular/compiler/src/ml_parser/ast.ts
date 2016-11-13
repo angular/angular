@@ -15,14 +15,18 @@ export interface Node {
 
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitText(this, context);
+  }
 }
 
 export class Expansion implements Node {
   constructor(
       public switchValue: string, public type: string, public cases: ExpansionCase[],
       public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansion(this, context);
+  }
 }
 
 export class ExpansionCase implements Node {
@@ -30,14 +34,18 @@ export class ExpansionCase implements Node {
       public value: string, public expression: Node[], public sourceSpan: ParseSourceSpan,
       public valueSourceSpan: ParseSourceSpan, public expSourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansionCase(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansionCase(this, context);
+  }
 }
 
 export class Attribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitAttribute(this, context);
+  }
 }
 
 export class Element implements Node {
@@ -45,12 +53,16 @@ export class Element implements Node {
       public name: string, public attrs: Attribute[], public children: Node[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
       public endSourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitElement(this, context);
+  }
 }
 
 export class Comment implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitComment(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitComment(this, context);
+  }
 }
 
 export interface Visitor {

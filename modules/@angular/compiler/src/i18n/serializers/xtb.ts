@@ -15,7 +15,7 @@ import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToIds, extractPlaceholders} from './serializer';
+import {extractPlaceholders, extractPlaceholderToIds, Serializer} from './serializer';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
@@ -24,7 +24,9 @@ const _PLACEHOLDER_TAG = 'ph';
 export class Xtb implements Serializer {
   constructor(private _htmlParser: HtmlParser, private _interpolationConfig: InterpolationConfig) {}
 
-  write(messageMap: {[id: string]: i18n.Message}): string { throw new Error('Unsupported'); }
+  write(messageMap: {[id: string]: i18n.Message}): string {
+    throw new Error('Unsupported');
+  }
 
   load(content: string, url: string, messageBundle: MessageBundle): {[id: string]: ml.Node[]} {
     // Parse the xtb file into xml nodes
@@ -173,9 +175,13 @@ class _Visitor implements ml.Visitor {
     throw new Error('unreachable code');
   }
 
-  visitText(text: ml.Text, context: any): any { return text.value; }
+  visitText(text: ml.Text, context: any): any {
+    return text.value;
+  }
 
-  visitComment(comment: ml.Comment, context: any): any { return ''; }
+  visitComment(comment: ml.Comment, context: any): any {
+    return '';
+  }
 
   visitExpansion(expansion: ml.Expansion, context: any): any {
     const strCases = expansion.cases.map(c => c.visit(this, null));

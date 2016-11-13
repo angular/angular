@@ -23,7 +23,9 @@ const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';
 
 export function main() {
   describe('DirectiveNormalizer', () => {
-    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+    });
 
     describe('normalizeDirective', () => {
       it('should throw if no template was specified',

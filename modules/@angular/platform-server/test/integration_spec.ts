@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, NgModule} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {ServerModule, platformDynamicServer} from '@angular/platform-server';
+import {platformDynamicServer, ServerModule} from '@angular/platform-server';
 
 function writeBody(html: string): any {
   const dom = getDOM();

@@ -41,9 +41,13 @@ export class SampleDescription {
       public metrics: {[key: string]: any}) {
     this.description = {};
     descriptions.forEach(description => {
-      Object.keys(description).forEach(prop => { this.description[prop] = description[prop]; });
+      Object.keys(description).forEach(prop => {
+        this.description[prop] = description[prop];
+      });
     });
   }
 
-  toJson() { return {'id': this.id, 'description': this.description, 'metrics': this.metrics}; }
+  toJson() {
+    return {'id': this.id, 'description': this.description, 'metrics': this.metrics};
+  }
 }

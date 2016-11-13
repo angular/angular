@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberWrapper, escapeRegExp} from '../src/lang';
+import {escapeRegExp, NumberWrapper} from '../src/lang';
 
 export function main() {
   describe('RegExp', () => {
@@ -21,23 +21,29 @@ export function main() {
 
   describe('Number', () => {
     describe('isNumeric', () => {
-      it('should return true when passing correct numeric string',
-         () => { expect(NumberWrapper.isNumeric('2')).toBe(true); });
+      it('should return true when passing correct numeric string', () => {
+        expect(NumberWrapper.isNumeric('2')).toBe(true);
+      });
 
-      it('should return true when passing correct double string',
-         () => { expect(NumberWrapper.isNumeric('1.123')).toBe(true); });
+      it('should return true when passing correct double string', () => {
+        expect(NumberWrapper.isNumeric('1.123')).toBe(true);
+      });
 
-      it('should return true when passing correct negative string',
-         () => { expect(NumberWrapper.isNumeric('-2')).toBe(true); });
+      it('should return true when passing correct negative string', () => {
+        expect(NumberWrapper.isNumeric('-2')).toBe(true);
+      });
 
-      it('should return true when passing correct scientific notation string',
-         () => { expect(NumberWrapper.isNumeric('1e5')).toBe(true); });
+      it('should return true when passing correct scientific notation string', () => {
+        expect(NumberWrapper.isNumeric('1e5')).toBe(true);
+      });
 
-      it('should return false when passing incorrect numeric',
-         () => { expect(NumberWrapper.isNumeric('a')).toBe(false); });
+      it('should return false when passing incorrect numeric', () => {
+        expect(NumberWrapper.isNumeric('a')).toBe(false);
+      });
 
-      it('should return false when passing parseable but non numeric',
-         () => { expect(NumberWrapper.isNumeric('2a')).toBe(false); });
+      it('should return false when passing parseable but non numeric', () => {
+        expect(NumberWrapper.isNumeric('2a')).toBe(false);
+      });
     });
   });
 }

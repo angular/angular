@@ -13,13 +13,21 @@ import {getTypeNameForDebugging} from '../facade/lang';
 export class NgForRow {
   constructor(public $implicit: any, public index: number, public count: number) {}
 
-  get first(): boolean { return this.index === 0; }
+  get first(): boolean {
+    return this.index === 0;
+  }
 
-  get last(): boolean { return this.index === this.count - 1; }
+  get last(): boolean {
+    return this.index === this.count - 1;
+  }
 
-  get even(): boolean { return this.index % 2 === 0; }
+  get even(): boolean {
+    return this.index % 2 === 0;
+  }
 
-  get odd(): boolean { return !this.even; }
+  get odd(): boolean {
+    return !this.even;
+  }
 }
 
 /**
@@ -113,7 +121,8 @@ export class NgFor implements DoCheck, OnChanges {
           this._differ = this._differs.find(value).create(this._cdr, this.ngForTrackBy);
         } catch (e) {
           throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(
+                  value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }

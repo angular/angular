@@ -17,7 +17,9 @@ import {unparse} from './unparser';
 import {validate} from './validator';
 
 export function main() {
-  function createParser() { return new Parser(new Lexer()); }
+  function createParser() {
+    return new Parser(new Lexer());
+  }
 
   function parseAction(text: string, location: any = null): ASTWithSource {
     return createParser().parseAction(text, location);
@@ -91,16 +93,22 @@ export function main() {
 
   describe('parser', () => {
     describe('parseAction', () => {
-      it('should parse numbers', () => { checkAction('1'); });
+      it('should parse numbers', () => {
+        checkAction('1');
+      });
 
       it('should parse strings', () => {
         checkAction('\'1\'', '"1"');
         checkAction('"1"');
       });
 
-      it('should parse null', () => { checkAction('null'); });
+      it('should parse null', () => {
+        checkAction('null');
+      });
 
-      it('should parse undefined', () => { checkAction('undefined'); });
+      it('should parse undefined', () => {
+        checkAction('undefined');
+      });
 
       it('should parse unary - expressions', () => {
         checkAction('-1', '0 - 1');
@@ -113,10 +121,13 @@ export function main() {
         checkAction('!!!true');
       });
 
-      it('should parse multiplicative expressions',
-         () => { checkAction('3*4/2%5', '3 * 4 / 2 % 5'); });
+      it('should parse multiplicative expressions', () => {
+        checkAction('3*4/2%5', '3 * 4 / 2 % 5');
+      });
 
-      it('should parse additive expressions', () => { checkAction('3 + 6 - 2'); });
+      it('should parse additive expressions', () => {
+        checkAction('3 + 6 - 2');
+      });
 
       it('should parse relational expressions', () => {
         checkAction('2 < 3');
@@ -140,14 +151,21 @@ export function main() {
         checkAction('true || false');
       });
 
-      it('should parse grouped expressions', () => { checkAction('(1 + 2) * 3', '1 + 2 * 3'); });
+      it('should parse grouped expressions', () => {
+        checkAction('(1 + 2) * 3', '1 + 2 * 3');
+      });
 
-      it('should ignore comments in expressions', () => { checkAction('a //comment', 'a'); });
+      it('should ignore comments in expressions', () => {
+        checkAction('a //comment', 'a');
+      });
 
-      it('should retain // in string literals',
-         () => { checkAction(`"http://www.google.com"`, `"http://www.google.com"`); });
+      it('should retain // in string literals', () => {
+        checkAction(`"http://www.google.com"`, `"http://www.google.com"`);
+      });
 
-      it('should parse an empty string', () => { checkAction(''); });
+      it('should parse an empty string', () => {
+        checkAction('');
+      });
 
       describe('literals', () => {
         it('should parse array', () => {
@@ -199,7 +217,9 @@ export function main() {
       });
 
       describe('functional calls', () => {
-        it('should parse function calls', () => { checkAction('fn()(1, 2)'); });
+        it('should parse function calls', () => {
+          checkAction('fn()(1, 2)');
+        });
       });
 
       describe('conditional', () => {
@@ -220,20 +240,26 @@ export function main() {
           checkAction('a = 123; b = 234;');
         });
 
-        it('should report on safe field assignments',
-           () => { expectActionError('a?.a = 123', 'cannot be used in the assignment'); });
+        it('should report on safe field assignments', () => {
+          expectActionError('a?.a = 123', 'cannot be used in the assignment');
+        });
 
-        it('should support array updates', () => { checkAction('a[0] = 200'); });
+        it('should support array updates', () => {
+          checkAction('a[0] = 200');
+        });
       });
 
-      it('should error when using pipes',
-         () => { expectActionError('x|blah', 'Cannot have a pipe'); });
+      it('should error when using pipes', () => {
+        expectActionError('x|blah', 'Cannot have a pipe');
+      });
 
-      it('should store the source in the result',
-         () => { expect(parseAction('someExpr', 'someExpr')); });
+      it('should store the source in the result', () => {
+        expect(parseAction('someExpr', 'someExpr'));
+      });
 
-      it('should store the passed-in location',
-         () => { expect(parseAction('someExpr', 'location').location).toBe('location'); });
+      it('should store the passed-in location', () => {
+        expect(parseAction('someExpr', 'location').location).toBe('location');
+      });
 
       it('should report when encountering interpolation', () => {
         expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
@@ -241,11 +267,13 @@ export function main() {
     });
 
     describe('general error handling', () => {
-      it('should report an unexpected token',
-         () => { expectActionError('[1,2] trac', 'Unexpected token \'trac\''); });
+      it('should report an unexpected token', () => {
+        expectActionError('[1,2] trac', 'Unexpected token \'trac\'');
+      });
 
-      it('should report reasonable error for unconsumed tokens',
-         () => { expectActionError(')', 'Unexpected token ) at column 1 in [)]'); });
+      it('should report reasonable error for unconsumed tokens', () => {
+        expectActionError(')', 'Unexpected token ) at column 1 in [)]');
+      });
 
       it('should report a missing expected token', () => {
         expectActionError('a(b', 'Missing expected ) at the end of the expression [a(b]');
@@ -272,12 +300,17 @@ export function main() {
           expectBindingError('"Foo"|"uppercase"', 'identifier or keyword');
         });
 
-        it('should parse quoted expressions', () => { checkBinding('a:b', 'a:b'); });
+        it('should parse quoted expressions', () => {
+          checkBinding('a:b', 'a:b');
+        });
 
-        it('should not crash when prefix part is not tokenizable',
-           () => { checkBinding('"a:b"', '"a:b"'); });
+        it('should not crash when prefix part is not tokenizable', () => {
+          checkBinding('"a:b"', '"a:b"');
+        });
 
-        it('should ignore whitespace around quote prefix', () => { checkBinding(' a :b', 'a:b'); });
+        it('should ignore whitespace around quote prefix', () => {
+          checkBinding(' a :b', 'a:b');
+        });
 
         it('should refuse prefixes that are not single identifiers', () => {
           expectBindingError('a + b:c', '');
@@ -285,30 +318,41 @@ export function main() {
         });
       });
 
-      it('should store the source in the result',
-         () => { expect(parseBinding('someExpr').source).toBe('someExpr'); });
+      it('should store the source in the result', () => {
+        expect(parseBinding('someExpr').source).toBe('someExpr');
+      });
 
-      it('should store the passed-in location',
-         () => { expect(parseBinding('someExpr', 'location').location).toBe('location'); });
+      it('should store the passed-in location', () => {
+        expect(parseBinding('someExpr', 'location').location).toBe('location');
+      });
 
-      it('should report chain expressions',
-         () => { expectError(parseBinding('1;2'), 'contain chained expression'); });
+      it('should report chain expressions', () => {
+        expectError(parseBinding('1;2'), 'contain chained expression');
+      });
 
-      it('should report assignment',
-         () => { expectError(parseBinding('a=2'), 'contain assignments'); });
+      it('should report assignment', () => {
+        expectError(parseBinding('a=2'), 'contain assignments');
+      });
 
       it('should report when encountering interpolation', () => {
         expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
       });
 
-      it('should parse conditional expression', () => { checkBinding('a < b ? a : b'); });
+      it('should parse conditional expression', () => {
+        checkBinding('a < b ? a : b');
+      });
 
-      it('should ignore comments in bindings', () => { checkBinding('a //comment', 'a'); });
+      it('should ignore comments in bindings', () => {
+        checkBinding('a //comment', 'a');
+      });
 
-      it('should retain // in string literals',
-         () => { checkBinding(`"http://www.google.com"`, `"http://www.google.com"`); });
+      it('should retain // in string literals', () => {
+        checkBinding(`"http://www.google.com"`, `"http://www.google.com"`);
+      });
 
-      it('should retain // in : microsyntax', () => { checkBinding('one:a//b', 'one:a//b'); });
+      it('should retain // in : microsyntax', () => {
+        checkBinding('one:a//b', 'one:a//b');
+      });
 
     });
 
@@ -338,10 +382,13 @@ export function main() {
             binding => isPresent(binding.expression) ? binding.expression.source : null);
       }
 
-      it('should parse an empty string', () => { expect(parseTemplateBindings('')).toEqual([]); });
+      it('should parse an empty string', () => {
+        expect(parseTemplateBindings('')).toEqual([]);
+      });
 
-      it('should parse a string without a value',
-         () => { expect(keys(parseTemplateBindings('a'))).toEqual(['a']); });
+      it('should parse a string without a value', () => {
+        expect(keys(parseTemplateBindings('a'))).toEqual(['a']);
+      });
 
       it('should only allow identifier, string, or keyword including dashes as keys', () => {
         let bindings = parseTemplateBindings('a:\'b\'');
@@ -462,8 +509,9 @@ export function main() {
     });
 
     describe('parseInterpolation', () => {
-      it('should return null if no interpolation',
-         () => { expect(parseInterpolation('nothing')).toBe(null); });
+      it('should return null if no interpolation', () => {
+        expect(parseInterpolation('nothing')).toBe(null);
+      });
 
       it('should parse no prefix/suffix interpolation', () => {
         const ast = parseInterpolation('{{a}}').ast as Interpolation;
@@ -489,8 +537,9 @@ export function main() {
             'Parser Error: Blank expressions are not allowed in interpolated strings');
       });
 
-      it('should parse conditional expression',
-         () => { checkInterpolation('{{ a < b ? a : b }}'); });
+      it('should parse conditional expression', () => {
+        checkInterpolation('{{ a < b ? a : b }}');
+      });
 
       it('should parse expression with newline characters', () => {
         checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
@@ -505,8 +554,9 @@ export function main() {
       });
 
       describe('comments', () => {
-        it('should ignore comments in interpolation expressions',
-           () => { checkInterpolation('{{a //comment}}', '{{ a }}'); });
+        it('should ignore comments in interpolation expressions', () => {
+          checkInterpolation('{{a //comment}}', '{{ a }}');
+        });
 
         it('should retain // in single quote strings', () => {
           checkInterpolation(`{{ 'http://www.google.com' }}`, `{{ "http://www.google.com" }}`);
@@ -516,16 +566,18 @@ export function main() {
           checkInterpolation(`{{ "http://www.google.com" }}`, `{{ "http://www.google.com" }}`);
         });
 
-        it('should ignore comments after string literals',
-           () => { checkInterpolation(`{{ "a//b" //comment }}`, `{{ "a//b" }}`); });
+        it('should ignore comments after string literals', () => {
+          checkInterpolation(`{{ "a//b" //comment }}`, `{{ "a//b" }}`);
+        });
 
         it('should retain // in complex strings', () => {
           checkInterpolation(
               `{{"//a\'//b\`//c\`//d\'//e" //comment}}`, `{{ "//a\'//b\`//c\`//d\'//e" }}`);
         });
 
-        it('should retain // in nested, unterminated strings',
-           () => { checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`); });
+        it('should retain // in nested, unterminated strings', () => {
+          checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
+        });
       });
 
     });

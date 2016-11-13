@@ -17,7 +17,9 @@ export function main() {
       it('should call next with values',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
-           const o = new Observable((sink: any /** TODO #9100 */) => { sink.next(1); });
+           const o = new Observable((sink: any /** TODO #9100 */) => {
+             sink.next(1);
+           });
 
            o.subscribe(v => {
              expect(v).toEqual(1);
@@ -36,7 +38,10 @@ export function main() {
            let nexted = false;
 
            o.subscribe(
-               v => { nexted = true; }, null,
+               v => {
+                 nexted = true;
+               },
+               null,
                () => {
                  expect(nexted).toBe(true);
                  async.done();
@@ -47,7 +52,9 @@ export function main() {
       it('should call error with errors',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
 
-           const o = new Observable((sink: any /** TODO #9100 */) => { sink.error('oh noes!'); });
+           const o = new Observable((sink: any /** TODO #9100 */) => {
+             sink.error('oh noes!');
+           });
 
            o.subscribe(
                v => {

@@ -23,11 +23,15 @@ class _ValueOutputAstTransformer implements ValueTransformer {
 
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
     const entries: [string, o.Expression][] = [];
-    Object.keys(map).forEach(key => { entries.push([key, visitValue(map[key], this, null)]); });
+    Object.keys(map).forEach(key => {
+      entries.push([key, visitValue(map[key], this, null)]);
+    });
     return o.literalMap(entries, type);
   }
 
-  visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
+  visitPrimitive(value: any, type: o.Type): o.Expression {
+    return o.literal(value, type);
+  }
 
   visitOther(value: any, type: o.Type): o.Expression {
     if (value instanceof CompileIdentifierMetadata) {

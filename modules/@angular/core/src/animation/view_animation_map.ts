@@ -42,7 +42,9 @@ export class ViewAnimationMap {
     this._map.set(element, playersByAnimation);
   }
 
-  getAllPlayers(): AnimationPlayer[] { return this._allPlayers; }
+  getAllPlayers(): AnimationPlayer[] {
+    return this._allPlayers;
+  }
 
   remove(element: any, animationName: string): void {
     const playersByAnimation = this._map.get(element);

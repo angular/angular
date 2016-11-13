@@ -27,18 +27,24 @@ export abstract class NgModuleRef<T> {
   /**
    * The injector that contains all of the providers of the NgModule.
    */
-  get injector(): Injector { return unimplemented(); }
+  get injector(): Injector {
+    return unimplemented();
+  }
 
   /**
    * The ComponentFactoryResolver to get hold of the ComponentFactories
    * declared in the `entryComponents` property of the module.
    */
-  get componentFactoryResolver(): ComponentFactoryResolver { return unimplemented(); }
+  get componentFactoryResolver(): ComponentFactoryResolver {
+    return unimplemented();
+  }
 
   /**
    * The NgModule instance.
    */
-  get instance(): T { return unimplemented(); }
+  get instance(): T {
+    return unimplemented();
+  }
 
   /**
    * Destroys the module instance and all of the data structures associated with it.
@@ -59,7 +65,9 @@ export class NgModuleFactory<T> {
       private _injectorClass: {new (parentInjector: Injector): NgModuleInjector<T>},
       private _moduleType: Type<T>) {}
 
-  get moduleType(): Type<T> { return this._moduleType; }
+  get moduleType(): Type<T> {
+    return this._moduleType;
+  }
 
   create(parentInjector: Injector): NgModuleRef<T> {
     if (!parentInjector) {
@@ -74,8 +82,7 @@ export class NgModuleFactory<T> {
 const _UNDEFINED = new Object();
 
 export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolver implements
-    Injector,
-    NgModuleRef<T> {
+    Injector, NgModuleRef<T> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
 
@@ -87,7 +94,9 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
     super(factories, parent.get(ComponentFactoryResolver, ComponentFactoryResolver.NULL));
   }
 
-  create() { this.instance = this.createInternal(); }
+  create() {
+    this.instance = this.createInternal();
+  }
 
   abstract createInternal(): T;
 
@@ -101,9 +110,13 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
 
   abstract getInternal(token: any, notFoundValue: any): any;
 
-  get injector(): Injector { return this; }
+  get injector(): Injector {
+    return this;
+  }
 
-  get componentFactoryResolver(): ComponentFactoryResolver { return this; }
+  get componentFactoryResolver(): ComponentFactoryResolver {
+    return this;
+  }
 
   destroy(): void {
     if (this._destroyed) {
@@ -115,7 +128,9 @@ export abstract class NgModuleInjector<T> extends CodegenComponentFactoryResolve
     this._destroyListeners.forEach((listener) => listener());
   }
 
-  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
+  onDestroy(callback: () => void): void {
+    this._destroyListeners.push(callback);
+  }
 
   abstract destroyInternal(): void;
 }

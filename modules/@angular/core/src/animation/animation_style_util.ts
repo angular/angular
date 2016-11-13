@@ -89,7 +89,9 @@ export function balanceAnimationKeyframes(
 
 export function clearStyles(styles: {[key: string]: string | number}): {[key: string]: string} {
   const finalStyles: {[key: string]: string} = {};
-  Object.keys(styles).forEach(key => { finalStyles[key] = null; });
+  Object.keys(styles).forEach(key => {
+    finalStyles[key] = null;
+  });
   return finalStyles;
 }
 
@@ -114,13 +116,17 @@ export function collectAndResolveStyles(
 
 export function renderStyles(
     element: any, renderer: any, styles: {[key: string]: string | number}): void {
-  Object.keys(styles).forEach(prop => { renderer.setElementStyle(element, prop, styles[prop]); });
+  Object.keys(styles).forEach(prop => {
+    renderer.setElementStyle(element, prop, styles[prop]);
+  });
 }
 
 export function flattenStyles(styles: {[key: string]: string | number}[]): {[key: string]: string} {
   const finalStyles: {[key: string]: string} = {};
   styles.forEach(entry => {
-    Object.keys(entry).forEach(prop => { finalStyles[prop] = entry[prop] as string; });
+    Object.keys(entry).forEach(prop => {
+      finalStyles[prop] = entry[prop] as string;
+    });
   });
   return finalStyles;
 }

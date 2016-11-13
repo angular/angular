@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression, MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue} from './schema';
 import {Symbols} from './symbols';
 
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
@@ -371,7 +371,7 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) => MetadataValue =
+        const getReference: (typeNameNode: ts.Identifier|ts.QualifiedName) => MetadataValue =
             node => {
               if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
                 const qualifiedName = <ts.QualifiedName>node;

@@ -12,7 +12,9 @@ import {AppView} from './view';
 const _UNDEFINED = new Object();
 
 export class ElementInjector extends Injector {
-  constructor(private _view: AppView<any>, private _nodeIndex: number) { super(); }
+  constructor(private _view: AppView<any>, private _nodeIndex: number) {
+    super();
+  }
 
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
     return this._view.injectorGet(token, this._nodeIndex, notFoundValue);

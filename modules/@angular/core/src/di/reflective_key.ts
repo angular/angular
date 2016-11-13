@@ -40,7 +40,9 @@ export class ReflectiveKey {
   /**
    * Returns a stringified token.
    */
-  get displayName(): string { return stringify(this.token); }
+  get displayName(): string {
+    return stringify(this.token);
+  }
 
   /**
    * Retrieves a `Key` for a token.
@@ -52,7 +54,9 @@ export class ReflectiveKey {
   /**
    * @returns the number of keys registered in the system.
    */
-  static get numberOfKeys(): number { return _globalKeyRegistry.numberOfKeys; }
+  static get numberOfKeys(): number {
+    return _globalKeyRegistry.numberOfKeys;
+  }
 }
 
 /**
@@ -73,7 +77,9 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys(): number { return this._allKeys.size; }
+  get numberOfKeys(): number {
+    return this._allKeys.size;
+  }
 }
 
 const _globalKeyRegistry = new KeyRegistry();

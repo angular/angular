@@ -36,7 +36,9 @@ export function async(fn: Function): (done: any) => any {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
         done = function() {};
-        done.fail = function(e: any) { throw e; };
+        done.fail = function(e: any) {
+          throw e;
+        };
       }
       runInTestZone(fn, done, (err: any) => {
         if (typeof err === 'string') {

@@ -28,13 +28,18 @@ fdescribe('some component', () => {
                    });
 });
 describe('another component', () => {
-  it('also has a test', () => { throw 'This test will not run.'; });
+  it('also has a test', () => {
+    throw 'This test will not run.';
+  });
 });
 // #enddocregion
 
 // #docregion xdescribe
-xdescribe(
-    'some component', () => { it('has a test', () => { throw 'This test will not run.'; }); });
+xdescribe('some component', () => {
+  it('has a test', () => {
+    throw 'This test will not run.';
+  });
+});
 describe('another component', () => {
   it('also has a test', () => {
                             // This test will run.
@@ -48,13 +53,17 @@ describe('some component', () => {
   fit('has a test', () => {
                         // This test will run.
                     });
-  it('has another test', () => { throw 'This test will not run.'; });
+  it('has another test', () => {
+    throw 'This test will not run.';
+  });
 });
 // #enddocregion
 
 // #docregion xit
 describe('some component', () => {
-  xit('has a test', () => { throw 'This test will not run.'; });
+  xit('has a test', () => {
+    throw 'This test will not run.';
+  });
   it('has another test', () => {
                              // This test will run.
                          });
@@ -63,7 +72,9 @@ describe('some component', () => {
 
 // #docregion beforeEach
 describe('some component', () => {
-  beforeEach(() => { db.connect(); });
+  beforeEach(() => {
+    db.connect();
+  });
   it('uses the db', () => {
                         // Database is connected.
                     });
@@ -82,7 +93,9 @@ describe('some component', () => {
 
 // #docregion afterEach
 describe('some component', () => {
-  afterEach((done: Function) => { db.reset().then((_: any) => done()); });
+  afterEach((done: Function) => {
+    db.reset().then((_: any) => done());
+  });
   it('uses the db', () => {
                         // This test can leave the database in a dirty state.
                         // The afterEach will ensure it gets reset.

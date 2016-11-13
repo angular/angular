@@ -40,7 +40,7 @@ interface IControllerInstance extends IBindingDestination {
   $postLink?: () => void;
 }
 
-type LifecycleHook = '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
+type LifecycleHook = '$onChanges'|'$onDestroy'|'$onInit'|'$postLink';
 
 /**
  * @experimental
@@ -107,7 +107,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
         this.resolveRequire(this.directive.name, this.$element, directiveRequire);
 
     if (this.directive.bindToController && isMap(directiveRequire)) {
-      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
+      const requiredControllersMap = requiredControllers as {[key: string]: IControllerInstance};
       Object.keys(requiredControllersMap).forEach(key => {
         this.controllerInstance[key] = requiredControllersMap[key];
       });
@@ -129,8 +129,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       childNodes.push(childNode);
     }
 
-    const attachElement: angular.ICloneAttachFunction =
-        (clonedElements, scope) => { this.$element.append(clonedElements); };
+    const attachElement: angular.ICloneAttachFunction = (clonedElements, scope) => {
+      this.$element.append(clonedElements);
+    };
     const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) => cloneAttach(childNodes);
 
     this.linkFn(this.$componentScope, attachElement, {parentBoundTranscludeFn: attachChildNodes});

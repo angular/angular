@@ -11,5 +11,7 @@ import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 import {SpyObject} from '@angular/core/testing/testing_internal';
 
 export class SpyResourceLoader extends SpyObject {
-  constructor() { super(ResourceLoader); }
+  constructor() {
+    super(ResourceLoader);
+  }
 }

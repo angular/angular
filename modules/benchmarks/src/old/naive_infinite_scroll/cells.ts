@@ -16,7 +16,9 @@ export class HasStyle {
 
   constructor() {}
 
-  set width(w: number) { this.cellWidth = w; }
+  set width(w: number) {
+    this.cellWidth = w;
+  }
 }
 
 @Component({
@@ -74,7 +76,9 @@ export class StageButtonsComponent extends HasStyle {
   private _offering: Offering;
   stages: Stage[];
 
-  get offering(): Offering { return this._offering; }
+  get offering(): Offering {
+    return this._offering;
+  }
 
   set offering(offering: Offering) {
     this._offering = offering;

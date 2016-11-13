@@ -19,7 +19,9 @@ export class RenderStore {
     this._lookupByObject = new Map<any, number>();
   }
 
-  allocateId(): number { return this._nextIndex++; }
+  allocateId(): number {
+    return this._nextIndex++;
+  }
 
   store(obj: any, id: number): void {
     this._lookupById.set(id, obj);

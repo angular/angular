@@ -12,14 +12,16 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import * as html from './ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import * as lex from './lexer';
-import {TagDefinition, getNsPrefix, mergeNsAndName} from './tags';
+import {getNsPrefix, mergeNsAndName, TagDefinition} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string, span: ParseSourceSpan, msg: string): TreeError {
     return new TreeError(elementName, span, msg);
   }
 
-  constructor(public elementName: string, span: ParseSourceSpan, msg: string) { super(span, msg); }
+  constructor(public elementName: string, span: ParseSourceSpan, msg: string) {
+    super(span, msg);
+  }
 }
 
 export class ParseTreeResult {

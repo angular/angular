@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('ngModelGroup example', () => {

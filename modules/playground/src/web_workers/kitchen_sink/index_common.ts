@@ -49,9 +49,15 @@ export class HelloCmp {
   greeting: string;
   lastKey: string = '(none)';
 
-  constructor(service: GreetingService) { this.greeting = service.greeting; }
+  constructor(service: GreetingService) {
+    this.greeting = service.greeting;
+  }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+  }
 
-  onKeyDown(event: KeyboardEvent): void { this.lastKey = String.fromCharCode(event.keyCode); }
+  onKeyDown(event: KeyboardEvent): void {
+    this.lastKey = String.fromCharCode(event.keyCode);
+  }
 }

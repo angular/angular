@@ -52,5 +52,7 @@ export abstract class Injector {
    * Injector.THROW_IF_NOT_FOUND is given
    * - Returns the `notFoundValue` otherwise
    */
-  get(token: any, notFoundValue?: any): any { return unimplemented(); }
+  get(token: any, notFoundValue?: any): any {
+    return unimplemented();
+  }
 }

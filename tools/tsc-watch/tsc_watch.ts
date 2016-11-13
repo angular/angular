@@ -152,7 +152,7 @@ function stdOut(data: Buffer, isStdError: boolean) {
   }
 }
 
-function contains(line: string, text: string | RegExp): boolean {
+function contains(line: string, text: string|RegExp): boolean {
   if (typeof text == 'string') {
     return line.indexOf(text as string) != -1;
   } else if (text instanceof RegExp) {

@@ -244,7 +244,9 @@ export class MessageBasedRenderer {
     this._renderStore.store(unregisterCallback, unlistenId);
   }
 
-  private _listenDone(renderer: Renderer, unlistenCallback: Function) { unlistenCallback(); }
+  private _listenDone(renderer: Renderer, unlistenCallback: Function) {
+    unlistenCallback();
+  }
 
   private _animate(
       renderer: Renderer, element: any, startingStyles: any, keyframes: any[], duration: number,
@@ -254,8 +256,9 @@ export class MessageBasedRenderer {
   }
 
   private _listenOnAnimationPlayer(player: AnimationPlayer, element: any, phaseName: string) {
-    const onEventComplete =
-        () => { this._eventDispatcher.dispatchAnimationEvent(player, phaseName, element); };
+    const onEventComplete = () => {
+      this._eventDispatcher.dispatchAnimationEvent(player, phaseName, element);
+    };
 
     // there is no need to register a unlistener value here since the
     // internal player callbacks are removed when the player is destroyed

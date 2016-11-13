@@ -25,7 +25,9 @@ function unimplemented(): any {
 const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 
 export abstract class CompileMetadataWithIdentifier {
-  get identifier(): CompileIdentifierMetadata { return <CompileIdentifierMetadata>unimplemented(); }
+  get identifier(): CompileIdentifierMetadata {
+    return <CompileIdentifierMetadata>unimplemented();
+  }
 }
 
 export class CompileAnimationEntryMetadata {
@@ -42,13 +44,17 @@ export class CompileAnimationStateDeclarationMetadata extends CompileAnimationSt
 }
 
 export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
-  constructor(public stateChangeExpr: string, public steps: CompileAnimationMetadata) { super(); }
+  constructor(public stateChangeExpr: string, public steps: CompileAnimationMetadata) {
+    super();
+  }
 }
 
 export abstract class CompileAnimationMetadata {}
 
 export class CompileAnimationKeyframesSequenceMetadata extends CompileAnimationMetadata {
-  constructor(public steps: CompileAnimationStyleMetadata[] = []) { super(); }
+  constructor(public steps: CompileAnimationStyleMetadata[] = []) {
+    super();
+  }
 }
 
 export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
@@ -67,15 +73,21 @@ export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
 }
 
 export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
-  constructor(public steps: CompileAnimationMetadata[] = null) { super(); }
+  constructor(public steps: CompileAnimationMetadata[] = null) {
+    super();
+  }
 }
 
 export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsMetadata {
-  constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
 }
 
 export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMetadata {
-  constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
+  constructor(steps: CompileAnimationMetadata[] = null) {
+    super(steps);
+  }
 }
 
 export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier {
@@ -95,7 +107,9 @@ export class CompileIdentifierMetadata implements CompileMetadataWithIdentifier 
     this.value = value;
   }
 
-  get identifier(): CompileIdentifierMetadata { return this; }
+  get identifier(): CompileIdentifierMetadata {
+    return this;
+  }
 }
 
 /**
@@ -487,7 +501,9 @@ export class CompileDirectiveMetadata implements CompileMetadataWithIdentifier {
     this.template = template;
   }
 
-  get identifier(): CompileIdentifierMetadata { return this.type; }
+  get identifier(): CompileIdentifierMetadata {
+    return this.type;
+  }
 
   toSummary(): CompileDirectiveSummary {
     return {
@@ -567,7 +583,9 @@ export class CompilePipeMetadata implements CompileMetadataWithIdentifier {
     this.name = name;
     this.pure = !!pure;
   }
-  get identifier(): CompileIdentifierMetadata { return this.type; }
+  get identifier(): CompileIdentifierMetadata {
+    return this.type;
+  }
 
   toSummary(): CompilePipeSummary {
     return {isSummary: true, type: this.type, name: this.name, pure: this.pure};
@@ -649,7 +667,9 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
     this.transitiveModule = transitiveModule;
   }
 
-  get identifier(): CompileIdentifierMetadata { return this.type; }
+  get identifier(): CompileIdentifierMetadata {
+    return this.type;
+  }
 
   toSummary(): CompileNgModuleSummary {
     return {

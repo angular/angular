@@ -9,7 +9,7 @@
 import {fakeAsync} from '@angular/core/testing/fake_async';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {SyncAsyncResult, splitAtColon} from '../src/util';
+import {splitAtColon, SyncAsyncResult} from '../src/util';
 
 export function main() {
   describe('util', () => {
@@ -26,7 +26,9 @@ export function main() {
         expect(splitAtColon('a:b', [])).toEqual(['a', 'b']);
       });
 
-      it('should trim parts', () => { expect(splitAtColon(' a : b ', [])).toEqual(['a', 'b']); });
+      it('should trim parts', () => {
+        expect(splitAtColon(' a : b ', [])).toEqual(['a', 'b']);
+      });
 
       it('should support multiple ":"', () => {
         expect(splitAtColon('a:b:c', [])).toEqual(['a', 'b:c']);

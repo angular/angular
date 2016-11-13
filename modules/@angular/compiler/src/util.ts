@@ -68,11 +68,17 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     const result: {[key: string]: any} = {};
-    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
+    Object.keys(map).forEach(key => {
+      result[key] = visitValue(map[key], this, context);
+    });
     return result;
   }
-  visitPrimitive(value: any, context: any): any { return value; }
-  visitOther(value: any, context: any): any { return value; }
+  visitPrimitive(value: any, context: any): any {
+    return value;
+  }
+  visitOther(value: any, context: any): any {
+    return value;
+  }
 }
 
 export class SyncAsyncResult<T> {

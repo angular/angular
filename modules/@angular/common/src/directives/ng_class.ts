@@ -112,8 +112,8 @@ export class NgClass implements DoCheck {
       if (typeof record.item === 'string') {
         this._toggleClass(record.item, true);
       } else {
-        throw new Error(
-            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`);
+        throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${stringify(
+            record.item)}`);
       }
     });
 
@@ -141,8 +141,9 @@ export class NgClass implements DoCheck {
   private _toggleClass(klass: string, enabled: boolean): void {
     klass = klass.trim();
     if (klass) {
-      klass.split(/\s+/g).forEach(
-          klass => { this._renderer.setElementClass(this._ngEl.nativeElement, klass, enabled); });
+      klass.split(/\s+/g).forEach(klass => {
+        this._renderer.setElementClass(this._ngEl.nativeElement, klass, enabled);
+      });
     }
   }
 }

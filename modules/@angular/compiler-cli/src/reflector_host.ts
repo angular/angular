@@ -56,7 +56,9 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
   }
 
   // We use absolute paths on disk as canonical.
-  getCanonicalFileName(fileName: string): string { return fileName; }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
 
   protected resolve(m: string, containingFile: string) {
     m = m.replace(EXT, '');
@@ -224,7 +226,7 @@ export class ReflectorHost implements StaticReflectorHost, ImportGenerator {
    * @param name the name of the type.
    */
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    const memberSuffix = members ? `.${ members.join('.')}` : '';
+    const memberSuffix = members ? `.${members.join('.')}` : '';
     const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.typeCache.get(key);
     if (!result) {
@@ -348,7 +350,11 @@ export class NodeReflectorHostContext implements ReflectorHostContext {
     }
   }
 
-  readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+  readFile(fileName: string): string {
+    return fs.readFileSync(fileName, 'utf8');
+  }
 
-  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
+  assumeFileExists(fileName: string): void {
+    this.assumedExists[fileName] = true;
+  }
 }

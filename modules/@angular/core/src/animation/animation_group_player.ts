@@ -44,13 +44,21 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this._players.forEach(player => player.init()); }
+  init(): void {
+    this._players.forEach(player => player.init());
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  hasStarted() { return this._started; }
+  hasStarted() {
+    return this._started;
+  }
 
   play() {
     if (!isPresent(this.parentPlayer)) {
@@ -64,9 +72,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     this._players.forEach(player => player.play());
   }
 
-  pause(): void { this._players.forEach(player => player.pause()); }
+  pause(): void {
+    this._players.forEach(player => player.pause());
+  }
 
-  restart(): void { this._players.forEach(player => player.restart()); }
+  restart(): void {
+    this._players.forEach(player => player.restart());
+  }
 
   finish(): void {
     this._onFinish();
@@ -89,7 +101,9 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   setPosition(p: any /** TODO #9100 */): void {
-    this._players.forEach(player => { player.setPosition(p); });
+    this._players.forEach(player => {
+      player.setPosition(p);
+    });
   }
 
   getPosition(): number {

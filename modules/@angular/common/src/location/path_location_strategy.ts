@@ -65,7 +65,9 @@ export class PathLocationStrategy extends LocationStrategy {
     this._platformLocation.onHashChange(fn);
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  getBaseHref(): string {
+    return this._baseHref;
+  }
 
   prepareExternalUrl(internal: string): string {
     return Location.joinWithSlash(this._baseHref, internal);
@@ -88,7 +90,11 @@ export class PathLocationStrategy extends LocationStrategy {
     this._platformLocation.replaceState(state, title, externalUrl);
   }
 
-  forward(): void { this._platformLocation.forward(); }
+  forward(): void {
+    this._platformLocation.forward();
+  }
 
-  back(): void { this._platformLocation.back(); }
+  back(): void {
+    this._platformLocation.back();
+  }
 }

@@ -30,13 +30,17 @@ export class SimpleFormGroup {
     last: new FormControl('Drew'),
   });
 
-  get first(): any { return this.form.get('first'); }
+  get first(): any {
+    return this.form.get('first');
+  }
 
   onSubmit(): void {
     console.log(this.form.value);  // {first: 'Nancy', last: 'Drew'}
   }
 
-  setValue() { this.form.setValue({first: 'Carson', last: 'Drew'}); }
+  setValue() {
+    this.form.setValue({first: 'Carson', last: 'Drew'});
+  }
 }
 
 

@@ -76,7 +76,9 @@ function createDynamicClass(
   // Note: use `function` instead of arrow function to capture `this`
   const ctor = function(...args: any[]) {
     const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
-    _classStmt.fields.forEach((field) => { this[field.name] = undefined; });
+    _classStmt.fields.forEach((field) => {
+      this[field.name] = undefined;
+    });
     _executeFunctionStatements(
         ctorParamNames, args, _classStmt.constructorMethod.body, instanceCtx, _visitor);
   };
@@ -86,7 +88,9 @@ function createDynamicClass(
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
+  debugAst(ast: o.Expression|o.Statement|o.Type): string {
+    return debugOutputAstAsTypeScript(ast);
+  }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
@@ -212,13 +216,17 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitThrowStmt(stmt: o.ThrowStmt, ctx: _ExecutionContext): any {
     throw stmt.error.visitExpression(this, ctx);
   }
-  visitCommentStmt(stmt: o.CommentStmt, context?: any): any { return null; }
+  visitCommentStmt(stmt: o.CommentStmt, context?: any): any {
+    return null;
+  }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(ast.args, ctx);
     const clazz = ast.classExpr.visitExpression(this, ctx);
     return new clazz(...args);
   }
-  visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any {
+    return ast.value;
+  }
   visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
     return ast.value.reference;
   }

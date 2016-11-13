@@ -96,8 +96,8 @@ export class CodeGenerator {
     let transContent: string = '';
     if (transFile) {
       if (!locale) {
-        throw new Error(
-            `The translation file (${transFile}) locale must be provided. Use the --locale option.`);
+        throw new Error(`The translation file (${transFile
+                        }) locale must be provided. Use the --locale option.`);
       }
       transContent = readFileSync(transFile, 'utf8');
     }

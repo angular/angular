@@ -46,21 +46,31 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   /**
    * Get the {@link FormGroup} backing this binding.
    */
-  get control(): FormGroup { return this.formDirective.getFormGroup(this); }
+  get control(): FormGroup {
+    return this.formDirective.getFormGroup(this);
+  }
 
   /**
    * Get the path to this control group.
    */
-  get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] {
+    return controlPath(this.name, this._parent);
+  }
 
   /**
    * Get the {@link Form} to which this group belongs.
    */
-  get formDirective(): Form { return this._parent ? this._parent.formDirective : null; }
+  get formDirective(): Form {
+    return this._parent ? this._parent.formDirective : null;
+  }
 
-  get validator(): ValidatorFn { return composeValidators(this._validators); }
+  get validator(): ValidatorFn {
+    return composeValidators(this._validators);
+  }
 
-  get asyncValidator(): AsyncValidatorFn { return composeAsyncValidators(this._asyncValidators); }
+  get asyncValidator(): AsyncValidatorFn {
+    return composeAsyncValidators(this._asyncValidators);
+  }
 
   /** @internal */
   _checkParentType(): void {}

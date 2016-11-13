@@ -12,9 +12,13 @@ import {Injectable} from '@angular/core';
 export class Log {
   logItems: any[];
 
-  constructor() { this.logItems = []; }
+  constructor() {
+    this.logItems = [];
+  }
 
-  add(value: any /** TODO #9100 */): void { this.logItems.push(value); }
+  add(value: any /** TODO #9100 */): void {
+    this.logItems.push(value);
+  }
 
   fn(value: any /** TODO #9100 */) {
     return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
@@ -22,7 +26,11 @@ export class Log {
     };
   }
 
-  clear(): void { this.logItems = []; }
+  clear(): void {
+    this.logItems = [];
+  }
 
-  result(): string { return this.logItems.join('; '); }
+  result(): string {
+    return this.logItems.join('; ');
+  }
 }

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output, forwardRef} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -608,7 +608,9 @@ export function main() {
         fixture.componentInstance.form = new FormGroup({'login': login});
         fixture.detectChanges();
 
-        login.valueChanges.subscribe(() => { expect(login.dirty).toBe(true); });
+        login.valueChanges.subscribe(() => {
+          expect(login.dirty).toBe(true);
+        });
 
         const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
         loginEl.value = 'newValue';
@@ -630,7 +632,9 @@ export function main() {
 
            expect(login.pristine).toBe(false);
 
-           login.valueChanges.subscribe(() => { expect(login.pristine).toBe(true); });
+           login.valueChanges.subscribe(() => {
+             expect(login.pristine).toBe(true);
+           });
 
            form.reset();
          });
@@ -804,7 +808,11 @@ export function main() {
         fixture.detectChanges();
 
         const input = fixture.debugElement.query(By.css('input'));
-        form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
+        form.valueChanges.subscribe({
+          next: (value) => {
+            throw 'Should not happen';
+          }
+        });
         input.nativeElement.value = 'updatedValue';
 
         dispatchEvent(input.nativeElement, 'change');
@@ -1798,14 +1806,22 @@ class WrappedValue implements ControlValueAccessor {
   value: any;
   onChange: Function;
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onChange = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.onChange = fn;
+  }
   registerOnTouched(fn: any) {}
 
-  handleOnInput(value: any) { this.onChange(value.substring(1, value.length - 1)); }
+  handleOnInput(value: any) {
+    this.onChange(value.substring(1, value.length - 1));
+  }
 
-  validate(c: AbstractControl) { return c.value === 'expected' ? null : {'err': true}; }
+  validate(c: AbstractControl) {
+    return c.value === 'expected' ? null : {'err': true};
+  }
 }
 
 @Component({selector: 'my-input', template: ''})
@@ -1813,21 +1829,31 @@ class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
   value: string;
 
-  constructor(cd: NgControl) { cd.valueAccessor = this; }
+  constructor(cd: NgControl) {
+    cd.valueAccessor = this;
+  }
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onInput.subscribe({next: fn}); }
+  registerOnChange(fn: (value: any) => void) {
+    this.onInput.subscribe({next: fn});
+  }
 
   registerOnTouched(fn: any) {}
 
-  dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
+  dispatchChangeEvent() {
+    this.onInput.emit(this.value.substring(1, this.value.length - 1));
+  }
 }
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
-    const promise = new Promise(res => { resolve = res; });
+    const promise = new Promise(res => {
+      resolve = res;
+    });
     const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     resolve(res);
     return promise;
@@ -1856,7 +1882,9 @@ class LoginIsEmptyValidator {
 class UniqLoginValidator implements Validator {
   @Input('uniq-login-validator') expected: any;
 
-  validate(c: AbstractControl) { return uniqLoginAsyncValidator(this.expected)(c); }
+  validate(c: AbstractControl) {
+    return uniqLoginAsyncValidator(this.expected)(c);
+  }
 }
 
 function sortedClassList(el: HTMLElement) {

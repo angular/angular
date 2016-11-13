@@ -24,12 +24,24 @@ export class BaseError extends Error {
     this._nativeError = nativeError;
   }
 
-  get message() { return this._nativeError.message; }
-  set message(message) { this._nativeError.message = message; }
-  get name() { return this._nativeError.name; }
-  get stack() { return (this._nativeError as any).stack; }
-  set stack(value) { (this._nativeError as any).stack = value; }
-  toString() { return this._nativeError.toString(); }
+  get message() {
+    return this._nativeError.message;
+  }
+  set message(message) {
+    this._nativeError.message = message;
+  }
+  get name() {
+    return this._nativeError.name;
+  }
+  get stack() {
+    return (this._nativeError as any).stack;
+  }
+  set stack(value) {
+    (this._nativeError as any).stack = value;
+  }
+  toString() {
+    return this._nativeError.toString();
+  }
 }
 
 /**
@@ -39,7 +51,7 @@ export class WrappedError extends BaseError {
   originalError: any;
 
   constructor(message: string, error: any) {
-    super(`${message} caused by: ${error instanceof Error ? error.message: error }`);
+    super(`${message} caused by: ${error instanceof Error ? error.message : error}`);
     this.originalError = error;
   }
 

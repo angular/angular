@@ -98,30 +98,42 @@ export function main() {
 
 @Injectable()
 class A {
-  constructor() { count++; }
+  constructor() {
+    count++;
+  }
 }
 
 @Injectable()
 class B {
-  constructor(a: A) { count++; }
+  constructor(a: A) {
+    count++;
+  }
 }
 
 @Injectable()
 class C {
-  constructor(b: B) { count++; }
+  constructor(b: B) {
+    count++;
+  }
 }
 
 @Injectable()
 class D {
-  constructor(c: C, b: B) { count++; }
+  constructor(c: C, b: B) {
+    count++;
+  }
 }
 
 @Injectable()
 class E {
-  constructor(d: D, c: C) { count++; }
+  constructor(d: D, c: C) {
+    count++;
+  }
 }
 
 @Injectable()
 class F {
-  constructor(e: E, d: D) { count++; }
+  constructor(e: E, d: D) {
+    count++;
+  }
 }

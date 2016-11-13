@@ -95,7 +95,7 @@ function extractAnnotation(annotation: any): any {
   return annotation;
 }
 
-function applyParams(fnOrArray: (Function | any[]), key: string): Function {
+function applyParams(fnOrArray: (Function|any[]), key: string): Function {
   if (fnOrArray === Object || fnOrArray === String || fnOrArray === Function ||
       fnOrArray === Number || fnOrArray === Array) {
     throw new Error(`Can not use native ${stringify(fnOrArray)} as constructor`);
@@ -110,12 +110,13 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
     const annoLength = annotations.length - 1;
     const fn: Function = fnOrArray[annoLength];
     if (typeof fn !== 'function') {
-      throw new Error(
-          `Last position of Class method array must be Function in key ${key} was '${stringify(fn)}'`);
+      throw new Error(`Last position of Class method array must be Function in key ${key
+                      } was '${stringify(fn)}'`);
     }
     if (annoLength != fn.length) {
       throw new Error(
-          `Number of annotations (${annoLength}) does not match number of arguments (${fn.length}) in the function: ${stringify(fn)}`);
+          `Number of annotations (${annoLength}) does not match number of arguments (${fn.length
+          }) in the function: ${stringify(fn)}`);
     }
     const paramsAnnotations: any[][] = [];
     for (let i = 0, ii = annotations.length - 1; i < ii; i++) {
@@ -136,8 +137,8 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
     return fn;
   }
 
-  throw new Error(
-      `Only Function or Array is supported in Class definition for key '${key}' is '${stringify(fnOrArray)}'`);
+  throw new Error(`Only Function or Array is supported in Class definition for key '${key
+                  }' is '${stringify(fnOrArray)}'`);
 }
 
 /**
@@ -234,7 +235,8 @@ export function Class(clsDef: ClassDefinition): Type<any> {
           Object.create((<Function>clsDef.extends).prototype);
     } else {
       throw new Error(
-          `Class definition 'extends' property must be a constructor function was: ${stringify(clsDef.extends)}`);
+          `Class definition 'extends' property must be a constructor function was: ${stringify(
+              clsDef.extends)}`);
     }
   }
 
@@ -296,7 +298,7 @@ export function makeDecorator(
   return DecoratorFactory;
 }
 
-function makeMetadataCtor(props: ([string, any] | {[key: string]: any})[]): any {
+function makeMetadataCtor(props: ([string, any]|{[key: string]: any})[]): any {
   return function ctor(...args: any[]) {
     props.forEach((prop, i) => {
       const argVal = args[i];
@@ -314,7 +316,7 @@ function makeMetadataCtor(props: ([string, any] | {[key: string]: any})[]): any 
 }
 
 export function makeParamDecorator(
-    name: string, props: ([string, any] | {[name: string]: any})[], parentClass?: any): any {
+    name: string, props: ([string, any]|{[name: string]: any})[], parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
   function ParamDecoratorFactory(...args: any[]): any {
     if (this instanceof ParamDecoratorFactory) {
@@ -351,7 +353,7 @@ export function makeParamDecorator(
 }
 
 export function makePropDecorator(
-    name: string, props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
+    name: string, props: ([string, any]|{[key: string]: any})[], parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
 
   function PropDecoratorFactory(...args: any[]): any {

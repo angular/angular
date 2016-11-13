@@ -176,5 +176,7 @@ export class DowngradeComponentAdapter {
 class Ng1Change implements SimpleChange {
   constructor(public previousValue: any, public currentValue: any) {}
 
-  isFirstChange(): boolean { return this.previousValue === this.currentValue; }
+  isFirstChange(): boolean {
+    return this.previousValue === this.currentValue;
+  }
 }

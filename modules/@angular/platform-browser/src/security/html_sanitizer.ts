@@ -190,7 +190,9 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars: any /** TODO #9100 */) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: any /** TODO #9100 */) {
+    this.buf.push(encodeEntities(chars));
+  }
 }
 
 // Regular Expressions for parsing tags and attributes
@@ -216,7 +218,9 @@ function encodeEntities(value: string) {
           })
       .replace(
           NON_ALPHANUMERIC_REGEXP,
-          function(match: string) { return '&#' + match.charCodeAt(0) + ';'; })
+          function(match: string) {
+            return '&#' + match.charCodeAt(0) + ';';
+          })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }

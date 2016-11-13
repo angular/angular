@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {EventEmitter} from '../../facade/async';
 import {FormControl} from '../../model';
@@ -74,7 +74,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Output('ngModelChange') update = new EventEmitter();
 
   @Input('disabled')
-  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+  set isDisabled(isDisabled: boolean) {
+    ReactiveErrors.disabledAttrWarning();
+  }
 
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
@@ -100,15 +102,21 @@ export class FormControlDirective extends NgControl implements OnChanges {
                 }
               }
 
-              get path(): string[] { return []; }
+              get path(): string[] {
+                return [];
+              }
 
-              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
+              get validator(): ValidatorFn {
+                return composeValidators(this._rawValidators);
+              }
 
               get asyncValidator(): AsyncValidatorFn {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 
-              get control(): FormControl { return this.form; }
+              get control(): FormControl {
+                return this.form;
+              }
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;

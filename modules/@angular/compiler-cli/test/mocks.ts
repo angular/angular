@@ -16,9 +16,13 @@ export interface Directory { [name: string]: Entry; }
 export class MockContext implements ReflectorHostContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
-  fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
+  fileExists(fileName: string): boolean {
+    return typeof this.getEntry(fileName) === 'string';
+  }
 
-  directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
+  directoryExists(path: string): boolean {
+    return typeof this.getEntry(path) === 'object';
+  }
 
   readFile(fileName: string): string|undefined {
     const data = this.getEntry(fileName);
@@ -37,7 +41,9 @@ export class MockContext implements ReflectorHostContext {
     }
   }
 
-  assumeFileExists(fileName: string): void { this.writeFile(fileName, ''); }
+  assumeFileExists(fileName: string): void {
+    this.writeFile(fileName, '');
+  }
 
   getEntry(fileName: string|string[]): Entry|undefined {
     let parts = typeof fileName === 'string' ? fileName.split('/') : fileName;
@@ -91,9 +97,13 @@ function normalize(parts: string[]): string[] {
 export class MockCompilerHost implements ts.CompilerHost {
   constructor(private context: MockContext) {}
 
-  fileExists(fileName: string): boolean { return this.context.fileExists(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.context.fileExists(fileName);
+  }
 
-  readFile(fileName: string): string { return this.context.readFile(fileName); }
+  readFile(fileName: string): string {
+    return this.context.readFile(fileName);
+  }
 
   directoryExists(directoryName: string): boolean {
     return this.context.directoryExists(directoryName);
@@ -114,17 +124,28 @@ export class MockCompilerHost implements ts.CompilerHost {
     return ts.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback = (fileName, text) => { this.context.writeFile(fileName, text); }
+  writeFile: ts.WriteFileCallback =
+      (fileName, text) => {
+        this.context.writeFile(fileName, text);
+      }
 
   getCurrentDirectory(): string {
     return this.context.currentDirectory;
   }
 
-  getCanonicalFileName(fileName: string): string { return fileName; }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
 
-  useCaseSensitiveFileNames(): boolean { return false; }
+  useCaseSensitiveFileNames(): boolean {
+    return false;
+  }
 
-  getNewLine(): string { return '\n'; }
+  getNewLine(): string {
+    return '\n';
+  }
 
-  getDirectories(path: string): string[] { return this.context.getDirectories(path); }
+  getDirectories(path: string): string[] {
+    return this.context.getDirectories(path);
+  }
 }

@@ -38,7 +38,9 @@ function _serializeKeyframes(keyframes: AnimationKeyframe[]): any[] {
 function _serializeStyles(styles: AnimationStyles): {[key: string]: any} {
   const flatStyles: {[key: string]: any} = {};
   styles.styles.forEach((entry: {[key: string]: string | number;}) => {
-    Object.keys(entry).forEach(prop => { flatStyles[prop] = entry[prop]; });
+    Object.keys(entry).forEach(prop => {
+      flatStyles[prop] = entry[prop];
+    });
   });
   return flatStyles;
 }

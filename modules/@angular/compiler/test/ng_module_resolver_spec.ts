@@ -32,7 +32,9 @@ export function main() {
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 
-    beforeEach(() => { resolver = new NgModuleResolver(); });
+    beforeEach(() => {
+      resolver = new NgModuleResolver();
+    });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);

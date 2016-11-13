@@ -9,7 +9,7 @@
 import {Component, Directive} from '@angular/core';
 
 import {AccountCellComponent, CompanyNameComponent, FormattedCellComponent, OfferingNameComponent, OpportunityNameComponent, StageButtonsComponent} from './cells';
-import {AAT_STATUS_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH, BUNDLES_WIDTH, COMPANY_NAME_WIDTH, DUE_DATE_WIDTH, END_DATE_WIDTH, ITEM_HEIGHT, KICKER_POINTS_WIDTH, OFFERING_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH, Offering, STAGE_BUTTONS_WIDTH} from './common';
+import {AAT_STATUS_WIDTH, ACCOUNT_CELL_WIDTH, BASE_POINTS_WIDTH, BUNDLES_WIDTH, COMPANY_NAME_WIDTH, DUE_DATE_WIDTH, END_DATE_WIDTH, ITEM_HEIGHT, KICKER_POINTS_WIDTH, Offering, OFFERING_NAME_WIDTH, OPPORTUNITY_NAME_WIDTH, STAGE_BUTTONS_WIDTH} from './common';
 
 @Component({
   selector: 'scroll-item',
@@ -63,17 +63,41 @@ export class ScrollItemComponent {
 
   itemHeight: number;
 
-  constructor() { this.itemHeight = ITEM_HEIGHT; }
+  constructor() {
+    this.itemHeight = ITEM_HEIGHT;
+  }
 
-  get companyNameWidth() { return COMPANY_NAME_WIDTH; }
-  get opportunityNameWidth() { return OPPORTUNITY_NAME_WIDTH; }
-  get offeringNameWidth() { return OFFERING_NAME_WIDTH; }
-  get accountCellWidth() { return ACCOUNT_CELL_WIDTH; }
-  get basePointsWidth() { return BASE_POINTS_WIDTH; }
-  get kickerPointsWidth() { return KICKER_POINTS_WIDTH; }
-  get stageButtonsWidth() { return STAGE_BUTTONS_WIDTH; }
-  get bundlesWidth() { return BUNDLES_WIDTH; }
-  get dueDateWidth() { return DUE_DATE_WIDTH; }
-  get endDateWidth() { return END_DATE_WIDTH; }
-  get aatStatusWidth() { return AAT_STATUS_WIDTH; }
+  get companyNameWidth() {
+    return COMPANY_NAME_WIDTH;
+  }
+  get opportunityNameWidth() {
+    return OPPORTUNITY_NAME_WIDTH;
+  }
+  get offeringNameWidth() {
+    return OFFERING_NAME_WIDTH;
+  }
+  get accountCellWidth() {
+    return ACCOUNT_CELL_WIDTH;
+  }
+  get basePointsWidth() {
+    return BASE_POINTS_WIDTH;
+  }
+  get kickerPointsWidth() {
+    return KICKER_POINTS_WIDTH;
+  }
+  get stageButtonsWidth() {
+    return STAGE_BUTTONS_WIDTH;
+  }
+  get bundlesWidth() {
+    return BUNDLES_WIDTH;
+  }
+  get dueDateWidth() {
+    return DUE_DATE_WIDTH;
+  }
+  get endDateWidth() {
+    return END_DATE_WIDTH;
+  }
+  get aatStatusWidth() {
+    return AAT_STATUS_WIDTH;
+  }
 }

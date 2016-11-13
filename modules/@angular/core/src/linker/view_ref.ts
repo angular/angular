@@ -18,7 +18,9 @@ import {AppView} from './view';
  * @stable
  */
 export abstract class ViewRef {
-  get destroyed(): boolean { return <boolean>unimplemented(); }
+  get destroyed(): boolean {
+    return <boolean>unimplemented();
+  }
 
   abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
@@ -78,9 +80,13 @@ export abstract class ViewRef {
  * @experimental
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
-  get context(): C { return unimplemented(); }
+  get context(): C {
+    return unimplemented();
+  }
 
-  get rootNodes(): any[] { return <any[]>unimplemented(); };
+  get rootNodes(): any[] {
+    return <any[]>unimplemented();
+  };
 
   /**
    * Destroys the view and all of the data structures associated with it.
@@ -97,21 +103,35 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
     this._originalMode = this._view.cdMode;
   }
 
-  get internalView(): AppView<C> { return this._view; }
+  get internalView(): AppView<C> {
+    return this._view;
+  }
 
-  get rootNodes(): any[] { return this._view.flatRootNodes; }
+  get rootNodes(): any[] {
+    return this._view.flatRootNodes;
+  }
 
-  get context() { return this._view.context; }
+  get context() {
+    return this._view.context;
+  }
 
-  get destroyed(): boolean { return this._view.destroyed; }
+  get destroyed(): boolean {
+    return this._view.destroyed;
+  }
 
-  markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
-  detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
+  markForCheck(): void {
+    this._view.markPathToRootAsCheckOnce();
+  }
+  detach(): void {
+    this._view.cdMode = ChangeDetectorStatus.Detached;
+  }
   detectChanges(): void {
     this._view.detectChanges(false);
     triggerQueuedAnimations();
   }
-  checkNoChanges(): void { this._view.detectChanges(true); }
+  checkNoChanges(): void {
+    this._view.detectChanges(true);
+  }
   reattach(): void {
     this._view.cdMode = this._originalMode;
     this.markForCheck();
@@ -124,5 +144,7 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
     this._view.disposables.push(callback);
   }
 
-  destroy() { this._view.detachAndDestroy(); }
+  destroy() {
+    this._view.detachAndDestroy();
+  }
 }

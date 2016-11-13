@@ -8,8 +8,8 @@
 
 // #docregion Observable
 import {Observable} from 'rxjs/Observable';
-import {Subscriber} from 'rxjs/Subscriber';
 import {map} from 'rxjs/operator/map';
+import {Subscriber} from 'rxjs/Subscriber';
 
 const obs = new Observable<number>((sub: Subscriber<number>) => {
   let i = 0;

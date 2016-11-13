@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DefaultUrlSerializer, containsTree} from '../src/url_tree';
+import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();

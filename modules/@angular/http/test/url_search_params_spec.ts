@@ -36,8 +36,12 @@ export function main() {
 
     it('should optionally accept a custom parser', () => {
       const fooEveryThingParser = {
-        encodeKey() { return 'I AM KEY'; },
-        encodeValue() { return 'I AM VALUE'; }
+        encodeKey() {
+          return 'I AM KEY';
+        },
+        encodeValue() {
+          return 'I AM VALUE';
+        }
       };
       const params = new URLSearchParams('', fooEveryThingParser);
       params.set('myKey', 'myValue');
@@ -68,8 +72,9 @@ export function main() {
        **/
 
       let params = new URLSearchParams();
-      '! $ \' ( ) * + , ; A 9 - . _ ~ ? / ='.split(' ').forEach(
-          (char, idx) => { params.set(`a${idx}`, char); });
+      '! $ \' ( ) * + , ; A 9 - . _ ~ ? / ='.split(' ').forEach((char, idx) => {
+        params.set(`a${idx}`, char);
+      });
       expect(params.toString())
           .toBe(
               `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/&a17==`
@@ -130,8 +135,12 @@ export function main() {
 
     it('should support a clone operation via clone()', () => {
       const fooQueryEncoder = {
-        encodeKey(k: string) { return encodeURIComponent(k); },
-        encodeValue(v: string) { return encodeURIComponent(v); }
+        encodeKey(k: string) {
+          return encodeURIComponent(k);
+        },
+        encodeValue(v: string) {
+          return encodeURIComponent(v);
+        }
       };
       const paramsA = new URLSearchParams('', fooQueryEncoder);
       paramsA.set('a', '2');

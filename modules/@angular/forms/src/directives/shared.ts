@@ -58,8 +58,9 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   });
 
   if (dir.valueAccessor.setDisabledState) {
-    control.registerOnDisabledChange(
-        (isDisabled: boolean) => { dir.valueAccessor.setDisabledState(isDisabled); });
+    control.registerOnDisabledChange((isDisabled: boolean) => {
+      dir.valueAccessor.setDisabledState(isDisabled);
+    });
   }
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
@@ -94,7 +95,7 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
 }
 
 export function setUpFormContainer(
-    control: FormGroup | FormArray, dir: AbstractFormGroupDirective | FormArrayName) {
+    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (isBlank(control)) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);

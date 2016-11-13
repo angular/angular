@@ -7,8 +7,9 @@
  */
 
 import {ReflectiveInjector} from '@angular/core';
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, describe, inject, it, SpyObject} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
+
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '../../src/backends/jsonp_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -22,11 +23,17 @@ let existingScripts: MockBrowserJsonp[] = [];
 class MockBrowserJsonp extends BrowserJsonp {
   src: string;
   callbacks = new Map<string, (data: any) => any>();
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
-  addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }
+  addEventListener(type: string, cb: (data: any) => any) {
+    this.callbacks.set(type, cb);
+  }
 
-  removeEventListener(type: string, cb: Function) { this.callbacks.delete(type); }
+  removeEventListener(type: string, cb: Function) {
+    this.callbacks.delete(type);
+  }
 
   dispatchEvent(type: string, argument?: any) {
     if (!isPresent(argument)) {
@@ -67,7 +74,9 @@ export function main() {
       sampleRequest = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));
     });
 
-    afterEach(() => { existingScripts = []; });
+    afterEach(() => {
+      existingScripts = [];
+    });
 
     it('should create a connection', () => {
       let instance: JSONPConnection;

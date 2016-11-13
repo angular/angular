@@ -97,7 +97,9 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     let id: string = null;
     if (returnType != null) {
       let completer: PromiseCompleter;
-      promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
+      promise = new Promise((resolve, reject) => {
+        completer = {resolve, reject};
+      });
       id = this._generateMessageId(args.method);
       this._pending.set(id, completer);
       promise.catch((err) => {

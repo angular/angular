@@ -81,7 +81,9 @@ export class WebWorkerRootRenderer implements RootRenderer {
     return result;
   }
 
-  allocateId(): number { return this.renderStore.allocateId(); }
+  allocateId(): number {
+    return this.renderStore.allocateId();
+  }
 
   destroyNodes(nodes: any[]) {
     for (let i = 0; i < nodes.length; i++) {
@@ -270,7 +272,9 @@ export class NamedEventEmitter {
     return listeners;
   }
 
-  listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
+  listen(eventName: string, callback: Function) {
+    this._getListeners(eventName).push(callback);
+  }
 
   unlisten(eventName: string, callback: Function) {
     ListWrapper.remove(this._getListeners(eventName), callback);
@@ -306,7 +310,9 @@ export class AnimationPlayerEmitter {
     this._getListeners(player, phaseName).push(callback);
   }
 
-  unlisten(player: AnimationPlayer) { this._listeners.delete(player); }
+  unlisten(player: AnimationPlayer) {
+    this._listeners.delete(player);
+  }
 
   dispatchEvent(player: AnimationPlayer, phaseName: string) {
     const listeners = this._getListeners(player, phaseName);
@@ -352,20 +358,30 @@ class _AnimationWorkerRendererPlayer implements AnimationPlayer, RenderStoreObje
     this._runOnService('onDone', []);
   }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
-  init(): void { this._runOnService('init', []); }
+  init(): void {
+    this._runOnService('init', []);
+  }
 
   play(): void {
     this._started = true;
     this._runOnService('play', []);
   }
 
-  pause(): void { this._runOnService('pause', []); }
+  pause(): void {
+    this._runOnService('pause', []);
+  }
 
-  restart(): void { this._runOnService('restart', []); }
+  restart(): void {
+    this._runOnService('restart', []);
+  }
 
-  finish(): void { this._runOnService('finish', []); }
+  finish(): void {
+    this._runOnService('finish', []);
+  }
 
   destroy(): void {
     if (!this._destroyed) {
@@ -376,9 +392,15 @@ class _AnimationWorkerRendererPlayer implements AnimationPlayer, RenderStoreObje
     }
   }
 
-  reset(): void { this._runOnService('reset', []); }
+  reset(): void {
+    this._runOnService('reset', []);
+  }
 
-  setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p, null)]); }
+  setPosition(p: number): void {
+    this._runOnService('setPosition', [new FnArg(p, null)]);
+  }
 
-  getPosition(): number { return 0; }
+  getPosition(): number {
+    return 0;
+  }
 }

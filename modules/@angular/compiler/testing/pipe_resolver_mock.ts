@@ -13,11 +13,17 @@ import {Compiler, Injectable, Injector, Pipe, Type} from '@angular/core';
 export class MockPipeResolver extends PipeResolver {
   private _pipes = new Map<Type<any>, Pipe>();
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector) {
+    super();
+  }
 
-  private get _compiler(): Compiler { return this._injector.get(Compiler); }
+  private get _compiler(): Compiler {
+    return this._injector.get(Compiler);
+  }
 
-  private _clearCacheFor(pipe: Type<any>) { this._compiler.clearCacheFor(pipe); }
+  private _clearCacheFor(pipe: Type<any>) {
+    this._compiler.clearCacheFor(pipe);
+  }
 
   /**
    * Overrides the {@link Pipe} for a pipe.

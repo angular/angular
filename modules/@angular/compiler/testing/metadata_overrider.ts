@@ -49,8 +49,9 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
   for (const prop in remove) {
     const removeValue = remove[prop];
     if (removeValue instanceof Array) {
-      removeValue.forEach(
-          (value: any) => { removeObjects.add(_propHashKey(prop, value, references)); });
+      removeValue.forEach((value: any) => {
+        removeObjects.add(_propHashKey(prop, value, references));
+      });
     } else {
       removeObjects.add(_propHashKey(prop, removeValue, references));
     }

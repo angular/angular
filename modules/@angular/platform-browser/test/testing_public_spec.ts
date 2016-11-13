@@ -7,8 +7,8 @@
  */
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
+import {async, fakeAsync, inject, TestBed, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../src/facade/lang';
@@ -19,7 +19,9 @@ import {stringify} from '../src/facade/lang';
 @Injectable()
 class ChildComp {
   childBinding: string;
-  constructor() { this.childBinding = 'Child'; }
+  constructor() {
+    this.childBinding = 'Child';
+  }
 }
 
 @Component({selector: 'child-comp', template: `<span>Mock</span>`})
@@ -53,12 +55,16 @@ class ChildChildComp {
 @Injectable()
 class ChildWithChildComp {
   childBinding: string;
-  constructor() { this.childBinding = 'Child'; }
+  constructor() {
+    this.childBinding = 'Child';
+  }
 }
 
 class FancyService {
   value: string = 'real value';
-  getAsyncValue() { return Promise.resolve('async value'); }
+  getAsyncValue() {
+    return Promise.resolve('async value');
+  }
   getTimeoutValue() {
     return new Promise<string>((resolve, reject) => setTimeout(() => resolve('timeout value'), 10));
   }
@@ -94,7 +100,9 @@ class SomeDirective {
 
 @Pipe({name: 'somePipe'})
 class SomePipe {
-  transform(value: string) { return `transformed ${value}`; }
+  transform(value: string) {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
@@ -286,7 +294,9 @@ export function main() {
       describe('overwriting metadata', () => {
         @Pipe({name: 'undefined'})
         class SomePipe {
-          transform(value: string): string { return `transformed ${value}`; }
+          transform(value: string): string {
+            return `transformed ${value}`;
+          }
         }
 
         @Directive({selector: '[undefined]'})
@@ -440,8 +450,9 @@ export function main() {
         const itPromise = patchJasmineIt();
         const barError = new Error('bar');
 
-        it('throws an async error',
-           async(inject([], () => setTimeout(() => { throw barError; }, 0))));
+        it('throws an async error', async(inject([], () => setTimeout(() => {
+                                                       throw barError;
+                                                     }, 0))));
 
         itPromise.then(() => done.fail('Expected test to fail, but it did not'), (err) => {
           expect(err).toEqual(barError);
@@ -488,7 +499,8 @@ export function main() {
                                            {declarations: [CompWithUrlTemplate]},
                                            () => TestBed.createComponent(CompWithUrlTemplate))))
                  .toThrowError(
-                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
+                     `This test module uses the component ${stringify(
+                         CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
                      `Please call "TestBed.compileComponents" before your test.`);
 
              restoreJasmineIt();

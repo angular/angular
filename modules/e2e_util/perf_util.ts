@@ -39,7 +39,9 @@ export function runBenchmark(config: {
   openBrowser(config);
 
   const description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
-  config.params.forEach((param) => { description[param.name] = param.value; });
+  config.params.forEach((param) => {
+    description[param.name] = param.value;
+  });
   return runner.sample({
     id: config.id,
     execute: config.work,

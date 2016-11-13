@@ -27,11 +27,17 @@ export class SpyLocation implements Location {
   /** @internal */
   _platformStrategy: LocationStrategy = null;
 
-  setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
+  setInitialPath(url: string) {
+    this._history[this._historyIndex].path = url;
+  }
 
-  setBaseHref(url: string) { this._baseHref = url; }
+  setBaseHref(url: string) {
+    this._baseHref = url;
+  }
 
-  path(): string { return this._history[this._historyIndex].path; }
+  path(): string {
+    return this._history[this._historyIndex].path;
+  }
 
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
     const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
@@ -41,7 +47,9 @@ export class SpyLocation implements Location {
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
   }
 
-  simulateUrlPop(pathname: string) { this._subject.emit({'url': pathname, 'pop': true}); }
+  simulateUrlPop(pathname: string) {
+    this._subject.emit({'url': pathname, 'pop': true});
+  }
 
   simulateHashChange(pathname: string) {
     // Because we don't prevent the native event, the browser will independently update the path
@@ -111,7 +119,9 @@ export class SpyLocation implements Location {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
-  normalize(url: string): string { return null; }
+  normalize(url: string): string {
+    return null;
+  }
 }
 
 class LocationState {

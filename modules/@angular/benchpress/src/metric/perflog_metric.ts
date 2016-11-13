@@ -156,7 +156,9 @@ export class PerflogMetric extends Metric {
         return result;
       }
       let resolve: (result: any) => void;
-      const promise = new Promise(res => { resolve = res; });
+      const promise = new Promise(res => {
+        resolve = res;
+      });
       this._setTimeout(() => resolve(this._readUntilEndMark(markName, loopCount + 1)), 100);
       return promise;
     });
@@ -358,7 +360,9 @@ export class PerflogMetric extends Metric {
         frameTimes.filter(t => t < _FRAME_TIME_SMOOTH_THRESHOLD).length / frameTimes.length;
   }
 
-  private _markName(index: number) { return `${_MARK_NAME_PREFIX}${index}`; }
+  private _markName(index: number) {
+    return `${_MARK_NAME_PREFIX}${index}`;
+  }
 }
 
 const _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/;

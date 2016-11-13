@@ -21,9 +21,13 @@ export function main() {
       originalLog = getDOM().log;  // Monkey patch DOM.log.
       getDOM().log = (msg) => logMsgs.push(msg);
     });
-    t.afterEach(() => { getDOM().log = originalLog; });
+    t.afterEach(() => {
+      getDOM().log = originalLog;
+    });
 
-    function expectSanitize(v: string) { return t.expect(sanitizeStyle(v)); }
+    function expectSanitize(v: string) {
+      return t.expect(sanitizeStyle(v));
+    }
 
     t.it('sanitizes values', () => {
       expectSanitize('').toEqual('');
@@ -32,7 +36,9 @@ export function main() {
       expectSanitize('rgb(255, 0, 0)').toEqual('rgb(255, 0, 0)');
       expectSanitize('expression(haha)').toEqual('unsafe');
     });
-    t.it('rejects unblanaced quotes', () => { expectSanitize('"value" "').toEqual('unsafe'); });
+    t.it('rejects unblanaced quotes', () => {
+      expectSanitize('"value" "').toEqual('unsafe');
+    });
     t.it('accepts transform functions', () => {
       expectSanitize('rotate(90deg)').toEqual('rotate(90deg)');
       expectSanitize('rotate(javascript:evil())').toEqual('unsafe');

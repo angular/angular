@@ -36,7 +36,9 @@ export function getPropertyInView(
 }
 
 class _ReplaceViewTransformer extends o.ExpressionTransformer {
-  constructor(private _viewExpr: o.Expression, private _view: CompileView) { super(); }
+  constructor(private _viewExpr: o.Expression, private _view: CompileView) {
+    super();
+  }
   private _isThis(expr: o.Expression): boolean {
     return expr instanceof o.ReadVarExpr && expr.builtin === o.BuiltinVar.This;
   }
@@ -72,7 +74,7 @@ export function injectFromViewParentInjector(
 }
 
 export function getViewClassName(
-    component: CompileDirectiveSummary | CompileDirectiveMetadata,
+    component: CompileDirectiveSummary|CompileDirectiveMetadata,
     embeddedTemplateIndex: number): string {
   return `View_${component.type.name}${embeddedTemplateIndex}`;
 }

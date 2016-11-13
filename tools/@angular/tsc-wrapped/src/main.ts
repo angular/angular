@@ -10,11 +10,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {check, tsc} from './tsc';
-
-import NgOptions from './options';
-import {MetadataWriterHost, TsickleHost} from './compiler_host';
 import {CliOptions} from './cli_options';
+import {MetadataWriterHost, TsickleHost} from './compiler_host';
+import NgOptions from './options';
+import {check, tsc} from './tsc';
 
 export type CodegenExtension =
     (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>

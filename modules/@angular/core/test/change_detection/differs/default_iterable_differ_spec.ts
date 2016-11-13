@@ -15,13 +15,17 @@ import {iterableChangesAsString} from '../../change_detection/util';
 class ItemWithId {
   constructor(private id: string) {}
 
-  toString() { return `{id: ${this.id}}`; }
+  toString() {
+    return `{id: ${this.id}}`;
+  }
 }
 
 class ComplexItem {
   constructor(private id: string, private color: string) {}
 
-  toString() { return `{id: ${this.id}, color: ${this.color}}`; }
+  toString() {
+    return `{id: ${this.id}, color: ${this.color}}`;
+  }
 }
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
@@ -30,7 +34,9 @@ export function main() {
     describe('DefaultIterableDiffer', function() {
       let differ: any /** TODO #9100 */;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer();
+      });
 
       it('should support list and iterables', () => {
         const f = new DefaultIterableDifferFactory();
@@ -484,7 +490,9 @@ export function main() {
 
       const buildItemList = (list: string[]) => list.map((val) => new ItemWithId(val));
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByItemId);
+      });
 
       it('should treat the collection as dirty if identity changes', () => {
         differ.diff(buildItemList(['a']));
@@ -570,7 +578,9 @@ export function main() {
 
       const trackByIndex = (index: number, item: any): number => index;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByIndex); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByIndex);
+      });
 
       it('should track removals normally', () => {
         differ.check(['a', 'b', 'c', 'd']);

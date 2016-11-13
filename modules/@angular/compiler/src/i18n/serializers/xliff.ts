@@ -16,7 +16,7 @@ import * as i18n from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 
-import {Serializer, extractPlaceholderToIds, extractPlaceholders} from './serializer';
+import {extractPlaceholders, extractPlaceholderToIds, Serializer} from './serializer';
 import * as xml from './xml_helper';
 
 const _VERSION = '1.2';
@@ -113,7 +113,9 @@ export class Xliff implements Serializer {
 class _WriteVisitor implements i18n.Visitor {
   private _isInIcu: boolean;
 
-  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
+  visitText(text: i18n.Text, context?: any): xml.Node[] {
+    return [new xml.Text(text.value)];
+  }
 
   visitContainer(container: i18n.Container, context?: any): xml.Node[] {
     const nodes: xml.Node[] = [];
@@ -275,9 +277,13 @@ class _LoadVisitor implements ml.Visitor {
     throw new Error('unreachable code');
   }
 
-  visitText(text: ml.Text, context: any): any { return text.value; }
+  visitText(text: ml.Text, context: any): any {
+    return text.value;
+  }
 
-  visitComment(comment: ml.Comment, context: any): any { return ''; }
+  visitComment(comment: ml.Comment, context: any): any {
+    return '';
+  }
 
   visitExpansion(expansion: ml.Expansion, context: any): any {
     throw new Error('unreachable code');

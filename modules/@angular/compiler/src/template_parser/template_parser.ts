@@ -27,7 +27,7 @@ import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 
 import {BindingParser, BoundProperty} from './binding_parser';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
 
 
@@ -153,8 +153,9 @@ export class TemplateParser {
     }
 
     if (isPresent(this.transforms)) {
-      this.transforms.forEach(
-          (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
+      this.transforms.forEach((transform: TemplateAstVisitor) => {
+        result = templateVisitAll(transform, result);
+      });
     }
 
     return new TemplateParseResult(result, errors);
@@ -214,9 +215,13 @@ class TemplateParseVisitor implements html.Visitor {
     });
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return null; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return null;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return null; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return null;
+  }
 
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
@@ -232,7 +237,9 @@ class TemplateParseVisitor implements html.Visitor {
     return new AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
   }
 
-  visitComment(comment: html.Comment, context: any): any { return null; }
+  visitComment(comment: html.Comment, context: any): any {
+    return null;
+  }
 
   visitElement(element: html.Element, parent: ElementContext): any {
     const nodeName = element.name;
@@ -395,7 +402,9 @@ class TemplateParseVisitor implements html.Visitor {
       inputs: BoundElementPropertyAst[], outputs: BoundEventAst[],
       template: CompileTemplateSummary) {
     const triggerLookup = new Set<string>();
-    template.animations.forEach(entry => { triggerLookup.add(entry); });
+    template.animations.forEach(entry => {
+      triggerLookup.add(entry);
+    });
 
     const animationInputs = inputs.filter(input => input.isAnimation);
     animationInputs.forEach(input => {
@@ -410,7 +419,9 @@ class TemplateParseVisitor implements html.Visitor {
         const found = animationInputs.find(input => input.name == output.name);
         if (!found) {
           this._reportError(
-              `Unable to listen on (@${output.name}.${output.phase}) because the animation trigger [@${output.name}] isn't being used on the same element`,
+              `Unable to listen on (@${output.name
+              }.${output.phase}) because the animation trigger [@${output.name
+              }] isn't being used on the same element`,
               output.sourceSpan);
         }
       }
@@ -668,8 +679,10 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (!matchElement && !this._schemaRegistry.hasElement(elName, this._schemas)) {
       const errorMsg = `'${elName}' is not a known element:\n` +
-          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n` +
-          `2. If '${elName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.`;
+          `1. If '${elName
+          }' is an Angular component, then verify that it is part of this module.\n` +
+          `2. If '${elName
+          }' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.`;
       this._reportError(errorMsg, element.sourceSpan);
     }
   }
@@ -684,7 +697,8 @@ class TemplateParseVisitor implements html.Visitor {
     }
     elementProps.forEach(prop => {
       this._reportError(
-          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section.`,
+          `Property binding ${prop.name
+          } not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section.`,
           sourceSpan);
     });
   }
@@ -703,7 +717,8 @@ class TemplateParseVisitor implements html.Visitor {
     events.forEach(event => {
       if (isPresent(event.target) || !allDirectiveEvents.has(event.name)) {
         this._reportError(
-            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
+            `Event binding ${event.fullName
+            } not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
             event.sourceSpan);
       }
     });
@@ -713,12 +728,13 @@ class TemplateParseVisitor implements html.Visitor {
     boundProps.forEach((boundProp) => {
       if (boundProp.type === PropertyBindingType.Property &&
           !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
-        let errorMsg =
-            `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
+        let errorMsg = `Can't bind to '${boundProp.name
+                       }' since it isn't a known property of '${elementName}'.`;
         if (elementName.indexOf('-') > -1) {
-          errorMsg +=
-              `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
-              `\n2. If '${elementName}' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
+          errorMsg += `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name
+                      }' input, then verify that it is part of this module.` +
+              `\n2. If '${elementName
+              }' is a Web Component then add "CUSTOM_ELEMENTS_SCHEMA" to the '@NgModule.schemas' of this component to suppress this message.\n`;
         }
         this._reportError(errorMsg, boundProp.sourceSpan);
       }
@@ -752,7 +768,9 @@ class NonBindableVisitor implements html.Visitor {
         ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, children,
         ngContentIndex, ast.sourceSpan, ast.endSourceSpan);
   }
-  visitComment(comment: html.Comment, context: any): any { return null; }
+  visitComment(comment: html.Comment, context: any): any {
+    return null;
+  }
 
   visitAttribute(attribute: html.Attribute, context: any): AttrAst {
     return new AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
@@ -763,9 +781,13 @@ class NonBindableVisitor implements html.Visitor {
     return new TextAst(text.value, ngContentIndex, text.sourceSpan);
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return expansion;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return expansionCase;
+  }
 }
 
 class ElementOrDirectiveRef {
@@ -802,8 +824,9 @@ class ElementContext {
 
   findNgContentIndex(selector: CssSelector): number {
     const ngContentIndices: number[] = [];
-    this._ngContentIndexMatcher.match(
-        selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
+    this._ngContentIndexMatcher.match(selector, (selector, ngContentIndex) => {
+      ngContentIndices.push(ngContentIndex);
+    });
     ngContentIndices.sort();
     if (isPresent(this._wildcardNgContentIndex)) {
       ngContentIndices.push(this._wildcardNgContentIndex);

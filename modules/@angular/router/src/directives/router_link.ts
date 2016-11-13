@@ -168,8 +168,12 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
   }
 
-  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: {}): any {
+    this.updateTargetUrlAndHref();
+  }
+  ngOnDestroy(): any {
+    this.subscription.unsubscribe();
+  }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {

@@ -60,9 +60,15 @@ export const DIRECT_DOM_RENDERER: DirectRenderer = {
       node.parentNode.removeChild(node);
     }
   },
-  appendChild(node: Node, parent: Element) { parent.appendChild(node);},
-  insertBefore(node: Node, refNode: Node) { refNode.parentNode.insertBefore(node, refNode);},
-  nextSibling(node: Node) { return node.nextSibling;},
+  appendChild(node: Node, parent: Element) {
+    parent.appendChild(node);
+  },
+  insertBefore(node: Node, refNode: Node) {
+    refNode.parentNode.insertBefore(node, refNode);
+  },
+  nextSibling(node: Node) {
+    return node.nextSibling;
+  },
   parentElement(node: Node): Element{return node.parentNode as Element;}
 };
 
@@ -165,7 +171,9 @@ export class DomRenderer implements Renderer {
     appendNodes(parentElement, nodes);
   }
 
-  attachViewAfter(node: Node, viewRootNodes: Node[]) { moveNodesAfterSibling(node, viewRootNodes); }
+  attachViewAfter(node: Node, viewRootNodes: Node[]) {
+    moveNodesAfterSibling(node, viewRootNodes);
+  }
 
   detachView(viewRootNodes: (Element|Text|Comment)[]) {
     for (let i = 0; i < viewRootNodes.length; i++) {
@@ -256,7 +264,9 @@ export class DomRenderer implements Renderer {
     (renderElement as any)[methodName].apply(renderElement, args);
   }
 
-  setText(renderNode: Text, text: string): void { renderNode.nodeValue = text; }
+  setText(renderNode: Text, text: string): void {
+    renderNode.nodeValue = text;
+  }
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
@@ -282,7 +292,7 @@ function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {
   }
 }
 
-function appendNodes(parent: Element | DocumentFragment, nodes: Node[]) {
+function appendNodes(parent: Element|DocumentFragment, nodes: Node[]) {
   for (let i = 0; i < nodes.length; i++) {
     parent.appendChild(nodes[i]);
   }

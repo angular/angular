@@ -115,7 +115,7 @@ export type IAugmentedJQuery = Node[] & {
   contents?: () => IAugmentedJQuery;
   parent?: () => IAugmentedJQuery;
   empty?: () => void;
-  append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
+  append?: (content: IAugmentedJQuery|string) => IAugmentedJQuery;
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
 };
@@ -163,8 +163,7 @@ function noNg() {
 }
 
 let angular: {
-  bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
-                 void,
+  bootstrap: (e: Element, modules: (string|IInjectable)[], config: IAngularBootstrapConfig) => void,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: (e: Element) => IAugmentedJQuery,
   version: {major: number}, resumeBootstrap?: () => void,

@@ -19,21 +19,25 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
 
 import {DomAnimatePlayer} from '../../../platform-browser/src/dom/dom_animate_player';
-import {ApplicationRef, Component, HostBinding, HostListener, NgModule, NgZone, destroyPlatform} from '../../index';
+import {ApplicationRef, Component, destroyPlatform, HostBinding, HostListener, NgModule, NgZone} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
-import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
+import {animate, AUTO_STYLE, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isPresent} from '../../src/facade/lang';
-import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -1392,7 +1396,9 @@ function declareTests({useJit}: {useJit: boolean}) {
            const fixture = TestBed.createComponent(DummyIfCmp);
            let eventData: AnimationTransitionEvent = null;
            const cmp = fixture.componentInstance;
-           cmp.callback = (e: AnimationTransitionEvent) => { eventData = e; };
+           cmp.callback = (e: AnimationTransitionEvent) => {
+             eventData = e;
+           };
            cmp.exp = 'one';
            fixture.detectChanges();
            flushMicrotasks();
@@ -1429,8 +1435,12 @@ function declareTests({useJit}: {useJit: boolean}) {
            let eventData1: AnimationTransitionEvent = null;
            let eventData2: AnimationTransitionEvent = null;
            const cmp = fixture.componentInstance;
-           cmp.callback1 = (e: AnimationTransitionEvent) => { eventData1 = e; };
-           cmp.callback2 = (e: AnimationTransitionEvent) => { eventData2 = e; };
+           cmp.callback1 = (e: AnimationTransitionEvent) => {
+             eventData1 = e;
+           };
+           cmp.callback2 = (e: AnimationTransitionEvent) => {
+             eventData2 = e;
+           };
            cmp.exp = 'one';
            fixture.detectChanges();
            flushMicrotasks();
@@ -2094,7 +2104,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       ];
     });
 
-    afterEach(() => { destroyPlatform(); });
+    afterEach(() => {
+      destroyPlatform();
+    });
 
     it('should automatically run change detection when the animation done callback code updates any bindings',
        (asyncDone: Function) => {
@@ -2143,7 +2155,9 @@ class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
 class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
   static initLog: any[] = [];
 
-  constructor(public element: any) { super(); }
+  constructor(public element: any) {
+    super();
+  }
 
   public computedHeight: number;
   public capturedInnerText: string;
@@ -2202,7 +2216,9 @@ class BrokenDummyLoadingCmp {
 }
 
 class _NaiveElementSchema extends DomElementSchemaRegistry {
-  normalizeAnimationStyleProperty(propName: string): string { return propName; }
+  normalizeAnimationStyleProperty(propName: string): string {
+    return propName;
+  }
 
   normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
       {error: string, value: string} {

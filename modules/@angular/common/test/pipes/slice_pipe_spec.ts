@@ -8,7 +8,7 @@
 
 import {CommonModule, SlicePipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {async, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -24,17 +24,23 @@ export function main() {
     });
 
     describe('supports', () => {
-      it('should support strings', () => { expect(() => pipe.transform(str, 0)).not.toThrow(); });
-      it('should support lists', () => { expect(() => pipe.transform(list, 0)).not.toThrow(); });
+      it('should support strings', () => {
+        expect(() => pipe.transform(str, 0)).not.toThrow();
+      });
+      it('should support lists', () => {
+        expect(() => pipe.transform(list, 0)).not.toThrow();
+      });
 
-      it('should not support other objects',
-         () => { expect(() => pipe.transform({}, 0)).toThrow(); });
+      it('should not support other objects', () => {
+        expect(() => pipe.transform({}, 0)).toThrow();
+      });
     });
 
     describe('transform', () => {
 
-      it('should return null if the value is null',
-         () => { expect(pipe.transform(null, 1)).toBe(null); });
+      it('should return null if the value is null', () => {
+        expect(pipe.transform(null, 1)).toBe(null);
+      });
 
       it('should return all items after START index when START is positive and END is omitted',
          () => {

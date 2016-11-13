@@ -59,20 +59,34 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   // TODO(tbosch): don't even call this method when we run the tests on server side
   // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
-  getProperty(el: any, name: string): any { return el[name]; }
+  getProperty(el: any, name: string): any {
+    return el[name];
+  }
 
-  logError(error: string) { console.error(error); }
+  logError(error: string) {
+    console.error(error);
+  }
 
-  log(error: string) { console.log(error); }
+  log(error: string) {
+    console.log(error);
+  }
 
-  logGroup(error: string) { console.error(error); }
+  logGroup(error: string) {
+    console.error(error);
+  }
 
   logGroupEnd() {}
 
-  get attrToPropMap() { return _attrToPropMap; }
+  get attrToPropMap() {
+    return _attrToPropMap;
+  }
 
-  query(selector: any) { throw _notImplemented('query'); }
-  querySelector(el: any, selector: string): any { return this.querySelectorAll(el, selector)[0]; }
+  query(selector: any) {
+    throw _notImplemented('query');
+  }
+  querySelector(el: any, selector: string): any {
+    return this.querySelectorAll(el, selector)[0];
+  }
   querySelectorAll(el: any, selector: string): any[] {
     const res: any[] = [];
     const _recursive = (result: any, node: any, selector: any, matcher: any) => {
@@ -117,7 +131,9 @@ export class Parse5DomAdapter extends DomAdapter {
         cssSelector.addClassName(classList[i]);
       }
 
-      matcher.match(cssSelector, function(selector: any, cb: any) { result = true; });
+      matcher.match(cssSelector, function(selector: any, cb: any) {
+        result = true;
+      });
     }
     return result;
   }
@@ -132,7 +148,9 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   onAndCancel(el: any, evt: any, listener: any): Function {
     this.on(el, evt, listener);
-    return () => { ListWrapper.remove(<any[]>(el._eventListenersMap[evt]), listener); };
+    return () => {
+      ListWrapper.remove(<any[]>(el._eventListenersMap[evt]), listener);
+    };
   }
   dispatchEvent(el: any, evt: any) {
     if (!evt.target) {
@@ -153,34 +171,60 @@ export class Parse5DomAdapter extends DomAdapter {
       this.dispatchEvent(el._window, evt);
     }
   }
-  createMouseEvent(eventType: any): Event { return this.createEvent(eventType); }
+  createMouseEvent(eventType: any): Event {
+    return this.createEvent(eventType);
+  }
   createEvent(eventType: string): Event {
     const event = <Event>{
       type: eventType,
       defaultPrevented: false,
-      preventDefault: () => { (<any>event).defaultPrevented = true; }
+      preventDefault: () => {
+        (<any>event).defaultPrevented = true;
+      }
     };
     return event;
   }
-  preventDefault(event: any) { event.returnValue = false; }
-  isPrevented(event: any): boolean { return isPresent(event.returnValue) && !event.returnValue; }
+  preventDefault(event: any) {
+    event.returnValue = false;
+  }
+  isPrevented(event: any): boolean {
+    return isPresent(event.returnValue) && !event.returnValue;
+  }
   getInnerHTML(el: any): string {
     return parse5.serialize(this.templateAwareRoot(el), {treeAdapter});
   }
-  getTemplateContent(el: any): Node { return null; }
+  getTemplateContent(el: any): Node {
+    return null;
+  }
   getOuterHTML(el: any): string {
     const fragment = treeAdapter.createDocumentFragment();
     this.appendChild(fragment, el);
     return parse5.serialize(fragment, {treeAdapter});
   }
-  nodeName(node: any): string { return node.tagName; }
-  nodeValue(node: any): string { return node.nodeValue; }
-  type(node: any): string { throw _notImplemented('type'); }
-  content(node: any): string { return node.childNodes[0]; }
-  firstChild(el: any): Node { return el.firstChild; }
-  nextSibling(el: any): Node { return el.nextSibling; }
-  parentElement(el: any): Node { return el.parent; }
-  childNodes(el: any): Node[] { return el.childNodes; }
+  nodeName(node: any): string {
+    return node.tagName;
+  }
+  nodeValue(node: any): string {
+    return node.nodeValue;
+  }
+  type(node: any): string {
+    throw _notImplemented('type');
+  }
+  content(node: any): string {
+    return node.childNodes[0];
+  }
+  firstChild(el: any): Node {
+    return el.firstChild;
+  }
+  nextSibling(el: any): Node {
+    return el.nextSibling;
+  }
+  parentElement(el: any): Node {
+    return el.parent;
+  }
+  childNodes(el: any): Node[] {
+    return el.childNodes;
+  }
   childNodesAsList(el: any): any[] {
     const childNodes = el.childNodes;
     const res = new Array(childNodes.length);
@@ -226,7 +270,9 @@ export class Parse5DomAdapter extends DomAdapter {
     this.remove(node);
     treeAdapter.insertBefore(el.parent, node, el);
   }
-  insertAllBefore(el: any, nodes: any) { nodes.forEach((n: any) => this.insertBefore(el, n)); }
+  insertAllBefore(el: any, nodes: any) {
+    nodes.forEach((n: any) => this.insertBefore(el, n));
+  }
   insertAfter(el: any, node: any) {
     if (el.nextSibling) {
       this.insertBefore(el.nextSibling, node);
@@ -271,11 +317,21 @@ export class Parse5DomAdapter extends DomAdapter {
       if (value !== '') treeAdapter.insertText(el, value);
     }
   }
-  getValue(el: any): string { return el.value; }
-  setValue(el: any, value: string) { el.value = value; }
-  getChecked(el: any): boolean { return el.checked; }
-  setChecked(el: any, value: boolean) { el.checked = value; }
-  createComment(text: string): Comment { return treeAdapter.createCommentNode(text); }
+  getValue(el: any): string {
+    return el.value;
+  }
+  setValue(el: any, value: string) {
+    el.value = value;
+  }
+  getChecked(el: any): boolean {
+    return el.checked;
+  }
+  setChecked(el: any, value: boolean) {
+    el.checked = value;
+  }
+  createComment(text: string): Comment {
+    return treeAdapter.createCommentNode(text);
+  }
   createTemplate(html: any): HTMLElement {
     const template = treeAdapter.createElement('template', 'http://www.w3.org/1999/xhtml', []);
     const content = parse5.parseFragment(html, {treeAdapter});
@@ -307,9 +363,15 @@ export class Parse5DomAdapter extends DomAdapter {
     el.shadowRoot.parent = el;
     return el.shadowRoot;
   }
-  getShadowRoot(el: any): Element { return el.shadowRoot; }
-  getHost(el: any): string { return el.host; }
-  getDistributedNodes(el: any): Node[] { throw _notImplemented('getDistributedNodes'); }
+  getShadowRoot(el: any): Element {
+    return el.shadowRoot;
+  }
+  getHost(el: any): string {
+    return el.host;
+  }
+  getDistributedNodes(el: any): Node[] {
+    throw _notImplemented('getDistributedNodes');
+  }
   clone(node: Node): Node {
     const _recursive = (node: any) => {
       const nodeClone = Object.create(Object.getPrototypeOf(node));
@@ -420,12 +482,16 @@ export class Parse5DomAdapter extends DomAdapter {
     (styleMap as any)[styleName] = styleValue;
     this._writeStyleAttribute(element, styleMap);
   }
-  removeStyle(element: any, styleName: string) { this.setStyle(element, styleName, null); }
+  removeStyle(element: any, styleName: string) {
+    this.setStyle(element, styleName, null);
+  }
   getStyle(element: any, styleName: string): string {
     const styleMap = this._readStyleAttribute(element);
     return styleMap.hasOwnProperty(styleName) ? (styleMap as any)[styleName] : '';
   }
-  tagName(element: any): string { return element.tagName == 'style' ? 'STYLE' : element.tagName; }
+  tagName(element: any): string {
+    return element.tagName == 'style' ? 'STYLE' : element.tagName;
+  }
   attributeMap(element: any): Map<string, string> {
     const res = new Map<string, string>();
     const elAttrs = treeAdapter.getAttrList(element);
@@ -438,13 +504,17 @@ export class Parse5DomAdapter extends DomAdapter {
   hasAttribute(element: any, attribute: string): boolean {
     return element.attribs && element.attribs.hasOwnProperty(attribute);
   }
-  hasAttributeNS(element: any, ns: string, attribute: string): boolean { throw 'not implemented'; }
+  hasAttributeNS(element: any, ns: string, attribute: string): boolean {
+    throw 'not implemented';
+  }
   getAttribute(element: any, attribute: string): string {
     return element.attribs && element.attribs.hasOwnProperty(attribute) ?
         element.attribs[attribute] :
         null;
   }
-  getAttributeNS(element: any, ns: string, attribute: string): string { throw 'not implemented'; }
+  getAttributeNS(element: any, ns: string, attribute: string): string {
+    throw 'not implemented';
+  }
   setAttribute(element: any, attribute: string, value: string) {
     if (attribute) {
       element.attribs[attribute] = value;
@@ -461,7 +531,9 @@ export class Parse5DomAdapter extends DomAdapter {
       delete element.attribs[attribute];
     }
   }
-  removeAttributeNS(element: any, ns: string, name: string) { throw 'not implemented'; }
+  removeAttributeNS(element: any, ns: string, name: string) {
+    throw 'not implemented';
+  }
   templateAwareRoot(el: any): any {
     return this.isTemplateElement(el) ? treeAdapter.getTemplateContent(el) : el;
   }
@@ -477,21 +549,45 @@ export class Parse5DomAdapter extends DomAdapter {
     newDoc['_window'] = {};
     return newDoc;
   }
-  defaultDoc(): Document { return defDoc = defDoc || this.createHtmlDocument(); }
-  getBoundingClientRect(el: any): any { return {left: 0, top: 0, width: 0, height: 0}; }
-  getTitle(): string { return this.defaultDoc().title || ''; }
-  setTitle(newTitle: string) { this.defaultDoc().title = newTitle; }
+  defaultDoc(): Document {
+    return defDoc = defDoc || this.createHtmlDocument();
+  }
+  getBoundingClientRect(el: any): any {
+    return {left: 0, top: 0, width: 0, height: 0};
+  }
+  getTitle(): string {
+    return this.defaultDoc().title || '';
+  }
+  setTitle(newTitle: string) {
+    this.defaultDoc().title = newTitle;
+  }
   isTemplateElement(el: any): boolean {
     return this.isElementNode(el) && this.tagName(el) === 'template';
   }
-  isTextNode(node: any): boolean { return treeAdapter.isTextNode(node); }
-  isCommentNode(node: any): boolean { return treeAdapter.isCommentNode(node); }
-  isElementNode(node: any): boolean { return node ? treeAdapter.isElementNode(node) : false; }
-  hasShadowRoot(node: any): boolean { return isPresent(node.shadowRoot); }
-  isShadowRoot(node: any): boolean { return this.getShadowRoot(node) == node; }
-  importIntoDoc(node: any): any { return this.clone(node); }
-  adoptNode(node: any): any { return node; }
-  getHref(el: any): string { return el.href; }
+  isTextNode(node: any): boolean {
+    return treeAdapter.isTextNode(node);
+  }
+  isCommentNode(node: any): boolean {
+    return treeAdapter.isCommentNode(node);
+  }
+  isElementNode(node: any): boolean {
+    return node ? treeAdapter.isElementNode(node) : false;
+  }
+  hasShadowRoot(node: any): boolean {
+    return isPresent(node.shadowRoot);
+  }
+  isShadowRoot(node: any): boolean {
+    return this.getShadowRoot(node) == node;
+  }
+  importIntoDoc(node: any): any {
+    return this.clone(node);
+  }
+  adoptNode(node: any): any {
+    return node;
+  }
+  getHref(el: any): string {
+    return el.href;
+  }
   resolveAndSetHref(el: any, baseUrl: string, href: string) {
     if (href == null) {
       el.href = baseUrl;
@@ -535,8 +631,12 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return rules;
   }
-  supportsDOMEvents(): boolean { return false; }
-  supportsNativeShadowDOM(): boolean { return false; }
+  supportsDOMEvents(): boolean {
+    return false;
+  }
+  supportsNativeShadowDOM(): boolean {
+    return false;
+  }
   getGlobalEventTarget(target: string): any {
     if (target == 'window') {
       return (<any>this.defaultDoc())._window;
@@ -546,31 +646,75 @@ export class Parse5DomAdapter extends DomAdapter {
       return this.defaultDoc().body;
     }
   }
-  getBaseHref(): string { throw 'not implemented'; }
-  resetBaseElement(): void { throw 'not implemented'; }
-  getHistory(): History { throw 'not implemented'; }
-  getLocation(): Location { throw 'not implemented'; }
-  getUserAgent(): string { return 'Fake user agent'; }
-  getData(el: any, name: string): string { return this.getAttribute(el, 'data-' + name); }
-  getComputedStyle(el: any): any { throw 'not implemented'; }
-  setData(el: any, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
+  getBaseHref(): string {
+    throw 'not implemented';
+  }
+  resetBaseElement(): void {
+    throw 'not implemented';
+  }
+  getHistory(): History {
+    throw 'not implemented';
+  }
+  getLocation(): Location {
+    throw 'not implemented';
+  }
+  getUserAgent(): string {
+    return 'Fake user agent';
+  }
+  getData(el: any, name: string): string {
+    return this.getAttribute(el, 'data-' + name);
+  }
+  getComputedStyle(el: any): any {
+    throw 'not implemented';
+  }
+  setData(el: any, name: string, value: string) {
+    this.setAttribute(el, 'data-' + name, value);
+  }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  supportsWebAnimation(): boolean { return false; }
-  performanceNow(): number { return Date.now(); }
-  getAnimationPrefix(): string { return ''; }
-  getTransitionEnd(): string { return 'transitionend'; }
-  supportsAnimation(): boolean { return true; }
+  setGlobalVar(path: string, value: any) {
+    setValueOnPath(global, path, value);
+  }
+  supportsWebAnimation(): boolean {
+    return false;
+  }
+  performanceNow(): number {
+    return Date.now();
+  }
+  getAnimationPrefix(): string {
+    return '';
+  }
+  getTransitionEnd(): string {
+    return 'transitionend';
+  }
+  supportsAnimation(): boolean {
+    return true;
+  }
 
-  replaceChild(el: any, newNode: any, oldNode: any) { throw new Error('not implemented'); }
-  parse(templateHtml: string) { throw new Error('not implemented'); }
-  invoke(el: Element, methodName: string, args: any[]): any { throw new Error('not implemented'); }
-  getEventKey(event: any): string { throw new Error('not implemented'); }
+  replaceChild(el: any, newNode: any, oldNode: any) {
+    throw new Error('not implemented');
+  }
+  parse(templateHtml: string) {
+    throw new Error('not implemented');
+  }
+  invoke(el: Element, methodName: string, args: any[]): any {
+    throw new Error('not implemented');
+  }
+  getEventKey(event: any): string {
+    throw new Error('not implemented');
+  }
 
-  supportsCookies(): boolean { return false; }
-  getCookie(name: string): string { throw new Error('not implemented'); }
-  setCookie(name: string, value: string) { throw new Error('not implemented'); }
-  animate(element: any, keyframes: any[], options: any): any { throw new Error('not implemented'); }
+  supportsCookies(): boolean {
+    return false;
+  }
+  getCookie(name: string): string {
+    throw new Error('not implemented');
+  }
+  setCookie(name: string, value: string) {
+    throw new Error('not implemented');
+  }
+  animate(element: any, keyframes: any[], options: any): any {
+    throw new Error('not implemented');
+  }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

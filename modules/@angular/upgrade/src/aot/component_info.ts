@@ -24,7 +24,9 @@ export class PropertyBinding {
   bindAttr: string;
   bindonAttr: string;
 
-  constructor(public binding: string) { this.parseBinding(); }
+  constructor(public binding: string) {
+    this.parseBinding();
+  }
 
   private parseBinding() {
     const parts = this.binding.split(':');

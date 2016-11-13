@@ -10,7 +10,7 @@ import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/chang
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
+import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {DirectRenderer, RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
 
 import {AnimationViewContext} from './animation_view_context';
@@ -21,7 +21,7 @@ import {ExpressionChangedAfterItHasBeenCheckedError, ViewDestroyedError, ViewWra
 import {ViewContainer} from './view_container';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
-import {ViewUtils, addToArray} from './view_utils';
+import {addToArray, ViewUtils} from './view_utils';
 
 const _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -76,7 +76,9 @@ export abstract class AppView<T> {
     return this._animationContext;
   }
 
-  get destroyed(): boolean { return this.cdMode === ChangeDetectorStatus.Destroyed; }
+  get destroyed(): boolean {
+    return this.cdMode === ChangeDetectorStatus.Destroyed;
+  }
 
   create(context: T) {
     this.context = context;
@@ -96,12 +98,16 @@ export abstract class AppView<T> {
    * Overwritten by implementations.
    * Returns the ComponentRef for the host element for ViewType.HOST.
    */
-  createInternal(rootSelectorOrNode: string|any): ComponentRef<any> { return null; }
+  createInternal(rootSelectorOrNode: string|any): ComponentRef<any> {
+    return null;
+  }
 
   /**
    * Overwritten by implementations.
    */
-  createEmbeddedViewInternal(templateNodeIndex: number): AppView<any> { return null; }
+  createEmbeddedViewInternal(templateNodeIndex: number): AppView<any> {
+    return null;
+  }
 
   init(lastRootNode: any, allNodes: any[], disposables: Function[]) {
     this.lastRootNode = lastRootNode;
@@ -135,7 +141,9 @@ export abstract class AppView<T> {
     return notFoundResult;
   }
 
-  injector(nodeIndex: number): Injector { return new ElementInjector(this, nodeIndex); }
+  injector(nodeIndex: number): Injector {
+    return new ElementInjector(this, nodeIndex);
+  }
 
   detachAndDestroy() {
     if (this._hasExternalHostElement) {
@@ -240,7 +248,9 @@ export abstract class AppView<T> {
     }
   }
 
-  get changeDetectorRef(): ChangeDetectorRef { return this.ref; }
+  get changeDetectorRef(): ChangeDetectorRef {
+    return this.ref;
+  }
 
   get flatRootNodes(): any[] {
     const nodes: any[] = [];
@@ -313,7 +323,9 @@ export abstract class AppView<T> {
    */
   detectChangesInternal(throwOnChange: boolean): void {}
 
-  markAsCheckOnce(): void { this.cdMode = ChangeDetectorStatus.CheckOnce; }
+  markAsCheckOnce(): void {
+    this.cdMode = ChangeDetectorStatus.CheckOnce;
+  }
 
   markPathToRootAsCheckOnce(): void {
     let c: AppView<any> = this;
@@ -333,7 +345,9 @@ export abstract class AppView<T> {
     return cb;
   }
 
-  throwDestroyedError(details: string): void { throw new ViewDestroyedError(details); }
+  throwDestroyedError(details: string): void {
+    throw new ViewDestroyedError(details);
+  }
 }
 
 export class DebugAppView<T> extends AppView<T> {
@@ -411,7 +425,9 @@ export class DebugAppView<T> extends AppView<T> {
     }
   }
 
-  private _resetDebug() { this._currentDebugContext = null; }
+  private _resetDebug() {
+    this._currentDebugContext = null;
+  }
 
   debug(nodeIndex: number, rowNum: number, colNum: number): DebugContext {
     return this._currentDebugContext = new DebugContext(this, nodeIndex, rowNum, colNum);

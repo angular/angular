@@ -12,19 +12,27 @@ import {beforeEach, describe, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
   // Place to put reproductions for regressions
   describe('regressions', () => {
 
-    beforeEach(() => { TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]});
+    });
 
     describe('platform pipes', () => {
-      beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+      beforeEach(() => {
+        TestBed.configureCompiler({useJit: useJit});
+      });
 
       it('should overwrite them by custom pipes', () => {
         TestBed.configureTestingModule({declarations: [CustomPipe]});
@@ -195,12 +203,16 @@ class MyComp1 {
 
 @Pipe({name: 'somePipe', pure: true})
 class PlatformPipe implements PipeTransform {
-  transform(value: any): any { return 'somePlatformPipe'; }
+  transform(value: any): any {
+    return 'somePlatformPipe';
+  }
 }
 
 @Pipe({name: 'somePipe', pure: true})
 class CustomPipe implements PipeTransform {
-  transform(value: any): any { return 'someCustomPipe'; }
+  transform(value: any): any {
+    return 'someCustomPipe';
+  }
 }
 
 @Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
@@ -214,7 +226,9 @@ class MyCountingComp {
     return {value: 'counting method value'};
   }
 
-  static reset() { MyCountingComp.calls = 0; }
+  static reset() {
+    MyCountingComp.calls = 0;
+  }
   static calls = 0;
 }
 
@@ -224,7 +238,9 @@ class CountingPipe implements PipeTransform {
     CountingPipe.calls++;
     return {value: 'counting pipe value'};
   }
-  static reset() { CountingPipe.calls = 0; }
+  static reset() {
+    CountingPipe.calls = 0;
+  }
   static calls = 0;
 }
 

@@ -7,7 +7,7 @@
  */
 
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
@@ -19,8 +19,9 @@ export function bindView(
     view: CompileView, parsedTemplate: TemplateAst[], schemaRegistry: ElementSchemaRegistry): void {
   const visitor = new ViewBinderVisitor(view, schemaRegistry);
   templateVisitAll(visitor, parsedTemplate);
-  view.pipes.forEach(
-      (pipe) => { bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view); });
+  view.pipes.forEach((pipe) => {
+    bindPipeDestroyLifecycleCallbacks(pipe.meta, pipe.instance, pipe.view);
+  });
 }
 
 class ViewBinderVisitor implements TemplateAstVisitor {
@@ -38,7 +39,9 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     return null;
   }
 
-  visitNgContent(ast: NgContentAst, parent: CompileElement): any { return null; }
+  visitNgContent(ast: NgContentAst, parent: CompileElement): any {
+    return null;
+  }
 
   visitElement(ast: ElementAst, parent: CompileElement): any {
     const compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
@@ -96,14 +99,26 @@ class ViewBinderVisitor implements TemplateAstVisitor {
     return null;
   }
 
-  visitAttr(ast: AttrAst, ctx: any): any { return null; }
-  visitDirective(ast: DirectiveAst, ctx: any): any { return null; }
+  visitAttr(ast: AttrAst, ctx: any): any {
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, ctx: any): any {
+    return null;
+  }
   visitEvent(ast: BoundEventAst, eventTargetAndNames: Map<string, BoundEventAst>): any {
     return null;
   }
 
-  visitReference(ast: ReferenceAst, ctx: any): any { return null; }
-  visitVariable(ast: VariableAst, ctx: any): any { return null; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
+  visitReference(ast: ReferenceAst, ctx: any): any {
+    return null;
+  }
+  visitVariable(ast: VariableAst, ctx: any): any {
+    return null;
+  }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    return null;
+  }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
+    return null;
+  }
 }

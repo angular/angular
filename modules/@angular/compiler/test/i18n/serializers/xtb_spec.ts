@@ -25,7 +25,9 @@ export function main(): void {
 
       const asAst = serializer.load(xtb, 'url', messageBundle);
       const asText: {[id: string]: string} = {};
-      Object.keys(asAst).forEach(id => { asText[id] = serializeNodes(asAst[id]).join(''); });
+      Object.keys(asAst).forEach(id => {
+        asText[id] = serializeNodes(asAst[id]).join('');
+      });
 
       return asText;
     }
@@ -148,7 +150,9 @@ export function main(): void {
   <translation id="8de97c6a35252d9409dcaca0b8171c952740b28c"><ph /></translation>
 </translationbundle>`;
 
-        expect(() => { loadAsText(HTML, XTB); }).toThrowError(/<ph> misses the "name" attribute/);
+        expect(() => {
+          loadAsText(HTML, XTB);
+        }).toThrowError(/<ph> misses the "name" attribute/);
       });
 
       it('should throw when a placeholder is not present in the source message', () => {
@@ -187,7 +191,10 @@ export function main(): void {
       }).toThrowError(new RegExp(escapeRegExp(`Unexpected tag ("[ERROR ->]<what></what>")`)));
     });
 
-    it('should throw when trying to save an xtb file',
-       () => { expect(() => { serializer.write({}); }).toThrowError(/Unsupported/); });
+    it('should throw when trying to save an xtb file', () => {
+      expect(() => {
+        serializer.write({});
+      }).toThrowError(/Unsupported/);
+    });
   });
 }

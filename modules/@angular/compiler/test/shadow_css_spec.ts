@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
+import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css';
 import {normalizeCSS} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
@@ -19,7 +19,9 @@ export function main() {
       return normalizeCSS(shim.replace(nlRegexp, ''));
     }
 
-    it('should handle empty string', () => { expect(s('', 'a')).toEqual(''); });
+    it('should handle empty string', () => {
+      expect(s('', 'a')).toEqual('');
+    });
 
     it('should add an attribute to every rule', () => {
       const css = 'one {color: red;}two {color: red;}';
@@ -109,14 +111,17 @@ export function main() {
     });
 
     describe((':host'), () => {
-      it('should handle no context',
-         () => { expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}'); });
+      it('should handle no context', () => {
+        expect(s(':host {}', 'a', 'a-host')).toEqual('[a-host] {}');
+      });
 
-      it('should handle tag selector',
-         () => { expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}'); });
+      it('should handle tag selector', () => {
+        expect(s(':host(ul) {}', 'a', 'a-host')).toEqual('ul[a-host] {}');
+      });
 
-      it('should handle class selector',
-         () => { expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}'); });
+      it('should handle class selector', () => {
+        expect(s(':host(.x) {}', 'a', 'a-host')).toEqual('.x[a-host] {}');
+      });
 
       it('should handle attribute selector', () => {
         expect(s(':host([a="b"]) {}', 'a', 'a-host')).toEqual('[a="b"][a-host] {}');
@@ -249,13 +254,17 @@ export function main() {
       expect(css).toEqual('div[a] {height:calc(100% - 55px);}');
     });
 
-    it('should strip comments', () => { expect(s('/* x */b {c}', 'a')).toEqual('b[a] {c}'); });
+    it('should strip comments', () => {
+      expect(s('/* x */b {c}', 'a')).toEqual('b[a] {c}');
+    });
 
-    it('should ignore special characters in comments',
-       () => { expect(s('/* {;, */b {c}', 'a')).toEqual('b[a] {c}'); });
+    it('should ignore special characters in comments', () => {
+      expect(s('/* {;, */b {c}', 'a')).toEqual('b[a] {c}');
+    });
 
-    it('should support multiline comments',
-       () => { expect(s('/* \n */b {c}', 'a')).toEqual('b[a] {c}'); });
+    it('should support multiline comments', () => {
+      expect(s('/* \n */b {c}', 'a')).toEqual('b[a] {c}');
+    });
 
     it('should keep sourceMappingURL comments', () => {
       expect(s('b {c}/*# sourceMappingURL=data:x */', 'a'))
@@ -276,13 +285,17 @@ export function main() {
         return result;
       }
 
-      it('should work with empty css', () => { expect(captureRules('')).toEqual([]); });
+      it('should work with empty css', () => {
+        expect(captureRules('')).toEqual([]);
+      });
 
-      it('should capture a rule without body',
-         () => { expect(captureRules('a;')).toEqual([new CssRule('a', '')]); });
+      it('should capture a rule without body', () => {
+        expect(captureRules('a;')).toEqual([new CssRule('a', '')]);
+      });
 
-      it('should capture css rules with body',
-         () => { expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]); });
+      it('should capture css rules with body', () => {
+        expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]);
+      });
 
       it('should capture css rules with nested rules', () => {
         expect(captureRules('a {b {c}} d {e}')).toEqual([

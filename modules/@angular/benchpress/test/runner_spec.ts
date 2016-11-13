@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
-import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
+import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index';
 
 export function main() {
   describe('runner', () => {
@@ -120,21 +120,37 @@ export function main() {
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script: string): Promise<string> { return Promise.resolve('someUserAgent'); }
-  capabilities(): Promise<Map<string, any>> { return null; }
+  executeScript(script: string): Promise<string> {
+    return Promise.resolve('someUserAgent');
+  }
+  capabilities(): Promise<Map<string, any>> {
+    return null;
+  }
 }
 
 class MockValidator extends Validator {
-  constructor() { super(); }
-  describe() { return {'v': 11}; }
+  constructor() {
+    super();
+  }
+  describe() {
+    return {'v': 11};
+  }
 }
 
 class MockMetric extends Metric {
-  constructor() { super(); }
-  describe() { return {'m1': 'some metric'}; }
+  constructor() {
+    super();
+  }
+  describe() {
+    return {'m1': 'some metric'};
+  }
 }
 
 class MockSampler extends Sampler {
-  constructor() { super(null, null, null, null, null, null, null); }
-  sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
+  constructor() {
+    super(null, null, null, null, null, null, null);
+  }
+  sample(): Promise<SampleState> {
+    return Promise.resolve(new SampleState([], []));
+  }
 }

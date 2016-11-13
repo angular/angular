@@ -50,7 +50,9 @@ export function main(): void {
 </messagebundle>
 `;
 
-    it('should write a valid xmb file', () => { expect(toXmb(HTML)).toEqual(XMB); });
+    it('should write a valid xmb file', () => {
+      expect(toXmb(HTML)).toEqual(XMB);
+    });
 
     it('should throw when trying to load an xmb file', () => {
       expect(() => {

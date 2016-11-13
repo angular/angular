@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetterFn, MethodFn, ReflectionCapabilities, SetterFn, reflector} from './private_import_core';
+import {GetterFn, MethodFn, ReflectionCapabilities, reflector, SetterFn} from './private_import_core';
 import {StaticReflector} from './static_reflector';
 
 export class StaticAndDynamicReflectionCapabilities {
@@ -18,8 +18,12 @@ export class StaticAndDynamicReflectionCapabilities {
 
   constructor(private staticDelegate: StaticReflector) {}
 
-  isReflectionEnabled(): boolean { return true; }
-  factory(type: any): Function { return this.dynamicDelegate.factory(type); }
+  isReflectionEnabled(): boolean {
+    return true;
+  }
+  factory(type: any): Function {
+    return this.dynamicDelegate.factory(type);
+  }
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return isStaticType(type) ? this.staticDelegate.hasLifecycleHook(type, lcProperty) :
@@ -37,10 +41,18 @@ export class StaticAndDynamicReflectionCapabilities {
     return isStaticType(typeOrFunc) ? this.staticDelegate.propMetadata(typeOrFunc) :
                                       this.dynamicDelegate.propMetadata(typeOrFunc);
   }
-  getter(name: string): GetterFn { return this.dynamicDelegate.getter(name); }
-  setter(name: string): SetterFn { return this.dynamicDelegate.setter(name); }
-  method(name: string): MethodFn { return this.dynamicDelegate.method(name); }
-  importUri(type: any): string { return this.staticDelegate.importUri(type); }
+  getter(name: string): GetterFn {
+    return this.dynamicDelegate.getter(name);
+  }
+  setter(name: string): SetterFn {
+    return this.dynamicDelegate.setter(name);
+  }
+  method(name: string): MethodFn {
+    return this.dynamicDelegate.method(name);
+  }
+  importUri(type: any): string {
+    return this.staticDelegate.importUri(type);
+  }
   resolveIdentifier(name: string, moduleUrl: string, runtime: any) {
     return this.staticDelegate.resolveIdentifier(name, moduleUrl, runtime);
   }
