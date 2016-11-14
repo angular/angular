@@ -31,3 +31,8 @@ export class ConnectionPositionPair {
     this.overlayY = overlay.overlayY;
   }
 }
+
+/** The change event emitted by the strategy when a fallback position is used. */
+export class ConnectedOverlayPositionChange {
+  constructor(public connectionPair: ConnectionPositionPair) {}
+}

@@ -2,6 +2,7 @@ import {ElementRef} from '@angular/core';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {ViewportRuler} from './viewport-ruler';
 import {OverlayPositionBuilder} from './overlay-position-builder';
+import {ConnectedOverlayPositionChange} from './connected-position';
 
 
 // Default width and height of the overlay and origin panels throughout these tests.
@@ -257,6 +258,33 @@ describe('ConnectedPositionStrategy', () => {
       expect(overlayRect.left).toBe(originRect.left);
     });
 
+  });
+
+  it('should emit onPositionChange event when position changes', () => {
+    // force the overlay to open in a fallback position
+    fakeViewportRuler.fakeRect = {
+      top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+    };
+    positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+    originElement.style.top = '200px';
+    originElement.style.left = '475px';
+
+    strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'end', originY: 'center'},
+        {overlayX: 'start', overlayY: 'center'})
+        .withFallbackPosition(
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'end', overlayY: 'top'});
+
+    const positionChangeHandler = jasmine.createSpy('positionChangeHandler');
+    strategy.onPositionChange.first().subscribe(positionChangeHandler);
+
+    strategy.apply(overlayElement);
+    expect(positionChangeHandler).toHaveBeenCalled();
+    expect(positionChangeHandler.calls.mostRecent().args[0])
+        .toEqual(jasmine.any(ConnectedOverlayPositionChange),
+            `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
   });
 
 
