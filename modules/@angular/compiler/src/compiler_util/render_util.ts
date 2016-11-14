@@ -99,19 +99,20 @@ export function createCheckAnimationBindingStmts(
   const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
   const animationTransitionVar = o.variable('animationTransition_' + animationName);
 
-  updateStmts.push(
-      animationTransitionVar
-          .set(animationFnExpr.callFn([
-            view, renderElement, isFirstViewCheck(view).conditional(emptyStateValue, oldValue),
-            evalResult.currValExpr
-          ]))
-          .toDeclStmt());
+  updateStmts.push(animationTransitionVar
+                       .set(animationFnExpr.callFn([
+                         view, renderElement,
+                         isFirstViewCheck(view).conditional(emptyStateValue, strigify(oldValue)),
+                         strigify(evalResult.currValExpr)
+                       ]))
+                       .toDeclStmt());
   updateStmts.push(oldValue.set(evalResult.currValExpr).toStmt());
 
-  detachStmts.push(animationTransitionVar
-                       .set(animationFnExpr.callFn(
-                           [view, renderElement, evalResult.currValExpr, emptyStateValue]))
-                       .toDeclStmt());
+  detachStmts.push(
+      animationTransitionVar
+          .set(animationFnExpr.callFn(
+              [view, renderElement, strigify(evalResult.currValExpr), emptyStateValue]))
+          .toDeclStmt());
 
   const registerStmts: o.Statement[] = [];
   const animationStartMethodExists = boundOutputs.find(
@@ -153,4 +154,8 @@ export function createCheckAnimationBindingStmts(
   ];
   const checkDetachStmts: o.Statement[] = [...evalResult.stmts, ...detachStmts];
   return {checkUpdateStmts, checkDetachStmts};
+}
+
+function strigify(exp: o.Expression): o.Expression {
+  return exp.equals(o.NULL_EXPR).conditional(o.literal('null'), exp.callMethod('toString', []));
 }

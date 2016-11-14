@@ -112,6 +112,65 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(keyframes2[1]).toEqual([1, {'opacity': '0'}]);
          }));
 
+      it('should allow `true` and `false` to be recognized as `true` and `false` within animation states',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngIf="exp2" [@myAnimation]="exp" (@myAnimation.start)="callback($event)"></div>
+              `,
+               animations: [trigger(
+                   'myAnimation',
+                   [
+                     transition('true <=> false', animate(543)),
+                     transition('false => void', animate(100))
+                   ])]
+             }
+           });
+
+           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp2 = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           let lastFromState: string;
+           let lastToState: string;
+           cmp.callback = function(event: AnimationTransitionEvent) {
+             lastFromState = event.fromState;
+             lastToState = event.toState;
+           };
+           driver.log = [];
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           let time = driver.log.pop()['duration'];
+           expect(time).toEqual(543);
+           expect(lastFromState).toBe('false');
+           expect(lastToState).toBe('true');
+
+           cmp.exp = false;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           time = driver.log.pop()['duration'];
+           expect(time).toEqual(543);
+           expect(lastFromState).toBe('true');
+           expect(lastToState).toBe('false');
+
+           cmp.exp2 = false;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           time = driver.log.pop()['duration'];
+           expect(time).toEqual(100);
+           expect(lastFromState).toBe('false');
+           expect(lastToState).toBe('void');
+         }));
+
       it('should animate the element when the expression changes between states',
          fakeAsync(
              () => {
