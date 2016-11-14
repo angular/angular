@@ -113,6 +113,24 @@ export function main(): void {
       });
 
       describe('structure errors', () => {
+        it('should throw when a trans-unit has no translation', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="missingtarget">
+        <source/>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => {
+            loadAsMap(XLIFF);
+          }).toThrowError(/Message missingtarget misses a translation/);
+        });
+
+
         it('should throw when a trans-unit has no id attribute', () => {
           const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
