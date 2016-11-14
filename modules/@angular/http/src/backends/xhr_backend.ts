@@ -60,7 +60,8 @@ export class XHRConnection implements Connection {
         if (typeof body === 'string') body = body.replace(XSSI_PREFIX, '');
         const headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
-        const url = getResponseURL(_xhr);
+        // IE 9 does not provide the way to get URL of response
+        const url: string = getResponseURL(_xhr) || req.url;
 
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
@@ -161,7 +162,7 @@ export class XHRConnection implements Connection {
         _xhr.setRequestHeader('content-type', 'text/plain');
         break;
       case ContentType.BLOB:
-        let blob = req.blob();
+        const blob = req.blob();
         if (blob.type) {
           _xhr.setRequestHeader('content-type', blob.type);
         }
