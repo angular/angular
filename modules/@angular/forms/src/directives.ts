@@ -57,21 +57,11 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
     [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
 
 /**
- * A list of all the form directives.
- *
- * @stable
- */
-export const FORM_DIRECTIVES: Type<any>[][] = [TEMPLATE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
-
-/**
- * @stable
- */
-export const REACTIVE_FORM_DIRECTIVES: Type<any>[][] =
-    [REACTIVE_DRIVEN_DIRECTIVES, SHARED_FORM_DIRECTIVES];
-
-/**
  * Internal module used for sharing directives between FormsModule and ReactiveFormsModule
  */
-@NgModule({declarations: SHARED_FORM_DIRECTIVES, exports: SHARED_FORM_DIRECTIVES})
+@NgModule({
+  declarations: SHARED_FORM_DIRECTIVES,
+  exports: SHARED_FORM_DIRECTIVES,
+})
 export class InternalFormsSharedModule {
 }
