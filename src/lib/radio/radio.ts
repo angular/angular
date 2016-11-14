@@ -127,6 +127,13 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
       this._value = newValue;
 
       this._updateSelectedRadioFromValue();
+      this._checkSelectedRadioButton();
+    }
+  }
+
+  _checkSelectedRadioButton() {
+    if (this.selected && !this._selected.checked) {
+      this._selected.checked = true;
     }
   }
 
@@ -139,9 +146,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     this._selected = selected;
     this.value = selected ? selected.value : null;
 
-    if (selected && !selected.checked) {
-      selected.checked = true;
-    }
+    this._checkSelectedRadioButton();
   }
 
   /**
@@ -180,14 +185,13 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     let isAlreadySelected = this._selected != null && this._selected.value == this._value;
 
     if (this._radios != null && !isAlreadySelected) {
-      let matchingRadio = this._radios.filter(radio => radio.value == this._value)[0];
-
-      if (matchingRadio) {
-        this.selected = matchingRadio;
-      } else if (this.value == null) {
-        this.selected = null;
-        this._radios.forEach(radio => { radio.checked = false; });
-      }
+      this._selected = null;
+      this._radios.forEach(radio => {
+        radio.checked = this.value == radio.value;
+        if (radio.checked) {
+          this._selected = radio;
+        }
+      });
     }
   }
 
@@ -303,19 +307,21 @@ export class MdRadioButton implements OnInit {
   }
 
   set checked(newCheckedState: boolean) {
-    this._checked = newCheckedState;
+    if (this._checked != newCheckedState) {
+      this._checked = newCheckedState;
 
-    if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
-      this.radioGroup.selected = this;
-    } else if (!newCheckedState && this.radioGroup && this.radioGroup.value == this.value) {
-      // When unchecking the selected radio button, update the selected radio
-      // property on the group.
-      this.radioGroup.selected = null;
-    }
+      if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
+        this.radioGroup.selected = this;
+      } else if (!newCheckedState && this.radioGroup && this.radioGroup.value == this.value) {
+        // When unchecking the selected radio button, update the selected radio
+        // property on the group.
+        this.radioGroup.selected = null;
+      }
 
-    if (newCheckedState) {
-      // Notify all radio buttons with the same name to un-check.
-      this.radioDispatcher.notify(this.id, this.name);
+      if (newCheckedState) {
+        // Notify all radio buttons with the same name to un-check.
+        this.radioDispatcher.notify(this.id, this.name);
+      }
     }
   }
 
@@ -327,10 +333,17 @@ export class MdRadioButton implements OnInit {
 
   set value(value: any) {
     if (this._value != value) {
-      if (this.radioGroup != null && this.checked) {
-        this.radioGroup.value = value;
-      }
       this._value = value;
+      if (this.radioGroup != null) {
+        if (!this.checked) {
+          // Update checked when the value changed to match the radio group's value
+          this.checked = this.radioGroup.value == value;
+        }
+        if (this.checked) {
+          this.radioGroup.selected = this;
+        }
+      }
+
     }
   }
 
