@@ -190,7 +190,11 @@ class XliffParser implements ml.Visitor {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             ml.visitAll(this, element.children, null);
-            this._mlNodesByMsgId[id] = this._unitMlNodes;
+            if (this._unitMlNodes) {
+              this._mlNodesByMsgId[id] = this._unitMlNodes;
+            } else {
+              this._addError(element, `Message ${id} misses a translation`);
+            }
           }
         }
         break;
