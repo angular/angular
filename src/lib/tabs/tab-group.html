@@ -1,6 +1,6 @@
 <div class="md-tab-header" role="tablist"
      (keydown)="handleKeydown($event)">
-  <div class="md-tab-label" role="tab" md-tab-label-wrapper
+  <div class="md-tab-label" role="tab" md-tab-label-wrapper md-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [tabIndex]="selectedIndex == i ? 0 : -1"

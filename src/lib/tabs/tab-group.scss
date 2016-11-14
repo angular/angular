@@ -16,6 +16,7 @@
 // Wraps each tab label
 .md-tab-label {
   @include tab-label;
+  position: relative;
 }
 
 @media ($md-xsmall) {

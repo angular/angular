@@ -9,7 +9,9 @@
 // Wraps each link in the header
 [md-tab-link] {
   @include tab-label;
-  text-decoration: none;
+  text-decoration: none;  // Removes anchor underline styling
+  position: relative;
+  overflow: hidden;  // Keeps the ripple from extending outside the element bounds
 }
 
 @media ($md-xsmall) {

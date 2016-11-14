@@ -1,5 +1,6 @@
 import {Component, Input, ViewChild, ElementRef, ViewEncapsulation, Directive} from '@angular/core';
 import {MdInkBar} from '../ink-bar';
+import {MdRipple} from '../../core/ripple/ripple';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -40,4 +41,17 @@ export class MdTabLink {
   }
 
   constructor(private _mdTabNavBar: MdTabNavBar, private _element: ElementRef) {}
+}
+
+/**
+ * Simple directive that extends the ripple and matches the selector of the MdTabLink. This
+ * adds the ripple behavior to nav bar labels.
+ */
+@Directive({
+  selector: '[md-tab-link]',
+})
+export class MdTabLinkRipple extends MdRipple {
+  constructor(private _element: ElementRef) {
+    super(_element);
+  }
 }
