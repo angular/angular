@@ -27,7 +27,10 @@ export class FocusTrap {
 
   /** Focuses the first tabbable element within the focus trap region. */
   focusFirstTabbableElement() {
-    let redirectToElement = this._getFirstTabbableElement(this.trappedContent.nativeElement);
+    let rootElement = this.trappedContent.nativeElement;
+    let redirectToElement = rootElement.querySelector('[md-focus-start]') as HTMLElement ||
+                            this._getFirstTabbableElement(rootElement);
+
     if (redirectToElement) {
       redirectToElement.focus();
     }
@@ -35,7 +38,16 @@ export class FocusTrap {
 
   /** Focuses the last tabbable element within the focus trap region. */
   focusLastTabbableElement() {
-    let redirectToElement = this._getLastTabbableElement(this.trappedContent.nativeElement);
+    let rootElement = this.trappedContent.nativeElement;
+    let focusTargets = rootElement.querySelectorAll('[md-focus-end]');
+    let redirectToElement: HTMLElement = null;
+
+    if (focusTargets.length) {
+      redirectToElement = focusTargets[focusTargets.length - 1] as HTMLElement;
+    } else {
+      redirectToElement = this._getLastTabbableElement(rootElement);
+    }
+
     if (redirectToElement) {
       redirectToElement.focus();
     }
