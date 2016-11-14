@@ -112,8 +112,8 @@ export function main(): void {
         });
       });
 
-      describe('errors', () => {
-        it('should throw when a placeholder has no id attribute', () => {
+      describe('structure errors', () => {
+        it('should throw when a trans-unit has no id attribute', () => {
           const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
@@ -131,25 +131,7 @@ export function main(): void {
           }).toThrowError(/<trans-unit> misses the "id" attribute/);
         });
 
-        it('should throw on unknown message tags', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" datatype="plaintext" original="ng2.template">
-    <body>
-      <trans-unit id="deadbeef" datatype="html">
-        <source/>
-        <target><b>msg should contain only ph tags</b></target>
-      </trans-unit>
-    </body>
-  </file>
-</xliff>`;
-
-          expect(() => { loadAsMap(XLIFF); })
-              .toThrowError(
-                  new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
-        });
-
-        it('should throw when a placeholder has no name attribute', () => {
+        it('should throw on duplicate trans-unit id', () => {
           const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
@@ -170,6 +152,45 @@ export function main(): void {
             loadAsMap(XLIFF);
           }).toThrowError(/Duplicated translations for msg deadbeef/);
         });
+      });
+
+      describe('message errors', () => {
+        it('should throw on unknown message tags', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="deadbeef" datatype="html">
+        <source/>
+        <target><b>msg should contain only ph tags</b></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => { loadAsMap(XLIFF); })
+              .toThrowError(
+                  new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
+        });
+
+        it('should throw when a placeholder misses an id attribute', () => {
+          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="deadbeef" datatype="html">
+        <source/>
+        <target><x/></target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`;
+
+          expect(() => {
+            loadAsMap(XLIFF);
+          }).toThrowError(new RegExp(escapeRegExp(`<x> misses the "id" attribute`)));
+        });
+
       });
     });
   });
