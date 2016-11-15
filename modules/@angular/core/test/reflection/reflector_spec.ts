@@ -89,6 +89,25 @@ export function main() {
         const p = reflector.parameters(ClassWithoutDecorators);
         expect(p.length).toEqual(2);
       });
+
+      // See https://github.com/angular/tsickle/issues/261
+      it('should read forwardRef down-leveled type', () => {
+        class Dep {}
+        class ForwardLegacy {
+          constructor(d: Dep) {}
+          // Older tsickle had a bug: wrote a forward reference
+          static ctorParameters = [{type: Dep}];
+        }
+        expect(reflector.parameters(ForwardLegacy)).toEqual([[Dep]]);
+        class Forward {
+          constructor(d: Dep) {}
+          // Newer tsickle generates a functionClosure
+          static ctorParameters = () => [{type: ForwardDep}];
+        }
+        class ForwardDep {}
+        expect(reflector.parameters(Forward)).toEqual([[ForwardDep]]);
+      });
+
     });
 
     describe('propMetadata', () => {
