@@ -8,6 +8,7 @@ import {ButtonE2E} from './button/button-e2e';
 import {MenuE2E} from './menu/menu-e2e';
 import {SimpleRadioButtons} from './radio/radio-e2e';
 import {BasicTabs} from './tabs/tabs-e2e';
+import {DialogE2E, TestDialog} from './dialog/dialog-e2e';
 import {MaterialModule} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 
@@ -27,10 +28,13 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     SimpleRadioButtons,
     SimpleCheckboxes,
     Home,
+    DialogE2E,
+    TestDialog,
   ],
   bootstrap: [E2EApp],
   providers: [
     {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
-  ]
+  ],
+  entryComponents: [TestDialog]
 })
 export class E2eAppModule { }
