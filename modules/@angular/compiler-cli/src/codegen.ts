@@ -17,9 +17,9 @@ import {readFileSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {PathMappedReflectorHost} from './path_mapped_reflector_host';
+import {NgHost, NgHostContext} from './ng_host';
+import {PathMappedNgHost} from './path_mapped_ng_host';
 import {Console} from './private_import_core';
-import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
@@ -37,8 +37,7 @@ export class CodeGenerator {
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
-      private compiler: compiler.AotCompiler, private reflectorHost: compiler.StaticReflectorHost) {
-  }
+      private compiler: compiler.AotCompiler, private ngHost: NgHost) {}
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -65,7 +64,7 @@ export class CodeGenerator {
 
   codegen(options: {transitiveModules: boolean}): Promise<any> {
     const staticSymbols =
-        extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
+        extractProgramSymbols(this.program, this.staticReflector, this.ngHost, this.options);
 
     return this.compiler.compileModules(staticSymbols, options).then(generatedModules => {
       generatedModules.forEach(generatedModule => {
@@ -79,8 +78,8 @@ export class CodeGenerator {
 
   static create(
       options: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
-      compilerHost: ts.CompilerHost, reflectorHostContext?: ReflectorHostContext,
-      resourceLoader?: compiler.ResourceLoader, reflectorHost?: ReflectorHost): CodeGenerator {
+      compilerHost: ts.CompilerHost, ngHostContext?: NgHostContext,
+      resourceLoader?: compiler.ResourceLoader, ngHost?: NgHost): CodeGenerator {
     resourceLoader = resourceLoader || {
       get: (s: string) => {
         if (!compilerHost.fileExists(s)) {
@@ -102,13 +101,13 @@ export class CodeGenerator {
     }
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    if (!reflectorHost) {
+    if (!ngHost) {
       const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-      reflectorHost = usePathMapping ?
-          new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
-          new ReflectorHost(program, compilerHost, options, reflectorHostContext);
+      ngHost = usePathMapping ?
+          new PathMappedNgHost(program, compilerHost, options, ngHostContext) :
+          new NgHost(program, compilerHost, options, ngHostContext);
     }
-    const staticReflector = new compiler.StaticReflector(reflectorHost);
+    const staticReflector = new compiler.StaticReflector(ngHost);
     compiler.StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
         new compiler.I18NHtmlParser(new compiler.HtmlParser(), transContent, cliOptions.i18nFormat);
@@ -135,18 +134,15 @@ export class CodeGenerator {
         new compiler.ViewCompiler(config, elementSchemaRegistry),
         new compiler.DirectiveWrapperCompiler(
             config, expressionParser, elementSchemaRegistry, console),
-        new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(reflectorHost),
-        cliOptions.locale, cliOptions.i18nFormat,
-        new compiler.AnimationParser(elementSchemaRegistry));
+        new compiler.NgModuleCompiler(), new compiler.TypeScriptEmitter(ngHost), cliOptions.locale,
+        cliOptions.i18nFormat, new compiler.AnimationParser(elementSchemaRegistry));
 
-    return new CodeGenerator(
-        options, program, compilerHost, staticReflector, aotCompiler, reflectorHost);
+    return new CodeGenerator(options, program, compilerHost, staticReflector, aotCompiler, ngHost);
   }
 }
 
 export function extractProgramSymbols(
-    program: ts.Program, staticReflector: compiler.StaticReflector,
-    reflectorHost: compiler.StaticReflectorHost,
+    program: ts.Program, staticReflector: compiler.StaticReflector, ngHost: NgHost,
     options: AngularCompilerOptions): compiler.StaticSymbol[] {
   // Compare with false since the default should be true
   const skipFileNames =
@@ -157,7 +153,7 @@ export function extractProgramSymbols(
   program.getSourceFiles()
       .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))
       .forEach(sourceFile => {
-        const absSrcPath = reflectorHost.getCanonicalFileName(sourceFile.fileName);
+        const absSrcPath = ngHost.getCanonicalFileName(sourceFile.fileName);
 
         const moduleMetadata = staticReflector.getModuleMetadata(absSrcPath);
         if (!moduleMetadata) {
@@ -176,7 +172,7 @@ export function extractProgramSymbols(
             // Ignore symbols that are only included to record error information.
             continue;
           }
-          staticSymbols.push(reflectorHost.findDeclaration(absSrcPath, symbol, absSrcPath));
+          staticSymbols.push(staticReflector.findDeclaration(absSrcPath, symbol, absSrcPath));
         }
       });
 

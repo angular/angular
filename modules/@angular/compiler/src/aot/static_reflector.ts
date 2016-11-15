@@ -7,75 +7,49 @@
  */
 
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-
+import {AssetUrl} from '../output/path_util';
 import {ReflectorReader} from '../private_import_core';
-
+import {AotCompilerHost} from './compiler_host';
 import {StaticSymbol} from './static_symbol';
 
 const SUPPORTED_SCHEMA_VERSION = 1;
-
-/**
- * The host of the static resolver is expected to be able to provide module metadata in the form of
- * ModuleMetadata. Angular 2 CLI will produce this metadata for a module whenever a .d.ts files is
- * produced and the module has exported variables or classes with decorators. Module metadata can
- * also be produced directly from TypeScript sources by using MetadataCollector in tools/metadata.
- */
-export interface StaticReflectorHost {
-  /**
-   * Return a ModuleMetadata for the given module.
-   *
-   * @param modulePath is a string identifier for a module as an absolute path.
-   * @returns the metadata for the given module.
-   */
-  getMetadataFor(modulePath: string): {[key: string]: any}|{[key: string]: any}[];
-
-  /**
-   * Resolve a symbol from an import statement form, to the file where it is declared.
-   * @param module the location imported from
-   * @param containingFile for relative imports, the path of the file containing the import
-   */
-  findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol;
-
-  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol;
-
-  angularImportLocations(): {
-    coreDecorators: string,
-    diDecorators: string,
-    diMetadata: string,
-    diOpaqueToken: string,
-    animationMetadata: string,
-    provider: string
-  };
-
-  getCanonicalFileName(fileName: string): string;
-}
+const ANGULAR_IMPORT_LOCATIONS = {
+  coreDecorators: '@angular/core/src/metadata',
+  diDecorators: '@angular/core/src/di/metadata',
+  diMetadata: '@angular/core/src/di/metadata',
+  diOpaqueToken: '@angular/core/src/di/opaque_token',
+  animationMetadata: '@angular/core/src/animation/metadata',
+  provider: '@angular/core/src/di/provider'
+};
 
 /**
  * A static reflector implements enough of the Reflector API that is necessary to compile
  * templates statically.
  */
 export class StaticReflector implements ReflectorReader {
+  private typeCache = new Map<string, StaticSymbol>();
   private annotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
   private metadataCache = new Map<string, {[key: string]: any}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
+  private declarationMap = new Map<string, StaticSymbol>();
   private opaqueToken: StaticSymbol;
 
-  constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
+  constructor(private host: AotCompilerHost) { this.initializeConversionMap(); }
 
   importUri(typeOrFunc: StaticSymbol): string {
-    const staticSymbol = this.host.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
+    const staticSymbol = this.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
     return staticSymbol ? staticSymbol.filePath : null;
   }
 
   resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
-    return this.host.findDeclaration(moduleUrl, name, '');
+    return this.findDeclaration(moduleUrl, name, '');
   }
 
   resolveEnum(enumIdentifier: any, name: string): any {
     const staticSymbol: StaticSymbol = enumIdentifier;
-    return this.host.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
+    return this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, [name]);
   }
 
   public annotations(type: StaticSymbol): any[] {
@@ -172,59 +146,156 @@ export class StaticReflector implements ReflectorReader {
 
   private initializeConversionMap(): void {
     const {coreDecorators, diDecorators, diMetadata, diOpaqueToken, animationMetadata, provider} =
-        this.host.angularImportLocations();
-    this.opaqueToken = this.host.findDeclaration(diOpaqueToken, 'OpaqueToken');
+        ANGULAR_IMPORT_LOCATIONS;
+    this.opaqueToken = this.findDeclaration(diOpaqueToken, 'OpaqueToken');
 
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Host'), Host);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Injectable'), Injectable);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Self'), Self);
+        this.findDeclaration(diDecorators, 'Injectable'), Injectable);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Self'), Self);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Inject'), Inject);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Optional'), Optional);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(diDecorators, 'Inject'), Inject);
+        this.findDeclaration(coreDecorators, 'Attribute'), Attribute);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diDecorators, 'Optional'), Optional);
+        this.findDeclaration(coreDecorators, 'ContentChild'), ContentChild);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Attribute'), Attribute);
+        this.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildren);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ContentChild'), ContentChild);
+        this.findDeclaration(coreDecorators, 'ViewChild'), ViewChild);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildren);
+        this.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildren);
+    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Input'), Input);
+    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Output'), Output);
+    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Pipe'), Pipe);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewChild'), ViewChild);
+        this.findDeclaration(coreDecorators, 'HostBinding'), HostBinding);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildren);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Input'), Input);
+        this.findDeclaration(coreDecorators, 'HostListener'), HostListener);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Output'), Output);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(coreDecorators, 'Pipe'), Pipe);
+        this.findDeclaration(coreDecorators, 'Directive'), Directive);
     this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'HostBinding'), HostBinding);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'HostListener'), HostListener);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Directive'), Directive);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'Component'), Component);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(coreDecorators, 'NgModule'), NgModule);
+        this.findDeclaration(coreDecorators, 'Component'), Component);
+    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'NgModule'), NgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'Host'), Host);
-    this.registerDecoratorOrConstructor(this.host.findDeclaration(diMetadata, 'Self'), Self);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(
-        this.host.findDeclaration(diMetadata, 'Optional'), Optional);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Host'), Host);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Self'), Self);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
+    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Optional'), Optional);
 
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'trigger'), trigger);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'state'), state);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'transition'), transition);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'style'), style);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'animate'), animate);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'keyframes'), keyframes);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'sequence'), sequence);
-    this.registerFunction(this.host.findDeclaration(animationMetadata, 'group'), group);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'trigger'), trigger);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'state'), state);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'transition'), transition);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'style'), style);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'animate'), animate);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'keyframes'), keyframes);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'sequence'), sequence);
+    this.registerFunction(this.findDeclaration(animationMetadata, 'group'), group);
+  }
+
+  /**
+   * getStaticSymbol produces a Type whose metadata is known but whose implementation is not loaded.
+   * All types passed to the StaticResolver should be pseudo-types returned by this method.
+   *
+   * @param declarationFile the absolute path of the file where the symbol is declared
+   * @param name the name of the type.
+   */
+  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
+    const memberSuffix = members ? `.${ members.join('.')}` : '';
+    const key = `"${declarationFile}".${name}${memberSuffix}`;
+    let result = this.typeCache.get(key);
+    if (!result) {
+      result = new StaticSymbol(declarationFile, name, members);
+      this.typeCache.set(key, result);
+    }
+    return result;
+  }
+
+  private normalizeAssetUrl(url: string): string {
+    const assetUrl = AssetUrl.parse(url);
+    return assetUrl ? `${assetUrl.packageName}@${assetUrl.modulePath}` : null;
+  }
+
+  private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
+    const resolveModule = (moduleName: string): string => {
+      const resolvedModulePath = this.host.resolveImportToFile(moduleName, filePath);
+      if (!resolvedModulePath) {
+        throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
+      }
+      return resolvedModulePath;
+    };
+    const metadata = this.getModuleMetadata(filePath);
+    if (metadata) {
+      // If we have metadata for the symbol, this is the original exporting location.
+      if (metadata['metadata'][symbolName]) {
+        return this.getStaticSymbol(filePath, symbolName);
+      }
+
+      // If no, try to find the symbol in one of the re-export location
+      if (metadata['exports']) {
+        // Try and find the symbol in the list of explicitly re-exported symbols.
+        for (const moduleExport of metadata['exports']) {
+          if (moduleExport.export) {
+            const exportSymbol = moduleExport.export.find((symbol: any) => {
+              if (typeof symbol === 'string') {
+                return symbol == symbolName;
+              } else {
+                return symbol.as == symbolName;
+              }
+            });
+            if (exportSymbol) {
+              let symName = symbolName;
+              if (typeof exportSymbol !== 'string') {
+                symName = exportSymbol.name;
+              }
+              return this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
+            }
+          }
+        }
+
+        // Try to find the symbol via export * directives.
+        for (const moduleExport of metadata['exports']) {
+          if (!moduleExport.export) {
+            const resolvedModule = resolveModule(moduleExport.from);
+            const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
+            if (candidateSymbol) return candidateSymbol;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  findDeclaration(module: string, symbolName: string, containingFile?: string): StaticSymbol {
+    const cacheKey = `${module}|${symbolName}|${containingFile}`;
+    let symbol = this.declarationMap.get(cacheKey);
+    if (symbol) {
+      return symbol;
+    }
+    try {
+      const assetUrl = this.normalizeAssetUrl(module);
+      if (assetUrl) {
+        module = assetUrl;
+      }
+      const filePath = this.host.resolveImportToFile(module, containingFile);
+
+      if (!filePath) {
+        // If the file cannot be found the module is probably referencing a declared module
+        // for which there is no disambiguating file and we also don't need to track
+        // re-exports. Just use the module name.
+        return this.getStaticSymbol(module, symbolName);
+      }
+
+      let symbol = this.resolveExportedSymbol(filePath, symbolName) ||
+          this.getStaticSymbol(filePath, symbolName);
+      this.declarationMap.set(cacheKey, symbol);
+      return symbol;
+    } catch (e) {
+      console.error(`can't resolve module ${module} from ${containingFile}`);
+      throw e;
+    }
   }
 
   /** @internal */
@@ -237,10 +308,10 @@ export class StaticReflector implements ReflectorReader {
       function resolveReference(context: StaticSymbol, expression: any): StaticSymbol {
         let staticSymbol: StaticSymbol;
         if (expression['module']) {
-          staticSymbol = _this.host.findDeclaration(
-              expression['module'], expression['name'], context.filePath);
+          staticSymbol =
+              _this.findDeclaration(expression['module'], expression['name'], context.filePath);
         } else {
-          staticSymbol = _this.host.getStaticSymbol(context.filePath, expression['name']);
+          staticSymbol = _this.getStaticSymbol(context.filePath, expression['name']);
         }
         return staticSymbol;
       }
@@ -449,8 +520,7 @@ export class StaticReflector implements ReflectorReader {
                     const members = selectTarget.members ?
                         (selectTarget.members as string[]).concat(member) :
                         [member];
-                    return _this.host.getStaticSymbol(
-                        selectTarget.filePath, selectTarget.name, members);
+                    return _this.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   }
                 }
                 const member = simplify(expression['member']);
@@ -485,10 +555,10 @@ export class StaticReflector implements ReflectorReader {
                 // Determine if the function is a built-in conversion
                 let target = expression['expression'];
                 if (target['module']) {
-                  staticSymbol = _this.host.findDeclaration(
-                      target['module'], target['name'], context.filePath);
+                  staticSymbol =
+                      _this.findDeclaration(target['module'], target['name'], context.filePath);
                 } else {
-                  staticSymbol = _this.host.getStaticSymbol(context.filePath, target['name']);
+                  staticSymbol = _this.getStaticSymbol(context.filePath, target['name']);
                 }
                 let converter = _this.conversionMap.get(staticSymbol);
                 if (converter) {
