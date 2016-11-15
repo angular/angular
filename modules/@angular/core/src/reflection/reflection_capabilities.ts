@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global, isPresent, stringify} from '../facade/lang';
+import {global, stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -42,7 +42,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       } else {
         result[i] = [];
       }
-      if (paramAnnotations && isPresent(paramAnnotations[i])) {
+      if (paramAnnotations && paramAnnotations[i]) {
         result[i] = result[i].concat(paramAnnotations[i]);
       }
     }
@@ -55,8 +55,15 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return (<any>type).parameters;
     }
 
+    let ownParamAnnotations: any[];
+    let ownParamTypes: any[];
+    if (this._reflect && this._reflect.getMetadata) {
+      ownParamAnnotations = this._reflect.getOwnMetadata('parameters', type);
+      ownParamTypes = this._reflect.getOwnMetadata('design:paramtypes', type);
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>type).ctorParameters) {
+    if ((<any>type).ctorParameters && !ownParamAnnotations && !ownParamTypes) {
       const ctorParameters = (<any>type).ctorParameters;
       const paramTypes = ctorParameters.map((ctorParam: any) => ctorParam && ctorParam.type);
       const paramAnnotations = ctorParameters.map(
@@ -66,7 +73,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+    if (this._reflect && this._reflect.getMetadata) {
       const paramAnnotations = this._reflect.getMetadata('parameters', type);
       const paramTypes = this._reflect.getMetadata('design:paramtypes', type);
       if (paramTypes || paramAnnotations) {
@@ -87,8 +94,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return annotations;
     }
 
+    let ownAnnotations: any[];
+    if (this._reflect && this._reflect.getMetadata) {
+      ownAnnotations = this._reflect.getOwnMetadata('annotations', typeOrFunc);
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>typeOrFunc).decorators) {
+    if ((<any>typeOrFunc).decorators && !ownAnnotations) {
       return convertTsickleDecoratorIntoMetadata((<any>typeOrFunc).decorators);
     }
 
@@ -110,8 +122,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return propMetadata;
     }
 
+    let ownPropMetadata: any;
+    if (this._reflect && this._reflect.getMetadata) {
+      ownPropMetadata = this._reflect.getOwnMetadata('propMetadata', typeOrFunc);
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>typeOrFunc).propDecorators) {
+    if ((<any>typeOrFunc).propDecorators && !ownPropMetadata) {
       const propDecorators = (<any>typeOrFunc).propDecorators;
       const propMetadata = <{[key: string]: any[]}>{};
       Object.keys(propDecorators).forEach(prop => {
