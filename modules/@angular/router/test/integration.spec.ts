@@ -1156,8 +1156,6 @@ describe('Integration', () => {
          advance(fixture);
          expect(location.path()).toEqual('/initial');
        })));
-
-    // should not break the back button when trigger by initial navigation
   });
 
   describe('guards', () => {
@@ -1380,6 +1378,11 @@ describe('Integration', () => {
                   return true;
                 }
               },
+              {
+                provide: 'alwaysFalse',
+                useValue:
+                    (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+              },
             ]
           });
         });
@@ -1504,6 +1507,31 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/team/33/user/fedor');
            })));
+
+        it('should not create a route state if navigation is canceled',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'main',
+               component: TeamCmp,
+               children: [
+                 {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
+                 {path: 'component2', component: SimpleCmp}
+               ]
+             }]);
+
+             router.navigateByUrl('/main/component1');
+             advance(fixture);
+
+             router.navigateByUrl('/main/component2');
+             advance(fixture);
+
+             const teamCmp = fixture.debugElement.children[1].componentInstance;
+             expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
+             expect(location.path()).toEqual('/main/component1');
+           })));
+
       });
 
       describe('should work when given a class', () => {
