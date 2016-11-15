@@ -232,7 +232,9 @@ export declare class RouterLink {
     queryParams: {
         [k: string]: any;
     };
+    replaceUrl: boolean;
     routerLink: any[] | string;
+    skipLocationChange: boolean;
     urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
     onClick(): boolean;
@@ -262,11 +264,13 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     queryParams: {
         [k: string]: any;
     };
+    replaceUrl: boolean;
     routerLink: any[] | string;
     routerLinkOptions: {
         preserveQueryParams: boolean;
         preserveFragment: boolean;
     };
+    skipLocationChange: boolean;
     target: string;
     urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
