@@ -62,23 +62,30 @@ export class CodeGenerator {
     return path.join(this.options.genDir, relativePath);
   }
 
-  codegen(options: {transitiveModules: boolean}): Promise<any> {
-    const staticSymbols =
-        extractProgramSymbols(this.program, this.staticReflector, this.ngHost, this.options);
-
-    return this.compiler.compileModules(staticSymbols, options).then(generatedModules => {
-      generatedModules.forEach(generatedModule => {
-        const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
-        const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
-        this.host.writeFile(
-            emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
-      });
-    });
+  codegen(): Promise<any> {
+    return this.compiler
+        .compileAll(
+            this.program.getSourceFiles().map(sf => this.ngHost.getCanonicalFileName(sf.fileName)))
+        .then(generatedModules => {
+          generatedModules.forEach(generatedModule => {
+            const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
+            const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
+            this.host.writeFile(
+                emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+          });
+        });
   }
 
   static create(
       options: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
-      compilerHost: ts.CompilerHost, ngHost?: NgHost): CodeGenerator {
+      compilerHost: ts.CompilerHost, ngHostContext?: NgHostContext,
+      ngHost?: NgHost): CodeGenerator {
+    if (!ngHost) {
+      const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
+      ngHost = usePathMapping ?
+          new PathMappedNgHost(program, compilerHost, options, ngHostContext) :
+          new NgHost(program, compilerHost, options, ngHostContext);
+    }
     const transFile = cliOptions.i18nFile;
     const locale = cliOptions.locale;
     let transContent: string = '';
@@ -93,7 +100,9 @@ export class CodeGenerator {
       debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale
+      locale: cliOptions.locale,
+      excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
+                                                                       GENERATED_FILES
     });
     return new CodeGenerator(options, program, compilerHost, reflector, aotCompiler, ngHost);
   }
@@ -102,37 +111,10 @@ export class CodeGenerator {
 export function extractProgramSymbols(
     program: ts.Program, staticReflector: compiler.StaticReflector, ngHost: NgHost,
     options: AngularCompilerOptions): compiler.StaticSymbol[] {
-  // Compare with false since the default should be true
-  const skipFileNames =
-      options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
-
-  const staticSymbols: compiler.StaticSymbol[] = [];
-
-  program.getSourceFiles()
-      .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))
-      .forEach(sourceFile => {
-        const absSrcPath = ngHost.getCanonicalFileName(sourceFile.fileName);
-
-        const moduleMetadata = staticReflector.getModuleMetadata(absSrcPath);
-        if (!moduleMetadata) {
-          console.log(`WARNING: no metadata found for ${absSrcPath}`);
-          return;
-        }
-
-        const metadata = moduleMetadata['metadata'];
-
-        if (!metadata) {
-          return;
-        }
-
-        for (const symbol of Object.keys(metadata)) {
-          if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-            // Ignore symbols that are only included to record error information.
-            continue;
-          }
-          staticSymbols.push(staticReflector.findDeclaration(absSrcPath, symbol, absSrcPath));
-        }
+  return compiler.extractProgramSymbols(
+      staticReflector, program.getSourceFiles().map(sf => ngHost.getCanonicalFileName(sf.fileName)),
+      {
+        excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
+                                                                         GENERATED_FILES
       });
-
-  return staticSymbols;
 }
