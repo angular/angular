@@ -52,6 +52,26 @@ export function check(diags: ts.Diagnostic[]) {
   }
 }
 
+export function validateAngularCompilerOptions(options: AngularCompilerOptions): ts.Diagnostic[] {
+  if (options.annotationsAs) {
+    switch (options.annotationsAs) {
+      case 'decorators':
+      case 'static fields':
+        break;
+      default:
+        return [{
+          file: null,
+          start: null,
+          length: null,
+          messageText:
+              'Angular compiler options "annotationsAs" only supports "static fields" and "decorators"',
+          category: ts.DiagnosticCategory.Error,
+          code: 0
+        }];
+    }
+  }
+}
+
 export class Tsc implements CompilerInterface {
   public ngOptions: AngularCompilerOptions;
   public parsed: ts.ParsedCommandLine;
@@ -96,6 +116,8 @@ export class Tsc implements CompilerInterface {
     for (const key of Object.keys(this.parsed.options)) {
       this.ngOptions[key] = this.parsed.options[key];
     }
+    check(validateAngularCompilerOptions(this.ngOptions));
+
     return {parsed: this.parsed, ngOptions: this.ngOptions};
   }
 
@@ -113,8 +135,10 @@ export class Tsc implements CompilerInterface {
   }
 
   emit(compilerHost: TsickleHost, oldProgram: ts.Program): number {
-    // Create a new program since the host may be different from the old program.
-    const program = ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost);
+    // Create a program if we are lowering annotations with tsickle.
+    const program = this.ngOptions.annotationsAs === 'static fields' ?
+        ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost) :
+        oldProgram;
     debug('Emitting outputs...');
     const emitResult = program.emit();
     const diagnostics: ts.Diagnostic[] = [];
