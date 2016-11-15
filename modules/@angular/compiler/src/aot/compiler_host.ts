@@ -25,7 +25,17 @@ export interface AotCompilerHost {
   getMetadataFor(modulePath: string): {[key: string]: any}|{[key: string]: any}[];
 
   /**
-   * Converts a module name into a file path.
+   * Converts an import into a file path.
    */
   resolveImportToFile(moduleName: string, containingFile: string): string;
+
+  /**
+   * Converts a file path to an import
+   */
+  resolveFileToImport(importedFilePath: string, containingFilePath: string): string;
+
+  /**
+   * Loads a resource (e.g. html / css)
+   */
+  loadResource(path: string): Promise<string>;
 }

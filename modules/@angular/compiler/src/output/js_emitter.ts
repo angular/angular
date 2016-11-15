@@ -12,10 +12,10 @@ import {isBlank, isPresent} from '../facade/lang';
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
-import {ImportGenerator} from './path_util';
+import {ImportResolver} from './path_util';
 
 export class JavaScriptEmitter implements OutputEmitter {
-  constructor(private _importGenerator: ImportGenerator) {}
+  constructor(private _importGenerator: ImportResolver) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
     const converter = new JsEmitterVisitor(moduleUrl);
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
@@ -25,7 +25,7 @@ export class JavaScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `var ${prefix} = req` +
-          `uire('${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}');`);
+          `uire('${this._importGenerator.resolveFileToImport(importedModuleUrl, moduleUrl)}');`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
