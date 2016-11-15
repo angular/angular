@@ -293,6 +293,45 @@ describe('MdRipple', () => {
       expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * customRadius, 1);
     });
   });
+
+  describe('initially disabled ripple', () => {
+    let controller: RippleContainerWithInputBindings;
+    let rippleComponent: MdRipple;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(RippleContainerWithInputBindings);
+      controller = fixture.debugElement.componentInstance;
+      controller.disabled = true;
+      fixture.detectChanges();
+
+      rippleComponent = controller.ripple;
+      rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
+    });
+
+    it('initially does not create background', () => {
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeNull();
+    });
+
+    it('creates background when enabled', () => {
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeNull();
+
+      controller.disabled = false;
+      fixture.detectChanges();
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeTruthy();
+    });
+
+    it('creates background when manually activated', () => {
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeNull();
+
+      rippleComponent.start();
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+      expect(rippleBackground).toBeTruthy();
+    });
+  });
 });
 
 @Component({

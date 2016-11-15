@@ -76,6 +76,9 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
     if (!this.trigger) {
       this._rippleRenderer.setTriggerElementToHost();
     }
+    if (!this.disabled) {
+      this._rippleRenderer.createBackgroundIfNeeded();
+    }
   }
 
   /** TODO: internal */
@@ -91,12 +94,16 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
     if (changedInputs.indexOf('trigger') !== -1) {
       this._rippleRenderer.setTriggerElement(this.trigger);
     }
+    if (!this.disabled) {
+      this._rippleRenderer.createBackgroundIfNeeded();
+    }
   }
 
   /**
    * Responds to the start of a ripple animation trigger by fading the background in.
    */
   start() {
+    this._rippleRenderer.createBackgroundIfNeeded();
     this._rippleRenderer.fadeInRippleBackground(this.backgroundColor);
   }
 
