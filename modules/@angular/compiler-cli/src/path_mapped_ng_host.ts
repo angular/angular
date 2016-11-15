@@ -69,7 +69,7 @@ export class PathMappedNgHost extends NgHost {
    * Relativize the paths by checking candidate prefixes of the absolute path, to see if
    * they are resolvable by the moduleResolution strategy from the CompilerHost.
    */
-  getImportPath(containingFile: string, importedFile: string): string {
+  resolveFileToImport(importedFile: string, containingFile: string): string {
     if (this.options.traceResolution) {
       console.log(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);

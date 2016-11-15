@@ -28,6 +28,14 @@ export class MockContext implements NgHostContext {
     return undefined;
   }
 
+  readResource(fileName: string): Promise<string> {
+    const result = this.readFile(fileName);
+    if (result == null) {
+      return Promise.reject(new Error(`Resource not found: ${fileName}`));
+    }
+    return Promise.resolve(result);
+  }
+
   writeFile(fileName: string, data: string): void {
     const parts = fileName.split('/');
     const name = parts.pop();
