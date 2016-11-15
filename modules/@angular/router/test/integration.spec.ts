@@ -1108,6 +1108,32 @@ describe('Integration', () => {
 
          expect(location.path()).toEqual('/team/22/simple?q=1#f');
        })));
+
+    it('should support extras input',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [
+             {path: 'link', component: LinkWithNavigationExtras},
+             {path: 'simple', component: SimpleCmp}
+           ]
+         }]);
+
+         router.navigateByUrl('/team/22/link');
+         advance(fixture);
+
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.getAttribute('href')).toEqual('/team/22/simple?q=1#f');
+         native.click();
+         advance(fixture);
+
+         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+         expect(location.path()).toEqual('/team/22/simple?q=1#f');
+       })));
   });
 
   describe('redirects', () => {
@@ -2412,6 +2438,14 @@ class RelativeLinkCmp {
 class LinkWithQueryParamsAndFragment {
 }
 
+@Component({
+  selector: 'link-cmp',
+  template:
+      `<a [routerLink]="['../simple']" [extras]="{queryParams: {q: '1'}, fragment: 'f'}">link</a>`
+})
+class LinkWithNavigationExtras {
+}
+
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
@@ -2578,6 +2612,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithNavigationExtras,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -2604,6 +2639,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithNavigationExtras,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -2631,6 +2667,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithNavigationExtras,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,

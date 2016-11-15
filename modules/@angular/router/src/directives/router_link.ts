@@ -10,10 +10,42 @@ import {LocationStrategy} from '@angular/common';
 import {Directive, HostBinding, HostListener, Input, OnChanges, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
-import {NavigationEnd, Router} from '../router';
+import {NavigationEnd, NavigationExtras, Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
 
+function mergeNavigationExtras(...extras: NavigationExtras[]): NavigationExtras {
+  const result: NavigationExtras = {};
+  if (extras) {
+    extras.forEach(extra => {
+      if (!extra) {
+        return;
+      }
+      if (extra.relativeTo) {
+        result.relativeTo = extra.relativeTo;
+      }
+      if (extra.queryParams) {
+        result.queryParams = extra.queryParams;
+      }
+      if (extra.preserveQueryParams) {
+        result.preserveQueryParams = extra.preserveQueryParams;
+      }
+      if (extra.fragment) {
+        result.fragment = extra.fragment;
+      }
+      if (extra.preserveFragment) {
+        result.preserveFragment = extra.preserveFragment;
+      }
+      if (extra.replaceUrl) {
+        result.replaceUrl = extra.replaceUrl;
+      }
+      if (extra.skipLocationChange) {
+        result.skipLocationChange = extra.skipLocationChange;
+      }
+    });
+  }
+  return result;
+}
 
 /**
  * @whatItDoes Lets you link to specific parts of your app.
@@ -73,6 +105,13 @@ import {UrlTree} from '../url_tree';
  component</a>
  * ```
  *
+ * And you can pass all settings to `[extras]` property.
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" [extras]="{ preserveQueryParams: true, fragment: 'education' }"
+ >link to user component</a>
+ * ```
+ *
  * The router link directive always treats the provided input as a delta to the current url.
  *
  * For instance, if the current url is `/user/(box//aux:team)`.
@@ -95,6 +134,7 @@ export class RouterLink {
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
+  @Input() extras: NavigationExtras;
   private commands: any[] = [];
 
   constructor(
@@ -117,7 +157,7 @@ export class RouterLink {
   }
 
   get urlTree(): UrlTree {
-    return this.router.createUrlTree(this.commands, {
+    const extras = mergeNavigationExtras(this.extras, {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
@@ -126,6 +166,7 @@ export class RouterLink {
       skipLocationChange: toBool(this.skipLocationChange),
       replaceUrl: toBool(this.replaceUrl),
     });
+    return this.router.createUrlTree(this.commands, extras);
   }
 }
 
@@ -149,6 +190,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
+  @Input() extras: NavigationExtras;
   private commands: any[] = [];
   private subscription: Subscription;
 
@@ -196,7 +238,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   get urlTree(): UrlTree {
-    return this.router.createUrlTree(this.commands, {
+    const extras = mergeNavigationExtras(this.extras, {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
@@ -205,6 +247,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       skipLocationChange: toBool(this.skipLocationChange),
       replaceUrl: toBool(this.replaceUrl),
     });
+    return this.router.createUrlTree(this.commands, extras);
   }
 }
 
