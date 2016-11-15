@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isJsObject, stringToArrayBuffer} from './http_utils';
+import {stringToArrayBuffer} from './http_utils';
 import {URLSearchParams} from './url_search_params';
 
 
@@ -51,7 +51,7 @@ export abstract class Body {
       return '';
     }
 
-    if (isJsObject(this._body)) {
+    if (typeof this._body === 'object') {
       return JSON.stringify(this._body, null, 2);
     }
 

@@ -7,15 +7,15 @@
  */
 
 import {Injectable} from '@angular/core';
-import {global} from '../facade/lang';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
 let _jsonpConnections: {[key: string]: any} = null;
 
 function _getJsonpConnections(): {[key: string]: any} {
+  const w: {[key: string]: any} = typeof window == 'object' ? window : {};
   if (_jsonpConnections === null) {
-    _jsonpConnections = (<{[key: string]: any}>global)[JSONP_HOME] = {};
+    _jsonpConnections = w[JSONP_HOME] = {};
   }
   return _jsonpConnections;
 }
