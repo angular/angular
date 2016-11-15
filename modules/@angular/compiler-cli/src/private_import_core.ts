@@ -16,9 +16,3 @@ export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.Reflectio
 
 export type Console = typeof r._Console;
 export var Console: typeof r.Console = r.Console;
-
-export var reflector: typeof r.reflector = r.reflector;
-
-export type SetterFn = typeof r._SetterFn;
-export type GetterFn = typeof r._GetterFn;
-export type MethodFn = typeof r._MethodFn;
