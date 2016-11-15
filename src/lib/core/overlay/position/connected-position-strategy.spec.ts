@@ -278,13 +278,23 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'end', overlayY: 'top'});
 
     const positionChangeHandler = jasmine.createSpy('positionChangeHandler');
-    strategy.onPositionChange.first().subscribe(positionChangeHandler);
+    const subscription = strategy.onPositionChange.subscribe(positionChangeHandler);
 
     strategy.apply(overlayElement);
     expect(positionChangeHandler).toHaveBeenCalled();
     expect(positionChangeHandler.calls.mostRecent().args[0])
         .toEqual(jasmine.any(ConnectedOverlayPositionChange),
             `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
+
+    originElement.style.top = '0';
+    originElement.style.left = '0';
+
+    // If the strategy is re-applied and the initial position would now fit,
+    // the position change event should be emitted again.
+    strategy.apply(overlayElement);
+    expect(positionChangeHandler).toHaveBeenCalledTimes(2);
+
+    subscription.unsubscribe();
   });
 
 
