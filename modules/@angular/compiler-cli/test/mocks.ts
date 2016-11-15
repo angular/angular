@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectorHostContext} from '@angular/compiler-cli/src/reflector_host';
+import {NgHostContext} from '@angular/compiler-cli/src/ng_host';
 import * as ts from 'typescript';
 
 export type Entry = string | Directory;
 
 export interface Directory { [name: string]: Entry; }
 
-export class MockContext implements ReflectorHostContext {
+export class MockContext implements NgHostContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }

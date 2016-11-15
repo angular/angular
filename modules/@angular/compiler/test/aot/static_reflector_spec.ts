@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
@@ -18,11 +18,11 @@ const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticReflector', () => {
   const noContext = new StaticSymbol('', '');
-  let host: StaticReflectorHost;
+  let host: AotCompilerHost;
   let reflector: StaticReflector;
 
   beforeEach(() => {
-    host = new MockReflectorHost();
+    host = new MockAotCompilerHost();
     reflector = new StaticReflector(host);
   });
 
@@ -31,7 +31,7 @@ describe('StaticReflector', () => {
   }
 
   it('should get annotations for NgFor', () => {
-    const NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
+    const NgFor = reflector.findDeclaration('@angular/common/src/directives/ng_for', 'NgFor');
     const annotations = reflector.annotations(NgFor);
     expect(annotations.length).toEqual(1);
     const annotation = annotations[0];
@@ -40,15 +40,15 @@ describe('StaticReflector', () => {
   });
 
   it('should get constructor for NgFor', () => {
-    const NgFor = host.findDeclaration('angular2/src/common/directives/ng_for', 'NgFor');
-    const ViewContainerRef =
-        host.findDeclaration('angular2/src/core/linker/view_container_ref', 'ViewContainerRef');
+    const NgFor = reflector.findDeclaration('@angular/common/src/directives/ng_for', 'NgFor');
+    const ViewContainerRef = reflector.findDeclaration(
+        '@angular/core/src/linker/view_container_ref', 'ViewContainerRef');
     const TemplateRef =
-        host.findDeclaration('angular2/src/core/linker/template_ref', 'TemplateRef');
-    const IterableDiffers = host.findDeclaration(
-        'angular2/src/core/change_detection/differs/iterable_differs', 'IterableDiffers');
-    const ChangeDetectorRef = host.findDeclaration(
-        'angular2/src/core/change_detection/change_detector_ref', 'ChangeDetectorRef');
+        reflector.findDeclaration('@angular/core/src/linker/template_ref', 'TemplateRef');
+    const IterableDiffers = reflector.findDeclaration(
+        '@angular/core/src/change_detection/differs/iterable_differs', 'IterableDiffers');
+    const ChangeDetectorRef = reflector.findDeclaration(
+        '@angular/core/src/change_detection/change_detector_ref', 'ChangeDetectorRef');
 
     const parameters = reflector.parameters(NgFor);
     expect(parameters).toEqual([
@@ -58,7 +58,7 @@ describe('StaticReflector', () => {
 
   it('should get annotations for HeroDetailComponent', () => {
     const HeroDetailComponent =
-        host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
+        reflector.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     const annotations = reflector.annotations(HeroDetailComponent);
     expect(annotations.length).toEqual(1);
     const annotation = annotations[0];
@@ -74,40 +74,39 @@ describe('StaticReflector', () => {
   });
 
   it('should throw and exception for unsupported metadata versions', () => {
-    const e = host.findDeclaration('src/version-error', 'e');
-    expect(() => reflector.annotations(e))
+    expect(() => reflector.findDeclaration('src/version-error', 'e'))
         .toThrow(new Error(
             'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 1'));
   });
 
   it('should get and empty annotation list for an unknown class', () => {
-    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const UnknownClass = reflector.findDeclaration('src/app/app.component', 'UnknownClass');
     const annotations = reflector.annotations(UnknownClass);
     expect(annotations).toEqual([]);
   });
 
   it('should get propMetadata for HeroDetailComponent', () => {
     const HeroDetailComponent =
-        host.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
+        reflector.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     const props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
     expect(props['onMouseOver']).toEqual([new HostListener('mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
-    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const UnknownClass = reflector.findDeclaration('src/app/app.component', 'UnknownClass');
     const properties = reflector.propMetadata(UnknownClass);
     expect(properties).toEqual({});
   });
 
   it('should get empty parameters list for an unknown class ', () => {
-    const UnknownClass = host.findDeclaration('src/app/app.component', 'UnknownClass');
+    const UnknownClass = reflector.findDeclaration('src/app/app.component', 'UnknownClass');
     const parameters = reflector.parameters(UnknownClass);
     expect(parameters).toEqual([]);
   });
 
   it('should provide context for errors reported by the collector', () => {
-    const SomeClass = host.findDeclaration('src/error-reporting', 'SomeClass');
+    const SomeClass = reflector.findDeclaration('src/error-reporting', 'SomeClass');
     expect(() => reflector.annotations(SomeClass))
         .toThrow(new Error(
             'Error encountered resolving symbol values statically. A reasonable error message (position 13:34 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
@@ -308,14 +307,14 @@ describe('StaticReflector', () => {
     expect(simplify(
                new StaticSymbol('/src/cases', ''),
                ({__symbolic: 'reference', module: './extern', name: 'nonExisting'})))
-        .toEqual(host.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
+        .toEqual(reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
 
   it('should simplify a function reference as a static symbol', () => {
     expect(simplify(
                new StaticSymbol('/src/cases', 'myFunction'),
                ({__symbolic: 'function', parameters: ['a'], value: []})))
-        .toEqual(host.getStaticSymbol('/src/cases', 'myFunction'));
+        .toEqual(reflector.getStaticSymbol('/src/cases', 'myFunction'));
   });
 
   it('should simplify values initialized with a function call', () => {
@@ -406,35 +405,35 @@ describe('StaticReflector', () => {
 
   it('should be able to get metadata for a class containing a custom decorator', () => {
     const props = reflector.propMetadata(
-        host.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
+        reflector.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
     expect(props).toEqual({foo: []});
   });
 
   it('should read ctor parameters with forwardRef', () => {
     const src = '/tmp/src/forward-ref.ts';
-    const dep = host.getStaticSymbol(src, 'Dep');
-    const props = reflector.parameters(host.getStaticSymbol(src, 'Forward'));
+    const dep = reflector.getStaticSymbol(src, 'Dep');
+    const props = reflector.parameters(reflector.getStaticSymbol(src, 'Forward'));
     expect(props).toEqual([[dep, new Inject(dep)]]);
   });
 
   it('should report an error for invalid function calls', () => {
     expect(
-        () =>
-            reflector.annotations(host.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent')))
+        () => reflector.annotations(
+            reflector.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent')))
         .toThrow(new Error(
             `Error encountered resolving symbol values statically. Calling function 'someFunction', function calls are not supported. Consider replacing the function or lambda with a reference to an exported function, resolving symbol MyComponent in /tmp/src/invalid-calls.ts, resolving symbol MyComponent in /tmp/src/invalid-calls.ts`));
   });
 
   it('should be able to get metadata for a class containing a static method call', () => {
     const annotations = reflector.annotations(
-        host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent'));
+        reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent'));
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual({provider: 'a', useValue: 100});
   });
 
   it('should be able to get metadata for a class containing a static field reference', () => {
-    const annotations =
-        reflector.annotations(host.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo'));
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo'));
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual([{provider: 'a', useValue: 'Some string'}]);
   });
@@ -442,7 +441,7 @@ describe('StaticReflector', () => {
   it('should be able to get the metadata for a class calling a method with a conditional expression',
      () => {
        const annotations = reflector.annotations(
-           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent'));
+           reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent'));
        expect(annotations.length).toBe(1);
        expect(annotations[0].providers).toEqual([
          [{provider: 'a', useValue: '1'}], [{provider: 'a', useValue: '2'}]
@@ -452,50 +451,68 @@ describe('StaticReflector', () => {
   it('should be able to get the metadata for a class calling a method with default parameters',
      () => {
        const annotations = reflector.annotations(
-           host.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent'));
+           reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent'));
        expect(annotations.length).toBe(1);
        expect(annotations[0].providers).toEqual([['a', true, false]]);
      });
 
   it('should be able to get metadata with a reference to a static method', () => {
     const annotations = reflector.annotations(
-        host.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
+        reflector.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
+
+  it('should be able to produce a symbol for an exported symbol', () => {
+    expect(reflector.findDeclaration('@angular/router', 'foo', 'main.ts')).toBeDefined();
+  });
+
+  it('should be able to produce a symbol for values space only reference', () => {
+    expect(reflector.findDeclaration('@angular/router/src/providers', 'foo', 'main.ts'))
+        .toBeDefined();
+  });
+
+  it('should be produce the same symbol if asked twice', () => {
+    const foo1 = reflector.getStaticSymbol('main.ts', 'foo');
+    const foo2 = reflector.getStaticSymbol('main.ts', 'foo');
+    expect(foo1).toBe(foo2);
+  });
+
+  it('should be able to produce a symbol for a module with no file',
+     () => { expect(reflector.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined(); });
+
+  it('should be able to trace a named export', () => {
+    const symbol = reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('One');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+  });
+
+  it('should be able to trace a renamed export', () => {
+    const symbol = reflector.findDeclaration('./reexport/reexport', 'Four', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Three');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+  });
+
+  it('should be able to trace an export * export', () => {
+    const symbol = reflector.findDeclaration('./reexport/reexport', 'Five', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Five');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5.d.ts');
+  });
+
+  it('should be able to trace a multi-level re-export', () => {
+    const symbol = reflector.findDeclaration('./reexport/reexport', 'Thirty', '/tmp/src/main.ts');
+    expect(symbol.name).toEqual('Thirty');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
+  });
 });
 
-class MockReflectorHost implements StaticReflectorHost {
-  private staticTypeCache = new Map<string, StaticSymbol>();
+class MockAotCompilerHost implements AotCompilerHost {
   private collector = new MetadataCollector();
 
   constructor() {}
 
-  angularImportLocations() {
-    return {
-      coreDecorators: 'angular2/src/core/metadata',
-      diDecorators: 'angular2/src/core/di/metadata',
-      diMetadata: 'angular2/src/core/di/metadata',
-      diOpaqueToken: 'angular2/src/core/di/opaque_token',
-      animationMetadata: 'angular2/src/core/animation/metadata',
-      provider: 'angular2/src/core/di/provider'
-    };
-  }
-
-  getCanonicalFileName(fileName: string): string { return fileName; }
-
-  getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    const cacheKey = `${declarationFile}:${name}${members?'.'+members.join('.'):''}`;
-    let result = this.staticTypeCache.get(cacheKey);
-    if (!result) {
-      result = new StaticSymbol(declarationFile, name, members);
-      this.staticTypeCache.set(cacheKey, result);
-    }
-    return result;
-  }
-
   // In tests, assume that symbols are not re-exported
-  findDeclaration(modulePath: string, symbolName: string, containingFile?: string): StaticSymbol {
+  resolveImportToFile(modulePath: string, containingFile?: string): string {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
 
     function resolvePath(pathParts: string[]): string {
@@ -530,16 +547,16 @@ class MockReflectorHost implements StaticReflectorHost {
       const baseName = pathTo(containingFile, modulePath);
       const tsName = baseName + '.ts';
       if (this.getMetadataFor(tsName)) {
-        return this.getStaticSymbol(tsName, symbolName);
+        return tsName;
       }
-      return this.getStaticSymbol(baseName + '.d.ts', symbolName);
+      return baseName + '.d.ts';
     }
-    return this.getStaticSymbol('/tmp/' + modulePath + '.d.ts', symbolName);
+    return '/tmp/' + modulePath + '.d.ts';
   }
 
   getMetadataFor(moduleId: string): any {
     const data: {[key: string]: any} = {
-      '/tmp/angular2/src/common/forms-deprecated/directives.d.ts': [{
+      '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
         'version': 1,
         'metadata': {
@@ -547,12 +564,12 @@ class MockReflectorHost implements StaticReflectorHost {
             {
               '__symbolic': 'reference',
               'name': 'NgFor',
-              'module': 'angular2/src/common/directives/ng_for'
+              'module': '@angular/common/src/directives/ng_for'
             }
           ]
         }
       }],
-      '/tmp/angular2/src/common/directives/ng_for.d.ts': {
+      '/tmp/@angular/common/src/directives/ng_for.d.ts': {
         '__symbolic': 'module',
         'version': 1,
         'metadata': {
@@ -564,7 +581,7 @@ class MockReflectorHost implements StaticReflectorHost {
                 'expression': {
                   '__symbolic': 'reference',
                   'name': 'Directive',
-                  'module': '../../core/metadata'
+                  'module': '@angular/core/src/metadata'
                 },
                 'arguments': [
                   {
@@ -581,22 +598,22 @@ class MockReflectorHost implements StaticReflectorHost {
                   'parameters': [
                     {
                       '__symbolic': 'reference',
-                      'module': '../../core/linker/view_container_ref',
+                      'module': '@angular/core/src/linker/view_container_ref',
                       'name': 'ViewContainerRef'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '../../core/linker/template_ref',
+                      'module': '@angular/core/src/linker/template_ref',
                       'name': 'TemplateRef'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '../../core/change_detection/differs/iterable_differs',
+                      'module': '@angular/core/src/change_detection/differs/iterable_differs',
                       'name': 'IterableDiffers'
                     },
                     {
                       '__symbolic': 'reference',
-                      'module': '../../core/change_detection/change_detector_ref',
+                      'module': '@angular/core/src/change_detection/change_detector_ref',
                       'name': 'ChangeDetectorRef'
                     }
                   ]
@@ -606,13 +623,13 @@ class MockReflectorHost implements StaticReflectorHost {
           }
         }
       },
-      '/tmp/angular2/src/core/linker/view_container_ref.d.ts':
+      '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
           {version: 1, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
-      '/tmp/angular2/src/core/linker/template_ref.d.ts':
+      '/tmp/@angular/core/src/linker/template_ref.d.ts':
           {version: 1, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
-      '/tmp/angular2/src/core/change_detection/differs/iterable_differs.d.ts':
+      '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
           {version: 1, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
-      '/tmp/angular2/src/core/change_detection/change_detector_ref.d.ts':
+      '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
           {version: 1, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
       '/tmp/src/app/hero-detail.component.d.ts': {
         '__symbolic': 'module',
@@ -626,7 +643,7 @@ class MockReflectorHost implements StaticReflectorHost {
                 'expression': {
                   '__symbolic': 'reference',
                   'name': 'Component',
-                  'module': 'angular2/src/core/metadata'
+                  'module': '@angular/core/src/metadata'
                 },
                 'arguments': [
                   {
@@ -638,7 +655,7 @@ class MockReflectorHost implements StaticReflectorHost {
                       'expression': {
                         '__symbolic': 'reference',
                         'name': 'trigger',
-                        'module': 'angular2/src/core/animation/metadata'
+                        'module': '@angular/core/src/animation/metadata'
                       },
                       'arguments': [
                         'myAnimation',
@@ -646,7 +663,7 @@ class MockReflectorHost implements StaticReflectorHost {
                            'expression': {
                              '__symbolic': 'reference',
                              'name': 'state',
-                             'module': 'angular2/src/core/animation/metadata'
+                             'module': '@angular/core/src/animation/metadata'
                            },
                            'arguments': [
                              'state1',
@@ -654,7 +671,7 @@ class MockReflectorHost implements StaticReflectorHost {
                                 'expression': {
                                   '__symbolic': 'reference',
                                   'name': 'style',
-                                  'module': 'angular2/src/core/animation/metadata'
+                                  'module': '@angular/core/src/animation/metadata'
                                 },
                                 'arguments': [
                                   { 'background':'white' }
@@ -666,7 +683,7 @@ class MockReflectorHost implements StaticReflectorHost {
                             'expression': {
                               '__symbolic':'reference',
                               'name':'transition',
-                              'module': 'angular2/src/core/animation/metadata'
+                              'module': '@angular/core/src/animation/metadata'
                             },
                             'arguments': [
                               '* => *',
@@ -675,20 +692,20 @@ class MockReflectorHost implements StaticReflectorHost {
                                 'expression':{
                                   '__symbolic':'reference',
                                   'name':'sequence',
-                                  'module': 'angular2/src/core/animation/metadata'
+                                  'module': '@angular/core/src/animation/metadata'
                                 },
                                 'arguments':[[{ '__symbolic': 'call',
                                   'expression': {
                                     '__symbolic':'reference',
                                     'name':'group',
-                                    'module': 'angular2/src/core/animation/metadata'
+                                    'module': '@angular/core/src/animation/metadata'
                                   },
                                   'arguments':[[{
                                     '__symbolic': 'call',
                                     'expression': {
                                       '__symbolic':'reference',
                                       'name':'animate',
-                                      'module': 'angular2/src/core/animation/metadata'
+                                      'module': '@angular/core/src/animation/metadata'
                                     },
                                     'arguments':[
                                       '1s 0.5s',
@@ -696,13 +713,13 @@ class MockReflectorHost implements StaticReflectorHost {
                                         'expression': {
                                           '__symbolic':'reference',
                                           'name':'keyframes',
-                                          'module': 'angular2/src/core/animation/metadata'
+                                          'module': '@angular/core/src/animation/metadata'
                                         },
                                         'arguments':[[{ '__symbolic': 'call',
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': 'angular2/src/core/animation/metadata'
+                                            'module': '@angular/core/src/animation/metadata'
                                           },
                                           'arguments':[ { 'background': 'blue'} ]
                                         }, {
@@ -710,7 +727,7 @@ class MockReflectorHost implements StaticReflectorHost {
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': 'angular2/src/core/animation/metadata'
+                                            'module': '@angular/core/src/animation/metadata'
                                           },
                                           'arguments':[ { 'background': 'red'} ]
                                         }]]
@@ -736,7 +753,7 @@ class MockReflectorHost implements StaticReflectorHost {
                       'expression': {
                         '__symbolic': 'reference',
                         'name': 'Input',
-                        'module': 'angular2/src/core/metadata'
+                        'module': '@angular/core/src/metadata'
                       }
                     }
                   ]
@@ -750,7 +767,7 @@ class MockReflectorHost implements StaticReflectorHost {
                                 '__symbolic': 'call',
                                 'expression': {
                                     '__symbolic': 'reference',
-                                    'module': 'angular2/src/core/metadata',
+                                    'module': '@angular/core/src/metadata',
                                     'name': 'HostListener'
                                 },
                                 'arguments': [
@@ -781,7 +798,7 @@ class MockReflectorHost implements StaticReflectorHost {
                 expression: {
                   __symbolic: 'reference',
                   name: 'Component',
-                  module: 'angular2/src/core/metadata'
+                  module: '@angular/core/src/metadata'
                 },
                 arguments: [
                   {
@@ -982,8 +999,8 @@ class MockReflectorHost implements StaticReflectorHost {
       `,
       '/tmp/src/invalid-calls.ts': `
         import {someFunction} from './nvalid-calll-definitions.ts';
-        import {Component} from 'angular2/src/core/metadata';
-        import {NgIf} from 'angular2/common';
+        import {Component} from '@angular/core/src/metadata';
+        import {NgIf} from '@angular/common';
 
         @Component({
           selector: 'my-component',
@@ -999,7 +1016,7 @@ class MockReflectorHost implements StaticReflectorHost {
         export class MyOtherComponent { }
       `,
       '/tmp/src/static-method.ts': `
-        import {Component} from 'angular2/src/core/metadata';
+        import {Component} from '@angular/core/src/metadata';
 
         @Component({
           selector: 'stub'
@@ -1017,7 +1034,7 @@ class MockReflectorHost implements StaticReflectorHost {
         }
       `,
       '/tmp/src/static-method-call.ts': `
-        import {Component} from 'angular2/src/core/metadata';
+        import {Component} from '@angular/core/src/metadata';
         import {MyModule} from './static-method';
 
         @Component({
@@ -1036,7 +1053,7 @@ class MockReflectorHost implements StaticReflectorHost {
         export class MyDefaultsComponent { }
       `,
       '/tmp/src/static-field.ts': `
-        import {Injectable} from 'angular2/core';
+        import {Injectable} from '@angular/core';
 
         @Injectable()
         export class MyModule {
@@ -1044,7 +1061,7 @@ class MockReflectorHost implements StaticReflectorHost {
         }
       `,
       '/tmp/src/static-field-reference.ts': `
-        import {Component} from 'angular2/src/core/metadata';
+        import {Component} from '@angular/core/src/metadata';
         import {MyModule} from './static-field';
 
         @Component({
@@ -1058,7 +1075,7 @@ class MockReflectorHost implements StaticReflectorHost {
         }
       `,
       '/tmp/src/static-method-ref.ts': `
-        import {Component} from 'angular2/src/core/metadata';
+        import {Component} from '@angular/core/src/metadata';
         import {ClassWithStatics} from './static-method-def';
 
         @Component({
@@ -1069,7 +1086,7 @@ class MockReflectorHost implements StaticReflectorHost {
         }
       `,
       '/tmp/src/invalid-metadata.ts': `
-        import {Component} from 'angular2/src/core/metadata';
+        import {Component} from '@angular/core/src/metadata';
 
         @Component({
           providers: [ { provider: 'a', useValue: (() => 1)() }]
@@ -1077,9 +1094,9 @@ class MockReflectorHost implements StaticReflectorHost {
         export class InvalidMetadata {}
       `,
       '/tmp/src/forward-ref.ts': `
-        import {forwardRef} from 'angular2/core';
-        import {Component} from 'angular2/src/core/metadata';
-        import {Inject} from 'angular2/src/core/di/metadata';
+        import {forwardRef} from '@angular/core';
+        import {Component} from '@angular/core/src/metadata';
+        import {Inject} from '@angular/core/src/di/metadata';
         @Component({})
         export class Forward {
           constructor(@Inject(forwardRef(() => Dep)) d: Dep) {}
@@ -1087,7 +1104,50 @@ class MockReflectorHost implements StaticReflectorHost {
         export class Dep {
           @Input f: Forward;
         }
-      `
+      `,
+      '/tmp/src/reexport/reexport.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {},
+        exports: [
+          {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
+          {from: './src/origin5'}, {from: './src/reexport2'}
+        ]
+      },
+      '/tmp/src/reexport/src/origin1.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          One: {__symbolic: 'class'},
+          Two: {__symbolic: 'class'},
+          Three: {__symbolic: 'class'},
+        },
+      },
+      '/tmp/src/reexport/src/origin5.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          Five: {__symbolic: 'class'},
+        },
+      },
+      '/tmp/src/reexport/src/origin30.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {
+          Thirty: {__symbolic: 'class'},
+        },
+      },
+      '/tmp/src/reexport/src/originNone.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {},
+      },
+      '/tmp/src/reexport/src/reexport2.d.ts': {
+        __symbolic: 'module',
+        version: 1,
+        metadata: {},
+        exports: [{from: './originNone'}, {from: './origin30'}]
+      }
     };
 
 
