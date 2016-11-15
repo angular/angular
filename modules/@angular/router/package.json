@@ -1,6 +1,6 @@
 {
   "name": "@angular/router",
-  "version": "3.0.0-rc.1",
+  "version": "0.0.0-ROUTERPLACEHOLDER",
   "description": "Angular - the routing library",
   "main": "bundles/router.umd.js",
   "module": "index.js",
@@ -23,7 +23,6 @@
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "rxjs": "5.0.0-beta.12"
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   }
 }
