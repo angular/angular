@@ -31,15 +31,11 @@ import {ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
+import {AotCompilerOptions} from './compiler_options';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector} from './static_reflector';
 
-export interface AotCompilerOptions {
-  debug?: boolean;
-  locale?: string;
-  i18nFormat?: string;
-  translations?: string;
-}
+
 
 /**
  * Creates a new AotCompiler based on options and a host.
@@ -74,6 +70,6 @@ export function createAotCompiler(ngHost: AotCompilerHost, options: AotCompilerO
       new ViewCompiler(config, elementSchemaRegistry),
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
       new NgModuleCompiler(), new TypeScriptEmitter(ngHost), options.locale, options.i18nFormat,
-      new AnimationParser(elementSchemaRegistry));
+      new AnimationParser(elementSchemaRegistry), staticReflector, options);
   return {compiler, reflector: staticReflector};
 }
