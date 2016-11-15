@@ -8,8 +8,6 @@
 
 import {Injectable} from '@angular/core';
 
-import {isPresent} from '../src/facade/lang';
-
 import {ResponseType} from './enums';
 import {Headers} from './headers';
 import {ResponseOptionsArgs} from './interfaces';
@@ -68,12 +66,12 @@ export class ResponseOptions {
   type: ResponseType;
   url: string;
   constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
-    this.body = isPresent(body) ? body : null;
-    this.status = isPresent(status) ? status : null;
-    this.headers = isPresent(headers) ? headers : null;
-    this.statusText = isPresent(statusText) ? statusText : null;
-    this.type = isPresent(type) ? type : null;
-    this.url = isPresent(url) ? url : null;
+    this.body = body != null ? body : null;
+    this.status = status != null ? status : null;
+    this.headers = headers != null ? headers : null;
+    this.statusText = statusText != null ? statusText : null;
+    this.type = type != null ? type : null;
+    this.url = url != null ? url : null;
   }
 
   /**
@@ -103,13 +101,12 @@ export class ResponseOptions {
    */
   merge(options?: ResponseOptionsArgs): ResponseOptions {
     return new ResponseOptions({
-      body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
-      status: isPresent(options) && isPresent(options.status) ? options.status : this.status,
-      headers: isPresent(options) && isPresent(options.headers) ? options.headers : this.headers,
-      statusText: isPresent(options) && isPresent(options.statusText) ? options.statusText :
-                                                                        this.statusText,
-      type: isPresent(options) && isPresent(options.type) ? options.type : this.type,
-      url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
+      body: options && options.body != null ? options.body : this.body,
+      status: options && options.status != null ? options.status : this.status,
+      headers: options && options.headers != null ? options.headers : this.headers,
+      statusText: options && options.statusText != null ? options.statusText : this.statusText,
+      type: options && options.type != null ? options.type : this.type,
+      url: options && options.url != null ? options.url : this.url,
     });
   }
 }

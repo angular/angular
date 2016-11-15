@@ -14,7 +14,6 @@ import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '..
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
-import {isPresent} from '../../src/facade/lang';
 import {Request} from '../../src/static_request';
 
 let existingScripts: MockBrowserJsonp[] = [];
@@ -22,18 +21,14 @@ let existingScripts: MockBrowserJsonp[] = [];
 class MockBrowserJsonp extends BrowserJsonp {
   src: string;
   callbacks = new Map<string, (data: any) => any>();
-  constructor() { super(); }
 
   addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }
 
   removeEventListener(type: string, cb: Function) { this.callbacks.delete(type); }
 
-  dispatchEvent(type: string, argument?: any) {
-    if (!isPresent(argument)) {
-      argument = {};
-    }
+  dispatchEvent(type: string, argument: any = {}) {
     const cb = this.callbacks.get(type);
-    if (isPresent(cb)) {
+    if (cb) {
       cb(argument);
     }
   }

@@ -12,7 +12,6 @@ import {Observer} from 'rxjs/Observer';
 
 import {ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';
-import {isPresent} from '../facade/lang';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
@@ -89,7 +88,7 @@ export class JSONPConnection_ extends JSONPConnection {
         if (!this._finished) {
           let responseOptions =
               new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url});
-          if (isPresent(baseResponseOptions)) {
+          if (baseResponseOptions) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }
           responseObserver.error(new Response(responseOptions));
@@ -97,7 +96,7 @@ export class JSONPConnection_ extends JSONPConnection {
         }
 
         let responseOptions = new ResponseOptions({body: this._responseData, url});
-        if (isPresent(this.baseResponseOptions)) {
+        if (this.baseResponseOptions) {
           responseOptions = this.baseResponseOptions.merge(responseOptions);
         }
 
@@ -110,7 +109,7 @@ export class JSONPConnection_ extends JSONPConnection {
         this.readyState = ReadyState.Done;
         _dom.cleanup(script);
         let responseOptions = new ResponseOptions({body: error.message, type: ResponseType.Error});
-        if (isPresent(baseResponseOptions)) {
+        if (baseResponseOptions) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
         responseObserver.error(new Response(responseOptions));
@@ -125,10 +124,7 @@ export class JSONPConnection_ extends JSONPConnection {
         this.readyState = ReadyState.Cancelled;
         script.removeEventListener('load', onLoad);
         script.removeEventListener('error', onError);
-        if (isPresent(script)) {
-          this._dom.cleanup(script);
-        }
-
+        this._dom.cleanup(script);
       };
     });
   }

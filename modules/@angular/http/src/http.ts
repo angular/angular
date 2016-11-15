@@ -8,7 +8,6 @@
 
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {isPresent} from '../src/facade/lang';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
 import {ConnectionBackend, RequestOptionsArgs} from './interfaces';
@@ -23,7 +22,7 @@ function mergeOptions(
     defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs, method: RequestMethod,
     url: string): RequestOptions {
   const newOptions = defaultOpts;
-  if (isPresent(providedOpts)) {
+  if (providedOpts) {
     // Hack so Dart can used named parameters
     return newOptions.merge(new RequestOptions({
       method: providedOpts.method || method,
@@ -35,11 +34,8 @@ function mergeOptions(
       responseType: providedOpts.responseType
     }));
   }
-  if (isPresent(method)) {
-    return newOptions.merge(new RequestOptions({method: method, url: url}));
-  } else {
-    return newOptions.merge(new RequestOptions({url: url}));
-  }
+
+  return newOptions.merge(new RequestOptions({method, url}));
 }
 
 /**
