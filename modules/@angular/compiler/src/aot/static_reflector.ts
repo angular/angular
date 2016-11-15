@@ -18,7 +18,7 @@ const ANGULAR_IMPORT_LOCATIONS = {
   diDecorators: '@angular/core/src/di/metadata',
   diMetadata: '@angular/core/src/di/metadata',
   diOpaqueToken: '@angular/core/src/di/opaque_token',
-  animationMetadata: '@angular/core/src/animation/metadata',
+  animationMetadata: '@angular/core/src/animation/animation_metadata',
   provider: '@angular/core/src/di/provider'
 };
 

@@ -17,14 +17,15 @@ import {WebAnimationsDriver} from '@angular/platform-browser/src/dom/web_animati
 import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
+
 import {ApplicationRef, Component, HostBinding, HostListener, NgModule, NgZone, destroyPlatform} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animation_player';
+import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/animation_metadata';
+import {AnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
-import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {isPresent} from '../../src/facade/lang';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';

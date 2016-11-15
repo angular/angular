@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata} from '../animation/metadata';
+import {AnimationEntryMetadata} from '../animation/animation_metadata';
 
 /**
  * Defines template and style encapsulation options available for Component's {@link Component}.

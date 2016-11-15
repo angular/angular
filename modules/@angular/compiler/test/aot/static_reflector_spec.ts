@@ -735,7 +735,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                       'expression': {
                         '__symbolic': 'reference',
                         'name': 'trigger',
-                        'module': '@angular/core/src/animation/metadata'
+                        'module': '@angular/core/src/animation/animation_metadata'
                       },
                       'arguments': [
                         'myAnimation',
@@ -743,7 +743,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                            'expression': {
                              '__symbolic': 'reference',
                              'name': 'state',
-                             'module': '@angular/core/src/animation/metadata'
+                             'module': '@angular/core/src/animation/animation_metadata'
                            },
                            'arguments': [
                              'state1',
@@ -751,7 +751,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                 'expression': {
                                   '__symbolic': 'reference',
                                   'name': 'style',
-                                  'module': '@angular/core/src/animation/metadata'
+                                  'module': '@angular/core/src/animation/animation_metadata'
                                 },
                                 'arguments': [
                                   { 'background':'white' }
@@ -763,7 +763,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                             'expression': {
                               '__symbolic':'reference',
                               'name':'transition',
-                              'module': '@angular/core/src/animation/metadata'
+                              'module': '@angular/core/src/animation/animation_metadata'
                             },
                             'arguments': [
                               '* => *',
@@ -772,20 +772,20 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                 'expression':{
                                   '__symbolic':'reference',
                                   'name':'sequence',
-                                  'module': '@angular/core/src/animation/metadata'
+                                  'module': '@angular/core/src/animation/animation_metadata'
                                 },
                                 'arguments':[[{ '__symbolic': 'call',
                                   'expression': {
                                     '__symbolic':'reference',
                                     'name':'group',
-                                    'module': '@angular/core/src/animation/metadata'
+                                    'module': '@angular/core/src/animation/animation_metadata'
                                   },
                                   'arguments':[[{
                                     '__symbolic': 'call',
                                     'expression': {
                                       '__symbolic':'reference',
                                       'name':'animate',
-                                      'module': '@angular/core/src/animation/metadata'
+                                      'module': '@angular/core/src/animation/animation_metadata'
                                     },
                                     'arguments':[
                                       '1s 0.5s',
@@ -793,13 +793,13 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                         'expression': {
                                           '__symbolic':'reference',
                                           'name':'keyframes',
-                                          'module': '@angular/core/src/animation/metadata'
+                                          'module': '@angular/core/src/animation/animation_metadata'
                                         },
                                         'arguments':[[{ '__symbolic': 'call',
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': '@angular/core/src/animation/metadata'
+                                            'module': '@angular/core/src/animation/animation_metadata'
                                           },
                                           'arguments':[ { 'background': 'blue'} ]
                                         }, {
@@ -807,7 +807,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
                                           'expression': {
                                             '__symbolic':'reference',
                                             'name':'style',
-                                            'module': '@angular/core/src/animation/metadata'
+                                            'module': '@angular/core/src/animation/animation_metadata'
                                           },
                                           'arguments':[ { 'background': 'red'} ]
                                         }]]
