@@ -1854,6 +1854,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            let animation = driver.log.pop();
            let kf = animation['keyframeLookup'];
            expect(kf[1]).toEqual([1, {'background': 'green'}]);
+           let player = animation['player'];
+           player.finish();
 
            cmp.exp = 'blue';
            fixture.detectChanges();
@@ -1863,6 +1865,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            kf = animation['keyframeLookup'];
            expect(kf[0]).toEqual([0, {'background': 'green'}]);
            expect(kf[1]).toEqual([1, {'background': 'grey'}]);
+           player = animation['player'];
+           player.finish();
 
            cmp.exp = 'red';
            fixture.detectChanges();
@@ -1872,6 +1876,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            kf = animation['keyframeLookup'];
            expect(kf[0]).toEqual([0, {'background': 'grey'}]);
            expect(kf[1]).toEqual([1, {'background': 'red'}]);
+           player = animation['player'];
+           player.finish();
 
            cmp.exp = 'orange';
            fixture.detectChanges();
@@ -1881,6 +1887,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            kf = animation['keyframeLookup'];
            expect(kf[0]).toEqual([0, {'background': 'red'}]);
            expect(kf[1]).toEqual([1, {'background': 'grey'}]);
+           player = animation['player'];
+           player.finish();
          }));
 
       it('should seed in the origin animation state styles into the first animation step',
@@ -1909,6 +1917,44 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            const animation = driver.log[0];
            expect(animation['startingStyles']).toEqual({'height': '100px'});
+         }));
+
+      it('should seed in the previous animation styles into the transition if the previous transition was interupted midway',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+            set: {
+              template: `
+              <div class="target" [@status]="exp"></div>
+            `,
+              animations: [trigger(
+                'status',
+                [
+                  state('*', style({ opacity: 0 })),
+                  state('a', style({height: '100px', width: '200px'})),
+                  state('b', style({height: '1000px' })),
+                  transition('* => *', [
+                    animate(1000, style({ fontSize: '20px' })),
+                    animate(1000)
+                  ])
+                ])]
+            }
+          });
+
+           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = 'a';
+           fixture.detectChanges();
+           flushMicrotasks();
+           driver.log = [];
+
+           cmp.exp = 'b';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const animation = driver.log[0];
+           expect(animation['previousStyles']).toEqual({opacity: '0', fontSize: '*'});
          }));
 
       it('should perform a state change even if there is no transition that is found',

@@ -88,7 +88,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     this._started = false;
   }
 
-  setPosition(p: any /** TODO #9100 */): void {
+  setPosition(p: number): void {
     this._players.forEach(player => { player.setPosition(p); });
   }
 
@@ -100,4 +100,6 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     });
     return min;
   }
+
+  get players(): AnimationPlayer[] { return this._players; }
 }

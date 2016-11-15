@@ -289,6 +289,30 @@ export function main() {
 
          expect(player.log.indexOf('destroy') >= 0).toBe(true);
        }));
+
+    it('should properly transition to the next animation if the current one is cancelled',
+       fakeAsync(() => {
+         const fixture = TestBed.createComponent(AnimationCmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.state = 'on';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         let player = <MockAnimationPlayer>uiDriver.log.shift()['player'];
+         player.finish();
+         player = <MockAnimationPlayer>uiDriver.log.shift()['player'];
+         player.setPosition(0.5);
+
+         uiDriver.log = [];
+
+         cmp.state = 'off';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         const step = uiDriver.log.shift();
+         expect(step['previousStyles']).toEqual({opacity: AUTO_STYLE, fontSize: AUTO_STYLE});
+       }));
   });
 }
 

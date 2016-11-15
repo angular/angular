@@ -84,6 +84,8 @@ export function balanceAnimationKeyframes(
     firstKeyframe.styles.styles.push(extraFirstKeyframeStyles);
   }
 
+  collectAndResolveStyles(collectedStyles, [finalStateStyles]);
+
   return keyframes;
 }
 

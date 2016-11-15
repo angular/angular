@@ -40,6 +40,29 @@ describe('WebWorkers Animations', function() {
     browser.wait(() => boxElm.getSize().then(sizes => sizes['width'] > 750), 1000);
   });
 
+  it('should cancel the animation midway and continue from where it left off', () => {
+    browser.ignoreSynchronization = true;
+    browser.get(URL);
+
+    waitForBootstrap();
+
+    const elem = element(by.css(selector + ' .box'));
+    const btn = element(by.css(selector + ' button'));
+    const getWidth = () => elem.getSize().then((sizes: any) => sizes['width']);
+
+    btn.click();
+
+    browser.sleep(250);
+
+    btn.click();
+
+    expect(getWidth()).toBeLessThan(600);
+
+    browser.sleep(500);
+
+    expect(getWidth()).toBeLessThan(50);
+  });
+
   function waitForBootstrap() {
     browser.wait(protractor.until.elementLocated(by.css(selector + ' .box')), 5000)
         .then(() => {}, () => {
