@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationPlayer} from '@angular/core';
 import {isPresent} from '../facade/lang';
 import {AnimationKeyframe, AnimationStyles} from '../private_import_core';
 
@@ -15,17 +16,18 @@ import {WebAnimationsPlayer} from './web_animations_player';
 export class WebAnimationsDriver implements AnimationDriver {
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): WebAnimationsPlayer {
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): WebAnimationsPlayer {
     let formattedSteps: {[key: string]: string | number}[] = [];
     let startingStyleLookup: {[key: string]: string | number} = {};
     if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
-      startingStyleLookup = _populateStyles(element, startingStyles, {});
+      startingStyleLookup = _populateStyles(startingStyles, {});
       startingStyleLookup['offset'] = 0;
       formattedSteps.push(startingStyleLookup);
     }
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
-      const data = _populateStyles(element, keyframe.styles, startingStyleLookup);
+      const data = _populateStyles(keyframe.styles, startingStyleLookup);
       data['offset'] = keyframe.offset;
       formattedSteps.push(data);
     });
@@ -52,13 +54,13 @@ export class WebAnimationsDriver implements AnimationDriver {
       playerOptions['easing'] = easing;
     }
 
-    return new WebAnimationsPlayer(element, formattedSteps, playerOptions);
+    return new WebAnimationsPlayer(
+        element, formattedSteps, playerOptions, <WebAnimationsPlayer[]>previousPlayers);
   }
 }
 
-function _populateStyles(
-    element: any, styles: AnimationStyles,
-    defaultStyles: {[key: string]: string | number}): {[key: string]: string | number} {
+function _populateStyles(styles: AnimationStyles, defaultStyles: {[key: string]: string | number}):
+    {[key: string]: string | number} {
   const data: {[key: string]: string | number} = {};
   styles.styles.forEach(
       (entry) => { Object.keys(entry).forEach(prop => { data[prop] = entry[prop]; }); });

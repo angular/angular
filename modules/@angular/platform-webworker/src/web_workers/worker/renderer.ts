@@ -16,6 +16,7 @@ import {MessageBus} from '../shared/message_bus';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
 import {ANIMATION_WORKER_PLAYER_PREFIX, RenderStoreObject, Serializer} from '../shared/serializer';
+
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()
@@ -239,13 +240,16 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
 
   animate(
       renderElement: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer {
+      duration: number, delay: number, easing: string,
+      previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
     const playerId = this._rootRenderer.allocateId();
+    const previousPlayerIds: number[] =
+        previousPlayers.map(player => this._rootRenderer.renderStore.serialize(player));
 
     this._runOnService('animate', [
       new FnArg(renderElement, RenderStoreObject), new FnArg(startingStyles, null),
       new FnArg(keyframes, null), new FnArg(duration, null), new FnArg(delay, null),
-      new FnArg(easing, null), new FnArg(playerId, null)
+      new FnArg(easing, null), new FnArg(previousPlayerIds, null), new FnArg(playerId, null)
     ]);
 
     const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement);
@@ -325,7 +329,7 @@ export class WebWorkerRenderNode {
   animationPlayerEvents = new AnimationPlayerEmitter();
 }
 
-class _AnimationWorkerRendererPlayer implements AnimationPlayer, RenderStoreObject {
+class _AnimationWorkerRendererPlayer implements RenderStoreObject {
   public parentPlayer: AnimationPlayer = null;
 
   private _destroyed: boolean = false;

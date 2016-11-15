@@ -89,7 +89,7 @@ export class MessageBasedRenderer {
         'animate',
         [
           RenderStoreObject, RenderStoreObject, PRIMITIVE, PRIMITIVE, PRIMITIVE, PRIMITIVE,
-          PRIMITIVE, PRIMITIVE
+          PRIMITIVE, PRIMITIVE, PRIMITIVE
         ],
         this._animate.bind(this));
 
@@ -248,8 +248,14 @@ export class MessageBasedRenderer {
 
   private _animate(
       renderer: Renderer, element: any, startingStyles: any, keyframes: any[], duration: number,
-      delay: number, easing: string, playerId: any) {
-    const player = renderer.animate(element, startingStyles, keyframes, duration, delay, easing);
+      delay: number, easing: string, previousPlayers: number[], playerId: any) {
+    let normalizedPreviousPlayers: AnimationPlayer[];
+    if (previousPlayers && previousPlayers.length) {
+      normalizedPreviousPlayers =
+          previousPlayers.map(playerId => this._renderStore.deserialize(playerId));
+    }
+    const player = renderer.animate(
+        element, startingStyles, keyframes, duration, delay, easing, normalizedPreviousPlayers);
     this._renderStore.store(player, playerId);
   }
 

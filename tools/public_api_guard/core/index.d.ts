@@ -749,7 +749,7 @@ export declare class RenderComponentType {
 
 /** @experimental */
 export declare abstract class Renderer {
-    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string): AnimationPlayer;
+    abstract animate(element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[], duration: number, delay: number, easing: string, previousPlayers?: AnimationPlayer[]): AnimationPlayer;
     abstract attachViewAfter(node: any, viewRootNodes: any[]): void;
     abstract createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any;
     abstract createTemplateAnchor(parentElement: any, debugInfo?: RenderDebugInfo): any;

@@ -88,7 +88,8 @@ export abstract class Renderer {
 
   abstract animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): AnimationPlayer;
+      duration: number, delay: number, easing: string,
+      previousPlayers?: AnimationPlayer[]): AnimationPlayer;
 }
 
 /**

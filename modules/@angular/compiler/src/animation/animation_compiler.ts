@@ -41,7 +41,9 @@ const _ANIMATION_TIME_VAR = o.variable('totalTime');
 const _ANIMATION_START_STATE_STYLES_VAR = o.variable('startStateStyles');
 const _ANIMATION_END_STATE_STYLES_VAR = o.variable('endStateStyles');
 const _ANIMATION_COLLECTED_STYLES = o.variable('collectedStyles');
-const EMPTY_MAP = o.literalMap([]);
+const _PREVIOUS_ANIMATION_PLAYERS = o.variable('previousPlayers');
+const _EMPTY_MAP = o.literalMap([]);
+const _EMPTY_ARRAY = o.literalArr([]);
 
 class _AnimationBuilder implements AnimationAstVisitor {
   private _fnVarName: string;
@@ -110,10 +112,15 @@ class _AnimationBuilder implements AnimationAstVisitor {
   _callAnimateMethod(
       ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
       context: _AnimationBuilderContext) {
+    let previousStylesValue: o.Expression = _EMPTY_ARRAY;
+    if (context.isExpectingFirstAnimateStep) {
+      previousStylesValue = _PREVIOUS_ANIMATION_PLAYERS;
+      context.isExpectingFirstAnimateStep = false;
+    }
     context.totalTransitionTime += ast.duration + ast.delay;
     return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
       _ANIMATION_FACTORY_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
-      o.literal(ast.delay), o.literal(ast.easing)
+      o.literal(ast.delay), o.literal(ast.easing), previousStylesValue
     ]);
   }
 
@@ -150,6 +157,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     context.totalTransitionTime = 0;
     context.isExpectingFirstStyleStep = true;
+    context.isExpectingFirstAnimateStep = true;
 
     const stateChangePreconditions: o.Expression[] = [];
 
@@ -187,17 +195,16 @@ class _AnimationBuilder implements AnimationAstVisitor {
     context.stateMap.registerState(DEFAULT_STATE, {});
 
     const statements: o.Statement[] = [];
-    statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT
-                        .callMethod(
-                            'cancelActiveAnimation',
+    statements.push(_PREVIOUS_ANIMATION_PLAYERS
+                        .set(_ANIMATION_FACTORY_VIEW_CONTEXT.callMethod(
+                            'getAnimationPlayers',
                             [
                               _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
                               _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE))
-                            ])
-                        .toStmt());
+                            ]))
+                        .toDeclStmt());
 
-
-    statements.push(_ANIMATION_COLLECTED_STYLES.set(EMPTY_MAP).toDeclStmt());
+    statements.push(_ANIMATION_COLLECTED_STYLES.set(_EMPTY_MAP).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
     statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
 
@@ -222,17 +229,6 @@ class _AnimationBuilder implements AnimationAstVisitor {
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
 
     const RENDER_STYLES_FN = o.importExpr(resolveIdentifier(Identifiers.renderStyles));
-
-    // before we start any animation we want to clear out the starting
-    // styles from the element's style property (since they were placed
-    // there at the end of the last animation
-    statements.push(RENDER_STYLES_FN
-                        .callFn([
-                          _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                          o.importExpr(resolveIdentifier(Identifiers.clearStyles))
-                              .callFn([_ANIMATION_START_STATE_STYLES_VAR])
-                        ])
-                        .toStmt());
 
     ast.stateTransitions.forEach(transAst => statements.push(transAst.visit(this, context)));
 
@@ -269,6 +265,22 @@ class _AnimationBuilder implements AnimationAstVisitor {
                          ])])
             .toStmt());
 
+    statements.push(o.importExpr(resolveIdentifier(Identifiers.AnimationSequencePlayer))
+                        .instantiate([_PREVIOUS_ANIMATION_PLAYERS])
+                        .callMethod('destroy', [])
+                        .toStmt());
+
+    // before we start any animation we want to clear out the starting
+    // styles from the element's style property (since they were placed
+    // there at the end of the last animation
+    statements.push(RENDER_STYLES_FN
+                        .callFn([
+                          _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
+                          o.importExpr(resolveIdentifier(Identifiers.clearStyles))
+                              .callFn([_ANIMATION_START_STATE_STYLES_VAR])
+                        ])
+                        .toStmt());
+
     statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT
                         .callMethod(
                             'queueAnimation',
@@ -304,7 +316,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     const lookupMap: any[] = [];
     Object.keys(context.stateMap.states).forEach(stateName => {
       const value = context.stateMap.states[stateName];
-      let variableValue = EMPTY_MAP;
+      let variableValue = _EMPTY_MAP;
       if (isPresent(value)) {
         const styleMap: any[] = [];
         Object.keys(value).forEach(key => { styleMap.push([key, o.literal(value[key])]); });
@@ -324,6 +336,7 @@ class _AnimationBuilderContext {
   stateMap = new _AnimationBuilderStateMap();
   endStateAnimateStep: AnimationStepAst = null;
   isExpectingFirstStyleStep = false;
+  isExpectingFirstAnimateStep = false;
   totalTransitionTime = 0;
 }
 

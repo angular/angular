@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockAnimationPlayer, beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
+import {AUTO_STYLE, AnimationPlayer} from '@angular/core';
+import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
@@ -18,14 +20,16 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
 
   constructor(
       public element: HTMLElement, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number}) {
-    super(element, keyframes, options);
+      public options: {[key: string]: string | number},
+      public previousPlayers: WebAnimationsPlayer[] = []) {
+    super(element, keyframes, options, previousPlayers);
   }
 
   get domPlayer() { return this._overriddenDomPlayer; }
 
   /** @internal */
   _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
+    this._overriddenDomPlayer._capture('trigger', {elm, keyframes, options});
     return this._overriddenDomPlayer;
   }
 }
@@ -33,7 +37,7 @@ class ExtendedWebAnimationsPlayer extends WebAnimationsPlayer {
 export function main() {
   function makePlayer(): {[key: string]: any} {
     const someElm = el('<div></div>');
-    const player = new ExtendedWebAnimationsPlayer(someElm, [], {});
+    const player = new ExtendedWebAnimationsPlayer(someElm, [{}, {}], {}, []);
     player.init();
     return {'captures': player.domPlayer.captures, 'player': player};
   }
@@ -156,5 +160,72 @@ export function main() {
          player.destroy();
          expect(captures['cancel'].length).toBe(1);
        });
+
+    it('should resolve auto styles based on what is computed from the provided element', () => {
+      const elm = el('<div></div>');
+      document.body.appendChild(elm);  // required for getComputedStyle() to work
+      elm.style.opacity = '0.5';
+
+      const player = new ExtendedWebAnimationsPlayer(
+          elm, [{opacity: AUTO_STYLE}, {opacity: '1'}], {duration: 1000}, []);
+
+      player.init();
+
+      const data = player.domPlayer.captures['trigger'][0];
+      expect(data['keyframes']).toEqual([{opacity: '0.5'}, {opacity: '1'}]);
+    });
+
+    describe('previousStyle', () => {
+      it('should merge keyframe styles based on the previous styles passed in when the player has finished its operation',
+         () => {
+           const elm = el('<div></div>');
+           const previousStyles = {width: '100px', height: '666px'};
+           const previousPlayer =
+               new ExtendedWebAnimationsPlayer(elm, [previousStyles, previousStyles], {}, []);
+           previousPlayer.play();
+           previousPlayer.finish();
+
+           const player = new ExtendedWebAnimationsPlayer(
+               elm,
+               [
+                 {width: '0px', height: '0px', opacity: 0, offset: 0},
+                 {width: '0px', height: '0px', opacity: 1, offset: 1}
+               ],
+               {duration: 1000}, [previousPlayer]);
+
+           player.init();
+
+           const data = player.domPlayer.captures['trigger'][0];
+           expect(data['keyframes']).toEqual([
+             {width: '100px', height: '666px', opacity: 0, offset: 0},
+             {width: '0px', height: '0px', opacity: 1, offset: 1}
+           ]);
+         });
+
+      it('should properly calculate the previous styles for the player even when its currently playing',
+         () => {
+           if (!getDOM().supportsWebAnimation()) return;
+
+           const elm = el('<div></div>');
+           document.body.appendChild(elm);
+
+           const fromStyles = {width: '100px', height: '666px'};
+           const toStyles = {width: '50px', height: '333px'};
+           const previousPlayer =
+               new WebAnimationsPlayer(elm, [fromStyles, toStyles], {duration: 1000}, []);
+           previousPlayer.play();
+           previousPlayer.setPosition(0.5);
+           previousPlayer.pause();
+
+           const newStyles = {width: '0px', height: '0px'};
+           const player = new WebAnimationsPlayer(
+               elm, [newStyles, newStyles], {duration: 1000}, [previousPlayer]);
+
+           player.init();
+
+           const data = player.previousStyles;
+           expect(player.previousStyles).toEqual({width: '75px', height: '499.5px'});
+         });
+    });
   });
 }

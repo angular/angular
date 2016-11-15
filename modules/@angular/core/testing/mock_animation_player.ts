@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {AnimationPlayer} from '@angular/core';
+import {AUTO_STYLE, AnimationPlayer} from '@angular/core';
 
 export class MockAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
@@ -16,8 +15,21 @@ export class MockAnimationPlayer implements AnimationPlayer {
   private _started = false;
 
   public parentPlayer: AnimationPlayer = null;
+  public previousStyles: {[styleName: string]: string | number} = {};
 
-  public log: any[] /** TODO #9100 */ = [];
+  public log: any[] = [];
+
+  constructor(
+      public startingStyles: {[key: string]: string | number} = {},
+      public keyframes: Array<[number, {[style: string]: string | number}]> = [],
+      previousPlayers: AnimationPlayer[] = []) {
+    previousPlayers.forEach(player => {
+      if (player instanceof MockAnimationPlayer) {
+        const styles = player._captureStyles();
+        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+      }
+    });
+  }
 
   private _onFinish(): void {
     if (!this._finished) {
@@ -67,6 +79,32 @@ export class MockAnimationPlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p: any /** TODO #9100 */): void {}
+  setPosition(p: number): void {}
   getPosition(): number { return 0; }
+
+  private _captureStyles(): {[styleName: string]: string | number} {
+    const captures: {[prop: string]: string | number} = {};
+
+    if (this.hasStarted()) {
+      // when assembling the captured styles, it's important that
+      // we build the keyframe styles in the following order:
+      // {startingStyles, ... other styles within keyframes, ... previousStyles }
+      Object.keys(this.startingStyles).forEach(prop => {
+        captures[prop] = this.startingStyles[prop];
+      });
+
+      this.keyframes.forEach(kf => {
+        const [offset, styles] = kf;
+        const newStyles: {[prop: string]: string | number} = {};
+        Object.keys(styles).forEach(
+            prop => { captures[prop] = this._finished ? styles[prop] : AUTO_STYLE; });
+      });
+    }
+
+    Object.keys(this.previousStyles).forEach(prop => {
+      captures[prop] = this.previousStyles[prop];
+    });
+
+    return captures;
+  }
 }
