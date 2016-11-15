@@ -244,10 +244,16 @@ export class MdProgressCircle implements OnDestroy {
   templateUrl: 'progress-circle.html',
   styleUrls: ['progress-circle.css'],
 })
-export class MdSpinner extends MdProgressCircle {
+export class MdSpinner extends MdProgressCircle implements OnDestroy {
   constructor(changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef, ngZone: NgZone) {
     super(changeDetectorRef, ngZone, elementRef);
     this.mode = 'indeterminate';
+  }
+
+  ngOnDestroy() {
+    // The `ngOnDestroy` from `MdProgressCircle` should be called explicitly, because
+    // in certain cases Angular won't call it (e.g. when using AoT and in unit tests).
+    super.ngOnDestroy();
   }
 }
 

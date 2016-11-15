@@ -14,6 +14,7 @@ describe('MdProgressCircular', () => {
         IndeterminateProgressSpinner,
         ProgressSpinnerWithValueAndBoundMode,
         IndeterminateProgressSpinnerWithNgIf,
+        SpinnerWithNgIf,
       ],
     });
 
@@ -90,6 +91,20 @@ describe('MdProgressCircular', () => {
     fixture.detectChanges();
     expect(progressElement.componentInstance.interdeterminateInterval).toBeFalsy();
   });
+
+  it('should clean up the animation when a spinner is destroyed', () => {
+    let fixture = TestBed.createComponent(SpinnerWithNgIf);
+    fixture.detectChanges();
+
+    let progressElement = fixture.debugElement.query(By.css('md-spinner'));
+
+    expect(progressElement.componentInstance.interdeterminateInterval).toBeTruthy();
+
+    fixture.debugElement.componentInstance.isHidden = true;
+    fixture.detectChanges();
+
+    expect(progressElement.componentInstance.interdeterminateInterval).toBeFalsy();
+  });
 });
 
 
@@ -105,3 +120,6 @@ class ProgressSpinnerWithValueAndBoundMode { }
 @Component({template: `
     <md-progress-circle mode="indeterminate" *ngIf="!isHidden"></md-progress-circle>`})
 class IndeterminateProgressSpinnerWithNgIf { }
+
+@Component({template: `<md-spinner *ngIf="!isHidden"></md-spinner>`})
+class SpinnerWithNgIf { }
