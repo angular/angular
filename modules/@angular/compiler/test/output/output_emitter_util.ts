@@ -22,7 +22,7 @@ export class ExternalClass {
 
 const testDataIdentifier = new CompileIdentifierMetadata({
   name: 'ExternalClass',
-  moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
+  moduleUrl: `@angular/compiler/test/output/output_emitter_util`,
   reference: ExternalClass
 });
 
@@ -253,12 +253,5 @@ function createOperatorFn(op: o.BinaryOperator) {
 }
 
 export class SimpleJsImportGenerator implements ImportGenerator {
-  getImportPath(moduleUrlStr: string, importedUrlStr: string): string {
-    const importedAssetUrl = ImportGenerator.parseAssetUrl(importedUrlStr);
-    if (importedAssetUrl) {
-      return `${importedAssetUrl.packageName}/${importedAssetUrl.modulePath}`;
-    } else {
-      return importedUrlStr;
-    }
-  }
+  getImportPath(moduleUrlStr: string, importedUrlStr: string): string { return importedUrlStr; }
 }
