@@ -20,18 +20,16 @@ import * as ts from 'typescript';
 
 import {extractProgramSymbols} from './codegen';
 import {ReflectorHost} from './reflector_host';
-import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
-import {StaticReflector, StaticSymbol} from './static_reflector';
 
 export class Extractor {
   constructor(
       private options: tsc.AngularCompilerOptions, private program: ts.Program,
-      public host: ts.CompilerHost, private staticReflector: StaticReflector,
+      public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
       private messageBundle: compiler.MessageBundle, private reflectorHost: ReflectorHost,
       private metadataResolver: compiler.CompileMetadataResolver) {}
 
   extract(): Promise<compiler.MessageBundle> {
-    const programSymbols: StaticSymbol[] =
+    const programSymbols: compiler.StaticSymbol[] =
         extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
 
     const {ngModules, files} = compiler.analyzeAndValidateNgModules(
@@ -72,8 +70,8 @@ export class Extractor {
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     if (!reflectorHost) reflectorHost = new ReflectorHost(program, compilerHost, options);
-    const staticReflector = new StaticReflector(reflectorHost);
-    StaticAndDynamicReflectionCapabilities.install(staticReflector);
+    const staticReflector = new compiler.StaticReflector(reflectorHost);
+    compiler.StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
     const config = new compiler.CompilerConfig({
       genDebugInfo: options.debug === true,

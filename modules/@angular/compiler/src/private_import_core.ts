@@ -73,3 +73,6 @@ export type ComponentStillLoadingError = typeof r._ComponentStillLoadingError;
 export const ComponentStillLoadingError: typeof r.ComponentStillLoadingError =
     r.ComponentStillLoadingError;
 export const AnimationTransition: typeof r.AnimationTransition = r.AnimationTransition;
+export type SetterFn = typeof r._SetterFn;
+export type GetterFn = typeof r._GetterFn;
+export type MethodFn = typeof r._MethodFn;
