@@ -14,7 +14,7 @@ import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitor
 import * as o from './output_ast';
 import {ImportGenerator} from './path_util';
 
-const _debugModuleUrl = 'asset://debug/lib';
+const _debugModuleUrl = '/debug/lib';
 
 export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
     string {

@@ -13,8 +13,8 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_in
 
 import {SimpleJsImportGenerator} from './output_emitter_util';
 
-const someModuleUrl = 'asset:somePackage/lib/somePath';
-const anotherModuleUrl = 'asset:somePackage/lib/someOtherPath';
+const someModuleUrl = 'somePackage/somePath';
+const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier =
     new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});

@@ -91,9 +91,6 @@ export function main() {
     it('should resolve package: urls',
        () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
 
-    it('should resolve asset: urls',
-       () => { expect(isStyleUrlResolvable('asset:someUrl.css')).toBe(true); });
-
     it('should not resolve empty urls', () => {
       expect(isStyleUrlResolvable(null)).toBe(false);
       expect(isStyleUrlResolvable('')).toBe(false);
