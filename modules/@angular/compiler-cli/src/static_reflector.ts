@@ -132,7 +132,6 @@ export class StaticReflector implements ReflectorReader {
           const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
           const parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
-
           parameters = [];
           parameterTypes.forEach((paramType, index) => {
             const nestedResult: any[] = [];

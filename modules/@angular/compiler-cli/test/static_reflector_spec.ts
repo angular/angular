@@ -7,7 +7,7 @@
  */
 
 import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
-import {HostListener, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
+import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -408,6 +408,13 @@ describe('StaticReflector', () => {
     const props = reflector.propMetadata(
         host.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
     expect(props).toEqual({foo: []});
+  });
+
+  it('should read ctor parameters with forwardRef', () => {
+    const src = '/tmp/src/forward-ref.ts';
+    const dep = host.getStaticSymbol(src, 'Dep');
+    const props = reflector.parameters(host.getStaticSymbol(src, 'Forward'));
+    expect(props).toEqual([[dep, new Inject(dep)]]);
   });
 
   it('should report an error for invalid function calls', () => {
@@ -1068,6 +1075,18 @@ class MockReflectorHost implements StaticReflectorHost {
           providers: [ { provider: 'a', useValue: (() => 1)() }]
         })
         export class InvalidMetadata {}
+      `,
+      '/tmp/src/forward-ref.ts': `
+        import {forwardRef} from 'angular2/core';
+        import {Component} from 'angular2/src/core/metadata';
+        import {Inject} from 'angular2/src/core/di/metadata';
+        @Component({})
+        export class Forward {
+          constructor(@Inject(forwardRef(() => Dep)) d: Dep) {}
+        }
+        export class Dep {
+          @Input f: Forward;
+        }
       `
     };
 
