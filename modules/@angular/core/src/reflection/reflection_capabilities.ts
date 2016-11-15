@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global, isPresent, stringify} from '../facade/lang';
+import {global, stringify} from '../facade/lang';
 import {Type} from '../type';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -42,7 +42,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       } else {
         result[i] = [];
       }
-      if (paramAnnotations && isPresent(paramAnnotations[i])) {
+      if (paramAnnotations && paramAnnotations[i]) {
         result[i] = result[i].concat(paramAnnotations[i]);
       }
     }
@@ -80,7 +80,6 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
-
     // The array has to be filled with `undefined` because holes would be skipped by `some`
     return new Array((<any>type.length)).fill(undefined);
   }
