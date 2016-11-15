@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEntryMetadata} from '../animation/metadata';
+import {AnimationEntryMetadata} from '../animation/animation_metadata';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../type';

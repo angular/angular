@@ -8,9 +8,9 @@
 
 import {FILL_STYLE_FLAG} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
+import {AUTO_STYLE} from '../../src/animation/animation_metadata';
 import * as animationUtils from '../../src/animation/animation_style_util';
 import {AnimationStyles} from '../../src/animation/animation_styles';
-import {AUTO_STYLE} from '../../src/animation/metadata';
 import {describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {

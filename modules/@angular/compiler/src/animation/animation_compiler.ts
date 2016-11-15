@@ -12,14 +12,14 @@ import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 
-import {AnimationAst, AnimationAstVisitor, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStepAst, AnimationStylesAst} from './animation_ast';
+import * as asts from './animation_ast';
 
 export class AnimationEntryCompileResult {
   constructor(public name: string, public statements: o.Statement[], public fnExp: o.Expression) {}
 }
 
 export class AnimationCompiler {
-  compile(factoryNamePrefix: string, parsedAnimations: AnimationEntryAst[]):
+  compile(factoryNamePrefix: string, parsedAnimations: asts.AnimationEntryAst[]):
       AnimationEntryCompileResult[] {
     return parsedAnimations.map(entry => {
       const factoryName = `${factoryNamePrefix}_${entry.name}`;
@@ -45,7 +45,7 @@ const _PREVIOUS_ANIMATION_PLAYERS = o.variable('previousPlayers');
 const _EMPTY_MAP = o.literalMap([]);
 const _EMPTY_ARRAY = o.literalArr([]);
 
-class _AnimationBuilder implements AnimationAstVisitor {
+class _AnimationBuilder implements asts.AnimationAstVisitor {
   private _fnVarName: string;
   private _statesMapVarName: string;
   private _statesMapVar: any;
@@ -56,7 +56,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
     this._statesMapVar = o.variable(this._statesMapVarName);
   }
 
-  visitAnimationStyles(ast: AnimationStylesAst, context: _AnimationBuilderContext): o.Expression {
+  visitAnimationStyles(ast: asts.AnimationStylesAst, context: _AnimationBuilderContext):
+      o.Expression {
     const stylesArr: any[] = [];
     if (context.isExpectingFirstStyleStep) {
       stylesArr.push(_ANIMATION_START_STATE_STYLES_VAR);
@@ -76,14 +77,14 @@ class _AnimationBuilder implements AnimationAstVisitor {
     ]);
   }
 
-  visitAnimationKeyframe(ast: AnimationKeyframeAst, context: _AnimationBuilderContext):
+  visitAnimationKeyframe(ast: asts.AnimationKeyframeAst, context: _AnimationBuilderContext):
       o.Expression {
     return o.importExpr(createIdentifier(Identifiers.AnimationKeyframe)).instantiate([
       o.literal(ast.offset), ast.styles.visit(this, context)
     ]);
   }
 
-  visitAnimationStep(ast: AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
+  visitAnimationStep(ast: asts.AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
     if (context.endStateAnimateStep === ast) {
       return this._visitEndStateAnimation(ast, context);
     }
@@ -96,7 +97,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   /** @internal */
-  _visitEndStateAnimation(ast: AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
+  _visitEndStateAnimation(ast: asts.AnimationStepAst, context: _AnimationBuilderContext):
+      o.Expression {
     const startingStylesExpr = ast.startingStyles.visit(this, context);
     const keyframeExpressions = ast.keyframes.map(keyframe => keyframe.visit(this, context));
     const keyframesExpr =
@@ -110,7 +112,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   /** @internal */
   _callAnimateMethod(
-      ast: AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
+      ast: asts.AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
       context: _AnimationBuilderContext) {
     let previousStylesValue: o.Expression = _EMPTY_ARRAY;
     if (context.isExpectingFirstAnimateStep) {
@@ -124,7 +126,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     ]);
   }
 
-  visitAnimationSequence(ast: AnimationSequenceAst, context: _AnimationBuilderContext):
+  visitAnimationSequence(ast: asts.AnimationSequenceAst, context: _AnimationBuilderContext):
       o.Expression {
     const playerExprs = ast.steps.map(step => step.visit(this, context));
     return o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
@@ -132,7 +134,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
     ]);
   }
 
-  visitAnimationGroup(ast: AnimationGroupAst, context: _AnimationBuilderContext): o.Expression {
+  visitAnimationGroup(ast: asts.AnimationGroupAst, context: _AnimationBuilderContext):
+      o.Expression {
     const playerExprs = ast.steps.map(step => step.visit(this, context));
     return o.importExpr(createIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
       o.literalArr(playerExprs)
@@ -140,7 +143,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   visitAnimationStateDeclaration(
-      ast: AnimationStateDeclarationAst, context: _AnimationBuilderContext): void {
+      ast: asts.AnimationStateDeclarationAst, context: _AnimationBuilderContext): void {
     const flatStyles: {[key: string]: string | number} = {};
     _getStylesArray(ast).forEach(
         entry => { Object.keys(entry).forEach(key => { flatStyles[key] = entry[key]; }); });
@@ -148,11 +151,11 @@ class _AnimationBuilder implements AnimationAstVisitor {
   }
 
   visitAnimationStateTransition(
-      ast: AnimationStateTransitionAst, context: _AnimationBuilderContext): any {
+      ast: asts.AnimationStateTransitionAst, context: _AnimationBuilderContext): any {
     const steps = ast.animation.steps;
     const lastStep = steps[steps.length - 1];
     if (_isEndStateAnimateStep(lastStep)) {
-      context.endStateAnimateStep = <AnimationStepAst>lastStep;
+      context.endStateAnimateStep = <asts.AnimationStepAst>lastStep;
     }
 
     context.totalTransitionTime = 0;
@@ -187,7 +190,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     return new o.IfStmt(precondition, [animationStmt, totalTimeStmt]);
   }
 
-  visitAnimationEntry(ast: AnimationEntryAst, context: _AnimationBuilderContext): any {
+  visitAnimationEntry(ast: asts.AnimationEntryAst, context: _AnimationBuilderContext): any {
     // visit each of the declarations first to build the context state map
     ast.stateDeclarations.forEach(def => def.visit(this, context));
 
@@ -310,7 +313,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         statements, o.importType(createIdentifier(Identifiers.AnimationTransition)));
   }
 
-  build(ast: AnimationAst): AnimationEntryCompileResult {
+  build(ast: asts.AnimationAst): AnimationEntryCompileResult {
     const context = new _AnimationBuilderContext();
     const fnStatement = ast.visit(this, context).toDeclStmt(this._fnVarName);
     const fnVariable = o.variable(this._fnVarName);
@@ -337,7 +340,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
 class _AnimationBuilderContext {
   stateMap = new _AnimationBuilderStateMap();
-  endStateAnimateStep: AnimationStepAst = null;
+  endStateAnimateStep: asts.AnimationStepAst = null;
   isExpectingFirstStyleStep = false;
   isExpectingFirstAnimateStep = false;
   totalTransitionTime = 0;
@@ -368,10 +371,10 @@ function _compareToAnimationStateExpr(value: o.Expression, animationState: strin
   }
 }
 
-function _isEndStateAnimateStep(step: AnimationAst): boolean {
+function _isEndStateAnimateStep(step: asts.AnimationAst): boolean {
   // the final animation step is characterized by having only TWO
   // keyframe values and it must have zero styles for both keyframes
-  if (step instanceof AnimationStepAst && step.duration > 0 && step.keyframes.length == 2) {
+  if (step instanceof asts.AnimationStepAst && step.duration > 0 && step.keyframes.length == 2) {
     const styles1 = _getStylesArray(step.keyframes[0])[0];
     const styles2 = _getStylesArray(step.keyframes[1])[0];
     return Object.keys(styles1).length === 0 && Object.keys(styles2).length === 0;

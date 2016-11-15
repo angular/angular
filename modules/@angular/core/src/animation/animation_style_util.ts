@@ -10,7 +10,7 @@ import {StringMapWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 
 import {FILL_STYLE_FLAG} from './animation_constants';
-import {AUTO_STYLE} from './metadata';
+import {AUTO_STYLE} from './animation_metadata';
 
 export function prepareFinalAnimationStyles(
     previousStyles: {[key: string]: string | number}, newStyles: {[key: string]: string | number},

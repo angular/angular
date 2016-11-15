@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
+import * as compileAsts from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
@@ -14,7 +14,7 @@ import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
-import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
+import * as asts from './animation_ast';
 import {StylesCollection} from './styles_collection';
 
 const _INITIAL_KEYFRAME = 0;
@@ -31,16 +31,16 @@ export class AnimationParseError extends ParseError {
 }
 
 export class AnimationEntryParseResult {
-  constructor(public ast: AnimationEntryAst, public errors: AnimationParseError[]) {}
+  constructor(public ast: asts.AnimationEntryAst, public errors: AnimationParseError[]) {}
 }
 
 @CompilerInjectable()
 export class AnimationParser {
   constructor(private _schema: ElementSchemaRegistry) {}
 
-  parseComponent(component: CompileDirectiveMetadata): AnimationEntryAst[] {
+  parseComponent(component: compileAsts.CompileDirectiveMetadata): asts.AnimationEntryAst[] {
     const errors: string[] = [];
-    const componentName = identifierName(component.type);
+    const componentName = compileAsts.identifierName(component.type);
     const animationTriggerNames = new Set<string>();
     const asts = component.template.animations.map(entry => {
       const result = this.parseEntry(entry);
@@ -70,46 +70,47 @@ export class AnimationParser {
     return asts;
   }
 
-  parseEntry(entry: CompileAnimationEntryMetadata): AnimationEntryParseResult {
+  parseEntry(entry: compileAsts.CompileAnimationEntryMetadata): AnimationEntryParseResult {
     const errors: AnimationParseError[] = [];
-    const stateStyles: {[key: string]: AnimationStylesAst} = {};
-    const transitions: CompileAnimationStateTransitionMetadata[] = [];
+    const stateStyles: {[key: string]: asts.AnimationStylesAst} = {};
+    const transitions: compileAsts.CompileAnimationStateTransitionMetadata[] = [];
 
-    const stateDeclarationAsts: AnimationStateDeclarationAst[] = [];
+    const stateDeclarationAsts: asts.AnimationStateDeclarationAst[] = [];
     entry.definitions.forEach(def => {
-      if (def instanceof CompileAnimationStateDeclarationMetadata) {
+      if (def instanceof compileAsts.CompileAnimationStateDeclarationMetadata) {
         _parseAnimationDeclarationStates(def, this._schema, errors).forEach(ast => {
           stateDeclarationAsts.push(ast);
           stateStyles[ast.stateName] = ast.styles;
         });
       } else {
-        transitions.push(<CompileAnimationStateTransitionMetadata>def);
+        transitions.push(<compileAsts.CompileAnimationStateTransitionMetadata>def);
       }
     });
 
     const stateTransitionAsts = transitions.map(
         transDef => _parseAnimationStateTransition(transDef, stateStyles, this._schema, errors));
 
-    const ast = new AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
+    const ast = new asts.AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
     return new AnimationEntryParseResult(ast, errors);
   }
 }
 
 function _parseAnimationDeclarationStates(
-    stateMetadata: CompileAnimationStateDeclarationMetadata, schema: ElementSchemaRegistry,
-    errors: AnimationParseError[]): AnimationStateDeclarationAst[] {
+    stateMetadata: compileAsts.CompileAnimationStateDeclarationMetadata,
+    schema: ElementSchemaRegistry,
+    errors: AnimationParseError[]): asts.AnimationStateDeclarationAst[] {
   const normalizedStyles = _normalizeStyleMetadata(stateMetadata.styles, {}, schema, errors, false);
-  const defStyles = new AnimationStylesAst(normalizedStyles);
+  const defStyles = new asts.AnimationStylesAst(normalizedStyles);
   const states = stateMetadata.stateNameExpr.split(/\s*,\s*/);
-  return states.map(state => new AnimationStateDeclarationAst(state, defStyles));
+  return states.map(state => new asts.AnimationStateDeclarationAst(state, defStyles));
 }
 
 function _parseAnimationStateTransition(
-    transitionStateMetadata: CompileAnimationStateTransitionMetadata,
-    stateStyles: {[key: string]: AnimationStylesAst}, schema: ElementSchemaRegistry,
-    errors: AnimationParseError[]): AnimationStateTransitionAst {
+    transitionStateMetadata: compileAsts.CompileAnimationStateTransitionMetadata,
+    stateStyles: {[key: string]: asts.AnimationStylesAst}, schema: ElementSchemaRegistry,
+    errors: AnimationParseError[]): asts.AnimationStateTransitionAst {
   const styles = new StylesCollection();
-  const transitionExprs: AnimationStateTransitionExpression[] = [];
+  const transitionExprs: asts.AnimationStateTransitionExpression[] = [];
   const transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
   transitionStates.forEach(
       expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
@@ -120,11 +121,12 @@ function _parseAnimationStateTransition(
     _fillAnimationAstStartingKeyframes(animationAst, styles, errors);
   }
 
-  const stepsAst: AnimationWithStepsAst = (animationAst instanceof AnimationWithStepsAst) ?
+  const stepsAst: asts.AnimationWithStepsAst =
+      (animationAst instanceof asts.AnimationWithStepsAst) ?
       animationAst :
-      new AnimationSequenceAst([animationAst]);
+      new asts.AnimationSequenceAst([animationAst]);
 
-  return new AnimationStateTransitionAst(transitionExprs, stepsAst);
+  return new asts.AnimationStateTransitionAst(transitionExprs, stepsAst);
 }
 
 function _parseAnimationAlias(alias: string, errors: AnimationParseError[]): string {
@@ -141,8 +143,8 @@ function _parseAnimationAlias(alias: string, errors: AnimationParseError[]): str
 }
 
 function _parseAnimationTransitionExpr(
-    eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
-  const expressions: AnimationStateTransitionExpression[] = [];
+    eventStr: string, errors: AnimationParseError[]): asts.AnimationStateTransitionExpression[] {
+  const expressions: asts.AnimationStateTransitionExpression[] = [];
   if (eventStr[0] == ':') {
     eventStr = _parseAnimationAlias(eventStr, errors);
   }
@@ -155,23 +157,25 @@ function _parseAnimationTransitionExpr(
   const fromState = match[1];
   const separator = match[2];
   const toState = match[3];
-  expressions.push(new AnimationStateTransitionExpression(fromState, toState));
+  expressions.push(new asts.AnimationStateTransitionExpression(fromState, toState));
 
   const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
   if (separator[0] == '<' && !isFullAnyStateExpr) {
-    expressions.push(new AnimationStateTransitionExpression(toState, fromState));
+    expressions.push(new asts.AnimationStateTransitionExpression(toState, fromState));
   }
   return expressions;
 }
 
-function _normalizeAnimationEntry(entry: CompileAnimationMetadata | CompileAnimationMetadata[]):
-    CompileAnimationMetadata {
-  return Array.isArray(entry) ? new CompileAnimationSequenceMetadata(entry) : entry;
+function _normalizeAnimationEntry(
+    entry: compileAsts.CompileAnimationMetadata |
+    compileAsts.CompileAnimationMetadata[]): compileAsts.CompileAnimationMetadata {
+  return Array.isArray(entry) ? new compileAsts.CompileAnimationSequenceMetadata(entry) : entry;
 }
 
 function _normalizeStyleMetadata(
-    entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    schema: ElementSchemaRegistry, errors: AnimationParseError[],
+    entry: compileAsts.CompileAnimationStyleMetadata,
+    stateStyles: {[key: string]: asts.AnimationStylesAst}, schema: ElementSchemaRegistry,
+    errors: AnimationParseError[],
     permitStateReferences: boolean): {[key: string]: string | number}[] {
   const offset = entry.offset;
   if (offset > 1 || offset < 0) {
@@ -207,12 +211,13 @@ function _normalizeStyleMetadata(
 }
 
 function _normalizeStyleSteps(
-    entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata {
+    entry: compileAsts.CompileAnimationMetadata,
+    stateStyles: {[key: string]: asts.AnimationStylesAst}, schema: ElementSchemaRegistry,
+    errors: AnimationParseError[]): compileAsts.CompileAnimationMetadata {
   const steps = _normalizeStyleStepEntry(entry, stateStyles, schema, errors);
-  return (entry instanceof CompileAnimationGroupMetadata) ?
-      new CompileAnimationGroupMetadata(steps) :
-      new CompileAnimationSequenceMetadata(steps);
+  return (entry instanceof compileAsts.CompileAnimationGroupMetadata) ?
+      new compileAsts.CompileAnimationGroupMetadata(steps) :
+      new compileAsts.CompileAnimationSequenceMetadata(steps);
 }
 
 function _mergeAnimationStyles(
@@ -230,19 +235,20 @@ function _mergeAnimationStyles(
 }
 
 function _normalizeStyleStepEntry(
-    entry: CompileAnimationMetadata, stateStyles: {[key: string]: AnimationStylesAst},
-    schema: ElementSchemaRegistry, errors: AnimationParseError[]): CompileAnimationMetadata[] {
-  let steps: CompileAnimationMetadata[];
-  if (entry instanceof CompileAnimationWithStepsMetadata) {
+    entry: compileAsts.CompileAnimationMetadata,
+    stateStyles: {[key: string]: asts.AnimationStylesAst}, schema: ElementSchemaRegistry,
+    errors: AnimationParseError[]): compileAsts.CompileAnimationMetadata[] {
+  let steps: compileAsts.CompileAnimationMetadata[];
+  if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
     steps = entry.steps;
   } else {
     return [entry];
   }
 
-  const newSteps: CompileAnimationMetadata[] = [];
+  const newSteps: compileAsts.CompileAnimationMetadata[] = [];
   let combinedStyles: Styles[];
   steps.forEach(step => {
-    if (step instanceof CompileAnimationStyleMetadata) {
+    if (step instanceof compileAsts.CompileAnimationStyleMetadata) {
       // this occurs when a style step is followed by a previous style step
       // or when the first style step is run. We want to concatenate all subsequent
       // style steps together into a single style step such that we have the correct
@@ -251,7 +257,7 @@ function _normalizeStyleStepEntry(
         combinedStyles = [];
       }
       _normalizeStyleMetadata(
-          <CompileAnimationStyleMetadata>step, stateStyles, schema, errors, true)
+          <compileAsts.CompileAnimationStyleMetadata>step, stateStyles, schema, errors, true)
           .forEach(entry => { _mergeAnimationStyles(combinedStyles, entry); });
     } else {
       // it is important that we create a metadata entry of the combined styles
@@ -259,27 +265,28 @@ function _normalizeStyleStepEntry(
       // This will ensure that the AST will have the previous styles painted on
       // screen before any further animations that use the styles take place.
       if (isPresent(combinedStyles)) {
-        newSteps.push(new CompileAnimationStyleMetadata(0, combinedStyles));
+        newSteps.push(new compileAsts.CompileAnimationStyleMetadata(0, combinedStyles));
         combinedStyles = null;
       }
 
-      if (step instanceof CompileAnimationAnimateMetadata) {
-        // we do not recurse into CompileAnimationAnimateMetadata since
+      if (step instanceof compileAsts.CompileAnimationAnimateMetadata) {
+        // we do not recurse into compileAsts.CompileAnimationAnimateMetadata since
         // those style steps are not going to be squashed
-        const animateStyleValue = (<CompileAnimationAnimateMetadata>step).styles;
-        if (animateStyleValue instanceof CompileAnimationStyleMetadata) {
+        const animateStyleValue = (<compileAsts.CompileAnimationAnimateMetadata>step).styles;
+        if (animateStyleValue instanceof compileAsts.CompileAnimationStyleMetadata) {
           animateStyleValue.styles =
               _normalizeStyleMetadata(animateStyleValue, stateStyles, schema, errors, true);
-        } else if (animateStyleValue instanceof CompileAnimationKeyframesSequenceMetadata) {
+        } else if (
+            animateStyleValue instanceof compileAsts.CompileAnimationKeyframesSequenceMetadata) {
           animateStyleValue.steps.forEach(step => {
             step.styles = _normalizeStyleMetadata(step, stateStyles, schema, errors, true);
           });
         }
-      } else if (step instanceof CompileAnimationWithStepsMetadata) {
+      } else if (step instanceof compileAsts.CompileAnimationWithStepsMetadata) {
         const innerSteps = _normalizeStyleStepEntry(step, stateStyles, schema, errors);
-        step = step instanceof CompileAnimationGroupMetadata ?
-            new CompileAnimationGroupMetadata(innerSteps) :
-            new CompileAnimationSequenceMetadata(innerSteps);
+        step = step instanceof compileAsts.CompileAnimationGroupMetadata ?
+            new compileAsts.CompileAnimationGroupMetadata(innerSteps) :
+            new compileAsts.CompileAnimationSequenceMetadata(innerSteps);
       }
 
       newSteps.push(step);
@@ -288,7 +295,7 @@ function _normalizeStyleStepEntry(
 
   // this happens when only styles were animated within the sequence
   if (isPresent(combinedStyles)) {
-    newSteps.push(new CompileAnimationStyleMetadata(0, combinedStyles));
+    newSteps.push(new compileAsts.CompileAnimationStyleMetadata(0, combinedStyles));
   }
 
   return newSteps;
@@ -296,7 +303,7 @@ function _normalizeStyleStepEntry(
 
 
 function _resolveStylesFromState(
-    stateName: string, stateStyles: {[key: string]: AnimationStylesAst},
+    stateName: string, stateStyles: {[key: string]: asts.AnimationStylesAst},
     errors: AnimationParseError[]) {
   const styles: Styles[] = [];
   if (stateName[0] != ':') {
@@ -323,9 +330,9 @@ class _AnimationTimings {
 }
 
 function _parseAnimationKeyframes(
-    keyframeSequence: CompileAnimationKeyframesSequenceMetadata, currentTime: number,
-    collectedStyles: StylesCollection, stateStyles: {[key: string]: AnimationStylesAst},
-    errors: AnimationParseError[]): AnimationKeyframeAst[] {
+    keyframeSequence: compileAsts.CompileAnimationKeyframesSequenceMetadata, currentTime: number,
+    collectedStyles: StylesCollection, stateStyles: {[key: string]: asts.AnimationStylesAst},
+    errors: AnimationParseError[]): asts.AnimationKeyframeAst[] {
   const totalEntries = keyframeSequence.steps.length;
   let totalOffsets = 0;
   keyframeSequence.steps.forEach(step => totalOffsets += (isPresent(step.offset) ? 1 : 0));
@@ -405,24 +412,25 @@ function _parseAnimationKeyframes(
   }
 
   return rawKeyframes.map(
-      entry => new AnimationKeyframeAst(entry[0], new AnimationStylesAst([entry[1]])));
+      entry => new asts.AnimationKeyframeAst(entry[0], new asts.AnimationStylesAst([entry[1]])));
 }
 
 function _parseTransitionAnimation(
-    entry: CompileAnimationMetadata, currentTime: number, collectedStyles: StylesCollection,
-    stateStyles: {[key: string]: AnimationStylesAst}, errors: AnimationParseError[]): AnimationAst {
+    entry: compileAsts.CompileAnimationMetadata, currentTime: number,
+    collectedStyles: StylesCollection, stateStyles: {[key: string]: asts.AnimationStylesAst},
+    errors: AnimationParseError[]): asts.AnimationAst {
   let ast: any /** TODO #9100 */;
   let playTime = 0;
   const startingTime = currentTime;
-  if (entry instanceof CompileAnimationWithStepsMetadata) {
+  if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
     let maxDuration = 0;
     const steps: any[] /** TODO #9100 */ = [];
-    const isGroup = entry instanceof CompileAnimationGroupMetadata;
+    const isGroup = entry instanceof compileAsts.CompileAnimationGroupMetadata;
     let previousStyles: any /** TODO #9100 */;
     entry.steps.forEach(entry => {
       // these will get picked up by the next step...
       const time = isGroup ? startingTime : currentTime;
-      if (entry instanceof CompileAnimationStyleMetadata) {
+      if (entry instanceof compileAsts.CompileAnimationStyleMetadata) {
         entry.styles.forEach(stylesEntry => {
           // by this point we know that we only have stringmap values
           const map = stylesEntry as Styles;
@@ -435,11 +443,11 @@ function _parseTransitionAnimation(
 
       const innerAst = _parseTransitionAnimation(entry, time, collectedStyles, stateStyles, errors);
       if (isPresent(previousStyles)) {
-        if (entry instanceof CompileAnimationWithStepsMetadata) {
-          const startingStyles = new AnimationStylesAst(previousStyles);
-          steps.push(new AnimationStepAst(startingStyles, [], 0, 0, ''));
+        if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
+          const startingStyles = new asts.AnimationStylesAst(previousStyles);
+          steps.push(new asts.AnimationStepAst(startingStyles, [], 0, 0, ''));
         } else {
-          const innerStep = <AnimationStepAst>innerAst;
+          const innerStep = <asts.AnimationStepAst>innerAst;
           innerStep.startingStyles.styles.push(...previousStyles);
         }
         previousStyles = null;
@@ -452,34 +460,35 @@ function _parseTransitionAnimation(
       steps.push(innerAst);
     });
     if (isPresent(previousStyles)) {
-      const startingStyles = new AnimationStylesAst(previousStyles);
-      steps.push(new AnimationStepAst(startingStyles, [], 0, 0, ''));
+      const startingStyles = new asts.AnimationStylesAst(previousStyles);
+      steps.push(new asts.AnimationStepAst(startingStyles, [], 0, 0, ''));
     }
     if (isGroup) {
-      ast = new AnimationGroupAst(steps);
+      ast = new asts.AnimationGroupAst(steps);
       playTime = maxDuration;
       currentTime = startingTime + playTime;
     } else {
-      ast = new AnimationSequenceAst(steps);
+      ast = new asts.AnimationSequenceAst(steps);
     }
-  } else if (entry instanceof CompileAnimationAnimateMetadata) {
+  } else if (entry instanceof compileAsts.CompileAnimationAnimateMetadata) {
     const timings = _parseTimeExpression(entry.timings, errors);
     const styles = entry.styles;
 
     let keyframes: any /** TODO #9100 */;
-    if (styles instanceof CompileAnimationKeyframesSequenceMetadata) {
+    if (styles instanceof compileAsts.CompileAnimationKeyframesSequenceMetadata) {
       keyframes =
           _parseAnimationKeyframes(styles, currentTime, collectedStyles, stateStyles, errors);
     } else {
-      const styleData = <CompileAnimationStyleMetadata>styles;
+      const styleData = <compileAsts.CompileAnimationStyleMetadata>styles;
       const offset = _TERMINAL_KEYFRAME;
-      const styleAst = new AnimationStylesAst(styleData.styles as Styles[]);
-      const keyframe = new AnimationKeyframeAst(offset, styleAst);
+      const styleAst = new asts.AnimationStylesAst(styleData.styles as Styles[]);
+      const keyframe = new asts.AnimationKeyframeAst(offset, styleAst);
       keyframes = [keyframe];
     }
 
-    ast = new AnimationStepAst(
-        new AnimationStylesAst([]), keyframes, timings.duration, timings.delay, timings.easing);
+    ast = new asts.AnimationStepAst(
+        new asts.AnimationStylesAst([]), keyframes, timings.duration, timings.delay,
+        timings.easing);
     playTime = timings.duration + timings.delay;
     currentTime += playTime;
 
@@ -491,7 +500,7 @@ function _parseTransitionAnimation(
     // if the code reaches this stage then an error
     // has already been populated within the _normalizeStyleSteps()
     // operation...
-    ast = new AnimationStepAst(null, [], 0, 0, '');
+    ast = new asts.AnimationStepAst(null, [], 0, 0, '');
   }
 
   ast.playTime = playTime;
@@ -500,9 +509,10 @@ function _parseTransitionAnimation(
 }
 
 function _fillAnimationAstStartingKeyframes(
-    ast: AnimationAst, collectedStyles: StylesCollection, errors: AnimationParseError[]): void {
+    ast: asts.AnimationAst, collectedStyles: StylesCollection,
+    errors: AnimationParseError[]): void {
   // steps that only contain style will not be filled
-  if ((ast instanceof AnimationStepAst) && ast.keyframes.length > 0) {
+  if ((ast instanceof asts.AnimationStepAst) && ast.keyframes.length > 0) {
     const keyframes = ast.keyframes;
     if (keyframes.length == 1) {
       const endKeyframe = keyframes[0];
@@ -510,7 +520,7 @@ function _fillAnimationAstStartingKeyframes(
           endKeyframe, ast.startTime, ast.playTime, collectedStyles, errors);
       ast.keyframes = [startKeyframe, endKeyframe];
     }
-  } else if (ast instanceof AnimationWithStepsAst) {
+  } else if (ast instanceof asts.AnimationWithStepsAst) {
     ast.steps.forEach(entry => _fillAnimationAstStartingKeyframes(entry, collectedStyles, errors));
   }
 }
@@ -557,8 +567,8 @@ function _parseTimeExpression(
 }
 
 function _createStartKeyframeFromEndKeyframe(
-    endKeyframe: AnimationKeyframeAst, startTime: number, duration: number,
-    collectedStyles: StylesCollection, errors: AnimationParseError[]): AnimationKeyframeAst {
+    endKeyframe: asts.AnimationKeyframeAst, startTime: number, duration: number,
+    collectedStyles: StylesCollection, errors: AnimationParseError[]): asts.AnimationKeyframeAst {
   const values: Styles = {};
   const endTime = startTime + duration;
   endKeyframe.styles.styles.forEach((styleData: Styles) => {
@@ -589,5 +599,5 @@ function _createStartKeyframeFromEndKeyframe(
     });
   });
 
-  return new AnimationKeyframeAst(_INITIAL_KEYFRAME, new AnimationStylesAst([values]));
+  return new asts.AnimationKeyframeAst(_INITIAL_KEYFRAME, new asts.AnimationStylesAst([values]));
 }
