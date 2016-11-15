@@ -29,6 +29,9 @@ interface Options extends ts.CompilerOptions {
   // Default is true.
   generateCodeForLibraries?: boolean;
 
+  // Modify how angular annotations are emitted to improve tree-shaking.
+  annotationsAs?: string; /* 'decorator'|'static field' */
+
   // Print extra information while running the compiler
   trace: boolean;
 
