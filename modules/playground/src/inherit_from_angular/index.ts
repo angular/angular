@@ -1,43 +1,57 @@
-//main entry point
-import {bootstrap} from '@angular/platform-browser';
-import { Directive, Component, ViewContainerRef, TemplateRef, Injectable } from '@angular/core';
-import { NgIf } from '@angular/common';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {NgIf} from '@angular/common';
+import {Component, Directive, Injectable, NgModule, TemplateRef, ViewContainerRef} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Injectable()
-class MyService { }
+class MyService {
+}
 
-@Directive({
-  selector: '[ngIfService]'
-})
+@Directive({selector: '[ngIfService]'})
 class NgIfService extends NgIf {
-  constructor(_viewContainerRef: ViewContainerRef, _templateRef: TemplateRef<Object>, myService: MyService) {
+  constructor(
+      _viewContainerRef: ViewContainerRef, _templateRef: TemplateRef<Object>,
+      myService: MyService) {
     super(_viewContainerRef, _templateRef);
     console.log(myService);
     if (myService) {
-      Object.getOwnPropertyDescriptor(NgIf.prototype, 'ngIf').set.apply(this, [true])
+      Object.getOwnPropertyDescriptor(NgIf.prototype, 'ngIf').set.apply(this, [true]);
     } else {
-      Object.getOwnPropertyDescriptor(NgIf.prototype, 'ngIf').set.apply(this, [false])
+      Object.getOwnPropertyDescriptor(NgIf.prototype, 'ngIf').set.apply(this, [false]);
     }
   }
 }
 
 @Component({
   selector: 'my-app',
-  providers: [MyService],
   template: `
     <div>
       <h2>Hello</h2>
       <div class="service" *ngIfService>Your service is present</div>
     </div>
   `,
-  directives: [NgIfService]
 })
 class App {
-  constructor() {
-  }
+  constructor() {}
 }
 
+@NgModule({
+  declarations: [App, NgIfService],
+  bootstrap: [App],
+  imports: [BrowserModule],
+  providers: [MyService],
+})
+class ExampleModule {
+}
 
 export function main() {
-  bootstrap(App)
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }
