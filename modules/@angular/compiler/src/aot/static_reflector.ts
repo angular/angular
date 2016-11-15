@@ -7,7 +7,6 @@
  */
 
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {AssetUrl} from '../output/path_util';
 import {ReflectorReader} from '../private_import_core';
 import {AotCompilerHost} from './compiler_host';
 import {StaticSymbol} from './static_symbol';
@@ -213,11 +212,6 @@ export class StaticReflector implements ReflectorReader {
     return result;
   }
 
-  private normalizeAssetUrl(url: string): string {
-    const assetUrl = AssetUrl.parse(url);
-    return assetUrl ? `${assetUrl.packageName}@${assetUrl.modulePath}` : null;
-  }
-
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
       const resolvedModulePath = this.host.resolveImportToFile(moduleName, filePath);
@@ -275,10 +269,6 @@ export class StaticReflector implements ReflectorReader {
       return symbol;
     }
     try {
-      const assetUrl = this.normalizeAssetUrl(module);
-      if (assetUrl) {
-        module = assetUrl;
-      }
       const filePath = this.host.resolveImportToFile(module, containingFile);
 
       if (!filePath) {
