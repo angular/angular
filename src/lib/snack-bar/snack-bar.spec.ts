@@ -259,6 +259,34 @@ describe('MdSnackBar', () => {
     // Let remaining animations run.
     tick(500);
   }));
+
+  it('should dismiss the snackbar when the action is called, notifying of both action and dismiss',
+     fakeAsync(() => {
+       let dismissObservableCompleted = false;
+       let actionObservableCompleted = false;
+       let snackBarRef = snackBar.open('Some content', 'dismiss');
+       viewContainerFixture.detectChanges();
+
+       snackBarRef.afterDismissed().subscribe(null, null, () => {
+         dismissObservableCompleted = true;
+       });
+       snackBarRef.onAction().subscribe(null, null, () => {
+         actionObservableCompleted = true;
+      });
+
+      let actionButton =
+        overlayContainerElement.querySelector('.md-simple-snackbar-action') as HTMLButtonElement;
+      actionButton.click();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      viewContainerFixture.whenStable().then(() => {
+        expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+        expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+      });
+
+      tick(500);
+    }));
 });
 
 @Directive({selector: 'dir-with-view-container'})
