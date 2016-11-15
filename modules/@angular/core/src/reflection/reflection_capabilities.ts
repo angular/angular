@@ -55,8 +55,17 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return (<any>type).parameters;
     }
 
+    var ownParamAnnotations;
+    var ownParamTypes;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownParamAnnotations = this._reflect.getOwnMetadata('parameters', typeOrFunc);
+      ownParamTypes = this._reflect.getOwnMetadata('design:paramtypes', typeOrFunc);
+    } else {
+      ownParamTypes = ownParamAnnotations = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>type).ctorParameters) {
+    if ((<any>type).ctorParameters && !ownParamAnnotations && !ownParamTypes) {
       const ctorParameters = (<any>type).ctorParameters;
       const paramTypes = ctorParameters.map((ctorParam: any) => ctorParam && ctorParam.type);
       const paramAnnotations = ctorParameters.map(
@@ -73,6 +82,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
       }
     }
+
     // The array has to be filled with `undefined` because holes would be skipped by `some`
     return new Array((<any>type.length)).fill(undefined);
   }
@@ -87,8 +97,15 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return annotations;
     }
 
+    var ownAnnotations;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownAnnotations = this._reflect.getOwnMetadata('annotations', typeOrFunc);
+    } else {
+      ownAnnotations = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>typeOrFunc).decorators) {
+    if ((<any>typeOrFunc).decorators && !ownAnnotations) {
       return convertTsickleDecoratorIntoMetadata((<any>typeOrFunc).decorators);
     }
 
@@ -110,8 +127,15 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       return propMetadata;
     }
 
+    var ownPropMetadata;
+    if (isPresent(this._reflect) && isPresent(this._reflect.getMetadata)) {
+      ownPropMetadata = this._reflect.getOwnMetadata('propMetadata', typeOrFunc);
+    } else {
+      ownPropMetadata = null;
+    }
+
     // API of tsickle for lowering decorators to properties on the class.
-    if ((<any>typeOrFunc).propDecorators) {
+    if ((<any>typeOrFunc).propDecorators && !ownPropMetadata) {
       const propDecorators = (<any>typeOrFunc).propDecorators;
       const propMetadata = <{[key: string]: any[]}>{};
       Object.keys(propDecorators).forEach(prop => {
