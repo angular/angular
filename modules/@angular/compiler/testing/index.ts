@@ -29,7 +29,7 @@ export * from './pipe_resolver_mock';
 import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, NgModuleFactory, Injector, NgModule, Component, Directive, Pipe, Type, PlatformRef} from '@angular/core';
 import {MetadataOverride} from '@angular/core/testing';
 import {TestingCompilerFactory, TestingCompiler} from './private_import_core';
-import {platformCoreDynamic, RuntimeCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '@angular/compiler';
+import {platformCoreDynamic, JitCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '@angular/compiler';
 import {MockDirectiveResolver} from './directive_resolver_mock';
 import {MockNgModuleResolver} from './ng_module_resolver_mock';
 import {MockPipeResolver} from './pipe_resolver_mock';
@@ -40,7 +40,7 @@ export class TestingCompilerFactoryImpl implements TestingCompilerFactory {
   constructor(private _compilerFactory: CompilerFactory) {}
 
   createTestingCompiler(options: CompilerOptions[]): TestingCompiler {
-    const compiler = <RuntimeCompiler>this._compilerFactory.createCompiler(options);
+    const compiler = <JitCompiler>this._compilerFactory.createCompiler(options);
     return new TestingCompilerImpl(
         compiler, compiler.injector.get(MockDirectiveResolver),
         compiler.injector.get(MockPipeResolver), compiler.injector.get(MockNgModuleResolver));
@@ -50,7 +50,7 @@ export class TestingCompilerFactoryImpl implements TestingCompilerFactory {
 export class TestingCompilerImpl implements TestingCompiler {
   private _overrider = new MetadataOverrider();
   constructor(
-      private _compiler: RuntimeCompiler, private _directiveResolver: MockDirectiveResolver,
+      private _compiler: JitCompiler, private _directiveResolver: MockDirectiveResolver,
       private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver) {}
   get injector(): Injector { return this._compiler.injector; }
 

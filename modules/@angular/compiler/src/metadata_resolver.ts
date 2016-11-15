@@ -8,6 +8,7 @@
 
 import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, Host, Inject, Injectable, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
 
+import {isStaticSymbol} from './aot/static_symbol';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -872,16 +873,16 @@ function flattenAndDedupeArray(tree: any[]): Array<any> {
 }
 
 function isValidType(value: any): boolean {
-  return cpl.isStaticSymbol(value) || (value instanceof Type);
+  return isStaticSymbol(value) || (value instanceof Type);
 }
 
 function staticTypeModuleUrl(value: any): string {
-  return cpl.isStaticSymbol(value) ? value.filePath : null;
+  return isStaticSymbol(value) ? value.filePath : null;
 }
 
 function componentModuleUrl(
     reflector: ReflectorReader, type: Type<any>, cmpMetadata: Component): string {
-  if (cpl.isStaticSymbol(type)) {
+  if (isStaticSymbol(type)) {
     return staticTypeModuleUrl(type);
   }
 
@@ -907,7 +908,7 @@ function convertToCompileValue(
 class _CompileValueConverter extends ValueTransformer {
   visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
     let identifier: cpl.CompileIdentifierMetadata;
-    if (cpl.isStaticSymbol(value)) {
+    if (isStaticSymbol(value)) {
       identifier = new cpl.CompileIdentifierMetadata(
           {name: value.name, moduleUrl: value.filePath, reference: value});
     } else {

@@ -8,22 +8,22 @@
 
 import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, SchemaMetadata, Type} from '@angular/core';
 
-import {AnimationCompiler} from './animation/animation_compiler';
-import {AnimationParser} from './animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from './compile_metadata';
-import {CompilerConfig} from './config';
-import {DirectiveNormalizer} from './directive_normalizer';
-import {DirectiveWrapperCompiler} from './directive_wrapper_compiler';
-import {stringify} from './facade/lang';
-import {CompileMetadataResolver} from './metadata_resolver';
-import {NgModuleCompiler} from './ng_module_compiler';
-import * as ir from './output/output_ast';
-import {interpretStatements} from './output/output_interpreter';
-import {jitStatements} from './output/output_jit';
-import {CompiledStylesheet, StyleCompiler} from './style_compiler';
-import {TemplateParser} from './template_parser/template_parser';
-import {SyncAsyncResult} from './util';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompiler} from './view_compiler/view_compiler';
+import {AnimationCompiler} from '../animation/animation_compiler';
+import {AnimationParser} from '../animation/animation_parser';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from '../compile_metadata';
+import {CompilerConfig} from '../config';
+import {DirectiveNormalizer} from '../directive_normalizer';
+import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
+import {stringify} from '../facade/lang';
+import {CompileMetadataResolver} from '../metadata_resolver';
+import {NgModuleCompiler} from '../ng_module_compiler';
+import * as ir from '../output/output_ast';
+import {interpretStatements} from '../output/output_interpreter';
+import {jitStatements} from '../output/output_jit';
+import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
+import {TemplateParser} from '../template_parser/template_parser';
+import {SyncAsyncResult} from '../util';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompiler} from '../view_compiler/view_compiler';
 
 
 
@@ -37,7 +37,7 @@ import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDepende
  * application to XSS risks.  For more detail, see the [Security Guide](http://g.co/ng/security).
  */
 @Injectable()
-export class RuntimeCompiler implements Compiler {
+export class JitCompiler implements Compiler {
   private _compiledTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledDirectiveWrapperCache = new Map<Type<any>, Type<any>>();
@@ -385,10 +385,10 @@ function assertComponent(meta: CompileDirectiveMetadata) {
 }
 
 /**
- * Implements `Compiler` by delegating to the RuntimeCompiler using a known module.
+ * Implements `Compiler` by delegating to the JitCompiler using a known module.
  */
 class ModuleBoundCompiler implements Compiler {
-  constructor(private _delegate: RuntimeCompiler, private _ngModule: Type<any>) {}
+  constructor(private _delegate: JitCompiler, private _ngModule: Type<any>) {}
 
   get _injector(): Injector { return this._delegate.injector; }
 

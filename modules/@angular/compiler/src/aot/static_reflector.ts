@@ -8,7 +8,9 @@
 
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
-import {ReflectorReader} from './private_import_core';
+import {ReflectorReader} from '../private_import_core';
+
+import {StaticSymbol} from './static_symbol';
 
 const SUPPORTED_SCHEMA_VERSION = 1;
 
@@ -46,15 +48,6 @@ export interface StaticReflectorHost {
   };
 
   getCanonicalFileName(fileName: string): string;
-}
-
-/**
- * A token representing the a reference to a static type.
- *
- * This token is unique for a filePath and name and can be used as a hash table key.
- */
-export class StaticSymbol {
-  constructor(public filePath: string, public name: string, public members?: string[]) {}
 }
 
 /**
