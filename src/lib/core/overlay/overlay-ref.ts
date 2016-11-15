@@ -33,12 +33,12 @@ export class OverlayRef implements PortalHost {
   }
 
   detach(): Promise<any> {
-    this._detatchBackdrop();
+    this._detachBackdrop();
     return this._portalHost.detach();
   }
 
   dispose(): void {
-    this._detatchBackdrop();
+    this._detachBackdrop();
     this._portalHost.dispose();
   }
 
@@ -101,7 +101,7 @@ export class OverlayRef implements PortalHost {
   }
 
   /** Detaches the backdrop (if any) associated with the overlay. */
-  private _detatchBackdrop(): void {
+  private _detachBackdrop(): void {
     let backdropToDetach = this._backdropElement;
 
     if (backdropToDetach) {

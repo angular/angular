@@ -56,7 +56,7 @@ export abstract class Portal<T> {
 
   /**
    * Sets the PortalHost reference without performing `attach()`. This is used directly by
-   * the PortalHost when it is performing an `attach()` or `detatch()`.
+   * the PortalHost when it is performing an `attach()` or `detach()`.
    */
   setAttachedHost(host: PortalHost) {
     this._attachedHost = host;

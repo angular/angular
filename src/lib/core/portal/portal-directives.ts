@@ -97,7 +97,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
     return new Map<string, any>();
   }
 
-  /** Detatches the currently attached Portal (if there is one) and attaches the given Portal. */
+  /** Detaches the currently attached Portal (if there is one) and attaches the given Portal. */
   private _replaceAttachedPortal(p: Portal<any>): void {
     if (this.hasAttached()) {
       this.detach();
