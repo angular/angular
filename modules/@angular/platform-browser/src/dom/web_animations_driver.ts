@@ -54,6 +54,9 @@ export class WebAnimationsDriver implements AnimationDriver {
       playerOptions['easing'] = easing;
     }
 
+    // there may be a chance a NoOp player is returned depending
+    // on when the previous animation was cancelled
+    previousPlayers = previousPlayers.filter(filterWebAnimationPlayerFn);
     return new WebAnimationsPlayer(
         element, formattedSteps, playerOptions, <WebAnimationsPlayer[]>previousPlayers);
   }
@@ -70,4 +73,8 @@ function _populateStyles(styles: AnimationStyles, defaultStyles: {[key: string]:
     }
   });
   return data;
+}
+
+function filterWebAnimationPlayerFn(player: AnimationPlayer) {
+  return player instanceof WebAnimationsPlayer;
 }

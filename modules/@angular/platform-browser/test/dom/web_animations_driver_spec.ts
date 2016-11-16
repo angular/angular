@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationPlayer} from '@angular/core';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
 import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
-import {AnimationKeyframe, AnimationStyles} from '../../src/private_import_core';
+import {AnimationKeyframe, AnimationStyles, NoOpAnimationPlayer} from '../../src/private_import_core';
 import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
 
 class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
@@ -71,7 +72,24 @@ export function main() {
       const keys = Object.keys(options);
       expect(keys.indexOf('easing')).toEqual(-1);
     });
+
+    it('should only apply the provided easing if present', () => {
+      const previousPlayers = [
+        new NoOpAnimationPlayerWithStyles(),
+        new NoOpAnimationPlayerWithStyles(),
+        new NoOpAnimationPlayerWithStyles(),
+      ];
+      const startingStyles = _makeStyles({});
+      const styles = [_makeKeyframe(0, {}), _makeKeyframe(1, {})];
+      const player = driver.animate(
+          elm, startingStyles, styles, 1000, 1000, null, <AnimationPlayer[]>previousPlayers);
+      expect(player.previousStyles).toEqual({});
+    });
   });
+}
+
+class NoOpAnimationPlayerWithStyles extends NoOpAnimationPlayer {
+  private _captureStyles() { return {color: 'red'}; }
 }
 
 function _formatOptions(player: WebAnimationsPlayer): {[key: string]: any} {
