@@ -157,7 +157,7 @@ export class Location {
       return start;
     }
     let slashes = 0;
-    if (start.endsWith('/')) {
+    if (start[start.length - 1] === '/') {
       slashes++;
     }
     if (end.startsWith('/')) {
