@@ -106,7 +106,13 @@ do
   UMD_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}.umd.min.js
   UMD_STATIC_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}-static.umd.min.js
   UMD_UPGRADE_ES5_MIN_PATH=${DESTDIR}/bundles/${PACKAGE}-upgrade.umd.min.js
-  LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
+
+  if [[ ${PACKAGE} != router ]]; then
+    LICENSE_BANNER=${PWD}/modules/@angular/license-banner.txt
+  fi
+  if [[ ${PACKAGE} == router ]]; then
+    LICENSE_BANNER=${PWD}/modules/@angular/router-license-banner.txt
+  fi
 
   rm -rf ${DESTDIR}
 
