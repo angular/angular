@@ -327,8 +327,8 @@ export class ShadowCss {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
       } else if (
-          rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
+          rule.selector.indexOf('@media') === 0 || rule.selector.indexOf('@supports') === 0 ||
+          rule.selector.indexOf('@page') === 0 || rule.selector.indexOf('@document') === 0) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       }
       return new CssRule(selector, content);
@@ -551,7 +551,7 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
     let content = '';
     let suffix = m[4];
     let contentPrefix = '';
-    if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
+    if (suffix && suffix.indexOf('{' + BLOCK_PLACEHOLDER) === 0) {
       content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
       suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
       contentPrefix = '{';

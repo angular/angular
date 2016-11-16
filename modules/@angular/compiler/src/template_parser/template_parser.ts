@@ -31,7 +31,6 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {PreparsedElementType, preparseElement} from './template_preparser';
 
 
-
 // Group 1 = "bind-"
 // Group 2 = "let-"
 // Group 3 = "ref-/#"
@@ -275,7 +274,7 @@ class TemplateParseVisitor implements html.Visitor {
       let prefixToken: string|undefined = undefined;
       if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      } else if (attr.name.indexOf(TEMPLATE_ATTR_PREFIX) === 0) {
         templateBindingsSource = attr.value;
         prefixToken = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
       }

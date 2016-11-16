@@ -722,7 +722,7 @@ export class MockStaticReflectorHost implements StaticReflectorHost {
 
     function pathTo(from: string, to: string): string {
       let result = to;
-      if (to.startsWith('.')) {
+      if (to[0] === '.') {
         const fromParts = splitPath(from);
         fromParts.pop();  // remove the file name.
         const toParts = splitPath(to);

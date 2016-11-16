@@ -142,7 +142,7 @@ function extractRecursiveProperties(
 
   let instance: HTMLElement = null;
   name.split(',').forEach(tagName => {
-    instance = type['name'].startsWith('SVG') ?
+    instance = type['name'].indexOf('SVG') === 0 ?
         document.createElementNS('http://www.w3.org/2000/svg', tagName.replace(SVG_PREFIX, '')) :
         document.createElement(tagName);
 
@@ -183,13 +183,13 @@ function extractProperties(
 
   keys.sort();
   keys.forEach((name) => {
-    if (name.startsWith('on')) {
+    if (name.indexOf('on') === 0) {
       props.push('*' + name.substr(2));
     } else {
       const typeCh = _TYPE_MNEMONICS[typeof instance[name]];
       const descriptor = Object.getOwnPropertyDescriptor(prototype, name);
       const isSetter = descriptor && descriptor.set;
-      if (typeCh !== void 0 && !name.startsWith('webkit') && isSetter) {
+      if (typeCh !== void 0 && name.indexOf('webkit') !== 0 && isSetter) {
         props.push(typeCh + name);
       }
     }
@@ -248,10 +248,10 @@ function extractName(type: Function): string {
     case 'SVGTSpanElement':
       return SVG_PREFIX + 'tspan';
     default:
-      const isSVG = name.startsWith('SVG');
-      if (name.startsWith('HTML') || isSVG) {
+      const isSVG = name.indexOf('SVG') === 0;
+      if (name.indexOf('HTML') === 0 || isSVG) {
         name = name.replace('HTML', '').replace('SVG', '').replace('Element', '');
-        if (isSVG && name.startsWith('FE')) {
+        if (isSVG && name.indexOf('FE') === 0) {
           name = 'fe' + name.substring(2);
         } else if (name) {
           name = name.charAt(0).toLowerCase() + name.substring(1);

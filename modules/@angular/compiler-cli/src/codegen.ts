@@ -54,7 +54,7 @@ export class CodeGenerator {
 
     // transplant the codegen path to be inside the `genDir`
     let relativePath: string = path.relative(root, filePath);
-    while (relativePath.startsWith('..' + path.sep)) {
+    while (relativePath.indexOf('..' + path.sep) === 0) {
       // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
       // into `genDir`.
       relativePath = relativePath.substr(3);

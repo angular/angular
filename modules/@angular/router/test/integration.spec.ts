@@ -2289,7 +2289,7 @@ describe('Integration', () => {
     describe('custom url handling strategies', () => {
       class CustomUrlHandlingStrategy implements UrlHandlingStrategy {
         shouldProcessUrl(url: UrlTree): boolean {
-          return url.toString().startsWith('/include') || url.toString() === '/';
+          return url.toString().indexOf('/include') === 0 || url.toString() === '/';
         }
 
         extract(url: UrlTree): UrlTree {

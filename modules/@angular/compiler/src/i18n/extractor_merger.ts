@@ -315,7 +315,7 @@ class _Visitor implements html.Visitor {
     const explicitAttrNameToValue: {[k: string]: string} = {};
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
-    el.attrs.filter(attr => attr.name.startsWith(_I18N_ATTR_PREFIX))
+    el.attrs.filter(attr => attr.name.indexOf(_I18N_ATTR_PREFIX) === 0)
         .forEach(
             attr => explicitAttrNameToValue[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
                 attr.value);
@@ -366,7 +366,7 @@ class _Visitor implements html.Visitor {
     const i18nAttributeMeanings: {[name: string]: string} = {};
 
     attributes.forEach(attr => {
-      if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
+      if (attr.name.indexOf(_I18N_ATTR_PREFIX) === 0) {
         i18nAttributeMeanings[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
             _splitMeaningAndDesc(attr.value)[0];
       }
@@ -375,7 +375,7 @@ class _Visitor implements html.Visitor {
     const translatedAttributes: html.Attribute[] = [];
 
     attributes.forEach((attr) => {
-      if (attr.name === _I18N_ATTR || attr.name.startsWith(_I18N_ATTR_PREFIX)) {
+      if (attr.name === _I18N_ATTR || attr.name.indexOf(_I18N_ATTR_PREFIX) === 0) {
         // strip i18n specific attributes
         return;
       }
@@ -485,7 +485,7 @@ class _Visitor implements html.Visitor {
 }
 
 function _isOpeningComment(n: html.Node): boolean {
-  return n instanceof html.Comment && n.value && n.value.startsWith('i18n');
+  return n instanceof html.Comment && n.value && n.value.indexOf('i18n') === 0;
 }
 
 function _isClosingComment(n: html.Node): boolean {

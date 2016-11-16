@@ -173,7 +173,7 @@ export class BindingParser {
       name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[]) {
     let isAnimationProp = false;
-    if (name.startsWith(ANIMATE_PROP_PREFIX)) {
+    if (name.indexOf(ANIMATE_PROP_PREFIX) === 0) {
       isAnimationProp = true;
       name = name.substring(ANIMATE_PROP_PREFIX.length);
     } else if (_isAnimationLabel(name)) {

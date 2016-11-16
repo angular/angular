@@ -52,7 +52,7 @@ export class SpyLocation implements Location {
   }
 
   prepareExternalUrl(url: string): string {
-    if (url.length > 0 && !url.startsWith('/')) {
+    if (url.length > 0 && url[0] !== '/') {
       url = '/' + url;
     }
     return this._baseHref + url;

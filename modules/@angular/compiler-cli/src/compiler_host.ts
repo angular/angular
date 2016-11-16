@@ -37,7 +37,7 @@ export class CompilerHost implements AotCompilerHost {
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
     const genPath: string = path.relative(this.basePath, this.genDir);
-    this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
+    this.isGenDirChildOfRootDir = genPath === '' || genPath.indexOf('..') !== 0;
   }
 
   // We use absolute paths on disk as canonical.
@@ -117,7 +117,7 @@ export class CompilerHost implements AotCompilerHost {
 
   private dotRelative(from: string, to: string): string {
     const rPath: string = path.relative(from, to).replace(/\\/g, '/');
-    return rPath.startsWith('.') ? rPath : './' + rPath;
+    return rPath[0] === '.' ? rPath : './' + rPath;
   }
 
   /**
