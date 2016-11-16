@@ -146,97 +146,43 @@ export class CompileMetadataResolver {
       return;
     }
     directiveType = resolveForwardRef(directiveType);
-    const dirMeta = this._directiveResolver.resolve(directiveType);
-    if (!dirMeta) {
-      return null;
-    }
-    let moduleUrl = staticTypeModuleUrl(directiveType);
+    const nonNormalizedMetadata = this.getNonNormalizedDirectiveMetadata(directiveType);
 
-    const createDirectiveMetadata = (templateMeta: cpl.CompileTemplateMetadata) => {
-      let changeDetectionStrategy: ChangeDetectionStrategy = null;
-      let viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
-      let entryComponentMetadata: cpl.CompileIdentifierMetadata[] = [];
-      let selector = dirMeta.selector;
-
-      if (dirMeta instanceof Component) {
-        // Component
-        changeDetectionStrategy = dirMeta.changeDetection;
-        if (dirMeta.viewProviders) {
-          viewProviders = this._getProvidersMetadata(
-              dirMeta.viewProviders, entryComponentMetadata,
-              `viewProviders for "${stringify(directiveType)}"`);
-        }
-        if (dirMeta.entryComponents) {
-          entryComponentMetadata =
-              flattenAndDedupeArray(dirMeta.entryComponents)
-                  .map((type) => this._getIdentifierMetadata(type, staticTypeModuleUrl(type)))
-                  .concat(entryComponentMetadata);
-        }
-        if (!selector) {
-          selector = this._schemaRegistry.getDefaultComponentElementName();
-        }
-      } else {
-        // Directive
-        if (!selector) {
-          throw new Error(`Directive ${stringify(directiveType)} has no selector, please add it!`);
-        }
-      }
-
-      let providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
-      if (isPresent(dirMeta.providers)) {
-        providers = this._getProvidersMetadata(
-            dirMeta.providers, entryComponentMetadata,
-            `providers for "${stringify(directiveType)}"`);
-      }
-      let queries: cpl.CompileQueryMetadata[] = [];
-      let viewQueries: cpl.CompileQueryMetadata[] = [];
-      if (isPresent(dirMeta.queries)) {
-        queries = this._getQueriesMetadata(dirMeta.queries, false, directiveType);
-        viewQueries = this._getQueriesMetadata(dirMeta.queries, true, directiveType);
-      }
-
-      const meta = cpl.CompileDirectiveMetadata.create({
-        selector: selector,
-        exportAs: dirMeta.exportAs,
-        isComponent: !!templateMeta,
-        type: this._getTypeMetadata(directiveType, moduleUrl),
-        template: templateMeta,
-        changeDetection: changeDetectionStrategy,
-        inputs: dirMeta.inputs,
-        outputs: dirMeta.outputs,
-        host: dirMeta.host,
-        providers: providers,
-        viewProviders: viewProviders,
-        queries: queries,
-        viewQueries: viewQueries,
-        entryComponents: entryComponentMetadata
+    const createDirectiveMetadata = (templateMetadata: cpl.CompileTemplateMetadata) => {
+      const normalizedDirMeta = new cpl.CompileDirectiveMetadata({
+        type: nonNormalizedMetadata.type,
+        isComponent: nonNormalizedMetadata.isComponent,
+        selector: nonNormalizedMetadata.selector,
+        exportAs: nonNormalizedMetadata.exportAs,
+        changeDetection: nonNormalizedMetadata.changeDetection,
+        inputs: nonNormalizedMetadata.inputs,
+        outputs: nonNormalizedMetadata.outputs,
+        hostListeners: nonNormalizedMetadata.hostListeners,
+        hostProperties: nonNormalizedMetadata.hostProperties,
+        hostAttributes: nonNormalizedMetadata.hostAttributes,
+        providers: nonNormalizedMetadata.providers,
+        viewProviders: nonNormalizedMetadata.viewProviders,
+        queries: nonNormalizedMetadata.queries,
+        viewQueries: nonNormalizedMetadata.viewQueries,
+        entryComponents: nonNormalizedMetadata.entryComponents,
+        template: templateMetadata
       });
-      this._directiveCache.set(directiveType, meta);
-      this._directiveSummaryCache.set(directiveType, meta.toSummary());
-      return meta;
+      this._directiveCache.set(directiveType, normalizedDirMeta);
+      this._directiveSummaryCache.set(directiveType, normalizedDirMeta.toSummary());
+      return normalizedDirMeta;
     };
 
-    if (dirMeta instanceof Component) {
-      // component
-      moduleUrl = componentModuleUrl(this._reflector, directiveType, dirMeta);
-      assertArrayOfStrings('styles', dirMeta.styles);
-      assertArrayOfStrings('styleUrls', dirMeta.styleUrls);
-      assertInterpolationSymbols('interpolation', dirMeta.interpolation);
-
-      const animations = dirMeta.animations ?
-          dirMeta.animations.map(e => this.getAnimationEntryMetadata(e)) :
-          null;
-
+    if (nonNormalizedMetadata.isComponent) {
       const templateMeta = this._directiveNormalizer.normalizeTemplate({
         componentType: directiveType,
-        moduleUrl: moduleUrl,
-        encapsulation: dirMeta.encapsulation,
-        template: dirMeta.template,
-        templateUrl: dirMeta.templateUrl,
-        styles: dirMeta.styles,
-        styleUrls: dirMeta.styleUrls,
-        animations: animations,
-        interpolation: dirMeta.interpolation
+        moduleUrl: nonNormalizedMetadata.type.moduleUrl,
+        encapsulation: nonNormalizedMetadata.template.encapsulation,
+        template: nonNormalizedMetadata.template.template,
+        templateUrl: nonNormalizedMetadata.template.templateUrl,
+        styles: nonNormalizedMetadata.template.styles,
+        styleUrls: nonNormalizedMetadata.template.styleUrls,
+        animations: nonNormalizedMetadata.template.animations,
+        interpolation: nonNormalizedMetadata.template.interpolation
       });
       if (templateMeta.syncResult) {
         createDirectiveMetadata(templateMeta.syncResult);
@@ -252,6 +198,96 @@ export class CompileMetadataResolver {
       createDirectiveMetadata(null);
       return null;
     }
+  }
+
+  getNonNormalizedDirectiveMetadata(directiveType: any): cpl.CompileDirectiveMetadata {
+    directiveType = resolveForwardRef(directiveType);
+    const dirMeta = this._directiveResolver.resolve(directiveType);
+    if (!dirMeta) {
+      return null;
+    }
+    let moduleUrl = staticTypeModuleUrl(directiveType);
+    let nonNormalizedTemplateMetadata: cpl.CompileTemplateMetadata;
+
+    if (dirMeta instanceof Component) {
+      // component
+      moduleUrl = componentModuleUrl(this._reflector, directiveType, dirMeta);
+      assertArrayOfStrings('styles', dirMeta.styles);
+      assertArrayOfStrings('styleUrls', dirMeta.styleUrls);
+      assertInterpolationSymbols('interpolation', dirMeta.interpolation);
+
+      const animations = dirMeta.animations ?
+          dirMeta.animations.map(e => this.getAnimationEntryMetadata(e)) :
+          null;
+
+      nonNormalizedTemplateMetadata = new cpl.CompileTemplateMetadata({
+        encapsulation: dirMeta.encapsulation,
+        template: dirMeta.template,
+        templateUrl: dirMeta.templateUrl,
+        styles: dirMeta.styles,
+        styleUrls: dirMeta.styleUrls,
+        animations: animations,
+        interpolation: dirMeta.interpolation
+      });
+    }
+
+    let changeDetectionStrategy: ChangeDetectionStrategy = null;
+    let viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
+    let entryComponentMetadata: cpl.CompileIdentifierMetadata[] = [];
+    let selector = dirMeta.selector;
+
+    if (dirMeta instanceof Component) {
+      // Component
+      changeDetectionStrategy = dirMeta.changeDetection;
+      if (dirMeta.viewProviders) {
+        viewProviders = this._getProvidersMetadata(
+            dirMeta.viewProviders, entryComponentMetadata,
+            `viewProviders for "${stringify(directiveType)}"`);
+      }
+      if (dirMeta.entryComponents) {
+        entryComponentMetadata =
+            flattenAndDedupeArray(dirMeta.entryComponents)
+                .map((type) => this._getIdentifierMetadata(type, staticTypeModuleUrl(type)))
+                .concat(entryComponentMetadata);
+      }
+      if (!selector) {
+        selector = this._schemaRegistry.getDefaultComponentElementName();
+      }
+    } else {
+      // Directive
+      if (!selector) {
+        throw new Error(`Directive ${stringify(directiveType)} has no selector, please add it!`);
+      }
+    }
+
+    let providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
+    if (isPresent(dirMeta.providers)) {
+      providers = this._getProvidersMetadata(
+          dirMeta.providers, entryComponentMetadata, `providers for "${stringify(directiveType)}"`);
+    }
+    let queries: cpl.CompileQueryMetadata[] = [];
+    let viewQueries: cpl.CompileQueryMetadata[] = [];
+    if (isPresent(dirMeta.queries)) {
+      queries = this._getQueriesMetadata(dirMeta.queries, false, directiveType);
+      viewQueries = this._getQueriesMetadata(dirMeta.queries, true, directiveType);
+    }
+
+    return cpl.CompileDirectiveMetadata.create({
+      selector: selector,
+      exportAs: dirMeta.exportAs,
+      isComponent: !!nonNormalizedTemplateMetadata,
+      type: this._getTypeMetadata(directiveType, moduleUrl),
+      template: nonNormalizedTemplateMetadata,
+      changeDetection: changeDetectionStrategy,
+      inputs: dirMeta.inputs,
+      outputs: dirMeta.outputs,
+      host: dirMeta.host,
+      providers: providers,
+      viewProviders: viewProviders,
+      queries: queries,
+      viewQueries: viewQueries,
+      entryComponents: entryComponentMetadata
+    });
   }
 
   /**
@@ -309,9 +345,18 @@ export class CompileMetadataResolver {
   loadNgModuleMetadata(moduleType: any, isSync: boolean, throwIfNotFound = true):
       {ngModule: cpl.CompileNgModuleMetadata, loading: Promise<any>} {
     const ngModule = this._loadNgModuleMetadata(moduleType, isSync, throwIfNotFound);
-    const loading =
-        ngModule ? Promise.all(ngModule.transitiveModule.loadingPromises) : Promise.resolve(null);
+    const loading = ngModule ?
+        Promise.all(ngModule.transitiveModule.directiveLoaders.map(loader => loader())) :
+        Promise.resolve(null);
     return {ngModule, loading};
+  }
+
+  /**
+   * Get the NgModule metadata without loading the directives.
+   */
+  getUnloadedNgModuleMetadata(moduleType: any, isSync: boolean, throwIfNotFound = true):
+      cpl.CompileNgModuleMetadata {
+    return this._loadNgModuleMetadata(moduleType, isSync, throwIfNotFound);
   }
 
   private _loadNgModuleMetadata(moduleType: any, isSync: boolean, throwIfNotFound = true):
@@ -396,10 +441,8 @@ export class CompileMetadataResolver {
           transitiveModule.directives.push(declaredIdentifier);
           declaredDirectives.push(declaredIdentifier);
           this._addTypeToModule(declaredType, moduleType);
-          const loadingPromise = this._loadDirectiveMetadata(declaredType, isSync);
-          if (loadingPromise) {
-            transitiveModule.loadingPromises.push(loadingPromise);
-          }
+          transitiveModule.directiveLoaders.push(
+              () => this._loadDirectiveMetadata(declaredType, isSync));
         } else if (this._pipeResolver.isPipe(declaredType)) {
           transitiveModule.pipesSet.add(declaredType);
           transitiveModule.pipes.push(declaredIdentifier);
@@ -525,10 +568,10 @@ export class CompileMetadataResolver {
     const directives =
         flattenArray(transitiveExportedModules.map((ngModule) => ngModule.exportedDirectives));
     const pipes = flattenArray(transitiveExportedModules.map((ngModule) => ngModule.exportedPipes));
-    const loadingPromises =
-        ListWrapper.flatten(transitiveExportedModules.map(ngModule => ngModule.loadingPromises));
+    const directiveLoaders =
+        ListWrapper.flatten(transitiveExportedModules.map(ngModule => ngModule.directiveLoaders));
     return new cpl.TransitiveCompileNgModuleMetadata(
-        transitiveModules, providers, entryComponents, directives, pipes, loadingPromises);
+        transitiveModules, providers, entryComponents, directives, pipes, directiveLoaders);
   }
 
   private _getIdentifierMetadata(type: Type<any>, moduleUrl: string):
@@ -584,20 +627,26 @@ export class CompileMetadataResolver {
     return pipeSummary;
   }
 
-  private _loadPipeMetadata(pipeType: Type<any>): void {
-    pipeType = resolveForwardRef(pipeType);
-    const pipeMeta = this._pipeResolver.resolve(pipeType);
+  getOrLoadPipeMetadata(pipeType: any): cpl.CompilePipeMetadata {
+    let pipeMeta = this._pipeCache.get(pipeType);
     if (!pipeMeta) {
-      return null;
+      pipeMeta = this._loadPipeMetadata(pipeType);
     }
+    return pipeMeta;
+  }
 
-    const meta = new cpl.CompilePipeMetadata({
+  private _loadPipeMetadata(pipeType: any): cpl.CompilePipeMetadata {
+    pipeType = resolveForwardRef(pipeType);
+    const pipeAnnotation = this._pipeResolver.resolve(pipeType);
+
+    const pipeMeta = new cpl.CompilePipeMetadata({
       type: this._getTypeMetadata(pipeType, staticTypeModuleUrl(pipeType)),
-      name: pipeMeta.name,
-      pure: pipeMeta.pure
+      name: pipeAnnotation.name,
+      pure: pipeAnnotation.pure
     });
-    this._pipeCache.set(pipeType, meta);
-    this._pipeSummaryCache.set(pipeType, meta.toSummary());
+    this._pipeCache.set(pipeType, pipeMeta);
+    this._pipeSummaryCache.set(pipeType, pipeMeta.toSummary());
+    return pipeMeta;
   }
 
   private _getDependenciesMetadata(typeOrFunc: Type<any>|Function, dependencies: any[]):
