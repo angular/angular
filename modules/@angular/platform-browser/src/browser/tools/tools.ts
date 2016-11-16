@@ -37,5 +37,7 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
  * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
-  delete context.ng.profiler;
+  if (context.ng) {
+    delete context.ng.profiler;
+  }
 }
