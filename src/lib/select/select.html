@@ -5,9 +5,10 @@
 </div>
 
 <template connected-overlay [origin]="origin"  [open]="panelOpen" hasBackdrop (backdropClick)="close()"
-  backdropClass="md-overlay-transparent-backdrop" [positions]="_positions" [width]="_getWidth()">
+  backdropClass="md-overlay-transparent-backdrop" [positions]="_positions" [width]="_getWidth()"
+  (positionChange)="_updateTransformOrigin($event)">
   <div class="md-select-panel" [@transformPanel]="_getPanelState()" (@transformPanel.done)="_onPanelDone()"
-    (keydown)="_keyManager.onKeydown($event)">
+    (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin">
     <div class="md-select-content" [@fadeInContent]="'showing'">
       <ng-content></ng-content>
     </div>

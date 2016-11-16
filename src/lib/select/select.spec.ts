@@ -7,6 +7,7 @@ import {MdSelect} from './select';
 import {MdOption} from './option';
 import {Dir} from '../core/rtl/dir';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
@@ -19,16 +20,32 @@ describe('MdSelect', () => {
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
+
+          // add fixed positioning to match real overlay container styles
+          overlayContainerElement.style.position = 'fixed';
+          overlayContainerElement.style.top = '0';
+          overlayContainerElement.style.left = '0';
+          document.body.appendChild(overlayContainerElement);
+
+          // remove body padding to keep consistent cross-browser
+          document.body.style.padding = '0';
+          document.body.style.margin = '0';
+
           return {getContainerElement: () => overlayContainerElement};
         }},
         {provide: Dir, useFactory: () => {
           return dir = { value: 'ltr' };
-        }}
+        }},
+        {provide: ViewportRuler, useClass: FakeViewportRuler}
       ]
     });
 
     TestBed.compileComponents();
   }));
+
+  afterEach(() => {
+    document.body.removeChild(overlayContainerElement);
+  });
 
   describe('overlay panel', () => {
     let fixture: ComponentFixture<BasicSelect>;
@@ -457,7 +474,7 @@ describe('MdSelect', () => {
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPanelState()).toEqual('showing-ltr');
+        expect(fixture.componentInstance.select._getPanelState()).toEqual('top-ltr');
       });
 
       it('should use the rtl panel state when the dir is rtl', () => {
@@ -465,8 +482,67 @@ describe('MdSelect', () => {
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPanelState()).toEqual('showing-rtl');
+        expect(fixture.componentInstance.select._getPanelState()).toEqual('top-rtl');
       });
+
+  });
+
+  describe('positioning', () => {
+    let fixture: ComponentFixture<BasicSelect>;
+    let trigger: HTMLElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicSelect);
+      fixture.detectChanges();
+      trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+    });
+
+    it('should open below the trigger if the panel will fit', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+      const overlayRect = overlayPane.getBoundingClientRect();
+      const triggerRect = trigger.getBoundingClientRect();
+
+      // when the select panel opens below the trigger, the tops of the trigger and the overlay
+      // should be aligned.
+      expect(overlayRect.top.toFixed(2))
+          .toEqual(triggerRect.top.toFixed(2), `Expected panel to open below by default.`);
+
+      // animation should match the position
+      expect(fixture.componentInstance.select._getPanelState())
+          .toEqual('top-ltr', `Expected panel animation values to match the position.`);
+      expect(fixture.componentInstance.select._transformOrigin)
+          .toBe('top', `Expected panel animation to originate at the top.`);
+    });
+
+    it('should open above the trigger if there is not space below for the panel', () => {
+      // Push trigger to the bottom part of viewport, so it doesn't have space to open
+      // in its default position below the trigger.
+      trigger.style.position = 'relative';
+      trigger.style.top = '650px';
+
+      trigger.click();
+      fixture.detectChanges();
+
+      const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+      const overlayRect = overlayPane.getBoundingClientRect();
+      const triggerRect = trigger.getBoundingClientRect();
+
+      // In "above" position, the bottom edges of the overlay and the origin are aligned.
+      // To find the overlay top, subtract the panel height from the origin's bottom edge.
+      const expectedTop = triggerRect.bottom - overlayRect.height;
+      expect(overlayRect.top.toFixed(2))
+          .toEqual(expectedTop.toFixed(2),
+              `Expected panel to open above the trigger if below wouldn't fit.`);
+
+      // animation should match the position
+      expect(fixture.componentInstance.select._getPanelState())
+          .toEqual('bottom-ltr', `Expected panel animation values to match the position.`);
+      expect(fixture.componentInstance.select._transformOrigin)
+          .toBe('bottom', `Expected panel animation to originate at the bottom.`);
+    });
 
   });
 
@@ -657,4 +733,16 @@ function dispatchEvent(eventName: string, element: HTMLElement): void {
   let event  = document.createEvent('Event');
   event.initEvent(eventName, true, true);
   element.dispatchEvent(event);
+}
+
+class FakeViewportRuler {
+  getViewportRect() {
+    return {
+      left: 0, top: 0, width: 1014, height: 686, bottom: 686, right: 1014
+    };
+  }
+
+  getViewportScrollPosition() {
+    return {top: 0, left: 0};
+  }
 }

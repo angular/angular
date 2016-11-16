@@ -21,6 +21,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {transformPlaceholder, transformPanel, fadeInContent} from './select-animations';
 import {ControlValueAccessor, NgControl} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {ConnectedOverlayPositionChange} from '../core/overlay/position/connected-position';
 
 @Component({
   moduleId: module.id,
@@ -77,16 +78,29 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** View -> model callback called when select has been touched */
   _onTouched: Function;
 
-  /** This position config ensures that the top left corner of the overlay
-   * is aligned with with the top left of the origin (overlapping the trigger
-   * completely). In RTL mode, the top right corners are aligned instead.
+  /** The value of the select panel's transform-origin property. */
+  _transformOrigin: string = 'top';
+
+  /**
+   * This position config ensures that the top "start" corner of the overlay
+   * is aligned with with the top "start" of the origin by default (overlapping
+   * the trigger completely). If the panel cannot fit below the trigger, it
+   * will fall back to a position above the trigger.
    */
-  _positions = [{
-    originX: 'start',
-    originY: 'top',
-    overlayX: 'start',
-    overlayY: 'top'
-  }];
+  _positions = [
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'top',
+    },
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'bottom',
+    },
+  ];
 
   @ViewChild('trigger') trigger: ElementRef;
   @ContentChildren(MdOption) options: QueryList<MdOption>;
@@ -226,7 +240,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
 
   /** The animation state of the overlay panel. */
   _getPanelState(): string {
-    return this._isRtl() ? 'showing-rtl' : 'showing-ltr';
+    return this._isRtl() ? `${this._transformOrigin}-rtl` : `${this._transformOrigin}-ltr`;
   }
 
   /** Ensures the panel opens if activated by the keyboard. */
@@ -262,6 +276,14 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** Returns the correct tabindex for the select depending on disabled state. */
   _getTabIndex() {
     return this.disabled ? '-1' : '0';
+  }
+
+  /**
+   * Sets the transform-origin property of the panel to ensure that it
+   * animates in the correct direction based on its positioning.
+   */
+  _updateTransformOrigin(pos: ConnectedOverlayPositionChange): void {
+    this._transformOrigin = pos.connectionPair.originY;
   }
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
