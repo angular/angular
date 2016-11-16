@@ -589,7 +589,7 @@ export interface CompileNgModuleDirectiveSummary extends CompileSummary {
   exportedDirectives: CompileIdentifierMetadata[];
   exportedPipes: CompileIdentifierMetadata[];
   exportedModules: CompileNgModuleDirectiveSummary[];
-  loadingPromises: Promise<any>[];
+  directiveLoaders: (() => Promise<void>)[];
 }
 
 export type CompileNgModuleSummary =
@@ -661,7 +661,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
       exportedModules: this.exportedModules,
       exportedDirectives: this.exportedDirectives,
       exportedPipes: this.exportedPipes,
-      loadingPromises: this.transitiveModule.loadingPromises
+      directiveLoaders: this.transitiveModule.directiveLoaders
     };
   }
 
@@ -682,7 +682,7 @@ export class CompileNgModuleMetadata implements CompileMetadataWithIdentifier {
       exportedDirectives: this.exportedDirectives,
       exportedPipes: this.exportedPipes,
       exportedModules: this.exportedModules,
-      loadingPromises: this.transitiveModule.loadingPromises
+      directiveLoaders: this.transitiveModule.directiveLoaders
     };
   }
 }
@@ -695,7 +695,7 @@ export class TransitiveCompileNgModuleMetadata {
       public modules: CompileNgModuleInjectorSummary[], public providers: CompileProviderMetadata[],
       public entryComponents: CompileIdentifierMetadata[],
       public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[],
-      public loadingPromises: Promise<any>[]) {
+      public directiveLoaders: (() => Promise<void>)[]) {
     directives.forEach(dir => this.directivesSet.add(dir.reference));
     pipes.forEach(pipe => this.pipesSet.add(pipe.reference));
   }

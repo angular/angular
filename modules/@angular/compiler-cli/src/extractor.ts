@@ -34,34 +34,34 @@ export class Extractor {
     const programSymbols: StaticSymbol[] =
         extractProgramSymbols(this.program, this.staticReflector, this.reflectorHost, this.options);
 
-    return compiler
-        .analyzeNgModules(programSymbols, {transitiveModules: true}, this.metadataResolver)
-        .then(({files}) => {
-          const errors: compiler.ParseError[] = [];
+    const {ngModules, files} = compiler.analyzeAndValidateNgModules(
+        programSymbols, {transitiveModules: true}, this.metadataResolver);
+    return compiler.loadNgModuleDirectives(ngModules).then(() => {
+      const errors: compiler.ParseError[] = [];
 
-          files.forEach(file => {
-            const compMetas: compiler.CompileDirectiveMetadata[] = [];
-            file.directives.forEach(directiveType => {
-              const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
-              if (dirMeta && dirMeta.isComponent) {
-                compMetas.push(dirMeta);
-              }
-            });
-            compMetas.forEach(compMeta => {
-              const html = compMeta.template.template;
-              const interpolationConfig =
-                  compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
-              errors.push(
-                  ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
-            });
-          });
-
-          if (errors.length) {
-            throw new Error(errors.map(e => e.toString()).join('\n'));
+      files.forEach(file => {
+        const compMetas: compiler.CompileDirectiveMetadata[] = [];
+        file.directives.forEach(directiveType => {
+          const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
+          if (dirMeta && dirMeta.isComponent) {
+            compMetas.push(dirMeta);
           }
-
-          return this.messageBundle;
         });
+        compMetas.forEach(compMeta => {
+          const html = compMeta.template.template;
+          const interpolationConfig =
+              compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
+          errors.push(
+              ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
+        });
+      });
+
+      if (errors.length) {
+        throw new Error(errors.map(e => e.toString()).join('\n'));
+      }
+
+      return this.messageBundle;
+    });
   }
 
   static create(
