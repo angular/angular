@@ -182,7 +182,8 @@ export function main() {
         new BoundDirectivePropertyAst('foo', 'bar', null, null)
       ];
       const result = templateVisitAll(visitor, nodes, null);
-      expect(result).toEqual(new Array(nodes.length).fill(true));
+      expect(result).toEqual(
+          Array.apply(null, Array(nodes.length)).map(Boolean.prototype.valueOf, true));
     });
   });
 
