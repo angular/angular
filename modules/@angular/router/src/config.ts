@@ -154,6 +154,9 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * When navigating to `/team/11/user/jim`, the router will instantiate the wrapper component with
  * the user component in it.
  *
+ * An empty path route inherits its parent's params and data. This is because it cannot have its
+ * own params, and, as a result, it often uses its parent's params and data as its own.
+ *
  * ### Matching Strategy
  *
  * By default the router will look at what is left in the url, and check if it starts with
@@ -219,7 +222,8 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * has to have the primary and aux outlets defined.
  *
  * The router will also merge the `params`, `data`, and `resolve` of the componentless parent into
- * the `params`, `data`, and `resolve` of the children.
+ * the `params`, `data`, and `resolve` of the children. This is done because there is no component
+ * that can inject the activated route of the componentless parent.
  *
  * This is especially useful when child components are defined as follows:
  *
