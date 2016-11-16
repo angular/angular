@@ -135,8 +135,9 @@ describe('MdTooltip', () => {
       fixture.detectChanges();
       tick(150);
 
+      const tooltipDelay = 1000;
       tooltipDirective.hide();
-      tick(TOOLTIP_HIDE_DELAY); // Change the tooltip state to hidden and trigger animation start
+      tick(tooltipDelay); // Change the tooltip state to hidden and trigger animation start
 
       // Store the tooltip instance, which will be set to null after the button is hidden.
       const tooltipInstance = tooltipDirective._tooltipInstance;
