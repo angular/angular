@@ -7,4 +7,5 @@ export interface MdMenuPanel {
   templateRef: TemplateRef<any>;
   close: EventEmitter<void>;
   focusFirstItem: () => void;
+  setPositionClasses: (x: MenuPositionX, y: MenuPositionY) => void;
 }

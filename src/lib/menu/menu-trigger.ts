@@ -22,9 +22,10 @@ import {
     TemplatePortal,
     ConnectedPositionStrategy,
     HorizontalConnectionPos,
-    VerticalConnectionPos
+    VerticalConnectionPos,
 } from '../core';
 import { Subscription } from 'rxjs/Subscription';
+import {MenuPositionX, MenuPositionY} from './menu-positions';
 
 /**
  * This directive is intended to be used in conjunction with an md-menu tag.  It is
@@ -44,6 +45,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _overlayRef: OverlayRef;
   private _menuOpen: boolean = false;
   private _backdropSubscription: Subscription;
+  private _positionSubscription: Subscription;
 
   // tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
@@ -92,9 +94,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
       this._overlayRef.dispose();
       this._overlayRef = null;
 
-      if (this._backdropSubscription) {
-        this._backdropSubscription.unsubscribe();
-      }
+      this._cleanUpSubscriptions();
     }
   }
 
@@ -172,7 +172,9 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _createOverlay(): void {
     if (!this._overlayRef) {
       this._portal = new TemplatePortal(this.menu.templateRef, this._viewContainerRef);
-      this._overlayRef = this._overlay.create(this._getOverlayConfig());
+      const config = this._getOverlayConfig();
+      this._subscribeToPositions(config.positionStrategy as ConnectedPositionStrategy);
+      this._overlayRef = this._overlay.create(config);
     }
   }
 
@@ -191,19 +193,51 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Listens to changes in the position of the overlay and sets the correct classes
+   * on the menu based on the new position. This ensures the animation origin is always
+   * correct, even if a fallback position is used for the overlay.
+   */
+  private _subscribeToPositions(position: ConnectedPositionStrategy): void {
+    this._positionSubscription = position.onPositionChange.subscribe((change) => {
+      const posX: MenuPositionX = change.connectionPair.originX === 'start' ? 'after' : 'before';
+      const posY: MenuPositionY = change.connectionPair.originY === 'top' ? 'below' : 'above';
+      this.menu.setPositionClasses(posX, posY);
+    });
+  }
+
+  /**
    * This method builds the position strategy for the overlay, so the menu is properly connected
    * to the trigger.
    * @returns ConnectedPositionStrategy
    */
   private _getPosition(): ConnectedPositionStrategy  {
-    const positionX: HorizontalConnectionPos = this.menu.positionX === 'before' ? 'end' : 'start';
-    const positionY: VerticalConnectionPos = this.menu.positionY === 'above' ? 'bottom' : 'top';
+    const [posX, fallbackX]: HorizontalConnectionPos[] =
+      this.menu.positionX === 'before' ? ['end', 'start'] : ['start', 'end'];
 
-    return this._overlay.position().connectedTo(
-      this._element,
-      {originX: positionX, originY: positionY},
-      {overlayX: positionX, overlayY: positionY}
-    );
+    const [posY, fallbackY]: VerticalConnectionPos[] =
+      this.menu.positionY === 'above' ? ['bottom', 'top'] : ['top', 'bottom'];
+
+    return this._overlay.position()
+      .connectedTo(this._element,
+          {originX: posX, originY: posY}, {overlayX: posX, overlayY: posY})
+      .withFallbackPosition(
+          {originX: fallbackX, originY: posY},
+          {overlayX: fallbackX, overlayY: posY})
+      .withFallbackPosition(
+          {originX: posX, originY: fallbackY},
+          {overlayX: posX, overlayY: fallbackY})
+      .withFallbackPosition(
+          {originX: fallbackX, originY: fallbackY},
+          {overlayX: fallbackX, overlayY: fallbackY});
+  }
+
+  private _cleanUpSubscriptions(): void {
+    if (this._backdropSubscription) {
+      this._backdropSubscription.unsubscribe();
+    }
+    if (this._positionSubscription) {
+      this._positionSubscription.unsubscribe();
+    }
   }
 
   _handleMousedown(event: MouseEvent): void {
