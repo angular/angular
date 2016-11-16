@@ -6,6 +6,7 @@ import {
   PortalModule,
   OverlayModule,
   A11yModule,
+  ProjectionModule,
   StyleCompatibilityModule,
 } from './core/index';
 
@@ -59,6 +60,7 @@ const MATERIAL_MODULES = [
   PortalModule,
   RtlModule,
   A11yModule,
+  ProjectionModule,
   StyleCompatibilityModule,
 ];
 
@@ -78,6 +80,7 @@ const MATERIAL_MODULES = [
     MdTabsModule.forRoot(),
     MdToolbarModule.forRoot(),
     PortalModule.forRoot(),
+    ProjectionModule.forRoot(),
     RtlModule.forRoot(),
 
     // These modules include providers.

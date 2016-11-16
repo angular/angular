@@ -34,6 +34,7 @@ export class DemoApp {
     {name: 'Live Announcer', route: 'live-announcer'},
     {name: 'Overlay', route: 'overlay'},
     {name: 'Portal', route: 'portal'},
+    {name: 'Projection', route: 'projection'},
     {name: 'Progress Bar', route: 'progress-bar'},
     {name: 'Progress Circle', route: 'progress-circle'},
     {name: 'Radio', route: 'radio'},
