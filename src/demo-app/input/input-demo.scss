@@ -18,3 +18,11 @@
 .demo-card {
   margin: 16px;
 }
+
+.demo-textarea {
+  resize: none;
+  border: none;
+  overflow: auto;
+  padding: 0;
+  background: lightblue;
+}

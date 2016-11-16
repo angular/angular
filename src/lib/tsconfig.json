@@ -22,7 +22,8 @@
       "../../node_modules/@types"
     ],
     "types": [
-      "jasmine"
+      "jasmine",
+      "rx/rx.all"
     ]
   },
   "angularCompilerOptions": {
