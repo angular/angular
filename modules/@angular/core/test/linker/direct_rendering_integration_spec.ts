@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, RenderComponentType, Renderer, RootRenderer} from '@angular/core';
+import {Component, ContentChild, Injectable, Input, RenderComponentType, Renderer, RootRenderer, TemplateRef} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
 import {DirectRenderer} from '@angular/core/src/render/api';
 import {TestBed, inject} from '@angular/core/testing';
@@ -124,6 +124,46 @@ export function main() {
       const childHostEl = fixture.nativeElement.children[0];
       const projectedNode = childHostEl.childNodes[1];
       expect(directRenderer.appendChild).toHaveBeenCalledWith(projectedNode, childHostEl);
+    });
+
+    it('should support using structural directives with ngTemplateOutlet', () => {
+      @Component({
+        template:
+            '<child [templateCtx]="templateCtx"><template let-shown="shown" #tpl><span *ngIf="shown">hello</span></template></child>'
+      })
+      class Parent {
+        templateCtx = {shown: false};
+      }
+
+      @Component({
+        selector: 'child',
+        template:
+            '(<template [ngTemplateOutlet]="templateRef" [ngOutletContext]="templateCtx"></template>)'
+      })
+      class Child {
+        @Input()
+        templateCtx: any;
+
+        @ContentChild('tpl')
+        templateRef: TemplateRef<any>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+
+      let fixture = TestBed.createComponent(Parent);
+      fixture.componentInstance.templateCtx.shown = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('()');
+      fixture.destroy();
+
+      fixture = TestBed.createComponent(Parent);
+      fixture.componentInstance.templateCtx.shown = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('(hello)');
+
+      fixture.componentInstance.templateCtx.shown = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('()');
     });
   });
 }
