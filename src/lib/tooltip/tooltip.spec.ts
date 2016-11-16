@@ -1,10 +1,14 @@
 import {
-    async, ComponentFixture, TestBed, tick, fakeAsync,
+    async,
+    ComponentFixture,
+    TestBed,
+    tick,
+    fakeAsync,
     flushMicrotasks
 } from '@angular/core/testing';
 import {Component, DebugElement, AnimationTransitionEvent} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {TooltipPosition, MdTooltip, TOOLTIP_HIDE_DELAY, MdTooltipModule} from './tooltip';
+import {TooltipPosition, MdTooltip, MdTooltipModule} from './tooltip';
 import {OverlayContainer} from '../core';
 
 const initialTooltipMessage = 'initial tooltip message';
@@ -52,11 +56,12 @@ describe('MdTooltip', () => {
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
 
       // After hide called, a timeout delay is created that will to hide the tooltip.
-      tooltipDirective.hide();
+      const tooltipDelay = 1000;
+      tooltipDirective.hide(tooltipDelay);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
       // After the tooltip delay elapses, expect that the tooltip is not visible.
-      tick(TOOLTIP_HIDE_DELAY);
+      tick(tooltipDelay);
       fixture.detectChanges();
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
 
@@ -70,12 +75,13 @@ describe('MdTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
       // After hide called, a timeout delay is created that will to hide the tooltip.
-      tooltipDirective.hide();
+      const tooltipDelay = 1000;
+      tooltipDirective.hide(tooltipDelay);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
       // Before delay time has passed, call show which should cancel intent to hide tooltip.
       tooltipDirective.show();
-      tick(TOOLTIP_HIDE_DELAY);
+      tick(tooltipDelay);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
     }));
 

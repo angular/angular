@@ -30,7 +30,7 @@ import {Subject} from 'rxjs/Subject';
 export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
 
 /** Time in ms to delay before changing the tooltip visibility to hidden */
-export const TOOLTIP_HIDE_DELAY  = 1500;
+export const TOUCHEND_HIDE_DELAY  = 1500;
 
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
@@ -41,6 +41,8 @@ export const TOOLTIP_HIDE_DELAY  = 1500;
 @Directive({
   selector: '[md-tooltip]',
   host: {
+    '(longpress)': 'show()',
+    '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
     '(mouseenter)': 'show()',
     '(mouseleave)': 'hide()',
   },
@@ -100,12 +102,8 @@ export class MdTooltip {
     this._tooltipInstance.show(this._position);
   }
 
-  /**
-   * Create the overlay config and position strategy
-   * Hides the tooltip after the provided delay in ms. Defaults the delay to the material design
-   * prescribed delay time
-   */
-  hide(delay: number = TOOLTIP_HIDE_DELAY): void {
+  /** Hides the tooltip after the provided delay in ms, defaulting to 0ms. */
+  hide(delay = 0): void {
     if (this._tooltipInstance) {
       this._tooltipInstance.hide(delay);
     }
