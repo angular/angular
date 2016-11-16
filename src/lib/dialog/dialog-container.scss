@@ -2,6 +2,7 @@
 
 
 $md-dialog-padding: 24px !default;
+$md-dialog-border-radius: 2px !default;
 
 md-dialog-container {
   @include md-elevation(24);
@@ -9,4 +10,5 @@ md-dialog-container {
   display: block;
   overflow: hidden;
   padding: $md-dialog-padding;
+  border-radius: $md-dialog-border-radius;
 }
