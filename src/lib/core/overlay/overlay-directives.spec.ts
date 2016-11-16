@@ -4,6 +4,7 @@ import {By} from '@angular/platform-browser';
 import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
+import {ConnectedOverlayPositionChange} from './position/connected-position';
 
 
 describe('Overlay directives', () => {
@@ -110,18 +111,6 @@ describe('Overlay directives', () => {
       expect(backdrop.classList).toContain('md-test-class');
     });
 
-    it('should emit backdropClick appropriately', () => {
-      fixture.componentInstance.hasBackdrop = true;
-      fixture.componentInstance.isOpen = true;
-      fixture.detectChanges();
-
-      const backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
-      backdrop.click();
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.backdropClicked).toBe(true);
-    });
-
     it('should set the offsetX', () => {
       const trigger = fixture.debugElement.query(By.css('button')).nativeElement;
       const startX = trigger.getBoundingClientRect().left;
@@ -154,6 +143,32 @@ describe('Overlay directives', () => {
 
   });
 
+  describe('outputs', () => {
+    it('should emit backdropClick appropriately', () => {
+      fixture.componentInstance.hasBackdrop = true;
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.backdropClicked).toBe(true);
+    });
+
+    it('should emit positionChange appropriately', () => {
+      expect(fixture.componentInstance.positionChangeHandler).not.toHaveBeenCalled();
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.positionChangeHandler).toHaveBeenCalled();
+      expect(fixture.componentInstance.positionChangeHandler.calls.mostRecent().args[0])
+          .toEqual(jasmine.any(ConnectedOverlayPositionChange),
+              `Expected directive to emit an instance of ConnectedOverlayPositionChange.`);
+    });
+
+  });
+
 });
 
 
@@ -161,8 +176,9 @@ describe('Overlay directives', () => {
   template: `
   <button overlay-origin #trigger="overlayOrigin">Toggle menu</button>
   <template connected-overlay [origin]="trigger" [open]="isOpen" [width]="width" [height]="height"
-            [hasBackdrop]="hasBackdrop" backdropClass="md-test-class" 
-            (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY">
+            [hasBackdrop]="hasBackdrop" backdropClass="md-test-class"
+            (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
+            (positionChange)="positionChangeHandler($event)">
     <p>Menu content</p>
   </template>`,
 })
@@ -174,6 +190,7 @@ class ConnectedOverlayDirectiveTest {
   offsetY: number = 0;
   hasBackdrop: boolean;
   backdropClicked = false;
+  positionChangeHandler = jasmine.createSpy('positionChangeHandler');
 
   @ViewChild(ConnectedOverlayDirective) connectedOverlayDirective: ConnectedOverlayDirective;
 }

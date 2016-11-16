@@ -15,7 +15,10 @@ import {Overlay, OVERLAY_PROVIDERS} from './overlay';
 import {OverlayRef} from './overlay-ref';
 import {TemplatePortal} from '../portal/portal';
 import {OverlayState} from './overlay-state';
-import {ConnectionPositionPair} from './position/connected-position';
+import {
+    ConnectionPositionPair,
+    ConnectedOverlayPositionChange
+} from './position/connected-position';
 import {PortalModule} from '../portal/portal-directives';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Subscription} from 'rxjs/Subscription';
@@ -63,6 +66,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
   private _open = false;
   private _hasBackdrop = false;
   private _backdropSubscription: Subscription;
+  private _positionSubscription: Subscription;
 
   @Input() origin: OverlayOrigin;
   @Input() positions: ConnectionPositionPair[];
@@ -105,6 +109,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
   /** Event emitted when the backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<void>();
+  @Output() positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
 
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 
@@ -169,11 +174,27 @@ export class ConnectedOverlayDirective implements OnDestroy {
     const originPoint = {originX: pos.originX, originY: pos.originY};
     const overlayPoint = {overlayX: pos.overlayX, overlayY: pos.overlayY};
 
-    return this._overlay.position()
+    const strategy = this._overlay.position()
       .connectedTo(this.origin.elementRef, originPoint, overlayPoint)
       .withDirection(this.dir)
       .withOffsetX(this.offsetX)
       .withOffsetY(this.offsetY);
+
+    this._handlePositionChanges(strategy);
+
+    return strategy;
+  }
+
+  private _handlePositionChanges(strategy: ConnectedPositionStrategy): void {
+    for (let i = 1; i < this.positions.length; i++) {
+      strategy.withFallbackPosition(
+          {originX: this.positions[i].originX, originY: this.positions[i].originY},
+          {overlayX: this.positions[i].overlayX, overlayY: this.positions[i].overlayY}
+      );
+    }
+
+    this._positionSubscription =
+        strategy.onPositionChange.subscribe(pos => this.positionChange.emit(pos));
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */
@@ -213,6 +234,9 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     if (this._backdropSubscription) {
       this._backdropSubscription.unsubscribe();
+    }
+    if (this._positionSubscription) {
+      this._positionSubscription.unsubscribe();
     }
   }
 }
