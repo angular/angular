@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone} from '@angular/core';
+import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
 import * as angular from '../angular_js';
 import {controllerKey} from '../util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-import {$INJECTOR, INJECTOR_KEY, UPGRADE_MODULE_NAME} from './constants';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from './constants';
+
 
 
 /**
@@ -40,6 +41,37 @@ export class UpgradeModule {
 
             .value(INJECTOR_KEY, this.injector)
 
+            .config([
+              $PROVIDE, $INJECTOR,
+              ($provide: angular.IProvideService, $injector: angular.IInjectorService) => {
+                if ($injector.has($$TESTABILITY)) {
+                  $provide.decorator($$TESTABILITY, [
+                    $DELEGATE,
+                    (testabilityDelegate: angular.ITestabilityService) => {
+                      const originalWhenStable: Function = testabilityDelegate.whenStable;
+                      const injector = this.injector;
+                      // Cannot use arrow function below because we need to grab the context
+                      const newWhenStable = function(callback: Function) {
+                        const whenStableContext: any = this;
+                        originalWhenStable.call(this, function() {
+                          const ng2Testability: Testability = injector.get(Testability);
+                          if (ng2Testability.isStable()) {
+                            callback.apply(this, arguments);
+                          } else {
+                            ng2Testability.whenStable(
+                                newWhenStable.bind(whenStableContext, callback));
+                          }
+                        });
+                      };
+
+                      testabilityDelegate.whenStable = newWhenStable;
+                      return testabilityDelegate;
+                    }
+                  ]);
+                }
+              }
+            ])
+
             .run([
               $INJECTOR,
               ($injector: angular.IInjectorService) => {
@@ -59,7 +91,22 @@ export class UpgradeModule {
               }
             ]);
 
+    // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
+    const windowAngular = (window as any /** TODO #???? */)['angular'];
+    windowAngular.resumeBootstrap = undefined;
+
     // Bootstrap the angular 1 application inside our zone
     this.ngZone.run(() => { angular.bootstrap(element, [upgradeModule.name], config); });
+
+    // Patch resumeBootstrap() to run inside the ngZone
+    if (windowAngular.resumeBootstrap) {
+      const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
+      const ngZone = this.ngZone;
+      windowAngular.resumeBootstrap = function() {
+        let args = arguments;
+        windowAngular.resumeBootstrap = originalResumeBootstrap;
+        ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
+      };
+    }
   }
 }
