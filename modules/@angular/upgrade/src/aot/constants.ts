@@ -13,6 +13,9 @@ export const $INJECTOR = '$injector';
 export const $PARSE = '$parse';
 export const $ROOT_SCOPE = '$rootScope';
 export const $SCOPE = '$scope';
+export const $PROVIDE = '$provide';
+export const $DELEGATE = '$delegate';
+export const $$TESTABILITY = '$$testability';
 
 export const $COMPILE = '$compile';
 export const $TEMPLATE_CACHE = '$templateCache';

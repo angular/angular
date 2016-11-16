@@ -7,6 +7,7 @@
  */
 
 import {NgModule, Testability, destroyPlatform} from '@angular/core';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -28,7 +29,11 @@ export function main() {
 
     it('should handle deferred bootstrap', fakeAsync(() => {
          let applicationRunning = false;
-         const ng1Module = angular.module('ng1', []).run(() => { applicationRunning = true; });
+         let stayedInTheZone: boolean;
+         const ng1Module = angular.module('ng1', []).run(() => {
+           applicationRunning = true;
+           stayedInTheZone = NgZone.isInAngularZone();
+         });
 
          const element = html('<div></div>');
          window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
@@ -40,6 +45,7 @@ export function main() {
          expect(applicationRunning).toEqual(false);
          tick(100);
          expect(applicationRunning).toEqual(true);
+         expect(stayedInTheZone).toEqual(true);
        }));
 
     it('should wait for ng2 testability', fakeAsync(() => {
