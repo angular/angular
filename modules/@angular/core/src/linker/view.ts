@@ -232,8 +232,10 @@ export abstract class AppView<T> {
       if (nextSibling) {
         this.visitRootNodesInternal(this._directRenderer.insertBefore, nextSibling);
       } else {
-        this.visitRootNodesInternal(
-            this._directRenderer.appendChild, this._directRenderer.parentElement(prevNode));
+        const parentElement = this._directRenderer.parentElement(prevNode);
+        if (parentElement) {
+          this.visitRootNodesInternal(this._directRenderer.appendChild, parentElement);
+        }
       }
     } else {
       this.renderer.attachViewAfter(prevNode, this.flatRootNodes);
