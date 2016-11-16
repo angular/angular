@@ -10,6 +10,7 @@ import {SimpleRadioButtons} from './radio/radio-e2e';
 import {BasicTabs} from './tabs/tabs-e2e';
 import {DialogE2E, TestDialog} from './dialog/dialog-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
+import {ListE2E} from './list/list-e2e';
 import {MaterialModule} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 
@@ -32,6 +33,7 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     DialogE2E,
     TestDialog,
     GridListE2E,
+    ListE2E,
   ],
   bootstrap: [E2EApp],
   providers: [
