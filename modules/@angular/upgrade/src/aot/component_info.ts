@@ -14,6 +14,12 @@ export interface ComponentInfo {
   outputs?: string[];
 }
 
+/**
+ * A `PropertyBinding` represents a mapping between a property name
+ * and an attribute name. It is parsed from a string of the form
+ * `"prop: attr"`; or simply `"propAndAttr" where the property
+ * and attribute have the same identifier.
+ */
 export class PropertyBinding {
   prop: string;
   attr: string;
