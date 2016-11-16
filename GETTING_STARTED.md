@@ -46,6 +46,20 @@ Add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerj
 (such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served 
 directly from your app.
 
+## Configuring SystemJS
+If your project is using SystemJS for module loading, you will need to add `@angular/material` 
+to the SystemJS configuration:
+
+```js
+System.config({
+  // existing configuration options
+  map: {
+    ...,
+    '@angular/material': 'npm:@angular/material/material.umd.js'
+  }
+});
+```
+
 ### [Optional] Using Material Design icons with `md-icon`:
 
 - If you want to use Material Design icons in addition to Angular Material components, 
