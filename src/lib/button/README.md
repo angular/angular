@@ -45,9 +45,6 @@ Example:
  ```html
 <button md-button>FLAT</button>
 <button md-raised-button>RAISED</button>
-<button md-icon-button>
-    <md-icon class="md-24">favorite</md-icon>
-</button>
 <button md-fab>
     <md-icon class="md-24">add</md-icon>
 </button>
