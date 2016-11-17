@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {NgHost, NgHostContext} from './ng_host';
+import {CompilerHost, CompilerHostContext} from './compiler_host';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -24,10 +24,10 @@ const DTS = /\.d\.ts$/;
  * import. This requires using TS `rootDirs` option and also teaching the module
  * loader what to do.
  */
-export class PathMappedNgHost extends NgHost {
+export class PathMappedCompilerHost extends CompilerHost {
   constructor(
       program: ts.Program, compilerHost: ts.CompilerHost, options: AngularCompilerOptions,
-      context?: NgHostContext) {
+      context?: CompilerHostContext) {
     super(program, compilerHost, options, context);
   }
 
@@ -42,7 +42,7 @@ export class PathMappedNgHost extends NgHost {
     return fileName;
   }
 
-  resolveImportToFile(m: string, containingFile: string) {
+  moduleNameToFileName(m: string, containingFile: string) {
     if (!containingFile || !containingFile.length) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -69,7 +69,7 @@ export class PathMappedNgHost extends NgHost {
    * Relativize the paths by checking candidate prefixes of the absolute path, to see if
    * they are resolvable by the moduleResolution strategy from the CompilerHost.
    */
-  resolveFileToImport(importedFile: string, containingFile: string): string {
+  fileNameToModuleName(importedFile: string, containingFile: string): string {
     if (this.options.traceResolution) {
       console.log(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
@@ -86,7 +86,8 @@ export class PathMappedNgHost extends NgHost {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.getCanonicalFileName(this.resolveImportToFile(candidate, importedFile));
+      const resolved =
+          this.getCanonicalFileName(this.moduleNameToFileName(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 

@@ -25,7 +25,7 @@ export class JavaScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `var ${prefix} = req` +
-          `uire('${this._importGenerator.resolveFileToImport(importedModuleUrl, moduleUrl)}');`);
+          `uire('${this._importGenerator.fileNameToModuleName(importedModuleUrl, moduleUrl)}');`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');

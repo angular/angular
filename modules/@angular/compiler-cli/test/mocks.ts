@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgHostContext} from '@angular/compiler-cli/src/ng_host';
+import {CompilerHostContext} from '@angular/compiler-cli/src/compiler_host';
 import * as ts from 'typescript';
 
 export type Entry = string | Directory;
 
 export interface Directory { [name: string]: Entry; }
 
-export class MockContext implements NgHostContext {
+export class MockAotContext implements CompilerHostContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
@@ -97,7 +97,7 @@ function normalize(parts: string[]): string[] {
 }
 
 export class MockCompilerHost implements ts.CompilerHost {
-  constructor(private context: MockContext) {}
+  constructor(private context: MockAotContext) {}
 
   fileExists(fileName: string): boolean { return this.context.fileExists(fileName); }
 
