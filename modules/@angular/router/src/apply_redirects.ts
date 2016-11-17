@@ -20,8 +20,8 @@ import {EmptyError} from 'rxjs/util/EmptyError';
 
 import {Route, Routes, UrlMatchResult} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
-import {NavigationCancelingError, PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {NavigationCancelingError, PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 
 class NoMatch {
@@ -29,7 +29,7 @@ class NoMatch {
 }
 
 class AbsoluteRedirect {
-  constructor(public segments: UrlSegment[]) {}
+  constructor(public urlTree: UrlTree) {}
 }
 
 function noMatch(segmentGroup: UrlSegmentGroup): Observable<UrlSegmentGroup> {
@@ -37,9 +37,15 @@ function noMatch(segmentGroup: UrlSegmentGroup): Observable<UrlSegmentGroup> {
       (obs: Observer<UrlSegmentGroup>) => obs.error(new NoMatch(segmentGroup)));
 }
 
-function absoluteRedirect(segments: UrlSegment[]): Observable<UrlSegmentGroup> {
+function absoluteRedirect(newTree: UrlTree): Observable<any> {
   return new Observable<UrlSegmentGroup>(
-      (obs: Observer<UrlSegmentGroup>) => obs.error(new AbsoluteRedirect(segments)));
+      (obs: Observer<UrlSegmentGroup>) => obs.error(new AbsoluteRedirect(newTree)));
+}
+
+function namedOutletsRedirect(redirectTo: string): Observable<any> {
+  return new Observable<UrlSegmentGroup>(
+      (obs: Observer<UrlSegmentGroup>) => obs.error(new Error(
+          `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`)));
 }
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
@@ -50,9 +56,9 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
 
 
 export function applyRedirects(
-    injector: Injector, configLoader: RouterConfigLoader, urlTree: UrlTree,
-    config: Routes): Observable<UrlTree> {
-  return new ApplyRedirects(injector, configLoader, urlTree, config).apply();
+    injector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
+    urlTree: UrlTree, config: Routes): Observable<UrlTree> {
+  return new ApplyRedirects(injector, configLoader, urlSerializer, urlTree, config).apply();
 }
 
 class ApplyRedirects {
@@ -60,21 +66,20 @@ class ApplyRedirects {
 
   constructor(
       private injector: Injector, private configLoader: RouterConfigLoader,
-      private urlTree: UrlTree, private config: Routes) {}
+      private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes) {}
 
   apply(): Observable<UrlTree> {
     const expanded$ =
         this.expandSegmentGroup(this.injector, this.config, this.urlTree.root, PRIMARY_OUTLET);
     const urlTrees$ = map.call(
-        expanded$, (rootSegmentGroup: UrlSegmentGroup) => this.createUrlTree(rootSegmentGroup));
+        expanded$, (rootSegmentGroup: UrlSegmentGroup) => this.createUrlTree(
+                       rootSegmentGroup, this.urlTree.queryParams, this.urlTree.fragment));
     return _catch.call(urlTrees$, (e: any) => {
       if (e instanceof AbsoluteRedirect) {
         // after an absolute redirect we do not apply any more redirects!
         this.allowRedirects = false;
-        const group =
-            new UrlSegmentGroup([], {[PRIMARY_OUTLET]: new UrlSegmentGroup(e.segments, {})});
         // we need to run matching, so we can fetch all lazy-loaded modules
-        return this.match(group);
+        return this.match(e.urlTree);
       } else if (e instanceof NoMatch) {
         throw this.noMatchError(e);
       } else {
@@ -83,11 +88,12 @@ class ApplyRedirects {
     });
   }
 
-  private match(segmentGroup: UrlSegmentGroup): Observable<UrlTree> {
+  private match(tree: UrlTree): Observable<UrlTree> {
     const expanded$ =
-        this.expandSegmentGroup(this.injector, this.config, segmentGroup, PRIMARY_OUTLET);
+        this.expandSegmentGroup(this.injector, this.config, tree.root, PRIMARY_OUTLET);
     const mapped$ = map.call(
-        expanded$, (rootSegmentGroup: UrlSegmentGroup) => this.createUrlTree(rootSegmentGroup));
+        expanded$, (rootSegmentGroup: UrlSegmentGroup) =>
+                       this.createUrlTree(rootSegmentGroup, tree.queryParams, tree.fragment));
     return _catch.call(mapped$, (e: any): Observable<UrlTree> => {
       if (e instanceof NoMatch) {
         throw this.noMatchError(e);
@@ -101,11 +107,12 @@ class ApplyRedirects {
     return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
-  private createUrlTree(rootCandidate: UrlSegmentGroup): UrlTree {
+  private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string):
+      UrlTree {
     const root = rootCandidate.segments.length > 0 ?
         new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate}) :
         rootCandidate;
-    return new UrlTree(root, this.urlTree.queryParams, this.urlTree.fragment);
+    return new UrlTree(root, queryParams, fragment);
   }
 
   private expandSegmentGroup(
@@ -191,12 +198,14 @@ class ApplyRedirects {
   private expandWildCardWithParamsAgainstRouteUsingRedirect(
       injector: Injector, routes: Route[], route: Route,
       outlet: string): Observable<UrlSegmentGroup> {
-    const newSegments = applyRedirectCommands([], route.redirectTo, {});
+    const newTree = this.applyRedirectCommands([], route.redirectTo, {});
     if (route.redirectTo.startsWith('/')) {
-      return absoluteRedirect(newSegments);
+      return absoluteRedirect(newTree);
     } else {
-      const group = new UrlSegmentGroup(newSegments, {});
-      return this.expandSegment(injector, group, routes, newSegments, outlet, false);
+      return mergeMap.call(this.lineralizeSegments(route, newTree), (newSegments: UrlSegment[]) => {
+        const group = new UrlSegmentGroup(newSegments, {});
+        return this.expandSegment(injector, group, routes, newSegments, outlet, false);
+      });
     }
   }
 
@@ -207,14 +216,16 @@ class ApplyRedirects {
         match(segmentGroup, route, segments);
     if (!matched) return noMatch(segmentGroup);
 
-    const newSegments =
-        applyRedirectCommands(consumedSegments, route.redirectTo, <any>positionalParamSegments);
+    const newTree = this.applyRedirectCommands(
+        consumedSegments, route.redirectTo, <any>positionalParamSegments);
     if (route.redirectTo.startsWith('/')) {
-      return absoluteRedirect(newSegments);
+      return absoluteRedirect(newTree);
     } else {
-      return this.expandSegment(
-          injector, segmentGroup, routes, newSegments.concat(segments.slice(lastChild)), outlet,
-          false);
+      return mergeMap.call(this.lineralizeSegments(route, newTree), (newSegments: UrlSegment[]) => {
+        return this.expandSegment(
+            injector, segmentGroup, routes, newSegments.concat(segments.slice(lastChild)), outlet,
+            false);
+      });
     }
   }
 
@@ -284,6 +295,92 @@ class ApplyRedirects {
       return of (new LoadedRouterConfig([], injector, null, null));
     }
   }
+
+  private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
+    let res: UrlSegment[] = [];
+    let c = urlTree.root;
+    while (true) {
+      res = res.concat(c.segments);
+      if (c.numberOfChildren === 0) {
+        return of (res);
+      } else if (c.numberOfChildren > 1 || !c.children[PRIMARY_OUTLET]) {
+        return namedOutletsRedirect(route.redirectTo);
+      } else {
+        c = c.children[PRIMARY_OUTLET];
+      }
+    }
+  }
+
+  private applyRedirectCommands(
+      segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
+    const t = this.urlSerializer.parse(redirectTo);
+    return this.applyRedirectCreatreUrlTree(
+        redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
+  }
+
+  private applyRedirectCreatreUrlTree(
+      redirectTo: string, urlTree: UrlTree, segments: UrlSegment[],
+      posParams: {[k: string]: UrlSegment}): UrlTree {
+    const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
+    return new UrlTree(
+        newRoot, this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams),
+        urlTree.fragment);
+  }
+
+  private createQueryParams(redirectToParams: Params, actualParams: Params): Params {
+    const res: Params = {};
+    forEach(redirectToParams, (v: any, k: string) => {
+      if (v.startsWith(':')) {
+        res[k] = actualParams[v.substring(1)];
+      } else {
+        res[k] = v;
+      }
+    });
+    return res;
+  }
+
+  private createSegmentGroup(
+      redirectTo: string, group: UrlSegmentGroup, segments: UrlSegment[],
+      posParams: {[k: string]: UrlSegment}): UrlSegmentGroup {
+    const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
+
+    let children: {[n: string]: UrlSegmentGroup} = {};
+    forEach(group.children, (child: UrlSegmentGroup, name: string) => {
+      children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
+    });
+
+    return new UrlSegmentGroup(updatedSegments, children);
+  }
+
+  private createSegments(
+      redirectTo: string, redirectToSegments: UrlSegment[], actualSegments: UrlSegment[],
+      posParams: {[k: string]: UrlSegment}): UrlSegment[] {
+    return redirectToSegments.map(
+        s => s.path.startsWith(':') ? this.findPosParam(redirectTo, s, posParams) :
+                                      this.findOrReturn(s, actualSegments));
+  }
+
+  private findPosParam(
+      redirectTo: string, redirectToUrlSegment: UrlSegment,
+      posParams: {[k: string]: UrlSegment}): UrlSegment {
+    const pos = posParams[redirectToUrlSegment.path.substring(1)];
+    if (!pos)
+      throw new Error(
+          `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
+    return pos;
+  }
+
+  private findOrReturn(redirectToUrlSegment: UrlSegment, actualSegments: UrlSegment[]): UrlSegment {
+    let idx = 0;
+    for (const s of actualSegments) {
+      if (s.path === redirectToUrlSegment.path) {
+        actualSegments.splice(idx);
+        return s;
+      }
+      idx++;
+    }
+    return redirectToUrlSegment;
+  }
 }
 
 function runGuards(injector: Injector, route: Route): Observable<boolean> {
@@ -327,46 +424,6 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
     positionalParamSegments: res.posParams
   };
 }
-
-function applyRedirectCommands(
-    segments: UrlSegment[], redirectTo: string,
-    posParams: {[k: string]: UrlSegment}): UrlSegment[] {
-  const r = redirectTo.startsWith('/') ? redirectTo.substring(1) : redirectTo;
-  if (r === '') {
-    return [];
-  } else {
-    return createSegments(redirectTo, r.split('/'), segments, posParams);
-  }
-}
-
-function createSegments(
-    redirectTo: string, parts: string[], segments: UrlSegment[],
-    posParams: {[k: string]: UrlSegment}): UrlSegment[] {
-  return parts.map(
-      p => p.startsWith(':') ? findPosParam(p, posParams, redirectTo) :
-                               findOrCreateSegment(p, segments));
-}
-
-function findPosParam(
-    part: string, posParams: {[k: string]: UrlSegment}, redirectTo: string): UrlSegment {
-  const paramName = part.substring(1);
-  const pos = posParams[paramName];
-  if (!pos) throw new Error(`Cannot redirect to '${redirectTo}'. Cannot find '${part}'.`);
-  return pos;
-}
-
-function findOrCreateSegment(part: string, segments: UrlSegment[]): UrlSegment {
-  let idx = 0;
-  for (const s of segments) {
-    if (s.path === part) {
-      segments.splice(idx);
-      return s;
-    }
-    idx++;
-  }
-  return new UrlSegment(part, {});
-}
-
 
 function split(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
