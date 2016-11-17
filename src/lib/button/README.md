@@ -40,6 +40,8 @@ between the tags, as you would with a normal button.
 
 Example:
 
+<!-- example(my example) -->
+
  ```html
 <button md-button>FLAT</button>
 <button md-raised-button>RAISED</button>
@@ -66,6 +68,8 @@ Simply pass in the palette name.
 In flat buttons, the palette chosen will affect the text color, while in other buttons, it affects the background.
 
 Example:
+
+<!-- example(my other example) -->
 
  ```html
 <button md-raised-button color="primary">PRIMARY</button>
