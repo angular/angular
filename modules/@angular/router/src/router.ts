@@ -299,6 +299,7 @@ type NavigationParams = {
 export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
+  private currentUrlTreeStoredInLocation: UrlTree;
 
   private navigations: BehaviorSubject<NavigationParams> =
       new BehaviorSubject<NavigationParams>(null);
@@ -716,6 +717,7 @@ export class Router {
       let navigationIsSuccessful: boolean;
       const storedState = this.currentRouterState;
       const storedUrl = this.currentUrlTree;
+      const storedUrlInLocation = this.currentUrlTreeStoredInLocation;
 
       routerState$
           .forEach(({appliedUrl, state, shouldActivate}: any) => {
@@ -726,6 +728,8 @@ export class Router {
 
             this.currentUrlTree = appliedUrl;
             this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+            this.currentUrlTreeStoredInLocation =
+                shouldPreventPushState ? this.currentUrlTreeStoredInLocation : this.rawUrlTree;
 
             this.currentRouterState = state;
 
@@ -774,14 +778,13 @@ export class Router {
                 this.currentRouterState = storedState;
                 this.currentUrlTree = storedUrl;
                 this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
-                this.location.replaceState(this.serializeUrl(this.rawUrlTree));
+                this.location.replaceState(this.serializeUrl(storedUrlInLocation));
               });
     });
   }
 
   private resetUrlToCurrentUrlTree(): void {
-    const path = this.urlSerializer.serialize(this.rawUrlTree);
-    this.location.replaceState(path);
+    this.location.replaceState(this.urlSerializer.serialize(this.currentUrlTreeStoredInLocation));
   }
 }
 

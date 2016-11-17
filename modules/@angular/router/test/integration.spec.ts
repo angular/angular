@@ -1532,6 +1532,27 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/main/component1');
            })));
 
+        it('should respect skipLocationChange when guards cancel navigations',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([
+               {path: 'component1', component: SimpleCmp},
+               {path: 'component2', component: SimpleCmp, canDeactivate: ['alwaysFalse']}
+             ]);
+
+             router.navigateByUrl('/component1');  // initial state
+             advance(fixture);
+
+             router.navigateByUrl('/component2', {skipLocationChange: true});
+             advance(fixture);
+             expect(location.path()).toEqual('/component1');
+
+             location.back();
+             advance(fixture);
+
+             expect(location.path()).toEqual('/component1');
+           })));
       });
 
       describe('should work when given a class', () => {
