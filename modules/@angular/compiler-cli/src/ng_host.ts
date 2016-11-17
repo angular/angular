@@ -31,6 +31,8 @@ export class NgHost implements AotCompilerHost {
   private isGenDirChildOfRootDir: boolean;
   protected basePath: string;
   private genDir: string;
+  private resolverCache = new Map<string, ModuleMetadata[]>();
+
   constructor(
       protected program: ts.Program, protected compilerHost: ts.CompilerHost,
       protected options: AngularCompilerOptions, context?: NgHostContext) {
@@ -138,9 +140,18 @@ export class NgHost implements AotCompilerHost {
     }
   }
 
-  private resolverCache = new Map<string, ModuleMetadata>();
+  protected getSourceFile(filePath: string): ts.SourceFile {
+    const sf = this.program.getSourceFile(filePath);
+    if (!sf) {
+      if (this.context.fileExists(filePath)) {
+        const sourceText = this.context.readFile(filePath);
+        return ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true);
+      }
+      throw new Error(`Source file ${filePath} not present in program.`);
+    }
+  }
 
-  getMetadataFor(filePath: string): ModuleMetadata {
+  getMetadataFor(filePath: string): ModuleMetadata[] {
     if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
       // This will occur if the user refernced a declared module for which no file
@@ -150,27 +161,51 @@ export class NgHost implements AotCompilerHost {
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
-        const metadata = this.readMetadata(metadataPath);
-        return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+        return this.readMetadata(metadataPath, filePath);
       }
     } else {
-      const sf = this.program.getSourceFile(filePath);
-      if (!sf) {
-        if (this.context.fileExists(filePath)) {
-          const sourceText = this.context.readFile(filePath);
-          return this.metadataCollector.getMetadata(
-              ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true));
-        }
-
-        throw new Error(`Source file ${filePath} not present in program.`);
-      }
-      return this.metadataCollector.getMetadata(sf);
+      const sf = this.getSourceFile(filePath);
+      const metadata = this.metadataCollector.getMetadata(sf);
+      return metadata ? [metadata] : [];
     }
   }
 
-  readMetadata(filePath: string) {
+  readMetadata(filePath: string, dtsFilePath: string): ModuleMetadata[] {
+    let metadatas = this.resolverCache.get(filePath);
+    if (metadatas) {
+      return metadatas;
+    }
     try {
-      return this.resolverCache.get(filePath) || JSON.parse(this.context.readFile(filePath));
+      const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
+      const metadatas = metadataOrMetadatas ?
+          (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
+          [];
+      const v1Metadata = metadatas.find(m => m['version'] === 1);
+      let v2Metadata = metadatas.find(m => m['version'] === 2);
+      if (!v2Metadata && v1Metadata) {
+        // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
+        // as the only difference between the versions is whether all exports are contained in
+        // the metadata
+        v2Metadata = {'__symbolic': 'module', 'version': 2, 'metadata': {}};
+        if (v1Metadata.exports) {
+          v2Metadata.exports = v1Metadata.exports;
+        }
+        for (let prop in v1Metadata.metadata) {
+          v2Metadata.metadata[prop] = v1Metadata.metadata[prop];
+        }
+        const sourceText = this.context.readFile(dtsFilePath);
+        const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
+        if (exports) {
+          for (let prop in exports.metadata) {
+            if (!v2Metadata.metadata[prop]) {
+              v2Metadata.metadata[prop] = exports.metadata[prop];
+            }
+          }
+        }
+        metadatas.push(v2Metadata);
+      }
+      this.resolverCache.set(filePath, metadatas);
+      return metadatas;
     } catch (e) {
       console.error(`Failed to read JSON file ${filePath}`);
       throw e;
@@ -178,15 +213,6 @@ export class NgHost implements AotCompilerHost {
   }
 
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
-
-  private getResolverMetadata(filePath: string): ModuleMetadata {
-    let metadata = this.resolverCache.get(filePath);
-    if (!metadata) {
-      metadata = this.getMetadataFor(filePath);
-      this.resolverCache.set(filePath, metadata);
-    }
-    return metadata;
-  }
 }
 
 export class NodeNgHostContext implements NgHostContext {
