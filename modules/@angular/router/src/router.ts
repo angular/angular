@@ -650,7 +650,7 @@ export class Router {
       let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, snapshot: RouterStateSnapshot}>;
       if (!precreatedState) {
         const redirectsApplied$ =
-            applyRedirects(this.injector, this.configLoader, url, this.config);
+            applyRedirects(this.injector, this.configLoader, this.urlSerializer, url, this.config);
 
         urlAndSnapshot$ = mergeMap.call(redirectsApplied$, (appliedUrl: UrlTree) => {
           return map.call(
