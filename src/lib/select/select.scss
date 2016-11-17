@@ -4,6 +4,7 @@
 $md-select-trigger-height: 30px !default;
 $md-select-trigger-min-width: 112px !default;
 $md-select-arrow-size: 5px !default;
+$md-select-arrow-margin: 4px !default;
 
 md-select {
   display: inline-block;
@@ -17,6 +18,7 @@ md-select {
   height: $md-select-trigger-height;
   min-width: $md-select-trigger-min-width;
   cursor: pointer;
+  position: relative;
 
   [aria-disabled='true'] & {
     @include md-control-disabled-underline();
@@ -43,6 +45,24 @@ md-select {
 
 .md-select-value {
   position: absolute;
+
+  // Firefox and some versions of IE incorrectly keep absolutely
+  // positioned children of flex containers in the flex flow when calculating
+  // position. This has been fixed for Firefox 52, slated for early 2017.
+  // Bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=874718
+  //
+  // In the meantime, we must adjust the left position to 0 to mimic where it
+  // would be if it were correctly taken out of the flex flow. It's also necessary
+  // to adjust the top value because absolutely positioned elements should not be
+  // affected by the flex container's "align-items" property either. To center the text,
+  // we must offset by 6px (6px top + 6px bottom + 18px text height = 30px total height).
+  left: 0;
+  top: 6px;
+
+  [dir='rtl'] & {
+    left: auto;
+    right: 0;
+  }
 }
 
 .md-select-arrow {
@@ -51,6 +71,7 @@ md-select {
   border-left: $md-select-arrow-size solid transparent;
   border-right: $md-select-arrow-size solid transparent;
   border-top: $md-select-arrow-size solid;
+  margin: 0 $md-select-arrow-margin;
 }
 
 .md-select-panel {

@@ -1,6 +1,6 @@
 <div class="demo-select">
   <md-card>
-    <md-select placeholder="Food" [formControl]="foodControl">
+    <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
       <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
     </md-select>
     <p> Value: {{ foodControl.value }} </p>
