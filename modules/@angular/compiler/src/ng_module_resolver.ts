@@ -35,7 +35,11 @@ export class NgModuleResolver {
       if (throwIfNotFound) {
         throw new Error(`No NgModule metadata found for '${stringify(type)}'.`);
       }
-      return null;
     }
+
+    if (throwIfNotFound) {
+      throw new Error(`No NgModule metadata found for '${stringify(type)}'.`);
+    }
+    return null;
   }
 }

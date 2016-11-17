@@ -80,7 +80,13 @@ export class DbService {
   }
 
   email(id: string): Promise<InboxRecord> {
-    return this.getData().then((data) => data.find((entry) => entry.id == id));
+    return this.getData().then((data) => {
+      for (let entry of data) {
+        if (entry.id === id) {
+          return entry;
+        }
+      }
+    });
   }
 }
 

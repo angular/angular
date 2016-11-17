@@ -86,11 +86,12 @@ export class KeyValueDiffers {
   }
 
   find(kv: Object): KeyValueDifferFactory {
-    const factory = this.factories.find(f => f.supports(kv));
-    if (isPresent(factory)) {
-      return factory;
-    } else {
-      throw new Error(`Cannot find a differ supporting object '${kv}'`);
+    for (let factory of this.factories) {
+      if (factory.supports(kv)) {
+        return factory;
+      }
     }
+
+    throw new Error(`Cannot find a differ supporting object '${kv}'`);
   }
 }

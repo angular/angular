@@ -2146,8 +2146,13 @@ function declareTests({useJit}: {useJit: boolean}) {
        (asyncDone: Function) => {
          bootstrap(AnimationAppCmp, testProviders).then(ref => {
            const appRef = <ApplicationRef>ref.injector.get(ApplicationRef);
-           const appCmp: AnimationAppCmp =
-               appRef.components.find(cmp => cmp.componentType === AnimationAppCmp).instance;
+           let appCmp: AnimationAppCmp;
+           for (let cmp of appRef.components) {
+             if (cmp.componentType === AnimationAppCmp) {
+               appCmp = cmp.instance;
+               break;
+             }
+           }
            const driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
            const zone: NgZone = ref.injector.get(NgZone);
            let text = '';

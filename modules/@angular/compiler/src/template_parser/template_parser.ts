@@ -406,7 +406,13 @@ class TemplateParseVisitor implements html.Visitor {
 
     outputs.forEach(output => {
       if (output.isAnimation) {
-        const found = animationInputs.find(input => input.name == output.name);
+        let found = false;
+        for (let input of animationInputs) {
+          if (input.name === output.name) {
+            found = true;
+            break;
+          }
+        }
         if (!found) {
           this._reportError(
               `Unable to listen on (@${output.name}.${output.phase}) because the animation trigger [@${output.name}] isn't being used on the same element`,
@@ -782,7 +788,13 @@ class ElementContext {
       providerContext: ProviderElementContext): ElementContext {
     const matcher = new SelectorMatcher();
     let wildcardNgContentIndex: number = null;
-    const component = directives.find(directive => directive.directive.isComponent);
+    let component: DirectiveAst;
+    for (let directive of directives) {
+      if (directive.directive.isComponent) {
+        component = directive;
+        break;
+      }
+    }
     if (component) {
       const ngContentSelectors = component.directive.template.ngContentSelectors;
       for (let i = 0; i < ngContentSelectors.length; i++) {

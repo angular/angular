@@ -48,10 +48,10 @@ export function createPureProxy(
 }
 
 export function createEnumExpression(enumType: IdentifierSpec, enumValue: any): o.Expression {
-  const enumName =
-      Object.keys(enumType.runtime).find((propName) => enumType.runtime[propName] === enumValue);
-  if (!enumName) {
-    throw new Error(`Unknown enum value ${enumValue} in ${enumType.name}`);
+  for (let propName of Object.keys(enumType.runtime)) {
+    if (enumType.runtime[propName] === enumValue) {
+      return o.importExpr(createEnumIdentifier(enumType, propName));
+    }
   }
-  return o.importExpr(createEnumIdentifier(enumType, enumName));
+  throw new Error(`Unknown enum value ${enumValue} in ${enumType.name}`);
 }

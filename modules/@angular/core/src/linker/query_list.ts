@@ -61,7 +61,14 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * See
    * [Array.find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
    */
-  find(fn: (item: T, index: number, array: T[]) => boolean): T { return this._results.find(fn); }
+  find(fn: (item: T, index: number, array: T[]) => boolean): T {
+    for (let i = 0; i < this._results.length; i++) {
+      if (fn(this._results[i], i, this._results)) {
+        return this._results[i];
+      }
+    }
+    return;
+  }
 
   /**
    * See

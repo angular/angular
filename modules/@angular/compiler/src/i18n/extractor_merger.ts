@@ -493,7 +493,12 @@ function _isClosingComment(n: html.Node): boolean {
 }
 
 function _getI18nAttr(p: html.Element): html.Attribute {
-  return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
+  for (let attr of p.attrs) {
+    if (attr.name === _I18N_ATTR) {
+      return attr;
+    }
+  }
+  return null;
 }
 
 function _splitMeaningAndDesc(i18n: string): [string, string] {

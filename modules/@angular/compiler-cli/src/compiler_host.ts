@@ -172,12 +172,22 @@ export class CompilerHost implements AotCompilerHost {
       return metadatas;
     }
     try {
-      const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
+      const metadataOrMetadatas: ModuleMetadata|ModuleMetadata[] =
+          JSON.parse(this.context.readFile(filePath));
       const metadatas = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find((m: any) => m['version'] === 1);
-      let v2Metadata = metadatas.find((m: any) => m['version'] === 2);
+
+      let v1Metadata: ModuleMetadata;
+      let v2Metadata: ModuleMetadata;
+      for (let m of metadatas) {
+        if (m.version === 1) {
+          v1Metadata = m;
+        } else if (m.version === 2) {
+          v2Metadata = m;
+        }
+      }
+
       if (!v2Metadata && v1Metadata) {
         // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
         // as the only difference between the versions is whether all exports are contained in

@@ -78,7 +78,13 @@ class XtbParser implements ml.Visitor {
         break;
 
       case _TRANSLATION_TAG:
-        const idAttr = element.attrs.find((attr) => attr.name === 'id');
+        let idAttr: ml.Attribute;
+        for (let attr of element.attrs) {
+          if (attr.name === 'id') {
+            idAttr = attr;
+            break;
+          }
+        }
         if (!idAttr) {
           this._addError(element, `<${_TRANSLATION_TAG}> misses the "id" attribute`);
         } else {
@@ -144,9 +150,10 @@ class XmlToI18n implements ml.Visitor {
 
   visitElement(el: ml.Element, context: any): i18n.Placeholder {
     if (el.name === _PLACEHOLDER_TAG) {
-      const nameAttr = el.attrs.find((attr) => attr.name === 'name');
-      if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan);
+      for (let attr of el.attrs) {
+        if (attr.name === 'name') {
+          return new i18n.Placeholder('', attr.value, el.sourceSpan);
+        }
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
