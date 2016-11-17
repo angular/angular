@@ -7,7 +7,7 @@ $md-snack-bar-max-width: 568px !default;
 
 
 :host {
-  @include md-elevation(24);
+  @include md-elevation(6);
   background: #323232;
   border-radius: 2px;
   box-sizing: content-box;

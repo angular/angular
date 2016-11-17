@@ -20,12 +20,12 @@
     transform: translate3d($close, 0, 0);
   }
   &.md-sidenav-opening {
-    @include md-elevation(1);
+    @include md-elevation(16);
     visibility: visible;
     transform: translate3d($open, 0, 0);
   }
   &.md-sidenav-opened {
-    @include md-elevation(1);
+    @include md-elevation(16);
     transform: translate3d($open, 0, 0);
   }
 }

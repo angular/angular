@@ -8,17 +8,13 @@ $md-card-border-radius: 2px !default;
 $md-card-header-size: 40px !default;
 
 md-card {
-  @include md-elevation(1);
+  @include md-elevation(2);
   @include md-elevation-transition;
   display: block;
   position: relative;
   padding: $md-card-default-padding;
   border-radius: $md-card-border-radius;
   font-family: $md-font-family;
-}
-
-md-card:hover {
-  @include md-elevation(2);
 }
 
 .md-card-flat {

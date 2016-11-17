@@ -88,6 +88,8 @@ $md-mini-fab-padding: 8px !default;
 @mixin md-fab($size, $padding) {
   @extend %md-raised-button;
 
+  @include md-elevation(6);
+
   // Reset the min-width from the button base.
   min-width: 0;
 
@@ -97,6 +99,10 @@ $md-mini-fab-padding: 8px !default;
   padding: 0;
 
   flex-shrink: 0;
+
+  &:active {
+    @include md-elevation(12);
+  }
 
   i, md-icon {
     padding: $padding 0;

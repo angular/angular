@@ -13,7 +13,7 @@ $md-menu-font-size: 16px !default;
 $md-menu-side-padding: 16px !default;
 
 @mixin md-menu-base() {
-  @include md-elevation(2);
+  @include md-elevation(8);
   min-width: $md-menu-overlay-min-width;
   max-width: $md-menu-overlay-max-width;
 
