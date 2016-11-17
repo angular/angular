@@ -27,6 +27,7 @@
     "index.ts"
   ],
   "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
     "strictMetadataEmit": true
   }
 }
