@@ -47,7 +47,7 @@ export class TypeScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${this._importGenerator.resolveFileToImport(importedModuleUrl, moduleUrl)}';`);
+          `ort * as ${prefix} from '${this._importGenerator.fileNameToModuleName(importedModuleUrl, moduleUrl)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
