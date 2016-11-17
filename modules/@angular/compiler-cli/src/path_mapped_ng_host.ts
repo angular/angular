@@ -116,7 +116,7 @@ export class PathMappedNgHost extends NgHost {
         `Unable to find any resolvable import for ${importedFile} relative to ${containingFile}`);
   }
 
-  getMetadataFor(filePath: string): ModuleMetadata {
+  getMetadataFor(filePath: string): ModuleMetadata[] {
     for (const root of this.options.rootDirs || []) {
       const rootedPath = path.join(root, filePath);
       if (!this.compilerHost.fileExists(rootedPath)) {
@@ -128,16 +128,13 @@ export class PathMappedNgHost extends NgHost {
       if (DTS.test(rootedPath)) {
         const metadataPath = rootedPath.replace(DTS, '.metadata.json');
         if (this.context.fileExists(metadataPath)) {
-          const metadata = this.readMetadata(metadataPath);
-          return (Array.isArray(metadata) && metadata.length == 0) ? undefined : metadata;
+          return this.readMetadata(metadataPath, rootedPath);
         }
       } else {
-        const sf = this.program.getSourceFile(rootedPath);
-        if (!sf) {
-          throw new Error(`Source file ${rootedPath} not present in program.`);
-        }
+        const sf = this.getSourceFile(rootedPath);
         sf.fileName = this.getCanonicalFileName(sf.fileName);
-        return this.metadataCollector.getMetadata(sf);
+        const metadata = this.metadataCollector.getMetadata(sf);
+        return metadata ? [metadata] : [];
       }
     }
   }

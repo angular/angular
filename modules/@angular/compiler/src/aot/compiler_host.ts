@@ -22,7 +22,7 @@ export interface AotCompilerHost {
    * @param modulePath is a string identifier for a module as an absolute path.
    * @returns the metadata for the given module.
    */
-  getMetadataFor(modulePath: string): {[key: string]: any}|{[key: string]: any}[];
+  getMetadataFor(modulePath: string): {[key: string]: any}[];
 
   /**
    * Converts an import into a file path.

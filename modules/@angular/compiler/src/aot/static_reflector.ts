@@ -11,7 +11,7 @@ import {ReflectorReader} from '../private_import_core';
 import {AotCompilerHost} from './compiler_host';
 import {StaticSymbol} from './static_symbol';
 
-const SUPPORTED_SCHEMA_VERSION = 1;
+const SUPPORTED_SCHEMA_VERSION = 2;
 const ANGULAR_IMPORT_LOCATIONS = {
   coreDecorators: '@angular/core/src/metadata',
   diDecorators: '@angular/core/src/di/metadata',
@@ -604,10 +604,15 @@ export class StaticReflector implements ReflectorReader {
   public getModuleMetadata(module: string): {[key: string]: any} {
     let moduleMetadata = this.metadataCache.get(module);
     if (!moduleMetadata) {
-      moduleMetadata = this.host.getMetadataFor(module);
-      if (Array.isArray(moduleMetadata)) {
-        moduleMetadata = moduleMetadata.find(md => md['version'] === SUPPORTED_SCHEMA_VERSION) ||
-            moduleMetadata[0];
+      const moduleMetadatas = this.host.getMetadataFor(module);
+      if (moduleMetadatas) {
+        let maxVersion = -1;
+        moduleMetadatas.forEach((md) => {
+          if (md['version'] > maxVersion) {
+            maxVersion = md['version'];
+            moduleMetadata = md;
+          }
+        });
       }
       if (!moduleMetadata) {
         moduleMetadata =
@@ -653,6 +658,7 @@ function expandedMessage(error: any): string {
       if (error.context && error.context.name) {
         return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
       }
+      break;
   }
   return error.message;
 }
