@@ -11,7 +11,6 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import AngularCompilerOptions from './options';
-import {TsickleHost} from './compiler_host';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -22,7 +21,7 @@ export interface CompilerInterface {
   readConfiguration(project: string, basePath: string):
       {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions};
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void;
-  emit(compilerHost: ts.CompilerHost, program: ts.Program): number;
+  emit(program: ts.Program): number;
 }
 
 const DEBUG = false;
@@ -134,17 +133,11 @@ export class Tsc implements CompilerInterface {
     check(diagnostics);
   }
 
-  emit(compilerHost: TsickleHost, oldProgram: ts.Program): number {
-    // Create a program if we are lowering annotations with tsickle.
-    const program = this.ngOptions.annotationsAs === 'static fields' ?
-        ts.createProgram(this.parsed.fileNames, this.parsed.options, compilerHost) :
-        oldProgram;
+  emit(program: ts.Program): number {
     debug('Emitting outputs...');
     const emitResult = program.emit();
     const diagnostics: ts.Diagnostic[] = [];
     diagnostics.push(...emitResult.diagnostics);
-
-    check(compilerHost.diagnostics);
     return emitResult.emitSkipped ? 1 : 0;
   }
 }

@@ -7,12 +7,20 @@
  */
 
 import {writeFileSync} from 'fs';
-import {convertDecorators} from 'tsickle';
+import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
 import NgOptions from './options';
 import {MetadataCollector} from './collector';
 
+export function formatDiagnostics(d: ts.Diagnostic[]): string {
+  const host: ts.FormatDiagnosticsHost = {
+    getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
+    getNewLine: () => ts.sys.newLine,
+    getCanonicalFileName: (f: string) => f
+  };
+  return ts.formatDiagnostics(d, host);
+}
 
 /**
  * Implementation of CompilerHost that forwards all methods to another instance.
@@ -41,15 +49,16 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
 }
 
-export class TsickleHost extends DelegatingHost {
-  // Additional diagnostics gathered by pre- and post-emit transformations.
-  public diagnostics: ts.Diagnostic[] = [];
-  private TSICKLE_SUPPORT = `
+export class DecoratorDownlevelCompilerHost extends DelegatingHost {
+  private ANNOTATION_SUPPORT = `
 interface DecoratorInvocation {
   type: Function;
   args?: any[];
 }
 `;
+  /** Error messages produced by tsickle, if any. */
+  public diagnostics: ts.Diagnostic[] = [];
+
   constructor(delegate: ts.CompilerHost, private program: ts.Program) { super(delegate); }
 
   getSourceFile =
@@ -58,12 +67,12 @@ interface DecoratorInvocation {
         let newContent = originalContent;
         if (!/\.d\.ts$/.test(fileName)) {
           try {
-            const converted = convertDecorators(
+            const converted = tsickle.convertDecorators(
                 this.program.getTypeChecker(), this.program.getSourceFile(fileName));
             if (converted.diagnostics) {
               this.diagnostics.push(...converted.diagnostics);
             }
-            newContent = converted.output + this.TSICKLE_SUPPORT;
+            newContent = converted.output + this.ANNOTATION_SUPPORT;
           } catch (e) {
             console.error('Cannot convertDecorators on file', fileName);
             throw e;
@@ -73,14 +82,35 @@ interface DecoratorInvocation {
       };
 }
 
+export class TsickleCompilerHost extends DelegatingHost {
+  /** Error messages produced by tsickle, if any. */
+  public diagnostics: ts.Diagnostic[] = [];
+
+  constructor(
+      delegate: ts.CompilerHost, private oldProgram: ts.Program, private options: NgOptions) {
+    super(delegate);
+  }
+
+  getSourceFile =
+      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
+        let sourceFile = this.oldProgram.getSourceFile(fileName);
+        let isDefinitions = /\.d\.ts$/.test(fileName);
+        // Don't tsickle-process any d.ts that isn't a compilation target;
+        // this means we don't process e.g. lib.d.ts.
+        if (isDefinitions) return sourceFile;
+
+        let {output, externs, diagnostics} =
+            tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
+        this.diagnostics = diagnostics;
+        return ts.createSourceFile(fileName, output, languageVersion, true);
+      };
+}
+
 const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
-  constructor(
-      delegate: ts.CompilerHost, private program: ts.Program, private ngOptions: NgOptions) {
-    super(delegate);
-  }
+  constructor(delegate: ts.CompilerHost, private ngOptions: NgOptions) { super(delegate); }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
     // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is

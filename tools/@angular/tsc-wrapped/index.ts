@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {MetadataWriterHost, TsickleHost} from './src/compiler_host';
+export {DecoratorDownlevelCompilerHost, MetadataWriterHost} from './src/compiler_host';
 export {CodegenExtension, main} from './src/main';
 
 export {default as AngularCompilerOptions} from './src/options';
