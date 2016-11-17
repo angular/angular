@@ -41,7 +41,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   host: {
     'role': 'alert',
     '[@state]': 'animationState',
-    '(@state.done)': 'markAsExited($event)'
+    '(@state.done)': 'onAnimationEnd($event)'
   },
   animations: [
     trigger('state', [
@@ -58,7 +58,10 @@ export class MdSnackBarContainer extends BasePortalHost {
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
   /** Subject for notifying that the snack bar has exited from view. */
-  private _onExit: Subject<any> = new Subject();
+  private onExit: Subject<any> = new Subject();
+
+  /** Subject for notifying that the snack bar has finished entering the view. */
+  private onEnter: Subject<any> = new Subject();
 
   /** The state of the snack bar animations. */
   animationState: SnackBarState = 'initial';
@@ -87,15 +90,21 @@ export class MdSnackBarContainer extends BasePortalHost {
   /** Begin animation of the snack bar exiting from view. */
   exit(): Observable<void> {
     this.animationState = 'complete';
-    return this._onExit.asObservable();
+    return this.onExit.asObservable();
   }
 
-  /** Mark snack bar as exited from the view. */
-  markAsExited(event: AnimationTransitionEvent) {
+  /** Handle end of animations, updating the state of the snackbar. */
+  onAnimationEnd(event: AnimationTransitionEvent) {
     if (event.toState === 'void' || event.toState === 'complete') {
       this._ngZone.run(() => {
-        this._onExit.next();
-        this._onExit.complete();
+        this.onExit.next();
+        this.onExit.complete();
+      });
+    }
+    if (event.toState === 'visible') {
+      this._ngZone.run(() => {
+        this.onEnter.next();
+        this.onEnter.complete();
       });
     }
   }
@@ -103,5 +112,10 @@ export class MdSnackBarContainer extends BasePortalHost {
   /** Begin animation of snack bar entrance into view. */
   enter(): void {
     this.animationState = 'visible';
+  }
+
+  /** Returns an observable resolving when the enter animation completes.  */
+  _onEnter(): Observable<void> {
+    return this.onEnter.asObservable();
   }
 }

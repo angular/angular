@@ -10,6 +10,15 @@
                 [(ngModel)]="actionButtonLabel"></md-input>
     </md-checkbox>
   </div>
+  <div>
+    <md-checkbox [(ngModel)]="setAutoHide">
+      <p *ngIf="!setAutoHide">Auto hide after duration</p>
+      <md-input type="number" class="demo-button-label-input"
+                *ngIf="setAutoHide"
+                 placeholder="Auto Hide Duration in ms"
+                 [(ngModel)]="autoHide"></md-input>
+    </md-checkbox>
+  </div>
 </div>
 
 <button md-raised-button (click)="open()">OPEN</button>

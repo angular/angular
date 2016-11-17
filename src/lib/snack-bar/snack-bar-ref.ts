@@ -19,6 +19,9 @@ export class MdSnackBarRef<T> {
   /** Subject for notifying the user that the snack bar has closed. */
   private _afterClosed: Subject<any> = new Subject();
 
+  /** Subject for notifying the user that the snack bar has opened and appeared. */
+  private _afterOpened: Subject<any>;
+
   /** Subject for notifying the user that the snack bar action was called. */
   private _onAction: Subject<any> = new Subject();
 
@@ -51,9 +54,22 @@ export class MdSnackBarRef<T> {
     }
   }
 
+  /** Marks the snackbar as opened */
+  _open(): void {
+    if (!this._afterOpened.closed) {
+      this._afterOpened.next();
+      this._afterOpened.complete();
+    }
+  }
+
   /** Gets an observable that is notified when the snack bar is finished closing. */
   afterDismissed(): Observable<void> {
     return this._afterClosed.asObservable();
+  }
+
+  /** Gets an observable that is notified when the snack bar has opened and appeared. */
+  afterOpened(): Observable<void> {
+    return this.containerInstance._onEnter();
   }
 
   /** Gets an observable that is notified when the snack bar action is called. */

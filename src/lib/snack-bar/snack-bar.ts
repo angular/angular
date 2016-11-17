@@ -22,8 +22,6 @@ import {MdSnackBarContainer} from './snack-bar-container';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {extendObject} from '../core/util/object-extend';
 
-// TODO(josephperrott): Automate dismiss after timeout.
-
 
 /**
  * Service to dispatch Material Design snack bar messages.
@@ -64,6 +62,14 @@ export class MdSnackBar {
     } else {
       snackBarRef.containerInstance.enter();
     }
+
+    // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
+    if (config.duration > 0) {
+      snackBarRef.afterOpened().subscribe(() => {
+        setTimeout(() => snackBarRef.dismiss(), config.duration);
+      });
+    }
+
     this._live.announce(config.announcementMessage, config.politeness);
     this._snackBarRef = snackBarRef;
     return this._snackBarRef;

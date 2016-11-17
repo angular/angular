@@ -9,6 +9,7 @@ import {
 } from '@angular/core/testing';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
+import {MdSnackBarConfig} from './snack-bar-config';
 import {OverlayContainer, MdLiveAnnouncer} from '../core';
 import {SimpleSnackBar} from './simple-snack-bar';
 
@@ -280,12 +281,29 @@ describe('MdSnackBar', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      viewContainerFixture.whenStable().then(() => {
-        expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
-        expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
-      });
+      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+      expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
 
       tick(500);
+    }));
+
+    it('should dismiss automatically after a specified timeout', fakeAsync(() => {
+      let dismissObservableCompleted = false;
+      let config = new MdSnackBarConfig();
+      config.duration = 250;
+      let snackBarRef = snackBar.open('content', 'test', config);
+      snackBarRef.afterDismissed().subscribe(null, null, () => {
+        dismissObservableCompleted = true;
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+      expect(dismissObservableCompleted).toBeFalsy('Expected the snack bar not to be dismissed');
+
+      tick(1000);
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
     }));
 });
 

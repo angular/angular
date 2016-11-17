@@ -15,6 +15,7 @@
 | `viewContainerRef: ViewContainerRef` | The view container ref to attach the snack bar to. |
 | `role: AriaLivePoliteness = 'assertive'` | The politeness level to announce the snack bar with. |
 | `announcementMessage: string` | The message to announce with the snack bar. |
+| `duration: number` | The length of time in milliseconds to wait before autodismissing the snack bar. |
 
 
 ### Example
