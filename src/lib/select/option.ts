@@ -10,6 +10,12 @@ import {
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
 import {coerceBooleanProperty} from '../core/coersion/boolean-property';
 
+/**
+ * Option IDs need to be unique across components, so this counter exists outside of
+ * the component definition.
+ */
+let _uniqueIdCounter = 0;
+
 @Component({
   moduleId: module.id,
   selector: 'md-option',
@@ -17,6 +23,7 @@ import {coerceBooleanProperty} from '../core/coersion/boolean-property';
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
     '[class.md-selected]': 'selected',
+    '[id]': 'id',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[class.md-option-disabled]': 'disabled',
@@ -32,6 +39,11 @@ export class MdOption {
 
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
+
+  private _id: string = `md-select-option-${_uniqueIdCounter++}`;
+
+  /** The unique ID of the option. */
+  get id() { return this._id; }
 
   /** The form value of the option. */
   @Input() value: any;

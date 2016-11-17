@@ -1,6 +1,6 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
@@ -16,7 +16,7 @@ describe('MdSelect', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSelectModule.forRoot(), ReactiveFormsModule, FormsModule],
-      declarations: [BasicSelect, NgModelSelect],
+      declarations: [BasicSelect, NgModelSelect, ManySelects],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -547,17 +547,14 @@ describe('MdSelect', () => {
   });
 
   describe('accessibility', () => {
-    let fixture: ComponentFixture<BasicSelect>;
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BasicSelect);
-      fixture.detectChanges();
-    });
 
     describe('for select', () => {
+      let fixture: ComponentFixture<BasicSelect>;
       let select: HTMLElement;
 
       beforeEach(() => {
+        fixture = TestBed.createComponent(BasicSelect);
+        fixture.detectChanges();
         select = fixture.debugElement.query(By.css('md-select')).nativeElement;
       });
 
@@ -614,14 +611,16 @@ describe('MdSelect', () => {
         expect(select.getAttribute('tabindex')).toEqual('0');
       });
 
-
     });
 
     describe('for options', () => {
+      let fixture: ComponentFixture<BasicSelect>;
       let trigger: HTMLElement;
       let options: NodeListOf<HTMLElement>;
 
       beforeEach(() => {
+        fixture = TestBed.createComponent(BasicSelect);
+        fixture.detectChanges();
         trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
         trigger.click();
         fixture.detectChanges();
@@ -673,6 +672,78 @@ describe('MdSelect', () => {
 
     });
 
+    describe('aria-owns', () => {
+      let fixture: ComponentFixture<ManySelects>;
+      let triggers: DebugElement[];
+      let options: NodeListOf<HTMLElement>;
+
+      beforeEach(() => {
+        fixture = TestBed.createComponent(ManySelects);
+        fixture.detectChanges();
+        triggers = fixture.debugElement.queryAll(By.css('.md-select-trigger'));
+
+        triggers[0].nativeElement.click();
+        fixture.detectChanges();
+
+        options =
+            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      });
+
+      it('should set aria-owns properly', async(() => {
+        const selects = fixture.debugElement.queryAll(By.css('md-select'));
+
+        expect(selects[0].nativeElement.getAttribute('aria-owns'))
+            .toContain(options[0].id, `Expected aria-owns to contain IDs of its child options.`);
+        expect(selects[0].nativeElement.getAttribute('aria-owns'))
+            .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
+
+        const backdrop =
+            overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+        backdrop.click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          triggers[1].nativeElement.click();
+
+          fixture.detectChanges();
+          options =
+              overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          expect(selects[1].nativeElement.getAttribute('aria-owns'))
+              .toContain(options[0].id, `Expected aria-owns to contain IDs of its child options.`);
+          expect(selects[1].nativeElement.getAttribute('aria-owns'))
+              .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
+        });
+
+      }));
+
+      it('should set the option id properly', async(() => {
+        let firstOptionID = options[0].id;
+
+        expect(options[0].id)
+            .toContain('md-select-option', `Expected option ID to have the correct prefix.`);
+        expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
+
+        const backdrop =
+            overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+        backdrop.click();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          triggers[1].nativeElement.click();
+
+          fixture.detectChanges();
+          options =
+              overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          expect(options[0].id)
+              .toContain('md-select-option', `Expected option ID to have the correct prefix.`);
+          expect(options[0].id).not.toEqual(firstOptionID, `Expected option IDs to be unique.`);
+          expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
+        });
+
+      }));
+
+    });
+
   });
 
 });
@@ -719,6 +790,21 @@ class NgModelSelect {
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 }
+
+@Component({
+  selector: 'many-selects',
+  template: `
+    <md-select placeholder="First">
+      <md-option value="one">one</md-option>
+      <md-option value="two">two</md-option>
+    </md-select>
+    <md-select placeholder="Second">
+      <md-option value="three">three</md-option>
+      <md-option value="four">four</md-option>
+    </md-select>
+  `
+})
+class ManySelects {}
 
 
 /**
