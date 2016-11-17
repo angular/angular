@@ -227,8 +227,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param overlayPoint
    */
   private _setElementPosition(element: HTMLElement, overlayPoint: Point) {
-    let x = overlayPoint.x;
-    let y = overlayPoint.y;
+    // Round the values to prevent blurry overlays due to subpixel rendering.
+    let x = Math.round(overlayPoint.x);
+    let y = Math.round(overlayPoint.y);
 
     // TODO(jelbourn): we don't want to always overwrite the transform property here,
     // because it will need to be used for animations.
