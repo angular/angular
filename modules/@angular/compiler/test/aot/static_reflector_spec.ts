@@ -73,10 +73,10 @@ describe('StaticReflector', () => {
     ])]);
   });
 
-  it('should throw and exception for unsupported metadata versions', () => {
+  it('should throw an exception for unsupported metadata versions', () => {
     expect(() => reflector.findDeclaration('src/version-error', 'e'))
         .toThrow(new Error(
-            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 1'));
+            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 2'));
   });
 
   it('should get and empty annotation list for an unknown class', () => {
@@ -342,13 +342,11 @@ describe('StaticReflector', () => {
     try {
       const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts');
       expect(metadata).toBeDefined();
-      if (!Array.isArray(metadata)) {
-        const moduleMetadata: any = metadata['metadata'];
-        expect(moduleMetadata).toBeDefined();
-        const classData: any = moduleMetadata['InvalidMetadata'];
-        expect(classData).toBeDefined();
-        simplify(new StaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
-      }
+      const moduleMetadata: any = metadata[0]['metadata'];
+      expect(moduleMetadata).toBeDefined();
+      const classData: any = moduleMetadata['InvalidMetadata'];
+      expect(classData).toBeDefined();
+      simplify(new StaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
     } catch (e) {
       expect(e.fileName).toBe('/tmp/src/invalid-metadata.ts');
       threw = true;
@@ -376,7 +374,7 @@ describe('StaticReflector', () => {
     const metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 1,
+      version: 2,
       metadata: {
         Foo: {
           __symbolic: 'class',
@@ -564,7 +562,7 @@ class MockAotCompilerHost implements AotCompilerHost {
     const data: {[key: string]: any} = {
       '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
-        'version': 1,
+        'version': 2,
         'metadata': {
           'FORM_DIRECTIVES': [
             {
@@ -577,7 +575,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       }],
       '/tmp/@angular/common/src/directives/ng_for.d.ts': {
         '__symbolic': 'module',
-        'version': 1,
+        'version': 2,
         'metadata': {
           'NgFor': {
             '__symbolic': 'class',
@@ -630,16 +628,16 @@ class MockAotCompilerHost implements AotCompilerHost {
         }
       },
       '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-          {version: 1, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+          {version: 2, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/linker/template_ref.d.ts':
-          {version: 1, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
+          {version: 2, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-          {version: 1, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
+          {version: 2, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-          {version: 1, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+          {version: 2, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
       '/tmp/src/app/hero-detail.component.d.ts': {
         '__symbolic': 'module',
-        'version': 1,
+        'version': 2,
         'metadata': {
           'HeroDetailComponent': {
             '__symbolic': 'class',
@@ -790,11 +788,11 @@ class MockAotCompilerHost implements AotCompilerHost {
           }
         }
       },
-      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 1, metadata: {s: 's'}},
+      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 2, metadata: {s: 's'}},
       '/tmp/src/version-error.d.ts': {'__symbolic': 'module', 'version': 100, metadata: {e: 's'}},
       '/tmp/src/error-reporting.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           SomeClass: {
             __symbolic: 'class',
@@ -824,7 +822,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/error-references.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           Link1: {
             __symbolic: 'reference',
@@ -846,7 +844,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/function-declaration.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           one: {
             __symbolic: 'function',
@@ -875,7 +873,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/function-reference.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           one: {
             __symbolic: 'call',
@@ -917,7 +915,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/function-recursive.d.ts': {
         __symbolic: 'modules',
-        version: 1,
+        version: 2,
         metadata: {
           recursive: {
             __symbolic: 'function',
@@ -977,7 +975,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/spread.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
         }
@@ -1113,7 +1111,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       `,
       '/tmp/src/reexport/reexport.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {},
         exports: [
           {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
@@ -1122,7 +1120,7 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/reexport/src/origin1.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           One: {__symbolic: 'class'},
           Two: {__symbolic: 'class'},
@@ -1131,26 +1129,26 @@ class MockAotCompilerHost implements AotCompilerHost {
       },
       '/tmp/src/reexport/src/origin5.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           Five: {__symbolic: 'class'},
         },
       },
       '/tmp/src/reexport/src/origin30.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {
           Thirty: {__symbolic: 'class'},
         },
       },
       '/tmp/src/reexport/src/originNone.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {},
       },
       '/tmp/src/reexport/src/reexport2.d.ts': {
         __symbolic: 'module',
-        version: 1,
+        version: 2,
         metadata: {},
         exports: [{from: './originNone'}, {from: './origin30'}]
       }
@@ -1166,9 +1164,14 @@ class MockAotCompilerHost implements AotCompilerHost {
         if (diagnostics && diagnostics.length) {
           throw Error(`Error encountered during parse of file ${moduleId}`);
         }
-        return this.collector.getMetadata(sf);
+        return [this.collector.getMetadata(sf)];
       }
     }
-    return data[moduleId];
+    const result = data[moduleId];
+    if (result) {
+      return Array.isArray(result) ? result : [result];
+    } else {
+      return null;
+    }
   }
 }
