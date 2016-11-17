@@ -336,9 +336,9 @@ export class MdSlider implements ControlValueAccessor {
       let event = new MdSliderChange();
       event.source = this;
       event.value = this.value;
-      this.change.emit(event);
-      this._controlValueAccessorChangeFn(this.value);
       this._lastEmittedValue = this.value;
+      this._controlValueAccessorChangeFn(this.value);
+      this.change.emit(event);
     }
   }
 
