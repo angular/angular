@@ -140,8 +140,8 @@ export class MdAnchor extends MdButton {
     return this.disabled ? -1 : 0;
   }
 
-  @HostBinding('attr.aria-disabled')
   /** Gets the aria-disabled value for the component, which must be a string for Dart. */
+  @HostBinding('attr.aria-disabled')
   get isAriaDisabled(): string {
     return this.disabled ? 'true' : 'false';
   }

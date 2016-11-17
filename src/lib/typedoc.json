@@ -1,0 +1,20 @@
+{
+  "mode": "modules",
+  "out": "./dist/api",
+  "json": "./dist/api/api.json",
+  "theme": "default",
+  "experimentalDecorators": "true",
+  "emitDecoratorMetadata": "true",
+  "excludePrivate": "true",
+  "excludeExternals": "true",
+  "includeDeclarations": "true",
+  "target": "ES6",
+  "exclude": "**/+(*.spec.ts|*.scss|*.html)",
+  "name": "Angular Material",
+  "moduleResolution": "node",
+  "preserveConstEnums": "true",
+  "stripInternal": "true",
+  "suppressExcessPropertyErrors": "true",
+  "suppressImplicitAnyIndexErrors": "true",
+  "module": "commonjs"
+}

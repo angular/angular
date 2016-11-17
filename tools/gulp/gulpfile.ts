@@ -9,3 +9,4 @@ import './tasks/lint';
 import './tasks/release';
 import './tasks/serve';
 import './tasks/unit-test';
+import './tasks/docs';
