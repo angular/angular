@@ -70,6 +70,8 @@ export class MdIconInvalidNameError extends MdError {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
+  private _color: string;
+
   @Input() svgSrc: string;
   @Input() svgIcon: string;
   @Input() fontSet: string;
@@ -78,13 +80,34 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   @Input('aria-label') hostAriaLabel: string = '';
 
+  @Input()
+  get color(): string {
+    return this._color;
+  }
+
+  set color(value: string) {
+    this._updateColor(value);
+  }
+
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;
 
   constructor(
-      private _element: ElementRef,
+      private _elementRef: ElementRef,
       private _renderer: Renderer,
       private _mdIconRegistry: MdIconRegistry) { }
+
+  _updateColor(newColor: string) {
+    this._setElementColor(this._color, false);
+    this._setElementColor(newColor, true);
+    this._color = newColor;
+  }
+
+  _setElementColor(color: string, isAdd: boolean) {
+    if (color != null && color != '') {
+      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
+    }
+  }
 
   /**
    * Splits an svgIcon binding value into its icon set and icon name components.
@@ -156,7 +179,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   private _updateAriaLabel() {
       const ariaLabel = this._getAriaLabel();
       if (ariaLabel) {
-        this._renderer.setElementAttribute(this._element.nativeElement, 'aria-label', ariaLabel);
+        this._renderer.setElementAttribute(this._elementRef.nativeElement, 'aria-label', ariaLabel);
       }
   }
 
@@ -174,7 +197,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     }
     // The "content" of an SVG icon is not a useful label.
     if (this._usingFontIcon()) {
-      const text = this._element.nativeElement.textContent;
+      const text = this._elementRef.nativeElement.textContent;
       if (text) {
         return text;
       }
@@ -188,7 +211,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   }
 
   private _setSvgElement(svg: SVGElement) {
-    const layoutElement = this._element.nativeElement;
+    const layoutElement = this._elementRef.nativeElement;
     // Remove existing child nodes and add the new SVG element.
     // We would use renderer.detachView(Array.from(layoutElement.childNodes)) here,
     // but it fails in IE11: https://github.com/angular/angular/issues/6327
@@ -200,7 +223,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     if (!this._usingFontIcon()) {
       return;
     }
-    const elem = this._element.nativeElement;
+    const elem = this._elementRef.nativeElement;
     const fontSetClass = this.fontSet ?
         this._mdIconRegistry.classNameForFontAlias(this.fontSet) :
         this._mdIconRegistry.getDefaultFontSetClass();

@@ -41,6 +41,7 @@ describe('MdIcon', () => {
     TestBed.configureTestingModule({
       imports: [MdIconModule.forRoot()],
       declarations: [
+        MdIconColorTestApp,
         MdIconLigatureTestApp,
         MdIconLigatureWithAriaBindingTestApp,
         MdIconCustomFontCssTestApp,
@@ -71,6 +72,17 @@ describe('MdIcon', () => {
       connection.mockRespond(getFakeSvgHttpResponse(url));
     });
   }));
+
+  it('should apply class based on color attribute', () => {
+    let fixture = TestBed.createComponent(MdIconColorTestApp);
+
+    const testComponent = fixture.debugElement.componentInstance;
+    const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    testComponent.iconName = 'home';
+    testComponent.iconColor = 'primary';
+    fixture.detectChanges();
+    expect(sortedClassNames(mdIconElement)).toEqual(['material-icons', 'md-primary']);
+  });
 
   describe('Ligature icons', () => {
     it('should add material-icons class by default', () => {
@@ -411,6 +423,16 @@ describe('MdIcon', () => {
 class MdIconLigatureTestApp {
   ariaLabel: string = null;
   iconName = '';
+}
+
+@Component({
+  selector: 'test-app',
+  template: `<md-icon [color]="iconColor">{{iconName}}</md-icon>`,
+})
+class MdIconColorTestApp {
+  ariaLabel: string = null;
+  iconName = '';
+  iconColor = 'primary';
 }
 
 @Component({

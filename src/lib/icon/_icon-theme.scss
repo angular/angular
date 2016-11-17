@@ -1,6 +1,25 @@
-@import '../core/theming/palette';
 @import '../core/theming/theming';
 
 
 // Include this empty mixin for consistency with the other components.
-@mixin md-icon-theme($theme) { }
+@mixin md-icon-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  md-icon {
+    &.md-primary {
+      color: md-color($primary);
+    }
+
+    &.md-accent {
+      color: md-color($accent);
+    }
+
+    &.md-warn {
+      color: md-color($warn);
+    }
+  }
+}
