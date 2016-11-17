@@ -7,15 +7,18 @@
  */
 
 import {Component, Input, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
 import {TableCell, emptyTable} from '../util';
+
+let trustedEmptyColor: SafeStyle;
+let trustedGreyColor: SafeStyle;
 
 @Component({
   selector: 'largetable',
   template: `<table><tbody>
     <tr *ngFor="let row of data; trackBy: trackByIndex">
-      <td *ngFor="let cell of row; trackBy: trackByIndex" [style.backgroundColor]="cell.row % 2 ? '' : 'grey'">
+      <td *ngFor="let cell of row; trackBy: trackByIndex" [style.backgroundColor]="getColor(cell.row)">
       {{cell.value}}
       </td>
     </tr>
@@ -26,8 +29,14 @@ export class TableComponent {
   data: TableCell[][] = emptyTable;
 
   trackByIndex(index: number, item: any) { return index; }
+
+  getColor(row: number) { return row % 2 ? trustedEmptyColor : trustedGreyColor; }
 }
 
 @NgModule({imports: [BrowserModule], bootstrap: [TableComponent], declarations: [TableComponent]})
 export class AppModule {
+  constructor(sanitizer: DomSanitizer) {
+    trustedEmptyColor = sanitizer.bypassSecurityTrustStyle('');
+    trustedGreyColor = sanitizer.bypassSecurityTrustStyle('grey');
+  }
 }
