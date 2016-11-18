@@ -298,12 +298,12 @@ export class SelectorMatcher {
     }
 
     let selectables = map.get(name);
-    if (!selectables) {
-      return false;
-    }
     const starSelectables = map.get('*');
     if (starSelectables) {
       selectables = selectables.concat(starSelectables);
+    }
+    if (!selectables) {
+      return false;
     }
     let selectable: SelectorContext;
     let result = false;
