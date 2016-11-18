@@ -47,8 +47,8 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      ApplicationRef, UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader,
-      Compiler, ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
+      UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader, Compiler, ROUTES,
+      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
     ]
   },
   RouterOutletMap,
@@ -217,6 +217,11 @@ export interface ExtraOptions {
   enableTracing?: boolean;
 
   /**
+   * Allows to configure preserveQueryParams for all navigation.
+   */
+  defaultPreserveQueryParams?: boolean;
+
+  /**
    * Enables the location strategy that uses the URL fragment instead of the history API.
    */
   useHash?: boolean;
@@ -238,9 +243,9 @@ export interface ExtraOptions {
 }
 
 export function setupRouter(
-    ref: ApplicationRef, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
-    location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
-    config: Route[][], opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy) {
+    urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
+    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
+    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
       null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(config));
 
@@ -250,6 +255,10 @@ export function setupRouter(
 
   if (opts.errorHandler) {
     router.errorHandler = opts.errorHandler;
+  }
+
+  if (opts.defaultPreserveQueryParams != null) {
+    router.defaultPreserveQueryParams = opts.defaultPreserveQueryParams;
   }
 
   if (opts.enableTracing) {
