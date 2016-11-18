@@ -355,14 +355,14 @@ export class UpgradeAdapter {
                 function(testabilityDelegate: angular.ITestabilityService) {
 
                   const originalWhenStable: Function = testabilityDelegate.whenStable;
-                  const newWhenStable = (callback: Function): void => {
-                    const whenStableContext: any = this;
+                  // Cannot use arrow function below because we need the context
+                  const newWhenStable = function(callback: Function) {
                     originalWhenStable.call(this, function() {
                       const ng2Testability: Testability = moduleRef.injector.get(Testability);
                       if (ng2Testability.isStable()) {
                         callback.apply(this, arguments);
                       } else {
-                        ng2Testability.whenStable(newWhenStable.bind(whenStableContext, callback));
+                        ng2Testability.whenStable(newWhenStable.bind(this, callback));
                       }
                     });
                   };
@@ -433,8 +433,9 @@ export class UpgradeAdapter {
       if (windowAngular.resumeBootstrap) {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
         windowAngular.resumeBootstrap = function() {
+          let args = arguments;
           windowAngular.resumeBootstrap = originalResumeBootstrap;
-          windowAngular.resumeBootstrap.apply(this, arguments);
+          ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
           resolve();
         };
       } else {
