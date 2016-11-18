@@ -14,7 +14,7 @@ export function main() {
   describe('SelectorMatcher', () => {
     let matcher: SelectorMatcher;
     let selectableCollector: (selector: CssSelector, context: any) => void;
-    let s1: any[], s2: any[], s3: any[], s4: any[], s5: any[];
+    let s1: any[], s2: any[], s3: any[], s4: any[];
     let matched: any[];
 
     function reset() { matched = []; }
@@ -216,12 +216,20 @@ export function main() {
       matcher.addSelectables(s2 = CssSelector.parse('p:not(.someOtherClass[someAttr])'), 2);
       matcher.addSelectables(s3 = CssSelector.parse(':not(.someClass)'), 3);
       matcher.addSelectables(s4 = CssSelector.parse(':not(.someOtherClass[someAttr])'), 4);
-      matcher.addSelectables(s5 = CssSelector.parse(':not([someAttr])'), 5);
 
       expect(matcher.match(
                  CssSelector.parse('p[someOtherAttr].someOtherClass')[0], selectableCollector))
           .toEqual(true);
-      expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4, s5[0], 5]);
+      expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
+    });
+
+    it('should select ', () => {
+      matcher.addSelectables(s1 = CssSelector.parse(':not([someAttr])'), 1);
+
+      expect(matcher.match(
+        CssSelector.parse('div[someAttr]')[0], selectableCollector))
+        .toEqual(true);
+      expect(matched).toEqual([s1[0], 1]);
     });
 
     it('should match with multiple :not selectors', () => {
