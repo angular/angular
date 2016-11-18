@@ -32,8 +32,8 @@ export class Extractor {
     const programSymbols: compiler.StaticSymbol[] =
         extractProgramSymbols(this.program, this.staticReflector, this.compilerHost, this.options);
 
-    const {ngModules, files} = compiler.analyzeAndValidateNgModules(
-        programSymbols, {transitiveModules: true}, this.metadataResolver);
+    const {ngModules, files} =
+        compiler.analyzeAndValidateNgModules(programSymbols, {}, this.metadataResolver);
     return compiler.loadNgModuleDirectives(ngModules).then(() => {
       const errors: compiler.ParseError[] = [];
 
