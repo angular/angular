@@ -49,7 +49,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
               ],
               ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
               ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ }
+              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ },
+              ngOnDestroy: function() { /* needs to be here for ng2 to properly detect it */ },
             });
   }
 
@@ -262,16 +263,18 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    for (const name in changes) {
-      if ((<Object>changes).hasOwnProperty(name)) {
-        const change: SimpleChange = changes[name];
-        this.setComponentProperty(name, change.currentValue);
-      }
+    const ng1Changes: any = {};
+    Object.keys(changes).forEach(name => {
+      const change: SimpleChange = changes[name];
+      this.setComponentProperty(name, change.currentValue);
+      ng1Changes[this.propertyMap[name]] = change;
+    });
+    if (this.destinationObj.$onChanges) {
+      this.destinationObj.$onChanges(ng1Changes);
     }
   }
 
-  ngDoCheck(): number {
-    const count = 0;
+  ngDoCheck() {
     const destinationObj = this.destinationObj;
     const lastValues = this.checkLastValues;
     const checkProperties = this.checkProperties;
@@ -287,7 +290,15 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
         }
       }
     }
-    return count;
+    if (this.destinationObj.$doCheck && this.directive.controller) {
+      this.destinationObj.$doCheck();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.destinationObj.$onDestroy && this.directive.controller) {
+      this.destinationObj.$onDestroy();
+    }
   }
 
   setComponentProperty(name: string, value: any) {

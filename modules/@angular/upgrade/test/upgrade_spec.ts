@@ -922,6 +922,127 @@ export function main() {
            });
          }));
 
+      it('should call $doCheck of components', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+           const valueToFind = '$doCheck';
+
+           let spy = jasmine.createSpy('doCheck');
+
+           const ng1 = {
+             bindings: {},
+             template: '{{$ctrl.value}}',
+             controller: Class({
+               constructor: function() {},
+               $doCheck: function() {
+                 this.value = valueToFind;
+                 spy();
+               }
+             })
+           };
+           ng1Module.component('ng1', ng1);
+
+           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
+             constructor: function() {}
+           });
+
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
+
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           const element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
+             expect(spy).toHaveBeenCalled();
+             let count = spy.calls.count();
+             setTimeout(() => {
+               expect(spy.calls.count()).toBeGreaterThan(count);
+               ref.dispose();
+             }, 100);
+           });
+         }));
+
+      it('should call $onChanges of components', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+           const valueToFind = '$onChanges init';
+           const valueToChange = '$onChanges changed';
+
+           const ng1 = {
+             bindings: {val: '<'},
+             template: '{{$ctrl.value}}',
+             controller: Class({
+               constructor: function() {},
+               $onChanges: function(changes: any) { this.value = changes.val.currentValue; }
+             })
+           };
+           ng1Module.component('ng1', ng1);
+
+           const Ng2 = Component({selector: 'ng2', template: '<ng1 [val]="val"></ng1>'}).Class({
+             constructor: function() { this.val = valueToFind; },
+             ngOnInit: function() { setTimeout(() => { this.val = valueToChange; }, 100); }
+           });
+
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
+
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           const element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
+             setTimeout(() => {
+               expect(multiTrim(document.body.textContent)).toEqual(valueToChange);
+               ref.dispose();
+             }, 200);
+           });
+         }));
+
+      it('should call $onDestroy of components', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+
+           let spy = jasmine.createSpy('$onDestroy');
+
+           const ng1 = {
+             bindings: {},
+             template: '<div>ng1</div>',
+             controller: function($rootScope: any) { this.$onDestroy = function() { spy(); }; }
+           };
+           ng1Module.component('ng1', ng1);
+
+           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
+             constructor: function() {}
+           });
+
+           const Ng2Module = NgModule({
+                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+                               imports: [BrowserModule],
+                               schemas: [NO_ERRORS_SCHEMA],
+                             }).Class({constructor: function() {}});
+
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+
+           const element = html(`<div ng-if="!destroy"><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             (<any>ref.ng1RootScope).destroy = false;
+             setTimeout(() => {
+               (<any>ref.ng1RootScope).destroy = true;
+               setTimeout(() => {
+                 expect(spy).toHaveBeenCalled();
+                 ref.dispose();
+               }, 100);
+             }, 100);
+           });
+         }));
+
       it('should bind input properties (<) of components', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module('ng1', []);
