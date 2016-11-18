@@ -186,7 +186,7 @@ export class CompilerHost implements AotCompilerHost {
       if (!v2Metadata && v1Metadata) {
         // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
         // as the only difference between the versions is whether all exports are contained in
-        // the metadata
+        // the metadata and the `extends` clause.
         v2Metadata = {'__symbolic': 'module', 'version': 2, 'metadata': {}};
         if (v1Metadata.exports) {
           v2Metadata.exports = v1Metadata.exports;
