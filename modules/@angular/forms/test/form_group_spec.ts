@@ -13,12 +13,12 @@ import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@a
 
 
 export function main() {
-  function asyncValidator(expected: string, timeouts = {}) {
+  function asyncValidator(expected: string, timeouts = {}, error: string = 'async') {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void;
       const promise = new Promise(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-      const res = c.value != expected ? {'async': true} : null;
+      const res = c.value != expected ? {[error]: true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -667,6 +667,29 @@ export function main() {
              }
            });
            control.setValue('');
+         }));
+    });
+
+    describe('constructor', () => {
+      it('should accept multiple sync validators', () => {
+        const c = new FormControl('');
+        const g = new FormGroup({'one': c}, [() => ({'1': true}), () => ({'2': true})]);
+        expect(g.hasError('1')).toBe(true);
+        expect(g.hasError('2')).toBe(true);
+      });
+
+      it('should accept multiple async validators', fakeAsync(() => {
+           const c = new FormControl('value');
+           const g = new FormGroup(
+               {'one': c}, null, [asyncValidator('1'), asyncValidator('2', {}, 'async2')]);
+
+           expect(g.pending).toBe(true);
+
+           tick(1);
+
+           expect(g.hasError('async')).toBe(true);
+           expect(g.hasError('async2')).toBe(true);
+           expect(g.pending).toBe(false);
          }));
     });
 

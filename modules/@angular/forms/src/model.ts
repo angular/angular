@@ -842,9 +842,10 @@ export class FormControl extends AbstractControl {
  */
 export class FormGroup extends AbstractControl {
   constructor(
-      public controls: {[key: string]: AbstractControl}, validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      public controls: {[key: string]: AbstractControl},
+      validator: ValidatorFn|ValidatorFn[] = null,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
+    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -1148,9 +1149,9 @@ export class FormGroup extends AbstractControl {
  */
 export class FormArray extends AbstractControl {
   constructor(
-      public controls: AbstractControl[], validator: ValidatorFn = null,
-      asyncValidator: AsyncValidatorFn = null) {
-    super(validator, asyncValidator);
+      public controls: AbstractControl[], validator: ValidatorFn|ValidatorFn[] = null,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[] = null) {
+    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});

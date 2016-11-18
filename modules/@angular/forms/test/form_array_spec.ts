@@ -13,12 +13,12 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms
 import {Validators} from '../src/validators';
 
 export function main() {
-  function asyncValidator(expected: string, timeouts = {}) {
+  function asyncValidator(expected: string, timeouts = {}, error: string = 'async') {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void;
       const promise = new Promise(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
-      const res = c.value != expected ? {'async': true} : null;
+      const res = c.value != expected ? {[error]: true} : null;
 
       if (t == 0) {
         resolve(res);
@@ -537,23 +537,64 @@ export function main() {
       });
     });
 
+    describe('constructor', () => {
+      it('should accept multiple sync validators', () => {
+        const simpleValidator = (a: FormArray) => {
+          if (a.length) {
+            return a.controls[0].value !== 'correct' ? {'broken': true} : null;
+          }
+          return null;
+        };
+
+        const c = new FormControl('');
+        const a = new FormArray([], [simpleValidator, Validators.required]);
+
+        expect(a.valid).toBe(false);
+        expect(a.hasError('required')).toBe(true);
+
+        a.push(c);
+
+        expect(a.valid).toBe(false);
+        expect(a.hasError('required')).toBe(false);
+        expect(a.hasError('broken')).toBe(true);
+
+        c.setValue('correct');
+
+        expect(a.valid).toBe(true);
+      });
+
+      it('should accept multiple async validators', fakeAsync(() => {
+           const c = new FormControl('value');
+           const a =
+               new FormArray([c], null, [asyncValidator('1'), asyncValidator('2', {}, 'async2')]);
+
+           expect(a.pending).toBe(true);
+
+           tick(1);
+
+           expect(a.hasError('async')).toBe(true);
+           expect(a.hasError('async2')).toBe(true);
+           expect(a.pending).toBe(false);
+         }));
+    });
+
     describe('errors', () => {
       it('should run the validator when the value changes', () => {
         const simpleValidator = (c: FormArray) =>
             c.controls[0].value != 'correct' ? {'broken': true} : null;
 
         const c = new FormControl(null);
-        const g = new FormArray([c], simpleValidator);
+        const a = new FormArray([c], simpleValidator);
 
         c.setValue('correct');
 
-        expect(g.valid).toEqual(true);
-        expect(g.errors).toEqual(null);
+        expect(a.valid).toEqual(true);
+        expect(a.errors).toEqual(null);
 
         c.setValue('incorrect');
 
-        expect(g.valid).toEqual(false);
-        expect(g.errors).toEqual({'broken': true});
+        expect(a.valid).toEqual(false);
+        expect(a.errors).toEqual({'broken': true});
       });
     });
 
