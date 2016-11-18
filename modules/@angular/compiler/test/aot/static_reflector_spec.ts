@@ -502,6 +502,21 @@ describe('StaticReflector', () => {
     expect(symbol.name).toEqual('Thirty');
     expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
   });
+
+  it('should cache tracing a named export', () => {
+    const moduleNameToFileNameSpy = spyOn(host, 'moduleNameToFileName').and.callThrough();
+    const getMetadataForSpy = spyOn(host, 'getMetadataFor').and.callThrough();
+    reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
+    moduleNameToFileNameSpy.calls.reset();
+    getMetadataForSpy.calls.reset();
+
+    const symbol = reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
+    expect(moduleNameToFileNameSpy.calls.count()).toBe(1);
+    expect(getMetadataForSpy.calls.count()).toBe(0);
+    expect(symbol.name).toEqual('One');
+    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+  });
+
 });
 
 class MockAotCompilerHost implements AotCompilerHost {
@@ -550,7 +565,7 @@ class MockAotCompilerHost implements AotCompilerHost {
     if (modulePath.indexOf('.') === 0) {
       const baseName = pathTo(containingFile, modulePath);
       const tsName = baseName + '.ts';
-      if (this.getMetadataFor(tsName)) {
+      if (this._getMetadataFor(tsName)) {
         return tsName;
       }
       return baseName + '.d.ts';
@@ -558,7 +573,9 @@ class MockAotCompilerHost implements AotCompilerHost {
     return '/tmp/' + modulePath + '.d.ts';
   }
 
-  getMetadataFor(moduleId: string): any {
+  getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
+
+  private _getMetadataFor(moduleId: string): any {
     const data: {[key: string]: any} = {
       '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
