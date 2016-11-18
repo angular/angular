@@ -226,9 +226,7 @@ export function main() {
     it('should select ', () => {
       matcher.addSelectables(s1 = CssSelector.parse(':not([someAttr])'), 1);
 
-      expect(matcher.match(
-        CssSelector.parse('div[someAttr]')[0], selectableCollector))
-        .toEqual(true);
+      expect(matcher.match(CssSelector.parse('div')[0], selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
 
