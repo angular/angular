@@ -333,6 +333,7 @@ export function main() {
            getComponent().items = [{'id': 'a', 'color': 'red'}];
            detectChangesAndExpectText('red');
          }));
+
       it('should move items around and keep them updated ', async(() => {
            const template =
                `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackById">{{item['color']}}</template></div>`;
@@ -348,6 +349,36 @@ export function main() {
       it('should handle added and removed items properly when tracking by index', async(() => {
            const template =
                `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackByIndex">{{item}}</template></div>`;
+           fixture = createTestComponent(template);
+
+           getComponent().items = ['a', 'b', 'c', 'd'];
+           fixture.detectChanges();
+           getComponent().items = ['e', 'f', 'g', 'h'];
+           fixture.detectChanges();
+           getComponent().items = ['e', 'f', 'h'];
+           detectChangesAndExpectText('efh');
+         }));
+
+      it('should track by the given object property', async(() => {
+           const template =
+               `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="'id'" let-i="index">
+               <p>{{items[i]}}</p></template>`;
+           fixture = createTestComponent(template);
+
+           const buildItemList = () => {
+             getComponent().items = [{'id': 'a'}];
+             fixture.detectChanges();
+             return fixture.debugElement.queryAll(By.css('p'))[0];
+           };
+
+           const firstP = buildItemList();
+           const finalP = buildItemList();
+           expect(finalP.nativeElement).toBe(firstP.nativeElement);
+         }));
+
+      it('should track by index when given "index" string', async(() => {
+           const template =
+               `<div><template ngFor let-item [ngForOf]="items" [ngForTrackBy]="'index'">{{item}}</template></div>`;
            fixture = createTestComponent(template);
 
            getComponent().items = ['a', 'b', 'c', 'd'];

@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef, CollectionChangeRecord, DefaultIterableDiffer, Directive, DoCheck, EmbeddedViewRef, Input, IterableDiffer, IterableDiffers, OnChanges, SimpleChanges, TemplateRef, TrackByFn, ViewContainerRef} from '@angular/core';
-
 import {getTypeNameForDebugging} from '../facade/lang';
 
 export class NgForRow {
@@ -89,13 +88,19 @@ export class NgForRow {
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgFor implements DoCheck, OnChanges {
   @Input() ngForOf: any;
-  @Input() ngForTrackBy: TrackByFn;
 
-  private _differ: IterableDiffer = null;
-
-  constructor(
-      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow>,
-      private _differs: IterableDiffers, private _cdr: ChangeDetectorRef) {}
+  @Input()
+  set ngForTrackBy(value: TrackByFn|string) {
+    if (typeof value === 'string') {
+      if (value === 'index') {
+        this._trackByFn = (index: number, item: any) => index;
+      } else {
+        this._trackByFn = (index: number, item: any) => item != null ? item[value] : item;
+      }
+    } else {
+      this._trackByFn = value;
+    }
+  }
 
   @Input()
   set ngForTemplate(value: TemplateRef<NgForRow>) {
@@ -104,13 +109,20 @@ export class NgFor implements DoCheck, OnChanges {
     }
   }
 
+  private _trackByFn: TrackByFn = null;
+  private _differ: IterableDiffer = null;
+
+  constructor(
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow>,
+      private _differs: IterableDiffers, private _cdr: ChangeDetectorRef) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if ('ngForOf' in changes) {
       // React on ngForOf changes only once all inputs have been initialized
       const value = changes['ngForOf'].currentValue;
       if (!this._differ && value) {
         try {
-          this._differ = this._differs.find(value).create(this._cdr, this.ngForTrackBy);
+          this._differ = this._differs.find(value).create(this._cdr, this._trackByFn);
         } catch (e) {
           throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
@@ -119,14 +131,14 @@ export class NgFor implements DoCheck, OnChanges {
     }
   }
 
-  ngDoCheck() {
+  ngDoCheck(): void {
     if (this._differ) {
       const changes = this._differ.diff(this.ngForOf);
       if (changes) this._applyChanges(changes);
     }
   }
 
-  private _applyChanges(changes: DefaultIterableDiffer) {
+  private _applyChanges(changes: DefaultIterableDiffer): void {
     const insertTuples: RecordViewTuple[] = [];
     changes.forEachOperation(
         (item: CollectionChangeRecord, adjustedPreviousIndex: number, currentIndex: number) => {
@@ -161,7 +173,7 @@ export class NgFor implements DoCheck, OnChanges {
     });
   }
 
-  private _perViewChange(view: EmbeddedViewRef<NgForRow>, record: CollectionChangeRecord) {
+  private _perViewChange(view: EmbeddedViewRef<NgForRow>, record: CollectionChangeRecord): void {
     view.context.$implicit = record.item;
   }
 }
