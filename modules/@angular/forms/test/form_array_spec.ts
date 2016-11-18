@@ -32,6 +32,7 @@ export function main() {
   }
 
   describe('FormArray', () => {
+
     describe('adding/removing', () => {
       let a: FormArray;
       let c1: FormControl, c2: FormControl, c3: FormControl;
@@ -78,6 +79,21 @@ export function main() {
       it('should be an empty array when there are no child controls', () => {
         const a = new FormArray([]);
         expect(a.value).toEqual([]);
+      });
+    });
+
+    describe('getRawValue()', () => {
+      let a: FormArray;
+
+      it('should work with nested form groups/arrays', () => {
+        a = new FormArray([
+          new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+          new FormArray([new FormControl('v4'), new FormControl('v5')])
+        ]);
+        a.at(0).get('c3').disable();
+        (a.at(1) as FormArray).at(1).disable();
+
+        expect(a.getRawValue()).toEqual([{'c2': 'v2', 'c3': 'v3'}, ['v4', 'v5']]);
       });
     });
 

@@ -8,7 +8,7 @@
 
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
-import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {EventEmitter} from '../src/facade/async';
 import {isPresent} from '../src/facade/lang';
@@ -60,6 +60,24 @@ export function main() {
 
         expect(g.value).toEqual({'one': '111', 'nested': {'two': '333'}});
       });
+    });
+
+    describe('getRawValue', () => {
+      let fg: FormGroup;
+
+      it('should work with nested form groups/arrays', () => {
+        fg = new FormGroup({
+          'c1': new FormControl('v1'),
+          'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+          'array': new FormArray([new FormControl('v4'), new FormControl('v5')])
+        });
+        fg.get('group').get('c3').disable();
+        (fg.get('array') as FormArray).at(1).disable();
+
+        expect(fg.getRawValue())
+            .toEqual({'c1': 'v1', 'group': {'c2': 'v2', 'c3': 'v3'}, 'array': ['v4', 'v5']});
+      });
+
     });
 
     describe('adding and removing controls', () => {
