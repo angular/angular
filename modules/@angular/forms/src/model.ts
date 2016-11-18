@@ -1020,7 +1020,7 @@ export class FormGroup extends AbstractControl {
   getRawValue(): any {
     return this._reduceChildren(
         {}, (acc: {[k: string]: AbstractControl}, control: AbstractControl, name: string) => {
-          acc[name] = control.value;
+          acc[name] = control instanceof FormControl ? control.value : (<any>control).getRawValue();
           return acc;
         });
   }
@@ -1321,7 +1321,11 @@ export class FormArray extends AbstractControl {
    * If you'd like to include all values regardless of disabled status, use this method.
    * Otherwise, the `value` property is the best way to get the value of the array.
    */
-  getRawValue(): any[] { return this.controls.map((control) => control.value); }
+  getRawValue(): any[] {
+    return this.controls.map((control: AbstractControl) => {
+      return control instanceof FormControl ? control.value : (<any>control).getRawValue();
+    });
+  }
 
   /** @internal */
   _throwIfControlMissing(index: number): void {
