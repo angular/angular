@@ -297,13 +297,13 @@ export class SelectorMatcher {
       return false;
     }
 
-    let selectables = map.get(name);
-    if (!selectables) {
-      return false;
-    }
+    let selectables = map.get(name) || [];
     const starSelectables = map.get('*');
     if (starSelectables) {
       selectables = selectables.concat(starSelectables);
+    }
+    if (selectables.length === 0) {
+      return false;
     }
     let selectable: SelectorContext;
     let result = false;
