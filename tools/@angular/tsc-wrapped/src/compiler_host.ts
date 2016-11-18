@@ -73,54 +73,33 @@ interface DecoratorInvocation {
       };
 }
 
-const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
+const DTS_EXPR = /\.d\.ts$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
-  constructor(
-      delegate: ts.CompilerHost, private program: ts.Program, private ngOptions: NgOptions) {
+  constructor(delegate: ts.CompilerHost, program: ts.Program, private ngOptions: NgOptions) {
     super(delegate);
   }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
-    // TODO: replace with DTS filePath when https://github.com/Microsoft/TypeScript/pull/8412 is
-    // released
-    if (/*DTS*/ /\.js$/.test(emitFilePath)) {
-      const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
-      const metadata =
-          this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
-      if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
-        writeFileSync(path, metadataText, {encoding: 'utf-8'});
-      }
+    const path = emitFilePath.replace(DTS_EXPR, '.metadata.json');
+    const metadata =
+        this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
+    if (metadata && metadata.metadata) {
+      const metadataText = JSON.stringify(metadata);
+      writeFileSync(path, metadataText, {encoding: 'utf-8'});
     }
   }
 
   writeFile: ts.WriteFileCallback =
       (fileName: string, data: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        if (/\.d\.ts$/.test(fileName)) {
+        if (DTS_EXPR.test(fileName)) {
           // Let the original file be written first; this takes care of creating parent directories
           this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
 
-          // TODO: remove this early return after https://github.com/Microsoft/TypeScript/pull/8412
-          // is
-          // released
-          return;
+          // Write the metadata file alongside type definitions
+          this.writeMetadata(fileName, sourceFiles[0]);
         }
-
-        if (IGNORED_FILES.test(fileName)) {
-          return;
-        }
-
-        if (!sourceFiles) {
-          throw new Error(
-              'Metadata emit requires the sourceFiles are passed to WriteFileCallback. ' +
-              'Update to TypeScript ^1.9.0-dev');
-        }
-        if (sourceFiles.length > 1) {
-          throw new Error('Bundled emit with --out is not supported');
-        }
-        this.writeMetadata(fileName, sourceFiles[0]);
       };
 }
