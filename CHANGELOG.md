@@ -18,7 +18,7 @@
 * **router:** register router with ngprobe ([c2fae72](https://github.com/angular/angular/commit/c2fae72))
 * **router_link:** add skipLocationChange and replaceUrl inputs ([#12850](https://github.com/angular/angular/issues/12850)) ([46d1502](https://github.com/angular/angular/commit/46d1502))
 
-Note: The 2.3.0-beta.1 release also contains all the changes present in the 2.2.1 release.
+Note: The 2.3.0-beta.0 release also contains all the changes present in the 2.2.1 release.
 
 <a name="2.2.1"></a>
 ## [2.2.1](https://github.com/angular/angular/compare/2.2.0...2.2.1) (2016-11-17)
