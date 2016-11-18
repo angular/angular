@@ -20,6 +20,10 @@ PACKAGES=(core
   benchpress)
 BUILD_ALL=true
 BUNDLE=true
+VERSION_PREFIX=$(node -p "require('./package.json').version")
+VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
+ROUTER_VERSION_PREFIX=$(node -p "require('./package.json').version.replace(/^2/, '3')")
+REMOVE_BENCHPRESS=false
 
 for ARG in "$@"; do
   case "$ARG" in
@@ -31,12 +35,20 @@ for ARG in "$@"; do
     --bundle=*)
       BUNDLE=( "${ARG#--bundle=}" )
       ;;
+    --publish)
+      VERSION_SUFFIX=""
+      REMOVE_BENCHPRESS=true
+      ;;
     *)
       echo "Unknown option $ARG."
       exit 1
       ;;
   esac
 done
+
+VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
+ROUTER_VERSION="${ROUTER_VERSION_PREFIX}${VERSION_SUFFIX}"
+echo "====== BUILDING: Version ${VERSION} (Router ${ROUTER_VERSION})"
 
 export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
 TSC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
@@ -149,6 +161,15 @@ do
     cp -r ${SRCDIR}/docs ${DESTDIR}
   fi
 
+  (
+    echo "======      VERSION: Updating version references"
+    cd ${DESTDIR}
+    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
+    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
+    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g\" $""(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .)"
+    perl -p -i -e "s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g" $(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .) < /dev/null 2> /dev/null
+  )
+
   if [[ ${BUNDLE} == true && ${PACKAGE} != compiler-cli && ${PACKAGE} != benchpress ]]; then
 
     echo "======      BUNDLING: ${SRCDIR} ====="
@@ -197,9 +218,15 @@ do
         $UGLIFYJS -c --screw-ie8 --comments -o ${UMD_UPGRADE_ES5_MIN_PATH} ${UMD_UPGRADE_ES5_PATH}
       fi
     ) 2>&1 | grep -v "as external dependency"
-
   fi
 done
 
+echo ""
 echo "====== Building examples: ./modules/@angular/examples/build.sh ====="
 ./modules/@angular/examples/build.sh
+
+if [[ ${REMOVE_BENCHPRESS} == true ]]; then
+  echo ""
+  echo "==== Removing benchpress from publication"
+  rm -r dist/packages-dist/benchpress
+fi
