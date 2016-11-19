@@ -572,6 +572,7 @@ export class Parse5DomAdapter extends DomAdapter {
   getCookie(name: string): string { throw new Error('not implemented'); }
   setCookie(name: string, value: string) { throw new Error('not implemented'); }
   animate(element: any, keyframes: any[], options: any): any { throw new Error('not implemented'); }
+  msie(): number { return undefined; }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement

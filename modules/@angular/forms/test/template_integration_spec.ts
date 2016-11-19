@@ -1079,6 +1079,35 @@ export function main() {
          }));
     });
 
+    // IE9 doesn't fire input events on backspace / delete
+    if (getDOM().msie() === 9) {
+      it('should change model on change/keydown events in ie9', fakeAsync(() => {
+           const fixture = TestBed.createComponent(StandaloneNgModel);
+           fixture.componentInstance.name = 'oldValue';
+
+           fixture.detectChanges();
+           tick();
+
+           // model -> view
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(input.value).toEqual('oldValue');
+
+           input.value = 'updatedValue';
+           dispatchEvent(input, 'change');
+           tick();
+
+           // view -> model
+           expect(fixture.componentInstance.name).toEqual('updatedValue');
+
+           input.value = 'newValue';
+           dispatchEvent(input, 'keydown');
+           tick();
+
+           // view -> model
+           expect(fixture.componentInstance.name).toEqual('newValue');
+         }));
+    }
+
   });
 }
 

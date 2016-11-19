@@ -377,6 +377,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     // not clear other cookies.
     document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
   }
+
+  msie(): number {
+    // documentMode is an IE-only property
+    // http://msdn.microsoft.com/en-us/library/ie/cc196988(v=vs.85).aspx
+    return (document as any).documentMode;
+  }
 }
 
 let baseElement: HTMLElement = null;

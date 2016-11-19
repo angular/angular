@@ -208,4 +208,5 @@ export class WorkerDomAdapter extends DomAdapter {
   supportsCookies(): boolean { return false; }
   getCookie(name: string): string { throw 'not implemented'; }
   setCookie(name: string, value: string) { throw 'not implemented'; }
+  msie(): number { throw 'not implemented'; }
 }

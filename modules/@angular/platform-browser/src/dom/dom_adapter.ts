@@ -184,4 +184,5 @@ export abstract class DomAdapter {
   abstract supportsCookies(): boolean;
   abstract getCookie(name: string): string;
   abstract setCookie(name: string, value: string): any /** TODO #9100 */;
+  abstract msie(): number;
 }
