@@ -237,6 +237,25 @@ export function main() {
         expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
       });
 
+      it('should attach default Accept header', () => {
+        const headers = new Headers();
+        const base = new BaseRequestOptions();
+        const connection = new XHRConnection(
+            new Request(base.merge(new RequestOptions({headers}))), new MockBrowserXHR());
+        connection.response.subscribe();
+        expect(setRequestHeaderSpy)
+            .toHaveBeenCalledWith('Accept', 'application/json, text/plain, */*');
+      });
+
+      it('should not override user provided Accept header', () => {
+        const headers = new Headers({'Accept': 'text/xml'});
+        const base = new BaseRequestOptions();
+        const connection = new XHRConnection(
+            new Request(base.merge(new RequestOptions({headers}))), new MockBrowserXHR());
+        connection.response.subscribe();
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Accept', 'text/xml');
+      });
+
       it('should skip content type detection if custom content type header is set', () => {
         const headers = new Headers({'Content-Type': 'text/plain'});
         const body = {test: 'val'};
