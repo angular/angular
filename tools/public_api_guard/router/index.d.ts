@@ -287,7 +287,7 @@ export declare class RouterModule {
 }
 
 /** @stable */
-export declare class RouterOutlet implements OnDestroy {
+export declare class RouterOutlet implements OnInit, OnDestroy {
     activateEvents: EventEmitter<any>;
     activatedRoute: ActivatedRoute;
     component: Object;
@@ -295,11 +295,13 @@ export declare class RouterOutlet implements OnDestroy {
     isActivated: boolean;
     locationFactoryResolver: ComponentFactoryResolver;
     locationInjector: Injector;
+    name: string;
     outletMap: RouterOutletMap;
-    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
+    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver);
     activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
     deactivate(): void;
     ngOnDestroy(): void;
+    ngOnInit(): void;
 }
 
 /** @stable */

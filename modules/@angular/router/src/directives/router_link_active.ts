@@ -89,6 +89,7 @@ export class RouterLinkActive implements OnChanges,
 
   private classes: string[] = [];
   private subscription: Subscription;
+  private _isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
@@ -100,11 +101,11 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-  get isActive(): boolean { return this.hasActiveLink(); }
+  get isActive(): boolean { return this._isActive; }
 
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(s => this.update());
-    this.linksWithHrefs.changes.subscribe(s => this.update());
+    this.links.changes.subscribe(() => this.update());
+    this.linksWithHrefs.changes.subscribe(() => this.update());
     this.update();
   }
 
@@ -123,10 +124,10 @@ export class RouterLinkActive implements OnChanges,
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
-    const isActive = this.hasActiveLink();
+    this._isActive = this.hasActiveLink();
     this.classes.forEach(c => {
       if (c) {
-        this.renderer.setElementClass(this.element.nativeElement, c, isActive);
+        this.renderer.setElementClass(this.element.nativeElement, c, this._isActive);
       }
     });
   }
