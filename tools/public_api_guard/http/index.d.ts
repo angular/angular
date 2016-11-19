@@ -212,8 +212,12 @@ export declare enum ResponseType {
 /** @experimental */
 export declare class URLSearchParams {
     paramsMap: Map<string, string[]>;
-    rawParams: string;
-    constructor(rawParams?: string, queryEncoder?: QueryEncoder);
+    rawParams: string | {
+        [key: string]: any;
+    };
+    constructor(rawParams?: string | {
+        [key: string]: any;
+    }, queryEncoder?: QueryEncoder);
     append(param: string, val: string): void;
     appendAll(searchParams: URLSearchParams): void;
     clone(): URLSearchParams;

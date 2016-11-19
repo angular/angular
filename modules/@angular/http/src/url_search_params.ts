@@ -6,21 +6,51 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-function paramParser(rawParams: string = ''): Map<string, string[]> {
-  const map = new Map<string, string[]>();
+function paramParser(rawParams: string | {[key: string]: any}): Map<string, string[]> {
+  if (typeof rawParams === 'string') {
+    return parseStrParams(rawParams);
+  }
+  return parseObjParams(rawParams);
+}
+
+function parseStrParams(rawParams: string): Map<string, string[]> {
+  const params = new Map<string, string[]>();
   if (rawParams.length > 0) {
-    const params: string[] = rawParams.split('&');
-    params.forEach((param: string) => {
+    const list: string[] = rawParams.split('&');
+    list.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
       const [key, val]: string[] =
           eqIdx == -1 ? [param, ''] : [param.slice(0, eqIdx), param.slice(eqIdx + 1)];
-      const list = map.get(key) || [];
+      const list = params.get(key) || [];
       list.push(val);
-      map.set(key, list);
+      params.set(key, list);
     });
   }
-  return map;
+  return params;
 }
+
+function parseObjParams(rawParams: {[key: string]: any}): Map<string, string[]> {
+  const params = new Map<string, string[]>();
+  Object.keys(rawParams).forEach((key: string) => {
+    let list: string[];
+    const value: any = rawParams[key];
+    if (Array.isArray(value)) {
+      list = value.map((item: any) => {
+        if (typeof item !== 'string') {
+          item = JSON.stringify(item);
+        }
+        return item;
+      });
+    } else if (typeof value !== 'string') {
+      list = [JSON.stringify(value)];
+    } else {
+      list = [value];
+    }
+    params.set(key, list);
+  });
+  return params;
+}
+
 /**
  * @experimental
  **/
@@ -81,7 +111,8 @@ function standardEncoding(v: string): string {
 export class URLSearchParams {
   paramsMap: Map<string, string[]>;
   constructor(
-      public rawParams: string = '', private queryEncoder: QueryEncoder = new QueryEncoder()) {
+      public rawParams: string|{[key: string]: any} = '',
+      private queryEncoder: QueryEncoder = new QueryEncoder()) {
     this.paramsMap = paramParser(rawParams);
   }
 
