@@ -8,6 +8,7 @@
 import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/core';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
+import {Observable} from 'rxjs/Observable';
 
 /**
  * An interface that can be implemented by classes that can act as validators.
@@ -85,6 +86,18 @@ export interface ValidatorFn { (c: AbstractControl): {[key: string]: any}; }
  */
 export interface AsyncValidatorFn {
   (c: AbstractControl): any /*Promise<{[key: string]: any}>|Observable<{[key: string]: any}>*/;
+}
+
+/**
+ * @experimental
+ */
+export declare type Errors = {[key: string]: any}|null;
+
+/**
+ * @experimental
+ */
+export interface ObservableValidatorFn {
+  (validator$: Observable<AbstractControl>): Observable<Errors>;
 }
 
 /**
