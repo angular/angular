@@ -10,7 +10,7 @@ import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/c
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
-import {Observable} from './facade/async';
+import {Observable} from '../facade/async';
 
 /**
  * An interface that can be implemented by classes that can act as validators.
