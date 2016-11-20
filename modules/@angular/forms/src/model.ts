@@ -7,8 +7,9 @@
  */
 
 import {fromPromise} from 'rxjs/observable/fromPromise';
+
 import {composeAsyncValidators, composeValidators} from './directives/shared';
-import {AsyncValidatorFn, ValidatorFn, ObservableValidatorFn, Errors} from './directives/validators';
+import {AsyncValidatorFn, Errors, ObservableValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {isPromise} from './private_import_core';
 
@@ -221,8 +222,7 @@ export abstract class AbstractControl {
   setObservableValidator(newValidator: ObservableValidatorFn): void {
     if (!newValidator) return;
     this._obsValidator$ = new EventEmitter();
-    newValidator(this._obsValidator$)
-      .subsctibe((err: Errors) => this.setErrors(err));
+    newValidator(this._obsValidator$).subsctibe((err: Errors) => this.setErrors(err));
   }
 
   /**

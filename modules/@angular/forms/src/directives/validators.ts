@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/core';
+
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
-import {Observable} from 'rxjs/Observable';
+
+import {Observable} from './facade/async';
+
+
 
 /**
  * An interface that can be implemented by classes that can act as validators.
@@ -91,7 +95,9 @@ export interface AsyncValidatorFn {
 /**
  * @experimental
  */
-export declare type Errors = {[key: string]: any}|null;
+export declare type Errors = {
+  [key: string]: any
+} | null;
 
 /**
  * @experimental
