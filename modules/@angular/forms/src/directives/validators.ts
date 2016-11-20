@@ -12,8 +12,6 @@ import {NG_VALIDATORS, Validators} from '../validators';
 
 import {Observable} from './facade/async';
 
-
-
 /**
  * An interface that can be implemented by classes that can act as validators.
  *

@@ -221,7 +221,7 @@ export abstract class AbstractControl {
   */
   setObservableValidator(newValidator: ObservableValidatorFn): void {
     if (!newValidator) return;
-    this._obsValidator$ = new EventEmitter();
+    this._obsValidator$ = new EventEmitter<AbstractControl>();
     newValidator(this._obsValidator$).subsctibe((err: Errors) => this.setErrors(err));
   }
 
