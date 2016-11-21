@@ -44,7 +44,7 @@ const DATE_FORMATS_SPLIT =
     /((?:[^yMLdHhmsazZEwGjJ']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|J+|j+|m+|s+|a|z|Z|G+|w+))(.*)/;
 
 const PATTERN_ALIASES: {[format: string]: DateFormatterFn} = {
-  yMMMdjms: datePartGetterFactory(combine([
+  'yMMMdjms': datePartGetterFactory(combine([
     digitCondition('year', 1),
     nameCondition('month', 3),
     digitCondition('day', 1),
@@ -52,23 +52,23 @@ const PATTERN_ALIASES: {[format: string]: DateFormatterFn} = {
     digitCondition('minute', 1),
     digitCondition('second', 1),
   ])),
-  yMdjm: datePartGetterFactory(combine([
+  'yMdjm': datePartGetterFactory(combine([
     digitCondition('year', 1), digitCondition('month', 1), digitCondition('day', 1),
     digitCondition('hour', 1), digitCondition('minute', 1)
   ])),
-  yMMMMEEEEd: datePartGetterFactory(combine([
+  'yMMMMEEEEd': datePartGetterFactory(combine([
     digitCondition('year', 1), nameCondition('month', 4), nameCondition('weekday', 4),
     digitCondition('day', 1)
   ])),
-  yMMMMd: datePartGetterFactory(
+  'yMMMMd': datePartGetterFactory(
       combine([digitCondition('year', 1), nameCondition('month', 4), digitCondition('day', 1)])),
-  yMMMd: datePartGetterFactory(
+  'yMMMd': datePartGetterFactory(
       combine([digitCondition('year', 1), nameCondition('month', 3), digitCondition('day', 1)])),
-  yMd: datePartGetterFactory(
+  'yMd': datePartGetterFactory(
       combine([digitCondition('year', 1), digitCondition('month', 1), digitCondition('day', 1)])),
-  jms: datePartGetterFactory(combine(
+  'jms': datePartGetterFactory(combine(
       [digitCondition('hour', 1), digitCondition('second', 1), digitCondition('minute', 1)])),
-  jm: datePartGetterFactory(combine([digitCondition('hour', 1), digitCondition('minute', 1)]))
+  'jm': datePartGetterFactory(combine([digitCondition('hour', 1), digitCondition('minute', 1)]))
 };
 
 const DATE_FORMATS: {[format: string]: DateFormatterFn} = {
