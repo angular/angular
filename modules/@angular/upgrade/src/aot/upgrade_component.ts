@@ -35,12 +35,13 @@ interface IBindingDestination {
 }
 
 interface IControllerInstance extends IBindingDestination {
+  $doCheck?: () => void;
   $onDestroy?: () => void;
   $onInit?: () => void;
   $postLink?: () => void;
 }
 
-type LifecycleHook = '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
+type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
 
 /**
  * @whatItDoes
@@ -168,6 +169,13 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     this.callLifecycleHook('$onInit', this.controllerInstance);
 
+    if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
+      const callDoCheck = () => this.callLifecycleHook('$doCheck', this.controllerInstance);
+
+      this.$componentScope.$parent.$watch(callDoCheck);
+      callDoCheck();
+    }
+
     const link = this.directive.link;
     const preLink = (typeof link == 'object') && (link as angular.IDirectivePrePost).pre;
     const postLink = (typeof link == 'object') ? (link as angular.IDirectivePrePost).post : link;
@@ -228,7 +236,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   private callLifecycleHook(method: LifecycleHook, context: IBindingDestination, arg?: any) {
-    if (context && typeof context[method] === 'function') {
+    if (context && isFunction(context[method])) {
       context[method](arg);
     }
   }
@@ -422,7 +430,11 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
 
 function getOrCall<T>(property: Function | T): T {
-  return typeof(property) === 'function' ? property() : property;
+  return isFunction(property) ? property() : property;
+}
+
+function isFunction(value: any): value is Function {
+  return typeof value === 'function';
 }
 
 // NOTE: Only works for `typeof T !== 'object'`.
