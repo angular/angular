@@ -59,16 +59,16 @@ High level items planned for November 2016:
 | slide-toggle     |                           Available | [README][14] |              - |
 | button-toggle    |                           Available | [README][15] |              - |
 | slider           |                           Available | [README][16] |              - |
-| menu             | Initial version, needs enhancements | [README][17] |   [#119][0119] |
+| menu             |                           Available | [README][17] |   [#119][0119] |
 | tooltip          | Initial version, needs enhancements | [README][18] |              - |
-| ripples          |  Available, but needs to be applied | [README][19] |   [#108][0108] |
-| dialog           |  Started, not yet ready for release | [README][22] |   [#114][0114] |
-| snackbar / toast | Initial version, needs enhancements | [README][21] |   [#115][0115] |
-| select           |                      Design started |           -  |   [#118][0118] |
+| ripples          |                           Available | [README][19] |   [#108][0108] |
+| dialog           |                           Available | [README][22] |   [#114][0114] |
+| snackbar / toast |                           Available | [README][21] |   [#115][0115] |
+| select           |        Will be released in alpha.11 |           -  |   [#118][0118] |
 | textarea         |                             Started |           -  |   [#546][0546] |
 | autocomplete     |                      Design started |           -  |   [#117][0117] |
-| chips            |                      Design started |           -  |   [#120][0120] |
-| theming          | Initial version, needs enhancements | [Guide][20]  |              - |
+| chips            |                             Started |           -  |   [#120][0120] |
+| theming          |   Available, need guidance overlays | [Guide][20]  |              - |
 | prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
