@@ -385,12 +385,15 @@ export class Router {
   setUpLocationChangeListener(): void {
     // Zone.current.wrap is needed because of the issue with RxJS scheduler,
     // which does not work properly with zone.js in IE and Safari
-    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
-      const rawUrlTree = this.urlSerializer.parse(change['url']);
-      setTimeout(() => {
-        this.scheduleNavigation(rawUrlTree, {skipLocationChange: change['pop'], replaceUrl: true});
-      }, 0);
-    }));
+    if (!this.locationSubscription) {
+      this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
+        const rawUrlTree = this.urlSerializer.parse(change['url']);
+        setTimeout(() => {
+          this.scheduleNavigation(
+              rawUrlTree, {skipLocationChange: change['pop'], replaceUrl: true});
+        }, 0);
+      }));
+    }
   }
 
   /**
@@ -435,7 +438,12 @@ export class Router {
   /**
    * Disposes of the router.
    */
-  dispose(): void { this.locationSubscription.unsubscribe(); }
+  dispose(): void {
+    if (this.locationSubscription) {
+      this.locationSubscription.unsubscribe();
+      this.locationSubscription = null;
+    }
+  }
 
   /**
    * Applies an array of commands to the current url tree and creates a new url tree.

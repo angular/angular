@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 
 import {ResolveData} from '../src/config';
@@ -29,6 +30,28 @@ describe('Router', () => {
       r.resetRootComponentType(NewRootComponent);
 
       expect(r.routerState.root).toBe(root);
+    });
+  });
+
+  describe('setUpLocationChangeListener', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should be indempotent', () => {
+      const r: Router = TestBed.get(Router);
+      const location: Location = TestBed.get(Location);
+
+      r.setUpLocationChangeListener();
+      const a = (<any>r).locationSubscription;
+      r.setUpLocationChangeListener();
+      const b = (<any>r).locationSubscription;
+
+      expect(a).toBe(b);
+
+      r.dispose();
+      r.setUpLocationChangeListener();
+      const c = (<any>r).locationSubscription;
+
+      expect(c).not.toBe(b);
     });
   });
 
