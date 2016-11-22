@@ -35,6 +35,8 @@ export function main() {
         'HTTP://abc',
         'https://abc',
         'HTTPS://abc',
+        'filesystem://abc',
+        'FILESYSTEM://abc',
         'ftp://abc',
         'FTP://abc',
         'mailto:me@example.com',
