@@ -338,8 +338,10 @@ export class Router {
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
     this.configLoader = new RouterConfigLoader(loader, compiler);
-    this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+  }
 
+  ngOnInit(): void {
+    this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
     this.processNavigations();
   }
 

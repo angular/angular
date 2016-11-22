@@ -96,7 +96,7 @@ export class RouterLinkActive implements OnChanges,
   constructor(private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
-        //this.update();
+        this.update();
       }
     });
   }
