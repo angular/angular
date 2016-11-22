@@ -5,6 +5,7 @@
   ],
   "rules": {
     "file-header": [true, "Copyright Google Inc\\."],
+    "no-console": [true, "log"],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
     "no-jasmine-focus": true,

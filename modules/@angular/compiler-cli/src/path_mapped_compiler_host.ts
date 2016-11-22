@@ -56,7 +56,7 @@ export class PathMappedCompilerHost extends CompilerHost {
           ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
       if (resolved) {
         if (this.options.traceResolution) {
-          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
+          console.error('resolve', m, containingFile, '=>', resolved.resolvedFileName);
         }
         return this.getCanonicalFileName(resolved.resolvedFileName);
       }
@@ -71,7 +71,7 @@ export class PathMappedCompilerHost extends CompilerHost {
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     if (this.options.traceResolution) {
-      console.log(
+      console.error(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
     }
 

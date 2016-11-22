@@ -21,11 +21,9 @@ function processOutputEmitterCodeGen(): Promise<number> {
   return new Promise((resolve, reject) => {
            const outDir = 'dist/all/@angular/compiler/test/';
            const promises: Promise<any>[] = [];
-           console.log('Processing codegen...');
            OFFLINE_COMPILE.forEach((file: string) => {
              const codegen = require('../../all/@angular/compiler/test/' + file + '.js');
              if (codegen.emit) {
-               console.log(`  ${file} has changed, regenerating...`);
                promises.push(Promise.resolve(codegen.emit()).then((code) => {
                  writeFileSync(outDir + file + '.ts', code);
                }));
@@ -36,7 +34,6 @@ function processOutputEmitterCodeGen(): Promise<number> {
                  .then(() => {
                    const args =
                        ['--project', 'tools/cjs-jasmine/tsconfig-output_emitter_codegen.json'];
-                   console.log('    compiling changes: tsc ' + args.join(' '));
                    const tsc = spawn(TSC, args, {stdio: 'pipe'});
                    tsc.stdout.on('data', (data: any) => process.stdout.write(data));
                    tsc.stderr.on('data', (data: any) => process.stderr.write(data));
