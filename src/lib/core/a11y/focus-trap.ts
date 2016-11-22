@@ -13,11 +13,7 @@ import {InteractivityChecker} from './interactivity-checker';
 @Component({
   moduleId: module.id,
   selector: 'focus-trap',
-  // TODO(jelbourn): move this to a separate file.
-  template: `
-  <div tabindex="0" (focus)="focusLastTabbableElement()"></div>
-  <div #trappedContent><ng-content></ng-content></div>
-  <div tabindex="0" (focus)="focusFirstTabbableElement()"></div>`,
+  templateUrl: 'focus-trap.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class FocusTrap {
