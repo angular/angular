@@ -118,7 +118,7 @@ export class RouterLinkActive implements OnChanges,
     }
   }
 
-  ngOnChanges(changes: {}): any { /*this.update();*/ }
+  ngOnChanges(changes: {}): any { this.update(); }
   ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   private update(): void {
