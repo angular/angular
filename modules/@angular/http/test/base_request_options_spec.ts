@@ -13,10 +13,16 @@ import {RequestMethod} from '../src/enums';
 export function main() {
   describe('BaseRequestOptions', () => {
     it('should create a new object when calling merge', () => {
+      const downloadProgress = <any>{};
+      const uploadProgress = <any>{};
       const options1 = new BaseRequestOptions();
-      const options2 = options1.merge(new RequestOptions({method: RequestMethod.Delete}));
+      const options2 = options1.merge(new RequestOptions(
+          {method: RequestMethod.Delete, timeout: 5000, downloadProgress, uploadProgress}));
       expect(options2).not.toBe(options1);
       expect(options2.method).toBe(RequestMethod.Delete);
+      expect(options2.timeout).toEqual(5000);
+      expect(options2.downloadProgress).toEqual(downloadProgress);
+      expect(options2.uploadProgress).toEqual(uploadProgress);
     });
 
     it('should retain previously merged values when merging again', () => {

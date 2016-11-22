@@ -112,9 +112,12 @@ export declare enum ReadyState {
 
 /** @experimental */
 export declare class Request extends Body {
+    downloadProgress: Subject<ProgressEvent>;
     headers: Headers;
     method: RequestMethod;
     responseType: ResponseContentType;
+    timeout: number;
+    uploadProgress: Subject<ProgressEvent>;
     url: string;
     withCredentials: boolean;
     constructor(requestOptions: RequestArgs);
@@ -137,23 +140,29 @@ export declare enum RequestMethod {
 /** @experimental */
 export declare class RequestOptions {
     body: any;
+    downloadProgress: Subject<ProgressEvent>;
     headers: Headers;
     method: RequestMethod | string;
     responseType: ResponseContentType;
     search: URLSearchParams;
+    timeout: number;
+    uploadProgress: Subject<ProgressEvent>;
     url: string;
     withCredentials: boolean;
-    constructor({method, headers, body, url, search, withCredentials, responseType}?: RequestOptionsArgs);
+    constructor({method, headers, body, url, search, withCredentials, responseType, downloadProgress, uploadProgress, timeout}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
 /** @experimental */
 export interface RequestOptionsArgs {
     body?: any;
+    downloadProgress?: Subject<ProgressEvent>;
     headers?: Headers;
     method?: string | RequestMethod;
     responseType?: ResponseContentType;
     search?: string | URLSearchParams;
+    timeout?: number;
+    uploadProgress?: Subject<ProgressEvent>;
     url?: string;
     withCredentials?: boolean;
 }

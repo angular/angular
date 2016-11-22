@@ -9,6 +9,8 @@
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {__platform_browser_private__} from '@angular/platform-browser';
+import {Subject} from 'rxjs/Subject';
+
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -146,6 +148,78 @@ export function main() {
     }
 
     describe('XHRConnection', () => {
+
+      describe('download progress', () => {
+
+        it('should call error callback on error event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             let error = false;
+             const progress$ = new Subject<ProgressEvent>();
+
+             const statusCode = 404;
+             const base = new BaseRequestOptions();
+             const connection = new XHRConnection(
+                 new Request(base.merge(
+                     new RequestOptions({url: 'https://google.com', downloadProgress: progress$}))),
+                 new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
+
+             progress$.subscribe(null, () => error = true);
+
+             connection.response.subscribe(null, errRes => async.done());
+
+             existingXHRs[0].setStatusCode(statusCode);
+             existingXHRs[0].dispatchEvent('load');
+
+             expect(error).toBeTruthy();
+           }));
+
+        it('should call complete callback on load event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             let complete = false;
+             const progress$ = new Subject<ProgressEvent>();
+
+             const statusCode = 200;
+             const base = new BaseRequestOptions();
+             const connection = new XHRConnection(
+                 new Request(base.merge(
+                     new RequestOptions({url: 'https://google.com', downloadProgress: progress$}))),
+                 new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
+
+             progress$.subscribe(null, null, () => complete = true);
+
+             connection.response.subscribe(null, null, () => async.done());
+
+             existingXHRs[0].setStatusCode(statusCode);
+             existingXHRs[0].dispatchEvent('load');
+
+             expect(complete).toBeTruthy();
+           }));
+
+        it('should call next callback on progress event',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             let next = false;
+             const progress$ = new Subject<ProgressEvent>();
+
+             const statusCode = 200;
+             const base = new BaseRequestOptions();
+             const connection = new XHRConnection(
+                 new Request(base.merge(
+                     new RequestOptions({url: 'https://google.com', downloadProgress: progress$}))),
+                 new MockBrowserXHR(), new ResponseOptions({status: statusCode}));
+
+             progress$.subscribe(() => next = true);
+
+             connection.response.subscribe(null, null, () => async.done());
+
+             existingXHRs[0].setStatusCode(statusCode);
+             existingXHRs[0].dispatchEvent('progress');
+             existingXHRs[0].dispatchEvent('load');
+
+             expect(next).toBeTruthy();
+           }));
+
+      });
+
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const connection = new XHRConnection(

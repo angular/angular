@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Subject} from 'rxjs/Subject';
+
 import {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
 import {Headers} from './headers';
 import {Request} from './static_request';
@@ -53,6 +55,9 @@ export interface RequestOptionsArgs {
   body?: any;
   withCredentials?: boolean;
   responseType?: ResponseContentType;
+  downloadProgress?: Subject<ProgressEvent>;
+  uploadProgress?: Subject<ProgressEvent>;
+  timeout?: number;
 }
 
 /**

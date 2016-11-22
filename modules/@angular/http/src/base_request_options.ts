@@ -8,6 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
+import {Subject} from 'rxjs/Subject';
 import {RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
@@ -67,14 +68,27 @@ export class RequestOptions {
    * Enable use credentials for a {@link Request}.
    */
   withCredentials: boolean;
-  /*
+  /**
    * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
    */
   responseType: ResponseContentType;
+  /**
+   * Observer which listen to XHR progress events or error timeout values.
+   */
+  downloadProgress: Subject<ProgressEvent>;
+  /**
+   * Observer which listen to XHR upload progress events or error timeout values.
+   */
+  uploadProgress: Subject<ProgressEvent>;
+  /**
+   *  A number representing the number of milliseconds a request can take before automatically
+   *  being terminated. A value of 0 (which is the default) means there is no timeout.
+   */
+  timeout: number;
 
   constructor(
-      {method, headers, body, url, search, withCredentials,
-       responseType}: RequestOptionsArgs = {}) {
+      {method, headers, body, url, search, withCredentials, responseType, downloadProgress,
+       uploadProgress, timeout}: RequestOptionsArgs = {}) {
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
@@ -83,6 +97,9 @@ export class RequestOptions {
         search != null ? (typeof search === 'string' ? new URLSearchParams(search) : search) : null;
     this.withCredentials = withCredentials != null ? withCredentials : null;
     this.responseType = responseType != null ? responseType : null;
+    this.downloadProgress = downloadProgress ? downloadProgress : null;
+    this.uploadProgress = uploadProgress ? uploadProgress : null;
+    this.timeout = timeout != null ? timeout : 0;
   }
 
   /**
@@ -123,7 +140,12 @@ export class RequestOptions {
       withCredentials: options && options.withCredentials != null ? options.withCredentials :
                                                                     this.withCredentials,
       responseType: options && options.responseType != null ? options.responseType :
-                                                              this.responseType
+                                                              this.responseType,
+      downloadProgress: options && options.downloadProgress ? options.downloadProgress :
+                                                              this.downloadProgress,
+      uploadProgress: options && options.uploadProgress ? options.uploadProgress :
+                                                          this.uploadProgress,
+      timeout: options && options.timeout != null ? options.timeout : this.timeout
     });
   }
 }

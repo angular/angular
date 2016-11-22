@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Subject} from 'rxjs/Subject';
+
 import {Body} from './body';
 import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
@@ -71,6 +73,10 @@ export class Request extends Body {
   withCredentials: boolean;
   /** Buffer to store the response */
   responseType: ResponseContentType;
+  /** An optional Observer which listen to XHR2 progress events or error timeout values. */
+  downloadProgress: Subject<ProgressEvent>;
+  uploadProgress: Subject<ProgressEvent>;
+  timeout: number;
   constructor(requestOptions: RequestArgs) {
     super();
     // TODO: assert that url is present
@@ -95,6 +101,8 @@ export class Request extends Body {
     this.contentType = this.detectContentType();
     this.withCredentials = requestOptions.withCredentials;
     this.responseType = requestOptions.responseType;
+    this.downloadProgress = requestOptions.downloadProgress;
+    this.uploadProgress = requestOptions.uploadProgress;
   }
 
   /**

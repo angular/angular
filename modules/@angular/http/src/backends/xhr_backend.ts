@@ -43,12 +43,14 @@ export class XHRConnection implements Connection {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
       const _xhr: XMLHttpRequest = browserXHR.build();
+      const downloadProgress = req.downloadProgress;
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
       if (req.withCredentials != null) {
         _xhr.withCredentials = req.withCredentials;
       }
+      _xhr.timeout = req.timeout;
       // load event handler
-      const onLoad = () => {
+      const onLoad = (event: Event) => {
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
 
@@ -86,15 +88,19 @@ export class XHRConnection implements Connection {
         const response = new Response(responseOptions);
         response.ok = isSuccess(status);
         if (response.ok) {
+          downloadProgress && downloadProgress.complete();
+
           responseObserver.next(response);
           // TODO(gdi2290): defer complete if array buffer until done
           responseObserver.complete();
           return;
         }
+        downloadProgress && downloadProgress.error(event);
         responseObserver.error(response);
       };
-      // error event handler
-      const onError = (err: ErrorEvent) => {
+      // error/timeout event handler
+      const onError = (err: ErrorEvent | ProgressEvent): void => {
+        downloadProgress && downloadProgress.error(err);
         let responseOptions = new ResponseOptions({
           body: err,
           type: ResponseType.Error,
@@ -106,6 +112,9 @@ export class XHRConnection implements Connection {
         }
         responseObserver.error(new Response(responseOptions));
       };
+
+      const onProgress =
+          downloadProgress ? (event: ProgressEvent) => downloadProgress.next(event) : () => {};
 
       this.setDetectedContentType(req, _xhr);
 
@@ -135,12 +144,20 @@ export class XHRConnection implements Connection {
 
       _xhr.addEventListener('load', onLoad);
       _xhr.addEventListener('error', onError);
+      _xhr.addEventListener('timeout', onError);
+      _xhr.addEventListener('progress', onProgress);
+
+      if (req.uploadProgress && _xhr.upload) {
+        this.registerUploadListeners(_xhr, req);
+      }
 
       _xhr.send(this.request.getBody());
 
       return () => {
         _xhr.removeEventListener('load', onLoad);
         _xhr.removeEventListener('error', onError);
+        _xhr.removeEventListener('timeout', onError);
+        _xhr.removeEventListener('progress', onProgress);
         _xhr.abort();
       };
     });
@@ -172,6 +189,13 @@ export class XHRConnection implements Connection {
         }
         break;
     }
+  }
+
+  private registerUploadListeners(xhr: XMLHttpRequest, {uploadProgress}: Request): void {
+    xhr.upload.addEventListener('progress', (e: ProgressEvent) => uploadProgress.next(e));
+    xhr.upload.addEventListener('load', () => uploadProgress.complete());
+    xhr.upload.addEventListener('error', (e: ErrorEvent) => uploadProgress.error(e));
+    xhr.upload.addEventListener('timeout', (e: ErrorEvent) => uploadProgress.error(e));
   }
 }
 
