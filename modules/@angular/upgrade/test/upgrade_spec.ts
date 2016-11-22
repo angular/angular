@@ -96,7 +96,6 @@ export function main() {
          const Ng2Module = NgModule({
                              declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                              imports: [BrowserModule],
-                             schemas: [NO_ERRORS_SCHEMA],
                            }).Class({constructor: function Ng2Module() {}});
 
          ng1Module.directive('ng1', () => {
@@ -170,7 +169,6 @@ export function main() {
                    adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2
                  ],
                  imports: [BrowserModule],
-                 schemas: [NO_ERRORS_SCHEMA],
                }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -276,7 +274,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            const element = html(`<div>
@@ -320,7 +317,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -354,7 +350,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -409,7 +404,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -453,7 +447,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -501,7 +494,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -547,7 +539,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -580,7 +571,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -608,7 +598,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -633,7 +622,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -658,7 +646,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -684,7 +671,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -728,7 +714,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -761,7 +746,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -794,7 +778,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -834,7 +817,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -879,7 +861,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -910,7 +891,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -949,7 +929,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -990,7 +969,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -1025,7 +1003,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -1062,7 +1039,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -1095,7 +1071,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2a, Ng2b],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            const element = html(`<div><ng2a></ng2a></div>`);
@@ -1112,7 +1087,6 @@ export function main() {
            const MyNg2Module = NgModule({
                                  providers: [{provide: SomeToken, useValue: 'correct_value'}],
                                  imports: [BrowserModule],
-                                 schemas: [NO_ERRORS_SCHEMA],
                                }).Class({constructor: function() {}});
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
@@ -1240,7 +1214,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            module.directive('ng2', adapter.downgradeNg2Component(Ng2));
