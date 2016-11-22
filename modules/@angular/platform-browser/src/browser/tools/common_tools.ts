@@ -36,6 +36,7 @@ export class AngularProfiler {
 
   constructor(ref: ComponentRef<any>) { this.appRef = ref.injector.get(ApplicationRef); }
 
+  // tslint:disable:no-console
   /**
    * Exercises change detection in a loop and then prints the average amount of
    * time in milliseconds how long a single round of change detection takes for
@@ -75,9 +76,7 @@ export class AngularProfiler {
       (<any>window.console.profileEnd)(profileName);
     }
     const msPerTick = (end - start) / numTicks;
-    // tslint:disable-next-line:no-console
     window.console.log(`ran ${numTicks} change detection cycles`);
-    // tslint:disable-next-line:no-console
     window.console.log(`${msPerTick.toFixed(2)} ms per check`);
 
     return new ChangeDetectionPerfRecord(msPerTick, numTicks);
