@@ -24,7 +24,6 @@ describe('ng2 largetable benchmark', function() {
 
   ['interpolation', 'interpolationAttr', 'interpolationFn'].forEach(function(benchmarkType) {
     it('should log the ng stats with: ' + benchmarkType, function(done) {
-      console.log('executing for type', benchmarkType);
       runClickBenchmark({
         url: URL,
         buttons: ['#ng2DestroyDom', '#ng2CreateDom'],

@@ -46,7 +46,7 @@ export class CodeGenerator {
     let root = this.options.basePath;
     for (const eachRootDir of this.options.rootDirs || []) {
       if (this.options.trace) {
-        console.log(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
+        console.error(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
       }
       if (path.relative(eachRootDir, filePath).indexOf('.') !== 0) {
         root = eachRootDir;
@@ -161,7 +161,7 @@ export function extractProgramSymbols(
 
         const moduleMetadata = staticReflector.getModuleMetadata(absSrcPath);
         if (!moduleMetadata) {
-          console.log(`WARNING: no metadata found for ${absSrcPath}`);
+          console.warn(`WARNING: no metadata found for ${absSrcPath}`);
           return;
         }
 
