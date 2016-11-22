@@ -129,6 +129,7 @@ export function isJsObject(o: any): boolean {
 }
 
 export function print(obj: Error | Object) {
+  // tslint:disable-next-line:no-console
   console.log(obj);
 }
 

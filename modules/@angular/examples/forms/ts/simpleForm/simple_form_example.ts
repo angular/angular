@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 // #docregion Component
 import {Component} from '@angular/core';
 import {NgForm} from '@angular/forms';
