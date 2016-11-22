@@ -17,5 +17,6 @@ node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/common/tsconfig-build.json
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/platform-browser/tsconfig-build.json
 node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/router/tsconfig-build.json
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/forms/tsconfig-build.json
 
 echo 'travis_fold:end:BUILD'
