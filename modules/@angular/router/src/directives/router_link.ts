@@ -97,9 +97,7 @@ export class RouterLink {
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
 
-  constructor(
-      private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input()
   set routerLink(data: any[]|string) {
