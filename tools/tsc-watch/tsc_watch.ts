@@ -37,7 +37,6 @@ export class TscWatch {
     start: string,
     complete: string, onStartCmds?: Array<string[]|Command>, onChangeCmds?: Array<string[]|Command>
   }) {
-    console.log('Watching:', tsconfig, 'in', process.cwd());
     this.tsconfig = tsconfig;
     this.start = start;
     this.error = error;
@@ -67,14 +66,12 @@ export class TscWatch {
       const args = argsOrCmd as Array<string>;
       return <any>new Promise((resolve, reject) => {
                const [cmd, ...options] = args;
-               console.log('=====>', cmd, options.join(' '));
                const childProcess = spawn(cmd, options, {stdio: 'pipe'});
                childProcess.stdout.on('data', stdOut);
                childProcess.stderr.on('data', stdErr);
                const onExit = () => childProcess.kill();
                childProcess.on('close', (code: number) => {
                  process.removeListener('exit', onExit);
-                 console.log('EXIT:', code, '<=====', args.join(' '));
                  code ? reject(code) : resolve(code);
                });
                process.on('exit', onExit);
@@ -98,7 +95,6 @@ export class TscWatch {
   consumeLine(buffer: Buffer, isStdError: boolean) {
     const line = '' + buffer;
     if (contains(line, this.start)) {
-      console.log('==============================================================================');
       stdOut(buffer, isStdError);
       this.state = State.waiting;
     } else if (contains(line, this.error)) {
@@ -106,15 +102,15 @@ export class TscWatch {
       this.state = State.error;
     } else if (contains(line, this.complete)) {
       stdOut(buffer, isStdError);
-      console.log('------------------------------------------------------------------------------');
       if (this.state == State.error) {
-        console.log('Errors found.... (response not triggered)');
+        console.error('Errors found.... (response not triggered)');
         if (this.runOnce) process.exit(1);
         this.state = State.idle;
       } else {
         if (this.triggered) {
           this.triggered.then(
-              () => this.triggerCmds(), (e) => console.log('Error while running commands....', e));
+              () => this.triggerCmds(),
+              (e) => console.error('Error while running commands....', e));
         } else {
           this.triggerCmds();
         }

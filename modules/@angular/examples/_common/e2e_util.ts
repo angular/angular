@@ -15,7 +15,6 @@ export function verifyNoBrowserErrors() {
     const errors: any[] = [];
     browserLog.filter(logEntry => {
       const msg = logEntry.message;
-      console.log('>> ' + msg);
       if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
         errors.push(msg);
       }
