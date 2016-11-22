@@ -51,7 +51,6 @@ export function profile(create: () => void, destroy: () => void, name: string) {
       destroy();
     }
     window.console.profileEnd();
-    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
 
     window.console.profile(name + ' w/o GC');
     duration = 0;
@@ -63,7 +62,6 @@ export function profile(create: () => void, destroy: () => void, name: string) {
       destroy();
     }
     window.console.profileEnd();
-    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
   };
 }
 

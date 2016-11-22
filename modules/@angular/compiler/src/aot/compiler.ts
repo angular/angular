@@ -369,7 +369,7 @@ export function extractProgramSymbols(
   files.filter(fileName => _filterFileByPatterns(fileName, options)).forEach(sourceFile => {
     const moduleMetadata = staticReflector.getModuleMetadata(sourceFile);
     if (!moduleMetadata) {
-      console.log(`WARNING: no metadata found for ${sourceFile}`);
+      console.error(`WARNING: no metadata found for ${sourceFile}`);
       return;
     }
 

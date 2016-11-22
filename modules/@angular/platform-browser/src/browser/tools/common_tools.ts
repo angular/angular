@@ -75,7 +75,9 @@ export class AngularProfiler {
       (<any>window.console.profileEnd)(profileName);
     }
     const msPerTick = (end - start) / numTicks;
+    // tslint:disable-next-line:no-console
     window.console.log(`ran ${numTicks} change detection cycles`);
+    // tslint:disable-next-line:no-console
     window.console.log(`${msPerTick.toFixed(2)} ms per check`);
 
     return new ChangeDetectionPerfRecord(msPerTick, numTicks);
