@@ -43,8 +43,8 @@ export class DomPortalHost extends BasePortalHost {
     } else {
       componentRef = componentFactory.create(portal.injector || this._defaultInjector);
 
-      // ApplicationRef's attachView and detachView methods are in Angular ^2.2.1 but not before.
-      // The `else` clause here can be removed once 2.2.1 is released.
+      // ApplicationRef's attachView and detachView methods are in Angular ^2.3.0 but not before.
+      // The `else` clause here can be removed once 2.3.0 is released.
       if ((this._appRef as any)['attachView']) {
         (this._appRef as any).attachView(componentRef.hostView);
 
@@ -55,7 +55,7 @@ export class DomPortalHost extends BasePortalHost {
       } else {
         // When creating a component outside of a ViewContainer, we need to manually register
         // its ChangeDetector with the application. This API is unfortunately not published
-        // in Angular <= 2.2.0. The change detector must also be deregistered when the component
+        // in Angular < 2.3.0. The change detector must also be deregistered when the component
         // is destroyed to prevent memory leaks.
         let changeDetectorRef = componentRef.changeDetectorRef;
         (this._appRef as any).registerChangeDetector(changeDetectorRef);
