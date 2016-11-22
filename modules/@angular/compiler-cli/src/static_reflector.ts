@@ -152,7 +152,7 @@ export class StaticReflector implements ReflectorReader {
       }
       return parameters;
     } catch (e) {
-      console.log(`Failed on type ${JSON.stringify(type)} with error ${e}`);
+      console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
   }

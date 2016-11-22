@@ -28,6 +28,7 @@ export interface CompilerInterface {
 const DEBUG = false;
 
 function debug(msg: string, ...o: any[]) {
+  // tslint:disable-next-line:no-console
   if (DEBUG) console.log(msg, ...o);
 }
 

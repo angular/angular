@@ -59,7 +59,7 @@ export function verifyNoBrowserErrors() {
   browser.manage().logs().get('browser').then(function(browserLog: any) {
     const filteredLog = browserLog.filter(function(logEntry: any) {
       if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
-        console.log('>> ' + logEntry.message);
+        console.error('>> ' + logEntry.message);
       }
       return logEntry.level.value > webdriver.logging.Level.WARNING.value;
     });

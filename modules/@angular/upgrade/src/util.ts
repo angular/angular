@@ -15,7 +15,7 @@ export function stringify(obj: any): string {
 
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
-  console.log(e, e.stack);
+  console.error(e, e.stack);
   throw e;
 }
 
