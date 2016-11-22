@@ -338,6 +338,7 @@ export class Router {
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
+    this.currentUrlTreeStoredInLocation = this.currentUrlTree;
     this.configLoader = new RouterConfigLoader(loader, compiler);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
 
