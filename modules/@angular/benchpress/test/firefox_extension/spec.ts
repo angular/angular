@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 import {browser} from 'protractor';
 
 const assertEventsContainsName = function(events: any[], eventName: string) {
@@ -27,7 +28,9 @@ describe('firefox extension', function() {
 
     browser.driver.get(TEST_URL);
 
-    browser.executeScript('window.startProfiler()');
+    browser.executeScript('window.startProfiler()').then(function() {
+      console.log('started measuring perf');
+    });
 
     browser.executeAsyncScript('setTimeout(arguments[0], 1000);');
     browser.executeScript('window.forceGC()');
