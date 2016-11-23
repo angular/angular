@@ -45,29 +45,11 @@ export interface StaticReflectorHost {
 }
 
 /**
- * A cache of static symbol used by the StaticReflector to return the same symbol for the
- * same symbol values.
- */
-export class StaticSymbolCache {
-  private cache = new Map<string, StaticSymbol>();
-
-  get(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    const memberSuffix = members ? `.${ members.join('.')}` : '';
-    const key = `"${declarationFile}".${name}${memberSuffix}`;
-    let result = this.cache.get(key);
-    if (!result) {
-      result = new StaticSymbol(declarationFile, name, members);
-      this.cache.set(key, result);
-    }
-    return result;
-  }
-}
-
-/**
  * A static reflector implements enough of the Reflector API that is necessary to compile
  * templates statically.
  */
 export class StaticReflector implements ReflectorReader {
+  private staticSymbolCache = new Map<string, StaticSymbol>();
   private declarationCache = new Map<string, StaticSymbol>();
   private annotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
@@ -76,11 +58,7 @@ export class StaticReflector implements ReflectorReader {
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private opaqueToken: StaticSymbol;
 
-  constructor(
-      private host: StaticReflectorHost,
-      private staticSymbolCache: StaticSymbolCache = new StaticSymbolCache()) {
-    this.initializeConversionMap();
-  }
+  constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
 
   importUri(typeOrFunc: StaticSymbol): string {
     const staticSymbol = this.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
@@ -247,7 +225,14 @@ export class StaticReflector implements ReflectorReader {
    * @param name the name of the type.
    */
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    return this.staticSymbolCache.get(declarationFile, name, members);
+    const memberSuffix = members ? `.${ members.join('.')}` : '';
+    const key = `"${declarationFile}".${name}${memberSuffix}`;
+    let result = this.staticSymbolCache.get(key);
+    if (!result) {
+      result = new StaticSymbol(declarationFile, name, members);
+      this.staticSymbolCache.set(key, result);
+    }
+    return result;
   }
 
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
