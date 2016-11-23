@@ -256,7 +256,7 @@ export class DomRenderer implements Renderer {
     (renderElement as any)[methodName].apply(renderElement, args);
   }
 
-  setText(renderNode: Text, text: string): void { renderNode.nodeValue = text; }
+  setText(renderNode: Text, text: string): void { renderNode.textContent = text; }
 
   animate(
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
