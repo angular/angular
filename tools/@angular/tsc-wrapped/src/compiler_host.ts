@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 
 import NgOptions from './options';
 import {MetadataCollector} from './collector';
+import {ModuleMetadata} from './schema';
 
 export function formatDiagnostics(d: ts.Diagnostic[]): string {
   const host: ts.FormatDiagnosticsHost = {
@@ -119,8 +120,19 @@ export class MetadataWriterHost extends DelegatingHost {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
       const metadata =
           this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
+      const metadatas: ModuleMetadata[] = [metadata];
       if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
+        if (metadata.version === 2) {
+          // Also emit a version 1 so that older clients can consume new metadata files as well.
+          // We can write the same data as version 2 is a strict super set.
+          metadatas.push({
+            __symbolic: metadata.__symbolic,
+            exports: metadata.exports,
+            metadata: metadata.metadata,
+            version: 1
+          });
+        }
+        const metadataText = JSON.stringify(metadatas);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
       }
     }
