@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 urlParamsToForm();
 
 export function getIntParameter(name: string) {
@@ -51,6 +52,7 @@ export function profile(create: () => void, destroy: () => void, name: string) {
       destroy();
     }
     window.console.profileEnd();
+    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
 
     window.console.profile(name + ' w/o GC');
     duration = 0;
@@ -62,6 +64,7 @@ export function profile(create: () => void, destroy: () => void, name: string) {
       destroy();
     }
     window.console.profileEnd();
+    window.console.log(`Iterations: ${count}; time: ${duration / count} ms / iteration`);
   };
 }
 
