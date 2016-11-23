@@ -13,7 +13,7 @@ import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {triggerAnimation, writeToRenderer} from '../compiler_util/render_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
@@ -69,7 +69,7 @@ export function bindRenderInputs(
         const {updateStmts, detachStmts} = triggerAnimation(
             o.THIS_EXPR, o.THIS_EXPR, boundProp,
             (hasEvents ? o.THIS_EXPR.prop(getHandleEventMethodName(compileElement.nodeIndex)) :
-                         o.importExpr(resolveIdentifier(Identifiers.noop)))
+                         o.importExpr(createIdentifier(Identifiers.noop)))
                 .callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR]),
             compileElement.renderNode, evalResult.currValExpr, bindingField.expression);
         checkBindingStmts.push(...updateStmts);

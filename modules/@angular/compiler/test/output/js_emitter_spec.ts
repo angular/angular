@@ -15,9 +15,9 @@ const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});
-const externalModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
+    new CompileIdentifierMetadata({reference: {name: 'someLocalId', filePath: someModuleUrl}});
+const externalModuleIdentifier = new CompileIdentifierMetadata(
+    {reference: {name: 'someExternalId', filePath: anotherModuleUrl}});
 
 class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {

@@ -11,6 +11,7 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, async, inject} from '@angular/core/testing';
 
+import {identifierName} from '../src/compile_metadata';
 import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
@@ -50,7 +51,7 @@ export function main() {
          expect(meta.exportAs).toEqual('someExportAs');
          expect(meta.isComponent).toBe(true);
          expect(meta.type.reference).toBe(ComponentWithEverythingInline);
-         expect(meta.type.name).toEqual(stringify(ComponentWithEverythingInline));
+         expect(identifierName(meta.type)).toEqual(stringify(ComponentWithEverythingInline));
          expect(meta.type.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
          expect(meta.changeDetection).toBe(ChangeDetectionStrategy.Default);
          expect(meta.inputs).toEqual({'someProp': 'someProp'});
@@ -114,18 +115,24 @@ export function main() {
              resourceLoader.flush();
            })));
 
-    it('should use the moduleUrl from the reflector if none is given',
-       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+    it('should use `./` as base url for templates during runtime compilation if no moduleId is given',
+       async(inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @Component({selector: 'someComponent', templateUrl: 'someUrl'})
+         class ComponentWithoutModuleId {
+         }
+
+
          @NgModule({declarations: [ComponentWithoutModuleId]})
          class SomeModule {
          }
-         resolver.loadNgModuleMetadata(SomeModule, true);
 
-         const value: string =
-             resolver.getDirectiveMetadata(ComponentWithoutModuleId).type.moduleUrl;
-         const expectedEndValue = './ComponentWithoutModuleId';
-         expect(value.endsWith(expectedEndValue)).toBe(true);
-       }));
+         resolver.loadNgModuleMetadata(SomeModule, false).loading.then(() => {
+           const value: string =
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.templateUrl;
+           const expectedEndValue = './someUrl';
+           expect(value.endsWith(expectedEndValue)).toBe(true);
+         });
+       })));
 
     it('should throw when the moduleId is not a string',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {

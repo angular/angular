@@ -42,7 +42,7 @@ export class ViewCompiler {
         Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
     const view = new CompileView(
         component, this._genConfig, pipes, styles, compiledAnimations, 0,
-        CompileElement.createNull(), []);
+        CompileElement.createNull(), [], dependencies);
 
     const statements: o.Statement[] = [];
     buildView(view, template, dependencies);

@@ -10,7 +10,8 @@ import {CompileIdentifierMetadata} from '../compile_metadata';
 
 export class ViewClassDependency {
   constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+      public comp: CompileIdentifierMetadata, public name: string,
+      public placeholder: CompileIdentifierMetadata) {}
 }
 
 export class ComponentFactoryDependency {
@@ -20,5 +21,6 @@ export class ComponentFactoryDependency {
 
 export class DirectiveWrapperDependency {
   constructor(
-      public dir: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+      public dir: CompileIdentifierMetadata, public name: string,
+      public placeholder: CompileIdentifierMetadata) {}
 }

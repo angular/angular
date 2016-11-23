@@ -7,7 +7,7 @@
  */
 
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
+import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
@@ -271,8 +271,13 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitExternalType(ast: o.ExternalType, ctx: EmitterVisitorContext): any {
-    this._visitIdentifier(ast.value, ast.typeParams, ctx);
+  visitExpressionType(ast: o.ExpressionType, ctx: EmitterVisitorContext): any {
+    ast.value.visitExpression(this, ctx);
+    if (isPresent(ast.typeParams) && ast.typeParams.length > 0) {
+      ctx.print(`<`);
+      this.visitAllObjects(type => type.visitType(this, ctx), ast.typeParams, ctx, ',');
+      ctx.print(`>`);
+    }
     return null;
   }
 
@@ -317,14 +322,16 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   private _visitIdentifier(
       value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
-    if (isBlank(value.name)) {
+    const name = identifierName(value);
+    const moduleUrl = identifierModuleUrl(value);
+    if (isBlank(name)) {
       throw new Error(`Internal error: unknown identifier ${value}`);
     }
-    if (isPresent(value.moduleUrl) && value.moduleUrl != this._moduleUrl) {
-      let prefix = this.importsWithPrefixes.get(value.moduleUrl);
+    if (isPresent(moduleUrl) && moduleUrl != this._moduleUrl) {
+      let prefix = this.importsWithPrefixes.get(moduleUrl);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
-        this.importsWithPrefixes.set(value.moduleUrl, prefix);
+        this.importsWithPrefixes.set(moduleUrl, prefix);
       }
       ctx.print(`${prefix}.`);
     }
@@ -333,7 +340,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print('.');
       ctx.print(value.reference.members.join('.'));
     } else {
-      ctx.print(value.name);
+      ctx.print(name);
     }
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);

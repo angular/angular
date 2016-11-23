@@ -7,7 +7,8 @@
  */
 
 import {Injectable, ViewEncapsulation} from '@angular/core';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileStylesheetMetadata} from './compile_metadata';
+
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileStylesheetMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';
@@ -18,7 +19,7 @@ const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 export class StylesCompileDependency {
   constructor(
-      public moduleUrl: string, public isShimmed: boolean,
+      public name: string, public moduleUrl: string, public isShimmed: boolean,
       public valuePlaceholder: CompileIdentifierMetadata) {}
 }
 
@@ -47,7 +48,7 @@ export class StyleCompiler {
         comp, new CompileStylesheetMetadata({
           styles: comp.template.styles,
           styleUrls: comp.template.styleUrls,
-          moduleUrl: comp.type.moduleUrl
+          moduleUrl: identifierModuleUrl(comp.type)
         }),
         true);
     comp.template.externalStylesheets.forEach((stylesheetMeta) => {
@@ -65,8 +66,9 @@ export class StyleCompiler {
         stylesheet.styles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
     const dependencies: StylesCompileDependency[] = [];
     for (let i = 0; i < stylesheet.styleUrls.length; i++) {
-      const identifier = new CompileIdentifierMetadata({name: getStylesVarName(null)});
-      dependencies.push(new StylesCompileDependency(stylesheet.styleUrls[i], shim, identifier));
+      const identifier = new CompileIdentifierMetadata();
+      dependencies.push(new StylesCompileDependency(
+          getStylesVarName(null), stylesheet.styleUrls[i], shim, identifier));
       styleExpressions.push(new o.ExternalExpr(identifier));
     }
     // styles variable contains plain strings and arrays of other styles arrays (recursive),
@@ -87,7 +89,7 @@ export class StyleCompiler {
 function getStylesVarName(component: CompileDirectiveMetadata): string {
   let result = `styles`;
   if (component) {
-    result += `_${component.type.name}`;
+    result += `_${identifierName(component.type)}`;
   }
   return result;
 }

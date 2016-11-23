@@ -10,7 +10,7 @@ import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFac
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, ProviderMeta, createHostComponentMeta, identifierName} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
@@ -126,14 +126,13 @@ export class JitCompiler implements Compiler {
       compileResult.dependencies.forEach((dep) => {
         dep.placeholder.reference =
             this._assertComponentKnown(dep.comp.reference, true).proxyComponentFactory;
-        dep.placeholder.name = `compFactory_${dep.comp.name}`;
       });
       if (!this._compilerConfig.useJit) {
         ngModuleFactory =
             interpretStatements(compileResult.statements, compileResult.ngModuleFactoryVar);
       } else {
         ngModuleFactory = jitStatements(
-            `/${moduleMeta.type.name}/module.ngfactory.js`, compileResult.statements,
+            `/${identifierName(moduleMeta.type)}/module.ngfactory.js`, compileResult.statements,
             compileResult.ngModuleFactoryVar);
       }
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
@@ -215,7 +214,12 @@ export class JitCompiler implements Compiler {
     if (!compiledTemplate) {
       const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
-      const hostMeta = createHostComponentMeta(compMeta);
+
+      class HostClass {
+        static overriddenName = `${identifierName(compMeta.type)}_Host`;
+      }
+
+      const hostMeta = createHostComponentMeta(HostClass, compMeta);
       compiledTemplate = new CompiledTemplate(
           true, compMeta.selector, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
@@ -264,8 +268,8 @@ export class JitCompiler implements Compiler {
       directiveWrapperClass = interpretStatements(statements, compileResult.dirWrapperClassVar);
     } else {
       directiveWrapperClass = jitStatements(
-          `/${moduleMeta.type.name}/${dirMeta.type.name}/wrapper.ngfactory.js`, statements,
-          compileResult.dirWrapperClassVar);
+          `/${identifierName(moduleMeta.type)}/${identifierName(dirMeta.type)}/wrapper.ngfactory.js`,
+          statements, compileResult.dirWrapperClassVar);
     }
     this._compiledDirectiveWrapperCache.set(dirMeta.type.reference, directiveWrapperClass);
   }
@@ -288,9 +292,9 @@ export class JitCompiler implements Compiler {
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
     const parsedTemplate = this._templateParser.parse(
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
-        compMeta.type.name);
+        identifierName(compMeta.type));
     const compiledAnimations =
-        this._animationCompiler.compile(compMeta.type.name, parsedAnimations);
+        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
     const compileResult = this._viewCompiler.compileComponent(
         compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
         pipes, compiledAnimations);
@@ -300,12 +304,10 @@ export class JitCompiler implements Compiler {
         const vfd = <ViewClassDependency>dep;
         depTemplate = this._assertComponentKnown(vfd.comp.reference, false);
         vfd.placeholder.reference = depTemplate.proxyViewClass;
-        vfd.placeholder.name = `View_${vfd.comp.name}`;
       } else if (dep instanceof ComponentFactoryDependency) {
         const cfd = <ComponentFactoryDependency>dep;
         depTemplate = this._assertComponentKnown(cfd.comp.reference, true);
         cfd.placeholder.reference = depTemplate.proxyComponentFactory;
-        cfd.placeholder.name = `compFactory_${cfd.comp.name}`;
       } else if (dep instanceof DirectiveWrapperDependency) {
         const dwd = <DirectiveWrapperDependency>dep;
         dwd.placeholder.reference = this._assertDirectiveWrapper(dwd.dir.reference);
@@ -319,7 +321,7 @@ export class JitCompiler implements Compiler {
       viewClass = interpretStatements(statements, compileResult.viewClassVar);
     } else {
       viewClass = jitStatements(
-          `/${template.ngModule.type.name}/${template.compType.name}/${template.isHost?'host':'component'}.ngfactory.js`,
+          `/${identifierName(template.ngModule.type)}/${identifierName(template.compType)}/${template.isHost?'host':'component'}.ngfactory.js`,
           statements, compileResult.viewClassVar);
     }
     template.compiled(viewClass);
@@ -332,7 +334,6 @@ export class JitCompiler implements Compiler {
       const nestedStylesArr = this._resolveAndEvalStylesCompileResult(
           nestedCompileResult, externalStylesheetsByModuleUrl);
       dep.valuePlaceholder.reference = nestedStylesArr;
-      dep.valuePlaceholder.name = `importedStyles${i}`;
     });
   }
 
@@ -380,7 +381,8 @@ class CompiledTemplate {
 
 function assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
-    throw new Error(`Could not compile '${meta.type.name}' because it is not a component.`);
+    throw new Error(
+        `Could not compile '${identifierName(meta.type)}' because it is not a component.`);
   }
 }
 
