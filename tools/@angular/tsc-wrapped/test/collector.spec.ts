@@ -29,7 +29,6 @@ describe('Collector', () => {
       '/unsupported-1.ts',
       '/unsupported-2.ts',
       'import-star.ts',
-      'exported-classes.ts',
       'exported-functions.ts',
       'exported-enum.ts',
       'exported-consts.ts',
@@ -63,7 +62,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 1,
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
@@ -104,7 +103,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 1,
       metadata: {
         AppComponent: {
           __symbolic: 'class',
@@ -158,7 +157,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 1,
       metadata: {
         HEROES: [
           {'id': 11, 'name': 'Mr. Nice'}, {'id': 12, 'name': 'Narco'},
@@ -169,6 +168,13 @@ describe('Collector', () => {
         ]
       }
     });
+  });
+
+  it('should return undefined for modules that have no metadata', () => {
+    const sourceFile = program.getSourceFile('/app/error-cases.ts');
+    expect(sourceFile).toBeTruthy(sourceFile);
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toBeUndefined();
   });
 
   let casesFile: ts.SourceFile;
@@ -232,7 +238,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(unsupported1);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 1,
       metadata: {
         a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
         b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
@@ -269,26 +275,12 @@ describe('Collector', () => {
     ]);
   });
 
-  it('should record all exported classes', () => {
-    const sourceFile = program.getSourceFile('/exported-classes.ts');
-    const metadata = collector.getMetadata(sourceFile);
-    expect(metadata).toEqual({
-      __symbolic: 'module',
-      version: 2,
-      metadata: {
-        SimpleClass: {__symbolic: 'class'},
-        AbstractClass: {__symbolic: 'class'},
-        DeclaredClass: {__symbolic: 'class'}
-      }
-    });
-  });
-
   it('should be able to record functions', () => {
     const exportedFunctions = program.getSourceFile('/exported-functions.ts');
     const metadata = collector.getMetadata(exportedFunctions);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 1,
       metadata: {
         one: {
           __symbolic: 'function',
@@ -336,9 +328,7 @@ describe('Collector', () => {
               }
             }
           }
-        },
-        complexFn: {__symbolic: 'function'},
-        declaredFn: {__symbolic: 'function'}
+        }
       }
     });
   });
@@ -839,11 +829,6 @@ const FILES: Directory = {
       constructor(private f: common.NgFor) {}
     }
   `,
-  'exported-classes.ts': `
-    export class SimpleClass {}
-    export abstract class AbstractClass {}
-    export declare class DeclaredClass {}
-  `,
   'exported-functions.ts': `
     export function one(a: string, b: string, c: string) {
       return {a: a, b: b, c: c};
@@ -857,14 +842,6 @@ const FILES: Directory = {
     export function supportsState(): boolean {
      return !!window.history.pushState;
     }
-    export function complexFn(x: any): boolean {
-      if (x) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    export declare function declaredFn();
   `,
   'exported-enum.ts': `
     import {constValue} from './exported-consts';

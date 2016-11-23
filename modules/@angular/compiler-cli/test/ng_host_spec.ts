@@ -141,9 +141,8 @@ describe('NgHost', () => {
   });
 
   it('should be able to read a metadata file', () => {
-    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts')).toEqual([
-      {__symbolic: 'module', version: 2, metadata: {foo: {__symbolic: 'class'}}}
-    ]);
+    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts'))
+        .toEqual({__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}});
   });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
@@ -151,21 +150,11 @@ describe('NgHost', () => {
   });
 
   it('should be able to read empty metadata ', () => {
-    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/empty.d.ts')).toEqual([]);
+    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/empty.d.ts')).toBeUndefined();
   });
 
   it('should return undefined for missing modules', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
-  });
-
-  it('should add missing v2 metadata from v1 metadata and .d.ts files', () => {
-    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1.d.ts')).toEqual([
-      {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}}, {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {foo: {__symbolic: 'class'}, bar: {__symbolic: 'class'}}
-      }
-    ]);
   });
 });
 
@@ -190,17 +179,12 @@ const FILES: Entry = {
         '@angular': {
           'core.d.ts': dummyModule,
           'core.metadata.json':
-              `{"__symbolic":"module", "version": 2, "metadata": {"foo": {"__symbolic": "class"}}}`,
+              `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
           'empty.metadata.json': '[]',
         }
-      },
-      'metadata_versions': {
-        'v1.d.ts': 'export declare class bar {}',
-        'v1.metadata.json':
-            `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
       }
     }
   }

@@ -256,11 +256,9 @@ export class MetadataCollector {
           if (classDeclaration.name) {
             const className = classDeclaration.name.text;
             if (node.flags & ts.NodeFlags.Export) {
-              if (!metadata) metadata = {};
               if (classDeclaration.decorators) {
+                if (!metadata) metadata = {};
                 metadata[className] = classMetadataOf(classDeclaration);
-              } else {
-                metadata[className] = {__symbolic: 'class'};
               }
             }
           }
@@ -271,14 +269,10 @@ export class MetadataCollector {
           // names substitution will be performed by the StaticReflector.
           const functionDeclaration = <ts.FunctionDeclaration>node;
           if (node.flags & ts.NodeFlags.Export) {
-            if (!metadata) metadata = {};
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
             if (maybeFunc) {
+              if (!metadata) metadata = {};
               metadata[maybeFunc.name] = recordEntry(maybeFunc.func, node);
-            } else if (functionDeclaration.name.kind == ts.SyntaxKind.Identifier) {
-              const nameNode = <ts.Identifier>functionDeclaration.name;
-              const functionName = nameNode.text;
-              metadata[functionName] = {__symbolic: 'function'};
             }
           }
           break;
