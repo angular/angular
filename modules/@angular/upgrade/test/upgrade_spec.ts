@@ -1101,6 +1101,97 @@ export function main() {
              });
            }));
 
+        it('should call `$postLink()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $postLinkSpyA = jasmine.createSpy('$postLinkA');
+             const $postLinkSpyB = jasmine.createSpy('$postLinkB');
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$postLink() { $postLinkSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$postLink = $postLinkSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($postLinkSpyA).toHaveBeenCalled();
+               expect($postLinkSpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$postLink()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $postLinkSpy = jasmine.createSpy('$postLink');
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$postLink = $postLinkSpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$postLink'] = $postLinkSpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($postLinkSpy).not.toHaveBeenCalled();
+               ref.dispose();
+             });
+           }));
+
         it('should call `$onChanges()` on binding destination', fakeAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $onChangesControllerSpyA = jasmine.createSpy('$onChangesControllerA');

@@ -21,9 +21,10 @@ interface IControllerInstance extends IBindingDestination {
   $doCheck?: () => void;
   $onDestroy?: () => void;
   $onInit?: () => void;
+  $postLink?: () => void;
 }
 
-type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit';
+type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
 
 
 const CAMEL_CASE = /([A-Z])/g;
@@ -278,6 +279,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
                                 cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }
     });
+
+    if (this.controllerInstance && isFunction(this.controllerInstance.$postLink)) {
+      this.controllerInstance.$postLink();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
