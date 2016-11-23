@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetterFn, MethodFn, ReflectionCapabilities, SetterFn, reflector} from '../private_import_core';
+import {GetterFn, MethodFn, ReflectionCapabilities, SetterFn, reflector} from './private_import_core';
 import {StaticReflector} from './static_reflector';
 
 export class StaticAndDynamicReflectionCapabilities {

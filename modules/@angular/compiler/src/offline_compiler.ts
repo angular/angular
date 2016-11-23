@@ -8,22 +8,20 @@
 
 import {SchemaMetadata} from '@angular/core';
 
-import {AnimationCompiler} from '../animation/animation_compiler';
-import {AnimationParser} from '../animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, createHostComponentMeta} from '../compile_metadata';
-import {DirectiveNormalizer} from '../directive_normalizer';
-import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
-import {ListWrapper} from '../facade/collection';
-import {Identifiers, resolveIdentifier, resolveIdentifierToken} from '../identifiers';
-import {CompileMetadataResolver} from '../metadata_resolver';
-import {NgModuleCompiler} from '../ng_module_compiler';
-import {OutputEmitter} from '../output/abstract_emitter';
-import * as o from '../output/output_ast';
-import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
-import {TemplateParser} from '../template_parser/template_parser';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
-
-import {StaticSymbol} from './static_symbol';
+import {AnimationCompiler} from './animation/animation_compiler';
+import {AnimationParser} from './animation/animation_parser';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, StaticSymbol, createHostComponentMeta} from './compile_metadata';
+import {DirectiveNormalizer} from './directive_normalizer';
+import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from './directive_wrapper_compiler';
+import {ListWrapper} from './facade/collection';
+import {Identifiers, resolveIdentifier, resolveIdentifierToken} from './identifiers';
+import {CompileMetadataResolver} from './metadata_resolver';
+import {NgModuleCompiler} from './ng_module_compiler';
+import {OutputEmitter} from './output/abstract_emitter';
+import * as o from './output/output_ast';
+import {CompiledStylesheet, StyleCompiler} from './style_compiler';
+import {TemplateParser} from './template_parser/template_parser';
+import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from './view_compiler/view_compiler';
 
 export class SourceModule {
   constructor(public fileUrl: string, public moduleUrl: string, public source: string) {}
@@ -117,7 +115,7 @@ function _analyzeNgModules(
   };
 }
 
-export class AotCompiler {
+export class OfflineCompiler {
   private _animationCompiler = new AnimationCompiler();
 
   constructor(

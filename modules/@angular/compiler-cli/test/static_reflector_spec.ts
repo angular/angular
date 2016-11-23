@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler-cli/src/static_reflector';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';

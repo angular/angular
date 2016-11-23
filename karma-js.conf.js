@@ -50,7 +50,6 @@ module.exports = function(config) {
       'dist/all/@angular/**/e2e_test/**',
       'dist/all/@angular/router/**',
       'dist/all/@angular/compiler-cli/**',
-      'dist/all/@angular/compiler/test/aot/**',
       'dist/all/@angular/benchpress/**',
       'dist/all/angular1_router.js',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',

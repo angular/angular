@@ -20,6 +20,8 @@ import * as ts from 'typescript';
 import {PathMappedReflectorHost} from './path_mapped_reflector_host';
 import {Console} from './private_import_core';
 import {ReflectorHost, ReflectorHostContext} from './reflector_host';
+import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
+import {StaticReflector, StaticReflectorHost, StaticSymbol} from './static_reflector';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
@@ -36,9 +38,8 @@ const PREAMBLE = `/**
 export class CodeGenerator {
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
-      public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
-      private compiler: compiler.AotCompiler, private reflectorHost: compiler.StaticReflectorHost) {
-  }
+      public host: ts.CompilerHost, private staticReflector: StaticReflector,
+      private compiler: compiler.OfflineCompiler, private reflectorHost: StaticReflectorHost) {}
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -108,8 +109,8 @@ export class CodeGenerator {
           new PathMappedReflectorHost(program, compilerHost, options, reflectorHostContext) :
           new ReflectorHost(program, compilerHost, options, reflectorHostContext);
     }
-    const staticReflector = new compiler.StaticReflector(reflectorHost);
-    compiler.StaticAndDynamicReflectionCapabilities.install(staticReflector);
+    const staticReflector = new StaticReflector(reflectorHost);
+    StaticAndDynamicReflectionCapabilities.install(staticReflector);
     const htmlParser =
         new compiler.I18NHtmlParser(new compiler.HtmlParser(), transContent, cliOptions.i18nFormat);
     const config = new compiler.CompilerConfig({
@@ -130,7 +131,7 @@ export class CodeGenerator {
         new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
         elementSchemaRegistry, normalizer, staticReflector);
     // TODO(vicb): do not pass cliOptions.i18nFormat here
-    const aotCompiler = new compiler.AotCompiler(
+    const offlineCompiler = new compiler.OfflineCompiler(
         resolver, tmplParser, new compiler.StyleCompiler(urlResolver),
         new compiler.ViewCompiler(config, elementSchemaRegistry),
         new compiler.DirectiveWrapperCompiler(
@@ -140,19 +141,18 @@ export class CodeGenerator {
         new compiler.AnimationParser(elementSchemaRegistry));
 
     return new CodeGenerator(
-        options, program, compilerHost, staticReflector, aotCompiler, reflectorHost);
+        options, program, compilerHost, staticReflector, offlineCompiler, reflectorHost);
   }
 }
 
 export function extractProgramSymbols(
-    program: ts.Program, staticReflector: compiler.StaticReflector,
-    reflectorHost: compiler.StaticReflectorHost,
-    options: AngularCompilerOptions): compiler.StaticSymbol[] {
+    program: ts.Program, staticReflector: StaticReflector, reflectorHost: StaticReflectorHost,
+    options: AngularCompilerOptions): StaticSymbol[] {
   // Compare with false since the default should be true
   const skipFileNames =
       options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
 
-  const staticSymbols: compiler.StaticSymbol[] = [];
+  const staticSymbols: StaticSymbol[] = [];
 
   program.getSourceFiles()
       .filter(sourceFile => !skipFileNames.test(sourceFile.fileName))

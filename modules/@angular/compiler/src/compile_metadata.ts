@@ -718,6 +718,15 @@ function _normalizeArray(obj: any[]): any[] {
   return obj || [];
 }
 
+export function isStaticSymbol(value: any): value is StaticSymbol {
+  return typeof value === 'object' && value !== null && value['name'] && value['filePath'];
+}
+
+export interface StaticSymbol {
+  name: string;
+  filePath: string;
+}
+
 export class ProviderMeta {
   token: any;
   useClass: Type<any>;
