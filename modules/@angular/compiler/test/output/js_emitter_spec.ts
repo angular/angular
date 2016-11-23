@@ -9,18 +9,21 @@
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
-import {SimpleJsImportGenerator} from './output_emitter_util';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
 
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier =
     new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});
-
 const externalModuleIdentifier =
     new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
+
+class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
+  }
+}
 
 export function main() {
   // Note supported features of our OutputAstin JavaScript / ES5:
