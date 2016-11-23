@@ -12,6 +12,20 @@ import * as angular from './angular_js';
 import {NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
 import {controllerKey} from './util';
 
+interface IBindingDestination {
+  [key: string]: any;
+  $onChanges?: (changes: SimpleChanges) => void;
+}
+
+interface IControllerInstance extends IBindingDestination {
+  $doCheck?: () => void;
+  $onDestroy?: () => void;
+  $onInit?: () => void;
+}
+
+type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit';
+
+
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -134,11 +148,11 @@ export class UpgradeNg1ComponentAdapterBuilder {
       httpBackend: angular.IHttpBackendService): Promise<angular.ILinkFn> {
     if (this.directive.template !== undefined) {
       this.linkFn = compileHtml(
-          typeof this.directive.template === 'function' ? this.directive.template() :
-                                                          this.directive.template);
+          isFunction(this.directive.template) ? this.directive.template() :
+                                                this.directive.template);
     } else if (this.directive.templateUrl) {
-      const url = typeof this.directive.templateUrl === 'function' ? this.directive.templateUrl() :
-                                                                     this.directive.templateUrl;
+      const url = isFunction(this.directive.templateUrl) ? this.directive.templateUrl() :
+                                                           this.directive.templateUrl;
       const html = templateCache.get(url);
       if (html !== undefined) {
         this.linkFn = compileHtml(html);
@@ -193,7 +207,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
 }
 
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
-  destinationObj: any = null;
+  private controllerInstance: IControllerInstance = null;
+  destinationObj: IBindingDestination = null;
   checkLastValues: any[] = [];
   componentScope: angular.IScope;
   element: Element;
@@ -209,7 +224,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     this.$element = angular.element(this.element);
     const controllerType = directive.controller;
     if (directive.bindToController && controllerType) {
-      this.destinationObj = this.buildController(controllerType);
+      this.controllerInstance = this.buildController(controllerType);
+      this.destinationObj = this.controllerInstance;
     } else {
       this.destinationObj = this.componentScope;
     }
@@ -231,8 +247,13 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   ngOnInit() {
     if (!this.directive.bindToController && this.directive.controller) {
-      this.buildController(this.directive.controller);
+      this.controllerInstance = this.buildController(this.directive.controller);
     }
+
+    if (this.controllerInstance && isFunction(this.controllerInstance.$onInit)) {
+      this.controllerInstance.$onInit();
+    }
+
     let link = this.directive.link;
     if (typeof link == 'object') link = (<angular.IDirectivePrePost>link).pre;
     if (link) {
@@ -257,9 +278,6 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       parentBoundTranscludeFn: (scope: any /** TODO #9100 */,
                                 cloneAttach: any /** TODO #9100 */) => { cloneAttach(childNodes); }
     });
-    if (this.destinationObj.$onInit) {
-      this.destinationObj.$onInit();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -269,7 +287,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       this.setComponentProperty(name, change.currentValue);
       ng1Changes[this.propertyMap[name]] = change;
     });
-    if (this.destinationObj.$onChanges) {
+
+    if (isFunction(this.destinationObj.$onChanges)) {
       this.destinationObj.$onChanges(ng1Changes);
     }
   }
@@ -290,14 +309,15 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
         }
       }
     }
-    if (this.destinationObj.$doCheck && this.directive.controller) {
-      this.destinationObj.$doCheck();
+
+    if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
+      this.controllerInstance.$doCheck();
     }
   }
 
   ngOnDestroy() {
-    if (this.destinationObj.$onDestroy && this.directive.controller) {
-      this.destinationObj.$onDestroy();
+    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
+      this.controllerInstance.$onDestroy();
     }
   }
 
@@ -352,4 +372,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     throw new Error(
         `Directive '${this.directive.name}' require syntax unrecognized: ${this.directive.require}`);
   }
+}
+
+function isFunction(value: any): value is Function {
+  return typeof value === 'function';
 }

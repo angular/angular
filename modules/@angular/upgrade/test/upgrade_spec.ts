@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -900,167 +900,469 @@ export function main() {
            });
          }));
 
-      it('should call $onInit of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const $onInitSpy = jasmine.createSpy('$onInit');
+      describe('with lifecycle hooks', () => {
+        it('should call `$onInit()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onInitSpyA = jasmine.createSpy('$onInitA');
+             const $onInitSpyB = jasmine.createSpy('$onInitB');
 
-           @Component({selector: 'ng2', template: '<ng1></ng1>'})
-           class Ng2Component {
-           }
-
-           angular.module('ng1', [])
-               .component('ng1', {
-                 bindings: {},
-                 template: '',
-                 controller: function() { this.$onInit = $onInitSpy; }
-               })
-               .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
-
-           @NgModule({
-             declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
-             imports: [BrowserModule],
-           })
-           class Ng2Module {
-           }
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect($onInitSpy).toHaveBeenCalled();
-             ref.dispose();
-           });
-         }));
-
-      it('should call $doCheck of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const $doCheckSpy = jasmine.createSpy('$doCheck');
-           let changeDetector: ChangeDetectorRef;
-
-           @Component({selector: 'ng2', template: '<ng1></ng1>'})
-           class Ng2Component {
-             constructor(cd: ChangeDetectorRef) { changeDetector = cd; }
-           }
-
-           angular.module('ng1', [])
-               .component('ng1', {
-                 bindings: {},
-                 template: '{{$ctrl.value}}',
-                 controller: function() { this.$doCheck = $doCheckSpy; }
-               })
-               .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
-
-
-           @NgModule({
-             declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
-             imports: [BrowserModule],
-           })
-           class Ng2Module {
-           }
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect($doCheckSpy).toHaveBeenCalled();
-
-             $doCheckSpy.calls.reset();
-             changeDetector.detectChanges();
-
-             expect($doCheckSpy).toHaveBeenCalled();
-
-             ref.dispose();
-           });
-         }));
-
-      it('should call $onChanges of components', fakeAsync(() => {
-           const EXPECTED_VALUE = '$onChanges called';
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const $onChangesSpy = jasmine.createSpy('$onChanges');
-           let ng2Instance: any;
-
-           @Component({selector: 'ng2', template: '<ng1 [val]="val"></ng1>'})
-           class Ng2Component {
-             constructor() { ng2Instance = this; }
-           }
-
-           angular.module('ng1Module', [])
-               .component('ng1', {
-                 bindings: {val: '<'},
-                 template: '',
-                 controller: function() { this.$onChanges = $onChangesSpy; }
-               })
-               .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
-
-           @NgModule({
-             declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
-             imports: [BrowserModule],
-           })
-           class Ng2Module {
-           }
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1Module']).ready((ref) => {
-
-             ng2Instance.val = EXPECTED_VALUE;
-             tick();
-             ref.ng1RootScope.$digest();
-
-             expect($onChangesSpy).toHaveBeenCalled();
-             const changes = $onChangesSpy.calls.mostRecent().args[0] as SimpleChanges;
-             expect(changes['val'].currentValue).toEqual(EXPECTED_VALUE);
-
-             ref.dispose();
-           });
-         }));
-
-      it('should call $onDestroy of components', fakeAsync(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const $onDestroySpy = jasmine.createSpy('$onDestroy');
-
-           @Component({selector: 'ng2', template: '<ng1></ng1>'})
-           class Ng2Component {
-           }
-
-           angular.module('ng1', [])
-               .component('ng1', {
-                 bindings: {},
-                 template: '<div>ng1</div>',
-                 controller: function() { this.$onDestroy = $onDestroySpy; }
-               })
-               .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
-
-
-           @NgModule({
-             declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
-             imports: [BrowserModule],
-           })
-           class Ng2Module {
-           }
-
-
-           const element = html(`<div ng-if="!destroy"><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             const $rootScope = ref.ng1RootScope as any;
-
-             $rootScope.destroy = false;
-             tick();
-             $rootScope.$digest();
-
-             expect($onDestroySpy).not.toHaveBeenCalled();
-
-             $rootScope.destroy = true;
-             tick();
-             $rootScope.$digest();
-
-             expect($onDestroySpy).toHaveBeenCalled();
-
-             ref.dispose();
-
-             if (!(global as any)['requestAnimationFrame']) {
-               // Needed for browser which don't support RAF and use a 16.6 setTimeout instead in
-               // ng1's AnimateRunner.
-               // This setTimeout remains at the end of the test and needs to be discarded.
-               tick(20);
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
              }
-           });
-         }));
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$onInit() { $onInitSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$onInit = $onInitSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($onInitSpyA).toHaveBeenCalled();
+               expect($onInitSpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$onInit()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onInitSpy = jasmine.createSpy('$onInit');
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$onInit = $onInitSpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$onInit'] = $onInitSpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($onInitSpy).not.toHaveBeenCalled();
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$doCheck()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $doCheckSpyA = jasmine.createSpy('$doCheckA');
+             const $doCheckSpyB = jasmine.createSpy('$doCheckB');
+             let changeDetector: ChangeDetectorRef;
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+               constructor(cd: ChangeDetectorRef) { changeDetector = cd; }
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$doCheck() { $doCheckSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$doCheck = $doCheckSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($doCheckSpyA).toHaveBeenCalled();
+               expect($doCheckSpyB).toHaveBeenCalled();
+
+               $doCheckSpyA.calls.reset();
+               $doCheckSpyB.calls.reset();
+               changeDetector.detectChanges();
+
+               expect($doCheckSpyA).toHaveBeenCalled();
+               expect($doCheckSpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$doCheck()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $doCheckSpyA = jasmine.createSpy('$doCheckA');
+             const $doCheckSpyB = jasmine.createSpy('$doCheckB');
+             let changeDetector: ChangeDetectorRef;
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+               constructor(cd: ChangeDetectorRef) { changeDetector = cd; }
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$doCheck = $doCheckSpyA;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$doCheck'] = $doCheckSpyB;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               $doCheckSpyA.calls.reset();
+               $doCheckSpyB.calls.reset();
+               changeDetector.detectChanges();
+
+               expect($doCheckSpyA).not.toHaveBeenCalled();
+               expect($doCheckSpyB).not.toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$onChanges()` on binding destination', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onChangesControllerSpyA = jasmine.createSpy('$onChangesControllerA');
+             const $onChangesControllerSpyB = jasmine.createSpy('$onChangesControllerB');
+             const $onChangesScopeSpy = jasmine.createSpy('$onChangesScope');
+             let ng2Instance: any;
+
+             @Component({
+               selector: 'ng2',
+               template: '<ng1-a [valA]="val"></ng1-a> | <ng1-b [valB]="val"></ng1-b>'
+             })
+             class Ng2Component {
+               constructor() { ng2Instance = this; }
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {valA: '<'},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        this.$onChanges = $onChangesControllerSpyA;
+                                      }
+                                    }))
+                 .directive(
+                     'ng1B',
+                     () => ({
+                       template: '',
+                       scope: {valB: '<'},
+                       bindToController: false,
+                       controllerAs: '$ctrl',
+                       controller: class {
+                         $onChanges(changes: SimpleChanges) { $onChangesControllerSpyB(changes); }
+                       }
+                     }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   Object.getPrototypeOf($rootScope).$onChanges = $onChangesScopeSpy;
+                 });
+
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               // Initial `$onChanges()` call
+               tick();
+
+               expect($onChangesControllerSpyA.calls.count()).toBe(1);
+               expect($onChangesControllerSpyA.calls.argsFor(0)[0]).toEqual({
+                 valA: jasmine.any(SimpleChange)
+               });
+
+               expect($onChangesControllerSpyB).not.toHaveBeenCalled();
+
+               expect($onChangesScopeSpy.calls.count()).toBe(1);
+               expect($onChangesScopeSpy.calls.argsFor(0)[0]).toEqual({
+                 valB: jasmine.any(SimpleChange)
+               });
+
+               $onChangesControllerSpyA.calls.reset();
+               $onChangesControllerSpyB.calls.reset();
+               $onChangesScopeSpy.calls.reset();
+
+               // `$onChanges()` call after a change
+               ng2Instance.val = 'new value';
+               tick();
+               ref.ng1RootScope.$digest();
+
+               expect($onChangesControllerSpyA.calls.count()).toBe(1);
+               expect($onChangesControllerSpyA.calls.argsFor(0)[0]).toEqual({
+                 valA: jasmine.objectContaining({currentValue: 'new value'})
+               });
+
+               expect($onChangesControllerSpyB).not.toHaveBeenCalled();
+
+               expect($onChangesScopeSpy.calls.count()).toBe(1);
+               expect($onChangesScopeSpy.calls.argsFor(0)[0]).toEqual({
+                 valB: jasmine.objectContaining({currentValue: 'new value'})
+               });
+
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$onDestroy()` on controller', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onDestroySpyA = jasmine.createSpy('$onDestroyA');
+             const $onDestroySpyB = jasmine.createSpy('$onDestroyB');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({
+               selector: 'ng2',
+               template: `
+                <div *ngIf="!ng2Destroy">
+                  <ng1-a></ng1-a> | <ng1-b></ng1-b>
+                </div>
+              `
+             })
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$onDestroy() { $onDestroySpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$onDestroy = $onDestroySpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div ng-if="!ng1Destroy"><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).not.toHaveBeenCalled();
+               expect($onDestroySpyB).not.toHaveBeenCalled();
+
+               $rootScope.ng1Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).toHaveBeenCalled();
+               expect($onDestroySpyB).toHaveBeenCalled();
+
+               $onDestroySpyA.calls.reset();
+               $onDestroySpyB.calls.reset();
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).not.toHaveBeenCalled();
+               expect($onDestroySpyB).not.toHaveBeenCalled();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).toHaveBeenCalled();
+               expect($onDestroySpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$onDestroy()` on scope', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onDestroySpy = jasmine.createSpy('$onDestroy');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({
+               selector: 'ng2',
+               template: `
+                <div *ngIf="!ng2Destroy">
+                  <ng1-a></ng1-a> | <ng1-b></ng1-b>
+                </div>
+              `
+             })
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$onDestroy = $onDestroySpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$onDestroy'] = $onDestroySpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div ng-if="!ng1Destroy"><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               $rootScope.ng1Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpy).not.toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+      });
 
       it('should bind input properties (<) of components', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
