@@ -27,7 +27,7 @@ export class Extractor {
 
   extract(): Promise<compiler.MessageBundle> {
     return this.ngExtractor.extract(this.program.getSourceFiles().map(
-        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)));
+        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
   }
 
   static create(

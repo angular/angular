@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Extractor, ExtractorHost, ExtractorOptions} from './extractor';
 export {I18NHtmlParser} from './i18n_html_parser';
 export {MessageBundle} from './message_bundle';
 export {Serializer} from './serializers/serializer';
 export {Xliff} from './serializers/xliff';
 export {Xmb} from './serializers/xmb';
 export {Xtb} from './serializers/xtb';
+export * from './extractor';
