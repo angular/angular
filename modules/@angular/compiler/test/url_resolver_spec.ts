@@ -106,6 +106,16 @@ export function main() {
       });
     });
 
+    describe('asset urls', () => {
+      let resolver: UrlResolver;
+      beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
+
+      it('should resolve package: urls into asset: urls', () => {
+        expect(resolver.resolve(null, 'package:somePkg/somePath'))
+            .toEqual('asset:somePkg/lib/somePath');
+      });
+    });
+
     describe('corner and error cases', () => {
       it('should encode URLs before resolving',
          () => {

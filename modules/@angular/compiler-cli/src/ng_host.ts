@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, StaticSymbol} from '@angular/compiler';
+import {AotCompilerHost, AssetUrl, StaticSymbol} from '@angular/compiler';
 import {AngularCompilerOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -60,6 +60,20 @@ export class NgHost implements AotCompilerHost {
     return resolved ? resolved.resolvedFileName : null;
   };
 
+  protected normalizeAssetUrl(url: string): string {
+    const assetUrl = AssetUrl.parse(url);
+    const path = assetUrl ? `${assetUrl.packageName}/${assetUrl.modulePath}` : null;
+    return this.getCanonicalFileName(path);
+  }
+
+  protected resolveAssetUrl(url: string, containingFile: string): string {
+    const assetUrl = this.normalizeAssetUrl(url);
+    if (assetUrl) {
+      return this.getCanonicalFileName(this.resolveImportToFile(assetUrl, containingFile));
+    }
+    return url;
+  }
+
   /**
    * We want a moduleId that will appear in import statements in the generated code.
    * These need to be in a form that system.js can load, so absolute file paths don't work.
@@ -76,6 +90,9 @@ export class NgHost implements AotCompilerHost {
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
   getImportPath(containingFile: string, importedFile: string): string {
+    importedFile = this.resolveAssetUrl(importedFile, containingFile);
+    containingFile = this.resolveAssetUrl(containingFile, '');
+
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (!this.compilerHost.fileExists(importedFile)) {

@@ -70,6 +70,9 @@ export class PathMappedNgHost extends NgHost {
    * they are resolvable by the moduleResolution strategy from the CompilerHost.
    */
   getImportPath(containingFile: string, importedFile: string): string {
+    importedFile = this.resolveAssetUrl(importedFile, containingFile);
+    containingFile = this.resolveAssetUrl(containingFile, '');
+
     if (this.options.traceResolution) {
       console.log(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
