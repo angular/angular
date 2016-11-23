@@ -26,7 +26,6 @@ export {TEMPLATE_TRANSFORMS} from './src/template_parser/template_parser';
 export {CompilerConfig, RenderTypes} from './src/config';
 export * from './src/compile_metadata';
 export * from './src/aot/compiler';
-export * from './src/aot/compiler_host';
 export * from './src/aot/static_reflector';
 export * from './src/aot/static_reflection_capabilities';
 export * from './src/aot/static_symbol';

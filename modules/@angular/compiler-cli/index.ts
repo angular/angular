@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AotCompilerHost, AotCompilerHost as StaticReflectorHost, StaticReflector, StaticSymbol} from '@angular/compiler';
+export {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
 export {CodeGenerator} from './src/codegen';
 export {Extractor} from './src/extractor';
-export {NgHost, NgHostContext, NodeNgHostContext} from './src/ng_host';
+export {NodeReflectorHostContext, ReflectorHost, ReflectorHostContext} from './src/reflector_host';
 
 export * from '@angular/tsc-wrapped';

@@ -12,22 +12,22 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {NgHost, NgHostContext} from './ng_host';
+import {ReflectorHost, ReflectorHostContext} from './reflector_host';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 
 /**
- * This version of the AotCompilerHost expects that the program will be compiled
+ * This version of the reflector host expects that the program will be compiled
  * and executed with a "path mapped" directory structure, where generated files
  * are in a parallel tree with the sources, and imported using a `./` relative
  * import. This requires using TS `rootDirs` option and also teaching the module
  * loader what to do.
  */
-export class PathMappedNgHost extends NgHost {
+export class PathMappedReflectorHost extends ReflectorHost {
   constructor(
       program: ts.Program, compilerHost: ts.CompilerHost, options: AngularCompilerOptions,
-      context?: NgHostContext) {
+      context?: ReflectorHostContext) {
     super(program, compilerHost, options, context);
   }
 
@@ -42,14 +42,7 @@ export class PathMappedNgHost extends NgHost {
     return fileName;
   }
 
-  resolveImportToFile(m: string, containingFile: string) {
-    if (!containingFile || !containingFile.length) {
-      if (m.indexOf('.') === 0) {
-        throw new Error('Resolution of relative paths requires a containing file.');
-      }
-      // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.basePath, 'index.ts');
-    }
+  protected resolve(m: string, containingFile: string) {
     for (const root of this.options.rootDirs || ['']) {
       const rootedContainingFile = path.join(root, containingFile);
       const resolved =
@@ -89,7 +82,7 @@ export class PathMappedNgHost extends NgHost {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.getCanonicalFileName(this.resolveImportToFile(candidate, importedFile));
+      const resolved = this.getCanonicalFileName(this.resolve(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 
