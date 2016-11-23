@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID} from '../application_tokens';
 import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
