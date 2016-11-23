@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {tokenReference} from '../compile_metadata';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 
@@ -66,7 +67,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
           directiveAst, directiveWrapperInstance, compileElement);
     });
     ast.providers.forEach((providerAst) => {
-      const providerInstance = compileElement.instances.get(providerAst.token.reference);
+      const providerInstance = compileElement.instances.get(tokenReference(providerAst.token));
       bindInjectableDestroyLifecycleCallbacks(providerAst, providerInstance, compileElement);
     });
     return null;
@@ -89,7 +90,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
           directiveAst, directiveWrapperInstance, compileElement);
     });
     ast.providers.forEach((providerAst) => {
-      const providerInstance = compileElement.instances.get(providerAst.token.reference);
+      const providerInstance = compileElement.instances.get(tokenReference(providerAst.token));
       bindInjectableDestroyLifecycleCallbacks(providerAst, providerInstance, compileElement);
     });
     bindView(compileElement.embeddedView, ast.children, this._schemaRegistry);

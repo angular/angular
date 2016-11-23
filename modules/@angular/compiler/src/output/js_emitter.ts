@@ -7,6 +7,7 @@
  */
 
 
+import {identifierModuleUrl, identifierName} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
 
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
@@ -38,18 +39,21 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   constructor(private _moduleUrl: string) { super(); }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    if (isBlank(ast.value.name)) {
+    const name = identifierName(ast.value);
+    const moduleUrl = identifierModuleUrl(ast.value);
+    if (isBlank(name)) {
+      console.error('>>>', ast.value);
       throw new Error(`Internal error: unknown identifier ${ast.value}`);
     }
-    if (isPresent(ast.value.moduleUrl) && ast.value.moduleUrl != this._moduleUrl) {
-      let prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);
+    if (isPresent(moduleUrl) && moduleUrl != this._moduleUrl) {
+      let prefix = this.importsWithPrefixes.get(moduleUrl);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
-        this.importsWithPrefixes.set(ast.value.moduleUrl, prefix);
+        this.importsWithPrefixes.set(moduleUrl, prefix);
       }
       ctx.print(`${prefix}.`);
     }
-    ctx.print(ast.value.name);
+    ctx.print(name);
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {

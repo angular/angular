@@ -35,10 +35,6 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
-export function sanitizeIdentifier(name: string): string {
-  return name.replace(/\W/g, '_');
-}
-
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
   if (Array.isArray(value)) {
     return visitor.visitArray(<any[]>value, context);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveSummary, CompileTypeMetadata} from '@angular/compiler';
+import {CompileDirectiveSummary, CompileTypeMetadata, identifierName} from '@angular/compiler';
 import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
 import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
 
@@ -56,7 +56,8 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
 export function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
-      if (diDep.token.identifier && diDep.token.identifier.name == 'TemplateRef') return true;
+      if (diDep.token.identifier && identifierName(diDep.token.identifier) == 'TemplateRef')
+        return true;
     }
   }
   return false;

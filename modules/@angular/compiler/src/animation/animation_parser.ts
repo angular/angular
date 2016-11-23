@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
+import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
 import {ParseError} from '../parse_util';
@@ -41,7 +41,7 @@ export class AnimationParser {
 
   parseComponent(component: CompileDirectiveMetadata): AnimationEntryAst[] {
     const errors: string[] = [];
-    const componentName = component.type.name;
+    const componentName = identifierName(component.type);
     const animationTriggerNames = new Set<string>();
     const asts = component.template.animations.map(entry => {
       const result = this.parseEntry(entry);

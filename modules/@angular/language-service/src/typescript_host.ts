@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilerConfig, StaticReflector, StaticSymbol, StaticSymbolCache, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {CompileDirectiveMetadata, CompilerConfig, StaticReflector, StaticSymbol, StaticSymbolCache, componentModuleUrl, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {NgAnalyzedModules, analyzeNgModules, extractProgramSymbols} from '@angular/compiler/src/aot/compiler';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
@@ -235,12 +235,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const urlResolver = createOfflineCompileUrlResolver();
       for (const module of ngModuleSummary.ngModules) {
         for (const directive of module.declaredDirectives) {
-          const directiveMetadata =
+          const {metadata, annotation} =
               this.resolver.getNonNormalizedDirectiveMetadata(directive.reference);
-          if (directiveMetadata.isComponent && directiveMetadata.template &&
-              directiveMetadata.template.templateUrl) {
-            const templateName =
-                urlResolver.resolve(directive.moduleUrl, directiveMetadata.template.templateUrl);
+          if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
+            const templateName = urlResolver.resolve(
+                componentModuleUrl(this.reflector, directive.reference, annotation),
+                metadata.template.templateUrl);
             fileToComponent.set(templateName, directive.reference);
             templateReference.push(templateName);
           }
@@ -427,7 +427,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
                   this._reflector.getStaticSymbol(sourceFile.fileName, classDeclaration.name.text);
               try {
                 if (this.resolver.isDirective(staticSymbol as any)) {
-                  const metadata =
+                  const {metadata} =
                       this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any);
                   return {type: staticSymbol, declarationSpan: spanOf(target), metadata};
                 }

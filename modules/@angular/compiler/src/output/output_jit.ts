@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {identifierName} from '../compile_metadata';
 import {isPresent} from '../facade/lang';
-import {sanitizeIdentifier} from '../util';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
@@ -52,8 +52,8 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     if (id === -1) {
       id = this._evalArgValues.length;
       this._evalArgValues.push(value);
-      const name = isPresent(ast.value.name) ? sanitizeIdentifier(ast.value.name) : 'val';
-      this._evalArgNames.push(sanitizeIdentifier(`jit_${name}${id}`));
+      const name = identifierName(ast.value) || 'val';
+      this._evalArgNames.push(`jit_${name}${id}`);
     }
     ctx.print(this._evalArgNames[id]);
     return null;

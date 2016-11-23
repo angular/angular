@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '@angular/compiler';
+import {StaticSymbol, identifierName, tokenReference} from '@angular/compiler';
 import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler/src/expression_parser/ast';
 import {ElementAst, EmbeddedTemplateAst, ReferenceAst, TemplateAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
 
@@ -667,7 +667,7 @@ function getReferences(info: TemplateInfo): SymbolDeclaration[] {
     for (const reference of references) {
       let type: Symbol;
       if (reference.value) {
-        type = info.template.query.getTypeSymbol(reference.value.reference);
+        type = info.template.query.getTypeSymbol(tokenReference(reference.value));
       }
       result.push({
         name: reference.name,
@@ -740,7 +740,8 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
 function refinedVariableType(
     type: Symbol, info: TemplateInfo, templateElement: EmbeddedTemplateAst): Symbol {
   // Special case the ngFor directive
-  const ngForDirective = templateElement.directives.find(d => d.directive.type.name == 'NgFor');
+  const ngForDirective =
+      templateElement.directives.find(d => identifierName(d.directive.type) == 'NgFor');
   if (ngForDirective) {
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {

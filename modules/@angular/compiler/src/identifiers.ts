@@ -9,7 +9,7 @@
 import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
 import {StaticSymbol, isStaticSymbol} from './aot/static_symbol';
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
 
 const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
@@ -347,27 +347,25 @@ export function assetUrl(pkg: string, path: string = null, type: string = 'src')
 }
 
 export function resolveIdentifier(identifier: IdentifierSpec) {
-  let moduleUrl = identifier.moduleUrl;
+  return reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
+}
+
+export function createIdentifier(identifier: IdentifierSpec) {
   const reference =
       reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
-  if (isStaticSymbol(reference)) {
-    moduleUrl = reference.filePath;
-  }
-  return new CompileIdentifierMetadata(
-      {name: identifier.name, moduleUrl: moduleUrl, reference: reference});
+  return new CompileIdentifierMetadata({reference: reference});
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {
   return new CompileTokenMetadata({identifier: identifier});
 }
 
-export function resolveIdentifierToken(identifier: IdentifierSpec): CompileTokenMetadata {
-  return identifierToken(resolveIdentifier(identifier));
+export function createIdentifierToken(identifier: IdentifierSpec): CompileTokenMetadata {
+  return identifierToken(createIdentifier(identifier));
 }
 
-export function resolveEnumIdentifier(
-    enumType: CompileIdentifierMetadata, name: string): CompileIdentifierMetadata {
-  const resolvedEnum = reflector.resolveEnum(enumType.reference, name);
-  return new CompileIdentifierMetadata(
-      {name: `${enumType.name}.${name}`, moduleUrl: enumType.moduleUrl, reference: resolvedEnum});
+export function createEnumIdentifier(
+    enumType: IdentifierSpec, name: string): CompileIdentifierMetadata {
+  const resolvedEnum = reflector.resolveEnum(resolveIdentifier(enumType), name);
+  return new CompileIdentifierMetadata({reference: resolvedEnum});
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {tokenReference} from '@angular/compiler';
 import {AST} from '@angular/compiler/src/expression_parser/ast';
 import {Attribute} from '@angular/compiler/src/ml_parser/ast';
 import {BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst} from '@angular/compiler/src/template_parser/template_ast';
@@ -67,7 +68,7 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo {
             }
           },
           visitReference(ast) {
-            symbol = info.template.query.getTypeSymbol(ast.value.reference);
+            symbol = info.template.query.getTypeSymbol(tokenReference(ast.value));
             span = spanOf(ast);
           },
           visitVariable(ast) {},

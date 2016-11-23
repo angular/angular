@@ -9,7 +9,7 @@
 
 import * as cdAst from '../expression_parser/ast';
 import {isBlank, isPresent} from '../facade/lang';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {Identifiers, createIdentifier} from '../identifiers';
 import {ClassBuilder} from '../output/class_builder';
 import * as o from '../output/output_ast';
 
@@ -116,7 +116,7 @@ export function createSharedBindingVariablesIfNeeded(stmts: o.Statement[]): o.St
   if (readVars.has(VAL_UNWRAPPER_VAR.name)) {
     unwrapperStmts.push(
         VAL_UNWRAPPER_VAR
-            .set(o.importExpr(resolveIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
+            .set(o.importExpr(createIdentifier(Identifiers.ValueUnwrapper)).instantiate([]))
             .toDeclStmt(null, [o.StmtModifier.Final]));
   }
   return unwrapperStmts;
@@ -277,8 +277,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
     return ast.expressions.length <= 9 ?
-        o.importExpr(resolveIdentifier(Identifiers.inlineInterpolate)).callFn(args) :
-        o.importExpr(resolveIdentifier(Identifiers.interpolate)).callFn([
+        o.importExpr(createIdentifier(Identifiers.inlineInterpolate)).callFn(args) :
+        o.importExpr(createIdentifier(Identifiers.interpolate)).callFn([
           args[0], o.literalArr(args.slice(1))
         ]);
   }
@@ -578,7 +578,7 @@ function flattenStatements(arg: any, output: o.Statement[]) {
 
 function createCachedLiteralArray(builder: ClassBuilder, values: o.Expression[]): o.Expression {
   if (values.length === 0) {
-    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_ARRAY));
+    return o.importExpr(createIdentifier(Identifiers.EMPTY_ARRAY));
   }
   const proxyExpr = o.THIS_EXPR.prop(`_arr_${builder.fields.length}`);
   const proxyParams: o.FnParam[] = [];
@@ -599,7 +599,7 @@ function createCachedLiteralArray(builder: ClassBuilder, values: o.Expression[])
 function createCachedLiteralMap(
     builder: ClassBuilder, entries: [string, o.Expression][]): o.Expression {
   if (entries.length === 0) {
-    return o.importExpr(resolveIdentifier(Identifiers.EMPTY_MAP));
+    return o.importExpr(createIdentifier(Identifiers.EMPTY_MAP));
   }
   const proxyExpr = o.THIS_EXPR.prop(`_map_${builder.fields.length}`);
   const proxyParams: o.FnParam[] = [];
