@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 import {browser} from 'protractor';
 
 const yargs = require('yargs');
@@ -59,7 +60,7 @@ export function verifyNoBrowserErrors() {
   browser.manage().logs().get('browser').then(function(browserLog: any) {
     const filteredLog = browserLog.filter(function(logEntry: any) {
       if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
-        console.error('>> ' + logEntry.message);
+        console.log('>> ' + logEntry.message);
       }
       return logEntry.level.value > webdriver.logging.Level.WARNING.value;
     });
