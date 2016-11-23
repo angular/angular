@@ -8,6 +8,7 @@
 
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {ReflectorReader} from '../private_import_core';
+import {AotCompilerHost} from './compiler_host';
 import {StaticSymbol} from './static_symbol';
 
 const SUPPORTED_SCHEMA_VERSION = 2;
@@ -19,30 +20,6 @@ const ANGULAR_IMPORT_LOCATIONS = {
   animationMetadata: '@angular/core/src/animation/metadata',
   provider: '@angular/core/src/di/provider'
 };
-
-/**
- * The host of the StaticReflector disconnects the implementation from TypeScript / other language
- * services and from underlying file systems.
- */
-export interface StaticReflectorHost {
-  /**
-   * Return a ModuleMetadata for the given module.
-   * Angular 2 CLI will produce this metadata for a module whenever a .d.ts files is
-   * produced and the module has exported variables or classes with decorators. Module metadata can
-   * also be produced directly from TypeScript sources by using MetadataCollector in tools/metadata.
-   *
-   * @param modulePath is a string identifier for a module as an absolute path.
-   * @returns the metadata for the given module.
-   */
-  getMetadataFor(modulePath: string): {[key: string]: any}[];
-
-  /**
-   * Converts a module name that is used in an `import` to a file path.
-   * I.e.
-   * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
-   */
-  moduleNameToFileName(moduleName: string, containingFile: string): string;
-}
 
 /**
  * A static reflector implements enough of the Reflector API that is necessary to compile
@@ -58,7 +35,7 @@ export class StaticReflector implements ReflectorReader {
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private opaqueToken: StaticSymbol;
 
-  constructor(private host: StaticReflectorHost) { this.initializeConversionMap(); }
+  constructor(private host: AotCompilerHost) { this.initializeConversionMap(); }
 
   importUri(typeOrFunc: StaticSymbol): string {
     const staticSymbol = this.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');

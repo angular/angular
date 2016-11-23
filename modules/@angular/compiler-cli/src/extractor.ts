@@ -14,28 +14,84 @@
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
+import {ViewEncapsulation} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {excludeFilePattern} from './codegen';
+import {extractProgramSymbols} from './codegen';
 import {CompilerHost} from './compiler_host';
 
 export class Extractor {
   constructor(
-      private ngExtractor: compiler.Extractor, private ngCompilerHost: CompilerHost,
-      private program: ts.Program) {}
+      private options: tsc.AngularCompilerOptions, private program: ts.Program,
+      public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
+      private messageBundle: compiler.MessageBundle, private compilerHost: CompilerHost,
+      private metadataResolver: compiler.CompileMetadataResolver) {}
 
   extract(): Promise<compiler.MessageBundle> {
-    return this.ngExtractor.extract(this.program.getSourceFiles().map(
-        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
+    const programSymbols: compiler.StaticSymbol[] =
+        extractProgramSymbols(this.program, this.staticReflector, this.compilerHost, this.options);
+
+    const {ngModules, files} =
+        compiler.analyzeAndValidateNgModules(programSymbols, {}, this.metadataResolver);
+    return compiler.loadNgModuleDirectives(ngModules).then(() => {
+      const errors: compiler.ParseError[] = [];
+
+      files.forEach(file => {
+        const compMetas: compiler.CompileDirectiveMetadata[] = [];
+        file.directives.forEach(directiveType => {
+          const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
+          if (dirMeta && dirMeta.isComponent) {
+            compMetas.push(dirMeta);
+          }
+        });
+        compMetas.forEach(compMeta => {
+          const html = compMeta.template.template;
+          const interpolationConfig =
+              compiler.InterpolationConfig.fromArray(compMeta.template.interpolation);
+          errors.push(
+              ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
+        });
+      });
+
+      if (errors.length) {
+        throw new Error(errors.map(e => e.toString()).join('\n'));
+      }
+
+      return this.messageBundle;
+    });
   }
 
   static create(
       options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
-      tsCompilerHost: ts.CompilerHost, ngCompilerHost?: CompilerHost): Extractor {
+      tsCompilerHost: ts.CompilerHost, resourceLoader: compiler.ResourceLoader,
+      ngCompilerHost?: CompilerHost): Extractor {
+    const htmlParser = new compiler.I18NHtmlParser(new compiler.HtmlParser());
+
+    const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
     if (!ngCompilerHost) ngCompilerHost = new CompilerHost(program, tsCompilerHost, options);
-    const {extractor: ngExtractor} = compiler.Extractor.create(
-        ngCompilerHost, {excludeFilePattern: excludeFilePattern(options)});
-    return new Extractor(ngExtractor, ngCompilerHost, program);
+    const staticReflector = new compiler.StaticReflector(ngCompilerHost);
+    compiler.StaticAndDynamicReflectionCapabilities.install(staticReflector);
+
+    const config = new compiler.CompilerConfig({
+      genDebugInfo: options.debug === true,
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      logBindingUpdate: false,
+      useJit: false
+    });
+
+    const normalizer =
+        new compiler.DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+    const elementSchemaRegistry = new compiler.DomElementSchemaRegistry();
+    const resolver = new compiler.CompileMetadataResolver(
+        new compiler.NgModuleResolver(staticReflector),
+        new compiler.DirectiveResolver(staticReflector), new compiler.PipeResolver(staticReflector),
+        elementSchemaRegistry, normalizer, staticReflector);
+
+    // TODO(vicb): implicit tags & attributes
+    const messageBundle = new compiler.MessageBundle(htmlParser, [], {});
+
+    return new Extractor(
+        options, program, tsCompilerHost, staticReflector, messageBundle, ngCompilerHost, resolver);
   }
 }

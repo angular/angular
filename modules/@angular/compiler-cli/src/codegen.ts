@@ -36,8 +36,8 @@ const PREAMBLE = `/**
 export class CodeGenerator {
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
-      public host: ts.CompilerHost, private compiler: compiler.AotCompiler,
-      private ngCompilerHost: CompilerHost) {}
+      public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
+      private compiler: compiler.AotCompiler, private ngCompilerHost: CompilerHost) {}
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -96,7 +96,7 @@ export class CodeGenerator {
       }
       transContent = readFileSync(transFile, 'utf8');
     }
-    const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
+    const {compiler: aotCompiler, reflector} = compiler.createAotCompiler(ngCompilerHost, {
       debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
@@ -104,10 +104,18 @@ export class CodeGenerator {
       excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
                                                                        GENERATED_FILES
     });
-    return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
+    return new CodeGenerator(
+        options, program, tsCompilerHost, reflector, aotCompiler, ngCompilerHost);
   }
 }
 
-export function excludeFilePattern(options: AngularCompilerOptions): RegExp {
-  return options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
+export function extractProgramSymbols(
+    program: ts.Program, staticReflector: compiler.StaticReflector, compilerHost: CompilerHost,
+    options: AngularCompilerOptions): compiler.StaticSymbol[] {
+  return compiler.extractProgramSymbols(
+      staticReflector,
+      program.getSourceFiles().map(sf => compilerHost.getCanonicalFileName(sf.fileName)), {
+        excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
+                                                                         GENERATED_FILES
+      });
 }

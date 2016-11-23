@@ -24,7 +24,17 @@ import {Extractor} from './extractor';
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost) {
-  const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host);
+  const resourceLoader: compiler.ResourceLoader = {
+    get: (s: string) => {
+      if (!host.fileExists(s)) {
+        // TODO: We should really have a test for error cases like this!
+        throw new Error(`Compilation failed. Resource file not found: ${s}`);
+      }
+      return Promise.resolve(host.readFile(s));
+    }
+  };
+  const extractor =
+      Extractor.create(ngOptions, cliOptions.i18nFormat, program, host, resourceLoader);
 
   const bundlePromise: Promise<compiler.MessageBundle> = extractor.extract();
 

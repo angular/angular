@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 import {MetadataCollector} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
@@ -18,11 +18,11 @@ const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticReflector', () => {
   const noContext = new StaticSymbol('', '');
-  let host: StaticReflectorHost;
+  let host: AotCompilerHost;
   let reflector: StaticReflector;
 
   beforeEach(() => {
-    host = new MockStaticReflectorHost();
+    host = new MockAotCompilerHost();
     reflector = new StaticReflector(host);
   });
 
@@ -519,8 +519,16 @@ describe('StaticReflector', () => {
 
 });
 
-class MockStaticReflectorHost implements StaticReflectorHost {
+class MockAotCompilerHost implements AotCompilerHost {
   private collector = new MetadataCollector();
+
+  constructor() {}
+
+  loadResource(filePath: string): Promise<string> { throw new Error('Should not be called!'); }
+
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
+    throw new Error('Should not be called!');
+  }
 
   // In tests, assume that symbols are not re-exported
   moduleNameToFileName(modulePath: string, containingFile?: string): string {

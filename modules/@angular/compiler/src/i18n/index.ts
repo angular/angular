@@ -12,4 +12,3 @@ export {Serializer} from './serializers/serializer';
 export {Xliff} from './serializers/xliff';
 export {Xmb} from './serializers/xmb';
 export {Xtb} from './serializers/xtb';
-export * from './extractor';
