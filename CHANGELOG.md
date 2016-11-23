@@ -1,3 +1,12 @@
+<a name="2.2.3"></a>
+## [2.2.3](https://github.com/angular/angular/compare/2.2.2...2.2.3) (2016-11-23)
+
+### Bug Fixes
+
+* **compiler:** Revert: fix versions of `@angular/tsc-wrapped` ([015ca47](https://github.com/angular/angular/commit/015ca47))
+* **animations:** Revert: blend in all previously transitioned styles into next animation if interrupted ([c12e56e](https://github.com/angular/angular/commit/c12e56e))
+
+
 <a name="2.2.2"></a>
 ## [2.2.2](https://github.com/angular/angular/compare/2.2.1...2.2.2) (2016-11-22)
 
