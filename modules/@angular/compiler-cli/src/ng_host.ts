@@ -21,7 +21,6 @@ export interface NgHostContext {
   fileExists(fileName: string): boolean;
   directoryExists(directoryName: string): boolean;
   readFile(fileName: string): string;
-  readResource(fileName: string): Promise<string>;
   assumeFileExists(fileName: string): void;
 }
 
@@ -76,7 +75,7 @@ export class NgHost implements AotCompilerHost {
    *
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
-  resolveFileToImport(importedFile: string, containingFile: string): string {
+  getImportPath(containingFile: string, importedFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (!this.compilerHost.fileExists(importedFile)) {
@@ -177,8 +176,6 @@ export class NgHost implements AotCompilerHost {
     }
   }
 
-  loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
-
   private getResolverMetadata(filePath: string): ModuleMetadata {
     let metadata = this.resolverCache.get(filePath);
     if (!metadata) {
@@ -207,14 +204,6 @@ export class NodeNgHostContext implements NgHostContext {
   }
 
   readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
-
-  readResource(s: string) {
-    if (!this.host.fileExists(s)) {
-      // TODO: We should really have a test for error cases like this!
-      throw new Error(`Compilation failed. Resource file not found: ${s}`);
-    }
-    return Promise.resolve(this.host.readFile(s));
-  }
 
   assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }

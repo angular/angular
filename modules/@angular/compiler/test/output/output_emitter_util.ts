@@ -9,7 +9,7 @@
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {assetUrl} from '@angular/compiler/src/identifiers';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {ImportResolver} from '@angular/compiler/src/output/path_util';
+import {ImportGenerator} from '@angular/compiler/src/output/path_util';
 import {EventEmitter} from '@angular/core';
 import {BaseError} from '@angular/core/src/facade/errors';
 import {ViewType} from '@angular/core/src/linker/view_type';
@@ -252,8 +252,6 @@ function createOperatorFn(op: o.BinaryOperator) {
       o.DYNAMIC_TYPE);
 }
 
-export class SimpleJsImportGenerator implements ImportResolver {
-  resolveFileToImport(importedUrlStr: string, moduleUrlStr: string): string {
-    return importedUrlStr;
-  }
+export class SimpleJsImportGenerator implements ImportGenerator {
+  getImportPath(moduleUrlStr: string, importedUrlStr: string): string { return importedUrlStr; }
 }

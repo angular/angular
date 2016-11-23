@@ -9,6 +9,6 @@
 /**
  * Interface that defines how import statements should be generated.
  */
-export abstract class ImportResolver {
-  abstract resolveFileToImport(importedFilePath: string, containingFilePath: string): string;
+export abstract class ImportGenerator {
+  abstract getImportPath(moduleUrlStr: string, importedUrlStr: string): string;
 }

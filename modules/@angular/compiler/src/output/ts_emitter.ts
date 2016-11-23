@@ -12,7 +12,7 @@ import {isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import * as o from './output_ast';
-import {ImportResolver} from './path_util';
+import {ImportGenerator} from './path_util';
 
 const _debugModuleUrl = '/debug/lib';
 
@@ -37,7 +37,7 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 }
 
 export class TypeScriptEmitter implements OutputEmitter {
-  constructor(private _importGenerator: ImportResolver) {}
+  constructor(private _importGenerator: ImportGenerator) {}
   emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
     const converter = new _TsEmitterVisitor(moduleUrl);
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
@@ -47,7 +47,7 @@ export class TypeScriptEmitter implements OutputEmitter {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${this._importGenerator.resolveFileToImport(importedModuleUrl, moduleUrl)}';`);
+          `ort * as ${prefix} from '${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
