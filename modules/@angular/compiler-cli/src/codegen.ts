@@ -17,8 +17,8 @@ import {readFileSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompilerHost, CompilerHostContext} from './compiler_host';
-import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {NgHost, NgHostContext} from './ng_host';
+import {PathMappedNgHost} from './path_mapped_ng_host';
 import {Console} from './private_import_core';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
@@ -37,7 +37,7 @@ export class CodeGenerator {
   constructor(
       private options: AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
-      private compiler: compiler.AotCompiler, private ngCompilerHost: CompilerHost) {}
+      private compiler: compiler.AotCompiler, private ngHost: NgHost) {}
 
   // Write codegen in a directory structure matching the sources.
   private calculateEmitPath(filePath: string): string {
@@ -64,8 +64,8 @@ export class CodeGenerator {
 
   codegen(): Promise<any> {
     return this.compiler
-        .compileAll(this.program.getSourceFiles().map(
-            sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
+        .compileAll(
+            this.program.getSourceFiles().map(sf => this.ngHost.getCanonicalFileName(sf.fileName)))
         .then(generatedModules => {
           generatedModules.forEach(generatedModule => {
             const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
@@ -78,13 +78,13 @@ export class CodeGenerator {
 
   static create(
       options: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
-      tsCompilerHost: ts.CompilerHost, compilerHostContext?: CompilerHostContext,
-      ngCompilerHost?: CompilerHost): CodeGenerator {
-    if (!ngCompilerHost) {
+      compilerHost: ts.CompilerHost, ngHostContext?: NgHostContext,
+      ngHost?: NgHost): CodeGenerator {
+    if (!ngHost) {
       const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-      ngCompilerHost = usePathMapping ?
-          new PathMappedCompilerHost(program, tsCompilerHost, options, compilerHostContext) :
-          new CompilerHost(program, tsCompilerHost, options, compilerHostContext);
+      ngHost = usePathMapping ?
+          new PathMappedNgHost(program, compilerHost, options, ngHostContext) :
+          new NgHost(program, compilerHost, options, ngHostContext);
     }
     const transFile = cliOptions.i18nFile;
     const locale = cliOptions.locale;
@@ -96,7 +96,7 @@ export class CodeGenerator {
       }
       transContent = readFileSync(transFile, 'utf8');
     }
-    const {compiler: aotCompiler, reflector} = compiler.createAotCompiler(ngCompilerHost, {
+    const {compiler: aotCompiler, reflector} = compiler.createAotCompiler(ngHost, {
       debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
@@ -104,17 +104,16 @@ export class CodeGenerator {
       excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
                                                                        GENERATED_FILES
     });
-    return new CodeGenerator(
-        options, program, tsCompilerHost, reflector, aotCompiler, ngCompilerHost);
+    return new CodeGenerator(options, program, compilerHost, reflector, aotCompiler, ngHost);
   }
 }
 
 export function extractProgramSymbols(
-    program: ts.Program, staticReflector: compiler.StaticReflector, compilerHost: CompilerHost,
+    program: ts.Program, staticReflector: compiler.StaticReflector, ngHost: NgHost,
     options: AngularCompilerOptions): compiler.StaticSymbol[] {
   return compiler.extractProgramSymbols(
-      staticReflector,
-      program.getSourceFiles().map(sf => compilerHost.getCanonicalFileName(sf.fileName)), {
+      staticReflector, program.getSourceFiles().map(sf => ngHost.getCanonicalFileName(sf.fileName)),
+      {
         excludeFilePattern: options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES :
                                                                          GENERATED_FILES
       });

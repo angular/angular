@@ -253,7 +253,7 @@ function createOperatorFn(op: o.BinaryOperator) {
 }
 
 export class SimpleJsImportGenerator implements ImportResolver {
-  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+  resolveFileToImport(importedUrlStr: string, moduleUrlStr: string): string {
     return importedUrlStr;
   }
 }

@@ -17,7 +17,7 @@ const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
 const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
 
-export interface CompilerHostContext {
+export interface NgHostContext {
   fileExists(fileName: string): boolean;
   directoryExists(directoryName: string): boolean;
   readFile(fileName: string): string;
@@ -25,9 +25,9 @@ export interface CompilerHostContext {
   assumeFileExists(fileName: string): void;
 }
 
-export class CompilerHost implements AotCompilerHost {
+export class NgHost implements AotCompilerHost {
   protected metadataCollector = new MetadataCollector();
-  protected context: CompilerHostContext;
+  protected context: NgHostContext;
   private isGenDirChildOfRootDir: boolean;
   protected basePath: string;
   private genDir: string;
@@ -35,12 +35,12 @@ export class CompilerHost implements AotCompilerHost {
 
   constructor(
       protected program: ts.Program, protected compilerHost: ts.CompilerHost,
-      protected options: AngularCompilerOptions, context?: CompilerHostContext) {
+      protected options: AngularCompilerOptions, context?: NgHostContext) {
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
-    this.context = context || new NodeCompilerHostContext(compilerHost);
+    this.context = context || new NodeNgHostContext(compilerHost);
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
@@ -48,7 +48,7 @@ export class CompilerHost implements AotCompilerHost {
   // We use absolute paths on disk as canonical.
   getCanonicalFileName(fileName: string): string { return fileName; }
 
-  moduleNameToFileName(m: string, containingFile: string) {
+  resolveImportToFile(m: string, containingFile: string) {
     if (!containingFile || !containingFile.length) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -78,7 +78,7 @@ export class CompilerHost implements AotCompilerHost {
    *
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
-  fileNameToModuleName(importedFile: string, containingFile: string): string {
+  resolveFileToImport(importedFile: string, containingFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (!this.compilerHost.fileExists(importedFile)) {
@@ -149,7 +149,6 @@ export class CompilerHost implements AotCompilerHost {
       }
       throw new Error(`Source file ${filePath} not present in program.`);
     }
-    return sf;
   }
 
   getMetadataFor(filePath: string): ModuleMetadata[] {
@@ -216,7 +215,7 @@ export class CompilerHost implements AotCompilerHost {
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
 }
 
-export class NodeCompilerHostContext implements CompilerHostContext {
+export class NodeNgHostContext implements NgHostContext {
   constructor(private host: ts.CompilerHost) {}
 
   private assumedExists: {[fileName: string]: boolean} = {};

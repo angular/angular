@@ -214,7 +214,7 @@ export class StaticReflector implements ReflectorReader {
 
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.host.moduleNameToFileName(moduleName, filePath);
+      const resolvedModulePath = this.host.resolveImportToFile(moduleName, filePath);
       if (!resolvedModulePath) {
         throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
       }
@@ -269,7 +269,7 @@ export class StaticReflector implements ReflectorReader {
       return symbol;
     }
     try {
-      const filePath = this.host.moduleNameToFileName(module, containingFile);
+      const filePath = this.host.resolveImportToFile(module, containingFile);
 
       if (!filePath) {
         // If the file cannot be found the module is probably referencing a declared module

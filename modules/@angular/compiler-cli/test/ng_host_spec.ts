@@ -8,19 +8,19 @@
 
 import * as ts from 'typescript';
 
-import {CompilerHost} from '../src/compiler_host';
+import {NgHost} from '../src/ng_host';
 
-import {Directory, Entry, MockAotContext, MockCompilerHost} from './mocks';
+import {Directory, Entry, MockCompilerHost, MockContext} from './mocks';
 
-describe('CompilerHost', () => {
-  let context: MockAotContext;
+describe('NgHost', () => {
+  let context: MockContext;
   let host: ts.CompilerHost;
   let program: ts.Program;
-  let hostNestedGenDir: CompilerHost;
-  let hostSiblingGenDir: CompilerHost;
+  let hostNestedGenDir: NgHost;
+  let hostSiblingGenDir: NgHost;
 
   beforeEach(() => {
-    context = new MockAotContext('/tmp/src', clone(FILES));
+    context = new MockContext('/tmp/src', clone(FILES));
     host = new MockCompilerHost(context);
     program = ts.createProgram(
         ['main.ts'], {
@@ -32,7 +32,7 @@ describe('CompilerHost', () => {
     if (errors && errors.length) {
       throw new Error('Expected no errors');
     }
-    hostNestedGenDir = new CompilerHost(
+    hostNestedGenDir = new NgHost(
         program, host, {
           genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
@@ -42,7 +42,7 @@ describe('CompilerHost', () => {
           trace: false
         },
         context);
-    hostSiblingGenDir = new CompilerHost(
+    hostSiblingGenDir = new NgHost(
         program, host, {
           genDir: '/tmp/project/gen',
           basePath: '/tmp/project/src/',
@@ -56,32 +56,32 @@ describe('CompilerHost', () => {
 
   describe('nestedGenDir', () => {
     it('should import node_module from factory', () => {
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/node_modules/@angular/core.d.ts',
                  '/tmp/project/src/gen/my.ngfactory.ts', ))
           .toEqual('@angular/core');
     });
 
     it('should import factory from factory', () => {
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ngfactory.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.css.ts', '/tmp/project/src/a/my.ngfactory.ts'))
           .toEqual('../my.other.css');
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./a/my.other.css.shim');
     });
 
     it('should import application from factory', () => {
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('../my.other');
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ts', '/tmp/project/src/a/my.ngfactory.ts'))
           .toEqual('../../my.other');
-      expect(hostNestedGenDir.fileNameToModuleName(
+      expect(hostNestedGenDir.resolveFileToImport(
                  '/tmp/project/src/a/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('../a/my.other');
     });
@@ -89,54 +89,54 @@ describe('CompilerHost', () => {
 
   describe('siblingGenDir', () => {
     it('should import node_module from factory', () => {
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/node_modules/@angular/core.d.ts',
                  '/tmp/project/src/gen/my.ngfactory.ts'))
           .toEqual('@angular/core');
     });
 
     it('should import factory from factory', () => {
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ngfactory.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.css.ts', '/tmp/project/src/a/my.ngfactory.ts'))
           .toEqual('../my.other.css');
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./a/my.other.css.shim');
     });
 
     it('should import application from factory', () => {
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./my.other');
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/my.other.ts', '/tmp/project/src/a/my.ngfactory.ts'))
           .toEqual('../my.other');
-      expect(hostSiblingGenDir.fileNameToModuleName(
+      expect(hostSiblingGenDir.resolveFileToImport(
                  '/tmp/project/src/a/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./a/my.other');
     });
   });
 
   it('should be able to produce an import from main @angular/core', () => {
-    expect(hostNestedGenDir.fileNameToModuleName(
+    expect(hostNestedGenDir.resolveFileToImport(
                '/tmp/project/node_modules/@angular/core.d.ts', '/tmp/project/src/main.ts'))
         .toEqual('@angular/core');
   });
 
   it('should be able to produce an import from main to a sub-directory', () => {
-    expect(hostNestedGenDir.fileNameToModuleName('lib/utils.ts', 'main.ts')).toEqual('./lib/utils');
+    expect(hostNestedGenDir.resolveFileToImport('lib/utils.ts', 'main.ts')).toEqual('./lib/utils');
   });
 
   it('should be able to produce an import from to a peer file', () => {
-    expect(hostNestedGenDir.fileNameToModuleName('lib/collections.ts', 'lib/utils.ts'))
+    expect(hostNestedGenDir.resolveFileToImport('lib/collections.ts', 'lib/utils.ts'))
         .toEqual('./collections');
   });
 
   it('should be able to produce an import from to a sibling directory', () => {
-    expect(hostNestedGenDir.fileNameToModuleName('lib/utils.ts', 'lib2/utils2.ts'))
+    expect(hostNestedGenDir.resolveFileToImport('lib/utils.ts', 'lib2/utils2.ts'))
         .toEqual('../lib/utils');
   });
 

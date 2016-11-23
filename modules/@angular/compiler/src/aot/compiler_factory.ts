@@ -40,12 +40,12 @@ import {StaticReflector} from './static_reflector';
 /**
  * Creates a new AotCompiler based on options and a host.
  */
-export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCompilerOptions):
+export function createAotCompiler(ngHost: AotCompilerHost, options: AotCompilerOptions):
     {compiler: AotCompiler, reflector: StaticReflector} {
   let translations: string = options.translations || '';
 
   const urlResolver = createOfflineCompileUrlResolver();
-  const staticReflector = new StaticReflector(compilerHost);
+  const staticReflector = new StaticReflector(ngHost);
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
   const htmlParser = new I18NHtmlParser(new HtmlParser(), translations, options.i18nFormat);
   const config = new CompilerConfig({
@@ -55,7 +55,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
     useJit: false
   });
   const normalizer = new DirectiveNormalizer(
-      {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);
+      {get: (url: string) => ngHost.loadResource(url)}, urlResolver, htmlParser, config);
   const expressionParser = new Parser(new Lexer());
   const elementSchemaRegistry = new DomElementSchemaRegistry();
   const console = new Console();
@@ -69,7 +69,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       resolver, tmplParser, new StyleCompiler(urlResolver),
       new ViewCompiler(config, elementSchemaRegistry),
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
-      new NgModuleCompiler(), new TypeScriptEmitter(compilerHost), options.locale,
-      options.i18nFormat, new AnimationParser(elementSchemaRegistry), staticReflector, options);
+      new NgModuleCompiler(), new TypeScriptEmitter(ngHost), options.locale, options.i18nFormat,
+      new AnimationParser(elementSchemaRegistry), staticReflector, options);
   return {compiler, reflector: staticReflector};
 }

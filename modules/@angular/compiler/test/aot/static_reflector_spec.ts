@@ -511,12 +511,12 @@ class MockAotCompilerHost implements AotCompilerHost {
 
   loadResource(filePath: string): Promise<string> { throw new Error('Should not be called!'); }
 
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
+  resolveFileToImport(importedFilePath: string, containingFilePath: string): string {
     throw new Error('Should not be called!');
   }
 
   // In tests, assume that symbols are not re-exported
-  moduleNameToFileName(modulePath: string, containingFile?: string): string {
+  resolveImportToFile(modulePath: string, containingFile?: string): string {
     function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
 
     function resolvePath(pathParts: string[]): string {

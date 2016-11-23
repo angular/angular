@@ -19,18 +19,18 @@ import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {extractProgramSymbols} from './codegen';
-import {CompilerHost} from './compiler_host';
+import {NgHost} from './ng_host';
 
 export class Extractor {
   constructor(
       private options: tsc.AngularCompilerOptions, private program: ts.Program,
       public host: ts.CompilerHost, private staticReflector: compiler.StaticReflector,
-      private messageBundle: compiler.MessageBundle, private compilerHost: CompilerHost,
+      private messageBundle: compiler.MessageBundle, private ngHost: NgHost,
       private metadataResolver: compiler.CompileMetadataResolver) {}
 
   extract(): Promise<compiler.MessageBundle> {
     const programSymbols: compiler.StaticSymbol[] =
-        extractProgramSymbols(this.program, this.staticReflector, this.compilerHost, this.options);
+        extractProgramSymbols(this.program, this.staticReflector, this.ngHost, this.options);
 
     const {ngModules, files} = compiler.analyzeAndValidateNgModules(
         programSymbols, {transitiveModules: true}, this.metadataResolver);
@@ -64,13 +64,13 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
-      tsCompilerHost: ts.CompilerHost, resourceLoader: compiler.ResourceLoader,
-      ngCompilerHost?: CompilerHost): Extractor {
+      compilerHost: ts.CompilerHost, resourceLoader: compiler.ResourceLoader,
+      ngHost?: NgHost): Extractor {
     const htmlParser = new compiler.I18NHtmlParser(new compiler.HtmlParser());
 
     const urlResolver: compiler.UrlResolver = compiler.createOfflineCompileUrlResolver();
-    if (!ngCompilerHost) ngCompilerHost = new CompilerHost(program, tsCompilerHost, options);
-    const staticReflector = new compiler.StaticReflector(ngCompilerHost);
+    if (!ngHost) ngHost = new NgHost(program, compilerHost, options);
+    const staticReflector = new compiler.StaticReflector(ngHost);
     compiler.StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
     const config = new compiler.CompilerConfig({
@@ -92,6 +92,6 @@ export class Extractor {
     const messageBundle = new compiler.MessageBundle(htmlParser, [], {});
 
     return new Extractor(
-        options, program, tsCompilerHost, staticReflector, messageBundle, ngCompilerHost, resolver);
+        options, program, compilerHost, staticReflector, messageBundle, ngHost, resolver);
   }
 }

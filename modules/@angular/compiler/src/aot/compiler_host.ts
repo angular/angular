@@ -25,17 +25,14 @@ export interface AotCompilerHost {
   getMetadataFor(modulePath: string): {[key: string]: any}[];
 
   /**
-   * Converts a module name that is used in an `import` to a file path.
-   * I.e.
-   * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
+   * Converts an import into a file path.
    */
-  moduleNameToFileName(moduleName: string, containingFile: string): string;
+  resolveImportToFile(moduleName: string, containingFile: string): string;
 
   /**
-   * Converts a file path to a module name that can be used as an `import.
-   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
+   * Converts a file path to an import
    */
-  fileNameToModuleName(importedFile: string, containingFile: string): string;
+  resolveFileToImport(importedFilePath: string, containingFilePath: string): string;
 
   /**
    * Loads a resource (e.g. html / css)

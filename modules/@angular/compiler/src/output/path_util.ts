@@ -10,5 +10,5 @@
  * Interface that defines how import statements should be generated.
  */
 export abstract class ImportResolver {
-  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
+  abstract resolveFileToImport(importedFilePath: string, containingFilePath: string): string;
 }
