@@ -202,6 +202,7 @@ function declareTests({useJit}: {useJit: boolean}) {
              const cmp = fixture.componentInstance;
              cmp.exp = true;
              fixture.detectChanges();
+             flushMicrotasks();
 
              expect(driver.log.length).toEqual(0);
 

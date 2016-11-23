@@ -247,6 +247,8 @@ export function main() {
          cmp1.state = 'off';
          cmp2.state = 'on';
          f1.detectChanges();
+         flushMicrotasks();
+
          f2.detectChanges();
          flushMicrotasks();
 
@@ -279,6 +281,7 @@ export function main() {
 
          cmp.state = 'off';
          fixture.detectChanges();
+         flushMicrotasks();
 
          const player = <MockAnimationPlayer>uiDriver.log.shift()['player'];
          expect(player.log.indexOf('destroy') >= 0).toBe(false);

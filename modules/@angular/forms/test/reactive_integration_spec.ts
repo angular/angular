@@ -661,7 +661,7 @@ export function main() {
 
       it('should work with single fields and async validators', fakeAsync(() => {
            const fixture = TestBed.createComponent(FormControlComp);
-           const control = new FormControl('', null, uniqLoginAsyncValidator('good'));
+           const control = new FormControl('', null, uniqLoginAsyncValidator('good', 10));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -669,12 +669,12 @@ export function main() {
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
            dispatchEvent(input, 'blur');
+           tick();
            fixture.detectChanges();
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
-
            input.value = 'good';
            dispatchEvent(input, 'input');
-           tick();
+           tick(10);
            fixture.detectChanges();
 
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
@@ -683,7 +683,7 @@ export function main() {
       it('should work with single fields that combines async and sync validators', fakeAsync(() => {
            const fixture = TestBed.createComponent(FormControlComp);
            const control =
-               new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
+               new FormControl('', Validators.required, uniqLoginAsyncValidator('good', 10));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -696,18 +696,19 @@ export function main() {
 
            input.value = 'bad';
            dispatchEvent(input, 'input');
+           tick();
            fixture.detectChanges();
 
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
 
-           tick();
+           tick(10);
            fixture.detectChanges();
 
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
 
            input.value = 'good';
            dispatchEvent(input, 'input');
-           tick();
+           tick(10);
            fixture.detectChanges();
 
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
@@ -1824,12 +1825,16 @@ class MyInput implements ControlValueAccessor {
   dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
 }
 
-function uniqLoginAsyncValidator(expectedValue: string) {
+function uniqLoginAsyncValidator(expectedValue: string, timeout?: number) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
     const promise = new Promise(res => { resolve = res; });
     const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
-    resolve(res);
+    if (timeout) {
+      setTimeout(() => { resolve(res); }, timeout);
+    } else {
+      resolve(res);
+    }
     return promise;
   };
 }
