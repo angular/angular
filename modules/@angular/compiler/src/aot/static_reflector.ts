@@ -26,13 +26,13 @@ const ANGULAR_IMPORT_LOCATIONS = {
  * templates statically.
  */
 export class StaticReflector implements ReflectorReader {
-  private staticSymbolCache = new Map<string, StaticSymbol>();
-  private declarationCache = new Map<string, StaticSymbol>();
+  private typeCache = new Map<string, StaticSymbol>();
   private annotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
   private metadataCache = new Map<string, {[key: string]: any}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
+  private declarationMap = new Map<string, StaticSymbol>();
   private opaqueToken: StaticSymbol;
 
   constructor(private host: AotCompilerHost) { this.initializeConversionMap(); }
@@ -204,10 +204,10 @@ export class StaticReflector implements ReflectorReader {
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
     const memberSuffix = members ? `.${ members.join('.')}` : '';
     const key = `"${declarationFile}".${name}${memberSuffix}`;
-    let result = this.staticSymbolCache.get(key);
+    let result = this.typeCache.get(key);
     if (!result) {
       result = new StaticSymbol(declarationFile, name, members);
-      this.staticSymbolCache.set(key, result);
+      this.typeCache.set(key, result);
     }
     return result;
   }
@@ -220,20 +220,15 @@ export class StaticReflector implements ReflectorReader {
       }
       return resolvedModulePath;
     };
-    const cacheKey = `${filePath}|${symbolName}`;
-    let staticSymbol = this.declarationCache.get(cacheKey);
-    if (staticSymbol) {
-      return staticSymbol;
-    }
     const metadata = this.getModuleMetadata(filePath);
     if (metadata) {
       // If we have metadata for the symbol, this is the original exporting location.
       if (metadata['metadata'][symbolName]) {
-        staticSymbol = this.getStaticSymbol(filePath, symbolName);
+        return this.getStaticSymbol(filePath, symbolName);
       }
 
       // If no, try to find the symbol in one of the re-export location
-      if (!staticSymbol && metadata['exports']) {
+      if (metadata['exports']) {
         // Try and find the symbol in the list of explicitly re-exported symbols.
         for (const moduleExport of metadata['exports']) {
           if (moduleExport.export) {
@@ -249,43 +244,43 @@ export class StaticReflector implements ReflectorReader {
               if (typeof exportSymbol !== 'string') {
                 symName = exportSymbol.name;
               }
-              staticSymbol = this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
+              return this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
             }
           }
         }
 
-        if (!staticSymbol) {
-          // Try to find the symbol via export * directives.
-          for (const moduleExport of metadata['exports']) {
-            if (!moduleExport.export) {
-              const resolvedModule = resolveModule(moduleExport.from);
-              const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
-              if (candidateSymbol) {
-                staticSymbol = candidateSymbol;
-                break;
-              }
-            }
+        // Try to find the symbol via export * directives.
+        for (const moduleExport of metadata['exports']) {
+          if (!moduleExport.export) {
+            const resolvedModule = resolveModule(moduleExport.from);
+            const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
+            if (candidateSymbol) return candidateSymbol;
           }
         }
       }
     }
-    this.declarationCache.set(cacheKey, staticSymbol);
-    return staticSymbol;
+    return null;
   }
 
   findDeclaration(module: string, symbolName: string, containingFile?: string): StaticSymbol {
+    const cacheKey = `${module}|${symbolName}|${containingFile}`;
+    let symbol = this.declarationMap.get(cacheKey);
+    if (symbol) {
+      return symbol;
+    }
     try {
       const filePath = this.host.moduleNameToFileName(module, containingFile);
-      let symbol: StaticSymbol;
+
       if (!filePath) {
         // If the file cannot be found the module is probably referencing a declared module
         // for which there is no disambiguating file and we also don't need to track
         // re-exports. Just use the module name.
-        symbol = this.getStaticSymbol(module, symbolName);
-      } else {
-        symbol = this.resolveExportedSymbol(filePath, symbolName) ||
-            this.getStaticSymbol(filePath, symbolName);
+        return this.getStaticSymbol(module, symbolName);
       }
+
+      let symbol = this.resolveExportedSymbol(filePath, symbolName) ||
+          this.getStaticSymbol(filePath, symbolName);
+      this.declarationMap.set(cacheKey, symbol);
       return symbol;
     } catch (e) {
       console.error(`can't resolve module ${module} from ${containingFile}`);

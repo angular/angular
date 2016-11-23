@@ -46,9 +46,14 @@ export class AotCompiler {
   clearCache() { this._metadataResolver.clearCache(); }
 
   compileAll(rootFiles: string[]): Promise<SourceModule[]> {
-    const programSymbols = extractProgramSymbols(this._staticReflector, rootFiles, this._options);
+    const options = {
+      transitiveModules: true,
+      excludeFilePattern: this._options.excludeFilePattern,
+      includeFilePattern: this._options.includeFilePattern
+    };
+    const programSymbols = extractProgramSymbols(this._staticReflector, rootFiles, options);
     const {ngModuleByPipeOrDirective, files, ngModules} =
-        analyzeAndValidateNgModules(programSymbols, this._options, this._metadataResolver);
+        analyzeAndValidateNgModules(programSymbols, options, this._metadataResolver);
     return loadNgModuleDirectives(ngModules).then(() => {
       const sourceModules = files.map(
           file => this._compileSrcFile(
@@ -283,7 +288,7 @@ export interface NgAnalyzedModules {
 // Returns all the source files and a mapping from modules to directives
 export function analyzeNgModules(
     programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    options: {transitiveModules: boolean, includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
     metadataResolver: CompileMetadataResolver): NgAnalyzedModules {
   const {ngModules, symbolsMissingModule} =
       _createNgModules(programStaticSymbols, options, metadataResolver);
@@ -291,8 +296,7 @@ export function analyzeNgModules(
 }
 
 export function analyzeAndValidateNgModules(
-    programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    programStaticSymbols: StaticSymbol[], options: {transitiveModules: boolean},
     metadataResolver: CompileMetadataResolver): NgAnalyzedModules {
   const result = analyzeNgModules(programStaticSymbols, options, metadataResolver);
   if (result.symbolsMissingModule && result.symbolsMissingModule.length) {
@@ -366,27 +370,31 @@ export function extractProgramSymbols(
     staticReflector: StaticReflector, files: string[],
     options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp} = {}): StaticSymbol[] {
   const staticSymbols: StaticSymbol[] = [];
-  files.filter(fileName => _filterFileByPatterns(fileName, options)).forEach(sourceFile => {
-    const moduleMetadata = staticReflector.getModuleMetadata(sourceFile);
-    if (!moduleMetadata) {
-      console.log(`WARNING: no metadata found for ${sourceFile}`);
-      return;
-    }
+  files
+      .filter(
+          fileName => _filterFileByPatterns(
+              fileName, options.includeFilePattern, options.includeFilePattern))
+      .forEach(sourceFile => {
+        const moduleMetadata = staticReflector.getModuleMetadata(sourceFile);
+        if (!moduleMetadata) {
+          console.log(`WARNING: no metadata found for ${sourceFile}`);
+          return;
+        }
 
-    const metadata = moduleMetadata['metadata'];
+        const metadata = moduleMetadata['metadata'];
 
-    if (!metadata) {
-      return;
-    }
+        if (!metadata) {
+          return;
+        }
 
-    for (const symbol of Object.keys(metadata)) {
-      if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-        // Ignore symbols that are only included to record error information.
-        continue;
-      }
-      staticSymbols.push(staticReflector.getStaticSymbol(sourceFile, symbol));
-    }
-  });
+        for (const symbol of Object.keys(metadata)) {
+          if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
+            // Ignore symbols that are only included to record error information.
+            continue;
+          }
+          staticSymbols.push(staticReflector.findDeclaration(sourceFile, symbol, sourceFile));
+        }
+      });
 
   return staticSymbols;
 }
@@ -396,7 +404,7 @@ export function extractProgramSymbols(
 // are also declared by a module.
 function _createNgModules(
     programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    options: {transitiveModules: boolean, includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
     metadataResolver: CompileMetadataResolver):
     {ngModules: CompileNgModuleMetadata[], symbolsMissingModule: StaticSymbol[]} {
   const ngModules = new Map<any, CompileNgModuleMetadata>();
@@ -404,7 +412,9 @@ function _createNgModules(
   const ngModulePipesAndDirective = new Set<StaticSymbol>();
 
   const addNgModule = (staticSymbol: any) => {
-    if (ngModules.has(staticSymbol) || !_filterFileByPatterns(staticSymbol.filePath, options)) {
+    if (ngModules.has(staticSymbol) ||
+        !_filterFileByPatterns(
+            staticSymbol.filePath, options.includeFilePattern, options.excludeFilePattern)) {
       return false;
     }
     const ngModule = metadataResolver.getUnloadedNgModuleMetadata(staticSymbol, false, false);
@@ -412,8 +422,10 @@ function _createNgModules(
       ngModules.set(ngModule.type.reference, ngModule);
       ngModule.declaredDirectives.forEach((dir) => ngModulePipesAndDirective.add(dir.reference));
       ngModule.declaredPipes.forEach((pipe) => ngModulePipesAndDirective.add(pipe.reference));
-      // For every input module add the list of transitively included modules
-      ngModule.transitiveModule.modules.forEach(modMeta => addNgModule(modMeta.type.reference));
+      if (options.transitiveModules) {
+        // For every input modules add the list of transitively included modules
+        ngModule.transitiveModule.modules.forEach(modMeta => addNgModule(modMeta.type.reference));
+      }
     }
     return !!ngModule;
   };
@@ -432,13 +444,13 @@ function _createNgModules(
 }
 
 function _filterFileByPatterns(
-    fileName: string, options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp} = {}) {
+    fileName: string, includeFilePattern: RegExp, excludeFilePattern: RegExp) {
   let match = true;
-  if (options.includeFilePattern) {
-    match = match && !!options.includeFilePattern.exec(fileName);
+  if (includeFilePattern) {
+    match = match && !!includeFilePattern.exec(fileName);
   }
-  if (options.excludeFilePattern) {
-    match = match && !options.excludeFilePattern.exec(fileName);
+  if (excludeFilePattern) {
+    match = match && !excludeFilePattern.exec(fileName);
   }
   return match;
 }

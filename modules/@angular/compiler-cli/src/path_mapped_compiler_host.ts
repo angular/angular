@@ -48,7 +48,7 @@ export class PathMappedCompilerHost extends CompilerHost {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = this.getCanonicalFileName(path.join(this.basePath, 'index.ts'));
+      containingFile = path.join(this.basePath, 'index.ts');
     }
     for (const root of this.options.rootDirs || ['']) {
       const rootedContainingFile = path.join(root, containingFile);
@@ -58,7 +58,7 @@ export class PathMappedCompilerHost extends CompilerHost {
         if (this.options.traceResolution) {
           console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
         }
-        return this.getCanonicalFileName(resolved.resolvedFileName);
+        return resolved.resolvedFileName;
       }
     }
   }
@@ -86,7 +86,8 @@ export class PathMappedCompilerHost extends CompilerHost {
     }
 
     const resolvable = (candidate: string) => {
-      const resolved = this.moduleNameToFileName(candidate, importedFile);
+      const resolved =
+          this.getCanonicalFileName(this.moduleNameToFileName(candidate, importedFile));
       return resolved && resolved.replace(EXT, '') === importedFile.replace(EXT, '');
     };
 
@@ -132,7 +133,7 @@ export class PathMappedCompilerHost extends CompilerHost {
         }
       } else {
         const sf = this.getSourceFile(rootedPath);
-        sf.fileName = sf.fileName;
+        sf.fileName = this.getCanonicalFileName(sf.fileName);
         const metadata = this.metadataCollector.getMetadata(sf);
         return metadata ? [metadata] : [];
       }

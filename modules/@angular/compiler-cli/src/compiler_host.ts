@@ -54,13 +54,13 @@ export class CompilerHost implements AotCompilerHost {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = this.getCanonicalFileName(path.join(this.basePath, 'index.ts'));
+      containingFile = path.join(this.basePath, 'index.ts');
     }
     m = m.replace(EXT, '');
     const resolved =
         ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
             .resolvedModule;
-    return resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
+    return resolved ? resolved.resolvedFileName : null;
   };
 
   /**
