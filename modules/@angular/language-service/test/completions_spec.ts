@@ -96,7 +96,7 @@ describe('completions', () => {
           }
         } catch (e) {
           // Emit enough diagnostic information to reproduce the error.
-          console.log(
+          console.error(
               `Position: ${position}\nContent: "${mockHost.getFileContent(fileName)}"\nStack:\n${e.stack}`);
           throw e;
         }
