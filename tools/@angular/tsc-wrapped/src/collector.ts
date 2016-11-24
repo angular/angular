@@ -73,6 +73,22 @@ export class MetadataCollector {
       }
     }
 
+
+    interface NodeFlagsUtils {
+      getNodeFlags(flag: ts.NodeFlags): (target: ts.Node) => boolean;
+    }
+
+    const nodeFlagsUtils = {
+      get isStatic(this: NodeFlagsUtils) { return this.getNodeFlags(ts.NodeFlags.Static); },
+
+      get isExport(this: NodeFlagsUtils) { return this.getNodeFlags(ts.NodeFlags.Export); },
+
+      getNodeFlags(flag: ts.NodeFlags) {
+        return function(target: ts.Node) { return !!(target.flags & flag); };
+      },
+    };
+
+
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       const result: ClassMetadata = {__symbolic: 'class'};
 
@@ -121,7 +137,7 @@ export class MetadataCollector {
           case ts.SyntaxKind.MethodDeclaration:
             isConstructor = member.kind === ts.SyntaxKind.Constructor;
             const method = <ts.MethodDeclaration|ts.ConstructorDeclaration>member;
-            if (method.flags & ts.NodeFlags.Static) {
+            if (nodeFlagsUtils.isStatic(method)) {
               const maybeFunc = maybeGetSimpleFunction(<ts.MethodDeclaration>method);
               if (maybeFunc) {
                 recordStaticMember(maybeFunc.name, maybeFunc.func);
@@ -168,7 +184,7 @@ export class MetadataCollector {
           case ts.SyntaxKind.GetAccessor:
           case ts.SyntaxKind.SetAccessor:
             const property = <ts.PropertyDeclaration>member;
-            if (property.flags & ts.NodeFlags.Static) {
+            if (nodeFlagsUtils.isStatic(property)) {
               const name = evaluator.nameOf(property.name);
               if (!isMetadataError(name)) {
                 if (property.initializer) {
@@ -207,7 +223,7 @@ export class MetadataCollector {
           const classDeclaration = <ts.ClassDeclaration>node;
           if (classDeclaration.name) {
             const className = classDeclaration.name.text;
-            if (node.flags & ts.NodeFlags.Export) {
+            if (nodeFlagsUtils.isExport(node)) {
               locals.define(className, {__symbolic: 'reference', name: className});
             } else {
               locals.define(
@@ -216,7 +232,7 @@ export class MetadataCollector {
           }
           break;
         case ts.SyntaxKind.FunctionDeclaration:
-          if (!(node.flags & ts.NodeFlags.Export)) {
+          if (!nodeFlagsUtils.isExport(node)) {
             // Report references to this function as an error.
             const functionDeclaration = <ts.FunctionDeclaration>node;
             const nameNode = functionDeclaration.name;
@@ -255,7 +271,7 @@ export class MetadataCollector {
           const classDeclaration = <ts.ClassDeclaration>node;
           if (classDeclaration.name) {
             const className = classDeclaration.name.text;
-            if (node.flags & ts.NodeFlags.Export) {
+            if (nodeFlagsUtils.isExport(node)) {
               if (!metadata) metadata = {};
               if (classDeclaration.decorators) {
                 metadata[className] = classMetadataOf(classDeclaration);
@@ -270,7 +286,7 @@ export class MetadataCollector {
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
           const functionDeclaration = <ts.FunctionDeclaration>node;
-          if (node.flags & ts.NodeFlags.Export) {
+          if (nodeFlagsUtils.isExport(node)) {
             if (!metadata) metadata = {};
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
             if (maybeFunc) {
@@ -283,7 +299,7 @@ export class MetadataCollector {
           }
           break;
         case ts.SyntaxKind.EnumDeclaration:
-          if (node.flags & ts.NodeFlags.Export) {
+          if (nodeFlagsUtils.isExport(node)) {
             const enumDeclaration = <ts.EnumDeclaration>node;
             const enumValueHolder: {[name: string]: MetadataValue} = {};
             const enumName = enumDeclaration.name.text;
@@ -337,8 +353,8 @@ export class MetadataCollector {
                 varValue = recordEntry(errorSym('Variable not initialized', nameNode), nameNode);
               }
               let exported = false;
-              if (variableStatement.flags & ts.NodeFlags.Export ||
-                  variableDeclaration.flags & ts.NodeFlags.Export) {
+              if (nodeFlagsUtils.isExport(variableStatement) ||
+                  nodeFlagsUtils.isExport(variableDeclaration)) {
                 if (!metadata) metadata = {};
                 metadata[nameNode.text] = recordEntry(varValue, node);
                 exported = true;
@@ -368,7 +384,7 @@ export class MetadataCollector {
                     const name = <ts.Identifier>nameNode;
                     const varValue = errorSym('Destructuring not supported', nameNode);
                     locals.define(name.text, varValue);
-                    if (node.flags & ts.NodeFlags.Export) {
+                    if (nodeFlagsUtils.isExport(node)) {
                       if (!metadata) metadata = {};
                       metadata[name.text] = varValue;
                     }
