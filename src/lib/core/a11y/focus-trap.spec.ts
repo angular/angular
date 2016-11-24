@@ -1,4 +1,4 @@
-import {inject, ComponentFixture, TestBed} from '@angular/core/testing';
+import {inject, ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {FocusTrap} from './focus-trap';
@@ -10,9 +10,13 @@ describe('FocusTrap', () => {
     let fixture: ComponentFixture<FocusTrapTestApp>;
     let focusTrapInstance: FocusTrap;
 
-    beforeEach(() => TestBed.configureTestingModule({
-      declarations: [FocusTrap, FocusTrapTestApp],
-      providers: [InteractivityChecker]
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        declarations: [FocusTrap, FocusTrapTestApp],
+        providers: [InteractivityChecker]
+      });
+
+      TestBed.compileComponents();
     }));
 
     beforeEach(inject([InteractivityChecker], (c: InteractivityChecker) => {
@@ -43,9 +47,13 @@ describe('FocusTrap', () => {
     let fixture: ComponentFixture<FocusTrapTargetTestApp>;
     let focusTrapInstance: FocusTrap;
 
-    beforeEach(() => TestBed.configureTestingModule({
-      declarations: [FocusTrap, FocusTrapTargetTestApp],
-      providers: [InteractivityChecker]
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        declarations: [FocusTrap, FocusTrapTargetTestApp],
+        providers: [InteractivityChecker]
+      });
+
+      TestBed.compileComponents();
     }));
 
     beforeEach(inject([InteractivityChecker], (c: InteractivityChecker) => {
