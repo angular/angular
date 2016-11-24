@@ -399,7 +399,6 @@ export declare class ElementRef {
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     context: C;
     rootNodes: any[];
-    abstract destroy(): void;
 }
 
 /** @stable */
@@ -1002,6 +1001,7 @@ export declare enum ViewEncapsulation {
 /** @stable */
 export declare abstract class ViewRef extends ChangeDetectorRef {
     destroyed: boolean;
+    abstract destroy(): void;
     abstract onDestroy(callback: Function): any;
 }
 
