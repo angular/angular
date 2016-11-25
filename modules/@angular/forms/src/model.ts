@@ -36,10 +36,6 @@ export const PENDING = 'PENDING';
  */
 export const DISABLED = 'DISABLED';
 
-export function isControl(control: Object): boolean {
-  return control instanceof AbstractControl;
-}
-
 function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
   if (path == null) return null;
 
