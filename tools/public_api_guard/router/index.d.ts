@@ -249,7 +249,7 @@ export declare class RouterLink {
     routerLink: any[] | string;
     skipLocationChange: boolean;
     urlTree: UrlTree;
-    constructor(router: Router, route: ActivatedRoute);
+    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer, el: ElementRef);
     onClick(): boolean;
 }
 
