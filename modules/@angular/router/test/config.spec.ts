@@ -67,8 +67,15 @@ describe('config', () => {
     it('should throw when path and matcher are missing', () => {
       expect(() => {
         validateConfig([{component: null, redirectTo: 'b'}]);
-      }).toThrowError(`Invalid route configuration: routes must have path specified`);
+      }).toThrowError(`Invalid route configuration: routes must have path or matcher specified`);
     });
+
+    it('should not throw when path is missing but matcher is present', () => {
+      expect(() => validateConfig([{component: ComponentA, matcher: <any>'func'}])).not.toThrow();
+    });
+
+    it('should not throw when matcher is missing but path is present',
+       () => expect(() => validateConfig([{component: ComponentA, path: 'a'}])).not.toThrow());
 
     it('should throw when none of component and children or direct are missing', () => {
       expect(() => { validateConfig([{path: 'a'}]); })
