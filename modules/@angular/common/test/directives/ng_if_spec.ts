@@ -46,6 +46,31 @@ export function main() {
          expect(fixture.nativeElement).toHaveText('hello2');
        }));
 
+    it('should assign data to a local variable', async(() => {
+         const template =
+             '<div><template [ngIf]="objCondition" let-user><span>{{user.name}}</span></template></div>';
+
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('name');
+       }));
+
+    it('should update local variable with new data', async(() => {
+         const template =
+             '<div><template [ngIf]="objCondition" let-user><span>{{user.name}}</span></template></div>';
+
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('name');
+
+         getComponent().objCondition = {name: 'new name'};
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('new name');
+       }));
+
     it('should toggle node when condition changes', async(() => {
          const template = '<div><span template="ngIf booleanCondition">hello</span></div>';
 
@@ -153,6 +178,38 @@ export function main() {
          expect(getDOM().hasClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo'))
              .toBe(true);
        }));
+
+    it('should show alternative template until condition is true', async(() => {
+         const template =
+             `<div><template [ngIf]="objCondition" [ngIfElse]="loading" let-user><span>{{user.name}}</span></template></div><template #loading><span>Loading</span></template>`;
+
+         fixture = createTestComponent(template);
+         getComponent().objCondition = null;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('Loading');
+
+         getComponent().objCondition = {name: 'name'};
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('name');
+       }));
+
+    it('should not recreate the alternative template if the condition goes from false to false',
+       async(() => {
+         const template =
+             `<div><template [ngIf]="objCondition" [ngIfElse]="loading" let-user><span>{{user.name}}</span></template></div><template #loading><span>Loading</span></template>`;
+
+         fixture = createTestComponent(template);
+         getComponent().objCondition = null;
+         fixture.detectChanges();
+         getDOM().addClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo');
+
+         getComponent().objCondition = undefined;
+         fixture.detectChanges();
+         expect(getDOM().hasClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo'))
+             .toBe(true);
+       }));
   });
 }
 
@@ -162,6 +219,7 @@ class TestComponent {
   nestedBooleanCondition: boolean = true;
   numberCondition: number = 1;
   stringCondition: string = 'foo';
+  objCondition: any = {id: 1, name: 'name'};
   functionCondition: Function = (s: any, n: any): boolean => s == 'foo' && n == 1;
 }
 

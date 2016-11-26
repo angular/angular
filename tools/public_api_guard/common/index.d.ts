@@ -128,9 +128,11 @@ export declare class NgFor implements DoCheck, OnChanges {
 }
 
 /** @stable */
-export declare class NgIf {
+export declare class NgIf implements OnChanges {
     ngIf: any;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<Object>);
+    ngIfElse: TemplateRef<NgIfContext>;
+    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgIfContext>);
+    ngOnChanges(changes: SimpleChanges): void;
 }
 
 /** @experimental */
