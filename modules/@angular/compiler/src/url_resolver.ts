@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
+import {Inject, Injectable, PACKAGE_ROOT_URL, Provider} from '@angular/core';
 
 import {isBlank, isPresent} from './facade/lang';
 
@@ -24,7 +24,7 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
 /**
  * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
  */
-export var DEFAULT_PACKAGE_URL_PROVIDER = {
+export const DEFAULT_PACKAGE_URL_PROVIDER: Provider = {
   provide: PACKAGE_ROOT_URL,
   useValue: '/'
 };
