@@ -15,7 +15,6 @@ import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
-import {camelCaseToDashCase} from './util';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'xlink': 'http://www.w3.org/1999/xlink',
@@ -66,10 +65,15 @@ export const DIRECT_DOM_RENDERER: DirectRenderer = {
   parentElement(node: Node): Element{return node.parentNode as Element;}
 };
 
+function attachShadow() {
+  return (<any>document.body).attachShadow.call(this, {mode: 'open'});
+}
+
 export class DomRenderer implements Renderer {
   private _contentAttr: string;
   private _hostAttr: string;
   private _styles: string[];
+  private _createShadowRoot: Function = (<any>document.body).createShadowRoot || attachShadow;
 
   directRenderer: DirectRenderer = DIRECT_DOM_RENDERER;
 
@@ -126,7 +130,7 @@ export class DomRenderer implements Renderer {
   createViewRoot(hostElement: Element): Element|DocumentFragment {
     let nodesParent: Element|DocumentFragment;
     if (this.componentProto.encapsulation === ViewEncapsulation.Native) {
-      nodesParent = (hostElement as any).createShadowRoot();
+      nodesParent = this._createShadowRoot.call(hostElement);
       this._rootRenderer.sharedStylesHost.addHost(nodesParent);
       for (let i = 0; i < this._styles.length; i++) {
         const styleEl = document.createElement('style');
