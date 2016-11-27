@@ -82,7 +82,6 @@ export class MockConnection implements Connection {
     // }
   }
 
-  // TODO(jeffbcross): consider using Response type
   /**
    * Emits the provided error object as an error to the {@link Response} {@link EventEmitter}
    * returned
@@ -98,7 +97,7 @@ export class MockConnection implements Connection {
    * ```
    *
    */
-  mockError(err?: Error) {
+  mockError(err?: Error|Response) {
     // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
