@@ -77,3 +77,86 @@ Here's a simple example of using the sidenav:
 </app>
 ```
 
+For a fullscreen sidenav, the recommended approach is set up the DOM such that the
+`md-sidenav-layout` can naturally take up the full space:
+
+```html
+<app>
+  <md-sidenav-layout>
+    <md-sidenav mode="side" opened="true">Drawer content</md-sidenav>
+    <div class="my-content">Main content</div>
+  </md-sidenav-layout>
+</app>
+```
+```css
+html, body, material-app, md-sidenav-layout, .my-content {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+```
+
+For a sidenav with a FAB (or other floating element), the recommended approach is to place the FAB
+outside of the scrollable region and absolutely position it.
+
+```html
+<app>
+  <md-sidenav-layout class="my-layout">
+    <md-sidenav mode="side" opened="true">
+      <button md-mini-fab class="my-fab">
+        <md-icon>add</md-icon>
+      </button>
+      <div class="my-scrolling-content">
+        Lorem ipsum dolor sit amet, pede a libero aenean phasellus, lectus metus sint ut risus,
+        fusce vel in pellentesque. Nisl rutrum etiam morbi consectetuer tempor magna, aenean nullam
+        nunc id, neque vivamus interdum sociis nulla scelerisque sem, dolor id wisi turpis magna
+        aliquam magna. Risus accumsan hac eget etiam donec sed, senectus erat mattis quam, tempor
+        vel urna occaecat cras, metus urna augue nec at. Et morbi amet dui praesent, nec eu at,
+        ligula ipsum dui sollicitudin, quis nisl massa viverra ligula, mauris fermentum orci arcu
+        enim fringilla. Arcu erat nulla in aenean lacinia ullamcorper, urna ante nam et sagittis,
+        tristique vehicula nibh ipsum vivamus, proin proin. Porta commodo nibh quis libero amet.
+        Taciti dui, sapien consectetuer.
+      </div>
+    </md-sidenav>
+    <button md-mini-fab class="my-fab">
+      <md-icon>add</md-icon>
+    </button>
+    <div class="my-scrolling-content">
+      Lorem ipsum dolor sit amet, pede a libero aenean phasellus, lectus metus sint ut risus, fusce
+      vel in pellentesque. Nisl rutrum etiam morbi consectetuer tempor magna, aenean nullam nunc id,
+      neque vivamus interdum sociis nulla scelerisque sem, dolor id wisi turpis magna aliquam magna.
+      Risus accumsan hac eget etiam donec sed, senectus erat mattis quam, tempor vel urna occaecat
+      cras, metus urna augue nec at. Et morbi amet dui praesent, nec eu at, ligula ipsum dui
+      sollicitudin, quis nisl massa viverra ligula, mauris fermentum orci arcu enim fringilla. Arcu
+      erat nulla in aenean lacinia ullamcorper, urna ante nam et sagittis, tristique vehicula nibh
+      ipsum vivamus, proin proin. Porta commodo nibh quis libero amet. Taciti dui, sapien
+      consectetuer.
+    </div>
+  </md-sidenav-layout>
+</app>
+```
+```css
+.my-layout {
+  width: 500px;
+  height: 300px;
+}
+
+.my-layout md-sidenav {
+  max-width: 200px;
+}
+
+.my-layout .md-sidenav-content,
+.my-layout md-sidenav {
+  display: flex;
+}
+
+.my-scrolling-content {
+  overflow: auto;
+}
+
+button.my-fab {
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
+}
+```
