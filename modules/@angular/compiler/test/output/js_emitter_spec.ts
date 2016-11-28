@@ -14,10 +14,12 @@ import {ImportResolver} from '@angular/compiler/src/output/path_util';
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier =
-    new CompileIdentifierMetadata({reference: {name: 'someLocalId', filePath: someModuleUrl}});
-const externalModuleIdentifier = new CompileIdentifierMetadata(
-    {reference: {name: 'someExternalId', filePath: anotherModuleUrl}});
+const sameModuleIdentifier: CompileIdentifierMetadata = {
+  reference: {name: 'someLocalId', filePath: someModuleUrl}
+};
+const externalModuleIdentifier: CompileIdentifierMetadata = {
+  reference: {name: 'someExternalId', filePath: anotherModuleUrl}
+};
 
 class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {

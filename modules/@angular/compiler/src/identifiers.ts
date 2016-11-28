@@ -350,14 +350,14 @@ export function resolveIdentifier(identifier: IdentifierSpec) {
   return reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
 }
 
-export function createIdentifier(identifier: IdentifierSpec) {
+export function createIdentifier(identifier: IdentifierSpec): CompileIdentifierMetadata {
   const reference =
       reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
-  return new CompileIdentifierMetadata({reference: reference});
+  return {reference: reference};
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {
-  return new CompileTokenMetadata({identifier: identifier});
+  return {identifier: identifier};
 }
 
 export function createIdentifierToken(identifier: IdentifierSpec): CompileTokenMetadata {
@@ -367,5 +367,5 @@ export function createIdentifierToken(identifier: IdentifierSpec): CompileTokenM
 export function createEnumIdentifier(
     enumType: IdentifierSpec, name: string): CompileIdentifierMetadata {
   const resolvedEnum = reflector.resolveEnum(resolveIdentifier(enumType), name);
-  return new CompileIdentifierMetadata({reference: resolvedEnum});
+  return {reference: resolvedEnum};
 }

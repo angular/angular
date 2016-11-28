@@ -30,6 +30,11 @@ const MOCK_SCHEMA_REGISTRY = [{
       ['onEvent'], ['onEvent']),
 }];
 
+function createTypeMeta({reference, diDeps}: {reference: any, diDeps?: any[]}):
+    CompileTypeMetadata {
+  return {reference: reference, diDeps: diDeps || [], lifecycleHooks: []};
+}
+
 export function main() {
   let ngIf: CompileDirectiveSummary;
   let parse: (
@@ -48,18 +53,17 @@ export function main() {
       const component = CompileDirectiveMetadata.create({
         selector: 'root',
         template: someTemplate,
-        type: new CompileTypeMetadata({reference: {filePath: someModuleUrl, name: 'Root'}}),
+        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Root'}}),
         isComponent: true
       });
-      ngIf =
-          CompileDirectiveMetadata
-              .create({
-                selector: '[ngIf]',
-                template: someTemplate,
-                type: new CompileTypeMetadata({reference: {filePath: someModuleUrl, name: 'NgIf'}}),
-                inputs: ['ngIf']
-              })
-              .toSummary();
+      ngIf = CompileDirectiveMetadata
+                 .create({
+                   selector: '[ngIf]',
+                   template: someTemplate,
+                   type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'NgIf'}}),
+                   inputs: ['ngIf']
+                 })
+                 .toSummary();
 
       parse =
           (template: string, directives: CompileDirectiveSummary[],
@@ -300,8 +304,7 @@ export function main() {
              inject([TemplateParser], (parser: TemplateParser) => {
                const component = CompileDirectiveMetadata.create({
                  selector: 'test',
-                 type:
-                     new CompileTypeMetadata({reference: {filePath: someModuleUrl, name: 'Test'}}),
+                 type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Test'}}),
                  isComponent: true,
                  template: new CompileTemplateMetadata({interpolation: ['{%', '%}']})
                });
@@ -468,7 +471,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                          .create({
                            selector: 'div',
                            template: new CompileTemplateMetadata({animations: animationEntries}),
-                           type: new CompileTypeMetadata({
+                           type: createTypeMeta({
                              reference: {filePath: someModuleUrl, name: 'DirA'},
                            }),
                            host: {'[@prop]': 'expr'}
@@ -480,14 +483,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                });
 
             it('should throw descriptive error when a host binding is not a string expression', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'broken',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 host: {'[class.foo]': null}
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'broken',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        host: {'[class.foo]': null}
+                      })
+                      .toSummary();
 
               expect(() => { parse('<broken></broken>', [dirA]); })
                   .toThrowError(
@@ -495,14 +498,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should throw descriptive error when a host event is not a string expression', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'broken',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 host: {'(click)': null}
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'broken',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        host: {'(click)': null}
+                      })
+                      .toSummary();
 
               expect(() => { parse('<broken></broken>', [dirA]); })
                   .toThrowError(
@@ -566,7 +569,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                                   .create({
                                     selector: 'template',
                                     outputs: ['e'],
-                                    type: new CompileTypeMetadata(
+                                    type: createTypeMeta(
                                         {reference: {filePath: someModuleUrl, name: 'DirA'}})
                                   })
                                   .toSummary();
@@ -605,21 +608,21 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                  const dirA = CompileDirectiveMetadata
                                   .create({
                                     selector: '[a]',
-                                    type: new CompileTypeMetadata(
+                                    type: createTypeMeta(
                                         {reference: {filePath: someModuleUrl, name: 'DirA'}})
                                   })
                                   .toSummary();
                  const dirB = CompileDirectiveMetadata
                                   .create({
                                     selector: '[b]',
-                                    type: new CompileTypeMetadata(
+                                    type: createTypeMeta(
                                         {reference: {filePath: someModuleUrl, name: 'DirB'}})
                                   })
                                   .toSummary();
                  const dirC = CompileDirectiveMetadata
                                   .create({
                                     selector: '[c]',
-                                    type: new CompileTypeMetadata(
+                                    type: createTypeMeta(
                                         {reference: {filePath: someModuleUrl, name: 'DirC'}})
                                   })
                                   .toSummary();
@@ -631,20 +634,20 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                });
 
             it('should locate directives in property bindings', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a=b]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}})
-                               })
-                               .toSummary();
-              const dirB = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[b]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirB'}})
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a=b]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
+                      })
+                      .toSummary();
+              const dirB =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[b]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirB'}})
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div [a]="b">', [dirA, dirB]))).toEqual([
                 [ElementAst, 'div'],
                 [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'b', null],
@@ -653,13 +656,13 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should locate directives in event bindings', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirB'}})
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirB'}})
+                      })
+                      .toSummary();
 
               expect(humanizeTplAst(parse('<div (a)="b">', [dirA]))).toEqual([
                 [ElementAst, 'div'], [BoundEventAst, 'a', null, 'b'], [DirectiveAst, dirA]
@@ -667,14 +670,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse directive host properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 host: {'[a]': 'expr'}
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        host: {'[a]': 'expr'}
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [DirectiveAst, dirA],
                 [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'expr', null]
@@ -682,28 +685,28 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse directive host listeners', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 host: {'(a)': 'expr'}
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        host: {'(a)': 'expr'}
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a', null, 'expr']
               ]);
             });
 
             it('should parse directive properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 inputs: ['aProp']
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        inputs: ['aProp']
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div [aProp]="expr"></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [DirectiveAst, dirA],
                 [BoundDirectivePropertyAst, 'aProp', 'expr']
@@ -711,14 +714,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse renamed directive properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 inputs: ['b:a']
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        inputs: ['b:a']
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div [a]="expr"></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [DirectiveAst, dirA],
                 [BoundDirectivePropertyAst, 'b', 'expr']
@@ -726,14 +729,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should parse literal directive properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 inputs: ['a']
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        inputs: ['a']
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div a="literal"></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [AttrAst, 'a', 'literal'], [DirectiveAst, dirA],
                 [BoundDirectivePropertyAst, 'a', '"literal"']
@@ -741,14 +744,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should favor explicit bound properties over literal properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 inputs: ['a']
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        inputs: ['a']
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div a="literal" [a]="\'literal2\'"></div>', [dirA])))
                   .toEqual([
                     [ElementAst, 'div'], [AttrAst, 'a', 'literal'], [DirectiveAst, dirA],
@@ -757,14 +760,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should support optional directive properties', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'div',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 inputs: ['a']
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: 'div',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        inputs: ['a']
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [DirectiveAst, dirA]
               ]);
@@ -779,10 +782,9 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
               let token: CompileTokenMetadata;
               if (value.startsWith('type:')) {
                 const name = value.substring(5);
-                token = new CompileTokenMetadata(
-                    {identifier: new CompileTypeMetadata({reference: <any>name})});
+                token = {identifier: createTypeMeta({reference: <any>name})};
               } else {
-                token = new CompileTokenMetadata({value: value});
+                token = {value: value};
               }
               return token;
             }
@@ -803,12 +805,12 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                 isHost = true;
                 value = value.substring(5);
               }
-              return new CompileDiDependencyMetadata({
+              return {
                 token: createToken(value),
                 isOptional: isOptional,
                 isSelf: isSelf,
                 isHost: isHost
-              });
+              };
             }
 
             function createProvider(
@@ -816,12 +818,15 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                 CompileProviderMetadata {
               const name = `provider${nextProviderId++}`;
               const compileToken = createToken(token);
-              return new CompileProviderMetadata({
+              return {
                 token: compileToken,
                 multi: multi,
-                useClass: new CompileTypeMetadata({reference: tokenReference(compileToken)}),
-                deps: deps.map(createDep)
-              });
+                useClass: createTypeMeta({reference: tokenReference(compileToken)}),
+                deps: deps.map(createDep),
+                useExisting: undefined,
+                useFactory: undefined,
+                useValue: undefined
+              };
             }
 
             function createDir(
@@ -836,7 +841,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
               return CompileDirectiveMetadata
                   .create({
                     selector: selector,
-                    type: new CompileTypeMetadata({
+                    type: createTypeMeta({
                       reference: <any>selector,
                       diDeps: deps.map(createDep),
                     }),
@@ -844,8 +849,15 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                     template: new CompileTemplateMetadata({ngContentSelectors: []}),
                     providers: providers,
                     viewProviders: viewProviders,
-                    queries: queries.map(
-                        (value) => new CompileQueryMetadata({selectors: [createToken(value)]}))
+                    queries: queries.map((value) => {
+                      return {
+                        selectors: [createToken(value)],
+                        descendants: false,
+                        first: false,
+                        propertyName: 'test',
+                        read: undefined
+                      };
+                    })
                   })
                   .toSummary();
             }
@@ -1087,14 +1099,14 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             });
 
             it('should assign references to directives via exportAs', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 exportAs: 'dirA'
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        exportAs: 'dirA'
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div a #a="dirA"></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'],
                 [AttrAst, 'a', ''],
@@ -1133,16 +1145,16 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                });
 
             it('should assign references with empty value to components', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 isComponent: true,
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                 exportAs: 'dirA',
-                                 template: new CompileTemplateMetadata({ngContentSelectors: []})
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a]',
+                        isComponent: true,
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                        exportAs: 'dirA',
+                        template: new CompileTemplateMetadata({ngContentSelectors: []})
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div a #a></div>', [dirA]))).toEqual([
                 [ElementAst, 'div'],
                 [AttrAst, 'a', ''],
@@ -1152,13 +1164,13 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             });
 
             it('should not locate directives in references', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}})
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<div ref-a>', [dirA]))).toEqual([
                 [ElementAst, 'div'], [ReferenceAst, 'a', null]
               ]);
@@ -1201,13 +1213,13 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             });
 
             it('should not locate directives in variables', () => {
-              const dirA = CompileDirectiveMetadata
-                               .create({
-                                 selector: '[a]',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'DirA'}})
-                               })
-                               .toSummary();
+              const dirA =
+                  CompileDirectiveMetadata
+                      .create({
+                        selector: '[a]',
+                        type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
+                      })
+                      .toSummary();
               expect(humanizeTplAst(parse('<template let-a="b"></template>', [dirA]))).toEqual([
                 [EmbeddedTemplateAst], [VariableAst, 'a', 'b']
               ]);
@@ -1249,7 +1261,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 const dirA = CompileDirectiveMetadata
                                  .create({
                                    selector: '[a=b]',
-                                   type: new CompileTypeMetadata(
+                                   type: createTypeMeta(
                                        {reference: {filePath: someModuleUrl, name: 'DirA'}}),
                                    inputs: ['a']
                                  })
@@ -1257,7 +1269,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 const dirB = CompileDirectiveMetadata
                                  .create({
                                    selector: '[b]',
-                                   type: new CompileTypeMetadata(
+                                   type: createTypeMeta(
                                        {reference: {filePath: someModuleUrl, name: 'DirB'}})
                                  })
                                  .toSummary();
@@ -1272,7 +1284,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 const dirA = CompileDirectiveMetadata
                                  .create({
                                    selector: '[a]',
-                                   type: new CompileTypeMetadata(
+                                   type: createTypeMeta(
                                        {reference: {filePath: someModuleUrl, name: 'DirA'}})
                                  })
                                  .toSummary();
@@ -1285,7 +1297,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 const dirA = CompileDirectiveMetadata
                                  .create({
                                    selector: '[a]',
-                                   type: new CompileTypeMetadata(
+                                   type: createTypeMeta(
                                        {reference: {filePath: someModuleUrl, name: 'DirA'}})
                                  })
                                  .toSummary();
@@ -1322,7 +1334,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 .create({
                   selector: selector,
                   isComponent: true,
-                  type: new CompileTypeMetadata(
+                  type: createTypeMeta(
                       {reference: {filePath: someModuleUrl, name: `SomeComp${compCounter++}`}}),
                   template: new CompileTemplateMetadata({ngContentSelectors: ngContentSelectors})
                 })
@@ -1333,7 +1345,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             return CompileDirectiveMetadata
                 .create({
                   selector: selector,
-                  type: new CompileTypeMetadata(
+                  type: createTypeMeta(
                       {reference: {filePath: someModuleUrl, name: `SomeDir${compCounter++}`}})
                 })
                 .toSummary();
@@ -1504,14 +1516,14 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("<div [ER
           });
 
           it('should report invalid host property names', () => {
-            const dirA = CompileDirectiveMetadata
-                             .create({
-                               selector: 'div',
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                               host: {'[invalidProp]': 'someProp'}
-                             })
-                             .toSummary();
+            const dirA =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'div',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                      host: {'[invalidProp]': 'someProp'}
+                    })
+                    .toSummary();
             expect(() => parse('<div></div>', [dirA])).toThrowError(`Template parse errors:
 Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("[ERROR ->]<div></div>"): TestComp@0:0, Directive DirA`);
           });
@@ -1523,36 +1535,36 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
 
           it('should not throw on invalid property names if the property is used by a directive',
              () => {
-               const dirA = CompileDirectiveMetadata
-                                .create({
-                                  selector: 'div',
-                                  type: new CompileTypeMetadata(
-                                      {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                  inputs: ['invalidProp']
-                                })
-                                .toSummary();
+               const dirA =
+                   CompileDirectiveMetadata
+                       .create({
+                         selector: 'div',
+                         type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                         inputs: ['invalidProp']
+                       })
+                       .toSummary();
                expect(() => parse('<div [invalid-prop]></div>', [dirA])).not.toThrow();
              });
 
           it('should not allow more than 1 component per element', () => {
-            const dirA = CompileDirectiveMetadata
-                             .create({
-                               selector: 'div',
-                               isComponent: true,
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                               template: new CompileTemplateMetadata({ngContentSelectors: []})
-                             })
-                             .toSummary();
-            const dirB = CompileDirectiveMetadata
-                             .create({
-                               selector: 'div',
-                               isComponent: true,
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirB'}}),
-                               template: new CompileTemplateMetadata({ngContentSelectors: []})
-                             })
-                             .toSummary();
+            const dirA =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'div',
+                      isComponent: true,
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                      template: new CompileTemplateMetadata({ngContentSelectors: []})
+                    })
+                    .toSummary();
+            const dirB =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'div',
+                      isComponent: true,
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirB'}}),
+                      template: new CompileTemplateMetadata({ngContentSelectors: []})
+                    })
+                    .toSummary();
             expect(() => parse('<div>', [dirB, dirA]))
                 .toThrowError(
                     `Template parse errors:\n` +
@@ -1563,15 +1575,15 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
 
           it('should not allow components or element bindings nor dom events on explicit embedded templates',
              () => {
-               const dirA = CompileDirectiveMetadata
-                                .create({
-                                  selector: '[a]',
-                                  isComponent: true,
-                                  type: new CompileTypeMetadata(
-                                      {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                                  template: new CompileTemplateMetadata({ngContentSelectors: []})
-                                })
-                                .toSummary();
+               const dirA =
+                   CompileDirectiveMetadata
+                       .create({
+                         selector: '[a]',
+                         isComponent: true,
+                         type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                         template: new CompileTemplateMetadata({ngContentSelectors: []})
+                       })
+                       .toSummary();
                expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
                    .toThrowError(`Template parse errors:
 Event binding e not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section. ("<template [a]="b" [ERROR ->](e)="f"></template>"): TestComp@0:18
@@ -1580,15 +1592,15 @@ Property binding a not used by any directive on an embedded template. Make sure 
              });
 
           it('should not allow components or element bindings on inline embedded templates', () => {
-            const dirA = CompileDirectiveMetadata
-                             .create({
-                               selector: '[a]',
-                               isComponent: true,
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                               template: new CompileTemplateMetadata({ngContentSelectors: []})
-                             })
-                             .toSummary();
+            const dirA =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: '[a]',
+                      isComponent: true,
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                      template: new CompileTemplateMetadata({ngContentSelectors: []})
+                    })
+                    .toSummary();
             expect(() => parse('<div *a="b"></div>', [dirA])).toThrowError(`Template parse errors:
 Components on an embedded template: DirA ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0
 Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section. ("[ERROR ->]<div *a="b"></div>"): TestComp@0:0`);
@@ -1740,22 +1752,22 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive', () => {
-            const dirA = CompileDirectiveMetadata
-                             .create({
-                               selector: '[a]',
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}})
-                             })
-                             .toSummary();
-            const comp = CompileDirectiveMetadata
-                             .create({
-                               selector: 'div',
-                               isComponent: true,
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'ZComp'}}),
-                               template: new CompileTemplateMetadata({ngContentSelectors: []})
-                             })
-                             .toSummary();
+            const dirA =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: '[a]',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
+                    })
+                    .toSummary();
+            const comp =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'div',
+                      isComponent: true,
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'ZComp'}}),
+                      template: new CompileTemplateMetadata({ngContentSelectors: []})
+                    })
+                    .toSummary();
             expect(humanizeTplAstSourceSpans(parse('<div a>', [dirA, comp]))).toEqual([
               [ElementAst, 'div', '<div a>'], [AttrAst, 'a', '', 'a'],
               [DirectiveAst, dirA, '<div a>'], [DirectiveAst, comp, '<div a>']
@@ -1763,17 +1775,17 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive in namespace', () => {
-            const tagSel = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'circle',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'elDir'}})
-                               })
-                               .toSummary();
+            const tagSel =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'circle',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'elDir'}})
+                    })
+                    .toSummary();
             const attrSel = CompileDirectiveMetadata
                                 .create({
                                   selector: '[href]',
-                                  type: new CompileTypeMetadata(
+                                  type: createTypeMeta(
                                       {reference: {filePath: someModuleUrl, name: 'attrDir'}})
                                 })
                                 .toSummary();
@@ -1791,14 +1803,14 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support directive property', () => {
-            const dirA = CompileDirectiveMetadata
-                             .create({
-                               selector: 'div',
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}}),
-                               inputs: ['aProp']
-                             })
-                             .toSummary();
+            const dirA =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'div',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                      inputs: ['aProp']
+                    })
+                    .toSummary();
             expect(humanizeTplAstSourceSpans(parse('<div [aProp]="foo"></div>', [dirA]))).toEqual([
               [ElementAst, 'div', '<div [aProp]="foo">'],
               [DirectiveAst, dirA, '<div [aProp]="foo">'],
@@ -1807,13 +1819,13 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should support endSourceSpan for elements', () => {
-            const tagSel = CompileDirectiveMetadata
-                               .create({
-                                 selector: 'circle',
-                                 type: new CompileTypeMetadata(
-                                     {reference: {filePath: someModuleUrl, name: 'elDir'}})
-                               })
-                               .toSummary();
+            const tagSel =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'circle',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'elDir'}})
+                    })
+                    .toSummary();
             const result = parse('<circle></circle>', [tagSel]);
             const circle = result[0] as ElementAst;
             expect(circle.endSourceSpan).toBeDefined();
@@ -1822,20 +1834,20 @@ Property binding a not used by any directive on an embedded template. Make sure 
           });
 
           it('should report undefined for endSourceSpan for elements without an end-tag', () => {
-            const ulSel = CompileDirectiveMetadata
-                              .create({
-                                selector: 'ul',
-                                type: new CompileTypeMetadata(
-                                    {reference: {filePath: someModuleUrl, name: 'ulDir'}})
-                              })
-                              .toSummary();
-            const liSel = CompileDirectiveMetadata
-                              .create({
-                                selector: 'li',
-                                type: new CompileTypeMetadata(
-                                    {reference: {filePath: someModuleUrl, name: 'liDir'}})
-                              })
-                              .toSummary();
+            const ulSel =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'ul',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'ulDir'}})
+                    })
+                    .toSummary();
+            const liSel =
+                CompileDirectiveMetadata
+                    .create({
+                      selector: 'li',
+                      type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'liDir'}})
+                    })
+                    .toSummary();
             const result = parse('<ul><li><li></ul>', [ulSel, liSel]);
             const ul = result[0] as ElementAst;
             const li = ul.children[0] as ElementAst;
@@ -1845,11 +1857,11 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
         describe('pipes', () => {
           it('should allow pipes that have been defined as dependencies', () => {
-            const testPipe = new CompilePipeMetadata({
-                               name: 'test',
-                               type: new CompileTypeMetadata(
-                                   {reference: {filePath: someModuleUrl, name: 'DirA'}})
-                             }).toSummary();
+            const testPipe =
+                new CompilePipeMetadata({
+                  name: 'test',
+                  type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
+                }).toSummary();
             expect(() => parse('{{a | test}}', [], [testPipe])).not.toThrow();
           });
 

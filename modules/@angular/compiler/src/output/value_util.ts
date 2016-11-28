@@ -30,12 +30,10 @@ class _ValueOutputAstTransformer implements ValueTransformer {
   visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
 
   visitOther(value: any, type: o.Type): o.Expression {
-    if (value instanceof CompileIdentifierMetadata) {
-      return o.importExpr(value);
-    } else if (value instanceof o.Expression) {
+    if (value instanceof o.Expression) {
       return value;
     } else {
-      throw new Error(`Illegal state: Don't now how to compile value ${value}`);
+      return o.importExpr({reference: value});
     }
   }
 }

@@ -99,7 +99,7 @@ export class CompileElement extends CompileNode {
   private _createComponentFactoryResolver() {
     const entryComponents =
         this.component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
-          const id = new CompileIdentifierMetadata();
+          const id: CompileIdentifierMetadata = {reference: null};
           this.view.targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
           return id;
         });
@@ -112,10 +112,10 @@ export class CompileElement extends CompileNode {
           injectFromViewParentInjector(
               this.view, createIdentifierToken(Identifiers.ComponentFactoryResolver), false)
         ]);
-    const provider = new CompileProviderMetadata({
+    const provider: CompileProviderMetadata = {
       token: createIdentifierToken(Identifiers.ComponentFactoryResolver),
       useValue: createComponentFactoryResolverExpr
-    });
+    };
     // Add ComponentFactoryResolver as first provider as it does not have deps on other providers
     // ProviderAstType.PrivateService as only the component and its view can see it,
     // but nobody else
@@ -140,8 +140,10 @@ export class CompileElement extends CompileNode {
           o.importExpr(createIdentifier(Identifiers.TemplateRef_)).instantiate([
             o.THIS_EXPR, o.literal(this.nodeIndex), this.renderNode
           ]);
-      const provider = new CompileProviderMetadata(
-          {token: createIdentifierToken(Identifiers.TemplateRef), useValue: createTemplateRefExpr});
+      const provider: CompileProviderMetadata = {
+        token: createIdentifierToken(Identifiers.TemplateRef),
+        useValue: createTemplateRefExpr
+      };
       // Add TemplateRef as first provider as it does not have deps on other providers
       this._resolvedProvidersArray.unshift(new ProviderAst(
           provider.token, false, true, [provider], ProviderAstType.Builtin, [],
@@ -166,9 +168,7 @@ export class CompileElement extends CompileNode {
           resolvedProvider.providerType === ProviderAstType.Directive;
       const providerValueExpressions = resolvedProvider.providers.map((provider) => {
         if (provider.useExisting) {
-          return this._getDependency(
-              resolvedProvider.providerType,
-              new CompileDiDependencyMetadata({token: provider.useExisting}));
+          return this._getDependency(resolvedProvider.providerType, {token: provider.useExisting});
         } else if (provider.useFactory) {
           const deps = provider.deps || provider.useFactory.diDeps;
           const depsExpr =
@@ -179,7 +179,7 @@ export class CompileElement extends CompileNode {
           const depsExpr =
               deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
           if (isDirectiveWrapper) {
-            const directiveWrapperIdentifier = new CompileIdentifierMetadata();
+            const directiveWrapperIdentifier: CompileIdentifierMetadata = {reference: null};
             this.view.targetDependencies.push(new DirectiveWrapperDependency(
                 provider.useClass, DirectiveWrapperCompiler.dirWrapperClassName(provider.useClass),
                 directiveWrapperIdentifier));
@@ -226,7 +226,7 @@ export class CompileElement extends CompileNode {
         varValue = this.renderNode;
       }
       this.view.locals.set(varName, varValue);
-      const varToken = new CompileTokenMetadata({value: varName});
+      const varToken = {value: varName};
       queriesWithReads.push(
           ...this._getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
     });
@@ -363,8 +363,7 @@ export class CompileElement extends CompileNode {
     // check parent elements
     while (!result && !currElement.parent.isNull()) {
       currElement = currElement.parent;
-      result = currElement._getLocalDependency(
-          ProviderAstType.PublicService, new CompileDiDependencyMetadata({token: dep.token}));
+      result = currElement._getLocalDependency(ProviderAstType.PublicService, {token: dep.token});
     }
 
     if (!result) {

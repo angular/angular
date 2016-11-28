@@ -113,17 +113,17 @@ export class AotCompiler {
     const providers: CompileProviderMetadata[] = [];
 
     if (this._localeId) {
-      providers.push(new CompileProviderMetadata({
+      providers.push({
         token: createIdentifierToken(Identifiers.LOCALE_ID),
         useValue: this._localeId,
-      }));
+      });
     }
 
     if (this._translationFormat) {
-      providers.push(new CompileProviderMetadata({
+      providers.push({
         token: createIdentifierToken(Identifiers.TRANSLATIONS_FORMAT),
         useValue: this._translationFormat
-      }));
+      });
     }
 
     const appCompileResult = this._ngModuleCompiler.compile(ngModule, providers);

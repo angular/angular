@@ -47,7 +47,7 @@ export class NgModuleCompiler {
     const bootstrapComponentFactories: CompileIdentifierMetadata[] = [];
     const entryComponentFactories =
         ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
-          const id = new CompileIdentifierMetadata();
+          const id: CompileIdentifierMetadata = {reference: null};
           if (ngModuleMeta.bootstrapComponents.indexOf(entryComponent) > -1) {
             bootstrapComponentFactories.push(id);
           }
@@ -159,7 +159,7 @@ class _InjectorBuilder implements ClassBuilder {
   private _getProviderValue(provider: CompileProviderMetadata): o.Expression {
     let result: o.Expression;
     if (isPresent(provider.useExisting)) {
-      result = this._getDependency(new CompileDiDependencyMetadata({token: provider.useExisting}));
+      result = this._getDependency({token: provider.useExisting});
     } else if (isPresent(provider.useFactory)) {
       const deps = provider.deps || provider.useFactory.diDeps;
       const depsExpr = deps.map((dep) => this._getDependency(dep));
