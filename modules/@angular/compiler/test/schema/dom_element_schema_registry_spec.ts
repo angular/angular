@@ -26,6 +26,7 @@ export function main() {
       expect(registry.hasElement('b', [])).toBeTruthy();
       expect(registry.hasElement('ng-container', [])).toBeTruthy();
       expect(registry.hasElement('ng-content', [])).toBeTruthy();
+      expect(registry.hasElement('slot', [])).toBeTruthy();
 
       expect(registry.hasElement('my-cmp', [])).toBeFalsy();
       expect(registry.hasElement('abc', [])).toBeFalsy();
@@ -40,6 +41,7 @@ export function main() {
     });
 
     it('should detect properties on regular elements', () => {
+      expect(registry.hasProperty('slot', 'name', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
       expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
       expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();

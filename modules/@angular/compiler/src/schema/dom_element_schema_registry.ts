@@ -227,6 +227,7 @@ const SCHEMA:
           'menuitem^[HTMLElement]|type,label,icon,!disabled,!checked,radiogroup,!default',
           'summary^[HTMLElement]|',
           'time^[HTMLElement]|dateTime',
+          'slot^[HTMLElement]|name',
         ];
 
 const _ATTR_TO_PROP: {[name: string]: string} = {
