@@ -25,5 +25,5 @@ To run lint, run `gulp lint`.
 ### Running benchmarks
 Not yet implemented.
 
-### Running screenshot diff tests.
+### Running screenshot diff tests
 Not yet implemented.
