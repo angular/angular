@@ -64,7 +64,11 @@ describe('MdRipple', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MdRippleModule.forRoot()],
-      declarations: [BasicRippleContainer, RippleContainerWithInputBindings],
+      declarations: [
+        BasicRippleContainer,
+        RippleContainerWithInputBindings,
+        RippleContainerWithNgIf,
+      ],
     });
   });
 
@@ -179,6 +183,20 @@ describe('MdRipple', () => {
       expect(pxStringToFloat(ripple.style.top)).toBeCloseTo(expectedTop, 1);
       expect(pxStringToFloat(ripple.style.width)).toBeCloseTo(2 * expectedRadius, 1);
       expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * expectedRadius, 1);
+    });
+
+    it('cleans up the event handlers when the container gets destroyed', () => {
+      fixture = TestBed.createComponent(RippleContainerWithNgIf);
+      fixture.detectChanges();
+
+      rippleElement = fixture.debugElement.nativeElement.querySelector('[md-ripple]');
+      rippleBackground = rippleElement.querySelector('.md-ripple-background');
+
+      fixture.componentInstance.isDestroyed = true;
+      fixture.detectChanges();
+
+      rippleElement.dispatchEvent(createMouseEvent('mousedown'));
+      expect(rippleBackground.classList).not.toContain('md-ripple-active');
     });
   });
 
@@ -366,4 +384,10 @@ class RippleContainerWithInputBindings {
   color = '';
   backgroundColor = '';
   @ViewChild(MdRipple) ripple: MdRipple;
+}
+
+@Component({ template: `<div id="container" md-ripple *ngIf="!isDestroyed"></div>` })
+class RippleContainerWithNgIf {
+  @ViewChild(MdRipple) ripple: MdRipple;
+  isDestroyed = false;
 }

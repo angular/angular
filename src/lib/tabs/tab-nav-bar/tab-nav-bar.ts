@@ -1,4 +1,13 @@
-import {Component, Input, ViewChild, ElementRef, ViewEncapsulation, Directive} from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  Directive,
+  OnDestroy,
+} from '@angular/core';
+
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/ripple';
 
@@ -50,8 +59,14 @@ export class MdTabLink {
 @Directive({
   selector: '[md-tab-link]',
 })
-export class MdTabLinkRipple extends MdRipple {
+export class MdTabLinkRipple extends MdRipple implements OnDestroy {
   constructor(private _element: ElementRef) {
     super(_element);
+  }
+
+  // In certain cases the parent destroy handler
+  // may not get called. See Angular issue #11606.
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 }
