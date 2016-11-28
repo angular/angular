@@ -12,8 +12,7 @@ import {Component} from '@angular/core';
     }
 
     .bottom-row {
-      position: absolute;
-      top: 200px;
+      margin-top: 5px;
     }
   `]
 })

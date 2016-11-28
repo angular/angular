@@ -9,6 +9,7 @@ import {SimpleCheckboxes} from '../checkbox/checkbox-e2e';
 import {DialogE2E} from '../dialog/dialog-e2e';
 import {GridListE2E} from '../grid-list/grid-list-e2e';
 import {ListE2E} from '../list/list-e2e';
+import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -21,4 +22,5 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'dialog', component: DialogE2E},
   {path: 'grid-list', component: GridListE2E},
   {path: 'list', component: ListE2E},
+  {path: 'progress-bar', component: ProgressBarE2E},
 ];
