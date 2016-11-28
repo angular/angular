@@ -167,6 +167,23 @@ describe('Overlay directives', () => {
               `Expected directive to emit an instance of ConnectedOverlayPositionChange.`);
     });
 
+    it('should emit attach and detach appropriately', () => {
+      expect(fixture.componentInstance.attachHandler).not.toHaveBeenCalled();
+      expect(fixture.componentInstance.detachHandler).not.toHaveBeenCalled();
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.attachHandler).toHaveBeenCalled();
+      expect(fixture.componentInstance.attachResult)
+          .toEqual(jasmine.any(HTMLElement),
+              `Expected pane to be populated with HTML elements when attach was called.`);
+      expect(fixture.componentInstance.detachHandler).not.toHaveBeenCalled();
+
+      fixture.componentInstance.isOpen = false;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.detachHandler).toHaveBeenCalled();
+    });
+
   });
 
 });
@@ -178,7 +195,8 @@ describe('Overlay directives', () => {
   <template connected-overlay [origin]="trigger" [open]="isOpen" [width]="width" [height]="height"
             [hasBackdrop]="hasBackdrop" backdropClass="md-test-class"
             (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
-            (positionChange)="positionChangeHandler($event)">
+            (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
+            (detach)="detachHandler()">
     <p>Menu content</p>
   </template>`,
 })
@@ -191,6 +209,12 @@ class ConnectedOverlayDirectiveTest {
   hasBackdrop: boolean;
   backdropClicked = false;
   positionChangeHandler = jasmine.createSpy('positionChangeHandler');
+  attachHandler = jasmine.createSpy('attachHandler').and.callFake(() => {
+    this.attachResult =
+        this.connectedOverlayDirective.overlayRef.overlayElement.querySelector('p') as HTMLElement;
+  });
+  detachHandler = jasmine.createSpy('detachHandler');
+  attachResult: HTMLElement;
 
   @ViewChild(ConnectedOverlayDirective) connectedOverlayDirective: ConnectedOverlayDirective;
 }

@@ -110,6 +110,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
   /** Event emitted when the backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<void>();
   @Output() positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
+  @Output() attach = new EventEmitter<void>();
+  @Output() detach = new EventEmitter<void>();
 
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 
@@ -205,6 +207,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);
+      this.attach.emit();
     }
 
     if (this.hasBackdrop) {
@@ -218,6 +221,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
   private _detachOverlay() {
     if (this._overlayRef) {
       this._overlayRef.detach();
+      this.detach.emit();
     }
 
     if (this._backdropSubscription) {
