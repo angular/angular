@@ -3,7 +3,7 @@
 
 ## Code style
 
-The [Google JavaScript Style Guide](https://google.github.io/styleguide/javascriptguide.xml) is the
+The [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) is the
 basis for our coding style, with additional guidance here where that style guide is not aligned with
 ES6 or TypeScript.
 
