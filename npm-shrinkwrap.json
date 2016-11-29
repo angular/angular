@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.2.0",
+  "version": "2.3.0-beta.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -2589,7 +2589,7 @@
     },
     "core-js": {
       "version": "2.4.1",
-      "from": "core-js@latest",
+      "from": "core-js@2.4.1",
       "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.4.1.tgz"
     },
     "core-util-is": {
@@ -4566,7 +4566,7 @@
     },
     "jasmine": {
       "version": "2.4.1",
-      "from": "jasmine@2.4.1",
+      "from": "jasmine@>=2.4.0 <2.5.0",
       "resolved": "https://registry.npmjs.org/jasmine/-/jasmine-2.4.1.tgz",
       "dependencies": {
         "glob": {
@@ -4901,7 +4901,7 @@
     },
     "lodash": {
       "version": "3.10.1",
-      "from": "lodash@>=3.8.0 <4.0.0",
+      "from": "lodash@3.10.1",
       "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
     },
     "lodash._basecopy": {
@@ -6174,9 +6174,9 @@
       "resolved": "https://registry.npmjs.org/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.12",
-      "from": "rxjs@5.0.0-beta.12",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.12.tgz"
+      "version": "5.0.0-rc.4",
+      "from": "rxjs@5.0.0-rc.4",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-rc.4.tgz"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
@@ -6572,9 +6572,9 @@
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
     },
     "symbol-observable": {
-      "version": "1.0.2",
+      "version": "1.0.4",
       "from": "symbol-observable@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.4.tgz"
     },
     "systemjs": {
       "version": "0.18.10",
@@ -6610,7 +6610,7 @@
     },
     "through2": {
       "version": "0.6.5",
-      "from": "through2@>=0.6.5 <0.7.0",
+      "from": "through2@>=0.6.3 <0.7.0",
       "resolved": "https://registry.npmjs.org/through2/-/through2-0.6.5.tgz",
       "dependencies": {
         "readable-stream": {
