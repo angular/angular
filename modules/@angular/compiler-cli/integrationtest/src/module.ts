@@ -19,7 +19,7 @@ import {BasicComp} from './basic';
 import {ComponentUsingThirdParty} from './comp_using_3rdp';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
-import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
+import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
@@ -52,7 +52,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     FormsModule,
     MdButtonModule,
     ModuleUsingCustomElements,
-    someLibModuleWithProviders(),
+    SomeLibModule.withProviders(),
     ThirdpartyModule,
   ],
   providers: [SomeService],

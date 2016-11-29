@@ -53,7 +53,7 @@ export function main() {
     it('should invoke as decorator', () => {
       function Type() {}
       TestDecorator({marker: 'WORKS'})(Type);
-      const annotations = Reflect.getMetadata('annotations', Type);
+      const annotations = Reflect.getOwnMetadata('annotations', Type);
       expect(annotations[0].marker).toEqual('WORKS');
     });
 

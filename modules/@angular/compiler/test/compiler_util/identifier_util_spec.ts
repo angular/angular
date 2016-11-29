@@ -7,7 +7,7 @@
  */
 
 import {createInlineArray} from '../../src/compiler_util/identifier_util';
-import {Identifiers, resolveIdentifier} from '../../src/identifiers';
+import {Identifiers, createIdentifier} from '../../src/identifiers';
 import * as o from '../../src/output/output_ast';
 
 export function main() {
@@ -16,7 +16,7 @@ export function main() {
     function check(argCount: number, expectedIdentifier: any) {
       const args = createArgs(argCount);
       expect(createInlineArray(args))
-          .toEqual(o.importExpr(resolveIdentifier(expectedIdentifier)).instantiate([
+          .toEqual(o.importExpr(createIdentifier(expectedIdentifier)).instantiate([
             <o.Expression>o.literal(argCount)
           ].concat(args)));
     }
@@ -31,7 +31,7 @@ export function main() {
 
     it('should work for arrays of length 0', () => {
       expect(createInlineArray([
-      ])).toEqual(o.importExpr(resolveIdentifier(Identifiers.EMPTY_INLINE_ARRAY)));
+      ])).toEqual(o.importExpr(createIdentifier(Identifiers.EMPTY_INLINE_ARRAY)));
     });
 
     it('should work for arrays of length 1 - 2', () => {

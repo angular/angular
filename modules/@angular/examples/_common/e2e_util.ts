@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/* tslint:disable:no-console  */
 import * as webdriver from 'selenium-webdriver';
 declare var browser: any;
 declare var expect: any;

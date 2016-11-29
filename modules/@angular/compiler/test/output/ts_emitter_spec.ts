@@ -8,19 +8,23 @@
 
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
-import {SimpleJsImportGenerator} from './output_emitter_util';
 
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});
+    new CompileIdentifierMetadata({reference: {name: 'someLocalId', filePath: someModuleUrl}});
 
-const externalModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
+const externalModuleIdentifier = new CompileIdentifierMetadata(
+    {reference: {name: 'someExternalId', filePath: anotherModuleUrl}});
+
+class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
+  }
+}
 
 export function main() {
   // Note supported features of our OutputAsti n TS:
@@ -316,6 +320,14 @@ export function main() {
         `import * as import0 from 'somePackage/someOtherPath';`,
         `var a:import0.someExternalId = (null as any);`
       ].join('\n'));
+    });
+
+    it('should support expression types', () => {
+      expect(emitStmt(o.variable('a')
+                          .set(o.NULL_EXPR)
+                          .toDeclStmt(o.expressionType(
+                              o.variable('b'), [o.expressionType(o.variable('c'))]))))
+          .toEqual('var a:b<c> = (null as any);');
     });
 
     it('should support combined types', () => {

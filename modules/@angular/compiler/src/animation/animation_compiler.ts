@@ -8,7 +8,7 @@
 
 
 import {isPresent} from '../facade/lang';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 
@@ -69,8 +69,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
       stylesArr.push(o.literalMap(entries));
     });
 
-    return o.importExpr(resolveIdentifier(Identifiers.AnimationStyles)).instantiate([
-      o.importExpr(resolveIdentifier(Identifiers.collectAndResolveStyles)).callFn([
+    return o.importExpr(createIdentifier(Identifiers.AnimationStyles)).instantiate([
+      o.importExpr(createIdentifier(Identifiers.collectAndResolveStyles)).callFn([
         _ANIMATION_COLLECTED_STYLES, o.literalArr(stylesArr)
       ])
     ]);
@@ -78,7 +78,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
   visitAnimationKeyframe(ast: AnimationKeyframeAst, context: _AnimationBuilderContext):
       o.Expression {
-    return o.importExpr(resolveIdentifier(Identifiers.AnimationKeyframe)).instantiate([
+    return o.importExpr(createIdentifier(Identifiers.AnimationKeyframe)).instantiate([
       o.literal(ast.offset), ast.styles.visit(this, context)
     ]);
   }
@@ -100,7 +100,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     const startingStylesExpr = ast.startingStyles.visit(this, context);
     const keyframeExpressions = ast.keyframes.map(keyframe => keyframe.visit(this, context));
     const keyframesExpr =
-        o.importExpr(resolveIdentifier(Identifiers.balanceAnimationKeyframes)).callFn([
+        o.importExpr(createIdentifier(Identifiers.balanceAnimationKeyframes)).callFn([
           _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
           o.literalArr(keyframeExpressions)
         ]);
@@ -127,14 +127,14 @@ class _AnimationBuilder implements AnimationAstVisitor {
   visitAnimationSequence(ast: AnimationSequenceAst, context: _AnimationBuilderContext):
       o.Expression {
     const playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(resolveIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
+    return o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
       o.literalArr(playerExprs)
     ]);
   }
 
   visitAnimationGroup(ast: AnimationGroupAst, context: _AnimationBuilderContext): o.Expression {
     const playerExprs = ast.steps.map(step => step.visit(this, context));
-    return o.importExpr(resolveIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
+    return o.importExpr(createIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
       o.literalArr(playerExprs)
     ]);
   }
@@ -228,7 +228,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
         _ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
 
-    const RENDER_STYLES_FN = o.importExpr(resolveIdentifier(Identifiers.renderStyles));
+    const RENDER_STYLES_FN = o.importExpr(createIdentifier(Identifiers.renderStyles));
 
     ast.stateTransitions.forEach(transAst => statements.push(transAst.visit(this, context)));
 
@@ -237,7 +237,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     statements.push(new o.IfStmt(
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_PLAYER_VAR
-             .set(o.importExpr(resolveIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
+             .set(o.importExpr(createIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
              .toStmt()]));
 
     // once complete we want to apply the styles on the element
@@ -255,17 +255,18 @@ class _AnimationBuilder implements AnimationAstVisitor {
                                .callFn([
                                  _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
                                  o.importExpr(
-                                      resolveIdentifier(Identifiers.prepareFinalAnimationStyles))
-                                     .callFn([
-                                       _ANIMATION_START_STATE_STYLES_VAR,
-                                       _ANIMATION_END_STATE_STYLES_VAR
-                                     ])
+                                      createIdentifier(Identifiers.prepareFinalAnimationStyles))
+                                     .callFn(
+                                         [
+                                           _ANIMATION_START_STATE_STYLES_VAR,
+                                           _ANIMATION_END_STATE_STYLES_VAR
+                                         ])
                                ])
                                .toStmt()
                          ])])
             .toStmt());
 
-    statements.push(o.importExpr(resolveIdentifier(Identifiers.AnimationSequencePlayer))
+    statements.push(o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer))
                         .instantiate([_PREVIOUS_ANIMATION_PLAYERS])
                         .callMethod('destroy', [])
                         .toStmt());
@@ -276,7 +277,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     statements.push(RENDER_STYLES_FN
                         .callFn([
                           _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                          o.importExpr(resolveIdentifier(Identifiers.clearStyles))
+                          o.importExpr(createIdentifier(Identifiers.clearStyles))
                               .callFn([_ANIMATION_START_STATE_STYLES_VAR])
                         ])
                         .toStmt());
@@ -291,7 +292,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
                         .toStmt());
 
     statements.push(new o.ReturnStatement(
-        o.importExpr(resolveIdentifier(Identifiers.AnimationTransition)).instantiate([
+        o.importExpr(createIdentifier(Identifiers.AnimationTransition)).instantiate([
           _ANIMATION_PLAYER_VAR, _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR,
           _ANIMATION_TIME_VAR
         ])));
@@ -300,12 +301,12 @@ class _AnimationBuilder implements AnimationAstVisitor {
         [
           new o.FnParam(
               _ANIMATION_FACTORY_VIEW_VAR.name,
-              o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+              o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
           new o.FnParam(_ANIMATION_FACTORY_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_CURRENT_STATE_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_NEXT_STATE_VAR.name, o.DYNAMIC_TYPE)
         ],
-        statements, o.importType(resolveIdentifier(Identifiers.AnimationTransition)));
+        statements, o.importType(createIdentifier(Identifiers.AnimationTransition)));
   }
 
   build(ast: AnimationAst): AnimationEntryCompileResult {

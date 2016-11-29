@@ -8,13 +8,13 @@
 
 import {Injectable} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
 import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
 import {triggerAnimation, writeToRenderer} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
 import {Parser} from './expression_parser/parser';
-import {Identifiers, resolveIdentifier} from './identifiers';
+import {Identifiers, createIdentifier} from './identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG} from './ml_parser/interpolation_config';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
@@ -53,7 +53,9 @@ const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap
  */
 @Injectable()
 export class DirectiveWrapperCompiler {
-  static dirWrapperClassName(id: CompileIdentifierMetadata) { return `Wrapper_${id.name}`; }
+  static dirWrapperClassName(id: CompileIdentifierMetadata) {
+    return `Wrapper_${identifierName(id)}`;
+  }
 
   constructor(
       private compilerConfig: CompilerConfig, private _exprParser: Parser,
@@ -117,10 +119,10 @@ class DirectiveWrapperBuilder implements ClassBuilder {
           [
             new o.FnParam(
                 VIEW_VAR.name,
-                o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+                o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
             new o.FnParam(
                 COMPONENT_VIEW_VAR.name,
-                o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+                o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
             new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
           ],
           this.detachStmts),
@@ -172,7 +174,7 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
     }
     if (builder.compilerConfig.logBindingUpdate) {
       onChangesStmts.push(
-          o.importExpr(resolveIdentifier(Identifiers.setBindingDebugInfoForChanges))
+          o.importExpr(createIdentifier(Identifiers.setBindingDebugInfoForChanges))
               .callFn(
                   [VIEW_VAR.prop('renderer'), RENDER_EL_VAR, o.THIS_EXPR.prop(CHANGES_FIELD_NAME)])
               .toStmt());
@@ -198,7 +200,7 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
       'ngDoCheck',
       [
         new o.FnParam(
-            VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+            VIEW_VAR.name, o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
         new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
         new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
       ],
@@ -214,7 +216,7 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
   if (builder.genChanges) {
     onChangeStatements.push(o.THIS_EXPR.prop(CHANGES_FIELD_NAME)
                                 .key(o.literal(input))
-                                .set(o.importExpr(resolveIdentifier(Identifiers.SimpleChange))
+                                .set(o.importExpr(createIdentifier(Identifiers.SimpleChange))
                                          .instantiate([field.expression, CURR_VALUE_VAR]))
                                 .toStmt());
   }
@@ -237,10 +239,10 @@ function addCheckHostMethod(
   const stmts: o.Statement[] = [];
   const methodParams: o.FnParam[] = [
     new o.FnParam(
-        VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+        VIEW_VAR.name, o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
     new o.FnParam(
         COMPONENT_VIEW_VAR.name,
-        o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+        o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
     new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
     new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
   ];
@@ -255,14 +257,14 @@ function addCheckHostMethod(
     if (hostProp.needsRuntimeSecurityContext) {
       securityContextExpr = o.variable(`secCtx_${methodParams.length}`);
       methodParams.push(new o.FnParam(
-          securityContextExpr.name, o.importType(resolveIdentifier(Identifiers.SecurityContext))));
+          securityContextExpr.name, o.importType(createIdentifier(Identifiers.SecurityContext))));
     }
     let checkBindingStmts: o.Statement[];
     if (hostProp.isAnimation) {
       const {updateStmts, detachStmts} = triggerAnimation(
           VIEW_VAR, COMPONENT_VIEW_VAR, hostProp,
           o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME)
-              .or(o.importExpr(resolveIdentifier(Identifiers.noop))),
+              .or(o.importExpr(createIdentifier(Identifiers.noop))),
           RENDER_EL_VAR, evalResult.currValExpr, field.expression);
       checkBindingStmts = updateStmts;
       builder.detachStmts.push(...detachStmts);
@@ -306,7 +308,7 @@ function addHandleEventMethod(hostListeners: BoundEventAst[], builder: Directive
 function addSubscribeMethod(dirMeta: CompileDirectiveMetadata, builder: DirectiveWrapperBuilder) {
   const methodParams: o.FnParam[] = [
     new o.FnParam(
-        VIEW_VAR.name, o.importType(resolveIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
+        VIEW_VAR.name, o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
     new o.FnParam(EVENT_HANDLER_FIELD_NAME, o.DYNAMIC_TYPE)
   ];
   const stmts: o.Statement[] = [
@@ -348,9 +350,10 @@ function parseHostBindings(
   const errors: ParseError[] = [];
   const parser =
       new BindingParser(exprParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, [], errors);
-  const sourceFileName = dirMeta.type.moduleUrl ?
-      `in Directive ${dirMeta.type.name} in ${dirMeta.type.moduleUrl}` :
-      `in Directive ${dirMeta.type.name}`;
+  const moduleUrl = identifierModuleUrl(dirMeta.type);
+  const sourceFileName = moduleUrl ?
+      `in Directive ${identifierName(dirMeta.type)} in ${moduleUrl}` :
+      `in Directive ${identifierName(dirMeta.type)}`;
   const sourceFile = new ParseSourceFile('', sourceFileName);
   const sourceSpan = new ParseSourceSpan(
       new ParseLocation(sourceFile, null, null, null),

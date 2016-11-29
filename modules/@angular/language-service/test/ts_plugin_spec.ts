@@ -255,9 +255,9 @@ function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
     let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
     if (diagnostic.start) {
       let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-      console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+      console.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
     } else {
-      console.log(`${message}`);
+      console.error(`${message}`);
     }
   }
   expect(diagnostics.length).toBe(0);

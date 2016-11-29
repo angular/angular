@@ -44,6 +44,9 @@ describe('Collector', () => {
       'static-method-call.ts',
       'static-method-with-if.ts',
       'static-method-with-default.ts',
+      'class-inheritance.ts',
+      'class-inheritance-parent.ts',
+      'class-inheritance-declarations.d.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
@@ -616,6 +619,32 @@ describe('Collector', () => {
     });
   });
 
+  describe('inheritance', () => {
+    it('should record `extends` clauses for declared classes', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['DeclaredChildClass'])
+          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
+    });
+
+    it('should record `extends` clauses for classes in the same file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['ChildClassSameFile'])
+          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
+    });
+
+    it('should record `extends` clauses for classes in a different file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['ChildClassOtherFile']).toEqual({
+        __symbolic: 'class',
+        extends: {
+          __symbolic: 'reference',
+          module: './class-inheritance-parent',
+          name: 'ParentClassFromOtherFile'
+        }
+      });
+    });
+  });
+
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
@@ -844,6 +873,20 @@ const FILES: Directory = {
     export abstract class AbstractClass {}
     export declare class DeclaredClass {}
   `,
+  'class-inheritance-parent.ts': `
+    export class ParentClassFromOtherFile {}
+  `,
+  'class-inheritance.ts': `
+    import {ParentClassFromOtherFile} from './class-inheritance-parent';
+
+    export class ParentClass {}
+
+    export declare class DeclaredChildClass extends ParentClass {}
+
+    export class ChildClassSameFile extends ParentClass {}
+
+    export class ChildClassOtherFile extends ParentClassFromOtherFile {}
+  `,
   'exported-functions.ts': `
     export function one(a: string, b: string, c: string) {
       return {a: a, b: b, c: c};
@@ -877,9 +920,6 @@ const FILES: Directory = {
     export const constValue = 100;
   `,
   'static-method.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(comp: any): any[] {
         return [
@@ -890,9 +930,6 @@ const FILES: Directory = {
     }
   `,
   'static-method-with-default.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(comp: any, foo: boolean = true, bar: boolean = false): any[] {
         return [
@@ -913,9 +950,6 @@ const FILES: Directory = {
     export class Foo { }
   `,
   'static-field.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static VALUE = 'Some string';
     }
@@ -930,9 +964,6 @@ const FILES: Directory = {
     export class Foo { }
   `,
   'static-method-with-if.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(cond: boolean): any[] {
         return [

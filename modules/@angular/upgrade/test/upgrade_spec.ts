@@ -41,7 +41,7 @@ export function main() {
 
       it('should throw an uncaught error', fakeAsync(() => {
            const resolveSpy = jasmine.createSpy('resolveSpy');
-           spyOn(console, 'log');
+           spyOn(console, 'error');
 
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
@@ -50,14 +50,14 @@ export function main() {
            expect(resolveSpy).not.toHaveBeenCalled();
          }));
 
-      it('should properly log to the console and re-throw', fakeAsync(() => {
-           spyOn(console, 'log');
+      it('should output an error message to the console and re-throw', fakeAsync(() => {
+           spyOn(console, 'error');
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
              flushMicrotasks();
            }).toThrowError();
-           expect(console.log).toHaveBeenCalled();
-           expect(console.log).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
+           expect(console.error).toHaveBeenCalled();
+           expect(console.error).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
          }));
     });
 

@@ -8,12 +8,12 @@
 
 import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateMetadata, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, removeIdentifierDuplicates} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateMetadata, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
-import {Identifiers, identifierToken, resolveIdentifierToken} from '../identifiers';
+import {Identifiers, createIdentifierToken, identifierToken} from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
@@ -546,7 +546,8 @@ class TemplateParseVisitor implements html.Visitor {
     let component: CompileDirectiveSummary = null;
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
-          elementSourceSpan.start, elementSourceSpan.end, `Directive ${directive.type.name}`);
+          elementSourceSpan.start, elementSourceSpan.end,
+          `Directive ${identifierName(directive.type)}`);
       if (directive.isComponent) {
         component = directive;
       }
@@ -579,7 +580,7 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (!component) {
         let refToken: CompileTokenMetadata = null;
         if (isTemplateElement) {
-          refToken = resolveIdentifierToken(Identifiers.TemplateRef);
+          refToken = createIdentifierToken(Identifiers.TemplateRef);
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
@@ -640,7 +641,7 @@ class TemplateParseVisitor implements html.Visitor {
 
   private _findComponentDirectiveNames(directives: DirectiveAst[]): string[] {
     return this._findComponentDirectives(directives)
-        .map(directive => directive.directive.type.name);
+        .map(directive => identifierName(directive.directive.type));
   }
 
   private _assertOnlyOneComponent(directives: DirectiveAst[], sourceSpan: ParseSourceSpan) {

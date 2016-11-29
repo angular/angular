@@ -52,6 +52,15 @@ export class StringMapWrapper {
 export interface Predicate<T> { (value: T, index?: number, array?: T[]): boolean; }
 
 export class ListWrapper {
+  static findLast<T>(arr: T[], condition: (value: T) => boolean): T {
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (condition(arr[i])) {
+        return arr[i];
+      }
+    }
+    return null;
+  }
+
   static removeAll<T>(list: T[], items: T[]) {
     for (let i = 0; i < items.length; ++i) {
       const index = list.indexOf(items[i]);

@@ -43,14 +43,14 @@ export class BuiltinType extends Type {
   }
 }
 
-export class ExternalType extends Type {
+export class ExpressionType extends Type {
   constructor(
-      public value: CompileIdentifierMetadata, public typeParams: Type[] = null,
+      public value: Expression, public typeParams: Type[] = null,
       modifiers: TypeModifier[] = null) {
     super(modifiers);
   }
   visitType(visitor: TypeVisitor, context: any): any {
-    return visitor.visitExternalType(this, context);
+    return visitor.visitExpressionType(this, context);
   }
 }
 
@@ -78,7 +78,7 @@ export var NULL_TYPE = new BuiltinType(BuiltinTypeName.Null);
 
 export interface TypeVisitor {
   visitBuiltintType(type: BuiltinType, context: any): any;
-  visitExternalType(type: ExternalType, context: any): any;
+  visitExpressionType(type: ExpressionType, context: any): any;
   visitArrayType(type: ArrayType, context: any): any;
   visitMapType(type: MapType, context: any): any;
 }
@@ -876,8 +876,14 @@ export function importExpr(id: CompileIdentifierMetadata, typeParams: Type[] = n
 
 export function importType(
     id: CompileIdentifierMetadata, typeParams: Type[] = null,
-    typeModifiers: TypeModifier[] = null): ExternalType {
-  return isPresent(id) ? new ExternalType(id, typeParams, typeModifiers) : null;
+    typeModifiers: TypeModifier[] = null): ExpressionType {
+  return isPresent(id) ? expressionType(importExpr(id), typeParams, typeModifiers) : null;
+}
+
+export function expressionType(
+    expr: Expression, typeParams: Type[] = null,
+    typeModifiers: TypeModifier[] = null): ExpressionType {
+  return isPresent(expr) ? new ExpressionType(expr, typeParams, typeModifiers) : null;
 }
 
 export function literalArr(values: Expression[], type: Type = null): LiteralArrayExpr {

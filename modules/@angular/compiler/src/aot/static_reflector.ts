@@ -70,16 +70,24 @@ export class StaticSymbolCache {
 export class StaticReflector implements ReflectorReader {
   private declarationCache = new Map<string, StaticSymbol>();
   private annotationCache = new Map<StaticSymbol, any[]>();
-  private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
+  private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
+  private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private metadataCache = new Map<string, {[key: string]: any}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private opaqueToken: StaticSymbol;
 
   constructor(
       private host: StaticReflectorHost,
-      private staticSymbolCache: StaticSymbolCache = new StaticSymbolCache()) {
+      private staticSymbolCache: StaticSymbolCache = new StaticSymbolCache(),
+      knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
+      knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = []) {
     this.initializeConversionMap();
+    knownMetadataClasses.forEach(
+        (kc) => this._registerDecoratorOrConstructor(
+            this.getStaticSymbol(kc.filePath, kc.name), kc.ctor));
+    knownMetadataFunctions.forEach(
+        (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
   }
 
   importUri(typeOrFunc: StaticSymbol): string {
@@ -99,29 +107,45 @@ export class StaticReflector implements ReflectorReader {
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
     if (!annotations) {
+      annotations = [];
       const classMetadata = this.getTypeMetadata(type);
+      if (classMetadata['extends']) {
+        const parentAnnotations = this.annotations(this.simplify(type, classMetadata['extends']));
+        annotations.push(...parentAnnotations);
+      }
       if (classMetadata['decorators']) {
-        annotations = this.simplify(type, classMetadata['decorators']);
-      } else {
-        annotations = [];
+        const ownAnnotations: any[] = this.simplify(type, classMetadata['decorators']);
+        annotations.push(...ownAnnotations);
       }
       this.annotationCache.set(type, annotations.filter(ann => !!ann));
     }
     return annotations;
   }
 
-  public propMetadata(type: StaticSymbol): {[key: string]: any} {
+  public propMetadata(type: StaticSymbol): {[key: string]: any[]} {
     let propMetadata = this.propertyCache.get(type);
     if (!propMetadata) {
-      const classMetadata = this.getTypeMetadata(type);
-      const members = classMetadata ? classMetadata['members'] : {};
-      propMetadata = mapStringMap(members, (propData, propName) => {
+      const classMetadata = this.getTypeMetadata(type) || {};
+      propMetadata = {};
+      if (classMetadata['extends']) {
+        const parentPropMetadata = this.propMetadata(this.simplify(type, classMetadata['extends']));
+        Object.keys(parentPropMetadata).forEach((parentProp) => {
+          propMetadata[parentProp] = parentPropMetadata[parentProp];
+        });
+      }
+
+      const members = classMetadata['members'] || {};
+      Object.keys(members).forEach((propName) => {
+        const propData = members[propName];
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+        const decorators: any[] = [];
+        if (propMetadata[propName]) {
+          decorators.push(...propMetadata[propName]);
+        }
+        propMetadata[propName] = decorators;
         if (prop && prop['decorators']) {
-          return this.simplify(type, prop['decorators']);
-        } else {
-          return [];
+          decorators.push(...this.simplify(type, prop['decorators']));
         }
       });
       this.propertyCache.set(type, propMetadata);
@@ -155,6 +179,8 @@ export class StaticReflector implements ReflectorReader {
             }
             parameters.push(nestedResult);
           });
+        } else if (classMetadata['extends']) {
+          parameters = this.parameters(this.simplify(type, classMetadata['extends']));
         }
         if (!parameters) {
           parameters = [];
@@ -163,9 +189,32 @@ export class StaticReflector implements ReflectorReader {
       }
       return parameters;
     } catch (e) {
-      console.log(`Failed on type ${JSON.stringify(type)} with error ${e}`);
+      console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
+  }
+
+  private _methodNames(type: any): {[key: string]: boolean} {
+    let methodNames = this.methodCache.get(type);
+    if (!methodNames) {
+      const classMetadata = this.getTypeMetadata(type) || {};
+      methodNames = {};
+      if (classMetadata['extends']) {
+        const parentMethodNames = this._methodNames(this.simplify(type, classMetadata['extends']));
+        Object.keys(parentMethodNames).forEach((parentProp) => {
+          methodNames[parentProp] = parentMethodNames[parentProp];
+        });
+      }
+
+      const members = classMetadata['members'] || {};
+      Object.keys(members).forEach((propName) => {
+        const propData = members[propName];
+        const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
+        methodNames[propName] = methodNames[propName] || isMethod;
+      });
+      this.methodCache.set(type, methodNames);
+    }
+    return methodNames;
   }
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {
@@ -173,18 +222,19 @@ export class StaticReflector implements ReflectorReader {
       throw new Error(
           `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`);
     }
-    const classMetadata = this.getTypeMetadata(type);
-    const members = classMetadata ? classMetadata['members'] : null;
-    const member: any[] =
-        members && members.hasOwnProperty(lcProperty) ? members[lcProperty] : null;
-    return member ? member.some(a => a['__symbolic'] == 'method') : false;
+    try {
+      return !!this._methodNames(type)[lcProperty];
+    } catch (e) {
+      console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
+      throw e;
+    }
   }
 
-  private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
+  private _registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => new ctor(...args));
   }
 
-  private registerFunction(type: StaticSymbol, fn: any): void {
+  private _registerFunction(type: StaticSymbol, fn: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => fn.apply(undefined, args));
   }
 
@@ -193,50 +243,51 @@ export class StaticReflector implements ReflectorReader {
         ANGULAR_IMPORT_LOCATIONS;
     this.opaqueToken = this.findDeclaration(diOpaqueToken, 'OpaqueToken');
 
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(diDecorators, 'Injectable'), Injectable);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Self'), Self);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Inject'), Inject);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Optional'), Optional);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Self'), Self);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Inject'), Inject);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Optional'), Optional);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Attribute'), Attribute);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ContentChild'), ContentChild);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildren);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ViewChild'), ViewChild);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildren);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Input'), Input);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Output'), Output);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Pipe'), Pipe);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Input'), Input);
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Output'), Output);
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Pipe'), Pipe);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'HostBinding'), HostBinding);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'HostListener'), HostListener);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Directive'), Directive);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Component'), Component);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'NgModule'), NgModule);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(coreDecorators, 'NgModule'), NgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Host'), Host);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Self'), Self);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Optional'), Optional);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Host'), Host);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Self'), Self);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Optional'), Optional);
 
-    this.registerFunction(this.findDeclaration(animationMetadata, 'trigger'), trigger);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'state'), state);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'transition'), transition);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'style'), style);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'animate'), animate);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'keyframes'), keyframes);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'sequence'), sequence);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'group'), group);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'trigger'), trigger);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'state'), state);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'transition'), transition);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'style'), style);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'animate'), animate);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'keyframes'), keyframes);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'sequence'), sequence);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'group'), group);
   }
 
   /**
@@ -333,7 +384,7 @@ export class StaticReflector implements ReflectorReader {
 
   /** @internal */
   public simplify(context: StaticSymbol, value: any): any {
-    const _this = this;
+    const self = this;
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
 
@@ -342,15 +393,15 @@ export class StaticReflector implements ReflectorReader {
         let staticSymbol: StaticSymbol;
         if (expression['module']) {
           staticSymbol =
-              _this.findDeclaration(expression['module'], expression['name'], context.filePath);
+              self.findDeclaration(expression['module'], expression['name'], context.filePath);
         } else {
-          staticSymbol = _this.getStaticSymbol(context.filePath, expression['name']);
+          staticSymbol = self.getStaticSymbol(context.filePath, expression['name']);
         }
         return staticSymbol;
       }
 
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
-        const moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
+        const moduleMetadata = self.getModuleMetadata(staticSymbol.filePath);
         const declarationValue =
             moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
         return declarationValue;
@@ -360,7 +411,7 @@ export class StaticReflector implements ReflectorReader {
         if (value && value.__symbolic === 'new' && value.expression) {
           const target = value.expression;
           if (target.__symbolic == 'reference') {
-            return sameSymbol(resolveReference(context, target), _this.opaqueToken);
+            return sameSymbol(resolveReference(context, target), self.opaqueToken);
           }
         }
         return false;
@@ -542,22 +593,26 @@ export class StaticReflector implements ReflectorReader {
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
+                let selectContext = context;
                 let selectTarget = simplify(expression['expression']);
                 if (selectTarget instanceof StaticSymbol) {
                   // Access to a static instance variable
+                  const member: string = expression['member'];
+                  const members = selectTarget.members ?
+                      (selectTarget.members as string[]).concat(member) :
+                      [member];
                   const declarationValue = resolveReferenceValue(selectTarget);
+                  selectContext =
+                      self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   if (declarationValue && declarationValue.statics) {
                     selectTarget = declarationValue.statics;
                   } else {
-                    const member: string = expression['member'];
-                    const members = selectTarget.members ?
-                        (selectTarget.members as string[]).concat(member) :
-                        [member];
-                    return _this.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
+                    return selectContext;
                   }
                 }
-                const member = simplify(expression['member']);
-                if (selectTarget && isPrimitive(member)) return simplify(selectTarget[member]);
+                const member = simplifyInContext(selectContext, expression['member'], depth + 1);
+                if (selectTarget && isPrimitive(member))
+                  return simplifyInContext(selectContext, selectTarget[member], depth + 1);
                 return null;
               case 'reference':
                 if (!expression.module) {
@@ -589,11 +644,11 @@ export class StaticReflector implements ReflectorReader {
                 let target = expression['expression'];
                 if (target['module']) {
                   staticSymbol =
-                      _this.findDeclaration(target['module'], target['name'], context.filePath);
+                      self.findDeclaration(target['module'], target['name'], context.filePath);
                 } else {
-                  staticSymbol = _this.getStaticSymbol(context.filePath, target['name']);
+                  staticSymbol = self.getStaticSymbol(context.filePath, target['name']);
                 }
-                let converter = _this.conversionMap.get(staticSymbol);
+                let converter = self.conversionMap.get(staticSymbol);
                 if (converter) {
                   let args: any[] = expression['arguments'];
                   if (!args) {

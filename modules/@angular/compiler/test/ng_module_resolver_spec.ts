@@ -45,9 +45,26 @@ export function main() {
       }));
     });
 
-    it('should throw when simple class has no component decorator', () => {
+    it('should throw when simple class has no NgModule decorator', () => {
       expect(() => resolver.resolve(SimpleClass))
           .toThrowError(`No NgModule metadata found for '${stringify(SimpleClass)}'.`);
     });
+
+    it('should support inheriting the metadata', function() {
+      @NgModule({id: 'p'})
+      class Parent {
+      }
+
+      class ChildNoDecorator extends Parent {}
+
+      @NgModule({id: 'c'})
+      class ChildWithDecorator extends Parent {
+      }
+
+      expect(resolver.resolve(ChildNoDecorator)).toEqual(new NgModule({id: 'p'}));
+
+      expect(resolver.resolve(ChildWithDecorator)).toEqual(new NgModule({id: 'c'}));
+    });
+
   });
 }
