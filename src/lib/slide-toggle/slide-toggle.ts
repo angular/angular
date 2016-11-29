@@ -174,6 +174,13 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     this.onTouched = fn;
   }
 
+  /**
+   * Implemented as a part of ControlValueAccessor.
+   */
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
   @Input()
   get checked() {
     return !!this._checked;

@@ -3,7 +3,7 @@ import {
   TestBed,
 } from '@angular/core/testing';
 import {Component} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MdInput, MdInputModule} from './input';
 
@@ -14,7 +14,7 @@ function isInternetExplorer11() {
 describe('MdInput', function () {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdInputModule.forRoot(), FormsModule],
+      imports: [MdInputModule.forRoot(), FormsModule, ReactiveFormsModule],
       declarations: [
         MdInputNumberTypeConservedTestComponent,
         MdInputPlaceholderRequiredTestComponent,
@@ -58,6 +58,7 @@ describe('MdInput', function () {
         MdInputPasswordTestController,
         MdInputNumberTestController,
         MdTextareaWithBindings,
+        MdInputWithFormControl,
       ],
     });
 
@@ -621,6 +622,27 @@ describe('MdInput', function () {
     expect(inputElement.name).toBe('some-name');
   });
 
+  it('toggles the disabled state when used with a FormControl', () => {
+    let fixture = TestBed.createComponent(MdInputWithFormControl);
+
+    fixture.detectChanges();
+
+    let input: MdInput = fixture.debugElement.query(By.directive(MdInput)).componentInstance;
+    let testComponent: MdInputWithFormControl = fixture.debugElement.componentInstance;
+
+    expect(input.disabled).toBe(false);
+
+    testComponent.formControl.disable();
+    fixture.detectChanges();
+
+    expect(input.disabled).toBe(true);
+
+    testComponent.formControl.enable();
+    fixture.detectChanges();
+
+    expect(input.disabled).toBe(false);
+  });
+
   describe('md-textarea', () => {
     it('supports the rows, cols, and wrap attributes', () => {
       let fixture = TestBed.createComponent(MdTextareaWithBindings);
@@ -805,6 +827,11 @@ class MdInputPasswordTestController {
 @Component({template: `<md-input type="number" [placeholder]="placeholder"></md-input>`})
 class MdInputNumberTestController {
   placeholder: string = '';
+}
+
+@Component({template: `<md-input [formControl]="formControl"></md-input>`})
+class MdInputWithFormControl {
+  formControl = new FormControl();
 }
 
 @Component({template:

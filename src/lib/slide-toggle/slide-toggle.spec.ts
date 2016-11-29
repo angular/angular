@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/t
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './slide-toggle';
-import {FormsModule, NgControl} from '@angular/forms';
+import {FormsModule, NgControl, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {TestGestureConfig} from '../slider/test-gesture-config';
 
 describe('MdSlideToggle', () => {
@@ -11,8 +11,8 @@ describe('MdSlideToggle', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSlideToggleModule.forRoot(), FormsModule],
-      declarations: [SlideToggleTestApp, SlideToggleFormsTestApp],
+      imports: [MdSlideToggleModule.forRoot(), FormsModule, ReactiveFormsModule],
+      declarations: [SlideToggleTestApp, SlideToggleFormsTestApp, SlideToggleWithFormControl],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()}
       ]
@@ -509,6 +509,34 @@ describe('MdSlideToggle', () => {
 
   });
 
+  describe('with a FormControl', () => {
+    let fixture: ComponentFixture<SlideToggleWithFormControl>;
+
+    let testComponent: SlideToggleWithFormControl;
+    let slideToggle: MdSlideToggle;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SlideToggleWithFormControl);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      slideToggle = fixture.debugElement.query(By.directive(MdSlideToggle)).componentInstance;
+    });
+
+    it('should toggle the disabled state', () => {
+      expect(slideToggle.disabled).toBe(false);
+
+      testComponent.formControl.disable();
+      fixture.detectChanges();
+
+      expect(slideToggle.disabled).toBe(true);
+
+      testComponent.formControl.enable();
+      fixture.detectChanges();
+
+      expect(slideToggle.disabled).toBe(false);
+    });
+  });
 });
 
 /**
@@ -525,20 +553,20 @@ function dispatchFocusChangeEvent(eventName: string, element: HTMLElement): void
 @Component({
   selector: 'slide-toggle-test-app',
   template: `
-    <md-slide-toggle [(ngModel)]="slideModel" 
+    <md-slide-toggle [(ngModel)]="slideModel"
                      [required]="isRequired"
-                     [disabled]="isDisabled" 
-                     [color]="slideColor" 
-                     [id]="slideId" 
-                     [checked]="slideChecked" 
-                     [name]="slideName" 
+                     [disabled]="isDisabled"
+                     [color]="slideColor"
+                     [id]="slideId"
+                     [checked]="slideChecked"
+                     [name]="slideName"
                      [ariaLabel]="slideLabel"
-                     [ariaLabelledby]="slideLabelledBy" 
-                     (change)="onSlideChange($event)" 
+                     [ariaLabelledby]="slideLabelledBy"
+                     (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
-                     
+
       <span>Test Slide Toggle</span>
-      
+
     </md-slide-toggle>`,
 })
 class SlideToggleTestApp {
@@ -571,4 +599,15 @@ class SlideToggleTestApp {
 class SlideToggleFormsTestApp {
   isSubmitted: boolean = false;
   isRequired: boolean = false;
+}
+
+
+@Component({
+  template: `
+    <md-slide-toggle [formControl]="formControl">
+      <span>Test Slide Toggle</span>
+    </md-slide-toggle>`,
+})
+class SlideToggleWithFormControl {
+  formControl = new FormControl();
 }

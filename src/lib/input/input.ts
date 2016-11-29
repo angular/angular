@@ -293,6 +293,13 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     this._onTouchedCallback = fn;
   }
 
+  /**
+   * Implemented as a part of ControlValueAccessor.
+   */
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
+  }
+
   /** TODO: internal */
   ngAfterContentInit() {
     this._validateConstraints();

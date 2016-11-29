@@ -112,7 +112,7 @@ export class MdCheckbox implements ControlValueAccessor {
   /** Whether or not the checkbox should come before or after the label. */
   @Input() align: 'start' | 'end' = 'start';
 
-  private _disabled: boolean;
+  private _disabled: boolean = false;
 
   /**
    * Whether the checkbox is disabled. When the checkbox is disabled it cannot be interacted with.
@@ -243,6 +243,13 @@ export class MdCheckbox implements ControlValueAccessor {
    */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
+  }
+
+  /**
+   * Implemented as a part of ControlValueAccessor.
+   */
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
   }
 
   private _transitionCheckState(newState: TransitionCheckState) {

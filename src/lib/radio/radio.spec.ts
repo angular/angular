@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {NgControl, FormsModule} from '@angular/forms';
+import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio';
@@ -9,10 +9,11 @@ describe('MdRadio', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdRadioModule.forRoot(), FormsModule],
+      imports: [MdRadioModule.forRoot(), FormsModule, ReactiveFormsModule],
       declarations: [
         RadiosInsideRadioGroup,
         RadioGroupWithNgModel,
+        RadioGroupWithFormControl,
         StandaloneRadioButtons,
       ],
     });
@@ -152,7 +153,7 @@ describe('MdRadio', () => {
       expect(spies[1]).toHaveBeenCalledTimes(1);
     });
 
-    it(`should not emit a change event from the radio group when change group value 
+    it(`should not emit a change event from the radio group when change group value
         programmatically`, () => {
       expect(groupInstance.value).toBeFalsy();
 
@@ -246,7 +247,7 @@ describe('MdRadio', () => {
       }
     }));
 
-    it(`should update the group's selected radio to null when unchecking that radio 
+    it(`should update the group's selected radio to null when unchecking that radio
         programmatically`, () => {
       let changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
@@ -420,6 +421,36 @@ describe('MdRadio', () => {
     });
   });
 
+  describe('group with FormControl', () => {
+    let fixture: ComponentFixture<RadioGroupWithFormControl>;
+    let groupDebugElement: DebugElement;
+    let groupInstance: MdRadioGroup;
+    let testComponent: RadioGroupWithFormControl;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(RadioGroupWithFormControl);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+      groupInstance = groupDebugElement.injector.get(MdRadioGroup);
+    });
+
+    it('should toggle the disabled state', () => {
+      expect(groupInstance.disabled).toBeFalsy();
+
+      testComponent.formControl.disable();
+      fixture.detectChanges();
+
+      expect(groupInstance.disabled).toBeTruthy();
+
+      testComponent.formControl.enable();
+      fixture.detectChanges();
+
+      expect(groupInstance.disabled).toBeFalsy();
+    });
+  });
+
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneRadioButtons>;
     let radioDebugElements: DebugElement[];
@@ -548,11 +579,11 @@ class RadiosInsideRadioGroup {
     <md-radio-button name="season" value="spring">Spring</md-radio-button>
     <md-radio-button name="season" value="summer">Summer</md-radio-button>
     <md-radio-button name="season" value="autum">Autumn</md-radio-button>
-    
+
     <md-radio-button name="weather" value="warm">Spring</md-radio-button>
     <md-radio-button name="weather" value="hot">Summer</md-radio-button>
     <md-radio-button name="weather" value="cool">Autumn</md-radio-button>
-    
+
     <span id="xyz">Baby Banana</span>
     <md-radio-button name="fruit" value="banana" aria-label="Banana" aria-labelledby="xyz">
     </md-radio-button>
@@ -579,6 +610,17 @@ class RadioGroupWithNgModel {
     {label: 'Strawberry', value: 'strawberry'},
   ];
   lastEvent: MdRadioChange;
+}
+
+@Component({
+  template: `
+  <md-radio-group [formControl]="formControl">
+    <md-radio-button value="1">One</md-radio-button>
+  </md-radio-group>
+  `
+})
+class RadioGroupWithFormControl {
+  formControl = new FormControl();
 }
 
 // TODO(jelbourn): remove everything below when Angular supports faking events.
