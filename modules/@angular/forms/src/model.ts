@@ -148,7 +148,7 @@ export abstract class AbstractControl {
    * In order to have this status, the control must be in the
    * middle of conducting a validation check.
    */
-  get pending(): boolean { return this._status == PENDING; }
+  get pending(): boolean { return this._status === PENDING; }
 
   /**
    * A control is `disabled` when its `status === DISABLED`.
@@ -396,13 +396,13 @@ export abstract class AbstractControl {
       }
     }
 
+    if (this._parent && !onlySelf) {
+      this._parent.updateValueAndValidity({onlySelf, emitEvent});
+    }
+
     if (emitEvent !== false) {
       this._valueChanges.emit(this._value);
       this._statusChanges.emit(this._status);
-    }
-
-    if (this._parent && !onlySelf) {
-      this._parent.updateValueAndValidity({onlySelf, emitEvent});
     }
   }
 

@@ -616,6 +616,25 @@ export function main() {
         dispatchEvent(loginEl, 'input');
       });
 
+      it('should emit change event after parent controls have been updated', () => {
+        const fixture = TestBed.createComponent(FormGroupComp);
+        const login = new FormControl('oldValue');
+        const form = new FormGroup({'login': login});
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
+
+        login.valueChanges.subscribe((value: string) => {
+          expect(form.value).toEqual({'login': 'newValue'});
+          expect(form.get('login').value).toEqual('newValue');
+          expect(value).toEqual('newValue');
+        });
+
+        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        loginEl.value = 'newValue';
+
+        dispatchEvent(loginEl, 'input');
+      });
+
       it('should mark control as pristine before emitting a value change event when resetting ',
          () => {
            const fixture = TestBed.createComponent(FormGroupComp);
