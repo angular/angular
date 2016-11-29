@@ -6174,9 +6174,9 @@
       "resolved": "https://registry.npmjs.org/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz"
     },
     "rxjs": {
-      "version": "5.0.0-beta.12",
-      "from": "rxjs@5.0.0-beta.12",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-beta.12.tgz"
+      "version": "5.0.0-rc.4",
+      "from": "rxjs@5.0.0-rc.4",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-rc.4.tgz"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
@@ -6572,9 +6572,9 @@
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
     },
     "symbol-observable": {
-      "version": "1.0.2",
+      "version": "1.0.4",
       "from": "symbol-observable@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.4.tgz"
     },
     "systemjs": {
       "version": "0.18.10",

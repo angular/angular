@@ -3872,7 +3872,7 @@
       "version": "1.5.2"
     },
     "rxjs": {
-      "version": "5.0.0-beta.12"
+      "version": "5.0.0-rc.4"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
@@ -4122,7 +4122,7 @@
       "version": "2.0.0"
     },
     "symbol-observable": {
-      "version": "1.0.2"
+      "version": "1.0.4"
     },
     "systemjs": {
       "version": "0.18.10"
