@@ -24,6 +24,15 @@ export interface CompilerInterface {
   emit(program: ts.Program): number;
 }
 
+export class UserError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    this.name = 'UserError';
+    this.stack = new Error().stack;
+  }
+}
+
 const DEBUG = false;
 
 function debug(msg: string, ...o: any[]) {
@@ -47,7 +56,7 @@ export function formatDiagnostics(diags: ts.Diagnostic[]): string {
 
 export function check(diags: ts.Diagnostic[]) {
   if (diags && diags.length && diags[0]) {
-    throw new Error(formatDiagnostics(diags));
+    throw new UserError(formatDiagnostics(diags));
   }
 }
 
