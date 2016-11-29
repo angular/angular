@@ -39,9 +39,7 @@ describe('compiler-cli', () => {
   it('should compile without errors', (done) => {
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {
-      error: {}
-    };
+    const mockConsole = {error: {}};
 
     spyOn(mockConsole, 'error');
 
@@ -55,9 +53,7 @@ describe('compiler-cli', () => {
   });
 
   it('should not print the stack trace if user input file does not exist', (done) => {
-    const mockConsole = {
-      error: {}
-    };
+    const mockConsole = {error: {}};
 
     spyOn(mockConsole, 'error');
 
@@ -74,9 +70,7 @@ describe('compiler-cli', () => {
   it('should not print the stack trace if user input file is malformed', (done) => {
     write('test.ts', 'foo bar');
 
-    const mockConsole = {
-      error: {}
-    };
+    const mockConsole = {error: {}};
 
     spyOn(mockConsole, 'error');
 
@@ -93,9 +87,7 @@ describe('compiler-cli', () => {
   it('should print the stack trace on compiler internal errors', (done) => {
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {
-      error: {}
-    };
+    const mockConsole = {error: {}};
 
     spyOn(mockConsole, 'error');
 
