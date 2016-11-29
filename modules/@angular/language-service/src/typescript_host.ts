@@ -26,8 +26,7 @@ import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {BuiltinType, CompletionKind, Declaration, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
-
+import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
 
 
 /**
@@ -88,6 +87,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private service: LanguageService;
   private fileToComponent: Map<string, StaticSymbol>;
   private templateReferences: string[];
+  private collectedErrors: Map<string, any[]>;
 
   constructor(
       typescript: typeof ts, private host: ts.LanguageServiceHost,
@@ -157,6 +157,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getAnalyzedModules(): NgAnalyzedModules {
     this.validate();
+    return this.ensureAnalyzedModules();
+  }
+
+  private ensureAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
       const programSymbols = extractProgramSymbols(
@@ -220,9 +224,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   updateAnalyzedModules() {
+    this.validate();
     if (this.modulesOutOfDate) {
       this.analyzedModules = null;
-      this.getAnalyzedModules();
+      this._reflector = null;
+      this.templateReferences = null;
+      this.fileToComponent = null;
+      this.ensureAnalyzedModules();
+      this.modulesOutOfDate = false;
     }
   }
 
@@ -248,10 +257,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this._checker = null;
     this._typeCache = [];
     this._resolver = null;
-    this._reflector = null;
+    this.collectedErrors = null;
     this.modulesOutOfDate = true;
-    this.templateReferences = null;
-    this.fileToComponent = null;
   }
 
   private ensureTemplateMap() {
@@ -360,19 +367,34 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         throw new Error('Internal error: no context could be determined');
       }
 
-      const tsConfigPath = findTsConfig(source.path);
+      const tsConfigPath = findTsConfig(source.fileName);
       const basePath = path.dirname(tsConfigPath || this.context);
+
       result = this._reflectorHost = new ReflectorHost(
-          () => this.tsService.getProgram(), this.host, this.host.getCompilationSettings(),
-          basePath);
+          () => this.tsService.getProgram(), this.host, {basePath, genDir: basePath});
     }
     return result;
+  }
+
+  private collectError(error: any, filePath: string) {
+    let errorMap = this.collectedErrors;
+    if (!errorMap) {
+      errorMap = this.collectedErrors = new Map();
+    }
+    let errors = errorMap.get(filePath);
+    if (!errors) {
+      errors = [];
+      this.collectedErrors.set(filePath, errors);
+    }
+    errors.push(error);
   }
 
   private get reflector(): StaticReflector {
     let result = this._reflector;
     if (!result) {
-      result = this._reflector = new StaticReflector(this.reflectorHost, this._staticSymbolCache);
+      result = this._reflector = new StaticReflector(
+          this.reflectorHost, this._staticSymbolCache, [], [],
+          (e, filePath) => this.collectError(e, filePath));
     }
     return result;
   }
@@ -439,6 +461,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return [declaration, callTarget];
   }
 
+  private getCollectedErrors(defaultSpan: Span, sourceFile: ts.SourceFile): DeclarationError[] {
+    const errors = (this.collectedErrors && this.collectedErrors.get(sourceFile.fileName));
+    return (errors && errors.map((e: any) => {
+             return {message: e.message, span: spanAt(sourceFile, e.line, e.column) || defaultSpan};
+           })) ||
+        [];
+  }
+
   private getDeclarationFromNode(sourceFile: ts.SourceFile, node: ts.Node): Declaration|undefined {
     if (node.kind == ts.SyntaxKind.ClassDeclaration && node.decorators &&
         (node as ts.ClassDeclaration).name) {
@@ -456,14 +486,22 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
                 if (this.resolver.isDirective(staticSymbol as any)) {
                   const {metadata} =
                       this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any);
-                  return {type: staticSymbol, declarationSpan: spanOf(target), metadata};
+                  const declarationSpan = spanOf(target);
+                  return {
+                    type: staticSymbol,
+                    declarationSpan,
+                    metadata,
+                    errors: this.getCollectedErrors(declarationSpan, sourceFile)
+                  };
                 }
               } catch (e) {
                 if (e.message) {
+                  this.collectError(e, sourceFile.fileName);
+                  const declarationSpan = spanOf(target);
                   return {
                     type: staticSymbol,
-                    declarationSpan: spanAt(sourceFile, e.line, e.column) || spanOf(target),
-                    error: e.message
+                    declarationSpan,
+                    errors: this.getCollectedErrors(declarationSpan, sourceFile)
                   };
                 }
               }

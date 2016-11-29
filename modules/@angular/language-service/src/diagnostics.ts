@@ -55,12 +55,14 @@ export function getDeclarationDiagnostics(
 
   let directives: Set<StaticSymbol>|undefined = undefined;
   for (const declaration of declarations) {
-    let report = (message: string) => {
-      results.push(
-          <Diagnostic>{kind: DiagnosticKind.Error, span: declaration.declarationSpan, message});
+    const report = (message: string, span?: Span) => {
+      results.push(<Diagnostic>{
+        kind: DiagnosticKind.Error,
+        span: span || declaration.declarationSpan, message
+      });
     };
-    if (declaration.error) {
-      report(declaration.error);
+    for (const error of declaration.errors) {
+      report(error.message, error.span);
     }
     if (declaration.metadata) {
       if (declaration.metadata.isComponent) {
