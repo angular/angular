@@ -22,6 +22,7 @@ import {SlideToggleDemo} from '../slide-toggle/slide-toggle-demo';
 import {SliderDemo} from '../slider/slider-demo';
 import {RadioDemo} from '../radio/radio-demo';
 import {CardDemo} from '../card/card-demo';
+import {ChipsDemo} from '../chips/chips-demo';
 import {MenuDemo} from '../menu/menu-demo';
 import {RippleDemo} from '../ripple/ripple-demo';
 import {DialogDemo} from '../dialog/dialog-demo';
@@ -34,6 +35,7 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
   {path: 'button', component: ButtonDemo},
   {path: 'card', component: CardDemo},
+  {path: 'chips', component: ChipsDemo},
   {path: 'radio', component: RadioDemo},
   {path: 'select', component: SelectDemo},
   {path: 'sidenav', component: SidenavDemo},

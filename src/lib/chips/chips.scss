@@ -1,0 +1,16 @@
+$md-chip-vertical-padding: 8px;
+$md-chip-horizontal-padding: 12px;
+
+.md-chip-list {
+  padding: $md-chip-horizontal-padding;
+}
+
+.md-chip {
+  display: inline-block;
+  padding: $md-chip-vertical-padding $md-chip-horizontal-padding
+    $md-chip-vertical-padding $md-chip-horizontal-padding;
+  border-radius: $md-chip-horizontal-padding * 2;
+
+  font-size: 13px;
+  line-height: 16px;
+}

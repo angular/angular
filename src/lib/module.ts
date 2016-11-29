@@ -21,6 +21,7 @@ import {MdSidenavModule} from './sidenav/index';
 import {MdListModule} from './list/index';
 import {MdGridListModule} from './grid-list/index';
 import {MdCardModule} from './card/index';
+import {MdChipsModule} from './chips/index';
 import {MdIconModule} from './icon/index';
 import {MdProgressCircleModule} from './progress-circle/index';
 import {MdProgressBarModule} from './progress-bar/index';
@@ -37,6 +38,7 @@ const MATERIAL_MODULES = [
   MdButtonModule,
   MdButtonToggleModule,
   MdCardModule,
+  MdChipsModule,
   MdCheckboxModule,
   MdDialogModule,
   MdGridListModule,
@@ -68,6 +70,7 @@ const MATERIAL_MODULES = [
   imports: [
     MdButtonModule.forRoot(),
     MdCardModule.forRoot(),
+    MdChipsModule.forRoot(),
     MdCheckboxModule.forRoot(),
     MdGridListModule.forRoot(),
     MdInputModule.forRoot(),

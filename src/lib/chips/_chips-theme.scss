@@ -1,0 +1,29 @@
+@import '../core/theming/theming';
+
+@mixin md-chips-theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+
+  .md-chip {
+    background-color: #e0e0e0;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .md-chip.selected {
+    &.md-primary {
+      background-color: md-color($primary, 500);
+      color: md-contrast($primary, 500);
+    }
+    &.md-accent {
+      background-color: md-color($accent, 500);
+      color: md-contrast($accent, 500);
+    }
+    &.md-warn {
+      background-color: md-color($warn, 500);
+      color: md-contrast($warn, 500);
+    }
+  }
+}

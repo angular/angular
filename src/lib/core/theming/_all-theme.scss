@@ -4,6 +4,7 @@
 @import '../../button-toggle/button-toggle-theme';
 @import '../../card/card-theme';
 @import '../../checkbox/checkbox-theme';
+@import '../../chips/chips-theme';
 @import '../../dialog/dialog-theme';
 @import '../../grid-list/grid-list-theme';
 @import '../../icon/icon-theme';
@@ -29,6 +30,7 @@
   @include md-button-toggle-theme($theme);
   @include md-card-theme($theme);
   @include md-checkbox-theme($theme);
+  @include md-chips-theme($theme);
   @include md-dialog-theme($theme);
   @include md-grid-list-theme($theme);
   @include md-icon-theme($theme);

@@ -13,6 +13,7 @@ import {IconDemo} from './icon/icon-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
 import {InputDemo} from './input/input-demo';
 import {CardDemo} from './card/card-demo';
+import {ChipsDemo} from './chips/chips-demo';
 import {RadioDemo} from './radio/radio-demo';
 import {ButtonToggleDemo} from './button-toggle/button-toggle-demo';
 import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
@@ -49,6 +50,7 @@ import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-d
     ButtonDemo,
     ButtonToggleDemo,
     CardDemo,
+    ChipsDemo,
     CheckboxDemo,
     DemoApp,
     DialogDemo,
