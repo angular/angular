@@ -101,7 +101,8 @@ export class JitCompiler implements Compiler {
 
   private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
     const loadingPromises: Promise<any>[] = [];
-    const {ngModule, loading} = this._metadataResolver.loadNgModuleMetadata(mainModule, isSync);
+    const {ngModule, loading} =
+        this._metadataResolver.loadNgModuleDirectiveAndPipeMetadata(mainModule, isSync);
     loadingPromises.push(loading);
     // Note: the loadingPromise for a module only includes the loading of the exported directives
     // of imported modules.
@@ -109,7 +110,8 @@ export class JitCompiler implements Compiler {
     // so we also need to call loadNgModuleMetadata for all nested modules.
     ngModule.transitiveModule.modules.forEach((localModuleMeta) => {
       loadingPromises.push(
-          this._metadataResolver.loadNgModuleMetadata(localModuleMeta.type.reference, isSync)
+          this._metadataResolver
+              .loadNgModuleDirectiveAndPipeMetadata(localModuleMeta.reference, isSync)
               .loading);
     });
     return Promise.all(loadingPromises);
@@ -150,7 +152,7 @@ export class JitCompiler implements Compiler {
 
     ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
       const localModuleMeta =
-          this._metadataResolver.getNgModuleMetadata(localModuleSummary.type.reference);
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference);
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         moduleByDirective.set(dirIdentifier.reference, localModuleMeta);
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
@@ -168,7 +170,7 @@ export class JitCompiler implements Compiler {
     });
     ngModule.transitiveModule.modules.forEach((localModuleSummary) => {
       const localModuleMeta =
-          this._metadataResolver.getNgModuleMetadata(localModuleSummary.type.reference);
+          this._metadataResolver.getNgModuleMetadata(localModuleSummary.reference);
       localModuleMeta.declaredDirectives.forEach((dirIdentifier) => {
         const dirMeta = this._metadataResolver.getDirectiveMetadata(dirIdentifier.reference);
         if (dirMeta.isComponent) {

@@ -273,16 +273,15 @@ export class NgModuleProviderAnalyzer {
       ngModule: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[],
       sourceSpan: ParseSourceSpan) {
     this._allProviders = new Map<any, ProviderAst>();
-    const ngModuleTypes = ngModule.transitiveModule.modules.map((moduleMeta) => moduleMeta.type);
-    ngModuleTypes.forEach((ngModuleType: CompileTypeMetadata) => {
+    ngModule.transitiveModule.modules.forEach((ngModuleType: CompileTypeMetadata) => {
       const ngModuleProvider = {token: {identifier: ngModuleType}, useClass: ngModuleType};
       _resolveProviders(
           [ngModuleProvider], ProviderAstType.PublicService, true, sourceSpan, this._errors,
           this._allProviders);
     });
     _resolveProviders(
-        ngModule.transitiveModule.providers.concat(extraProviders), ProviderAstType.PublicService,
-        false, sourceSpan, this._errors, this._allProviders);
+        ngModule.transitiveModule.providers.map(entry => entry.provider).concat(extraProviders),
+        ProviderAstType.PublicService, false, sourceSpan, this._errors, this._allProviders);
   }
 
   parse(): ProviderAst[] {

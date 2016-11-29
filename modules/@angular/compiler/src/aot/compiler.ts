@@ -49,12 +49,16 @@ export class AotCompiler {
     const programSymbols = extractProgramSymbols(this._staticReflector, rootFiles, this._options);
     const {ngModuleByPipeOrDirective, files, ngModules} =
         analyzeAndValidateNgModules(programSymbols, this._options, this._metadataResolver);
-    return loadNgModuleDirectives(ngModules).then(() => {
-      const sourceModules = files.map(
-          file => this._compileSrcFile(
-              file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.ngModules));
-      return ListWrapper.flatten(sourceModules);
-    });
+    return Promise
+        .all(ngModules.map(
+            ngModule => this._metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
+                ngModule.type.reference, false)))
+        .then(() => {
+          const sourceModules = files.map(
+              file => this._compileSrcFile(
+                  file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.ngModules));
+          return ListWrapper.flatten(sourceModules);
+        });
   }
 
   private _compileSrcFile(
@@ -313,14 +317,6 @@ export function analyzeAndValidateNgModules(
   return result;
 }
 
-// Wait for the directives in the given modules have been loaded
-export function loadNgModuleDirectives(ngModules: CompileNgModuleMetadata[]) {
-  return Promise
-      .all(ListWrapper.flatten(ngModules.map(
-          (ngModule) => ngModule.transitiveModule.directiveLoaders.map(loader => loader()))))
-      .then(() => {});
-}
-
 function _analyzeNgModules(
     ngModuleMetas: CompileNgModuleMetadata[],
     symbolsMissingModule: StaticSymbol[]): NgAnalyzedModules {
@@ -417,13 +413,13 @@ function _createNgModules(
     if (ngModules.has(staticSymbol) || !_filterFileByPatterns(staticSymbol.filePath, options)) {
       return false;
     }
-    const ngModule = metadataResolver.getUnloadedNgModuleMetadata(staticSymbol, false, false);
+    const ngModule = metadataResolver.getNgModuleMetadata(staticSymbol, false);
     if (ngModule) {
       ngModules.set(ngModule.type.reference, ngModule);
       ngModule.declaredDirectives.forEach((dir) => ngModulePipesAndDirective.add(dir.reference));
       ngModule.declaredPipes.forEach((pipe) => ngModulePipesAndDirective.add(pipe.reference));
       // For every input module add the list of transitively included modules
-      ngModule.transitiveModule.modules.forEach(modMeta => addNgModule(modMeta.type.reference));
+      ngModule.transitiveModule.modules.forEach(modMeta => addNgModule(modMeta.reference));
     }
     return !!ngModule;
   };
