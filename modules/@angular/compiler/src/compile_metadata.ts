@@ -499,30 +499,21 @@ export class CompilePipeMetadata {
 
 // Note: This should only use interfaces as nested data types
 // as we need to be able to serialize this from/to JSON!
-export interface CompileNgModuleInjectorSummary extends CompileSummary {
+export interface CompileNgModuleSummary {
   isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
-  entryComponents: CompileIdentifierMetadata[];
-  providers: CompileProviderMetadata[];
-  importedModules: CompileNgModuleInjectorSummary[];
-  exportedModules: CompileNgModuleInjectorSummary[];
-}
 
-// Note: This should only use interfaces as nested data types
-// as we need to be able to serialize this from/to JSON!
-export interface CompileNgModuleDirectiveSummary extends CompileSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
-  type: CompileTypeMetadata;
   exportedDirectives: CompileIdentifierMetadata[];
   exportedPipes: CompileIdentifierMetadata[];
-  exportedModules: CompileNgModuleDirectiveSummary[];
-  directiveLoaders: (() => Promise<void>)[];
-}
+  exportedModules: CompileIdentifierMetadata[];
 
-// Note: This should only use interfaces as nested data types
-// as we need to be able to serialize this from/to JSON!
-export type CompileNgModuleSummary =
-    CompileNgModuleInjectorSummary & CompileNgModuleDirectiveSummary;
+  // Note: This is transitive.
+  entryComponents: CompileIdentifierMetadata[];
+  // Note: This is transitive.
+  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[],
+      // Note: This is transitive.
+      modules: CompileTypeMetadata[];
+}
 
 /**
  * Metadata regarding compilation of a module.
@@ -532,6 +523,7 @@ export class CompileNgModuleMetadata {
   declaredDirectives: CompileIdentifierMetadata[];
   exportedDirectives: CompileIdentifierMetadata[];
   declaredPipes: CompileIdentifierMetadata[];
+
   exportedPipes: CompileIdentifierMetadata[];
   entryComponents: CompileIdentifierMetadata[];
   bootstrapComponents: CompileIdentifierMetadata[];
@@ -581,34 +573,12 @@ export class CompileNgModuleMetadata {
     return {
       isSummary: true,
       type: this.type,
-      entryComponents: this.entryComponents,
-      providers: this.providers,
-      importedModules: this.importedModules,
-      exportedModules: this.exportedModules,
+      entryComponents: this.transitiveModule.entryComponents,
+      providers: this.transitiveModule.providers,
+      modules: this.transitiveModule.modules,
       exportedDirectives: this.exportedDirectives,
       exportedPipes: this.exportedPipes,
-      directiveLoaders: this.transitiveModule.directiveLoaders
-    };
-  }
-
-  toInjectorSummary(): CompileNgModuleInjectorSummary {
-    return {
-      isSummary: true,
-      type: this.type,
-      entryComponents: this.entryComponents,
-      providers: this.providers,
-      importedModules: this.importedModules,
-      exportedModules: this.exportedModules
-    };
-  }
-  toDirectiveSummary(): CompileNgModuleDirectiveSummary {
-    return {
-      isSummary: true,
-      type: this.type,
-      exportedDirectives: this.exportedDirectives,
-      exportedPipes: this.exportedPipes,
-      exportedModules: this.exportedModules,
-      directiveLoaders: this.transitiveModule.directiveLoaders
+      exportedModules: this.exportedModules.map(m => m.type)
     };
   }
 }
@@ -618,10 +588,10 @@ export class TransitiveCompileNgModuleMetadata {
   pipesSet = new Set<any>();
 
   constructor(
-      public modules: CompileNgModuleInjectorSummary[], public providers: CompileProviderMetadata[],
+      public modules: CompileTypeMetadata[],
+      public providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[],
       public entryComponents: CompileIdentifierMetadata[],
-      public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[],
-      public directiveLoaders: (() => Promise<void>)[]) {
+      public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[]) {
     directives.forEach(dir => this.directivesSet.add(dir.reference));
     pipes.forEach(pipe => this.pipesSet.add(pipe.reference));
   }

@@ -12,7 +12,7 @@
  */
 import {ViewEncapsulation} from '@angular/core';
 
-import {analyzeAndValidateNgModules, extractProgramSymbols, loadNgModuleDirectives} from '../aot/compiler';
+import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
 import {StaticReflector, StaticReflectorHost} from '../aot/static_reflector';
 import {CompileDirectiveMetadata} from '../compile_metadata';
@@ -58,32 +58,36 @@ export class Extractor {
     const programSymbols = extractProgramSymbols(this.staticReflector, rootFiles, this.options);
     const {ngModuleByPipeOrDirective, files, ngModules} =
         analyzeAndValidateNgModules(programSymbols, this.options, this.metadataResolver);
-    return loadNgModuleDirectives(ngModules).then(() => {
-      const errors: ParseError[] = [];
+    return Promise
+        .all(ngModules.map(
+            ngModule => this.metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
+                ngModule.type.reference, false)))
+        .then(() => {
+          const errors: ParseError[] = [];
 
-      files.forEach(file => {
-        const compMetas: CompileDirectiveMetadata[] = [];
-        file.directives.forEach(directiveType => {
-          const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
-          if (dirMeta && dirMeta.isComponent) {
-            compMetas.push(dirMeta);
+          files.forEach(file => {
+            const compMetas: CompileDirectiveMetadata[] = [];
+            file.directives.forEach(directiveType => {
+              const dirMeta = this.metadataResolver.getDirectiveMetadata(directiveType);
+              if (dirMeta && dirMeta.isComponent) {
+                compMetas.push(dirMeta);
+              }
+            });
+            compMetas.forEach(compMeta => {
+              const html = compMeta.template.template;
+              const interpolationConfig =
+                  InterpolationConfig.fromArray(compMeta.template.interpolation);
+              errors.push(
+                  ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
+            });
+          });
+
+          if (errors.length) {
+            throw new Error(errors.map(e => e.toString()).join('\n'));
           }
-        });
-        compMetas.forEach(compMeta => {
-          const html = compMeta.template.template;
-          const interpolationConfig =
-              InterpolationConfig.fromArray(compMeta.template.interpolation);
-          errors.push(
-              ...this.messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig));
-        });
-      });
 
-      if (errors.length) {
-        throw new Error(errors.map(e => e.toString()).join('\n'));
-      }
-
-      return this.messageBundle;
-    });
+          return this.messageBundle;
+        });
   }
 
   static create(host: ExtractorHost, options: ExtractorOptions):
