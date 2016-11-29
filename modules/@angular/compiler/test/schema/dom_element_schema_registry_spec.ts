@@ -7,7 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext, Component, ViewEncapsulation} from '@angular/core';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 

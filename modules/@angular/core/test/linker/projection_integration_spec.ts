@@ -533,7 +533,7 @@ class Simple {
 
 @Component({
   selector: 'simple-native1',
-  template: 'SIMPLE1(<content></content>)',
+  template: 'SIMPLE1(<slot></slot>)',
   encapsulation: ViewEncapsulation.Native,
   styles: ['div {color: red}']
 })
