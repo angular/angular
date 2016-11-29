@@ -450,6 +450,17 @@ describe('StaticReflector', () => {
        ]);
      });
 
+  it('should be able to get metadata for a class with nested method calls', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyFactoryComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual({
+      provide: 'c',
+      useFactory:
+          reflector.getStaticSymbol('/tmp/src/static-method.ts', 'AnotherModule', ['someFactory'])
+    });
+  });
+
   it('should be able to get the metadata for a class calling a method with default parameters',
      () => {
        const annotations = reflector.annotations(
@@ -1231,6 +1242,15 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           static defaultsMethod(a, b = true, c = false) {
             return [a, b, c];
           }
+          static withFactory() {
+            return { provide: 'c', useFactory: AnotherModule.someFactory };
+          }
+        }
+
+        export class AnotherModule {
+          static someFactory() {
+            return 'e';
+          }
         }
       `,
       '/tmp/src/static-method-call.ts': `
@@ -1251,6 +1271,11 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           providers: [MyModule.defaultsMethod('a')]
         })
         export class MyDefaultsComponent { }
+
+        @Component({
+          providers: MyModule.withFactory()
+        })
+        export class MyFactoryComponent { }
       `,
       '/tmp/src/static-field.ts': `
         import {Injectable} from '@angular/core';
