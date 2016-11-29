@@ -593,22 +593,26 @@ export class StaticReflector implements ReflectorReader {
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
+                let selectContext = context;
                 let selectTarget = simplify(expression['expression']);
                 if (selectTarget instanceof StaticSymbol) {
                   // Access to a static instance variable
+                  const member: string = expression['member'];
+                  const members = selectTarget.members ?
+                      (selectTarget.members as string[]).concat(member) :
+                      [member];
                   const declarationValue = resolveReferenceValue(selectTarget);
+                  selectContext =
+                      self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   if (declarationValue && declarationValue.statics) {
                     selectTarget = declarationValue.statics;
                   } else {
-                    const member: string = expression['member'];
-                    const members = selectTarget.members ?
-                        (selectTarget.members as string[]).concat(member) :
-                        [member];
-                    return self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
+                    return selectContext;
                   }
                 }
-                const member = simplify(expression['member']);
-                if (selectTarget && isPrimitive(member)) return simplify(selectTarget[member]);
+                const member = simplifyInContext(selectContext, expression['member'], depth + 1);
+                if (selectTarget && isPrimitive(member))
+                  return simplifyInContext(selectContext, selectTarget[member], depth + 1);
                 return null;
               case 'reference':
                 if (!expression.module) {
