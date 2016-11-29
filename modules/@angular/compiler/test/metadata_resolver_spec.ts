@@ -84,35 +84,12 @@ export function main() {
              }
 
              resourceLoader.when('someTemplateUrl', 'someTemplate');
-             resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).loading.then(() => {
+             resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
                const meta = resolver.getDirectiveMetadata(ComponentWithExternalResources);
                expect(meta.selector).toEqual('someSelector');
                expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
                expect(meta.template.templateUrl).toEqual('someTemplateUrl');
                expect(meta.template.template).toEqual('someTemplate');
-             });
-             resourceLoader.flush();
-           })));
-
-    it('should wait for external resources of imported modules',
-       async(inject(
-           [CompileMetadataResolver, ResourceLoader],
-           (resolver: CompileMetadataResolver, resourceLoader: MockResourceLoader) => {
-             @NgModule({
-               declarations: [ComponentWithExternalResources],
-               exports: [ComponentWithExternalResources]
-             })
-             class SomeImportedModule {
-             }
-
-             @NgModule({imports: [SomeImportedModule]})
-             class SomeModule {
-             }
-
-             resourceLoader.when('someTemplateUrl', 'someTemplate');
-             resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).loading.then(() => {
-               const meta = resolver.getDirectiveMetadata(ComponentWithExternalResources);
-               expect(meta.selector).toEqual('someSelector');
              });
              resourceLoader.flush();
            })));
@@ -128,7 +105,7 @@ export function main() {
          class SomeModule {
          }
 
-         resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).loading.then(() => {
+         resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
            const value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.templateUrl;
            const expectedEndValue = './someUrl';
@@ -329,7 +306,7 @@ export function main() {
        class MyModule {
        }
 
-       const modMeta = resolver.loadNgModuleDirectiveAndPipeMetadata(MyModule, true).ngModule;
+       const modMeta = resolver.getNgModuleMetadata(MyModule);
        expect(modMeta.declaredDirectives.length).toBe(1);
        expect(modMeta.declaredDirectives[0].reference).toBe(MyComp);
      }));

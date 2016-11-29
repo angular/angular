@@ -50,6 +50,8 @@ cp -v package.json $TMP
   ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xlf
   ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xmb
 
+  node test/test_summaries.js
+
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
   ./node_modules/.bin/webpack ./webpack.config.js

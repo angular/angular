@@ -15,6 +15,7 @@ import {ViewEncapsulation} from '@angular/core';
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
 import {StaticReflector, StaticReflectorHost} from '../aot/static_reflector';
+import {AotSummaryResolver, AotSummaryResolverHost} from '../aot/summary_resolver';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
@@ -41,7 +42,7 @@ export interface ExtractorOptions {
  * The host of the Extractor disconnects the implementation from TypeScript / other language
  * services and from underlying file systems.
  */
-export interface ExtractorHost extends StaticReflectorHost {
+export interface ExtractorHost extends StaticReflectorHost, AotSummaryResolverHost {
   /**
    * Loads a resource (e.g. html / css)
    */
@@ -110,7 +111,8 @@ export class Extractor {
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resolver = new CompileMetadataResolver(
         new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
-        new PipeResolver(staticReflector), elementSchemaRegistry, normalizer, staticReflector);
+        new PipeResolver(staticReflector), new AotSummaryResolver(host, staticReflector, options),
+        elementSchemaRegistry, normalizer, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {});

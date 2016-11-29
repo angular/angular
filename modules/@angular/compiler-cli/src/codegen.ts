@@ -22,6 +22,7 @@ import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 import {Console} from './private_import_core';
 
 const GENERATED_FILES = /\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
+const GENERATED_META_FILES = /\.json$/;
 const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.css\.ts$|\.css\.shim\.ts$/;
 
 const PREAMBLE = `/**
@@ -68,10 +69,11 @@ export class CodeGenerator {
             sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
         .then(generatedModules => {
           generatedModules.forEach(generatedModule => {
-            const sourceFile = this.program.getSourceFile(generatedModule.fileUrl);
-            const emitPath = this.calculateEmitPath(generatedModule.moduleUrl);
-            this.host.writeFile(
-                emitPath, PREAMBLE + generatedModule.source, false, () => {}, [sourceFile]);
+            const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
+            const emitPath = this.calculateEmitPath(generatedModule.genFileUrl);
+            const source = GENERATED_META_FILES.test(emitPath) ? generatedModule.source :
+                                                                 PREAMBLE + generatedModule.source;
+            this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
           });
         });
   }

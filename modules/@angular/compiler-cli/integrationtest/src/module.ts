@@ -11,7 +11,9 @@ import {FormsModule} from '@angular/forms';
 import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 
-import {ThirdpartyModule} from '../third_party_src/module';
+// Note: don't refer to third_party_src as we want to test that
+// we can compile components from node_modules!
+import {ThirdpartyModule} from 'third_party/module';
 
 import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
