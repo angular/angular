@@ -26,12 +26,11 @@ const blocked_statements = [
   '\\bxit\\(',
   '\\bdebugger;',
   'from \\\'rxjs/Rx\\\'',
+  '\\r'
 ];
 
 const sourceFolders = ['./src', './e2e'];
-const libRoot = 'src/lib';
 const blockedRegex = new RegExp(blocked_statements.join('|'), 'g');
-const importRegex = /from\s+'(.*)';/g;
 
 /*
  * Verify that the current PR is not adding any forbidden identifiers.
@@ -47,69 +46,105 @@ findTestFiles()
   .then(files => files.map(name => ({ name, content: fs.readFileSync(name, 'utf-8') })))
 
   /* Run checks against content of the filtered files. */
-  .then(diffList => {
+  .then(diffList => findErrors(diffList))
 
-    return diffList.reduce((errors, diffFile) => {
-      let fileName = diffFile.name;
-      let content = diffFile.content.split('\n');
-      let lineCount = 0;
-
-      content.forEach(line => {
-        lineCount++;
-
-        let matches = line.match(blockedRegex);
-        let scopeImport = path.relative(libRoot, fileName).startsWith('..')
-          ? isRelativeScopeImport(fileName, line)
-          : false;
-
-        if (matches || scopeImport) {
-
-          let error = {
-            fileName: fileName,
-            lineNumber: lineCount,
-            statement: matches && matches[0] || scopeImport.invalidStatement
-          };
-
-          if (scopeImport) {
-            error.messages = [
-              'You are using an import statement, which imports a file from another scope package.',
-              `Please import the file by using the following path: ${scopeImport.scopeImportPath}`
-            ];
-          }
-
-          errors.push(error);
-        }
-      });
-
-      return errors;
-
-    }, []);
-  })
+  /* Groups similar errors to simplify console output */
+  .then(errors => groupErrors(errors))
 
   /* Print the resolved errors to the console */
-  .then(errors => {
-    if (errors.length > 0) {
-      console.error('Error: You are using one or more blocked statements:\n');
-
-      errors.forEach(entry => {
-        if (entry.messages) {
-          entry.messages.forEach(message => console.error(`   ${message}`))
-        }
-
-        console.error(`   ${entry.fileName}@${entry.lineNumber}, Statement: ${entry.statement}.\n`);
-      });
-
-      process.exit(1);
-    }
-  })
+  .then(errors => printErrors(errors))
 
   .catch(err => {
     // An error occurred in this script. Output the error and the stack.
-    console.error('An error occurred during execution:');
     console.error(err.stack || err);
     process.exit(2);
   });
 
+/**
+ * Finds errors inside of changed files by running them against the blocked statements.
+ * @param {{name: string, content: string}[]} diffList
+ */
+function findErrors(diffList) {
+  return diffList.reduce((errors, diffFile) => {
+    let fileName = diffFile.name;
+    let content = diffFile.content.split('\n');
+    let lineNumber = 0;
+
+    content.forEach(line => {
+      lineNumber++;
+
+      let matches = line.match(blockedRegex);
+
+      if (matches) {
+
+        errors.push({
+          fileName,
+          lineNumber,
+          statement: matches[0]
+        });
+
+      }
+    });
+
+    return errors;
+
+  }, []);
+}
+
+/**
+ * Groups similar errors in the same file which are present over a range of lines.
+ * @param {{fileName: string, lineNumber: number, statement: string}[]} errors
+ */
+function groupErrors(errors) {
+
+  let initialError, initialLine, previousLine;
+
+  return errors.filter(error => {
+
+    if (initialError && isSimilarError(error)) {
+      previousLine = error.lineNumber;
+
+      // Overwrite the lineNumber with a string, which indicates the range of lines.
+      initialError.lineNumber = `${initialLine}-${previousLine}`;
+
+      return false;
+    }
+
+    initialLine = previousLine = error.lineNumber;
+    initialError = error;
+
+    return true;
+  });
+
+  /** Checks whether the given error is similar to the previous one. */
+  function isSimilarError(error) {
+    return initialError.fileName === error.fileName &&
+           initialError.statement === error.statement &&
+           previousLine === (error.lineNumber - 1);
+  }
+}
+
+/**
+ * Prints all errors to the console and terminates the process if errors were present.
+ * @param {{fileName: string, lineNumber: number, statement: string}[]} errors
+ */
+function printErrors(errors) {
+  if (errors.length > 0) {
+
+    console.error('Error: You are using one or more blocked statements:\n');
+
+    errors.forEach(entry => {
+
+      // Stringify the statement to represent line-endings or other unescaped characters.
+      let statement = JSON.stringify(entry.statement);
+
+      console.error(`   ${entry.fileName}@${entry.lineNumber}, Statement: ${statement}.\n`);
+    });
+
+    // Exit the process with an error exit code to notify the CI.
+    process.exit(1);
+  }
+}
 
 /**
  * Resolves all files, which should run against the forbidden identifiers check.
@@ -120,8 +155,8 @@ function findTestFiles() {
     return findChangedFiles();
   }
 
-  var files = sourceFolders.map(folder => {
-    return glob(`${folder}/**/*.ts`);
+  let files = sourceFolders.map(folder => {
+    return glob(`${folder}/**/*`);
   }).reduce((files, fileSet) => files.concat(fileSet), []);
 
   return Promise.resolve(files);
@@ -148,72 +183,6 @@ function findChangedFiles() {
         })
         .map(line => line.split(/\s+/, 2)[1]);
     });
-}
-
-/**
- * Checks the line for any relative imports of a scope package, which should be imported by using
- * the scope package name instead of the relative path.
- * @param fileName Filename to validate the path
- * @param line Line to be checked.
- */
-function isRelativeScopeImport(fileName, line) {
-  if (fileName.startsWith(libRoot)) {
-    return false;
-  }
-
-  let importMatch = importRegex.exec(line);
-
-  // We have to reset the last index of the import regex, otherwise we
-  // would have incorrect matches in the next execution.
-  importRegex.lastIndex = 0;
-
-  // Skip the check if the current line doesn't match any imports.
-  if (!importMatch) {
-    return false;
-  }
-
-  let importPath = importMatch[1];
-
-  // Skip the check when the import doesn't start with a dot, because the line
-  // isn't importing any file relatively. Also applies to scope packages starting
-  // with `@`.
-  if (!importPath.startsWith('.')) {
-    return false;
-  }
-
-  // Transform the relative import path into an absolute path.
-  importPath = path.resolve(path.dirname(fileName), importPath);
-
-  let fileScope = findScope(fileName);
-  let importScope = findScope(importPath);
-
-  if (fileScope.path !== importScope.path) {
-
-    // Creates a valid import statement, which uses the correct scope package.
-    let validImportPath = `@angular/material`;
-
-    return {
-      fileScope: fileScope.name,
-      importScope: importScope.name,
-      invalidStatement: importMatch[0],
-      scopeImportPath: validImportPath
-    }
-  }
-
-  function findScope(filePath) {
-    // Normalize the filePath, to avoid issues with the different environments path delimiter.
-    filePath = path.normalize(filePath);
-
-    // Iterate through all scope paths and try to find them inside of the file path.
-    var scopePath = filePath.indexOf(path.normalize(libRoot)) == -1 ? libRoot : filePath;
-
-    // Return an object containing the name of the scope and the associated path.
-    return {
-      name: path.basename(scopePath),
-      path: scopePath
-    }
-  }
-
 }
 
 /**
