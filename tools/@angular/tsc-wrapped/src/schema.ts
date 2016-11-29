@@ -36,7 +36,6 @@ export interface ModuleExportMetadata {
 
 export interface ClassMetadata {
   __symbolic: 'class';
-  extends?: MetadataSymbolicExpression|MetadataError;
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
   members?: MetadataMap;
   statics?: {[name: string]: MetadataValue | FunctionMetadata};
