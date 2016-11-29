@@ -42,12 +42,14 @@ export class AnimationTransitionEvent {
   public toState: string;
   public totalTime: number;
   public phaseName: string;
+  public triggerName: string;
 
-  constructor({fromState, toState, totalTime, phaseName}:
-                  {fromState: string, toState: string, totalTime: number, phaseName: string}) {
+  constructor({fromState, toState, totalTime, phaseName, triggerName}:
+                  {fromState: string, toState: string, totalTime: number, phaseName: string, triggerName: string}) {
     this.fromState = fromState;
     this.toState = toState;
     this.totalTime = totalTime;
     this.phaseName = phaseName;
+    this.triggerName = triggerName;
   }
 }

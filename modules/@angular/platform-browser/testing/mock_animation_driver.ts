@@ -24,7 +24,7 @@ export class MockAnimationDriver extends AnimationDriver {
     const normalizedStartingStyles = _serializeStyles(startingStyles);
     const normalizedKeyframes = _serializeKeyframes(keyframes);
     const player =
-        new MockAnimationPlayer(normalizedStartingStyles, normalizedKeyframes, previousPlayers);
+        new MockAnimationPlayer(normalizedStartingStyles, normalizedKeyframes, duration, delay, previousPlayers);
 
     this.log.push({
       'element': element,

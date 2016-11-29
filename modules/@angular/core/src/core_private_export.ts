@@ -11,7 +11,7 @@ import {AnimationGroupPlayer as AnimationGroupPlayer_} from './animation/animati
 import {AnimationKeyframe as AnimationKeyframe_} from './animation/animation_keyframe';
 import {AnimationPlayer as AnimationPlayer_, NoOpAnimationPlayer as NoOpAnimationPlayer_} from './animation/animation_player';
 import {AnimationSequencePlayer as AnimationSequencePlayer_} from './animation/animation_sequence_player';
-import * as animationUtils from './animation/animation_style_util';
+import * as runtimeAnimationUtils from './animation/runtime_animation_util';
 import {AnimationStyles as AnimationStyles_} from './animation/animation_styles';
 import {AnimationTransition} from './animation/animation_transition';
 import * as application_tokens from './application_tokens';
@@ -42,6 +42,8 @@ import * as reflection_types from './reflection/types';
 import * as api from './render/api';
 import * as decorators from './util/decorators';
 import {isPromise} from './util/lang';
+import {ViewContainerWithAnimations} from "./linker/view_container";
+import {EARLY_AUTO_STYLE} from './animation/animation_constants';
 
 export const __core_private__: {
   isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
@@ -93,12 +95,12 @@ export const __core_private__: {
   _AnimationSequencePlayer?: AnimationSequencePlayer_,
   AnimationGroupPlayer: typeof AnimationGroupPlayer_, _AnimationGroupPlayer?: AnimationGroupPlayer_,
   AnimationKeyframe: typeof AnimationKeyframe_, _AnimationKeyframe?: AnimationKeyframe_,
-  prepareFinalAnimationStyles: typeof animationUtils.prepareFinalAnimationStyles,
-  balanceAnimationKeyframes: typeof animationUtils.balanceAnimationKeyframes,
-  flattenStyles: typeof animationUtils.flattenStyles,
-  clearStyles: typeof animationUtils.clearStyles,
-  renderStyles: typeof animationUtils.renderStyles,
-  collectAndResolveStyles: typeof animationUtils.collectAndResolveStyles,
+  prepareFinalAnimationStyles: typeof runtimeAnimationUtils.prepareFinalAnimationStyles,
+  balanceAnimationKeyframes: typeof runtimeAnimationUtils.balanceAnimationKeyframes,
+  flattenStyles: typeof runtimeAnimationUtils.flattenStyles,
+  clearStyles: typeof runtimeAnimationUtils.clearStyles,
+  renderStyles: typeof runtimeAnimationUtils.renderStyles,
+  collectAndResolveStyles: typeof runtimeAnimationUtils.collectAndResolveStyles,
   APP_ID_RANDOM_PROVIDER: typeof application_tokens.APP_ID_RANDOM_PROVIDER,
   AnimationStyles: typeof AnimationStyles_, _AnimationStyles?: AnimationStyles_,
   ANY_STATE: typeof ANY_STATE_,
@@ -110,6 +112,11 @@ export const __core_private__: {
   isPromise: typeof isPromise,
   AnimationTransition: typeof AnimationTransition
   view_utils: typeof view_utils,
+  animateQuery: typeof runtimeAnimationUtils.animateQuery,
+  fetchElementAnimation: typeof runtimeAnimationUtils.fetchElementAnimation,
+  AnimationElementIdMap: typeof runtimeAnimationUtils.AnimationElementIdMap,
+  ViewContainerWithAnimations: typeof ViewContainerWithAnimations,
+  EARLY_AUTO_STYLE: typeof EARLY_AUTO_STYLE
 } = {
   isDefaultChangeDetectionStrategy: constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: constants.ChangeDetectorStatus,
@@ -145,12 +152,12 @@ export const __core_private__: {
   AnimationSequencePlayer: AnimationSequencePlayer_,
   AnimationGroupPlayer: AnimationGroupPlayer_,
   AnimationKeyframe: AnimationKeyframe_,
-  prepareFinalAnimationStyles: animationUtils.prepareFinalAnimationStyles,
-  balanceAnimationKeyframes: animationUtils.balanceAnimationKeyframes,
-  flattenStyles: animationUtils.flattenStyles,
-  clearStyles: animationUtils.clearStyles,
-  renderStyles: animationUtils.renderStyles,
-  collectAndResolveStyles: animationUtils.collectAndResolveStyles,
+  prepareFinalAnimationStyles: runtimeAnimationUtils.prepareFinalAnimationStyles,
+  balanceAnimationKeyframes: runtimeAnimationUtils.balanceAnimationKeyframes,
+  flattenStyles: runtimeAnimationUtils.flattenStyles,
+  clearStyles: runtimeAnimationUtils.clearStyles,
+  renderStyles: runtimeAnimationUtils.renderStyles,
+  collectAndResolveStyles: runtimeAnimationUtils.collectAndResolveStyles,
   APP_ID_RANDOM_PROVIDER: application_tokens.APP_ID_RANDOM_PROVIDER,
   AnimationStyles: AnimationStyles_,
   ANY_STATE: ANY_STATE_,
@@ -159,5 +166,10 @@ export const __core_private__: {
   FILL_STYLE_FLAG: FILL_STYLE_FLAG_,
   ComponentStillLoadingError: ComponentStillLoadingError,
   isPromise: isPromise,
-  AnimationTransition: AnimationTransition
+  AnimationTransition: AnimationTransition,
+  animateQuery: runtimeAnimationUtils.animateQuery,
+  fetchElementAnimation: runtimeAnimationUtils.fetchElementAnimation,
+  AnimationElementIdMap: runtimeAnimationUtils.AnimationElementIdMap,
+  ViewContainerWithAnimations: ViewContainerWithAnimations,
+  EARLY_AUTO_STYLE: EARLY_AUTO_STYLE
 };

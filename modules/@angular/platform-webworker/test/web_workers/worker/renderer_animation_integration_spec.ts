@@ -206,21 +206,21 @@ export function main() {
          const [triggerOneStart, triggerOneDone] = log['one'];
          expect(triggerOneStart)
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'start'}));
+                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'start', triggerName: 'one'}));
 
          expect(triggerOneDone)
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'done'}));
+                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'done', triggerName: 'one'}));
 
          uiDriver.log.shift()['player'].finish();
          const [triggerTwoStart, triggerTwoDone] = log['two'];
          expect(triggerTwoStart)
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'start'}));
+                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'start', triggerName: 'two'}));
 
          expect(triggerTwoDone)
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'done'}));
+                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'done', triggerName: 'two'}));
        }));
 
     it('should handle .start and .done callbacks for mutliple elements that contain animations that are fired at the same time',
@@ -254,11 +254,11 @@ export function main() {
 
          expect(cmp1Log['start'])
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'start'}));
+                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'start', triggerName: 'one'}));
 
          expect(cmp1Log['done'])
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'done'}));
+                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'done', triggerName: 'one'}));
 
          // the * => on transition has two steps
          uiDriver.log.shift()['player'].finish();
@@ -266,11 +266,11 @@ export function main() {
 
          expect(cmp2Log['start'])
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'start'}));
+                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'start', triggerName: 'two'}));
 
          expect(cmp2Log['done'])
              .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'done'}));
+                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'done', triggerName: 'two'}));
        }));
 
     it('should destroy the player when the animation is complete', fakeAsync(() => {

@@ -10,7 +10,7 @@ import {AnimationTransitionEvent} from './animation_transition_event';
 
 export class AnimationTransition {
   constructor(
-      private _player: AnimationPlayer, private _fromState: string, private _toState: string,
+      public player: AnimationPlayer, private _triggerName: string, private _fromState: string, private _toState: string,
       private _totalTime: number) {}
 
   private _createEvent(phaseName: string): AnimationTransitionEvent {
@@ -18,19 +18,20 @@ export class AnimationTransition {
       fromState: this._fromState,
       toState: this._toState,
       totalTime: this._totalTime,
-      phaseName: phaseName
+      triggerName: this._triggerName,
+      phaseName: phaseName,
     });
   }
 
   onStart(callback: (event: AnimationTransitionEvent) => any): void {
     const fn =
         <() => void>Zone.current.wrap(() => callback(this._createEvent('start')), 'player.onStart');
-    this._player.onStart(fn);
+    this.player.onStart(fn);
   }
 
   onDone(callback: (event: AnimationTransitionEvent) => any): void {
     const fn =
         <() => void>Zone.current.wrap(() => callback(this._createEvent('done')), 'player.onDone');
-    this._player.onDone(fn);
+    this.player.onDone(fn);
   }
 }

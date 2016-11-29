@@ -6,23 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryList} from '@angular/core/src/linker/query_list';
+import {AnimationQueryList, QueryList} from '@angular/core/src/linker/query_list';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {iterateListLike} from '../../src/facade/collection';
+import {AppView} from '../../src/linker/view';
 
 export function main() {
   describe('QueryList', () => {
+    let log: string = '';
+    ;
     let queryList: QueryList<string>;
-    let log: string;
+
+    function logAppend(item: any) { log += (log.length == 0 ? '' : ', ') + item; }
+
     beforeEach(() => {
       queryList = new QueryList<string>();
       log = '';
     });
-
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
 
     it('should support resetting and iterating over the new objects', () => {
       queryList.reset(['one']);
@@ -93,11 +96,6 @@ export function main() {
 
     it('should support toArray', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.reduce((a: string, x: string) => a + x, 'start:')).toEqual('start:onetwo');
-    });
-
-    it('should support toArray', () => {
-      queryList.reset(['one', 'two']);
       expect(queryList.toArray()).toEqual(['one', 'two']);
     });
 
@@ -149,5 +147,42 @@ export function main() {
            }));
       });
     }
+  });
+
+  describe('AnimationQueryList', () => {
+    let queryList: AnimationQueryList<any>;
+    let data: any[];
+
+    beforeEach(() => {
+      const v1 = <AppView<any>>{};
+      const v2 = <AppView<any>>{};
+      queryList = new AnimationQueryList<any>();
+      data = [[v1, [1, 2, 3]], [v2, [4, 5, 6]]];
+    });
+
+    it('should support resetting and iterating over the new objects', () => {
+      queryList.reset([data[0]]);
+      queryList.reset([data[1]]);
+      let val = 0;
+      queryList.forEach(item => {
+        let [view, entries] = item;
+        val = entries[0];
+      });
+      expect(val).toEqual(4);
+    });
+
+    it('should support forEach', () => {
+      let join = '';
+      queryList.reset(data);
+      queryList.forEach((x) => join = `${join} [${x[1].join(',')}]`);
+      expect(join.trim()).toEqual('[1,2,3] [4,5,6]');
+    });
+
+    it('should support forEach with index', () => {
+      let join = '';
+      queryList.reset(data);
+      queryList.forEach((x, i) => join = `${join} ${i} [${x[1].join(',')}]`);
+      expect(join.trim()).toEqual('0 [1,2,3] 1 [4,5,6]');
+    });
   });
 }

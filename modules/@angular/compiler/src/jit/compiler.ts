@@ -298,9 +298,9 @@ export class JitCompiler implements Compiler {
         compMeta, compMeta.template.template, directives, pipes, template.ngModule.schemas,
         identifierName(compMeta.type));
     const compiledAnimations =
-        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
+        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations.entryAsts);
     const compileResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
+        compMeta, parsedTemplate, parsedAnimations.queryAsts, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
         pipes, compiledAnimations);
     const statements = stylesCompileResult.componentStylesheet.statements
                            .concat(...compiledAnimations.map(ca => ca.statements))

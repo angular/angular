@@ -90,6 +90,8 @@ export abstract class Renderer {
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string,
       previousPlayers?: AnimationPlayer[]): AnimationPlayer;
+
+  abstract renderDetach(renderNode: any, detach: boolean): void;
 }
 
 /**

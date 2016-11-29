@@ -22,6 +22,7 @@ import {ViewContainer} from './view_container';
 import {ViewRef_} from './view_ref';
 import {ViewType} from './view_type';
 import {ViewUtils, addToArray} from './view_utils';
+import {AnimationPlayer} from "../animation/animation_player";
 
 const _scope_check: WtfScopeFn = wtfCreateScope(`AppView#check(ascii id)`);
 
@@ -57,12 +58,16 @@ export abstract class AppView<T> {
   private _directRenderer: DirectRenderer;
 
   public context: T;
+  public flaggedForQuery: boolean = false;
+  public delayDetach: boolean = false;
+  public delayDetachPlayer: AnimationPlayer;
 
   constructor(
       public clazz: any, public componentType: RenderComponentType, public type: ViewType,
       public viewUtils: ViewUtils, public parentView: AppView<any>, public parentIndex: number,
       public parentElement: any, public cdMode: ChangeDetectorStatus,
-      public declaredViewContainer: ViewContainer = null) {
+      public declaredViewContainer: ViewContainer = null,
+      private _parentDelayedDetachCalls: any[] = null) {
     this.ref = new ViewRef_(this, viewUtils.animationQueue);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
@@ -155,7 +160,6 @@ export abstract class AppView<T> {
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       return;
     }
-    const hostElement = this.type === ViewType.COMPONENT ? this.parentElement : null;
     if (this.disposables) {
       for (let i = 0; i < this.disposables.length; i++) {
         this.disposables[i]();
@@ -164,14 +168,44 @@ export abstract class AppView<T> {
     this.destroyInternal();
     this.dirtyParentQueriesInternal();
 
-    if (this._animationContext) {
-      this._animationContext.onAllActiveAnimationsDone(
-          () => this.renderer.destroyView(hostElement, this.allNodes));
+    if (this._parentDelayedDetachCalls) {
+      this.delayDetach = true;
+      this._parentDelayedDetachCalls.push([this, true]);
+    } else if (this._animationContext) {
+      this.delayDetach = true;
+      this._animationContext.onAllActiveAnimationsDone(() => this._renderDestroy());
     } else {
-      this.renderer.destroyView(hostElement, this.allNodes);
+      this._renderDestroy();
     }
 
     this.cdMode = ChangeDetectorStatus.Destroyed;
+  }
+
+  private _renderDestroy() {
+    const hostElement = this.type === ViewType.COMPONENT ? this.parentElement : null;
+    this.renderer.destroyView(hostElement, this.allNodes);
+  }
+
+  private _processDelayedDetachEntries(entries: any[]) {
+    entries.forEach(tuple => {
+      let [view, doDestroy] = tuple;
+      if (view.delayDetachPlayer) {
+        view.delayDetachPlayer.onDestroy(() => {
+          if (doDestroy) {
+            view._renderDestroy();
+          } else {
+            view._renderDetach();
+          }
+        });
+      } else {
+        if (doDestroy) {
+          view._renderDestroy();
+        } else {
+          view._renderDetach();
+        }
+      }
+    });
+    entries.length = 0;
   }
 
   /**
@@ -186,7 +220,11 @@ export abstract class AppView<T> {
 
   detach(): void {
     this.detachInternal();
-    if (this._animationContext) {
+    if (this._parentDelayedDetachCalls) {
+      this.delayDetach = true;
+      this._parentDelayedDetachCalls.push([this, false]);
+    } else if (this._animationContext) {
+      this.delayDetach = true;
       this._animationContext.onAllActiveAnimationsDone(() => this._renderDetach());
     } else {
       this._renderDetach();
@@ -368,10 +406,10 @@ export class DebugAppView<T> extends AppView<T> {
       clazz: any, componentType: RenderComponentType, type: ViewType, viewUtils: ViewUtils,
       parentView: AppView<any>, parentIndex: number, parentNode: any, cdMode: ChangeDetectorStatus,
       public staticNodeDebugInfos: StaticNodeDebugInfo[],
-      declaredViewContainer: ViewContainer = null) {
+      declaredViewContainer: ViewContainer = null, parentAnimationProp: any) {
     super(
         clazz, componentType, type, viewUtils, parentView, parentIndex, parentNode, cdMode,
-        declaredViewContainer);
+        declaredViewContainer, parentAnimationProp);
   }
 
   create(context: T) {

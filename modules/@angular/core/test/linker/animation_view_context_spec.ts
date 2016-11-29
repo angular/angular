@@ -19,6 +19,7 @@ export function main() {
     let elm: any;
     beforeEach(() => { elm = el('<div></div>'); });
 
+    const someView = <any>{};
     function getPlayers(vc: any) { return vc.getAnimationPlayers(elm); }
 
     it('should remove the player from the registry once the animation is complete',
@@ -28,7 +29,7 @@ export function main() {
          const vc = new AnimationViewContext(animationQueue);
 
          expect(getPlayers(vc).length).toEqual(0);
-         vc.queueAnimation(elm, 'someAnimation', player);
+         vc.queueAnimation(someView, elm, 'someAnimation', player);
          expect(getPlayers(vc).length).toEqual(1);
          player.finish();
          expect(getPlayers(vc).length).toEqual(0);
@@ -41,11 +42,11 @@ export function main() {
          const animationQueue = TestBed.get(AnimationQueue) as AnimationQueue;
          const vc = new AnimationViewContext(animationQueue);
 
-         vc.queueAnimation(elm, 'someAnimation', player1);
+         vc.queueAnimation(someView, elm, 'someAnimation', player1);
          expect(getPlayers(vc).length).toBe(1);
          expect(getPlayers(vc)[0]).toBe(player1);
 
-         vc.queueAnimation(elm, 'someAnimation', player2);
+         vc.queueAnimation(someView, elm, 'someAnimation', player2);
          expect(getPlayers(vc).length).toBe(1);
          expect(getPlayers(vc)[0]).toBe(player2);
 
@@ -60,3 +61,4 @@ export function main() {
        }));
   });
 }
+

@@ -215,6 +215,11 @@ export class ServerRenderer implements Renderer {
       return new NoOpAnimationPlayer();
     }
   }
+  
+  renderDetach(renderNode: any, detach: boolean): void {
+    const val = detach ? 'none' : null;
+    this.setElementStyle(renderNode, 'display', val);
+  }
 }
 
 function moveNodesAfterSibling(sibling: any /** TODO #9100 */, nodes: any /** TODO #9100 */) {

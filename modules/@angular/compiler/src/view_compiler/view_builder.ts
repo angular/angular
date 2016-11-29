@@ -211,9 +211,11 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
     const renderNode = o.THIS_EXPR.prop(fieldName);
 
+    const containsAnimations = ast.inputs.some(input => input.isAnimation);
+
     const compileElement = new CompileElement(
-        parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.providers,
-        ast.hasViewContainer, false, ast.references);
+        parent, this.view, nodeIndex, renderNode, ast, component, directives, ast.inputs, ast.providers,
+        ast.hasViewContainer, false, ast.references, containsAnimations);
     this.view.nodes.push(compileElement);
     let compViewExpr: o.ReadPropExpr = null;
     if (isPresent(component)) {
@@ -247,6 +249,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, parent: CompileElement): any {
     const nodeIndex = this.view.nodes.length;
     const fieldName = `_anchor_${nodeIndex}`;
+    const parentWithAnimations = _findParentElementContainingAnimations(parent);
     this.view.fields.push(
         new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderComment)));
     this.view.createMethod.addStmt(
@@ -265,15 +268,16 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
 
     const directives = ast.directives.map(directiveAst => directiveAst.directive);
     const compileElement = new CompileElement(
-        parent, this.view, nodeIndex, renderNode, ast, null, directives, ast.providers,
+        parent, this.view, nodeIndex, renderNode, ast, null, directives, [], ast.providers,
         ast.hasViewContainer, true, ast.references);
     this.view.nodes.push(compileElement);
 
     this.nestedViewCount++;
     const embeddedView = new CompileView(
         this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
+        this.view.animationQueries,
         this.view.animations, this.view.viewIndex + this.nestedViewCount, compileElement,
-        templateVariableBindings, this.targetDependencies);
+        templateVariableBindings, this.targetDependencies, parentWithAnimations);
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);
 
     compileElement.beforeChildren();
@@ -468,6 +472,8 @@ function createViewClass(
         'declaredViewContainer', o.importType(createIdentifier(Identifiers.ViewContainer))));
     superConstructorArgs.push(o.variable('declaredViewContainer'));
   }
+  viewConstructorArgs.push(new o.FnParam('parentAnimationProp', o.DYNAMIC_TYPE));
+  superConstructorArgs.push(o.variable('parentAnimationProp'));
   const viewMethods = [
     new o.ClassMethod(
         'createInternal', [new o.FnParam(rootSelectorVar.name, o.STRING_TYPE)],
@@ -488,7 +494,7 @@ function createViewClass(
         generateDetectChangesMethod(view)),
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], generateDestroyMethod(view)),
-    new o.ClassMethod('detachInternal', [], view.detachMethod.finish()),
+    new o.ClassMethod('detachInternal', [], generateDetachMethod(view)),
     generateVisitRootNodesMethod(view), generateVisitProjectableNodesMethod(view),
     generateCreateEmbeddedViewsMethod(view)
   ].filter((method) => method.body.length > 0);
@@ -512,6 +518,14 @@ function generateDestroyMethod(view: CompileView): o.Statement[] {
   view.viewChildren.forEach(
       (viewChild) => { stmts.push(viewChild.callMethod('destroy', []).toStmt()); });
   stmts.push(...view.destroyMethod.finish());
+  return stmts;
+}
+
+function generateDetachMethod(view: CompileView): o.Statement[] {
+  const stmts: o.Statement[] = [];
+  stmts.push(...view.updateAnimationQueriesMethod.finish());
+  stmts.push(...view.detachMethod.finish());
+  stmts.push(...view.checkAndDestroyBindingsEndMethod.finish());
   return stmts;
 }
 
@@ -557,23 +571,25 @@ function generateCreateMethod(view: CompileView): o.Statement[] {
 
 function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   const stmts: any[] = [];
-  if (view.animationBindingsMethod.isEmpty() && view.detectChangesInInputsMethod.isEmpty() &&
+  if (view.animationBindingsMethod.length == 0 && view.detectChangesInInputsMethod.isEmpty() &&
       view.updateContentQueriesMethod.isEmpty() &&
+      view.updateAnimationQueriesMethod.isEmpty() &&
       view.afterContentLifecycleCallbacksMethod.isEmpty() &&
       view.detectChangesRenderPropertiesMethod.isEmpty() &&
       view.updateViewQueriesMethod.isEmpty() && view.afterViewLifecycleCallbacksMethod.isEmpty() &&
       view.viewContainers.length === 0 && view.viewChildren.length === 0) {
     return stmts;
   }
-  stmts.push(...view.animationBindingsMethod.finish());
   stmts.push(...view.detectChangesInInputsMethod.finish());
   view.viewContainers.forEach((viewContainer) => {
     stmts.push(
         viewContainer.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
             .toStmt());
   });
-  const afterContentStmts = view.updateContentQueriesMethod.finish().concat(
-      view.afterContentLifecycleCallbacksMethod.finish());
+  const afterContentStmts =
+      view.updateContentQueriesMethod.finish().concat(
+      view.updateAnimationQueriesMethod.finish().concat(
+      view.afterContentLifecycleCallbacksMethod.finish()));
   if (afterContentStmts.length > 0) {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterContentStmts));
   }
@@ -587,6 +603,9 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   if (afterViewStmts.length > 0) {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterViewStmts));
   }
+  view.animationBindingsMethod.reverse().forEach((statements: o.Statement[]) => {
+    stmts.push(...statements);
+  });
 
   const varStmts: any[] = [];
   const readVars = o.findReadVarNames(stmts);
@@ -599,6 +618,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
             .toDeclStmt(new o.MapType(o.importType(createIdentifier(Identifiers.SimpleChange)))));
   }
   varStmts.push(...createSharedBindingVariablesIfNeeded(stmts));
+  stmts.push(...view.checkAndDestroyBindingsEndMethod.finish());
   return varStmts.concat(stmts);
 }
 
@@ -693,12 +713,15 @@ function generateCreateEmbeddedViewsMethod(view: CompileView): o.ClassMethod {
   view.nodes.forEach((node) => {
     if (node instanceof CompileElement) {
       if (node.embeddedView) {
+        const animationProp = node.embeddedView.parentWithAnimations ?
+            o.THIS_EXPR.prop(`_delayedDetach_${node.embeddedView.parentWithAnimations.nodeIndex}`) :
+            o.literal(null);
         const parentNodeIndex = node.isRootElement() ? null : node.parent.nodeIndex;
         stmts.push(new o.IfStmt(
             nodeIndexVar.equals(o.literal(node.nodeIndex)),
             [new o.ReturnStatement(node.embeddedView.classExpr.instantiate([
               ViewProperties.viewUtils, o.THIS_EXPR, o.literal(node.nodeIndex), node.renderNode,
-              node.viewContainer
+              node.viewContainer, animationProp
             ]))]));
       }
     }
@@ -709,4 +732,11 @@ function generateCreateEmbeddedViewsMethod(view: CompileView): o.ClassMethod {
   return new o.ClassMethod(
       'createEmbeddedViewInternal', [new o.FnParam(nodeIndexVar.name, o.NUMBER_TYPE)], stmts,
       o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE]));
+}
+
+function _findParentElementContainingAnimations(parent: CompileElement): CompileElement {
+  do {
+    if (parent.containsAnimationTriggers) return parent;
+  } while (parent = parent.parent);
+  return null;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, ModuleWithProviders, OpaqueToken, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, ModuleWithProviders, OpaqueToken, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, AnimationQueryMetadata, AnimationAnimateChildMetadata, _EMPTY_STYLES} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -28,7 +28,6 @@ import {MODULE_SUFFIX, SyntaxError, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 export const ERROR_COLLECTOR_TOKEN = new OpaqueToken('ErrorCollector');
-
 // Design notes:
 // - don't lazily create metadata:
 //   For some metadata, we need to do async work sometimes,
@@ -161,6 +160,9 @@ export class CompileMetadataResolver {
 
   private _getAnimationStyleMetadata(value: AnimationStyleMetadata):
       cpl.CompileAnimationStyleMetadata {
+    if (value === _EMPTY_STYLES) {
+      return cpl._EMPTY_COMPILED_STYLED;
+    }
     return new cpl.CompileAnimationStyleMetadata(value.offset, value.styles);
   }
 
@@ -172,6 +174,10 @@ export class CompileMetadataResolver {
     if (value instanceof AnimationKeyframesSequenceMetadata) {
       return new cpl.CompileAnimationKeyframesSequenceMetadata(
           value.steps.map(entry => this._getAnimationStyleMetadata(entry)));
+    }
+
+    if (value instanceof AnimationAnimateChildMetadata) {
+      return new cpl.CompileAnimationAnimateChildMetadata(value.timings);
     }
 
     if (value instanceof AnimationAnimateMetadata) {
@@ -190,6 +196,12 @@ export class CompileMetadataResolver {
 
       return new cpl.CompileAnimationSequenceMetadata(steps);
     }
+
+    if (value instanceof AnimationQueryMetadata) {
+      const steps = value.steps.map(step => this._getAnimationMetadata(step));
+      return new cpl.CompileAnimationQueryMetadata(value.criteria, value.criteria, steps);
+    }
+
     return null;
   }
 

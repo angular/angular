@@ -9,6 +9,9 @@
 import {EventEmitter, Observable} from '../facade/async';
 import {ListWrapper} from '../facade/collection';
 import {getSymbolIterator} from '../facade/lang';
+import {AppView} from './view';
+
+declare type AnimationQueryTuple = [AppView<any>, any[]];
 
 /**
  * An unmodifiable list of items that Angular keeps up to date when the state
@@ -103,4 +106,60 @@ export class QueryList<T>/* implements Iterable<T> */ {
 
   /** internal */
   get dirty() { return this._dirty; }
+}
+
+export class AnimationQueryList<T>/* implements Iterable<T> */ {
+  private _dirty = true;
+  private _results: [AppView<any>, Array<T>][] = [];
+
+  forEach(fn: (view: [AppView<any>, Array<T>], index: number, array: [
+            AppView<any>, Array<T>
+          ][]) => void): void {
+    this._results.forEach(fn);
+  }
+
+  reset(res: Array<[AppView<any>, Array<T>]>): void {
+    this._results = flattenAnimationQueryEntries(res);
+    this._dirty = false;
+  }
+
+  /** internal */
+  setDirty() { this._dirty = true; }
+
+  /** internal */
+  get dirty() { return this._dirty; }
+}
+
+function flattenAnimationQueryEntries(entries: AnimationQueryTuple[]): AnimationQueryTuple[] {
+  const results: AnimationQueryTuple[] = [];
+  entries.forEach(entry => flattenAnimationQueryEntry(entry, results));
+  return results;
+}
+
+function flattenAnimationQueryEntry(tuple: AnimationQueryTuple, results: AnimationQueryTuple[]) {
+  let [view, entries] = tuple;
+  if (view instanceof AppView) {
+    var data:any[] = [];
+    entries.forEach(entry => {
+      if (Array.isArray(entry)) {
+        if (entry[0] instanceof AppView) {
+          if (data.length) {
+            results.push([view, data]);
+            data = [];
+          }
+          flattenAnimationQueryEntry(<AnimationQueryTuple>entry, results);
+        }
+      } else {
+        data.push(entry);
+      }
+    });
+    if (data.length) {
+      results.push([view, data]);
+      data = [];
+    }
+  } else {
+    tuple.forEach(entry => {
+      flattenAnimationQueryEntry(<AnimationQueryTuple>entry, results);
+    });
+  }
 }

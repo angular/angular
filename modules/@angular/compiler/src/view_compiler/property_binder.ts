@@ -7,7 +7,9 @@
  */
 
 import {SecurityContext} from '@angular/core';
+import {delay} from 'rxjs/operator/delay';
 
+import {generateDelayedDetachPropName} from '../animation/animation_util';
 import {createCheckBindingField, createCheckBindingStmt} from '../compiler_util/binding_util';
 import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
@@ -46,6 +48,13 @@ export function bindRenderInputs(
   const view = compileElement.view;
   const renderNode = compileElement.renderNode;
 
+  const containsAnimations = boundProps.some(prop => prop.isAnimation);
+  const transitionVarsVar = o.variable(`transitionVars_${compileElement.nodeIndex}`);
+  const transitionVarsDecl = transitionVarsVar.set(o.literalArr([])).toDeclStmt();
+  if (containsAnimations) {
+    view.detachMethod.addStmt(transitionVarsDecl);
+  }
+
   boundProps.forEach((boundProp) => {
     const bindingField = createCheckBindingField(view);
     view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileElement.nodeIndex, boundProp);
@@ -54,8 +63,7 @@ export function bindRenderInputs(
     if (!evalResult) {
       return;
     }
-    const checkBindingStmts: o.Statement[] = [];
-    let compileMethod = view.detectChangesRenderPropertiesMethod;
+    let checkBindingStmts: o.Statement[] = [];
     switch (boundProp.type) {
       case PropertyBindingType.Property:
       case PropertyBindingType.Attribute:
@@ -64,22 +72,40 @@ export function bindRenderInputs(
         checkBindingStmts.push(...writeToRenderer(
             o.THIS_EXPR, boundProp, renderNode, evalResult.currValExpr,
             view.genConfig.logBindingUpdate));
+        view.detectChangesRenderPropertiesMethod.addStmts(createCheckBindingStmt(
+          evalResult, bindingField.expression, DetectChangesVars.throwOnChange, checkBindingStmts));
         break;
       case PropertyBindingType.Animation:
-        compileMethod = view.animationBindingsMethod;
-        const {updateStmts, detachStmts} = triggerAnimation(
+        const {animationTransitionVar, updateStmts, detachStmts} = triggerAnimation(
             o.THIS_EXPR, o.THIS_EXPR, boundProp, boundOutputs,
             (hasEvents ? o.THIS_EXPR.prop(getHandleEventMethodName(compileElement.nodeIndex)) :
                          o.importExpr(createIdentifier(Identifiers.noop)))
                 .callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR]),
-            compileElement.renderNode, evalResult.currValExpr, bindingField.expression);
+            compileElement.renderNode, evalResult.currValExpr, bindingField.expression,
+            compileElement.animationQueryProps, compileElement.nodeIndex);
+        const updateBindingsArrStmt =
+            transitionVarsVar.callMethod('push', [animationTransitionVar]).toStmt();
+        updateStmts.push(updateBindingsArrStmt);
+        detachStmts.push(updateBindingsArrStmt);
         checkBindingStmts.push(...updateStmts);
+        view.animationBindingsMethod.push(createCheckBindingStmt(
+          evalResult, bindingField.expression, DetectChangesVars.throwOnChange, checkBindingStmts));
         view.detachMethod.addStmts(detachStmts);
         break;
     }
-    compileMethod.addStmts(createCheckBindingStmt(
-        evalResult, bindingField.expression, DetectChangesVars.throwOnChange, checkBindingStmts));
   });
+
+  if (containsAnimations) {
+    view.animationBindingsMethod.push([transitionVarsDecl]);
+
+    const delayedDetachVar =
+      o.THIS_EXPR.prop(generateDelayedDetachPropName(compileElement.nodeIndex));
+    view.createMethod.addStmt(delayedDetachVar.set(o.literalArr([])).toStmt());
+
+    const processStmt =
+      o.THIS_EXPR.callMethod('_processDelayedDetachEntries', [delayedDetachVar]).toStmt();
+    view.checkAndDestroyBindingsEndMethod.addStmt(processStmt);
+  }
 }
 
 export function bindDirectiveHostProps(

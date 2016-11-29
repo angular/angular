@@ -19,6 +19,7 @@ import {CompileView} from './compile_view';
 import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 import {bindView} from './view_binder';
 import {buildView, finishView} from './view_builder';
+import {AnimationQueryAst} from '../animation/animation_ast';
 
 export {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 
@@ -34,13 +35,15 @@ export class ViewCompiler {
   constructor(private _genConfig: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
 
   compileComponent(
-      component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
+      component: CompileDirectiveMetadata, template: TemplateAst[],
+      animationQueryMap: {[triggerName: string]: AnimationQueryAst[]},
+      styles: o.Expression,
       pipes: CompilePipeSummary[],
       compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
     const dependencies:
         Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
     const view = new CompileView(
-        component, this._genConfig, pipes, styles, compiledAnimations, 0,
+        component, this._genConfig, pipes, styles, animationQueryMap, compiledAnimations, 0,
         CompileElement.createNull(), [], dependencies);
 
     const statements: o.Statement[] = [];

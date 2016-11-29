@@ -29,11 +29,12 @@ export class AnimationCompiler {
   }
 }
 
-const _ANIMATION_FACTORY_ELEMENT_VAR = o.variable('element');
+const _ANIMATION_ELEMENT_VAR = o.variable('element');
+const _ANIMATION_ELEMENT_ID_MAP = o.variable('elementIdMap');
 const _ANIMATION_DEFAULT_STATE_VAR = o.variable('defaultStateStyles');
 const _ANIMATION_FACTORY_VIEW_VAR = o.variable('view');
-const _ANIMATION_FACTORY_VIEW_CONTEXT = _ANIMATION_FACTORY_VIEW_VAR.prop('animationContext');
-const _ANIMATION_FACTORY_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer');
+const _ANIMATION_VIEW_CONTEXT = _ANIMATION_FACTORY_VIEW_VAR.prop('animationContext');
+const _ANIMATION_RENDERER_VAR = _ANIMATION_FACTORY_VIEW_VAR.prop('renderer');
 const _ANIMATION_CURRENT_STATE_VAR = o.variable('currentState');
 const _ANIMATION_NEXT_STATE_VAR = o.variable('nextState');
 const _ANIMATION_PLAYER_VAR = o.variable('player');
@@ -41,7 +42,12 @@ const _ANIMATION_TIME_VAR = o.variable('totalTime');
 const _ANIMATION_START_STATE_STYLES_VAR = o.variable('startStateStyles');
 const _ANIMATION_END_STATE_STYLES_VAR = o.variable('endStateStyles');
 const _ANIMATION_COLLECTED_STYLES = o.variable('collectedStyles');
-const _PREVIOUS_ANIMATION_PLAYERS = o.variable('previousPlayers');
+const _PREVIOUS_PLAYER_RESULT = o.variable('previousPlayerResult');
+const _PREVIOUS_ANIMATION_PLAYER = o.variable('previousPlayer');
+const _PREVIOUS_ANIMATION_LEAF_PLAYERS = o.variable('previousPlayerLeafs');
+const _ANIMATION_QUERIED_ELEMENT_ID = o.variable('elementId');
+const _ANIMATION_QUERIES_VAR = o.variable('queries');
+const _ANIMATION_STEPS = o.variable('s');
 const _EMPTY_MAP = o.literalMap([]);
 const _EMPTY_ARRAY = o.literalArr([]);
 
@@ -59,7 +65,10 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
   visitAnimationStyles(ast: asts.AnimationStylesAst, context: _AnimationBuilderContext):
       o.Expression {
     const stylesArr: any[] = [];
-    if (context.isExpectingFirstStyleStep) {
+
+    // starting state styles are only seeded in for the
+    // first animation on the trigger element
+    if (context.isExpectingFirstStyleStep && context.parentQueryIndex === 0) {
       stylesArr.push(_ANIMATION_START_STATE_STYLES_VAR);
       context.isExpectingFirstStyleStep = false;
     }
@@ -72,7 +81,7 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
 
     return o.importExpr(createIdentifier(Identifiers.AnimationStyles)).instantiate([
       o.importExpr(createIdentifier(Identifiers.collectAndResolveStyles)).callFn([
-        _ANIMATION_COLLECTED_STYLES, o.literalArr(stylesArr)
+        _ANIMATION_COLLECTED_STYLES, _ANIMATION_QUERIED_ELEMENT_ID, o.literalArr(stylesArr)
       ])
     ]);
   }
@@ -85,60 +94,138 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
   }
 
   visitAnimationStep(ast: asts.AnimationStepAst, context: _AnimationBuilderContext): o.Expression {
-    if (context.endStateAnimateStep === ast) {
-      return this._visitEndStateAnimation(ast, context);
+    if (ast.isRestoreStep) {
+      return this._visitAnimationRestoreStep(ast, context);
     }
 
     const startingStylesExpr = ast.startingStyles.visit(this, context);
     const keyframeExpressions =
         ast.keyframes.map(keyframeEntry => keyframeEntry.visit(this, context));
+
     return this._callAnimateMethod(
         ast, startingStylesExpr, o.literalArr(keyframeExpressions), context);
   }
 
-  /** @internal */
-  _visitEndStateAnimation(ast: asts.AnimationStepAst, context: _AnimationBuilderContext):
+  visitAnimationChildStep(ast: asts.AnimationChildStepAst, context: _AnimationBuilderContext): o.Expression {
+      return o.importExpr(createIdentifier(Identifiers.fetchElementAnimation))
+        .callFn([
+          _ANIMATION_ELEMENT_VAR,
+          _ANIMATION_VIEW_CONTEXT,
+          o.literal(ast.duration),
+          o.literal(ast.delay),
+          o.literal(ast.easing),
+          _ANIMATION_COLLECTED_STYLES
+        ]);
+  }
+
+  private _visitAnimationRestoreStep(ast: asts.AnimationStepAst, context: _AnimationBuilderContext):
       o.Expression {
     const startingStylesExpr = ast.startingStyles.visit(this, context);
     const keyframeExpressions = ast.keyframes.map(keyframe => keyframe.visit(this, context));
     const keyframesExpr =
         o.importExpr(createIdentifier(Identifiers.balanceAnimationKeyframes)).callFn([
-          _ANIMATION_COLLECTED_STYLES, _ANIMATION_END_STATE_STYLES_VAR,
+          _ANIMATION_COLLECTED_STYLES, _ANIMATION_QUERIED_ELEMENT_ID, _ANIMATION_END_STATE_STYLES_VAR,
           o.literalArr(keyframeExpressions)
         ]);
 
     return this._callAnimateMethod(ast, startingStylesExpr, keyframesExpr, context);
   }
 
-  /** @internal */
-  _callAnimateMethod(
+  private _callAnimateMethod(
       ast: asts.AnimationStepAst, startingStylesExpr: any, keyframesExpr: any,
-      context: _AnimationBuilderContext) {
+      context: _AnimationBuilderContext): o.Expression {
     let previousStylesValue: o.Expression = _EMPTY_ARRAY;
-    if (context.isExpectingFirstAnimateStep) {
-      previousStylesValue = _PREVIOUS_ANIMATION_PLAYERS;
-      context.isExpectingFirstAnimateStep = false;
+
+    // the very first animation per query always gets a collection of the players passed in
+    if (ast.startTime === 0) {
+      previousStylesValue = _PREVIOUS_ANIMATION_LEAF_PLAYERS;
     }
     context.totalTransitionTime += ast.duration + ast.delay;
-    return _ANIMATION_FACTORY_RENDERER_VAR.callMethod('animate', [
-      _ANIMATION_FACTORY_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
+    const exp = _ANIMATION_RENDERER_VAR.callMethod('animate', [
+      _ANIMATION_ELEMENT_VAR, startingStylesExpr, keyframesExpr, o.literal(ast.duration),
       o.literal(ast.delay), o.literal(ast.easing), previousStylesValue
     ]);
+    const index = context.animateSteps.length;
+    context.animateSteps.push(_ANIMATION_STEPS.key(exp).set(exp).toStmt());
+    return _ANIMATION_STEPS.key(o.literal(index));
   }
 
   visitAnimationSequence(ast: asts.AnimationSequenceAst, context: _AnimationBuilderContext):
       o.Expression {
-    const playerExprs = ast.steps.map(step => step.visit(this, context));
+    // The code below will turn a sequence of animations that contains
+    // two or more repeated zero-value players into grouped items.
+    // It's important that all zero-duration && zero-delay players
+    // are merged into one group. Doing so will eliminate any pauses
+    // between a player ending and the next one starting (which would
+    // cause flickers) both with and without web-workers being used.
+    //
+    // [ 1 0 0 1 0 0 ] => [ 1 0 1 0 ]
+    const playerExprs: o.Expression[] = [];
+    let zeroPlayTimePlayers: o.Expression[] = [];
+    for (let i = 0; i < ast.steps.length; i++) {
+      const step = ast.steps[i];
+      const player = step.visit(this, context);
+      if (step.playTime == 0) {
+        zeroPlayTimePlayers.push(player);
+      } else {
+        if (zeroPlayTimePlayers.length) {
+          playerExprs.push(this._combinePlayersIntoGroup(zeroPlayTimePlayers));
+          // do not optimize with `length = 0` since the array
+          // persists within the group data structure
+          zeroPlayTimePlayers = [];
+        }
+        playerExprs.push(player);
+      }
+    }
+
+    if (zeroPlayTimePlayers.length) {
+      playerExprs.push(this._combinePlayersIntoGroup(zeroPlayTimePlayers));
+    }
+
     return o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer)).instantiate([
       o.literalArr(playerExprs)
     ]);
   }
 
+  private _combinePlayersIntoGroup(playerExprs: o.Expression[]): o.Expression {
+    return playerExprs.length == 1 ? playerExprs[0] : this._createAnimationGroup(playerExprs);
+  }
+
   visitAnimationGroup(ast: asts.AnimationGroupAst, context: _AnimationBuilderContext):
       o.Expression {
-    const playerExprs = ast.steps.map(step => step.visit(this, context));
+    return this._createAnimationGroup(ast.steps.map(step => step.visit(this, context)));
+  }
+
+  private _createAnimationGroup(playerExprs: o.Expression[]) {
     return o.importExpr(createIdentifier(Identifiers.AnimationGroupPlayer)).instantiate([
       o.literalArr(playerExprs)
+    ]);
+  }
+
+  visitAnimationQuery(ast: asts.AnimationQueryAst, context: _AnimationBuilderContext): any {
+    var idAsNum = parseInt(ast.id);
+    var previousQueryId = context.parentQueryIndex;
+    context.parentQueryIndex = idAsNum;
+    var innerAnimationExpr = ast.animation.visit(this, context);
+    context.parentQueryIndex = previousQueryId;
+
+    // collecting parent players should only happen BEFORE the very first
+    // animation step has occurred.
+    const collectParentPlayers = ast.startTime == 0;
+
+    return o.importExpr(createIdentifier(Identifiers.animateQuery)).callFn([
+      _ANIMATION_VIEW_CONTEXT,
+      o.literal(context.entryAst.name),
+      _ANIMATION_ELEMENT_ID_MAP,
+      _ANIMATION_QUERIES_VAR.key(o.literal(idAsNum)),
+      o.literal(collectParentPlayers),
+      o.fn([
+        new o.FnParam(_ANIMATION_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
+        new o.FnParam(_ANIMATION_QUERIED_ELEMENT_ID.name, o.NUMBER_TYPE),
+        new o.FnParam(_PREVIOUS_ANIMATION_LEAF_PLAYERS.name, o.NUMBER_TYPE)
+      ], [
+        new o.ReturnStatement(innerAnimationExpr)
+      ])
     ]);
   }
 
@@ -152,15 +239,9 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
 
   visitAnimationStateTransition(
       ast: asts.AnimationStateTransitionAst, context: _AnimationBuilderContext): any {
-    const steps = ast.animation.steps;
-    const lastStep = steps[steps.length - 1];
-    if (_isEndStateAnimateStep(lastStep)) {
-      context.endStateAnimateStep = <asts.AnimationStepAst>lastStep;
-    }
-
     context.totalTransitionTime = 0;
     context.isExpectingFirstStyleStep = true;
-    context.isExpectingFirstAnimateStep = true;
+    context.parentQueryIndex = 0;
 
     const stateChangePreconditions: o.Expression[] = [];
 
@@ -178,16 +259,22 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
       }
     });
 
+    context.animateSteps = [];
     const animationPlayerExpr = ast.animation.visit(this, context);
 
     const reducedStateChangesPrecondition = stateChangePreconditions.reduce((a, b) => a.or(b));
     const precondition =
         _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR).and(reducedStateChangesPrecondition);
 
-    const animationStmt = _ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt();
-    const totalTimeStmt = _ANIMATION_TIME_VAR.set(o.literal(context.totalTransitionTime)).toStmt();
+    const animationClosure = o.fn([], [
+      _ANIMATION_PLAYER_VAR.set(animationPlayerExpr).toStmt(),
+      _ANIMATION_TIME_VAR.set(o.literal(context.totalTransitionTime)).toStmt()
+    ]);
 
-    return new o.IfStmt(precondition, [animationStmt, totalTimeStmt]);
+    return new o.IfStmt(precondition, [
+      ...context.animateSteps,
+      new o.ReturnStatement(animationClosure)
+    ]);
   }
 
   visitAnimationEntry(ast: asts.AnimationEntryAst, context: _AnimationBuilderContext): any {
@@ -196,19 +283,14 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
 
     // this should always be defined even if the user overrides it
     context.stateMap.registerState(DEFAULT_STATE, {});
+    context.entryAst = ast;
 
+    const RENDER_STYLES_FN = o.importExpr(createIdentifier(Identifiers.renderStyles));
     const statements: o.Statement[] = [];
-    statements.push(_PREVIOUS_ANIMATION_PLAYERS
-                        .set(_ANIMATION_FACTORY_VIEW_CONTEXT.callMethod(
-                            'getAnimationPlayers',
-                            [
-                              _ANIMATION_FACTORY_ELEMENT_VAR,
-                              _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE))
-                                  .conditional(o.NULL_EXPR, o.literal(this.animationName))
-                            ]))
-                        .toDeclStmt());
 
-    statements.push(_ANIMATION_COLLECTED_STYLES.set(_EMPTY_MAP).toDeclStmt());
+    statements.push(_ANIMATION_COLLECTED_STYLES.set(_EMPTY_ARRAY).toDeclStmt());
+    statements.push(_ANIMATION_ELEMENT_ID_MAP.set(o.importExpr(createIdentifier(Identifiers.AnimationElementIdMap)).instantiate([_ANIMATION_ELEMENT_VAR])).toDeclStmt());
+    statements.push(_ANIMATION_QUERIED_ELEMENT_ID.set(o.literal(0)).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
     statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
 
@@ -232,81 +314,85 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
         _ANIMATION_END_STATE_STYLES_VAR.equals(o.NULL_EXPR),
         [_ANIMATION_END_STATE_STYLES_VAR.set(_ANIMATION_DEFAULT_STATE_VAR).toStmt()]));
 
-    const RENDER_STYLES_FN = o.importExpr(createIdentifier(Identifiers.renderStyles));
+    // this check ensures that the animation factory always returns a player
+    // so that the onDone callback can be used for tracking
+
+    statements.push(_PREVIOUS_PLAYER_RESULT
+      .set(_ANIMATION_VIEW_CONTEXT.callMethod(
+        'getAnimationPlayers',
+        [
+          _ANIMATION_ELEMENT_VAR,
+          _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE)).conditional(o.NULL_EXPR, o.literal(this.animationName))
+        ]))
+      .toDeclStmt());
+
+    statements.push(_PREVIOUS_ANIMATION_PLAYER.set(_PREVIOUS_PLAYER_RESULT.key(o.literal(0))).toDeclStmt());
+    statements.push(_PREVIOUS_ANIMATION_LEAF_PLAYERS.set(_PREVIOUS_PLAYER_RESULT.key(o.literal(1))).toDeclStmt());
 
     ast.stateTransitions.forEach(transAst => statements.push(transAst.visit(this, context)));
 
-    // this check ensures that the animation factory always returns a player
-    // so that the onDone callback can be used for tracking
     statements.push(new o.IfStmt(
-        _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR),
-        [_ANIMATION_PLAYER_VAR
-             .set(o.importExpr(createIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
-             .toStmt()]));
+      _ANIMATION_PLAYER_VAR.equals(o.NULL_EXPR),
+      [_ANIMATION_PLAYER_VAR
+        .set(o.importExpr(createIdentifier(Identifiers.NoOpAnimationPlayer)).instantiate([]))
+        .toStmt()]));
 
     // once complete we want to apply the styles on the element
     // since the destination state's values should persist once
     // the animation sequence has completed.
     statements.push(
-        _ANIMATION_PLAYER_VAR
-            .callMethod(
-                'onDone',
-                [o
-                     .fn([],
-                         [
-                           _ANIMATION_PLAYER_VAR.callMethod('destroy', []).toStmt(),
-                           RENDER_STYLES_FN
-                               .callFn([
-                                 _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                                 o.importExpr(
-                                      createIdentifier(Identifiers.prepareFinalAnimationStyles))
-                                     .callFn(
-                                         [
-                                           _ANIMATION_START_STATE_STYLES_VAR,
-                                           _ANIMATION_END_STATE_STYLES_VAR
-                                         ])
-                               ])
-                               .toStmt()
-                         ])])
-            .toStmt());
+        _ANIMATION_PLAYER_VAR.callMethod('onDone', [o.fn([], [
+          _ANIMATION_PLAYER_VAR.callMethod('destroy', []).toStmt(),
+          RENDER_STYLES_FN
+            .callFn([
+              _ANIMATION_ELEMENT_VAR, _ANIMATION_RENDERER_VAR,
+              o.importExpr(
+                createIdentifier(Identifiers.prepareFinalAnimationStyles))
+                .callFn([
+                  _ANIMATION_START_STATE_STYLES_VAR,
+                  _ANIMATION_END_STATE_STYLES_VAR
+                ])
+            ])
+            .toStmt()
+        ])
+        ]).toStmt());
 
-    statements.push(o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer))
-                        .instantiate([_PREVIOUS_ANIMATION_PLAYERS])
-                        .callMethod('destroy', [])
-                        .toStmt());
+    statements.push(_PREVIOUS_ANIMATION_PLAYER.callMethod('destroy', []).toStmt());
 
     // before we start any animation we want to clear out the starting
     // styles from the element's style property (since they were placed
     // there at the end of the last animation
     statements.push(RENDER_STYLES_FN
-                        .callFn([
-                          _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_FACTORY_RENDERER_VAR,
-                          o.importExpr(createIdentifier(Identifiers.clearStyles))
-                              .callFn([_ANIMATION_START_STATE_STYLES_VAR])
-                        ])
-                        .toStmt());
+      .callFn([
+        _ANIMATION_ELEMENT_VAR, _ANIMATION_RENDERER_VAR,
+        o.importExpr(createIdentifier(Identifiers.clearStyles))
+          .callFn([_ANIMATION_START_STATE_STYLES_VAR])
+      ])
+      .toStmt());
 
-    statements.push(_ANIMATION_FACTORY_VIEW_CONTEXT
+    statements.push(_ANIMATION_VIEW_CONTEXT
                         .callMethod(
                             'queueAnimation',
                             [
-                              _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+                              _ANIMATION_FACTORY_VIEW_VAR,
+                              _ANIMATION_ELEMENT_VAR, o.literal(this.animationName),
                               _ANIMATION_PLAYER_VAR
                             ])
                         .toStmt());
 
     statements.push(new o.ReturnStatement(
-        o.importExpr(createIdentifier(Identifiers.AnimationTransition)).instantiate([
-          _ANIMATION_PLAYER_VAR, _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR,
-          _ANIMATION_TIME_VAR
-        ])));
+      o.importExpr(createIdentifier(Identifiers.AnimationTransition)).instantiate([
+        _ANIMATION_PLAYER_VAR, o.literal(this.animationName), _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR,
+        _ANIMATION_TIME_VAR
+      ])));
 
     return o.fn(
         [
           new o.FnParam(
               _ANIMATION_FACTORY_VIEW_VAR.name,
               o.importType(createIdentifier(Identifiers.AppView), [o.DYNAMIC_TYPE])),
-          new o.FnParam(_ANIMATION_FACTORY_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
+          new o.FnParam(_ANIMATION_ELEMENT_VAR.name, o.DYNAMIC_TYPE),
+          new o.FnParam(_ANIMATION_QUERIES_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_CURRENT_STATE_VAR.name, o.DYNAMIC_TYPE),
           new o.FnParam(_ANIMATION_NEXT_STATE_VAR.name, o.DYNAMIC_TYPE)
         ],
@@ -339,11 +425,12 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
 }
 
 class _AnimationBuilderContext {
+  animateSteps: o.Statement[] = [];
   stateMap = new _AnimationBuilderStateMap();
-  endStateAnimateStep: asts.AnimationStepAst = null;
   isExpectingFirstStyleStep = false;
-  isExpectingFirstAnimateStep = false;
   totalTransitionTime = 0;
+  parentQueryIndex = 0;
+  entryAst: asts.AnimationEntryAst = null;
 }
 
 class _AnimationBuilderStateMap {
@@ -369,17 +456,6 @@ function _compareToAnimationStateExpr(value: o.Expression, animationState: strin
     default:
       return value.equals(o.literal(animationState));
   }
-}
-
-function _isEndStateAnimateStep(step: asts.AnimationAst): boolean {
-  // the final animation step is characterized by having only TWO
-  // keyframe values and it must have zero styles for both keyframes
-  if (step instanceof asts.AnimationStepAst && step.duration > 0 && step.keyframes.length == 2) {
-    const styles1 = _getStylesArray(step.keyframes[0])[0];
-    const styles2 = _getStylesArray(step.keyframes[1])[0];
-    return Object.keys(styles1).length === 0 && Object.keys(styles2).length === 0;
-  }
-  return false;
 }
 
 function _getStylesArray(obj: any): {[key: string]: any}[] {

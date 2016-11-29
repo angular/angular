@@ -92,7 +92,7 @@ function sanitizedValue(
 export function triggerAnimation(
     view: o.Expression, componentView: o.Expression, boundProp: BoundElementPropertyAst,
     boundOutputs: BoundEventAst[], eventListener: o.Expression, renderElement: o.Expression,
-    renderValue: o.Expression, lastRenderValue: o.Expression) {
+    renderValue: o.Expression, lastRenderValue: o.Expression, animationQueryProps: {[triggerName: string]: string[]}, nodeIndex: number) {
   const detachStmts: o.Statement[] = [];
   const updateStmts: o.Statement[] = [];
 
@@ -105,12 +105,20 @@ export function triggerAnimation(
   // so that the styles data can be obtained from the stringmap
   const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
   const unitializedValue = o.importExpr(createIdentifier(Identifiers.UNINITIALIZED));
-  const animationTransitionVar = o.variable('animationTransition_' + animationName);
+  const animationTransitionVar = o.variable(`animationTransition_${animationName}_${nodeIndex}`);
+
+  var queryExprs: o.Expression[] = [renderElement];
+  var queryProps = animationQueryProps[animationName];
+  if (queryProps && queryProps.length) {
+    queryProps.forEach(propName => queryExprs.push(view.prop(propName)));
+  }
+  var queries = o.literalArr(queryExprs);
 
   updateStmts.push(
       animationTransitionVar
           .set(animationFnExpr.callFn([
             view, renderElement,
+            queries,
             lastRenderValue.equals(unitializedValue).conditional(emptyStateValue, lastRenderValue),
             renderValue.equals(unitializedValue).conditional(emptyStateValue, renderValue)
           ]))
@@ -118,7 +126,7 @@ export function triggerAnimation(
 
   detachStmts.push(
       animationTransitionVar
-          .set(animationFnExpr.callFn([view, renderElement, lastRenderValue, emptyStateValue]))
+          .set(animationFnExpr.callFn([view, renderElement, queries, lastRenderValue, emptyStateValue]))
           .toDeclStmt());
 
   const registerStmts: o.Statement[] = [];
@@ -151,5 +159,5 @@ export function triggerAnimation(
   updateStmts.push(...registerStmts);
   detachStmts.push(...registerStmts);
 
-  return {updateStmts, detachStmts};
+  return {animationTransitionVar, updateStmts, detachStmts};
 }

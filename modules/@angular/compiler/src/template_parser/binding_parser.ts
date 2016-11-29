@@ -20,6 +20,7 @@ import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
 
 import {BoundElementPropertyAst, BoundEventAst, PropertyBindingType, VariableAst} from './template_ast';
+import {getAnimationPrefixLength} from "../animation/animation_util";
 
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
@@ -152,8 +153,9 @@ export class BindingParser {
   parseLiteralAttr(
       name: string, value: string, sourceSpan: ParseSourceSpan, targetMatchableAttrs: string[][],
       targetProps: BoundProperty[]) {
-    if (_isAnimationLabel(name)) {
-      name = name.substring(1);
+    const animationPrefixLength = getAnimationPrefixLength(name);
+    if (animationPrefixLength) {
+      name = name.substring(animationPrefixLength);
       if (value) {
         this._reportError(
             `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
@@ -175,9 +177,12 @@ export class BindingParser {
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
       name = name.substring(ANIMATE_PROP_PREFIX.length);
-    } else if (_isAnimationLabel(name)) {
-      isAnimationProp = true;
-      name = name.substring(1);
+    } else {
+      const animationPrefixLength = getAnimationPrefixLength(name);
+      if (animationPrefixLength) {
+        isAnimationProp = true;
+        name = name.substring(animationPrefixLength);
+      }
     }
 
     if (isAnimationProp) {
@@ -294,8 +299,9 @@ export class BindingParser {
   parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
-    if (_isAnimationLabel(name)) {
-      name = name.substr(1);
+    const animationPrefixLength = getAnimationPrefixLength(name);
+    if (animationPrefixLength > 0) {
+      name = name.substr(animationPrefixLength);
       this._parseAnimationEvent(name, expression, sourceSpan, targetEvents);
     } else {
       this._parseEvent(name, expression, sourceSpan, targetMatchableAttrs, targetEvents);
@@ -412,10 +418,6 @@ export class PipeCollector extends RecursiveAstVisitor {
     this.visitAll(ast.args, context);
     return null;
   }
-}
-
-function _isAnimationLabel(name: string): boolean {
-  return name[0] == '@';
 }
 
 export function calcPossibleSecurityContexts(

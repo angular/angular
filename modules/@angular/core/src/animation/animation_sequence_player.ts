@@ -15,9 +15,13 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   private _activePlayer: AnimationPlayer;
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _finished = false;
   private _started = false;
   private _destroyed = false;
+  private _speed = 1;
+
+  public flaggedForQuery: boolean = false;
 
   public parentPlayer: AnimationPlayer = null;
 
@@ -59,6 +63,8 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
 
   hasStarted() { return this._started; }
 
@@ -99,6 +105,8 @@ export class AnimationSequencePlayer implements AnimationPlayer {
     if (!this._destroyed) {
       this._onFinish();
       this._players.forEach(player => player.destroy());
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
       this._destroyed = true;
       this._activePlayer = new NoOpAnimationPlayer();
     }
@@ -109,4 +117,21 @@ export class AnimationSequencePlayer implements AnimationPlayer {
   getPosition(): number { return this._players[0].getPosition(); }
 
   get players(): AnimationPlayer[] { return this._players; }
+
+  setSpeed(value: number): void {
+    this._speed = value;
+    this._players.forEach(player => player.setSpeed(value));
+  }
+
+  getSpeed(): number { return this._speed; }
+
+  get duration(): number {
+    let duration = 0;
+    if (this._players.length) {
+      duration = this._players.reduce((accumulatedTime: number, player: AnimationPlayer) => {
+        return accumulatedTime + player.duration;
+      }, duration);
+    }
+    return duration;
+  }
 }

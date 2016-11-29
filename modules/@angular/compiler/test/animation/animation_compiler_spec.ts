@@ -30,7 +30,7 @@ export function main() {
     const compileAnimations =
         (component: CompileDirectiveMetadata): AnimationEntryCompileResult[] => {
           const parsedAnimations = parser.parseComponent(component);
-          return compiler.compile(identifierName(component.type), parsedAnimations);
+          return compiler.compile(identifierName(component.type), parsedAnimations.entryAsts);
         };
 
     const compileTriggers = (input: any[]) => {

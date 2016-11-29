@@ -252,10 +252,17 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
       new FnArg(easing, null), new FnArg(previousPlayerIds, null), new FnArg(playerId, null)
     ]);
 
-    const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement);
+    const player = new _AnimationWorkerRendererPlayer(this._rootRenderer, renderElement, duration, delay);
     this._rootRenderer.renderStore.store(player, playerId);
 
     return player;
+  }
+
+  renderDetach(renderElement: any, detach: boolean): void {
+    this._runOnService('renderDetach', [
+      new FnArg(renderElement, RenderStoreObject),
+      new FnArg(detach, null)
+    ]);
   }
 }
 
@@ -334,8 +341,11 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
 
   private _destroyed: boolean = false;
   private _started: boolean = false;
+  private _speed: number = 1;
 
-  constructor(private _rootRenderer: WebWorkerRootRenderer, private _renderElement: any) {}
+  public flaggedForQuery: boolean = false;
+
+  constructor(private _rootRenderer: WebWorkerRootRenderer, private _renderElement: any, public duration: number, private _delay: number) {}
 
   private _runOnService(fnName: string, fnArgs: FnArg[]) {
     if (!this._destroyed) {
@@ -354,6 +364,11 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
   onDone(fn: () => void): void {
     this._renderElement.animationPlayerEvents.listen(this, 'onDone', fn);
     this._runOnService('onDone', []);
+  }
+  
+  onDestroy(fn: () => void): void {
+    this._renderElement.animationPlayerEvents.listen(this, 'onDestroy', fn);
+    this._runOnService('onDestroy', []);
   }
 
   hasStarted(): boolean { return this._started; }
@@ -385,4 +400,15 @@ class _AnimationWorkerRendererPlayer implements RenderStoreObject {
   setPosition(p: number): void { this._runOnService('setPosition', [new FnArg(p, null)]); }
 
   getPosition(): number { return 0; }
+
+  setSpeed(value: number): void {
+    this._speed = value;
+    this._runOnService('speed', [
+      new FnArg(value, null)
+    ]);
+  }
+
+  getSpeed(): number {
+    return this._speed;
+  }
 }

@@ -36,3 +36,4 @@ export const balanceAnimationKeyframes: typeof r.balanceAnimationKeyframes =
     r.balanceAnimationKeyframes;
 export const clearStyles: typeof r.clearStyles = r.clearStyles;
 export const collectAndResolveStyles: typeof r.collectAndResolveStyles = r.collectAndResolveStyles;
+export const EARLY_AUTO_STYLE: typeof r.EARLY_AUTO_STYLE = r.EARLY_AUTO_STYLE;

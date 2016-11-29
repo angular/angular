@@ -9,12 +9,12 @@
 import {FILL_STYLE_FLAG} from '../../src/animation/animation_constants';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
 import {AUTO_STYLE} from '../../src/animation/animation_metadata';
-import * as animationUtils from '../../src/animation/animation_style_util';
+import * as animationUtils from '../../src/animation/runtime_animation_util';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
-  describe('Animation Style Utils', function() {
+  describe('Runtime Animation Utils', function() {
 
     describe('prepareFinalAnimationStyles', () => {
       it('should set all non-shared styles to the provided null value between the two sets of styles',
@@ -61,7 +61,7 @@ export function main() {
         ];
 
         const result =
-            animationUtils.balanceAnimationKeyframes(collectedStyles, finalStyles, keyframes);
+            animationUtils.balanceAnimationKeyframes([collectedStyles], 0, finalStyles, keyframes);
 
         expect(animationUtils.flattenStyles(result[0].styles.styles)).toEqual({
           'width': 100,
@@ -90,7 +90,7 @@ export function main() {
           new AnimationKeyframe(1, new AnimationStyles([{width: 100}]))
         ];
 
-        const result = animationUtils.balanceAnimationKeyframes({}, {}, keyframes);
+        const result = animationUtils.balanceAnimationKeyframes([{}], 0, {}, keyframes);
 
         expect(animationUtils.flattenStyles(result[0].styles.styles))
             .toEqual({'height': 100, 'opacity': 1, 'width': '*'});
@@ -121,10 +121,10 @@ export function main() {
 
         const collection: {[key: string]: string | number} = {};
 
-        expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual(styles1);
+        expect(animationUtils.collectAndResolveStyles([collection], 0, styles1)).toEqual(styles1);
         expect(collection).toEqual({'opacity': 0, 'width': 100});
 
-        expect(animationUtils.collectAndResolveStyles(collection, styles2)).toEqual(styles2);
+        expect(animationUtils.collectAndResolveStyles([collection], 0, styles2)).toEqual(styles2);
         expect(collection).toEqual({'opacity': 1, 'width': 100, 'height': 999});
       });
 
@@ -135,11 +135,11 @@ export function main() {
 
         const collection = {};
 
-        expect(animationUtils.collectAndResolveStyles(collection, styles1)).toEqual([
+        expect(animationUtils.collectAndResolveStyles([collection], 0, styles1)).toEqual([
           {'opacity': 0, 'width': AUTO_STYLE}
         ]);
 
-        expect(animationUtils.collectAndResolveStyles(collection, styles2)).toEqual([
+        expect(animationUtils.collectAndResolveStyles([collection], 0, styles2)).toEqual([
           {'opacity': 0, 'height': 999}
         ]);
       });

@@ -261,7 +261,7 @@ function addCheckHostMethod(
           VIEW_VAR, COMPONENT_VIEW_VAR, hostProp, hostEvents,
           o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME)
               .or(o.importExpr(createIdentifier(Identifiers.noop))),
-          RENDER_EL_VAR, evalResult.currValExpr, field.expression);
+          RENDER_EL_VAR, evalResult.currValExpr, field.expression, {}, 0);
       checkBindingStmts = updateStmts;
       builder.detachStmts.push(...detachStmts);
     } else {

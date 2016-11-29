@@ -21,7 +21,7 @@ export function main() {
         new MockAnimationPlayer(),
       ];
     });
-
+    
     const assertLastStatus =
         (player: MockAnimationPlayer, status: string, match: boolean, iOffset: number = 0) => {
           const index = player.log.length - 1 + iOffset;

@@ -92,6 +92,8 @@ export class MessageBasedRenderer {
           PRIMITIVE, PRIMITIVE, PRIMITIVE
         ],
         this._animate.bind(this));
+    broker.registerMethod(
+      'renderDetach', [RenderStoreObject, RenderStoreObject, PRIMITIVE], this._renderDetach.bind(this));
 
     this._bindAnimationPlayerMethods(broker);
   }
@@ -139,11 +141,22 @@ export class MessageBasedRenderer {
         [RenderStoreObject, RenderStoreObject, PRIMITIVE],
         (player: AnimationPlayer, element: any) =>
             this._listenOnAnimationPlayer(player, element, 'onDone'));
+    
+    broker.registerMethod(
+      ANIMATION_WORKER_PLAYER_PREFIX + 'onDestroy',
+      [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+      (player: AnimationPlayer, element: any) =>
+        this._listenOnAnimationPlayer(player, element, 'onDestroy'));
 
     broker.registerMethod(
         ANIMATION_WORKER_PLAYER_PREFIX + 'setPosition',
         [RenderStoreObject, RenderStoreObject, PRIMITIVE],
         (player: AnimationPlayer, element: any, position: number) => player.setPosition(position));
+
+    broker.registerMethod(
+      ANIMATION_WORKER_PLAYER_PREFIX + 'setSpeed',
+      [RenderStoreObject, RenderStoreObject, PRIMITIVE],
+      (player: AnimationPlayer, element: any, value: number) => player.setSpeed(value));
   }
 
   private _renderComponent(renderComponentType: RenderComponentType, rendererId: number) {
@@ -259,16 +272,26 @@ export class MessageBasedRenderer {
     this._renderStore.store(player, playerId);
   }
 
+  private _renderDetach(renderer: Renderer, element: any, detach: boolean) {
+    renderer.renderDetach(element, detach);
+  }
+
   private _listenOnAnimationPlayer(player: AnimationPlayer, element: any, phaseName: string) {
     const onEventComplete =
         () => { this._eventDispatcher.dispatchAnimationEvent(player, phaseName, element); };
 
     // there is no need to register a unlistener value here since the
     // internal player callbacks are removed when the player is destroyed
-    if (phaseName == 'onDone') {
-      player.onDone(() => onEventComplete());
-    } else {
-      player.onStart(() => onEventComplete());
+    switch (phaseName) {
+      case 'onDone':
+        player.onDone(() => onEventComplete());
+        break;
+      case 'onStart':
+        player.onStart(() => onEventComplete());
+        break;
+      case 'onDestroy':
+        player.onDestroy(() => onEventComplete());
+        break;
     }
   }
 }

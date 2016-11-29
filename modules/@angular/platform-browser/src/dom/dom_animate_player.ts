@@ -16,4 +16,5 @@ export interface DomAnimatePlayer {
   currentTime: number;
   addEventListener(eventName: string, handler: (event: any) => any): any;
   dispatchEvent(eventName: string): any;
+  playbackRate: number;
 }

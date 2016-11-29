@@ -13,7 +13,7 @@ export {ComponentFactoryResolver} from './linker/component_factory_resolver';
 export {ElementRef} from './linker/element_ref';
 export {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 export {NgModuleFactoryLoader, getModuleFactory} from './linker/ng_module_factory_loader';
-export {QueryList} from './linker/query_list';
+export {AnimationQueryList, QueryList} from './linker/query_list';
 export {SystemJsNgModuleLoader, SystemJsNgModuleLoaderConfig} from './linker/system_js_ng_module_factory_loader';
 export {TemplateRef} from './linker/template_ref';
 export {ViewContainerRef} from './linker/view_container_ref';

@@ -269,6 +269,11 @@ export class DomRenderer implements Renderer {
       return new NoOpAnimationPlayer();
     }
   }
+
+  renderDetach(renderNode: any, detach: boolean): void {
+    const val = detach ? 'none' : null;
+    this.setElementStyle(renderNode, 'display', val);
+  }
 }
 
 function moveNodesAfterSibling(sibling: Node, nodes: Node[]) {

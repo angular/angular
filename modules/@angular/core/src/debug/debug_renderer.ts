@@ -155,4 +155,8 @@ export class DebugDomRenderer {
     return this._delegate.animate(
         element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
   }
+
+  renderDetach(renderElement: any, detach: boolean) {
+    this._delegate.renderDetach(renderElement, detach);
+  }
 }

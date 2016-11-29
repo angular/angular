@@ -212,9 +212,9 @@ export class AotCompiler {
         identifierName(compMeta.type));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const compiledAnimations =
-        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations);
+        this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations.entryAsts);
     const viewResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, stylesExpr, pipes, compiledAnimations);
+        compMeta, parsedTemplate, parsedAnimations.queryAsts, stylesExpr, pipes, compiledAnimations);
     if (componentStyles) {
       targetStatements.push(
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));

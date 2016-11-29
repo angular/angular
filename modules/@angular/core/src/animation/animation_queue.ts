@@ -8,16 +8,30 @@
 import {Injectable} from '../di/metadata';
 import {NgZone} from '../zone/ng_zone';
 import {AnimationPlayer} from './animation_player';
+import {Renderer} from "../render/api";
 
 @Injectable()
 export class AnimationQueue {
-  public entries: AnimationPlayer[] = [];
+  public entries = new Map<any, AnimationPlayer[]>();
 
   constructor(private _zone: NgZone) {}
 
-  enqueue(player: AnimationPlayer) { this.entries.push(player); }
+  flagViewAsQueried(view: any) {
+    view.flaggedForQuery = true;
+    if (!this.entries.has(view)) {
+      this.entries.set(view, []);
+    }
+  }
 
-  flush() {
+  enqueue(view: any, player: AnimationPlayer) {
+    let players = this.entries.get(view);
+    if (!players) {
+      this.entries.set(view, players = []);
+    }
+    players.push(player);
+  }
+
+  flush(renderer: Renderer) {
     // given that each animation player may set aside
     // microtasks and rely on DOM-based events, this
     // will cause Angular to run change detection after
@@ -25,27 +39,58 @@ export class AnimationQueue {
     // hooks into an animation via (@anim.start) or (@anim.done)
     // then those methods will automatically trigger change
     // detection by wrapping themselves inside of a zone
-    if (this.entries.length) {
+    if (this.entries.size) {
       this._zone.runOutsideAngular(() => {
         // this code is wrapped into a single promise such that the
         // onStart and onDone player callbacks are triggered outside
         // of the digest cycle of animations
-        Promise.resolve(null).then(() => this._triggerAnimations());
+        Promise.resolve(null).then(() => this._triggerAnimations(renderer));
       });
     }
   }
 
-  private _triggerAnimations() {
+  private _triggerAnimations(renderer: Renderer) {
     NgZone.assertNotInAngularZone();
+    const views = Array.from(this.entries.keys());
+    const viewPlayers = Array.from(this.entries.values());
 
-    while (this.entries.length) {
-      const player = this.entries.shift();
-      // in the event that an animation throws an error then we do
-      // not want to re-run animations on any previous animations
-      // if they have already been kicked off beforehand
-      if (!player.hasStarted()) {
+    views.forEach(view => {
+      if (view.flaggedForQuery && view.delayDetachPlayer) {
+        //renderer.renderDetach(view.parentElement, true);
+      }
+    });
+
+    viewPlayers.forEach(players => {
+      players.forEach(player => {
+        player.init();
+      });
+    });
+
+    /*
+     views.forEach(view => {
+     if (view.flaggedForQuery) {
+     if (view.delayDetach) {
+     renderer.renderDetach(view.parentElement, false);
+     }
+     view.flaggedForQuery = false;
+     }
+     });
+     */
+
+    for (let i = viewPlayers.length - 1; i >= 0; i--) {
+      const players = viewPlayers[i];
+      for (let j = 0; j < players.length; j++) {
+        const player = players[j];
         player.play();
+        // we do a play/pause for queried animations such that
+        // the queried animations themselves render and pause
+        // on the very first frame of the animation...
+        if (player.flaggedForQuery) {
+          player.pause();
+        }
       }
     }
+
+    this.entries.clear();
   }
 }

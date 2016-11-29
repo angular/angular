@@ -9,7 +9,7 @@
 import {AUTO_STYLE} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
-import {AnimationPlayer} from '../private_import_core';
+import {AnimationPlayer, EARLY_AUTO_STYLE} from '../private_import_core';
 
 import {getDOM} from './dom_adapter';
 import {DomAnimatePlayer} from './dom_animate_player';
@@ -17,14 +17,18 @@ import {DomAnimatePlayer} from './dom_animate_player';
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _player: DomAnimatePlayer;
-  private _duration: number;
   private _initialized = false;
   private _finished = false;
   private _started = false;
   private _destroyed = false;
   private _finalKeyframe: {[key: string]: string | number};
+  private _speed: number = 1;
 
+  private _delay: number;
+  public duration: number;
+  public flaggedForQuery: boolean = false;
   public parentPlayer: AnimationPlayer = null;
   public previousStyles: {[styleName: string]: string | number};
 
@@ -32,12 +36,29 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       public element: any, public keyframes: {[key: string]: string | number}[],
       public options: {[key: string]: string | number},
       previousPlayers: WebAnimationsPlayer[] = []) {
-    this._duration = <number>options['duration'];
+    this.duration = <number>options['duration'];
+    this._delay = <number>options['delay'];
+
+    keyframes.forEach(kf => {
+      Object.keys(kf).forEach(prop => {
+        const value = kf[prop];
+        if (value == EARLY_AUTO_STYLE) {
+          kf[prop] = _computeStyle(element, prop);
+          console.log(prop, kf[prop]);
+        }
+      });
+    });
 
     this.previousStyles = {};
     previousPlayers.forEach(player => {
       let styles = player._captureStyles();
-      Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+      Object.keys(styles).forEach(prop => {
+        let value = styles[prop];
+        if (value == EARLY_AUTO_STYLE) {
+          value = _computeStyle(element, prop);
+        }
+        this.previousStyles[prop] = value;
+      });
     });
   }
 
@@ -83,7 +104,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
           let kf = keyframes[i];
           missingStyleProps.forEach(prop => { kf[prop] = _computeStyle(this.element, prop); });
         }
-      });
+      }
     }
 
     this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
@@ -104,6 +125,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
 
   play(): void {
     this.init();
@@ -136,6 +159,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _resetDomPlayerState() {
     if (this._player) {
       this._player.cancel();
+      this._player.playbackRate = this.getSpeed();
     }
   }
 
@@ -150,15 +174,15 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (!this._destroyed) {
       this._resetDomPlayerState();
       this._onFinish();
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
       this._destroyed = true;
     }
   }
 
-  get totalTime(): number { return this._duration; }
+  setPosition(p: number): void { this._player.currentTime = p * this.duration; }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.totalTime; }
-
-  getPosition(): number { return this._player.currentTime / this.totalTime; }
+  getPosition(): number { return this._player.currentTime / this.duration; }
 
   private _captureStyles(): {[prop: string]: string | number} {
     const styles: {[key: string]: string | number} = {};
@@ -172,6 +196,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
 
     return styles;
+  }
+
+  setSpeed(value: number): void {
+    if (this._initialized) {
+      this._player.playbackRate = value;
+    }
+    this._speed = value;
+  }
+
+  getSpeed(): number {
+    return this._speed;
   }
 }
 
@@ -189,20 +224,3 @@ function _copyKeyframeStyles(styles: {[style: string]: string | number}):
   });
   return newStyles;
 }
-<<<<<<< HEAD
-
-function findStartingKeyframe(keyframes: {[prop: string]: string | number}[]):
-    {[prop: string]: string | number} {
-  let startingKeyframe = keyframes[0];
-  // it's important that we find the LAST keyframe
-  // to ensure that style overidding is final.
-  for (let i = 1; i < keyframes.length; i++) {
-    const kf = keyframes[i];
-    const offset = kf['offset'];
-    if (offset !== 0) break;
-    startingKeyframe = kf;
-  }
-  return startingKeyframe;
-}
-=======
->>>>>>> 9f437e6... fix(animations): blend in all previously transitioned styles into next animation if interrupted

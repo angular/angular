@@ -14,6 +14,7 @@ export class MockDomAnimatePlayer implements DomAnimatePlayer {
   private _position: number = 0;
   private _onfinish: Function = () => {};
   public currentTime: number;
+  public playbackRate: number;
 
   /** @internal */
   _capture(method: string, data: any): void {

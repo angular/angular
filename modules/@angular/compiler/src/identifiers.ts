@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationQueryList, AnimationTransitionEvent, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
 import {CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
+import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewContainerWithAnimations, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils, animateQuery, fetchElementAnimation, AnimationElementIdMap} from './private_import_core';
 
 const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
@@ -71,6 +71,11 @@ export class Identifiers {
     name: 'QueryList',
     moduleUrl: assetUrl('core', 'linker/query_list'),
     runtime: QueryList
+  };
+  static AnimationQueryList: IdentifierSpec = {
+    name: 'AnimationQueryList',
+    moduleUrl: assetUrl('core', 'linker/query_list'),
+    runtime: AnimationQueryList
   };
   static TemplateRef: IdentifierSpec = {
     name: 'TemplateRef',
@@ -336,6 +341,26 @@ export class Identifiers {
   };
   static noop:
       IdentifierSpec = {name: 'noop', moduleUrl: VIEW_UTILS_MODULE_URL, runtime: view_utils.noop};
+  static animateQuery: IdentifierSpec = {
+    name: 'animateQuery',
+    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
+    runtime: animateQuery
+  };
+  static fetchElementAnimation: IdentifierSpec = {
+    name: 'fetchElementAnimation',
+    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
+    runtime: fetchElementAnimation
+  };
+  static AnimationElementIdMap: IdentifierSpec = {
+    name: 'AnimationElementIdMap',
+    moduleUrl: ANIMATION_STYLE_UTIL_ASSET_URL,
+    runtime: AnimationElementIdMap
+  };
+  static ViewContainerWithAnimations: IdentifierSpec = {
+    name: 'ViewContainerWithAnimations',
+    moduleUrl: assetUrl('core', 'linker/view_container'),
+    runtime: ViewContainerWithAnimations
+  };
 }
 
 export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {

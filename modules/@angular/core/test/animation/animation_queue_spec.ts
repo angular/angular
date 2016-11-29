@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationQueue} from '@angular/core/src/animation/animation_queue';
-
+import {Renderer} from '../../src/render/api';
 import {NgZone} from '../../src/zone/ng_zone';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
@@ -16,9 +16,12 @@ export function main() {
   describe('AnimationQueue', function() {
     beforeEach(() => { TestBed.configureTestingModule({declarations: [], imports: []}); });
 
+    const someView = <any>{};
+
     it('should queue animation players and run when flushed, but only as the next scheduled microtask',
        fakeAsync(() => {
          const zone = TestBed.get(NgZone);
+         const renderer = TestBed.get(Renderer);
          const queue = new AnimationQueue(zone);
 
          const log: string[] = [];
@@ -30,12 +33,12 @@ export function main() {
          p2.onStart(() => log.push('2'));
          p3.onStart(() => log.push('3'));
 
-         queue.enqueue(p1);
-         queue.enqueue(p2);
-         queue.enqueue(p3);
+         queue.enqueue(someView, p1);
+         queue.enqueue(someView, p2);
+         queue.enqueue(someView, p3);
          expect(log).toEqual([]);
 
-         queue.flush();
+         queue.flush(renderer);
          expect(log).toEqual([]);
 
          flushMicrotasks();
@@ -45,6 +48,7 @@ export function main() {
     it('should always run each of the animation players outside of the angular zone on start',
        fakeAsync(() => {
          const zone = TestBed.get(NgZone);
+         const renderer = TestBed.get(Renderer);
          const queue = new AnimationQueue(zone);
 
          const player = new MockAnimationPlayer();
@@ -56,8 +60,8 @@ export function main() {
 
          zone.run(() => {
            NgZone.assertInAngularZone();
-           queue.enqueue(player);
-           queue.flush();
+           queue.enqueue(someView, player);
+           queue.flush(renderer);
            flushMicrotasks();
          });
 
@@ -67,6 +71,7 @@ export function main() {
     it('should always run each of the animation players outside of the angular zone on done',
        fakeAsync(() => {
          const zone = TestBed.get(NgZone);
+         const renderer = TestBed.get(Renderer);
          const queue = new AnimationQueue(zone);
 
          const player = new MockAnimationPlayer();
@@ -78,8 +83,8 @@ export function main() {
 
          zone.run(() => {
            NgZone.assertInAngularZone();
-           queue.enqueue(player);
-           queue.flush();
+           queue.enqueue(someView, player);
+           queue.flush(renderer);
            flushMicrotasks();
          });
 
@@ -90,6 +95,7 @@ export function main() {
 
     it('should not run animations again incase an animation midway fails', fakeAsync(() => {
          const zone = TestBed.get(NgZone);
+         const renderer = TestBed.get(Renderer);
          const queue = new AnimationQueue(zone);
 
          const log: string[] = [];
@@ -101,11 +107,11 @@ export function main() {
          p2.onStart(() => log.push('2'));
          p3.onStart(() => log.push('3'));
 
-         queue.enqueue(p1);
-         queue.enqueue(p2);
-         queue.enqueue(p3);
+         queue.enqueue(someView, p1);
+         queue.enqueue(someView, p2);
+         queue.enqueue(someView, p3);
 
-         queue.flush();
+         queue.flush(renderer);
 
          expect(() => flushMicrotasks()).toThrowError();
 
@@ -115,7 +121,7 @@ export function main() {
          p2.reset();
          p2.onStart(() => log.push('2'));
 
-         queue.flush();
+         queue.flush(renderer);
 
          expect(() => flushMicrotasks()).not.toThrowError();
 

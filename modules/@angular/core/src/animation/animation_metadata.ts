@@ -96,6 +96,14 @@ export class AnimationAnimateMetadata extends AnimationMetadata {
   }
 }
 
+/**  * It's awesome 
+ *
+ * @experimental Animation support is experimental. 
+ */
+export class AnimationAnimateChildMetadata extends AnimationMetadata {
+  constructor(public timings: string|number = 0) { super(); }
+}
+
 /**
  * @experimental Animation support is experimental.
  */
@@ -181,12 +189,11 @@ export class AnimationGroupMetadata extends AnimationWithStepsMetadata {
  * @experimental Animation support is experimental.
  */
 export function animate(
-    timing: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
+    timing: string | number = -1, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata =
                                  null): AnimationAnimateMetadata {
   let stylesEntry = styles;
   if (!isPresent(stylesEntry)) {
-    const EMPTY_STYLE: {[key: string]: string | number} = {};
-    stylesEntry = new AnimationStyleMetadata([EMPTY_STYLE], 1);
+    stylesEntry = _EMPTY_STYLES;
   }
   return new AnimationAnimateMetadata(timing, stylesEntry);
 }
@@ -231,6 +238,14 @@ export function animate(
  */
 export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
   return new AnimationGroupMetadata(steps);
+}
+
+/**  * It's awesome 
+ *
+ * @experimental Animation support is experimental. 
+ */
+export class AnimationQueryMetadata extends AnimationMetadata {
+  constructor(public criteria: any, public options: any, public steps: AnimationMetadata[]) { super(); }
 }
 
 /**
@@ -627,3 +642,27 @@ export function transition(stateChangeExpr: string, steps: AnimationMetadata | A
 export function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata {
   return new AnimationEntryMetadata(name, animation);
 }
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export function query(criteria: any, options: any, animation: AnimationMetadata|AnimationMetadata[] = null): AnimationQueryMetadata {
+  if (arguments.length == 2) {
+    animation = <AnimationMetadata|AnimationMetadata[]>options;
+    options = {};
+  }
+  var steps: AnimationMetadata[] = Array.isArray(animation)
+     ? <AnimationMetadata[]>animation
+     : [<AnimationMetadata>animation];
+    return new AnimationQueryMetadata(criteria, options, steps);
+}
+
+/**  * It's awesome 
+ *
+ * @experimental Animation support is experimental. 
+ */
+export function animateChild(timing: string|number = -1): AnimationAnimateChildMetadata {
+  return new AnimationAnimateChildMetadata(timing);
+}
+
+export const _EMPTY_STYLES = new AnimationStyleMetadata([{}], 1);

@@ -20,10 +20,8 @@ export class WebAnimationsDriver implements AnimationDriver {
       previousPlayers: AnimationPlayer[] = []): WebAnimationsPlayer {
     let formattedSteps: {[key: string]: string | number}[] = [];
     let startingStyleLookup: {[key: string]: string | number} = {};
-    if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
+    if (isPresent(startingStyles)) {
       startingStyleLookup = _populateStyles(startingStyles, {});
-      startingStyleLookup['offset'] = 0;
-      formattedSteps.push(startingStyleLookup);
     }
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {

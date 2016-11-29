@@ -10,18 +10,27 @@ import {AUTO_STYLE, AnimationPlayer} from '@angular/core';
 export class MockAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _finished = false;
   private _destroyed = false;
   private _started = false;
+  private _speed: number = 0;
+
+  public flaggedForQuery: boolean = false;
 
   public parentPlayer: AnimationPlayer = null;
   public previousStyles: {[styleName: string]: string | number} = {};
+
+  /** @internal */
+  public isPaused = false;
 
   public log: any[] = [];
 
   constructor(
       public startingStyles: {[key: string]: string | number} = {},
       public keyframes: Array<[number, {[style: string]: string | number}]> = [],
+      public duration: number = 0,
+      private _delay: number = 0,
       previousPlayers: AnimationPlayer[] = []) {
     previousPlayers.forEach(player => {
       if (player instanceof MockAnimationPlayer) {
@@ -47,9 +56,12 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+
   hasStarted() { return this._started; }
 
   play(): void {
+    this.isPaused = false;
     if (!this.hasStarted()) {
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
@@ -58,7 +70,10 @@ export class MockAnimationPlayer implements AnimationPlayer {
     this.log.push('play');
   }
 
-  pause(): void { this.log.push('pause'); }
+  pause(): void {
+    this.isPaused = true;
+    this.log.push('pause');
+  }
 
   restart(): void { this.log.push('restart'); }
 
@@ -75,6 +90,8 @@ export class MockAnimationPlayer implements AnimationPlayer {
     if (!this._destroyed) {
       this._destroyed = true;
       this.finish();
+      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns = [];
       this.log.push('destroy');
     }
   }
@@ -107,4 +124,7 @@ export class MockAnimationPlayer implements AnimationPlayer {
 
     return captures;
   }
+
+  setSpeed(value: number): void { this._speed = value; }
+  getSpeed(): number { return this._speed; }
 }

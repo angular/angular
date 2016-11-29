@@ -12,34 +12,44 @@ import {isPresent} from '../facade/lang';
 import {AnimationPlayer} from './animation_player';
 
 export class ViewAnimationMap {
-  private _map = new Map<any, {[key: string]: AnimationPlayer}>();
+  private _map = new Map<any, {[key: string]: AnimationPlayer[]}>();
   private _allPlayers: AnimationPlayer[] = [];
 
-  find(element: any, animationName: string): AnimationPlayer {
+  find(element: any, animationName: string): AnimationPlayer[] {
     const playersByAnimation = this._map.get(element);
     if (isPresent(playersByAnimation)) {
-      return playersByAnimation[animationName];
+      const players = playersByAnimation[animationName];
+      if (players) {
+        return players;
+      }
     }
+    return [];
   }
 
   findAllPlayersByElement(element: any): AnimationPlayer[] {
-    const el = this._map.get(element);
-
-    return el ? Object.keys(el).map(k => el[k]) : [];
+    const players: AnimationPlayer[] = [];
+    const playersByElement = this._map.get(element);
+    if (playersByElement) {
+      Object.keys(playersByElement).forEach(animationName => {
+        players.push(...playersByElement[animationName]);
+      });
+    }
+    return players;
   }
 
   set(element: any, animationName: string, player: AnimationPlayer): void {
     let playersByAnimation = this._map.get(element);
     if (!isPresent(playersByAnimation)) {
-      playersByAnimation = {};
+      this._map.set(element, playersByAnimation = {});
     }
-    const existingEntry = playersByAnimation[animationName];
-    if (isPresent(existingEntry)) {
-      this.remove(element, animationName);
+
+    let players = playersByAnimation[animationName];
+    if (!isPresent(players)) {
+      players = playersByAnimation[animationName] = [];
     }
-    playersByAnimation[animationName] = player;
+
+    players.push(player);
     this._allPlayers.push(player);
-    this._map.set(element, playersByAnimation);
   }
 
   getAllPlayers(): AnimationPlayer[] { return this._allPlayers; }
@@ -47,15 +57,31 @@ export class ViewAnimationMap {
   remove(element: any, animationName: string, targetPlayer: AnimationPlayer = null): void {
     const playersByAnimation = this._map.get(element);
     if (playersByAnimation) {
-      const player = playersByAnimation[animationName];
-      if (!targetPlayer || player === targetPlayer) {
-        delete playersByAnimation[animationName];
-        const index = this._allPlayers.indexOf(player);
-        this._allPlayers.splice(index, 1);
-
-        if (Object.keys(playersByAnimation).length === 0) {
-          this._map.delete(element);
+      let playersToRemove: AnimationPlayer[];
+      const players = playersByAnimation[animationName];
+      if (players) {
+        if (targetPlayer) {
+          playersToRemove = [];
+          const innerIndex = players.indexOf(targetPlayer);
+          if (innerIndex >= 0) {
+            players.splice(innerIndex, 1);
+            playersToRemove.push(targetPlayer);
+          }
+        } else {
+          playersToRemove = players;
+          delete playersByAnimation[animationName];
         }
+      }
+
+      playersToRemove.forEach(player => {
+        const outerIndex = this._allPlayers.indexOf(player);
+        if (outerIndex >= 0) {
+          this._allPlayers.splice(outerIndex, 1);
+        }
+      });
+
+      if (Object.keys(playersByAnimation).length === 0) {
+        this._map.delete(element);
       }
     }
   }

@@ -8,6 +8,9 @@
 
 import {scheduleMicroTask} from '../facade/lang';
 
+function unimplemented(): any {
+  new Error('NOT IMPLEMENTED: Base Class');
+}
 
 /**
  * @experimental Animation support is experimental.
@@ -15,6 +18,7 @@ import {scheduleMicroTask} from '../facade/lang';
 export abstract class AnimationPlayer {
   abstract onDone(fn: () => void): void;
   abstract onStart(fn: () => void): void;
+  abstract onDestroy(fn: () => void): void;
   abstract init(): void;
   abstract hasStarted(): boolean;
   abstract play(): void;
@@ -25,15 +29,23 @@ export abstract class AnimationPlayer {
   abstract reset(): void;
   abstract setPosition(p: any /** TODO #9100 */): void;
   abstract getPosition(): number;
-  get parentPlayer(): AnimationPlayer { throw new Error('NOT IMPLEMENTED: Base Class'); }
-  set parentPlayer(player: AnimationPlayer) { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  abstract setSpeed(p: number): void;
+  abstract getSpeed(): number;
+  get parentPlayer(): AnimationPlayer { throw unimplemented(); }
+  set parentPlayer(player: AnimationPlayer) { throw unimplemented(); }
+  get flaggedForQuery(): boolean { return false; }
+  set flaggedForQuery(value: boolean) { throw unimplemented(); }
+  get duration(): number { throw unimplemented(); }
 }
 
 export class NoOpAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
+  private _onDestroyFns: Function[] = [];
   private _started = false;
   public parentPlayer: AnimationPlayer = null;
+  public flaggedForQuery: boolean = false;
+  public duration = 0;
   constructor() { scheduleMicroTask(() => this._onFinish()); }
   /** @internal */
   _onFinish() {
@@ -42,6 +54,7 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
   }
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
   onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
   hasStarted(): boolean { return this._started; }
   init(): void {}
   play(): void {
@@ -54,8 +67,13 @@ export class NoOpAnimationPlayer implements AnimationPlayer {
   pause(): void {}
   restart(): void {}
   finish(): void { this._onFinish(); }
-  destroy(): void {}
+  destroy(): void {
+    this._onDestroyFns.forEach(fn => fn());
+    this._onDestroyFns = [];
+  }
   reset(): void {}
   setPosition(p: number): void {}
   getPosition(): number { return 0; }
+  setSpeed(p: number): void {}
+  getSpeed(): number { return 1; }
 }

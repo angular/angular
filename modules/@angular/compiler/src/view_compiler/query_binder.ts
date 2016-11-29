@@ -29,7 +29,9 @@ export function bindQueryValues(ce: CompileElement) {
   });
   queriesWithReads.forEach((queryWithRead) => {
     let value: o.Expression;
-    if (queryWithRead.read.identifier) {
+    if (queryWithRead.query.meta.isAnimationQuery) {
+      value = this.renderNode;
+    } else if (queryWithRead.read.identifier) {
       // query for an identifier
       value = ce.instances.get(tokenReference(queryWithRead.read));
     } else {

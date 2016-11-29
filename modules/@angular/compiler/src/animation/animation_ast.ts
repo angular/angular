@@ -21,10 +21,12 @@ export interface AnimationAstVisitor {
   visitAnimationStateDeclaration(ast: AnimationStateDeclarationAst, context: any): any;
   visitAnimationStateTransition(ast: AnimationStateTransitionAst, context: any): any;
   visitAnimationStep(ast: AnimationStepAst, context: any): any;
+  visitAnimationChildStep(ast: AnimationChildStepAst, context: any): any;
   visitAnimationSequence(ast: AnimationSequenceAst, context: any): any;
   visitAnimationGroup(ast: AnimationGroupAst, context: any): any;
   visitAnimationKeyframe(ast: AnimationKeyframeAst, context: any): any;
   visitAnimationStyles(ast: AnimationStylesAst, context: any): any;
+  visitAnimationQuery(ast: AnimationQueryAst, context: any): any;
 }
 
 export class AnimationEntryAst extends AnimationAst {
@@ -61,6 +63,7 @@ export class AnimationStateTransitionAst extends AnimationStateAst {
 }
 
 export class AnimationStepAst extends AnimationAst {
+  public isRestoreStep = false;
   constructor(
       public startingStyles: AnimationStylesAst, public keyframes: AnimationKeyframeAst[],
       public duration: number, public delay: number, public easing: string) {
@@ -68,6 +71,13 @@ export class AnimationStepAst extends AnimationAst {
   }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationStep(this, context);
+  }
+}
+
+export class AnimationChildStepAst extends AnimationAst {
+  constructor(public duration: number, public delay: number, public easing: string) { super(); }
+  visit(visitor: AnimationAstVisitor, context: any): any {
+    return visitor.visitAnimationChildStep(this, context);
   }
 }
 
@@ -100,5 +110,13 @@ export class AnimationSequenceAst extends AnimationWithStepsAst {
   constructor(steps: AnimationAst[]) { super(steps); }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationSequence(this, context);
+  }
+}
+
+export class AnimationQueryAst extends AnimationAst {
+  public containsAnimateChildStatement = false;
+  constructor(public id: string, public criteria: any, public animation: AnimationWithStepsAst) { super(); }
+  visit(visitor: AnimationAstVisitor, context: any): any {
+    return visitor.visitAnimationQuery(this, context);
   }
 }

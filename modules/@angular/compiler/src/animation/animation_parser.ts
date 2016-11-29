@@ -15,11 +15,12 @@ import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
 import * as asts from './animation_ast';
-import {StylesCollection} from './styles_collection';
+import {StylesCollection, StylesCollectionEntry} from './styles_collection';
 
 const _INITIAL_KEYFRAME = 0;
 const _TERMINAL_KEYFRAME = 1;
 const _ONE_SECOND = 1000;
+const _ROOT_QUERY_ID = '0';
 
 declare type Styles = {
   [key: string]: string | number
@@ -31,18 +32,28 @@ export class AnimationParseError extends ParseError {
 }
 
 export class AnimationEntryParseResult {
-  constructor(public ast: asts.AnimationEntryAst, public errors: AnimationParseError[]) {}
+  constructor(public ast: asts.AnimationEntryAst,
+              public queries: asts.AnimationQueryAst[],
+              public errors: AnimationParseError[]) {}
+}
+
+export class ComponentAnimationParseResult {
+  constructor(public entryAsts: asts.AnimationEntryAst[],
+              public queryAsts: {[triggerName: string]: asts.AnimationQueryAst[]}) {}
 }
 
 @CompilerInjectable()
 export class AnimationParser {
   constructor(private _schema: ElementSchemaRegistry) {}
 
-  parseComponent(component: compileAsts.CompileDirectiveMetadata): asts.AnimationEntryAst[] {
+  parseComponent(component: compileAsts.CompileDirectiveMetadata): ComponentAnimationParseResult {
     const errors: string[] = [];
     const componentName = compileAsts.identifierName(component.type);
     const animationTriggerNames = new Set<string>();
-    const asts = component.template.animations.map(entry => {
+
+    const queryStringMap: {[triggerName: string]: asts.AnimationQueryAst[]} = {};
+    const entryAsts: asts.AnimationEntryAst[] = [];
+    component.template.animations.forEach(entry => {
       const result = this.parseEntry(entry);
       const ast = result.ast;
       const triggerName = ast.name;
@@ -59,7 +70,8 @@ export class AnimationParser {
             (error: AnimationParseError) => { errorMessage += '\n-- ' + error.msg; });
         errors.push(errorMessage);
       }
-      return ast;
+      entryAsts.push(ast);
+      queryStringMap[ast.name] = result.queries;
     });
 
     if (errors.length > 0) {
@@ -67,13 +79,15 @@ export class AnimationParser {
       throw new Error(`Animation parse errors:\n${errorString}`);
     }
 
-    return asts;
+    return new ComponentAnimationParseResult(entryAsts, queryStringMap);
   }
 
   parseEntry(entry: compileAsts.CompileAnimationEntryMetadata): AnimationEntryParseResult {
     const errors: AnimationParseError[] = [];
     const stateStyles: {[key: string]: asts.AnimationStylesAst} = {};
     const transitions: compileAsts.CompileAnimationStateTransitionMetadata[] = [];
+
+    const queryMap = new _AnimationQueryMap();
 
     const stateDeclarationAsts: asts.AnimationStateDeclarationAst[] = [];
     entry.definitions.forEach(def => {
@@ -88,10 +102,10 @@ export class AnimationParser {
     });
 
     const stateTransitionAsts = transitions.map(
-        transDef => _parseAnimationStateTransition(transDef, stateStyles, this._schema, errors));
+        transDef => _parseAnimationStateTransition(transDef, stateStyles, queryMap, this._schema, errors));
 
     const ast = new asts.AnimationEntryAst(entry.name, stateDeclarationAsts, stateTransitionAsts);
-    return new AnimationEntryParseResult(ast, errors);
+    return new AnimationEntryParseResult(ast, queryMap.queries, errors);
   }
 }
 
@@ -107,7 +121,9 @@ function _parseAnimationDeclarationStates(
 
 function _parseAnimationStateTransition(
     transitionStateMetadata: compileAsts.CompileAnimationStateTransitionMetadata,
-    stateStyles: {[key: string]: asts.AnimationStylesAst}, schema: ElementSchemaRegistry,
+    stateStyles: {[key: string]: asts.AnimationStylesAst},
+    queryMap: _AnimationQueryMap,
+    schema: ElementSchemaRegistry,
     errors: AnimationParseError[]): asts.AnimationStateTransitionAst {
   const styles = new StylesCollection();
   const transitionExprs: asts.AnimationStateTransitionExpression[] = [];
@@ -116,9 +132,10 @@ function _parseAnimationStateTransition(
       expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
   const entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   const animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
-  const animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
+  const rootQuery = new asts.AnimationQueryAst(_ROOT_QUERY_ID, null, null);
+  const animationAst = _parseTransitionAnimation(animation, rootQuery, 0, styles, stateStyles, queryMap, errors);
   if (errors.length == 0) {
-    _fillAnimationAstStartingKeyframes(animationAst, styles, errors);
+    _fillAnimationAstStartingKeyframes(animationAst, rootQuery, styles, queryMap, errors);
   }
 
   const stepsAst: asts.AnimationWithStepsAst =
@@ -416,17 +433,28 @@ function _parseAnimationKeyframes(
 }
 
 function _parseTransitionAnimation(
-    entry: compileAsts.CompileAnimationMetadata, currentTime: number,
-    collectedStyles: StylesCollection, stateStyles: {[key: string]: asts.AnimationStylesAst},
+    entry: compileAsts.CompileAnimationMetadata,
+    parentQuery: asts.AnimationQueryAst,
+    currentTime: number,
+    collectedStyles: StylesCollection,
+    stateStyles: {[key: string]: asts.AnimationStylesAst},
+    queryMap: _AnimationQueryMap,
     errors: AnimationParseError[]): asts.AnimationAst {
-  let ast: any /** TODO #9100 */;
+  let ast: asts.AnimationAst;
   let playTime = 0;
   const startingTime = currentTime;
-  if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
+  if (entry instanceof compileAsts.CompileAnimationQueryMetadata) {
+    const innerQueryId = queryMap.getOrCreateQueryId(entry);
+    const innerEntry = _normalizeAnimationEntry(entry.animation);
+    const queryAst = new asts.AnimationQueryAst(innerQueryId, entry.criteria, null);
+    queryAst.animation = <asts.AnimationWithStepsAst>_parseTransitionAnimation(innerEntry, queryAst, currentTime, collectedStyles, stateStyles, queryMap, errors);
+    queryMap.registerQueryAst(innerQueryId, queryAst);
+    ast = queryAst;
+  } else if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
     let maxDuration = 0;
-    const steps: any[] /** TODO #9100 */ = [];
+    const steps: asts.AnimationAst[] = [];
     const isGroup = entry instanceof compileAsts.CompileAnimationGroupMetadata;
-    let previousStyles: any /** TODO #9100 */;
+    let previousStyles: any;
     entry.steps.forEach(entry => {
       // these will get picked up by the next step...
       const time = isGroup ? startingTime : currentTime;
@@ -435,20 +463,19 @@ function _parseTransitionAnimation(
           // by this point we know that we only have stringmap values
           const map = stylesEntry as Styles;
           Object.keys(map).forEach(
-              prop => { collectedStyles.insertAtTime(prop, time, map[prop]); });
+              prop => { collectedStyles.insertAtTime(parentQuery.id, prop, time, map[prop]); });
         });
         previousStyles = entry.styles;
         return;
       }
 
-      const innerAst = _parseTransitionAnimation(entry, time, collectedStyles, stateStyles, errors);
+      const innerAst = _parseTransitionAnimation(entry, parentQuery, time, collectedStyles, stateStyles, queryMap, errors);
       if (isPresent(previousStyles)) {
-        if (entry instanceof compileAsts.CompileAnimationWithStepsMetadata) {
+        if (innerAst instanceof asts.AnimationStepAst) {
+          innerAst.startingStyles.styles.push(...previousStyles);
+        } else {
           const startingStyles = new asts.AnimationStylesAst(previousStyles);
           steps.push(new asts.AnimationStepAst(startingStyles, [], 0, 0, ''));
-        } else {
-          const innerStep = <asts.AnimationStepAst>innerAst;
-          innerStep.startingStyles.styles.push(...previousStyles);
         }
         previousStyles = null;
       }
@@ -470,11 +497,23 @@ function _parseTransitionAnimation(
     } else {
       ast = new asts.AnimationSequenceAst(steps);
     }
+  } else if (entry instanceof compileAsts.CompileAnimationAnimateChildMetadata) {
+    const timings = _parseTimeExpression(entry.timings, errors);
+    if (parentQuery.id === _ROOT_QUERY_ID) {
+      errors.push(new AnimationParseError(`animateChild() is only allowed to be used within query().`));
+    }
+    
+    // we are unsure how long the inner child animates for, but given that we rely
+    // on a callback to fire (via a microtask) it is not a 0ms duration...
+    playTime += 1;
+    
+    parentQuery.containsAnimateChildStatement = true;
+    ast = new asts.AnimationChildStepAst(timings.duration, timings.delay, timings.easing);
   } else if (entry instanceof compileAsts.CompileAnimationAnimateMetadata) {
     const timings = _parseTimeExpression(entry.timings, errors);
     const styles = entry.styles;
 
-    let keyframes: any /** TODO #9100 */;
+    let keyframes: asts.AnimationKeyframeAst[];
     if (styles instanceof compileAsts.CompileAnimationKeyframesSequenceMetadata) {
       keyframes =
           _parseAnimationKeyframes(styles, currentTime, collectedStyles, stateStyles, errors);
@@ -486,16 +525,18 @@ function _parseTransitionAnimation(
       keyframes = [keyframe];
     }
 
-    ast = new asts.AnimationStepAst(
+    let stepAst = ast = new asts.AnimationStepAst(
         new asts.AnimationStylesAst([]), keyframes, timings.duration, timings.delay,
         timings.easing);
     playTime = timings.duration + timings.delay;
     currentTime += playTime;
+    
+    stepAst.isRestoreStep = entry.styles === compileAsts._EMPTY_COMPILED_STYLED;
 
-    keyframes.forEach(
-        (keyframe: any /** TODO #9100 */) => keyframe.styles.styles.forEach(
-            (entry: any /** TODO #9100 */) => Object.keys(entry).forEach(
-                prop => { collectedStyles.insertAtTime(prop, currentTime, entry[prop]); })));
+    keyframes.forEach(keyframe =>
+        keyframe.styles.styles.forEach(
+            entry => Object.keys(entry).forEach(
+                prop => { collectedStyles.insertAtTime(parentQuery.id, prop, currentTime, entry[prop]); })));
   } else {
     // if the code reaches this stage then an error
     // has already been populated within the _normalizeStyleSteps()
@@ -509,25 +550,35 @@ function _parseTransitionAnimation(
 }
 
 function _fillAnimationAstStartingKeyframes(
-    ast: asts.AnimationAst, collectedStyles: StylesCollection,
+    ast: asts.AnimationAst,
+    parentQuery: asts.AnimationQueryAst,
+    collectedStyles: StylesCollection,
+    queryMap: _AnimationQueryMap,
     errors: AnimationParseError[]): void {
   // steps that only contain style will not be filled
-  if ((ast instanceof asts.AnimationStepAst) && ast.keyframes.length > 0) {
+  if (ast instanceof asts.AnimationStepAst) {
     const keyframes = ast.keyframes;
     if (keyframes.length == 1) {
       const endKeyframe = keyframes[0];
       const startKeyframe = _createStartKeyframeFromEndKeyframe(
-          endKeyframe, ast.startTime, ast.playTime, collectedStyles, errors);
+        endKeyframe, parentQuery.id, ast.startTime, ast.playTime, collectedStyles, queryMap, errors);
       ast.keyframes = [startKeyframe, endKeyframe];
     }
-  } else if (ast instanceof asts.AnimationWithStepsAst) {
-    ast.steps.forEach(entry => _fillAnimationAstStartingKeyframes(entry, collectedStyles, errors));
+  } else {
+    var steps: asts.AnimationAst[] = [];
+    if (ast instanceof asts.AnimationQueryAst) {
+      steps = ast.animation.steps;
+      parentQuery = ast;
+    } else if (ast instanceof asts.AnimationWithStepsAst) {
+      steps = ast.steps;
+    }
+    steps.forEach(entry => _fillAnimationAstStartingKeyframes(entry, parentQuery, collectedStyles, queryMap, errors));
   }
 }
 
 function _parseTimeExpression(
     exp: string | number, errors: AnimationParseError[]): _AnimationTimings {
-  const regex = /^([\.\d]+)(m?s)(?:\s+([\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
+  const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?/i;
   let duration: number;
   let delay: number = 0;
   let easing: string = null;
@@ -567,8 +618,12 @@ function _parseTimeExpression(
 }
 
 function _createStartKeyframeFromEndKeyframe(
-    endKeyframe: asts.AnimationKeyframeAst, startTime: number, duration: number,
-    collectedStyles: StylesCollection, errors: AnimationParseError[]): asts.AnimationKeyframeAst {
+    endKeyframe: asts.AnimationKeyframeAst,
+    queryId: string,
+    startTime: number, duration: number,
+    collectedStyles: StylesCollection,
+    queryMap: _AnimationQueryMap,
+    errors: AnimationParseError[]): asts.AnimationKeyframeAst {
   const values: Styles = {};
   const endTime = startTime + duration;
   endKeyframe.styles.styles.forEach((styleData: Styles) => {
@@ -576,13 +631,14 @@ function _createStartKeyframeFromEndKeyframe(
       const val = styleData[prop];
       if (prop == 'offset') return;
 
-      const resultIndex = collectedStyles.indexOfAtOrBeforeTime(prop, startTime);
-      let resultEntry: any /** TODO #9100 */, nextEntry: any /** TODO #9100 */,
-          value: any /** TODO #9100 */;
+      const resultIndex = collectedStyles.indexOfAtOrBeforeTime(queryId, prop, startTime);
+      let resultEntry: StylesCollectionEntry;
+      let nextEntry: StylesCollectionEntry;
+      let value: string|number;
       if (isPresent(resultIndex)) {
-        resultEntry = collectedStyles.getByIndex(prop, resultIndex);
+        resultEntry = collectedStyles.getByIndex(queryId, prop, resultIndex);
         value = resultEntry.value;
-        nextEntry = collectedStyles.getByIndex(prop, resultIndex + 1);
+        nextEntry = collectedStyles.getByIndex(queryId, prop, resultIndex + 1);
       } else {
         // this is a flag that the runtime code uses to pass
         // in a value either from the state declaration styles
@@ -600,4 +656,30 @@ function _createStartKeyframeFromEndKeyframe(
   });
 
   return new asts.AnimationKeyframeAst(_INITIAL_KEYFRAME, new asts.AnimationStylesAst([values]));
+}
+
+class _AnimationQueryMap {
+  private _criteriaToIdMap = new Map<any, string>();
+  private _idToQueryMap = new Map<string, asts.AnimationQueryAst>();
+  private _latestQueryId = 1; // 0 is reserved for the trigger element
+
+  getOrCreateQueryId(query: compileAsts.CompileAnimationQueryMetadata): string {
+    var id = this._criteriaToIdMap.get(query.criteria);
+    if (!isPresent(id)) {
+      id = this._latestQueryId.toString();
+      this._criteriaToIdMap.set(query.criteria, id);
+      this._latestQueryId++;
+    }
+    return id;
+  }
+
+  registerQueryAst(queryId: string, queryAst: asts.AnimationQueryAst) {
+    this._idToQueryMap.set(queryId, queryAst);
+  }
+
+  get queries(): asts.AnimationQueryAst[] {
+    var entries: asts.AnimationQueryAst[] = [];
+    this._idToQueryMap.forEach(value => entries.push(value));
+    return entries;
+  }
 }

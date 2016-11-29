@@ -63,6 +63,10 @@ export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
   }
 }
 
+export class CompileAnimationAnimateChildMetadata extends CompileAnimationMetadata {
+  constructor(public timings: string|number = 0) { super(); }
+}
+
 export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
   constructor(public steps: CompileAnimationMetadata[] = null) { super(); }
 }
@@ -75,6 +79,11 @@ export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMeta
   constructor(steps: CompileAnimationMetadata[] = null) { super(steps); }
 }
 
+export class CompileAnimationQueryMetadata extends CompileAnimationMetadata {
+  constructor(public criteria: any, public options: any, public animation: CompileAnimationMetadata[]) { super(); }
+}
+
+export const _EMPTY_COMPILED_STYLED = new CompileAnimationStyleMetadata(1, [{}]);
 
 function _sanitizeIdentifier(name: string): string {
   return name.replace(/\W/g, '_');
@@ -208,6 +217,7 @@ export interface CompileQueryMetadata {
   first: boolean;
   propertyName: string;
   read: CompileTokenMetadata;
+  isAnimationQuery?: boolean;
 }
 
 /**

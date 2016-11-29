@@ -76,3 +76,7 @@ export const AnimationTransition: typeof r.AnimationTransition = r.AnimationTran
 export type SetterFn = typeof r._SetterFn;
 export type GetterFn = typeof r._GetterFn;
 export type MethodFn = typeof r._MethodFn;
+export const animateQuery: typeof r.animateQuery = r.animateQuery;
+export const fetchElementAnimation: typeof r.fetchElementAnimation = r.fetchElementAnimation;
+export const AnimationElementIdMap: typeof r.AnimationElementIdMap = r.AnimationElementIdMap;
+export const ViewContainerWithAnimations: typeof r.ViewContainerWithAnimations = r.ViewContainerWithAnimations;

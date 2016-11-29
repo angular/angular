@@ -30,6 +30,10 @@ export class CompileQuery {
     this._values = new ViewQueryValues(view, []);
   }
 
+  get notifyOnChange(): boolean {
+    return !this.meta.first;
+  }
+
   addValue(value: o.Expression, view: CompileView) {
     let currentView = view;
     const elPath: CompileElement[] = [];
@@ -65,14 +69,14 @@ export class CompileQuery {
   }
 
   generateStatements(targetStaticMethod: CompileMethod, targetDynamicMethod: CompileMethod) {
-    const values = createQueryValues(this._values);
+    const values = createQueryValues(this.meta, this._values);
     const updateStmts = [this.queryList.callMethod('reset', [o.literalArr(values)]).toStmt()];
     if (isPresent(this.ownerDirectiveExpression)) {
       const valueExpr = this.meta.first ? this.queryList.prop('first') : this.queryList;
       updateStmts.push(
           this.ownerDirectiveExpression.prop(this.meta.propertyName).set(valueExpr).toStmt());
     }
-    if (!this.meta.first) {
+    if (this.notifyOnChange) {
       updateStmts.push(this.queryList.callMethod('notifyOnChanges', []).toStmt());
     }
     if (this.meta.first && this._isStatic()) {
@@ -87,11 +91,40 @@ export class CompileQuery {
   }
 }
 
-function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
+export class CompileQueryForAnimation extends CompileQuery {
+  get notifyOnChange(): boolean { return false; }
+}
+
+function createQueryValues(
+    queryMeta: CompileQueryMetadata, viewValues: ViewQueryValues): o.Expression[] {
+  if (queryMeta.isAnimationQuery) {
+    return _createGroupedQueryValues(queryMeta, viewValues, o.THIS_EXPR);
+  } else {
+    return _createQueryValues(queryMeta, viewValues);
+  }
+}
+
+function _createGroupedQueryValues(
+    queryMeta: CompileQueryMetadata, viewValues: ViewQueryValues,
+    viewExpr: o.Expression): o.Expression[] {
   return ListWrapper.flatten(viewValues.values.map((entry) => {
     if (entry instanceof ViewQueryValues) {
       return mapNestedViews(
-          entry.view.declarationElement.viewContainer, entry.view, createQueryValues(entry));
+          queryMeta, entry.view.declarationElement.viewContainer, entry.view,
+          _createGroupedQueryValues(queryMeta, entry, o.variable('nestedView')));
+    } else {
+      return o.literalArr([viewExpr, o.literalArr([<o.Expression>entry])]);
+    }
+  }));
+}
+
+function _createQueryValues(
+    queryMeta: CompileQueryMetadata, viewValues: ViewQueryValues): o.Expression[] {
+  return ListWrapper.flatten(viewValues.values.map((entry) => {
+    if (entry instanceof ViewQueryValues) {
+      return mapNestedViews(
+          queryMeta, entry.view.declarationElement.viewContainer, entry.view,
+          _createQueryValues(queryMeta, entry));
     } else {
       return <o.Expression>entry;
     }
@@ -99,10 +132,13 @@ function createQueryValues(viewValues: ViewQueryValues): o.Expression[] {
 }
 
 function mapNestedViews(
-    viewContainer: o.Expression, view: CompileView, expressions: o.Expression[]): o.Expression {
+    queryMeta: CompileQueryMetadata, viewContainer: o.Expression, view: CompileView,
+    expressions: o.Expression[]): o.Expression {
   const adjustedExpressions: o.Expression[] = expressions.map(
       (expr) => o.replaceVarInExpression(o.THIS_EXPR.name, o.variable('nestedView'), expr));
-  return viewContainer.callMethod('mapNestedViews', [
+  const mapNestedViewsMethod =
+      queryMeta.isAnimationQuery ? 'mapNestedAnimationViews' : 'mapNestedViews';
+  return viewContainer.callMethod(mapNestedViewsMethod, [
     o.variable(view.className),
     o.fn(
         [new o.FnParam('nestedView', view.classType)],
@@ -113,13 +149,14 @@ function mapNestedViews(
 export function createQueryList(
     query: CompileQueryMetadata, directiveInstance: o.Expression, propertyName: string,
     compileView: CompileView): o.Expression {
-  compileView.fields.push(new o.ClassField(
-      propertyName, o.importType(createIdentifier(Identifiers.QueryList), [o.DYNAMIC_TYPE])));
+  const identifier = createIdentifier(
+      query.isAnimationQuery ? Identifiers.AnimationQueryList : Identifiers.QueryList);
+  compileView.fields.push(
+      new o.ClassField(propertyName, o.importType(identifier, [o.DYNAMIC_TYPE])));
   const expr = o.THIS_EXPR.prop(propertyName);
   compileView.createMethod.addStmt(
       o.THIS_EXPR.prop(propertyName)
-          .set(o.importExpr(createIdentifier(Identifiers.QueryList), [o.DYNAMIC_TYPE]).instantiate([
-          ]))
+          .set(o.importExpr(identifier, [o.DYNAMIC_TYPE]).instantiate([]))
           .toStmt());
   return expr;
 }
