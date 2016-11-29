@@ -9,23 +9,9 @@
 import {AnimationPlayer} from '@angular/core';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
-import {DomAnimatePlayer} from '../../src/dom/dom_animate_player';
 import {WebAnimationsDriver} from '../../src/dom/web_animations_driver';
 import {WebAnimationsPlayer} from '../../src/dom/web_animations_player';
 import {AnimationKeyframe, AnimationStyles, NoOpAnimationPlayer} from '../../src/private_import_core';
-import {MockDomAnimatePlayer} from '../../testing/mock_dom_animate_player';
-
-class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
-  public log: {[key: string]: any}[] = [];
-
-  constructor() { super(); }
-
-  /** @internal */
-  _triggerWebAnimation(elm: any, keyframes: any[], options: any): DomAnimatePlayer {
-    this.log.push({'elm': elm, 'keyframes': keyframes, 'options': options});
-    return new MockDomAnimatePlayer();
-  }
-}
 
 function _makeStyles(styles: {[key: string]: string | number}): AnimationStyles {
   return new AnimationStyles([styles]);
@@ -38,10 +24,10 @@ function _makeKeyframe(
 
 export function main() {
   describe('WebAnimationsDriver', () => {
-    let driver: ExtendedWebAnimationsDriver;
+    let driver: WebAnimationsDriver;
     let elm: HTMLElement;
     beforeEach(() => {
-      driver = new ExtendedWebAnimationsDriver();
+      driver = new WebAnimationsDriver();
       elm = el('<div></div>');
     });
 
@@ -100,6 +86,33 @@ export function main() {
       player.keyframes.pop();  // remove the final keyframe that is `1`
       const allZero = player.keyframes.every(kf => kf['offset'] == 0);
       expect(allZero).toBe(true);
+    });
+
+    it('should create an animation with only starting-styles as data', () => {
+      const startingStyles = _makeStyles({color: 'red', fontSize: '20px'});
+
+      const player = driver.animate(elm, startingStyles, [], 1000, 1000, null);
+
+      expect(player.keyframes).toEqual([
+        {color: 'red', fontSize: '20px'},
+        {color: 'red', fontSize: '20px'},
+      ]);
+    });
+
+    it('should create a balanced animation when only one keyframe is passed in', () => {
+      const startingStyles = _makeStyles({color: 'red', fontSize: '20px'});
+
+      const keyframeStyles: any = [_makeKeyframe(1, {color: 'blue'})];
+
+      const player = driver.animate(elm, startingStyles, keyframeStyles, 1000, 1000, null);
+
+      const kf0 = player.keyframes[0];
+      const kf1 = player.keyframes[1];
+
+      expect(kf0['color']).toEqual('red');
+      expect(kf0['fontSize']).toEqual('20px');
+      expect(kf1['color']).toEqual('blue');
+      expect(kf1['fontSize']).toEqual('20px');
     });
   });
 }
