@@ -8,7 +8,6 @@
 
 import {Injectable, NgModule, Type} from '@angular/core';
 
-import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
 import {ReflectorReader, reflector} from './private_import_core';
 
@@ -26,8 +25,7 @@ export class NgModuleResolver {
   isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
 
   resolve(type: Type<any>, throwIfNotFound = true): NgModule {
-    const ngModuleMeta: NgModule =
-        ListWrapper.findLast(this._reflector.annotations(type), _isNgModuleMetadata);
+    const ngModuleMeta: NgModule = this._reflector.annotations(type).find(_isNgModuleMetadata);
 
     if (isPresent(ngModuleMeta)) {
       return ngModuleMeta;

@@ -93,15 +93,6 @@ export class MetadataCollector {
         }
       }
 
-      // Add class parents
-      if (classDeclaration.heritageClauses) {
-        classDeclaration.heritageClauses.forEach((hc) => {
-          if (hc.token === ts.SyntaxKind.ExtendsKeyword && hc.types) {
-            hc.types.forEach(type => result.extends = referenceFrom(type.expression));
-          }
-        });
-      }
-
       // Add class decorators
       if (classDeclaration.decorators) {
         result.decorators = getDecorators(classDeclaration.decorators);
@@ -205,7 +196,8 @@ export class MetadataCollector {
         result.statics = statics;
       }
 
-      return recordEntry(result, classDeclaration);
+      return result.decorators || members || statics ? recordEntry(result, classDeclaration) :
+                                                       undefined;
     }
 
     // Predeclare classes and functions
@@ -265,7 +257,11 @@ export class MetadataCollector {
             const className = classDeclaration.name.text;
             if (node.flags & ts.NodeFlags.Export) {
               if (!metadata) metadata = {};
-              metadata[className] = classMetadataOf(classDeclaration);
+              if (classDeclaration.decorators) {
+                metadata[className] = classMetadataOf(classDeclaration);
+              } else {
+                metadata[className] = {__symbolic: 'class'};
+              }
             }
           }
           // Otherwise don't record metadata for the class.
@@ -473,15 +469,14 @@ function validateMetadata(
     }
   }
 
-  function validateMember(classData: ClassMetadata, member: MemberMetadata) {
+  function validateMember(member: MemberMetadata) {
     if (member.decorators) {
       member.decorators.forEach(validateExpression);
     }
     if (isMethodMetadata(member) && member.parameterDecorators) {
       member.parameterDecorators.forEach(validateExpression);
     }
-    // Only validate parameters of classes for which we know that are used with our DI
-    if (classData.decorators && isConstructorMetadata(member) && member.parameters) {
+    if (isConstructorMetadata(member) && member.parameters) {
       member.parameters.forEach(validateExpression);
     }
   }
@@ -492,7 +487,7 @@ function validateMetadata(
     }
     if (classData.members) {
       Object.getOwnPropertyNames(classData.members)
-          .forEach(name => classData.members[name].forEach((m) => validateMember(classData, m)));
+          .forEach(name => classData.members[name].forEach(validateMember));
     }
   }
 
