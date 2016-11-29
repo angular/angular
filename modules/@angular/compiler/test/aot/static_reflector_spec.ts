@@ -694,7 +694,7 @@ describe('StaticReflector', () => {
 
 });
 
-class MockStaticReflectorHost implements StaticReflectorHost {
+export class MockStaticReflectorHost implements StaticReflectorHost {
   private collector = new MetadataCollector();
 
   constructor(private data: {[key: string]: any}) {}

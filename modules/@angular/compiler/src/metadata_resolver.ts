@@ -21,6 +21,7 @@ import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ComponentStillLoadingError, LIFECYCLE_HOOKS_VALUES, ReflectorReader, reflector} from './private_import_core';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
+import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
 import {MODULE_SUFFIX, SyncAsyncResult, ValueTransformer, visitValue} from './util';
 
@@ -39,12 +40,14 @@ export class CompileMetadataResolver {
   private _directiveSummaryCache = new Map<Type<any>, cpl.CompileDirectiveSummary>();
   private _pipeCache = new Map<Type<any>, cpl.CompilePipeMetadata>();
   private _pipeSummaryCache = new Map<Type<any>, cpl.CompilePipeSummary>();
+  private _ngModuleSummaryCache = new Map<Type<any>, cpl.CompileNgModuleSummary>();
   private _ngModuleCache = new Map<Type<any>, cpl.CompileNgModuleMetadata>();
   private _ngModuleOfTypes = new Map<Type<any>, Type<any>>();
 
   constructor(
       private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
-      private _pipeResolver: PipeResolver, private _schemaRegistry: ElementSchemaRegistry,
+      private _pipeResolver: PipeResolver, private _summaryResolver: SummaryResolver,
+      private _schemaRegistry: ElementSchemaRegistry,
       private _directiveNormalizer: DirectiveNormalizer,
       private _reflector: ReflectorReader = reflector) {}
 
@@ -54,6 +57,7 @@ export class CompileMetadataResolver {
     this._directiveSummaryCache.delete(type);
     this._pipeCache.delete(type);
     this._pipeSummaryCache.delete(type);
+    this._ngModuleSummaryCache.delete(type);
     this._ngModuleOfTypes.delete(type);
     // Clear all of the NgModule as they contain transitive information!
     this._ngModuleCache.clear();
@@ -69,6 +73,7 @@ export class CompileMetadataResolver {
     this._pipeSummaryCache.clear();
     this._ngModuleCache.clear();
     this._ngModuleOfTypes.clear();
+    this._ngModuleSummaryCache.clear();
     this._directiveNormalizer.clearCache();
   }
 
@@ -126,7 +131,7 @@ export class CompileMetadataResolver {
     return null;
   }
 
-  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): () => Promise<any> {
+  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): Promise<any> {
     if (this._directiveCache.has(directiveType)) {
       return;
     }
@@ -176,7 +181,7 @@ export class CompileMetadataResolver {
         if (isSync) {
           throw new ComponentStillLoadingError(directiveType);
         }
-        return () => templateMeta.asyncResult.then(createDirectiveMetadata);
+        return templateMeta.asyncResult.then(createDirectiveMetadata);
       }
     } else {
       // directive
@@ -288,10 +293,15 @@ export class CompileMetadataResolver {
   }
 
   getDirectiveSummary(dirType: any): cpl.CompileDirectiveSummary {
-    const dirSummary = this._directiveSummaryCache.get(dirType);
+    let dirSummary = this._directiveSummaryCache.get(dirType);
     if (!dirSummary) {
-      throw new Error(
-          `Illegal state: getDirectiveSummary can only be called after loadNgModuleMetadata for a module that imports it. Directive ${stringify(dirType)}.`);
+      dirSummary = <cpl.CompileDirectiveSummary>this._summaryResolver.resolveSummary(dirType);
+      if (dirSummary) {
+        this._directiveSummaryCache.set(dirType, dirSummary);
+      } else {
+        throw new Error(
+            `Illegal state: Could not load the summary for directive ${stringify(dirType)}.`);
+      }
     }
     return dirSummary;
   }
@@ -300,33 +310,38 @@ export class CompileMetadataResolver {
 
   isPipe(type: any) { return this._pipeResolver.isPipe(type); }
 
-  private _getNgModuleSummary(moduleType: any): cpl.CompileNgModuleSummary {
-    // TODO(tbosch): add logic to read summary files!
-    // - needs to add directive / pipe summaries to this._directiveSummaryCache /
-    // this._pipeSummaryCache as well!
-    const moduleMeta = this.getNgModuleMetadata(moduleType, false);
-    return moduleMeta ? moduleMeta.toSummary() : null;
+  getNgModuleSummary(moduleType: any): cpl.CompileNgModuleSummary {
+    let moduleSummary = this._ngModuleSummaryCache.get(moduleType);
+    if (!moduleSummary) {
+      moduleSummary = <cpl.CompileNgModuleSummary>this._summaryResolver.resolveSummary(moduleType);
+      if (!moduleSummary) {
+        const moduleMeta = this.getNgModuleMetadata(moduleType, false);
+        moduleSummary = moduleMeta ? moduleMeta.toSummary() : null;
+      }
+      if (moduleSummary) {
+        this._ngModuleSummaryCache.set(moduleType, moduleSummary);
+      }
+    }
+    return moduleSummary;
   }
 
   /**
-   * Loads an NgModule and all of its directives. This includes loading the exported directives of
-   * imported modules,
-   * but not private directives of imported modules.
+   * Loads the declared directives and pipes of an NgModule.
    */
   loadNgModuleDirectiveAndPipeMetadata(moduleType: any, isSync: boolean, throwIfNotFound = true):
-      {ngModule: cpl.CompileNgModuleMetadata, loading: Promise<any>} {
+      Promise<any> {
     const ngModule = this.getNgModuleMetadata(moduleType, throwIfNotFound);
-    let loading: Promise<any>;
+    const loading: Promise<any>[] = [];
     if (ngModule) {
-      loading = Promise.all([
-        ...ngModule.transitiveModule.directives.map(
-            (id) => this._loadDirectiveMetadata(id.reference, isSync)),
-        ...ngModule.transitiveModule.pipes.map((id) => this._loadPipeMetadata(id.reference)),
-      ]);
-    } else {
-      loading = Promise.resolve(null);
+      ngModule.declaredDirectives.forEach((id) => {
+        const promise = this._loadDirectiveMetadata(id.reference, isSync);
+        if (promise) {
+          loading.push(promise);
+        }
+      });
+      ngModule.declaredPipes.forEach((id) => this._loadPipeMetadata(id.reference));
     }
-    return {ngModule, loading};
+    return Promise.all(loading);
   }
 
   getNgModuleMetadata(moduleType: any, throwIfNotFound = true): cpl.CompileNgModuleMetadata {
@@ -365,7 +380,7 @@ export class CompileMetadataResolver {
         }
 
         if (importedModuleType) {
-          const importedModuleSummary = this._getNgModuleSummary(importedModuleType);
+          const importedModuleSummary = this.getNgModuleSummary(importedModuleType);
           if (!importedModuleSummary) {
             throw new Error(
                 `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`);
@@ -384,7 +399,7 @@ export class CompileMetadataResolver {
           throw new Error(
               `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`);
         }
-        const exportedModuleSummary = this._getNgModuleSummary(exportedType);
+        const exportedModuleSummary = this.getNgModuleSummary(exportedType);
         if (exportedModuleSummary) {
           exportedModules.push(exportedModuleSummary);
         } else {
@@ -543,6 +558,7 @@ export class CompileMetadataResolver {
           entryComponents.push(comp);
         }
       });
+      const addedTokens = new Set<any>();
       modSummary.providers.forEach((entry) => {
         const tokenRef = cpl.tokenReference(entry.provider.token);
         let prevModules = modulesByToken.get(tokenRef);
@@ -551,8 +567,11 @@ export class CompileMetadataResolver {
           modulesByToken.set(tokenRef, prevModules);
         }
         const moduleRef = entry.module.reference;
-        if (!prevModules.has(moduleRef)) {
+        // Note: the providers of one module may still contain multiple providers
+        // per token (e.g. for multi providers), and we need to preserve these.
+        if (addedTokens.has(tokenRef) || !prevModules.has(moduleRef)) {
           prevModules.add(moduleRef);
+          addedTokens.add(tokenRef);
           providers.push(entry);
         }
       });
@@ -575,7 +594,7 @@ export class CompileMetadataResolver {
         visitedModules.add(ngModule.type.reference);
         targetModules.push(ngModule);
         this._getTransitiveExportedModules(
-            ngModule.exportedModules.map(id => this._getNgModuleSummary(id.reference)),
+            ngModule.exportedModules.map(id => this.getNgModuleSummary(id.reference)),
             targetModules, visitedModules);
       }
     });
@@ -617,10 +636,15 @@ export class CompileMetadataResolver {
   }
 
   getPipeSummary(pipeType: any): cpl.CompilePipeSummary {
-    const pipeSummary = this._pipeSummaryCache.get(pipeType);
+    let pipeSummary = this._pipeSummaryCache.get(pipeType);
     if (!pipeSummary) {
-      throw new Error(
-          `Illegal state: getPipeSummary can only be called after loadNgModuleMetadata for a module that imports it. Pipe ${stringify(pipeType)}.`);
+      pipeSummary = <cpl.CompilePipeSummary>this._summaryResolver.resolveSummary(pipeType);
+      if (pipeSummary) {
+        this._pipeSummaryCache.set(pipeType, pipeSummary);
+      } else {
+        throw new Error(
+            `Illegal state: Could not load the summary for pipe ${stringify(pipeType)}.`);
+      }
     }
     return pipeSummary;
   }

@@ -123,6 +123,8 @@ export interface CompileSummary {
   isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
 }
 
+export interface CompileTypeSummary extends CompileSummary { type: CompileTypeMetadata; }
+
 export interface CompileDiDependencyMetadata {
   isAttribute?: boolean;
   isSelf?: boolean;
@@ -262,7 +264,7 @@ export class CompileTemplateMetadata {
 
 // Note: This should only use interfaces as nested data types
 // as we need to be able to serialize this from/to JSON!
-export interface CompileDirectiveSummary extends CompileSummary {
+export interface CompileDirectiveSummary extends CompileTypeSummary {
   isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
   isComponent: boolean;
@@ -470,7 +472,7 @@ export function createHostComponentMeta(
   });
 }
 
-export interface CompilePipeSummary extends CompileSummary {
+export interface CompilePipeSummary extends CompileTypeSummary {
   isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
   name: string;
@@ -499,7 +501,7 @@ export class CompilePipeMetadata {
 
 // Note: This should only use interfaces as nested data types
 // as we need to be able to serialize this from/to JSON!
-export interface CompileNgModuleSummary {
+export interface CompileNgModuleSummary extends CompileTypeSummary {
   isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
 
@@ -510,9 +512,9 @@ export interface CompileNgModuleSummary {
   // Note: This is transitive.
   entryComponents: CompileIdentifierMetadata[];
   // Note: This is transitive.
-  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[],
-      // Note: This is transitive.
-      modules: CompileTypeMetadata[];
+  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[];
+  // Note: This is transitive.
+  modules: CompileTypeMetadata[];
 }
 
 /**

@@ -209,6 +209,12 @@ export class CompilerHost implements AotCompilerHost {
   }
 
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
+
+  loadSummary(filePath: string): string { return this.context.readFile(filePath); }
+
+  getOutputFileName(sourceFilePath: string): string {
+    return sourceFilePath.replace(EXT, '') + '.d.ts';
+  }
 }
 
 export class CompilerHostContextAdapter {

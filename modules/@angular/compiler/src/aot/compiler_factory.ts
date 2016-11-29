@@ -34,8 +34,7 @@ import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector} from './static_reflector';
-
-
+import {AotSummaryResolver} from './summary_resolver';
 
 /**
  * Creates a new AotCompiler based on options and a host.
@@ -61,15 +60,17 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const console = new Console();
   const tmplParser =
       new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
+  const summaryResolver = new AotSummaryResolver(compilerHost, staticReflector, options);
   const resolver = new CompileMetadataResolver(
       new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
-      new PipeResolver(staticReflector), elementSchemaRegistry, normalizer, staticReflector);
+      new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
+      staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
   const compiler = new AotCompiler(
       resolver, tmplParser, new StyleCompiler(urlResolver),
       new ViewCompiler(config, elementSchemaRegistry),
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
-      new NgModuleCompiler(), new TypeScriptEmitter(compilerHost), options.locale,
+      new NgModuleCompiler(), new TypeScriptEmitter(compilerHost), summaryResolver, options.locale,
       options.i18nFormat, new AnimationParser(elementSchemaRegistry), staticReflector, options);
   return {compiler, reflector: staticReflector};
 }
