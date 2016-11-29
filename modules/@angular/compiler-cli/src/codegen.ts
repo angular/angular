@@ -17,7 +17,7 @@ import {readFileSync} from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompilerHost, CompilerHostContext} from './compiler_host';
+import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 import {Console} from './private_import_core';
 
@@ -82,9 +82,9 @@ export class CodeGenerator {
       ngCompilerHost?: CompilerHost): CodeGenerator {
     if (!ngCompilerHost) {
       const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-      ngCompilerHost = usePathMapping ?
-          new PathMappedCompilerHost(program, tsCompilerHost, options, compilerHostContext) :
-          new CompilerHost(program, tsCompilerHost, options, compilerHostContext);
+      const context = compilerHostContext || new ModuleResolutionHostAdapter(tsCompilerHost);
+      ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
+                                        new CompilerHost(program, options, context);
     }
     const transFile = cliOptions.i18nFile;
     const locale = cliOptions.locale;
