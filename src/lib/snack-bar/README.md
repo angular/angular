@@ -5,7 +5,7 @@
 
 | Name |  Description |
 | --- | --- |
-| `open(message: string,<br>  actionLabel: string, config: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar>` | Creates and opens a simple snack bar notification matching material spec. |
+| `open(message: string, actionLabel: string, config: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar>` | Creates and opens a simple snack bar notification matching material spec. |
 | `openFromComponent(component: ComponentType<T>, config: MdSnackBarConfig): MdSnackBarRef<T>` | Creates and opens a snack bar notification with a custom component as content. |
 
 ### Config
@@ -22,7 +22,7 @@
 The service can be injected in a component.
 ```ts
 @Component({
-  selector: 'my-component'
+  selector: 'my-component',
   providers: [MdSnackBar]
 })
 export class MyComponent {
