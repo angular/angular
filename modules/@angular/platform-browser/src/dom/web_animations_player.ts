@@ -69,10 +69,19 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
     const previousStyleProps = Object.keys(this.previousStyles);
     if (previousStyleProps.length) {
-      let startingKeyframe = findStartingKeyframe(keyframes);
+      let startingKeyframe = keyframes[0];
+      let missingStyleProps: string[] = [];
       previousStyleProps.forEach(prop => {
-        if (isPresent(startingKeyframe[prop])) {
-          startingKeyframe[prop] = this.previousStyles[prop];
+        if (!isPresent(startingKeyframe[prop])) {
+          missingStyleProps.push(prop);
+        }
+        startingKeyframe[prop] = this.previousStyles[prop];
+      });
+
+      if (missingStyleProps.length) {
+        for (let i = 1; i < keyframes.length; i++) {
+          let kf = keyframes[i];
+          missingStyleProps.forEach(prop => { kf[prop] = _computeStyle(this.element, prop); });
         }
       });
     }
@@ -180,6 +189,7 @@ function _copyKeyframeStyles(styles: {[style: string]: string | number}):
   });
   return newStyles;
 }
+<<<<<<< HEAD
 
 function findStartingKeyframe(keyframes: {[prop: string]: string | number}[]):
     {[prop: string]: string | number} {
@@ -194,3 +204,5 @@ function findStartingKeyframe(keyframes: {[prop: string]: string | number}[]):
   }
   return startingKeyframe;
 }
+=======
+>>>>>>> 9f437e6... fix(animations): blend in all previously transitioned styles into next animation if interrupted
