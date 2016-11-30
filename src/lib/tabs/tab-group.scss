@@ -25,6 +25,11 @@
   }
 }
 
+:host[md-stretch-tabs] .md-tab-label {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
 // The ink bar that displays next to the active tab
 md-ink-bar {
   @include ink-bar;

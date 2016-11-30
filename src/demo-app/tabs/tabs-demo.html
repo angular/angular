@@ -97,6 +97,15 @@
   </md-tab>
 </md-tab-group>
 
+<h1>Stretched Tabs</h1>
+
+<md-tab-group class="demo-tab-group" style="height: 200px" md-stretch-tabs>
+  <md-tab *ngFor="let tab of tabs" [disabled]="tab.disabled">
+    <template md-tab-label>{{tab.label}}</template>
+    {{tab.content}}
+  </md-tab>
+</md-tab-group>
+
 
 <h1>Async Tabs</h1>
 
