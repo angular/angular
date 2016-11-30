@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {stringify} from '../../src/facade/lang';
 
 export function main() {
-  describe('Query API', () => {
+  fdescribe('Query API', () => {
 
     beforeEach(() => TestBed.configureTestingModule({
       declarations: [
@@ -43,6 +43,8 @@ export function main() {
         NeedsContentChildWithRead,
         NeedsViewChildrenWithRead,
         NeedsViewChildWithRead,
+        NeedsContentChildTemplateRef,
+        NeedsContentChildTemplateRefApp,
         NeedsViewContainerWithRead,
         ManualProjecting
       ]
@@ -253,13 +255,24 @@ export function main() {
 
       it('should contain the first descendant content child', () => {
         const template = '<needs-content-child-read>' +
-            '<div dir><div #q text="ca"></div></div>' +
-            '</needs-content-child-read>';
+          '<div dir><div #q text="ca"></div></div>' +
+          '</needs-content-child-read>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
         const comp: NeedsContentChildWithRead =
-            view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
+          view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
         expect(comp.textDirChild.text).toEqual('ca');
+      });
+
+      fit('should contain the first descendant content child templateRef', () => {
+        const template = '<needs-content-child-template-ref-app>' +
+          '</needs-content-child-template-ref-app>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+        debugger;
+        view.detectChanges();
+        debugger;
+        expect(view.nativeElement.textContent).toEqual('OUTER');
       });
 
       it('should contain the first view child', () => {
@@ -728,6 +741,23 @@ class NeedsContentChildrenWithRead {
 class NeedsContentChildWithRead {
   @ContentChild('q', {read: TextDirective}) textDirChild: TextDirective;
   @ContentChild('nonExisting', {read: TextDirective}) nonExistingVar: TextDirective;
+}
+
+@Component({
+  selector: 'needs-content-child-template-ref',
+  template: '<div [ngTemplateOutlet]="templateRef"></div>'
+})
+class NeedsContentChildTemplateRef {
+  @ContentChild(TemplateRef) templateRef: TemplateRef<any>;
+}
+
+@Component({
+  selector: 'needs-content-child-template-ref-app',
+  template: '<needs-content-child-template-ref>' +
+    '<template>OUTER<template>INNER</template></template>' +
+  '</needs-content-child-template-ref>'
+})
+class NeedsContentChildTemplateRefApp {
 }
 
 @Component({
