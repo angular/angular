@@ -71,6 +71,7 @@ export declare type Event = NavigationStart | NavigationEnd | NavigationCancel |
 
 /** @stable */
 export interface ExtraOptions {
+    defaultPreserveQueryParams?: boolean;
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: boolean;
@@ -198,6 +199,7 @@ export interface Route {
 /** @stable */
 export declare class Router {
     config: Routes;
+    defaultPreserveQueryParams: boolean;
     errorHandler: ErrorHandler;
     events: Observable<Event>;
     navigated: boolean;

@@ -309,6 +309,8 @@ export class Router {
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
 
+  defaultPreserveQueryParams: boolean = false;
+
   /**
    * Error handler that is invoked when a navigation errors.
    *
@@ -465,6 +467,9 @@ export class Router {
       commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo ? relativeTo : this.routerState.root;
+    if (preserveQueryParams == null) {
+      preserveQueryParams = this.defaultPreserveQueryParams;
+    }
     const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
