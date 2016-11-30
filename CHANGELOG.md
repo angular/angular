@@ -1,3 +1,15 @@
+<a name="2.2.4"></a>
+## [2.2.4](https://github.com/angular/angular/compare/2.2.3...2.2.4) (2016-11-30)
+
+
+### Bug Fixes
+
+* **common:** update DatePipe to allow closure compilation ([eba53fd](https://github.com/angular/angular/commit/eba53fd))
+* **compiler:** fix performance regression caused by 5b0f9e2 ([ee2d6e5](https://github.com/angular/angular/commit/ee2d6e5)), closes [#13146](https://github.com/angular/angular/issues/13146)
+* **compiler-cli:** fix paths in source maps to be relative ([eb173bc](https://github.com/angular/angular/commit/eb173bc)), closes [#13040](https://github.com/angular/angular/issues/13040)
+
+
+
 <a name="2.2.3"></a>
 ## [2.2.3](https://github.com/angular/angular/compare/2.2.2...2.2.3) (2016-11-23)
 
