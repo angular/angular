@@ -75,6 +75,7 @@ export interface ExtraOptions {
     errorHandler?: ErrorHandler;
     initialNavigation?: boolean;
     preloadingStrategy?: any;
+    routerLinkActive?: RouterLinkActiveOptions;
     useHash?: boolean;
 }
 
@@ -249,10 +250,17 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     routerLinkActiveOptions: {
         exact: boolean;
     };
-    constructor(router: Router, element: ElementRef, renderer: Renderer);
+    constructor(router: Router, element: ElementRef, renderer: Renderer, config: any);
     ngAfterContentInit(): void;
-    ngOnChanges(changes: {}): any;
-    ngOnDestroy(): any;
+    ngOnChanges(changes: {}): void;
+    ngOnDestroy(): void;
+}
+
+/** @experimental */
+export interface RouterLinkActiveOptions {
+    defaultClass?: string;
+    enabled?: boolean;
+    exact?: boolean;
 }
 
 /** @stable */

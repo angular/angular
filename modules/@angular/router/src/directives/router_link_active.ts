@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer} from '@angular/core';
+import {AfterContentInit, ContentChildren, Directive, ElementRef, Inject, Input, OnChanges, OnDestroy, QueryList, Renderer} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
-import {NavigationEnd, Router} from '../router';
+import {ExtraOptions} from '../extra_options';
+import {Event, NavigationEnd, Router} from '../router';
+import {ROUTER_CONFIGURATION} from '../router_tokens';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
+const DEFAULT_ACTIVE_CLASS: string = 'router-link-active';
 
 /**
  * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.
@@ -72,13 +75,13 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * This will set the active-link class on the div tag if the url is either '/user/jim' or
  * '/user/bob'.
  *
- * @selector ':not(a)[routerLink]'
+ * @selector '[routerLinkActive],[routerLink]'
  * @ngModule RouterModule
  *
  * @stable
  */
 @Directive({
-  selector: '[routerLinkActive]',
+  selector: '[routerLinkActive],[routerLink]',
   exportAs: 'routerLinkActive',
 })
 export class RouterLinkActive implements OnChanges,
@@ -87,14 +90,24 @@ export class RouterLinkActive implements OnChanges,
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs: QueryList<RouterLinkWithHref>;
 
-  private classes: string[] = [];
+  private classes: string[] = [DEFAULT_ACTIVE_CLASS];
+  private _routerLinkActiveOptions: {exact: boolean} = {exact: false};
+  private enabled: boolean = true;
   private subscription: Subscription;
 
-  @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
+  @Input()
+  set routerLinkActiveOptions(options: {exact: boolean}) {
+    this._routerLinkActiveOptions = options;
+  }
 
-  constructor(private router: Router, private element: ElementRef, private renderer: Renderer) {
-    this.subscription = router.events.subscribe(s => {
-      if (s instanceof NavigationEnd) {
+  get routerLinkActiveOptions() { return this._routerLinkActiveOptions; }
+
+  constructor(
+      private router: Router, private element: ElementRef, private renderer: Renderer,
+      @Inject(ROUTER_CONFIGURATION) private config: any /* TODO #12631 ExtraOptions*/) {
+    this.parseConfig(config);
+    this.subscription = this.router.events.subscribe((e: Event) => {
+      if (e instanceof NavigationEnd) {
         this.update();
       }
     });
@@ -103,24 +116,37 @@ export class RouterLinkActive implements OnChanges,
   get isActive(): boolean { return this.hasActiveLink(); }
 
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(s => this.update());
-    this.linksWithHrefs.changes.subscribe(s => this.update());
+    this.links.changes.subscribe(() => this.update());
+    this.linksWithHrefs.changes.subscribe(() => this.update());
     this.update();
   }
 
   @Input()
   set routerLinkActive(data: string[]|string) {
-    if (Array.isArray(data)) {
-      this.classes = <any>data;
-    } else {
-      this.classes = data.split(' ');
+    this.classes = Array.isArray(data) ? <any>data : data.split(' ');
+    this.enabled = true;
+  }
+
+  ngOnChanges(changes: {}): void { this.update(); }
+  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+
+  private parseConfig(config: ExtraOptions): void {
+    if (config && config.routerLinkActive) {
+      const linkOpts = config.routerLinkActive;
+      if (linkOpts.defaultClass) {
+        this.classes = [linkOpts.defaultClass];
+      }
+      if (linkOpts.exact != null) {
+        this._routerLinkActiveOptions = {exact: linkOpts.exact};
+      }
+      if (linkOpts.enabled != null) {
+        this.enabled = linkOpts.enabled;
+      }
     }
   }
 
-  ngOnChanges(changes: {}): any { this.update(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
-
   private update(): void {
+    if (!this.enabled) return;
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
 
     const isActive = this.hasActiveLink();
