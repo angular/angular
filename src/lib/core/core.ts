@@ -29,6 +29,9 @@ export {DomPortalHost} from './portal/dom-portal-host';
 // Projection
 export * from './projection/projection';
 
+// Platform
+export * from './platform/platform';
+
 // Overlay
 export {Overlay, OVERLAY_PROVIDERS} from './overlay/overlay';
 export {OverlayContainer} from './overlay/overlay-container';

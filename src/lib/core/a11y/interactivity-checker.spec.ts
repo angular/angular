@@ -1,14 +1,17 @@
 import {InteractivityChecker} from './interactivity-checker';
+import {MdPlatform} from '../platform/platform';
+import {async} from '@angular/core/testing';
 
 describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;
   let checker: InteractivityChecker;
+  let platform: MdPlatform = new MdPlatform();
 
   beforeEach(() => {
     testContainerElement = document.createElement('div');
     document.body.appendChild(testContainerElement);
 
-    checker = new InteractivityChecker();
+    checker = new InteractivityChecker(platform);
   });
 
   afterEach(() => {
@@ -234,57 +237,257 @@ describe('InteractivityChecker', () => {
       });
     });
 
-    it('should return true for div and span with tabindex == 0', () => {
-      let elements = createElements('div', 'span');
 
-      elements.forEach(el => el.setAttribute('tabindex', '0'));
-      appendElements(elements);
-
-      elements.forEach(el => {
-        expect(checker.isFocusable(el))
-            .toBe(true, `Expected <${el.nodeName} tabindex="0"> to be focusable`);
-      });
-    });
   });
 
   describe('isTabbable', () => {
-    it('should return true for native form controls and anchor without tabindex attribute', () => {
-      let elements = createElements('input', 'textarea', 'select', 'button', 'a');
-      appendElements(elements);
 
-      elements.forEach(el => {
-        expect(checker.isTabbable(el)).toBe(true, `Expected <${el.nodeName}> to be tabbable`);
+    it('should respect the tabindex for video elements with controls',
+      // Do not run for Blink, Firefox and iOS because those treat video elements
+      // with controls different and are covered in other tests.
+      runIf(!platform.BLINK && !platform.FIREFOX && !platform.IOS, () => {
+        let video = createFromTemplate('<video controls>', true);
+
+        expect(checker.isTabbable(video)).toBe(true);
+
+        video.tabIndex = -1;
+
+        expect(checker.isTabbable(video)).toBe(false);
+      })
+    );
+
+    it('should always mark video elements with controls as tabbable (BLINK & FIREFOX)',
+      // Only run this spec for Blink and Firefox, because those always treat video
+      // elements with controls as tabbable.
+      runIf(platform.BLINK || platform.FIREFOX, () => {
+        let video = createFromTemplate('<video controls>', true);
+
+        expect(checker.isTabbable(video)).toBe(true);
+
+        video.tabIndex = -1;
+
+        expect(checker.isTabbable(video)).toBe(true);
+      })
+    );
+
+    // Some tests should not run inside of iOS browsers, because those only allow specific
+    // elements to be tabbable and cause the tests to always fail.
+    describe('for non-iOS browsers', runIf(!platform.IOS, () => {
+
+      it('should mark form controls and anchors without tabindex attribute as tabbable', () => {
+        let elements = createElements('input', 'textarea', 'select', 'button', 'a');
+        appendElements(elements);
+
+        elements.forEach(el => {
+          expect(checker.isTabbable(el)).toBe(true, `Expected <${el.nodeName}> to be tabbable`);
+        });
       });
-    });
 
-    it('should return false for native form controls and anchor with tabindex == -1', () => {
-      let elements = createElements('input', 'textarea', 'select', 'button', 'a');
+      it('should return true for div and span with tabindex == 0', () => {
+        let elements = createElements('div', 'span');
 
-      elements.forEach(el => el.setAttribute('tabindex', '-1'));
-      appendElements(elements);
+        elements.forEach(el => el.setAttribute('tabindex', '0'));
+        appendElements(elements);
 
-      elements.forEach(el => {
-        expect(checker.isTabbable(el))
+        elements.forEach(el => {
+          expect(checker.isFocusable(el))
+            .toBe(true, `Expected <${el.nodeName} tabindex="0"> to be focusable`);
+        });
+      });
+
+      it('should return false for native form controls and anchor with tabindex == -1', () => {
+        let elements = createElements('input', 'textarea', 'select', 'button', 'a');
+
+        elements.forEach(el => el.setAttribute('tabindex', '-1'));
+        appendElements(elements);
+
+        elements.forEach(el => {
+          expect(checker.isTabbable(el))
             .toBe(false, `Expected <${el.nodeName} tabindex="-1"> not to be tabbable`);
+        });
       });
-    });
 
-    it('should return true for div and span with tabindex == 0', () => {
-      let elements = createElements('div', 'span');
+      it('should return true for div and span with tabindex == 0', () => {
+        let elements = createElements('div', 'span');
 
-      elements.forEach(el => el.setAttribute('tabindex', '0'));
-      appendElements(elements);
+        elements.forEach(el => el.setAttribute('tabindex', '0'));
+        appendElements(elements);
 
-      elements.forEach(el => {
-        expect(checker.isTabbable(el))
+        elements.forEach(el => {
+          expect(checker.isTabbable(el))
             .toBe(true, `Expected <${el.nodeName} tabindex="0"> to be tabbable`);
+        });
       });
-    });
+
+      it('should respect the inherited tabindex inside of frame elements', () => {
+        let iframe = createFromTemplate('<iframe>', true) as HTMLFrameElement;
+        let button = createFromTemplate('<button tabindex="0">Not Tabbable</button>');
+
+        appendElements([iframe]);
+
+        iframe.tabIndex = -1;
+        iframe.contentDocument.body.appendChild(button);
+
+        expect(checker.isTabbable(iframe)).toBe(false);
+        expect(checker.isTabbable(button)).toBe(false);
+
+        iframe.tabIndex = null;
+
+        expect(checker.isTabbable(iframe)).toBe(false);
+        expect(checker.isTabbable(button)).toBe(true);
+      });
+
+      it('should mark elements which are contentEditable as tabbable', async(() => {
+        let editableEl = createFromTemplate('<div contenteditable="true">', true);
+
+        // Wait one tick, because the browser takes some time to update the tabIndex
+        // according to the contentEditable attribute.
+        setTimeout(() => {
+
+          expect(checker.isTabbable(editableEl)).toBe(true);
+
+          editableEl.tabIndex = -1;
+
+          expect(checker.isTabbable(editableEl)).toBe(false);
+
+        }, 0);
+
+      }));
+
+      it('should never mark iframe elements as tabbable', () => {
+        let iframe = createFromTemplate('<iframe>', true);
+
+        // iFrame elements will be never marked as tabbable, because it depends on the content
+        // which is mostly not detectable due to CORS and also the checks will be not reliable.
+        expect(checker.isTabbable(iframe)).toBe(false);
+      });
+
+      it('should always mark audio elements without controls as not tabbable', () => {
+        let audio = createFromTemplate('<audio>', true);
+
+        expect(checker.isTabbable(audio)).toBe(false);
+      });
+
+    }));
+
+    describe('for Blink and Webkit browsers', runIf(platform.BLINK || platform.WEBKIT, () => {
+
+      it('should not mark elements inside of object frames as tabbable', () => {
+        let objectEl = createFromTemplate('<object>', true) as HTMLObjectElement;
+        let button = createFromTemplate('<button tabindex="0">Not Tabbable</button>');
+
+        appendElements([objectEl]);
+
+        // This is a hack to create an empty contentDocument for the frame element.
+        objectEl.type = 'text/html';
+        objectEl.contentDocument.body.appendChild(button);
+
+        expect(checker.isTabbable(objectEl)).toBe(false);
+        expect(checker.isTabbable(button)).toBe(false);
+      });
+
+      it('should not mark elements inside of invisible frames as tabbable', () => {
+        let iframe = createFromTemplate('<iframe>', true) as HTMLFrameElement;
+        let button = createFromTemplate('<button tabindex="0">Not Tabbable</button>');
+
+        appendElements([iframe]);
+
+        iframe.style.display = 'none';
+        iframe.contentDocument.body.appendChild(button);
+
+        expect(checker.isTabbable(iframe)).toBe(false);
+        expect(checker.isTabbable(button)).toBe(false);
+      });
+
+      it('should never mark object frame elements as tabbable', () => {
+        let objectEl = createFromTemplate('<object>', true);
+
+        expect(checker.isTabbable(objectEl)).toBe(false);
+      });
+
+    }));
+
+    describe('for Blink browsers', runIf(platform.BLINK, () => {
+
+      it('should always mark audio elements with controls as tabbable', () => {
+        let audio = createFromTemplate('<audio controls>', true);
+
+        expect(checker.isTabbable(audio)).toBe(true);
+
+        audio.tabIndex = -1;
+
+        // The audio element will be still tabbable because Blink always
+        // considers them as tabbable.
+        expect(checker.isTabbable(audio)).toBe(true);
+      });
+
+    }));
+
+    describe('for Internet Explorer', runIf(platform.TRIDENT, () => {
+
+      it('should never mark video elements without controls as tabbable', () => {
+        // In Internet Explorer video elements without controls are never tabbable.
+        let video = createFromTemplate('<video>', true);
+
+        expect(checker.isTabbable(video)).toBe(false);
+
+        video.tabIndex = 0;
+
+        expect(checker.isTabbable(video)).toBe(false);
+
+      });
+
+    }));
+
+    describe('for iOS browsers', runIf(platform.IOS && platform.WEBKIT, () => {
+
+      it('should never allow div elements to be tabbable', () => {
+        let divEl = createFromTemplate('<div tabindex="0">', true);
+
+        expect(checker.isTabbable(divEl)).toBe(false);
+      });
+
+      it('should never allow span elements to be tabbable', () => {
+        let spanEl = createFromTemplate('<span tabindex="0">Text</span>', true);
+
+        expect(checker.isTabbable(spanEl)).toBe(false);
+      });
+
+      it('should never allow button elements to be tabbable', () => {
+        let buttonEl = createFromTemplate('<button tabindex="0">', true);
+
+        expect(checker.isTabbable(buttonEl)).toBe(false);
+      });
+
+      it('should never allow anchor elements to be tabbable', () => {
+        let anchorEl = createFromTemplate('<a tabindex="0">Link</a>', true);
+
+        expect(checker.isTabbable(anchorEl)).toBe(false);
+      });
+
+    }));
+
+
   });
 
   /** Creates an array of elements with the given node names. */
   function createElements(...nodeNames: string[]) {
     return nodeNames.map(name => document.createElement(name));
+  }
+
+  function createFromTemplate(template: string, append = false) {
+    let tmpRoot = document.createElement('div');
+    tmpRoot.innerHTML = template;
+
+    let element = tmpRoot.firstElementChild;
+
+    tmpRoot.removeChild(element);
+
+    if (append) {
+      appendElements([element]);
+    }
+
+    return element as HTMLElement;
   }
 
   /** Appends elements to the testContainerElement. */
@@ -293,4 +496,13 @@ describe('InteractivityChecker', () => {
       testContainerElement.appendChild(e);
     }
   }
+
+  function runIf(condition: boolean, runFn: Function): () => void {
+    return (...args: any[]) => {
+      if (condition) {
+        runFn.apply(this, args);
+      }
+    };
+  }
+
 });

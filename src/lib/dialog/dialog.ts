@@ -13,9 +13,8 @@ import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
-import {A11yModule, InteractivityChecker} from '../core';
+import {A11yModule, InteractivityChecker, MdPlatform} from '../core';
 import {extendObject} from '../core/util/object-extend';
-
 export {MdDialogConfig} from './dialog-config';
 export {MdDialogRef} from './dialog-ref';
 
@@ -161,7 +160,7 @@ export class MdDialogModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdDialogModule,
-      providers: [MdDialog, OVERLAY_PROVIDERS, InteractivityChecker],
+      providers: [MdDialog, OVERLAY_PROVIDERS, InteractivityChecker, MdPlatform],
     };
   }
 }

@@ -30,6 +30,7 @@ import {TooltipDemo} from '../tooltip/tooltip-demo';
 import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 import {ProjectionDemo} from '../projection/projection-demo';
 import {TABS_DEMO_ROUTES} from '../tabs/routes';
+import {PlatformDemo} from '../platform/platform-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -62,4 +63,5 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'dialog', component: DialogDemo},
   {path: 'tooltip', component: TooltipDemo},
   {path: 'snack-bar', component: SnackBarDemo},
+  {path: 'platform', component: PlatformDemo}
 ];

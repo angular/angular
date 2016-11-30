@@ -47,6 +47,7 @@ export class DemoApp {
     {name: 'Snack Bar', route: 'snack-bar'},
     {name: 'Tabs', route: 'tabs'},
     {name: 'Toolbar', route: 'toolbar'},
-    {name: 'Tooltip', route: 'tooltip'}
+    {name: 'Tooltip', route: 'tooltip'},
+    {name: 'Platform', route: 'platform'}
   ];
 }

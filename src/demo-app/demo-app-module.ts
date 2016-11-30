@@ -35,6 +35,7 @@ import {PortalDemo, ScienceJoke} from './portal/portal-demo';
 import {MenuDemo} from './menu/menu-demo';
 import {TabsDemo, SunnyTabContent, RainyTabContent, FoggyTabContent} from './tabs/tabs-demo';
 import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-demo';
+import {PlatformDemo} from './platform/platform-demo';
 
 @NgModule({
   imports: [
@@ -86,6 +87,7 @@ import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-d
     SunnyTabContent,
     RainyTabContent,
     FoggyTabContent,
+    PlatformDemo
   ],
   entryComponents: [
     DemoApp,

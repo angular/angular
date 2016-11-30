@@ -3,17 +3,21 @@ import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {FocusTrap} from './focus-trap';
 import {InteractivityChecker} from './interactivity-checker';
+import {MdPlatform} from '../platform/platform';
 
 
 describe('FocusTrap', () => {
+
   describe('with default element', () => {
+
     let fixture: ComponentFixture<FocusTrapTestApp>;
     let focusTrapInstance: FocusTrap;
+    let platform: MdPlatform = new MdPlatform();
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         declarations: [FocusTrap, FocusTrapTestApp],
-        providers: [InteractivityChecker]
+        providers: [InteractivityChecker, MdPlatform]
       });
 
       TestBed.compileComponents();
@@ -38,8 +42,11 @@ describe('FocusTrap', () => {
       // focus event handler directly.
       focusTrapInstance.focusLastTabbableElement();
 
+      // In iOS button elements are never tabbable, so the last element will be the input.
+      let lastElement = platform.IOS ? 'input' : 'button';
+
       expect(document.activeElement.nodeName.toLowerCase())
-          .toBe('button', 'Expected button element to be focused');
+          .toBe(lastElement, `Expected ${lastElement} element to be focused`);
     });
   });
 
@@ -50,7 +57,7 @@ describe('FocusTrap', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         declarations: [FocusTrap, FocusTrapTargetTestApp],
-        providers: [InteractivityChecker]
+        providers: [InteractivityChecker, MdPlatform]
       });
 
       TestBed.compileComponents();

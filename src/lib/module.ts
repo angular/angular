@@ -32,6 +32,7 @@ import {MdToolbarModule} from './toolbar/index';
 import {MdTooltipModule} from './tooltip/index';
 import {MdMenuModule} from './menu/index';
 import {MdDialogModule} from './dialog/index';
+import {PlatformModule} from './core/platform/platform';
 
 
 const MATERIAL_MODULES = [
@@ -62,6 +63,7 @@ const MATERIAL_MODULES = [
   PortalModule,
   RtlModule,
   A11yModule,
+  PlatformModule,
   ProjectionModule,
   StyleCompatibilityModule,
 ];
@@ -97,6 +99,7 @@ const MATERIAL_MODULES = [
     MdSlideToggleModule.forRoot(),
     MdSnackBarModule.forRoot(),
     MdTooltipModule.forRoot(),
+    PlatformModule.forRoot(),
     OverlayModule.forRoot(),
     StyleCompatibilityModule.forRoot(),
   ],
