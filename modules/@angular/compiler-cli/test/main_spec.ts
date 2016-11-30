@@ -10,6 +10,7 @@ import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import {ReflectionCapabilities, reflector} from '../../compiler/src/private_import_core';
 import {main} from '../src/main';
 
 describe('compiler-cli', () => {
@@ -35,6 +36,8 @@ describe('compiler-cli', () => {
       "files": ["test.ts"]
     }`);
   });
+
+  afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
 
   it('should compile without errors', (done) => {
     write('test.ts', 'export const A = 1;');
