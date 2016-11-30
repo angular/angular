@@ -47,6 +47,7 @@ export class MdButtonToggleChange {
   providers: [MD_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
+    '[class.md-button-toggle-vertical]': 'vertical'
   },
   exportAs: 'mdButtonToggleGroup',
 })
@@ -59,6 +60,9 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
 
   /** Disables all toggles in the group. */
   private _disabled: boolean = null;
+
+  /** Whether the button toggle group should be vertical. */
+  private _vertical: boolean = false;
 
   /** The currently selected button toggle, should match the value. */
   private _selected: MdButtonToggle = null;
@@ -107,6 +111,15 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
 
   set disabled(value) {
     this._disabled = coerceBooleanProperty(value);
+  }
+
+  @Input()
+  get vertical(): boolean {
+    return this._vertical;
+  }
+
+  set vertical(value) {
+    this._vertical = coerceBooleanProperty(value);
   }
 
   @Input()
@@ -207,10 +220,16 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
 @Directive({
   selector: 'md-button-toggle-group[multiple]',
   exportAs: 'mdButtonToggleGroup',
+  host: {
+    '[class.md-button-toggle-vertical]': 'vertical'
+  }
 })
 export class MdButtonToggleGroupMultiple {
   /** Disables all toggles in the group. */
   private _disabled: boolean = null;
+
+  /** Whether the button toggle group should be vertical. */
+  private _vertical: boolean = false;
 
   @Input()
   get disabled(): boolean {
@@ -220,6 +239,16 @@ export class MdButtonToggleGroupMultiple {
   set disabled(value) {
     this._disabled = (value != null && value !== false) ? true : null;
   }
+
+  @Input()
+  get vertical(): boolean {
+    return this._vertical;
+  }
+
+  set vertical(value) {
+    this._vertical = coerceBooleanProperty(value);
+  }
+
 }
 
 @Component({

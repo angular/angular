@@ -9,10 +9,24 @@ md-button-toggle-group {
   @include md-elevation(2);
   position: relative;
   display: inline-flex;
+  flex-direction: row;
+
   border-radius: $md-button-toggle-border-radius;
+
   cursor: pointer;
   white-space: nowrap;
 }
+
+.md-button-toggle-vertical {
+  flex-direction: column;
+
+  .md-button-toggle-label-content {
+    // Vertical button toggles shouldn't be an inline-block, because the toggles should
+    // fill the available width in the group.
+    display: block;
+  }
+}
+
 
 .md-button-toggle-disabled .md-button-toggle-label-content {
   cursor: default;

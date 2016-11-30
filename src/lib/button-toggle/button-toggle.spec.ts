@@ -126,6 +126,15 @@ describe('MdButtonToggle', () => {
       expect(groupInstance.value);
     });
 
+    it('should change the vertical state', () => {
+      expect(groupNativeElement.classList).not.toContain('md-button-toggle-vertical');
+
+      groupInstance.vertical = true;
+      fixture.detectChanges();
+
+      expect(groupNativeElement.classList).toContain('md-button-toggle-vertical');
+    });
+
     it('should emit a change event from button toggles', fakeAsync(() => {
       expect(buttonToggleInstances[0].checked).toBe(false);
 
@@ -412,6 +421,15 @@ describe('MdButtonToggle', () => {
       expect(buttonToggleInstances[0].checked).toBe(true);
     });
 
+    it('should change the vertical state', () => {
+      expect(groupNativeElement.classList).not.toContain('md-button-toggle-vertical');
+
+      groupInstance.vertical = true;
+      fixture.detectChanges();
+
+      expect(groupNativeElement.classList).toContain('md-button-toggle-vertical');
+    });
+
     it('should deselect a button toggle when selected twice', () => {
       buttonToggleNativeElements[0].click();
       fixture.detectChanges();
@@ -506,7 +524,7 @@ describe('MdButtonToggle', () => {
 
 @Component({
   template: `
-  <md-button-toggle-group [disabled]="isGroupDisabled" [value]="groupValue">
+  <md-button-toggle-group [disabled]="isGroupDisabled" [vertical]="isVertical" [value]="groupValue">
     <md-button-toggle value="test1">Test1</md-button-toggle>
     <md-button-toggle value="test2">Test2</md-button-toggle>
     <md-button-toggle value="test3">Test3</md-button-toggle>
@@ -515,6 +533,7 @@ describe('MdButtonToggle', () => {
 })
 class ButtonTogglesInsideButtonToggleGroup {
   isGroupDisabled: boolean = false;
+  isVertical: boolean = false;
   groupValue: string = null;
 }
 
@@ -539,7 +558,7 @@ class ButtonToggleGroupWithNgModel {
 
 @Component({
   template: `
-  <md-button-toggle-group [disabled]="isGroupDisabled" multiple>
+  <md-button-toggle-group [disabled]="isGroupDisabled" [vertical]="isVertical" multiple>
     <md-button-toggle value="eggs">Eggs</md-button-toggle>
     <md-button-toggle value="flour">Flour</md-button-toggle>
     <md-button-toggle value="sugar">Sugar</md-button-toggle>
@@ -548,6 +567,7 @@ class ButtonToggleGroupWithNgModel {
 })
 class ButtonTogglesInsideButtonToggleGroupMultiple {
   isGroupDisabled: boolean = false;
+  isVertical: boolean = false;
 }
 
 @Component({

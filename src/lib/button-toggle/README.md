@@ -124,6 +124,7 @@ Output:
 | `disabled` | boolean | Optional, default = `false`. |
 | `value` | any | The current value for the group. Will be set to the value of the selected toggle or a list of values from the selected toggles. |
 | `selected` | `mdButtonToggle` | The current selected toggle or a list of the selected toggles. |
+| `vertical` | boolean | Whether the group should show the toggles vertically. Default is `false`. |
 
 ### Attributes
 
