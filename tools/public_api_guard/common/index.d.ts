@@ -219,6 +219,11 @@ export declare abstract class PlatformLocation {
 }
 
 /** @stable */
+export declare class ProperCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
+/** @stable */
 export declare class SlicePipe implements PipeTransform {
     transform(value: any, start: number, end?: number): any;
 }
