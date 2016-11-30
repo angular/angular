@@ -18,5 +18,5 @@ export class Version {
 
   get minor(): string { return this.full.split('.')[1]; }
 
-  get patch(): string { return this.full.split('.')[2]; }
+  get patch(): string { return this.full.split('.').slice(2).join('.'); }
 }
