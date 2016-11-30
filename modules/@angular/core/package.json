@@ -9,7 +9,7 @@
   "license": "MIT",
   "peerDependencies": {
     "rxjs": "5.0.0-rc.4",
-    "zone.js": "^0.6.21"
+    "zone.js": "^0.7.2"
   },
   "repository": {
     "type": "git",
