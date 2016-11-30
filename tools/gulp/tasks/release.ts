@@ -1,5 +1,5 @@
 import {spawn} from 'child_process';
-import {existsSync, readdirSync, statSync} from 'fs';
+import {existsSync, statSync} from 'fs';
 import {task} from 'gulp';
 import gulpRunSequence = require('run-sequence');
 import path = require('path');

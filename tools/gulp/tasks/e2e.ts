@@ -1,7 +1,5 @@
 import {task, watch} from 'gulp';
 import * as path from 'path';
-import gulpMerge = require('merge2');
-import gulpRunSequence = require('run-sequence');
 
 import {SOURCE_ROOT, DIST_ROOT, PROJECT_ROOT} from '../constants';
 import {
@@ -53,7 +51,7 @@ task(':e2e:done', () => process.exit(0));
 let stopE2eServer: () => void = null;
 
 /** Starts up the e2e app server. */
-task(':serve:e2eapp', serverTask(false, (stream) => { stopE2eServer = () => stream.emit('kill') }));
+task(':serve:e2eapp', serverTask(false, stream => { stopE2eServer = () => stream.emit('kill'); }));
 
 /** Terminates the e2e app server */
 task(':serve:e2eapp:stop', () => stopE2eServer());
