@@ -532,3 +532,6 @@ export declare class Validators {
         [key: string]: boolean;
     };
 }
+
+/** @stable */
+export declare const VERSION: Version;

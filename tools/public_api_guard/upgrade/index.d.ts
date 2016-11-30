@@ -19,3 +19,6 @@ export declare class UpgradeAdapterRef {
     dispose(): void;
     ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void): void;
 }
+
+/** @stable */
+export declare const VERSION: Version;

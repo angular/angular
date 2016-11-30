@@ -77,6 +77,9 @@ export declare class UiArguments {
     constructor(method: string, args?: FnArg[]);
 }
 
+/** @stable */
+export declare const VERSION: Version;
+
 /** @experimental */
 export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;

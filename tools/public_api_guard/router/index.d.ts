@@ -413,3 +413,6 @@ export declare class UrlTree {
     root: UrlSegmentGroup;
     toString(): string;
 }
+
+/** @stable */
+export declare const VERSION: Version;
