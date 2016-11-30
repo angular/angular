@@ -154,11 +154,11 @@ export class CompileView implements NameResolver {
     }
   }
 
-  afterNodes() {
+  finish() {
     Array.from(this.viewQueries.values())
         .forEach(
             queries => queries.forEach(
-                q => q.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
+                q => q.generateStatements(this.createMethod, this.updateViewQueriesMethod)));
   }
 }
 

@@ -211,12 +211,7 @@ export class CompileElement extends CompileNode {
       const directiveInstance = this.instances.get(tokenReference(identifierToken(directive.type)));
       directive.queries.forEach((queryMeta) => { this._addQuery(queryMeta, directiveInstance); });
     }
-    const queriesWithReads: _QueryWithRead[] = [];
-    Array.from(this._resolvedProviders.values()).forEach((resolvedProvider) => {
-      const queriesForProvider = this._getQueriesFor(resolvedProvider.token);
-      queriesWithReads.push(
-          ...queriesForProvider.map(query => new _QueryWithRead(query, resolvedProvider.token)));
-    });
+
     Object.keys(this.referenceTokens).forEach(varName => {
       const token = this.referenceTokens[varName];
       let varValue: o.Expression;
@@ -226,27 +221,6 @@ export class CompileElement extends CompileNode {
         varValue = this.renderNode;
       }
       this.view.locals.set(varName, varValue);
-      const varToken = {value: varName};
-      queriesWithReads.push(
-          ...this._getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
-    });
-    queriesWithReads.forEach((queryWithRead) => {
-      let value: o.Expression;
-      if (isPresent(queryWithRead.read.identifier)) {
-        // query for an identifier
-        value = this.instances.get(tokenReference(queryWithRead.read));
-      } else {
-        // query for a reference
-        const token = this.referenceTokens[queryWithRead.read.value];
-        if (isPresent(token)) {
-          value = this.instances.get(tokenReference(token));
-        } else {
-          value = this.elementRef;
-        }
-      }
-      if (isPresent(value)) {
-        queryWithRead.query.addValue(value, this.view);
-      }
     });
   }
 
@@ -265,12 +239,14 @@ export class CompileElement extends CompileNode {
       this.view.injectorGetMethod.addStmt(createInjectInternalCondition(
           this.nodeIndex, providerChildNodeCount, resolvedProvider, providerExpr));
     });
+  }
 
+  finish() {
     Array.from(this._queries.values())
         .forEach(
             queries => queries.forEach(
-                q =>
-                    q.afterChildren(this.view.createMethod, this.view.updateContentQueriesMethod)));
+                q => q.generateStatements(
+                    this.view.createMethod, this.view.updateContentQueriesMethod)));
   }
 
   addContentNode(ngContentIndex: number, nodeExpr: CompileViewRootNode) {
@@ -283,12 +259,11 @@ export class CompileElement extends CompileNode {
         null;
   }
 
-  getProviderTokens(): o.Expression[] {
-    return Array.from(this._resolvedProviders.values())
-        .map((resolvedProvider) => createDiTokenExpression(resolvedProvider.token));
+  getProviderTokens(): CompileTokenMetadata[] {
+    return Array.from(this._resolvedProviders.values()).map(provider => provider.token);
   }
 
-  private _getQueriesFor(token: CompileTokenMetadata): CompileQuery[] {
+  getQueriesFor(token: CompileTokenMetadata): CompileQuery[] {
     const result: CompileQuery[] = [];
     let currentEl: CompileElement = this;
     let distance = 0;
@@ -425,11 +400,4 @@ function createProviderProperty(
     view.getters.push(new o.ClassGetter(propName, getter.finish(), type));
   }
   return o.THIS_EXPR.prop(propName);
-}
-
-class _QueryWithRead {
-  public read: CompileTokenMetadata;
-  constructor(public query: CompileQuery, match: CompileTokenMetadata) {
-    this.read = query.meta.read || match;
-  }
 }
