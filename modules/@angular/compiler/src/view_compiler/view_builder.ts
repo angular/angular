@@ -214,7 +214,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     this.view.nodes.push(compileElement);
     let compViewExpr: o.ReadPropExpr = null;
     if (isPresent(component)) {
-      const nestedComponentIdentifier = new CompileIdentifierMetadata();
+      const nestedComponentIdentifier: CompileIdentifierMetadata = {reference: null};
       this.targetDependencies.push(new ViewClassDependency(
           component.type, getViewClassName(component, 0), nestedComponentIdentifier));
 

@@ -66,7 +66,7 @@ export class StyleCompiler {
         stylesheet.styles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
     const dependencies: StylesCompileDependency[] = [];
     for (let i = 0; i < stylesheet.styleUrls.length; i++) {
-      const identifier = new CompileIdentifierMetadata();
+      const identifier: CompileIdentifierMetadata = {reference: null};
       dependencies.push(new StylesCompileDependency(
           getStylesVarName(null), stylesheet.styleUrls[i], shim, identifier));
       styleExpressions.push(new o.ExternalExpr(identifier));

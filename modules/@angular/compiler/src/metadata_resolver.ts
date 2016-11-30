@@ -216,7 +216,7 @@ export class CompileMetadataResolver {
     }
 
     let changeDetectionStrategy: ChangeDetectionStrategy = null;
-    let viewProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
+    let viewProviders: cpl.CompileProviderMetadata[] = [];
     let entryComponentMetadata: cpl.CompileIdentifierMetadata[] = [];
     let selector = dirMeta.selector;
 
@@ -243,7 +243,7 @@ export class CompileMetadataResolver {
       }
     }
 
-    let providers: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
+    let providers: cpl.CompileProviderMetadata[] = [];
     if (isPresent(dirMeta.providers)) {
       providers = this._getProvidersMetadata(
           dirMeta.providers, entryComponentMetadata, `providers for "${stringify(directiveType)}"`);
@@ -557,24 +557,23 @@ export class CompileMetadataResolver {
 
   private _getIdentifierMetadata(type: Type<any>): cpl.CompileIdentifierMetadata {
     type = resolveForwardRef(type);
-    return new cpl.CompileIdentifierMetadata({reference: type});
+    return {reference: type};
   }
 
   private _getTypeMetadata(type: Type<any>, dependencies: any[] = null): cpl.CompileTypeMetadata {
     const identifier = this._getIdentifierMetadata(type);
-    return new cpl.CompileTypeMetadata({
+    return {
       reference: identifier.reference,
       diDeps: this._getDependenciesMetadata(identifier.reference, dependencies),
       lifecycleHooks:
           LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, identifier.reference)),
-    });
+    };
   }
 
   private _getFactoryMetadata(factory: Function, dependencies: any[] = null):
       cpl.CompileFactoryMetadata {
     factory = resolveForwardRef(factory);
-    return new cpl.CompileFactoryMetadata(
-        {reference: factory, diDeps: this._getDependenciesMetadata(factory, dependencies)});
+    return {reference: factory, diDeps: this._getDependenciesMetadata(factory, dependencies)};
   }
 
   /**
@@ -660,14 +659,14 @@ export class CompileMetadataResolver {
         return null;
       }
 
-      return new cpl.CompileDiDependencyMetadata({
+      return {
         isAttribute,
         isHost,
         isSelf,
         isSkipSelf,
         isOptional,
         token: this._getTokenMetadata(token)
-      });
+      };
 
     });
 
@@ -685,57 +684,50 @@ export class CompileMetadataResolver {
     token = resolveForwardRef(token);
     let compileToken: cpl.CompileTokenMetadata;
     if (typeof token === 'string') {
-      compileToken = new cpl.CompileTokenMetadata({value: token});
+      compileToken = {value: token};
     } else {
-      compileToken = new cpl.CompileTokenMetadata(
-          {identifier: new cpl.CompileIdentifierMetadata({reference: token})});
+      compileToken = {identifier: {reference: token}};
     }
     return compileToken;
   }
 
   private _getProvidersMetadata(
       providers: Provider[], targetEntryComponents: cpl.CompileIdentifierMetadata[],
-      debugInfo?: string): Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> {
-    const compileProviders: Array<cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[]> = [];
+      debugInfo?: string,
+      compileProviders: cpl.CompileProviderMetadata[] = []): cpl.CompileProviderMetadata[] {
     providers.forEach((provider: any, providerIdx: number) => {
-      provider = resolveForwardRef(provider);
-      if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
-        provider = new cpl.ProviderMeta(provider.provide, provider);
-      }
-      let compileProvider: cpl.CompileProviderMetadata|cpl.CompileTypeMetadata|any[];
       if (Array.isArray(provider)) {
-        compileProvider = this._getProvidersMetadata(provider, targetEntryComponents, debugInfo);
-      } else if (provider instanceof cpl.ProviderMeta) {
-        const tokenMeta = this._getTokenMetadata(provider.token);
-        if (cpl.tokenReference(tokenMeta) ===
-            resolveIdentifier(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS)) {
-          targetEntryComponents.push(...this._getEntryComponentsFromProvider(provider));
-        } else {
-          compileProvider = this.getProviderMetadata(provider);
-        }
-      } else if (isValidType(provider)) {
-        compileProvider = this._getTypeMetadata(provider);
+        this._getProvidersMetadata(provider, targetEntryComponents, debugInfo, compileProviders);
       } else {
-        const providersInfo =
-            (<string[]>providers.reduce(
-                 (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
-                   if (seenProviderIdx < providerIdx) {
-                     soFar.push(`${stringify(seenProvider)}`);
-                   } else if (seenProviderIdx == providerIdx) {
-                     soFar.push(`?${stringify(seenProvider)}?`);
-                   } else if (seenProviderIdx == providerIdx + 1) {
-                     soFar.push('...');
-                   }
-                   return soFar;
-                 },
-                 []))
-                .join(', ');
-
-        throw new Error(
-            `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
-      }
-      if (compileProvider) {
-        compileProviders.push(compileProvider);
+        provider = resolveForwardRef(provider);
+        let providerMeta: cpl.ProviderMeta;
+        if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
+          providerMeta = new cpl.ProviderMeta(provider.provide, provider);
+        } else if (isValidType(provider)) {
+          providerMeta = new cpl.ProviderMeta(provider, {useClass: provider});
+        } else {
+          const providersInfo =
+              (<string[]>providers.reduce(
+                   (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
+                     if (seenProviderIdx < providerIdx) {
+                       soFar.push(`${stringify(seenProvider)}`);
+                     } else if (seenProviderIdx == providerIdx) {
+                       soFar.push(`?${stringify(seenProvider)}?`);
+                     } else if (seenProviderIdx == providerIdx + 1) {
+                       soFar.push('...');
+                     }
+                     return soFar;
+                   },
+                   []))
+                  .join(', ');
+          throw new Error(
+              `Invalid ${debugInfo ? debugInfo : 'provider'} - only instances of Provider and Type are allowed, got: [${providersInfo}]`);
+        }
+        if (providerMeta.token === resolveIdentifier(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS)) {
+          targetEntryComponents.push(...this._getEntryComponentsFromProvider(providerMeta));
+        } else {
+          compileProviders.push(this.getProviderMetadata(providerMeta));
+        }
       }
     });
     return compileProviders;
@@ -754,7 +746,7 @@ export class CompileMetadataResolver {
       throw new Error(`The ANALYZE_FOR_ENTRY_COMPONENTS token only supports 'multi = true'!`);
     }
 
-    convertToCompileValue(provider.useValue, collectedIdentifiers);
+    extractIdentifiers(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
       if (this._directiveResolver.isDirective(identifier.reference)) {
         components.push(identifier);
@@ -767,24 +759,29 @@ export class CompileMetadataResolver {
     let compileDeps: cpl.CompileDiDependencyMetadata[];
     let compileTypeMetadata: cpl.CompileTypeMetadata = null;
     let compileFactoryMetadata: cpl.CompileFactoryMetadata = null;
+    let token: cpl.CompileTokenMetadata = this._getTokenMetadata(provider.token);
 
     if (provider.useClass) {
       compileTypeMetadata = this._getTypeMetadata(provider.useClass, provider.dependencies);
       compileDeps = compileTypeMetadata.diDeps;
+      if (provider.token === provider.useClass) {
+        // use the compileTypeMetadata as it contains information about lifecycleHooks...
+        token = {identifier: compileTypeMetadata};
+      }
     } else if (provider.useFactory) {
       compileFactoryMetadata = this._getFactoryMetadata(provider.useFactory, provider.dependencies);
       compileDeps = compileFactoryMetadata.diDeps;
     }
 
-    return new cpl.CompileProviderMetadata({
-      token: this._getTokenMetadata(provider.token),
+    return {
+      token: token,
       useClass: compileTypeMetadata,
-      useValue: convertToCompileValue(provider.useValue, []),
+      useValue: provider.useValue,
       useFactory: compileFactoryMetadata,
       useExisting: provider.useExisting ? this._getTokenMetadata(provider.useExisting) : null,
       deps: compileDeps,
       multi: provider.multi
-    });
+    };
   }
 
   private _getQueriesMetadata(
@@ -818,12 +815,12 @@ export class CompileMetadataResolver {
       selectors = [this._getTokenMetadata(q.selector)];
     }
 
-    return new cpl.CompileQueryMetadata({
+    return {
       selectors,
       first: q.first,
       descendants: q.descendants, propertyName,
       read: q.read ? this._getTokenMetadata(q.read) : null
-    });
+    };
   }
 }
 
@@ -909,15 +906,12 @@ export function componentModuleUrl(
   return reflector.importUri(type);
 }
 
-function convertToCompileValue(
-    value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
-  return visitValue(value, new _CompileValueConverter(), targetIdentifiers);
+function extractIdentifiers(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]) {
+  visitValue(value, new _CompileValueConverter(), targetIdentifiers);
 }
 
 class _CompileValueConverter extends ValueTransformer {
   visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
-    const identifier = new cpl.CompileIdentifierMetadata({reference: value});
-    targetIdentifiers.push(identifier);
-    return identifier;
+    targetIdentifiers.push({reference: value});
   }
 }

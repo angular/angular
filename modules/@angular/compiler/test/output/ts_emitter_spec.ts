@@ -14,11 +14,13 @@ import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier =
-    new CompileIdentifierMetadata({reference: {name: 'someLocalId', filePath: someModuleUrl}});
+const sameModuleIdentifier: CompileIdentifierMetadata = {
+  reference: {name: 'someLocalId', filePath: someModuleUrl}
+};
 
-const externalModuleIdentifier = new CompileIdentifierMetadata(
-    {reference: {name: 'someExternalId', filePath: anotherModuleUrl}});
+const externalModuleIdentifier: CompileIdentifierMetadata = {
+  reference: {name: 'someExternalId', filePath: anotherModuleUrl}
+};
 
 class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {

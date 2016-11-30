@@ -40,7 +40,7 @@ export function main() {
       });
 
       const component = CompileDirectiveMetadata.create({
-        type: new CompileTypeMetadata({reference: {name: 'myCmp', filePath: ''}}),
+        type: {reference: {name: 'myCmp', filePath: ''}, diDeps: [], lifecycleHooks: []},
         template: new CompileTemplateMetadata({animations: entries})
       });
 
