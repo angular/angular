@@ -12,6 +12,7 @@
  * Entry point from which you should import all public core APIs.
  */
 export * from './metadata';
+export * from './version';
 export * from './util';
 export * from './di';
 export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, enableProdMode, isDevMode, createPlatformFactory, NgProbeToken} from './application_ref';

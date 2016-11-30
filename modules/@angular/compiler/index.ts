@@ -21,6 +21,11 @@
  *   </p>
  * </div>
  */
+import {Version} from '@angular/core';
+/**
+ * @stable
+ */
+export const VERSION = new Version('0.0.0-PLACEHOLDER');
 export * from './src/template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './src/template_parser/template_parser';
 export {CompilerConfig, RenderTypes} from './src/config';
@@ -58,5 +63,4 @@ export * from './src/style_compiler';
 export * from './src/template_parser/template_parser';
 export {ViewCompiler} from './src/view_compiler/view_compiler';
 export {AnimationParser} from './src/animation/animation_parser';
-
 // This file only reexports content of the `src` folder. Keep it that way.

@@ -93,3 +93,6 @@ export declare class Title {
     getTitle(): string;
     setTitle(newTitle: string): void;
 }
+
+/** @stable */
+export declare const VERSION: Version;

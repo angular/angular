@@ -950,6 +950,18 @@ export interface ValueProvider {
 }
 
 /** @stable */
+export declare class Version {
+    full: string;
+    major: string;
+    minor: string;
+    patch: string;
+    constructor(full: string);
+}
+
+/** @stable */
+export declare const VERSION: Version;
+
+/** @stable */
 export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */

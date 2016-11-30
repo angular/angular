@@ -227,6 +227,9 @@ export declare class URLSearchParams {
     toString(): string;
 }
 
+/** @stable */
+export declare const VERSION: Version;
+
 /** @experimental */
 export declare class XHRBackend implements ConnectionBackend {
     constructor(_browserXHR: BrowserXhr, _baseResponseOptions: ResponseOptions, _xsrfStrategy: XSRFStrategy);

@@ -7,3 +7,6 @@ export declare const platformServer: (extraProviders?: Provider[]) => PlatformRe
 /** @experimental */
 export declare class ServerModule {
 }
+
+/** @stable */
+export declare const VERSION: Version;

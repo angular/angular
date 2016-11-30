@@ -227,3 +227,6 @@ export declare class SlicePipe implements PipeTransform {
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
+
+/** @stable */
+export declare const VERSION: Version;
