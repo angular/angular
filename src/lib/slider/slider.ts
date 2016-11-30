@@ -7,12 +7,15 @@ import {
   Output,
   ViewEncapsulation,
   forwardRef,
-  EventEmitter
+  EventEmitter,
+  Optional
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdGestureConfig, coerceBooleanProperty, coerceNumberProperty} from '../core';
 import {Input as HammerInput} from 'hammerjs';
+import {Dir} from '../core/rtl/dir';
+import {CommonModule} from '@angular/common';
 import {
   PAGE_UP,
   PAGE_DOWN,
@@ -67,6 +70,7 @@ export class MdSliderChange {
     '[class.md-slider-active]': '_isActive',
     '[class.md-slider-disabled]': 'disabled',
     '[class.md-slider-has-ticks]': 'tickInterval',
+    '[class.md-slider-inverted]': 'invert',
     '[class.md-slider-sliding]': '_isSliding',
     '[class.md-slider-thumb-label-showing]': 'thumbLabel',
   },
@@ -189,25 +193,47 @@ export class MdSlider implements ControlValueAccessor {
     this._percent = this._calculatePercentage(this.value);
   }
 
-  get trackFillFlexBasis() {
-    return this.percent * 100 + '%';
+  /** Whether the slider is inverted. */
+  @Input()
+  get invert() { return this._invert; }
+  set invert(value: boolean) { this._invert = coerceBooleanProperty(value); }
+  private _invert = false;
+
+  /** CSS styles for the track fill element. */
+  get trackFillStyles(): { [key: string]: string } {
+    return {
+      'flexBasis': `${this.percent * 100}%`
+    };
   }
 
-  get ticksMarginLeft() {
-    return this.tickIntervalPercent / 2 * 100 + '%';
+  /** CSS styles for the ticks container element. */
+  get ticksContainerStyles(): { [key: string]: string } {
+    return {
+      'marginLeft': `${this.direction == 'rtl' ? '' : '-'}${this.tickIntervalPercent / 2 * 100}%`
+    };
   }
 
-  get ticksContainerMarginLeft() {
-    return '-' + this.ticksMarginLeft;
+  /** CSS styles for the ticks element. */
+  get ticksStyles() {
+    let styles: { [key: string]: string } = {
+      'backgroundSize': `${this.tickIntervalPercent * 100}% 2px`
+    };
+    if (this.direction == 'rtl') {
+      styles['marginRight'] = `-${this.tickIntervalPercent / 2 * 100}%`;
+    } else {
+      styles['marginLeft'] = `${this.tickIntervalPercent / 2 * 100}%`;
+    }
+    return styles;
   }
 
-  get ticksBackgroundSize() {
-    return this.tickIntervalPercent * 100 + '% 2px';
+  /** The language direction for this slider element. */
+  get direction() {
+    return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
   @Output() change = new EventEmitter<MdSliderChange>();
 
-  constructor(elementRef: ElementRef) {
+  constructor(@Optional() private _dir: Dir, elementRef: ElementRef) {
     this._renderer = new SliderRenderer(elementRef);
   }
 
@@ -283,13 +309,13 @@ export class MdSlider implements ControlValueAccessor {
         this.value = this.min;
         break;
       case LEFT_ARROW:
-        this._increment(-1);
+        this._increment(this._isLeftMin() ? -1 : 1);
         break;
       case UP_ARROW:
         this._increment(1);
         break;
       case RIGHT_ARROW:
-        this._increment(1);
+        this._increment(this._isLeftMin() ? 1 : -1);
         break;
       case DOWN_ARROW:
         this._increment(-1);
@@ -301,6 +327,11 @@ export class MdSlider implements ControlValueAccessor {
     }
 
     event.preventDefault();
+  }
+
+  /** Whether the left side of the slider is the minimum value. */
+  private _isLeftMin() {
+    return (this.direction == 'rtl') == this.invert;
   }
 
   /** Increments the slider by the given number of steps (negative number decrements). */
@@ -321,6 +352,9 @@ export class MdSlider implements ControlValueAccessor {
 
     // The exact value is calculated from the event and used to find the closest snap value.
     let percent = this._clamp((pos - offset) / size);
+    if (!this._isLeftMin()) {
+      percent = 1 - percent;
+    }
     let exactValue = this._calculateValue(percent);
 
     // This calculation finds the closest step by finding the closest whole number divisible by the
@@ -441,7 +475,7 @@ export class SliderRenderer {
 
 
 @NgModule({
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   exports: [MdSlider],
   declarations: [MdSlider],
   providers: [

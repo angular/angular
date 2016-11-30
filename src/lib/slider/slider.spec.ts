@@ -4,6 +4,7 @@ import {Component, DebugElement} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './slider';
 import {TestGestureConfig} from './test-gesture-config';
+import {RtlModule} from '../core/rtl/dir';
 import {
   UP_ARROW,
   RIGHT_ARROW,
@@ -11,7 +12,8 @@ import {
   PAGE_DOWN,
   PAGE_UP,
   END,
-  HOME, LEFT_ARROW
+  HOME,
+  LEFT_ARROW
 } from '../core/keyboard/keycodes';
 
 
@@ -20,7 +22,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule.forRoot(), ReactiveFormsModule],
+      imports: [MdSliderModule.forRoot(), RtlModule.forRoot(), ReactiveFormsModule],
       declarations: [
         StandardSlider,
         DisabledSlider,
@@ -35,6 +37,7 @@ describe('MdSlider', () => {
         SliderWithValueSmallerThanMin,
         SliderWithValueGreaterThanMax,
         SliderWithChangeHandler,
+        SliderWithDirAndInvert,
       ],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
@@ -838,6 +841,122 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(0);
     });
   });
+
+  describe('slider with direction and invert', () => {
+    let fixture: ComponentFixture<SliderWithDirAndInvert>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderTrackElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let testComponent: SliderWithDirAndInvert;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithDirAndInvert);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+    });
+
+    it('works in inverted mode', () => {
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.3);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(70);
+    });
+
+    it('works in RTL languages', () => {
+      testComponent.dir = 'rtl';
+      fixture.detectChanges();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.3);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(70);
+    });
+
+    it('works in RTL languages in inverted mode', () => {
+      testComponent.dir = 'rtl';
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.3);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(30);
+    });
+
+    it('should decrement inverted slider by 1 on right arrow pressed', () => {
+      testComponent.invert = true;
+      sliderInstance.value = 100;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should increment inverted slider by 1 on left arrow pressed', () => {
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+
+    it('should decrement RTL slider by 1 on right arrow pressed', () => {
+      testComponent.dir = 'rtl';
+      sliderInstance.value = 100;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should increment RTL slider by 1 on left arrow pressed', () => {
+      testComponent.dir = 'rtl';
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+
+    it('should increment inverted RTL slider by 1 on right arrow pressed', () => {
+      testComponent.dir = 'rtl';
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+
+    it('should decrement inverted RTL slider by 1 on left arrow pressed', () => {
+      testComponent.dir = 'rtl';
+      testComponent.invert = true;
+      sliderInstance.value = 100;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(99);
+    });
+  });
 });
 
 // Disable animations and make the slider an even 100px (+ 8px padding on either side)
@@ -932,6 +1051,15 @@ class SliderWithValueGreaterThanMax { }
 })
 class SliderWithChangeHandler {
   onChange() { }
+}
+
+@Component({
+  template: `<div [dir]="dir"><md-slider [invert]="invert"></md-slider></div>`,
+  styles: [styles],
+})
+class SliderWithDirAndInvert {
+  dir = 'ltr';
+  invert = false;
 }
 
 /**

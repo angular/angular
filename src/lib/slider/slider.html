@@ -1,8 +1,7 @@
 <div class="md-slider-track">
-  <div class="md-slider-track-fill" [style.flexBasis]="trackFillFlexBasis"></div>
-  <div class="md-slider-ticks-container" [style.marginLeft]="ticksContainerMarginLeft">
-    <div class="md-slider-ticks" [style.marginLeft]="ticksMarginLeft"
-         [style.backgroundSize]="ticksBackgroundSize"></div>
+  <div class="md-slider-track-fill" [ngStyle]="trackFillStyles"></div>
+  <div class="md-slider-ticks-container" [ngStyle]="ticksContainerStyles">
+    <div class="md-slider-ticks" [ngStyle]="ticksStyles"></div>
   </div>
   <div class="md-slider-thumb-container">
     <div class="md-slider-thumb"></div>

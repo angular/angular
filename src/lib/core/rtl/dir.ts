@@ -1,11 +1,11 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    Directive,
-    HostBinding,
-    Output,
-    Input,
-    EventEmitter
+  NgModule,
+  ModuleWithProviders,
+  Directive,
+  HostBinding,
+  Output,
+  Input,
+  EventEmitter
 } from '@angular/core';
 
 export type LayoutDirection = 'ltr' | 'rtl';
