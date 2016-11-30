@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteReuseStrategy, Router, RouterModule, RouterStateSnapshot, RoutesRecognized, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '../index';
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -2391,6 +2391,105 @@ describe('Integration', () => {
            ]);
          })));
     });
+  });
+
+  describe('Custom Route Reuse Strategy', () => {
+    class AttachDetachReuseStrategy implements RouteReuseStrategy {
+      stored: {[k: string]: DetachedRouteHandle} = {};
+
+      shouldDetach(route: ActivatedRouteSnapshot): boolean {
+        return route.routeConfig.path === 'a';
+      }
+
+      store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {
+        this.stored[route.routeConfig.path] = detachedTree;
+      }
+
+      shouldAttach(route: ActivatedRouteSnapshot): boolean {
+        return !!this.stored[route.routeConfig.path];
+      }
+
+      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
+        return this.stored[route.routeConfig.path];
+      }
+
+      shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+        return future.routeConfig === curr.routeConfig;
+      }
+    }
+
+    class ShortLifecycle implements RouteReuseStrategy {
+      shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
+      store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
+      shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
+      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null; }
+      shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+        if (future.routeConfig !== curr.routeConfig) {
+          return false;
+        } else if (Object.keys(future.params).length !== Object.keys(curr.params).length) {
+          return false;
+        } else {
+          return Object.keys(future.params).every(k => future.params[k] === curr.params[k]);
+        }
+      }
+    }
+
+    it('should support attaching & detaching fragments',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.routeReuseStrategy = new AttachDetachReuseStrategy();
+
+         router.resetConfig([
+           {path: 'a', component: TeamCmp, children: [{path: 'b', component: SimpleCmp}]},
+           {path: 'c', component: UserCmp}
+         ]);
+
+         router.navigateByUrl('/a/b');
+         advance(fixture);
+         const teamCmp = fixture.debugElement.children[1].componentInstance;
+         const simpleCmp = fixture.debugElement.children[1].children[1].componentInstance;
+         expect(location.path()).toEqual('/a/b');
+         expect(teamCmp).toBeDefined();
+         expect(simpleCmp).toBeDefined();
+
+         router.navigateByUrl('/c');
+         advance(fixture);
+         expect(location.path()).toEqual('/c');
+         expect(fixture.debugElement.children[1].componentInstance).toBeAnInstanceOf(UserCmp);
+
+         router.navigateByUrl('/a;p=1/b;p=2');
+         advance(fixture);
+         const teamCmp2 = fixture.debugElement.children[1].componentInstance;
+         const simpleCmp2 = fixture.debugElement.children[1].children[1].componentInstance;
+         expect(location.path()).toEqual('/a;p=1/b;p=2');
+         expect(teamCmp2).toBe(teamCmp);
+         expect(simpleCmp2).toBe(simpleCmp);
+
+         expect(teamCmp.route).toBe(router.routerState.root.firstChild);
+         expect(teamCmp.route.snapshot).toBe(router.routerState.snapshot.root.firstChild);
+         expect(teamCmp.route.snapshot.params).toEqual({p: '1'});
+         expect(teamCmp.route.firstChild.snapshot.params).toEqual({p: '2'});
+       })));
+
+    it('should support shorter lifecycles',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+         router.routeReuseStrategy = new ShortLifecycle();
+
+         router.resetConfig([{path: 'a', component: SimpleCmp}]);
+
+         router.navigateByUrl('/a');
+         advance(fixture);
+         const simpleCmp1 = fixture.debugElement.children[1].componentInstance;
+         expect(location.path()).toEqual('/a');
+
+         router.navigateByUrl('/a;p=1');
+         advance(fixture);
+         expect(location.path()).toEqual('/a;p=1');
+         const simpleCmp2 = fixture.debugElement.children[1].componentInstance;
+         expect(simpleCmp1).not.toBe(simpleCmp2);
+       })));
   });
 });
 

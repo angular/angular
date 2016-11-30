@@ -28,6 +28,7 @@ import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
 import {recognize} from './recognize';
+import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
@@ -287,6 +288,20 @@ type NavigationParams = {
   promise: Promise<boolean>
 };
 
+
+/**
+ * Does not detach any subtrees. Reuses routes as long as their route config is the same.
+ */
+export class DefaultRouteReuseStrategy implements RouteReuseStrategy {
+  shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
+  store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
+  shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null; }
+  shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+    return future.routeConfig === curr.routeConfig;
+  }
+}
+
 /**
  * @whatItDoes Provides the navigation and url manipulation capabilities.
  *
@@ -325,6 +340,8 @@ export class Router {
    * Extracts and merges URLs. Used for Angular 1 to Angular 2 migrations.
    */
   urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
+
+  routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
   /**
    * Creates the router service.
@@ -703,7 +720,8 @@ export class Router {
       const routerState$ =
           map.call(preactivationResolveData$, ({appliedUrl, snapshot, shouldActivate}: any) => {
             if (shouldActivate) {
-              const state = createRouterState(snapshot, this.currentRouterState);
+              const state =
+                  createRouterState(this.routeReuseStrategy, snapshot, this.currentRouterState);
               return {appliedUrl, state, shouldActivate};
             } else {
               return {appliedUrl, state: null, shouldActivate};
@@ -738,7 +756,8 @@ export class Router {
               }
             }
 
-            new ActivateRoutes(state, storedState).activate(this.outletMap);
+            new ActivateRoutes(this.routeReuseStrategy, state, storedState)
+                .activate(this.outletMap);
 
             navigationIsSuccessful = true;
           })
@@ -1007,7 +1026,9 @@ export class PreActivation {
 }
 
 class ActivateRoutes {
-  constructor(private futureState: RouterState, private currState: RouterState) {}
+  constructor(
+      private routeReuseStrategy: RouteReuseStrategy, private futureState: RouterState,
+      private currState: RouterState) {}
 
   activate(parentOutletMap: RouterOutletMap): void {
     const futureRoot = this.futureState._root;
@@ -1087,9 +1108,18 @@ class ActivateRoutes {
       if (future.component) {
         advanceActivatedRoute(future);
         const outlet = getOutlet(parentOutletMap, futureNode.value);
-        const outletMap = new RouterOutletMap();
-        this.placeComponentIntoOutlet(outletMap, future, outlet);
-        this.activateChildRoutes(futureNode, null, outletMap);
+
+        if (this.routeReuseStrategy.shouldAttach(future.snapshot)) {
+          const stored =
+              (<DetachedRouteHandleInternal>this.routeReuseStrategy.retrieve(future.snapshot));
+          this.routeReuseStrategy.store(future.snapshot, null);
+          outlet.attach(stored.componentRef, stored.route.value);
+          advanceActivatedRouteNodeAndItsChildren(stored.route);
+        } else {
+          const outletMap = new RouterOutletMap();
+          this.placeComponentIntoOutlet(outletMap, future, outlet);
+          this.activateChildRoutes(futureNode, null, outletMap);
+        }
 
         // if we have a componentless route, we recurse but keep the same outlet map.
       } else {
@@ -1125,6 +1155,22 @@ class ActivateRoutes {
 
   private deactiveRouteAndItsChildren(
       route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap): void {
+    if (this.routeReuseStrategy.shouldDetach(route.value.snapshot)) {
+      this.detachAndStoreRouteSubtree(route, parentOutletMap);
+    } else {
+      this.deactiveRouteAndOutlet(route, parentOutletMap);
+    }
+  }
+
+  private detachAndStoreRouteSubtree(
+      route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap): void {
+    const outlet = getOutlet(parentOutletMap, route.value);
+    const componentRef = outlet.detach();
+    this.routeReuseStrategy.store(route.value.snapshot, {componentRef, route});
+  }
+
+  private deactiveRouteAndOutlet(route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap):
+      void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
     let outlet: RouterOutlet = null;
 
@@ -1149,6 +1195,11 @@ class ActivateRoutes {
       outlet.deactivate();
     }
   }
+}
+
+function advanceActivatedRouteNodeAndItsChildren(node: TreeNode<ActivatedRoute>): void {
+  advanceActivatedRoute(node.value);
+  node.children.forEach(advanceActivatedRouteNodeAndItsChildren);
 }
 
 function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig {

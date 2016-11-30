@@ -66,6 +66,9 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
+/** @experimental */
+export declare type DetachedRouteHandle = {};
+
 /** @stable */
 export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized;
 
@@ -201,6 +204,7 @@ export declare class Router {
     errorHandler: ErrorHandler;
     events: Observable<Event>;
     navigated: boolean;
+    routeReuseStrategy: RouteReuseStrategy;
     routerState: RouterState;
     url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
@@ -223,6 +227,15 @@ export declare const ROUTER_CONFIGURATION: OpaqueToken;
 
 /** @experimental */
 export declare const ROUTER_INITIALIZER: OpaqueToken;
+
+/** @experimental */
+export declare abstract class RouteReuseStrategy {
+    abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle;
+    abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
+    abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
+    abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void;
+}
 
 /** @stable */
 export declare class RouterLink {
@@ -298,7 +311,9 @@ export declare class RouterOutlet implements OnDestroy {
     outletMap: RouterOutletMap;
     constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
     activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
+    attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     deactivate(): void;
+    detach(): ComponentRef<any>;
     ngOnDestroy(): void;
 }
 
