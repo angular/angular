@@ -126,7 +126,7 @@ export class CompileMetadataResolver {
     return null;
   }
 
-  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): Promise<any> {
+  private _loadDirectiveMetadata(directiveType: any, isSync: boolean): () => Promise<any> {
     if (this._directiveCache.has(directiveType)) {
       return;
     }
@@ -176,7 +176,7 @@ export class CompileMetadataResolver {
         if (isSync) {
           throw new ComponentStillLoadingError(directiveType);
         }
-        return templateMeta.asyncResult.then(createDirectiveMetadata);
+        return () => templateMeta.asyncResult.then(createDirectiveMetadata);
       }
     } else {
       // directive
@@ -423,8 +423,10 @@ export class CompileMetadataResolver {
           transitiveModule.directives.push(declaredIdentifier);
           declaredDirectives.push(declaredIdentifier);
           this._addTypeToModule(declaredType, moduleType);
-          transitiveModule.directiveLoaders.push(
-              () => this._loadDirectiveMetadata(declaredType, isSync));
+          const loader = this._loadDirectiveMetadata(declaredType, isSync);
+          if (loader) {
+            transitiveModule.directiveLoaders.push(loader);
+          }
         } else if (this._pipeResolver.isPipe(declaredType)) {
           transitiveModule.pipesSet.add(declaredType);
           transitiveModule.pipes.push(declaredIdentifier);
