@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialog, MdDialogRef} from '@angular/material';
+import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -10,11 +10,22 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 export class DialogDemo {
   dialogRef: MdDialogRef<JazzDialog>;
   lastCloseResult: string;
+  config: MdDialogConfig = {
+    disableClose: false,
+    width: '',
+    height: '',
+    position: {
+      top: '',
+      bottom: '',
+      left: '',
+      right: ''
+    }
+  };
 
   constructor(public dialog: MdDialog) { }
 
   open() {
-    this.dialogRef = this.dialog.open(JazzDialog);
+    this.dialogRef = this.dialog.open(JazzDialog, this.config);
 
     this.dialogRef.afterClosed().subscribe(result => {
       this.lastCloseResult = result;

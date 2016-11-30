@@ -12,8 +12,11 @@ MdDialog is a service, which opens dialogs components in the view.
 
 | Key |  Description |
 | --- | --- |
-| `role: DialogRole = 'dialog'` | The ARIA role of the dialog element. Possible values are `dialog` and `alertdialog`. Defaults to `dialog`. |
-| `disableClose: boolean = false` | Whether to prevent the user from closing a dialog by clicking on the backdrop or pressing escape. Defaults to `false`. |
+| `role: DialogRole = 'dialog'` | The ARIA role of the dialog element. Possible values are `dialog` and `alertdialog`. Optional. |
+| `disableClose: boolean = false` | Whether to prevent the user from closing a dialog by clicking on the backdrop or pressing escape. Optional. |
+| `width: string = ''` | Width of the dialog. Takes any valid CSS value. Optional. |
+| `height: string = ''` | Height of the dialog. Takes any valid CSS value. Optional. |
+| `position: { top?: string, bottom?: string, left?: string, right?: string }` | Position of the dialog that overrides the default centering in it's axis. Optional. |
 | `viewContainerRef: ViewContainerRef` | The view container ref to attach the dialog to. Optional. |
 
 ## MdDialogRef

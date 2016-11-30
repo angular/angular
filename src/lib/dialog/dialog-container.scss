@@ -8,7 +8,12 @@ md-dialog-container {
   @include md-elevation(24);
 
   display: block;
-  overflow: hidden;
   padding: $md-dialog-padding;
   border-radius: $md-dialog-border-radius;
+  box-sizing: border-box;
+  overflow: auto;
+
+  // The dialog container should completely fill its parent overlay element.
+  width: 100%;
+  height: 100%;
 }

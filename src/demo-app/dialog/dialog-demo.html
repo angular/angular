@@ -1,7 +1,32 @@
 <h1>Dialog demo</h1>
 
-<button (click)="open()" [disabled]="dialogRef">Open dialog</button>
+<button md-raised-button color="primary" (click)="open()" [disabled]="dialogRef">Open dialog</button>
 
-<p>
-  Last close result: {{lastCloseResult}}
-</p>
+<md-card class="demo-dialog-card">
+  <md-card-content>
+    <h2>Dialog dimensions</h2>
+
+    <p>
+      <md-input [(ngModel)]="config.width" placeholder="Width"></md-input>
+      <md-input [(ngModel)]="config.height" placeholder="Height"></md-input>
+    </p>
+
+    <h2>Dialog position</h2>
+
+    <p>
+      <md-input [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top"></md-input>
+      <md-input [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom"></md-input>
+    </p>
+
+    <p>
+      <md-input [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left"></md-input>
+      <md-input [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right"></md-input>
+    </p>
+
+    <h2>Other options</h2>
+
+    <md-checkbox [(ngModel)]="config.disableClose">Disable close</md-checkbox>
+  </md-card-content>
+</md-card>
+
+<p>Last close result: {{lastCloseResult}}</p>

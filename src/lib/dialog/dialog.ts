@@ -22,8 +22,6 @@ export {MdDialogRef} from './dialog-ref';
 
 // TODO(jelbourn): add support for opening with a TemplateRef
 // TODO(jelbourn): add `closeAll` method
-// TODO(jelbourn): default dialog config
-// TODO(jelbourn): escape key closes dialog
 // TODO(jelbourn): dialog content directives (e.g., md-dialog-header)
 // TODO(jelbourn): animations
 
@@ -119,12 +117,25 @@ export class MdDialog {
    */
   private _getOverlayState(dialogConfig: MdDialogConfig): OverlayState {
     let state = new OverlayState();
+    let strategy = this._overlay.position().global();
+    let position = dialogConfig.position;
 
     state.hasBackdrop = true;
-    state.positionStrategy = this._overlay.position()
-        .global()
-        .centerHorizontally()
-        .centerVertically();
+    state.positionStrategy = strategy;
+
+    if (position && (position.left || position.right)) {
+      position.left ? strategy.left(position.left) : strategy.right(position.right);
+    } else {
+      strategy.centerHorizontally();
+    }
+
+    if (position && (position.top || position.bottom)) {
+      position.top ? strategy.top(position.top) : strategy.bottom(position.bottom);
+    } else {
+      strategy.centerVertically();
+    }
+
+    strategy.width(dialogConfig.width).height(dialogConfig.height);
 
     return state;
   }

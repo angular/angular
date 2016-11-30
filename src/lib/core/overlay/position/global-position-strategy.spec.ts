@@ -100,6 +100,40 @@ describe('GlobalPositonStrategy', () => {
 
     expect(element.style.position).toBe('fixed');
   }));
+
+  it('should set the element width', fakeAsync(() => {
+    strategy.width('100px').apply(element);
+
+    flushMicrotasks();
+
+    expect(element.style.width).toBe('100px');
+  }));
+
+  it('should set the element height', fakeAsync(() => {
+    strategy.height('100px').apply(element);
+
+    flushMicrotasks();
+
+    expect(element.style.height).toBe('100px');
+  }));
+
+  it('should reset the horizontal position and offset when the width is 100%', fakeAsync(() => {
+    strategy.centerHorizontally().width('100%').apply(element);
+
+    flushMicrotasks();
+
+    expect(element.style.left).toBe('0px');
+    expect(element.style.transform).toBe('');
+  }));
+
+  it('should reset the vertical position and offset when the height is 100%', fakeAsync(() => {
+    strategy.centerVertically().height('100%').apply(element);
+
+    flushMicrotasks();
+
+    expect(element.style.top).toBe('0px');
+    expect(element.style.transform).toBe('');
+  }));
 });
 
 function fakeAsyncTest(fn: () => void) {
