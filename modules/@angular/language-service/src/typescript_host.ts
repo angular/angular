@@ -11,6 +11,9 @@ import {NgAnalyzedModules, analyzeNgModules, extractProgramSymbols} from '@angul
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler/src/ml_parser/interpolation_config';
+import {ParseTreeResult, Parser} from '@angular/compiler/src/ml_parser/parser';
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
@@ -37,6 +40,29 @@ export function createLanguageServiceFromTypescript(
   const ngServer = createLanguageService(ngHost);
   ngHost.setSite(ngServer);
   return ngServer;
+}
+
+/**
+ * The language service never needs the normalized versions of the metadata. To avoid parsing
+ * the content and resolving references, return an empty file. This also allows normalizing
+ * template that are syntatically incorrect which is required to provide completions in
+ * syntatically incorrect templates.
+ */
+export class DummyHtmlParser extends HtmlParser {
+  constructor() { super(); }
+
+  parse(
+      source: string, url: string, parseExpansionForms: boolean = false,
+      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
+    return new ParseTreeResult([], []);
+  }
+}
+
+/**
+ * Avoid loading resources in the language servcie by using a dummy loader.
+ */
+export class DummyResourceLoader extends ResourceLoader {
+  get(url: string): Promise<string> { return Promise.resolve(''); }
 }
 
 /**
@@ -82,8 +108,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const directiveResolver = new DirectiveResolver(this.reflector);
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
-      const resourceLoader = new ResourceLoader();
+      const resourceLoader = new DummyResourceLoader();
       const urlResolver = createOfflineCompileUrlResolver();
+      const htmlParser = new DummyHtmlParser();
       // This tracks the CompileConfig in codegen.ts. Currently these options
       // are hard-coded except for genDebugInfo which is not applicable as we
       // never generate code.
@@ -94,7 +121,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         useJit: false
       });
       const directiveNormalizer =
-          new DirectiveNormalizer(resourceLoader, urlResolver, null, config);
+          new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
       result = this._resolver = new CompileMetadataResolver(
           moduleResolver, directiveResolver, pipeResolver, elementSchemaRegistry,
