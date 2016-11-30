@@ -25,6 +25,13 @@ export class MdDuplicatedSidenavError extends MdError {
   }
 }
 
+
+/** Sidenav toggle promise result. */
+export class MdSidenavToggleResult {
+  constructor(public type: 'open' | 'close', public animationFinished: boolean) {}
+}
+
+
 /**
  * <md-sidenav> component.
  *
@@ -106,6 +113,15 @@ export class MdSidenav implements AfterContentInit {
   /** Event emitted when the sidenav alignment changes. */
   @Output('align-changed') onAlignChanged = new EventEmitter<void>();
 
+  /** The current toggle animation promise. `null` if no animation is in progress. */
+  private _toggleAnimationPromise: Promise<MdSidenavToggleResult> = null;
+
+  /**
+   * The current toggle animation promise resolution function.
+   * `null` if no animation is in progress.
+   */
+  private _resolveToggleAnimationPromise: (animationFinished: boolean) => void = null;
+
   /**
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
    *     If not available we do not hook on transitions.
@@ -115,9 +131,9 @@ export class MdSidenav implements AfterContentInit {
   ngAfterContentInit() {
     // This can happen when the sidenav is set to opened in the template and the transition
     // isn't ended.
-    if (this._openPromise) {
-      this._openPromiseResolve();
-      this._openPromise = null;
+    if (this._toggleAnimationPromise) {
+      this._resolveToggleAnimationPromise(true);
+      this._toggleAnimationPromise = this._resolveToggleAnimationPromise = null;
     }
   }
 
@@ -134,7 +150,7 @@ export class MdSidenav implements AfterContentInit {
 
   /** Open this sidenav, and return a Promise that will resolve when it's fully opened (or get
    * rejected if it didn't). */
-  open(): Promise<void> {
+  open(): Promise<MdSidenavToggleResult> {
     return this.toggle(true);
   }
 
@@ -142,7 +158,7 @@ export class MdSidenav implements AfterContentInit {
    * Close this sidenav, and return a Promise that will resolve when it's fully closed (or get
    * rejected if it didn't).
    */
-  close(): Promise<void> {
+  close(): Promise<MdSidenavToggleResult> {
     return this.toggle(false);
   }
 
@@ -151,20 +167,18 @@ export class MdSidenav implements AfterContentInit {
    * close() when it's closed.
    * @param isOpen
    */
-  toggle(isOpen: boolean = !this.opened): Promise<void> {
-    if (!this.valid) { return Promise.resolve(null); }
+  toggle(isOpen: boolean = !this.opened): Promise<MdSidenavToggleResult> {
+    if (!this.valid) {
+      return Promise.resolve(new MdSidenavToggleResult(isOpen ? 'open' : 'close', true));
+    }
 
     // Shortcut it if we're already opened.
     if (isOpen === this.opened) {
-      if (!this._transition) {
-        return Promise.resolve(null);
-      } else {
-        return isOpen ? this._openPromise : this._closePromise;
-      }
+      return this._toggleAnimationPromise ||
+          Promise.resolve(new MdSidenavToggleResult(isOpen ? 'open' : 'close', true));
     }
 
     this._opened = isOpen;
-    this._transition = true;
 
     if (isOpen) {
       this.onOpenStart.emit();
@@ -172,25 +186,15 @@ export class MdSidenav implements AfterContentInit {
       this.onCloseStart.emit();
     }
 
-    if (isOpen) {
-      if (this._openPromise == null) {
-        this._openPromise = new Promise<void>((resolve, reject) => {
-          this._openPromiseResolve = resolve;
-          this._openPromiseReject = reject;
-        });
-      }
-      return this._openPromise;
-    } else {
-      if (this._closePromise == null) {
-        this._closePromise = new Promise<void>((resolve, reject) => {
-          this._closePromiseResolve = resolve;
-          this._closePromiseReject = reject;
-        });
-      }
-      return this._closePromise;
+    if (this._toggleAnimationPromise) {
+      this._resolveToggleAnimationPromise(false);
     }
+    this._toggleAnimationPromise = new Promise<MdSidenavToggleResult>(resolve => {
+      this._resolveToggleAnimationPromise = animationFinished =>
+          resolve(new MdSidenavToggleResult(isOpen ? 'open' : 'close', animationFinished));
+    });
+    return this._toggleAnimationPromise;
   }
-
 
   /**
    * When transition has finished, set the internal state for classes and emit the proper event.
@@ -201,43 +205,30 @@ export class MdSidenav implements AfterContentInit {
     if (transitionEvent.target == this._elementRef.nativeElement
         // Simpler version to check for prefixes.
         && transitionEvent.propertyName.endsWith('transform')) {
-      this._transition = false;
       if (this._opened) {
-        if (this._openPromise != null) {
-          this._openPromiseResolve();
-        }
-        if (this._closePromise != null) {
-          this._closePromiseReject();
-        }
-
         this.onOpen.emit();
       } else {
-        if (this._closePromise != null) {
-          this._closePromiseResolve();
-        }
-        if (this._openPromise != null) {
-          this._openPromiseReject();
-        }
-
         this.onClose.emit();
       }
 
-      this._openPromise = null;
-      this._closePromise = null;
+      if (this._toggleAnimationPromise) {
+        this._resolveToggleAnimationPromise(true);
+        this._toggleAnimationPromise = this._resolveToggleAnimationPromise = null;
+      }
     }
   }
 
   get _isClosing() {
-    return !this._opened && this._transition;
+    return !this._opened && !!this._toggleAnimationPromise;
   }
   get _isOpening() {
-    return this._opened && this._transition;
+    return this._opened && !!this._toggleAnimationPromise;
   }
   get _isClosed() {
-    return !this._opened && !this._transition;
+    return !this._opened && !this._toggleAnimationPromise;
   }
   get _isOpened() {
-    return this._opened && !this._transition;
+    return this._opened && !this._toggleAnimationPromise;
   }
   get _isEnd() {
     return this.align == 'end';
@@ -258,14 +249,6 @@ export class MdSidenav implements AfterContentInit {
     }
     return 0;
   }
-
-  private _transition: boolean = false;
-  private _openPromise: Promise<void>;
-  private _openPromiseResolve: () => void;
-  private _openPromiseReject: () => void;
-  private _closePromise: Promise<void>;
-  private _closePromiseResolve: () => void;
-  private _closePromiseReject: () => void;
 }
 
 /**

@@ -1,7 +1,7 @@
 import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdSidenav, MdSidenavModule} from './sidenav';
+import {MdSidenav, MdSidenavModule, MdSidenavToggleResult} from './sidenav';
 
 
 function endSidenavTransition(fixture: ComponentFixture<any>) {
@@ -129,27 +129,25 @@ describe('MdSidenav', () => {
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
 
-      let openCalled = false;
-      let openCancelled = false;
-      let closeCalled = false;
+      let openResult: MdSidenavToggleResult;
+      let closeResult: MdSidenavToggleResult;
 
-      sidenav.open().then(() => {
-        openCalled = true;
-      }, () => {
-        openCancelled = true;
+      sidenav.open().then((result) => {
+        openResult = result;
       });
 
       // We do not call transition end, close directly.
-      sidenav.close().then(() => {
-        closeCalled = true;
+      sidenav.close().then((result) => {
+        closeResult = result;
       });
 
       endSidenavTransition(fixture);
       tick();
 
-      expect(openCalled).toBe(false);
-      expect(openCancelled).toBe(true);
-      expect(closeCalled).toBe(true);
+      expect(openResult.type).toBe('open');
+      expect(openResult.animationFinished).toBe(false);
+      expect(closeResult.type).toBe('close');
+      expect(closeResult.animationFinished).toBe(true);
       tick();
     }));
 
@@ -158,9 +156,8 @@ describe('MdSidenav', () => {
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
 
-      let closeCalled = false;
-      let closeCancelled = false;
-      let openCalled = false;
+      let closeResult: MdSidenavToggleResult;
+      let openResult: MdSidenavToggleResult;
 
       // First, open the sidenav completely.
       sidenav.open();
@@ -168,22 +165,21 @@ describe('MdSidenav', () => {
       tick();
 
       // Then close and check behavior.
-      sidenav.close().then(() => {
-        closeCalled = true;
-      }, () => {
-        closeCancelled = true;
+      sidenav.close().then((result) => {
+        closeResult = result;
       });
       // We do not call transition end, open directly.
-      sidenav.open().then(() => {
-        openCalled = true;
+      sidenav.open().then((result) => {
+        openResult = result;
       });
 
       endSidenavTransition(fixture);
       tick();
 
-      expect(closeCalled).toBe(false);
-      expect(closeCancelled).toBe(true);
-      expect(openCalled).toBe(true);
+      expect(closeResult.type).toBe('close');
+      expect(closeResult.animationFinished).toBe(false);
+      expect(openResult.type).toBe('open');
+      expect(openResult.animationFinished).toBe(true);
       tick();
     }));
 
@@ -219,7 +215,7 @@ describe('MdSidenav', () => {
       expect(sidenavEl.classList).not.toContain('md-sidenav-closed');
       expect(sidenavEl.classList).toContain('md-sidenav-opened');
 
-      expect((testComponent as any)._openPromise).toBeNull();
+      expect((testComponent as any)._toggleAnimationPromise).toBeNull();
     });
 
     it('should remove align attr from DOM', () => {
