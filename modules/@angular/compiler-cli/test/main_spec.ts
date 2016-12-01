@@ -64,7 +64,9 @@ describe('compiler-cli', () => {
 
     main({p: basePath}, mockConsole.error)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalledWith(`Error File '` + path.join(basePath, 'test.ts') + `' not found.`);
+          expect(mockConsole.error)
+              .toHaveBeenCalledWith(
+                  `Error File '` + path.join(basePath, 'test.ts') + `' not found.`);
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();
@@ -81,7 +83,9 @@ describe('compiler-cli', () => {
 
     main({p: basePath}, mockConsole.error)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalledWith('Error at ' + path.join(basePath, 'test.ts') + `:1:1: Cannot find name 'foo'.`);
+          expect(mockConsole.error)
+              .toHaveBeenCalledWith(
+                  'Error at ' + path.join(basePath, 'test.ts') + `:1:1: Cannot find name 'foo'.`);
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();
@@ -90,7 +94,7 @@ describe('compiler-cli', () => {
   });
 
   it('should not print the stack trace if cannot find the imported module', (done) => {
-    write('test.ts', "import {MyClass} from './not-exist-deps';");
+    write('test.ts', `import {MyClass} from './not-exist-deps';`);
 
     const mockConsole = {error: (s: string) => {}};
 
@@ -98,7 +102,10 @@ describe('compiler-cli', () => {
 
     main({p: basePath}, mockConsole.error)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalledWith('Error at ' + path.join(basePath, 'test.ts') + `:1:23: Cannot find module './not-exist-deps'.`);
+          expect(mockConsole.error)
+              .toHaveBeenCalledWith(
+                  'Error at ' + path.join(basePath, 'test.ts') +
+                  `:1:23: Cannot find module './not-exist-deps'.`);
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();
@@ -108,7 +115,7 @@ describe('compiler-cli', () => {
 
   it('should not print the stack trace if cannot import', (done) => {
     write('empty-deps.ts', 'export const A = 1;');
-    write('test.ts', "import {MyClass} from './empty-deps';");
+    write('test.ts', `import {MyClass} from './empty-deps';`);
 
     const mockConsole = {error: (s: string) => {}};
 
@@ -116,7 +123,10 @@ describe('compiler-cli', () => {
 
     main({p: basePath}, mockConsole.error)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalledWith('Error at ' + path.join(basePath, 'test.ts') + `:1:9: Module '"` + path.join(basePath, 'empty-deps') + `"' has no exported member 'MyClass'.`);
+          expect(mockConsole.error)
+              .toHaveBeenCalledWith(
+                  'Error at ' + path.join(basePath, 'test.ts') + `:1:9: Module '"` +
+                  path.join(basePath, 'empty-deps') + `"' has no exported member 'MyClass'.`);
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();
@@ -137,7 +147,10 @@ describe('compiler-cli', () => {
 
     main({p: basePath}, mockConsole.error)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalledWith('Error at ' + path.join(basePath, 'test.ts') + ':3:7: Cannot invoke an expression whose type lacks a call signature.');
+          expect(mockConsole.error)
+              .toHaveBeenCalledWith(
+                  'Error at ' + path.join(basePath, 'test.ts') +
+                  ':3:7: Cannot invoke an expression whose type lacks a call signature.');
           expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
           expect(exitCode).toEqual(1);
           done();
