@@ -7,12 +7,9 @@
  */
 
 import {LOCALE_ID} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing/matchers';
+import {TestBed, inject} from '@angular/core/testing';
 
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../src/localization';
-
 
 export function main() {
   describe('l10n', () => {
@@ -140,6 +137,23 @@ export function main() {
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
         expect(getPluralCategory(5, ['one', 'other', '=5'], l10n)).toEqual('=5');
         expect(getPluralCategory(6, ['one', 'other', '=5'], l10n)).toEqual('other');
+      });
+
+      it('should fallback to other when the case is not present', () => {
+        const l10n = new NgLocaleLocalization('ro');
+        expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
+        // 2 -> 'few'
+        expect(getPluralCategory(2, ['one', 'other'], l10n)).toEqual('other');
+      });
+
+      describe('errors', () => {
+        it('should report an error when the "other" category is not present', () => {
+          expect(() => {
+            const l10n = new NgLocaleLocalization('ro');
+            // 2 -> 'few'
+            getPluralCategory(2, ['one'], l10n);
+          }).toThrowError('No plural message found for value "2"');
+        });
       });
     });
   });
