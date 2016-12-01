@@ -17,30 +17,25 @@ const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
 const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
 
-export interface CompilerHostContext {
-  fileExists(fileName: string): boolean;
-  directoryExists(directoryName: string): boolean;
-  readFile(fileName: string): string;
+export interface CompilerHostContext extends ts.ModuleResolutionHost {
   readResource(fileName: string): Promise<string>;
   assumeFileExists(fileName: string): void;
 }
 
 export class CompilerHost implements AotCompilerHost {
   protected metadataCollector = new MetadataCollector();
-  protected context: CompilerHostContext;
   private isGenDirChildOfRootDir: boolean;
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
 
   constructor(
-      protected program: ts.Program, protected compilerHost: ts.CompilerHost,
-      protected options: AngularCompilerOptions, context?: CompilerHostContext) {
+      protected program: ts.Program, protected options: AngularCompilerOptions,
+      protected context: CompilerHostContext) {
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
-    this.context = context || new NodeCompilerHostContext(compilerHost);
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
   }
@@ -81,7 +76,7 @@ export class CompilerHost implements AotCompilerHost {
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
-    if (!this.compilerHost.fileExists(importedFile)) {
+    if (!this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
     }
 
@@ -181,8 +176,8 @@ export class CompilerHost implements AotCompilerHost {
       const metadatas = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find(m => m['version'] === 1);
-      let v2Metadata = metadatas.find(m => m['version'] === 2);
+      const v1Metadata = metadatas.find((m: any) => m['version'] === 1);
+      let v2Metadata = metadatas.find((m: any) => m['version'] === 2);
       if (!v2Metadata && v1Metadata) {
         // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
         // as the only difference between the versions is whether all exports are contained in
@@ -216,13 +211,42 @@ export class CompilerHost implements AotCompilerHost {
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
 }
 
-export class NodeCompilerHostContext implements CompilerHostContext {
-  constructor(private host: ts.CompilerHost) {}
+export class CompilerHostContextAdapter {
+  protected assumedExists: {[fileName: string]: boolean} = {};
 
-  private assumedExists: {[fileName: string]: boolean} = {};
+  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
+}
+
+export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter implements
+    CompilerHostContext {
+  public directoryExists: ((directoryName: string) => boolean)|undefined;
+
+  constructor(private host: ts.ModuleResolutionHost) {
+    super();
+    if (host.directoryExists) {
+      this.directoryExists = (directoryName: string) => host.directoryExists(directoryName);
+    }
+  }
 
   fileExists(fileName: string): boolean {
     return this.assumedExists[fileName] || this.host.fileExists(fileName);
+  }
+
+  readFile(fileName: string): string { return this.host.readFile(fileName); }
+
+  readResource(s: string) {
+    if (!this.host.fileExists(s)) {
+      // TODO: We should really have a test for error cases like this!
+      throw new Error(`Compilation failed. Resource file not found: ${s}`);
+    }
+    return Promise.resolve(this.host.readFile(s));
+  }
+}
+
+export class NodeCompilerHostContext extends CompilerHostContextAdapter implements
+    CompilerHostContext {
+  fileExists(fileName: string): boolean {
+    return this.assumedExists[fileName] || fs.existsSync(fileName);
   }
 
   directoryExists(directoryName: string): boolean {
@@ -236,12 +260,10 @@ export class NodeCompilerHostContext implements CompilerHostContext {
   readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
 
   readResource(s: string) {
-    if (!this.host.fileExists(s)) {
+    if (!this.fileExists(s)) {
       // TODO: We should really have a test for error cases like this!
       throw new Error(`Compilation failed. Resource file not found: ${s}`);
     }
-    return Promise.resolve(this.host.readFile(s));
+    return Promise.resolve(this.readFile(s));
   }
-
-  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }

@@ -14,14 +14,13 @@ import {Directory, Entry, MockAotContext, MockCompilerHost} from './mocks';
 
 describe('CompilerHost', () => {
   let context: MockAotContext;
-  let host: ts.CompilerHost;
   let program: ts.Program;
   let hostNestedGenDir: CompilerHost;
   let hostSiblingGenDir: CompilerHost;
 
   beforeEach(() => {
     context = new MockAotContext('/tmp/src', clone(FILES));
-    host = new MockCompilerHost(context);
+    const host = new MockCompilerHost(context);
     program = ts.createProgram(
         ['main.ts'], {
           module: ts.ModuleKind.CommonJS,
@@ -33,7 +32,7 @@ describe('CompilerHost', () => {
       throw new Error('Expected no errors');
     }
     hostNestedGenDir = new CompilerHost(
-        program, host, {
+        program, {
           genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
           skipMetadataEmit: false,
@@ -43,7 +42,7 @@ describe('CompilerHost', () => {
         },
         context);
     hostSiblingGenDir = new CompilerHost(
-        program, host, {
+        program, {
           genDir: '/tmp/project/gen',
           basePath: '/tmp/project/src/',
           skipMetadataEmit: false,
