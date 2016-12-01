@@ -46,6 +46,20 @@ Add HammerJS to your application via [npm](https://www.npmjs.com/package/hammerj
 (such as the [Google CDN](https://developers.google.com/speed/libraries/#hammerjs)), or served 
 directly from your app.
 
+#### If you want to include HammerJS from npm, you can install it:
+
+```bash
+npm install --save hammerjs 
+npm install --save-dev @types/hammerjs
+```
+
+Import HammerJS on your app's module.
+
+**src/app/app.module.ts**
+```ts
+import 'hammerjs';
+```
+
 ## Configuring SystemJS
 If your project is using SystemJS for module loading, you will need to add `@angular/material` 
 to the SystemJS configuration:
