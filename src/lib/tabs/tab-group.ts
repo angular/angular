@@ -1,40 +1,25 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    ContentChild,
-    ViewChild,
-    Component,
-    Input,
-    Output,
-    ViewChildren,
-    NgZone,
-    EventEmitter,
-    QueryList,
-    ContentChildren,
-    TemplateRef,
-    ViewContainerRef,
-    OnInit,
-    trigger,
-    state,
-    style,
-    animate,
-    transition,
-    AnimationTransitionEvent,
-    ElementRef,
-    Renderer,
-    Optional,
+  NgModule,
+  ModuleWithProviders,
+  ViewChild,
+  Component,
+  Input,
+  Output,
+  ViewChildren,
+  NgZone,
+  EventEmitter,
+  QueryList,
+  ContentChildren,
+  ElementRef,
+  Renderer
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
-    PortalModule,
-    TemplatePortal,
-    RIGHT_ARROW,
-    LEFT_ARROW,
-    ENTER,
-    coerceBooleanProperty,
-    PortalHostDirective,
-    Dir,
-    LayoutDirection
+  PortalModule,
+  RIGHT_ARROW,
+  LEFT_ARROW,
+  ENTER,
+  coerceBooleanProperty
 } from '../core';
 import {MdTabLabel} from './tab-label';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
@@ -43,46 +28,17 @@ import {MdInkBar} from './ink-bar';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import {MdRippleModule} from '../core/ripple/ripple';
+import {MdTab} from './tab';
+import {MdTabBody} from './tab-body';
 
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
+
 /** A simple change event emitted on focus or selection changes. */
 export class MdTabChangeEvent {
   index: number;
   tab: MdTab;
-}
-
-@Component({
-  moduleId: module.id,
-  selector: 'md-tab',
-  templateUrl: 'tab.html',
-})
-export class MdTab implements OnInit {
-  /** Content for the tab label given by <template md-tab-label>. */
-  @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
-
-  /** Template inside the MdTab view that contains an <ng-content>. */
-  @ViewChild(TemplateRef) _content: TemplateRef<any>;
-
-  /** The plain text label for the tab, used when there is no template label. */
-  @Input('label') textLabel: string = '';
-
-  private _contentPortal: TemplatePortal = null;
-
-  constructor(private _viewContainerRef: ViewContainerRef) { }
-
-  ngOnInit() {
-    this._contentPortal = new TemplatePortal(this._content, this._viewContainerRef);
-  }
-
-  private _disabled = false;
-  @Input() set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
-  get disabled(): boolean { return this._disabled; }
-
-  get content(): TemplatePortal {
-    return this._contentPortal;
-  }
 }
 
 /**
@@ -94,20 +50,23 @@ export class MdTab implements OnInit {
   moduleId: module.id,
   selector: 'md-tab-group',
   templateUrl: 'tab-group.html',
-  styleUrls: ['tab-group.css']
+  styleUrls: ['tab-group.css'],
 })
 export class MdTabGroup {
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
   @ViewChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
-  @ViewChildren(MdInkBar) _inkBar: QueryList<MdInkBar>;
-
+  @ViewChild(MdInkBar) _inkBar: MdInkBar;
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
 
+  /** Whether this component has been initialized. */
   private _isInitialized: boolean = false;
 
+  /** The tab index that should be selected after the content has been checked. */
+  private _indexToSelect = 0;
+
   /** Snapshot of the height of the tab body wrapper before another tab is activated. */
-  private _tabBodyWrapperHeight: number = 0;
+  private _tabBodyWrapperHeight: number = null;
 
   /** Whether the tab group should grow to the size of the active tab */
   private _dynamicHeight: boolean = false;
@@ -116,16 +75,9 @@ export class MdTabGroup {
   }
 
   /** The index of the active tab. */
-  private _selectedIndex: number = 0;
+  private _selectedIndex: number = null;
   @Input() set selectedIndex(value: number) {
-    this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
-    if (value != this._selectedIndex && this.isValidIndex(value)) {
-      this._selectedIndex = value;
-
-      if (this._isInitialized) {
-        this._onSelectChange.emit(this._createChangeEvent(value));
-      }
-    }
+    this._indexToSelect = value;
   }
   get selectedIndex(): number {
     return this._selectedIndex;
@@ -141,7 +93,8 @@ export class MdTabGroup {
     return this._onFocusChange.asObservable();
   }
 
-  private _onSelectChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
+  private _onSelectChange: EventEmitter<MdTabChangeEvent> =
+      new EventEmitter<MdTabChangeEvent>(true);
   @Output() get selectChange(): Observable<MdTabChangeEvent> {
     return this._onSelectChange.asObservable();
   }
@@ -151,6 +104,37 @@ export class MdTabGroup {
 
   constructor(private _zone: NgZone, private _renderer: Renderer) {
     this._groupId = nextId++;
+  }
+
+  /**
+   * After the content is checked, this component knows what tabs have been defined
+   * and what the selected index should be. This is where we can know exactly what position
+   * each tab should be in according to the new selected index, and additionally we know how
+   * a new selected tab should transition in (from the left or right).
+   */
+  ngAfterContentChecked(): void {
+    // Clamp the next selected index to the bounds of 0 and the tabs length.
+    this._indexToSelect =
+        Math.min(this._tabs.length - 1, Math.max(this._indexToSelect, 0));
+
+    // If there is a change in selected index, emit a change event. Should not trigger if
+    // the selected index has not yet been initialized.
+    if (this._selectedIndex != this._indexToSelect && this._selectedIndex != null) {
+      this._onSelectChange.emit(this._createChangeEvent(this._indexToSelect));
+    }
+
+    // Setup the position for each tab and optionally setup an origin on the next selected tab.
+    this._tabs.forEach((tab: MdTab, index: number) => {
+      tab.position = index - this._indexToSelect;
+
+      // If there is already a selected tab, then set up an origin for the next selected tab
+      // if it doesn't have one already.
+      if (this._selectedIndex != null && tab.position == 0 && !tab.origin) {
+        tab.origin = this._indexToSelect - this._selectedIndex;
+      }
+    });
+
+    this._selectedIndex = this._indexToSelect;
   }
 
   /**
@@ -182,7 +166,9 @@ export class MdTabGroup {
 
   /** Tells the ink-bar to align itself to the current label wrapper */
   private _updateInkBar(): void {
-    this._inkBar.toArray()[0].alignToElement(this._currentLabelWrapper);
+    if (this._currentLabelWrapper) {
+      this._inkBar.alignToElement(this._currentLabelWrapper);
+    }
   }
 
   /**
@@ -190,7 +176,8 @@ export class MdTabGroup {
    * ViewChildren references are ready.
    */
   private get _currentLabelWrapper(): HTMLElement {
-    return this._labelWrappers && this._labelWrappers.length
+    return this._labelWrappers && this._labelWrappers.length &&
+        this._labelWrappers.toArray()[this.selectedIndex]
         ? this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement
         : null;
   }
@@ -278,7 +265,7 @@ export class MdTabGroup {
    * height property is true.
    */
   _setTabBodyWrapperHeight(tabHeight: number): void {
-    if (!this._dynamicHeight) { return; }
+    if (!this._dynamicHeight || !this._tabBodyWrapperHeight) { return; }
 
     this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height',
         this._tabBodyWrapperHeight + 'px');
@@ -293,90 +280,14 @@ export class MdTabGroup {
 
   /** Removes the height of the tab body wrapper. */
   _removeTabBodyWrapperHeight(): void {
+    this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
     this._renderer.setElementStyle(this._tabBodyWrapper.nativeElement, 'height', '');
-  }
-}
-
-export type MdTabBodyActiveState = 'left' | 'center' | 'right';
-
-@Component({
-  moduleId: module.id,
-  selector: 'md-tab-body',
-  templateUrl: 'tab-body.html',
-  animations: [
-    trigger('translateTab', [
-      state('left', style({transform: 'translate3d(-100%, 0, 0)'})),
-      state('center', style({transform: 'translate3d(0, 0, 0)'})),
-      state('right', style({transform: 'translate3d(100%, 0, 0)'})),
-      transition('* => *', animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')),
-    ])
-  ]
-})
-export class MdTabBody implements OnInit {
-  /** The portal host inside of this container into which the tab body content will be loaded. */
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
-
-  /** Event emitted when the tab begins to animate towards the center as the active tab. */
-  @Output()
-  onTabBodyCentering: EventEmitter<number> = new EventEmitter<number>();
-
-  /** Event emitted when the tab completes its animation towards the center. */
-  @Output()
-  onTabBodyCentered: EventEmitter<void> = new EventEmitter<void>();
-
-  /** The tab body content to display. */
-  @Input('md-tab-body-content') _content: TemplatePortal;
-
-  /** The shifted index position of the tab body, where zero represents the active center tab. */
-  _position: MdTabBodyActiveState;
-  @Input('md-tab-body-position') set position(v: number) {
-    if (v < 0) {
-      this._position = this.getLayoutDirection() == 'ltr' ? 'left' : 'right';
-    } else if (v > 0) {
-      this._position = this.getLayoutDirection() == 'ltr' ? 'right' : 'left';
-    } else {
-      this._position = 'center';
-    }
-
-    if (this._position === 'center' && !this._portalHost.hasAttached() && this._content) {
-      this._portalHost.attach(this._content);
-    }
-  }
-
-  constructor(private _elementRef: ElementRef, @Optional() private _dir: Dir) {}
-
-  ngOnInit() {
-    if (this._position == 'center' && !this._portalHost.hasAttached()) {
-      this._portalHost.attach(this._content);
-    }
-  }
-
-  _onTranslateTabStarted(e: AnimationTransitionEvent) {
-    if (e.fromState != 'void' && e.toState == 'center') {
-      this.onTabBodyCentering.emit(this._elementRef.nativeElement.clientHeight);
-    }
-  }
-
-  _onTranslateTabComplete(e: AnimationTransitionEvent) {
-    if ((e.toState == 'left' || e.toState == 'right') && this._position !== 'center') {
-      // If the end state is that the tab is not centered, then detach the content.
-      this._portalHost.detach();
-    }
-
-    if ((e.toState == 'center') && this._position == 'center') {
-      this.onTabBodyCentered.emit();
-    }
-  }
-
-  /** The text direction of the containing app. */
-  getLayoutDirection(): LayoutDirection {
-    return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 }
 
 @NgModule({
   imports: [CommonModule, PortalModule, MdRippleModule],
-  // Don't export MdInkBar or MdTabLabelWrapper, as they are internal implementation details.
+  // Don't export all components because some are only to be used internally.
   exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink, MdTabLinkRipple],
   declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
     MdTabNavBar, MdTabLink, MdTabBody, MdTabLinkRipple],

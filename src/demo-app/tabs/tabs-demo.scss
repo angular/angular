@@ -1,5 +1,6 @@
 .demo-nav-bar {
   border: 1px solid #e0e0e0;
+  margin-bottom: 40px;
   [md-tab-nav-bar] {
     background: #f9f9f9;
   }
@@ -13,10 +14,28 @@
 
 .demo-tab-group {
   border: 1px solid #e0e0e0;
+  margin-bottom: 40px;
   .md-tab-header {
     background: #f9f9f9;
   }
   .md-tab-body-content {
     padding: 12px;
+  }
+}
+
+tabs-demo md-card {
+  width: 160px;
+
+  md-checkbox {
+    display: block;
+    margin-top: 8px;
+  }
+
+  md-input {
+    width: 100px;
+  }
+
+  button {
+    width: 100%;
   }
 }
