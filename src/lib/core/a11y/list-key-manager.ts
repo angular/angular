@@ -54,9 +54,14 @@ export class ListKeyManager {
         this.focusLastItem();
         break;
       case TAB:
+        // Note that we shouldn't prevent the default action on tab.
         this._tabOut.next(null);
-        break;
+        return;
+      default:
+        return;
     }
+
+    event.preventDefault();
   }
 
   /** Focuses the first enabled item in the list. */
