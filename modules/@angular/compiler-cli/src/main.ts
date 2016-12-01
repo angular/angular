@@ -22,7 +22,8 @@ function codegen(
   return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
 }
 
-export function main(args: any, consoleError: (s: string) => void = console.error): Promise<number> {
+export function main(
+    args: any, consoleError: (s: string) => void = console.error): Promise<number> {
   const project = args.p || args.project || '.';
   const cliOptions = new tsc.NgcCliOptions(args);
 
