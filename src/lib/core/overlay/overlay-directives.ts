@@ -67,15 +67,38 @@ export class ConnectedOverlayDirective implements OnDestroy {
   private _hasBackdrop = false;
   private _backdropSubscription: Subscription;
   private _positionSubscription: Subscription;
+  private _offsetX: number = 0;
+  private _offsetY: number = 0;
+  private _position: ConnectedPositionStrategy;
 
   @Input() origin: OverlayOrigin;
   @Input() positions: ConnectionPositionPair[];
 
   /** The offset in pixels for the overlay connection point on the x-axis */
-  @Input() offsetX: number = 0;
+  @Input()
+  get offsetX(): number {
+    return this._offsetX;
+  }
+
+  set offsetX(offsetX: number) {
+    this._offsetX = offsetX;
+    if (this._position) {
+      this._position.withOffsetX(offsetX);
+    }
+  }
 
   /** The offset in pixels for the overlay connection point on the y-axis */
-  @Input() offsetY: number = 0;
+  @Input()
+  get offsetY() {
+    return this._offsetY;
+  }
+
+  set offsetY(offsetY: number) {
+    this._offsetY = offsetY;
+    if (this._position) {
+      this._position.withOffsetY(offsetY);
+    }
+  }
 
   /** The width of the overlay panel. */
   @Input() width: number | string;
@@ -163,7 +186,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
       overlayConfig.backdropClass = this.backdropClass;
     }
 
-    overlayConfig.positionStrategy = this._createPositionStrategy();
+    this._position = this._createPositionStrategy() as ConnectedPositionStrategy;
+    overlayConfig.positionStrategy = this._position;
 
     overlayConfig.direction = this.dir;
 

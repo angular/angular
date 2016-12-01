@@ -119,10 +119,21 @@ describe('Overlay directives', () => {
       fixture.componentInstance.isOpen = true;
       fixture.detectChanges();
 
-      // expected x value is the starting x + offset x
-      const expectedX = startX + 5;
       const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.transform).toContain(`translateX(${expectedX}px)`);
+      expect(pane.style.transform)
+          .toContain(`translateX(${startX + 5}px)`,
+              `Expected overlay translateX to equal the original X + the offsetX.`);
+
+      fixture.componentInstance.isOpen = false;
+      fixture.detectChanges();
+
+      fixture.componentInstance.offsetX = 15;
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      expect(pane.style.transform)
+          .toContain(`translateX(${startX + 15}px)`,
+              `Expected overlay directive to reflect new offsetX if it changes.`);
     });
 
     it('should set the offsetY', () => {
@@ -138,7 +149,19 @@ describe('Overlay directives', () => {
       // expected y value is the starting y + trigger height + offset y
       // 30 + 20 + 45 = 95px
       const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.transform).toContain(`translateY(95px)`);
+      expect(pane.style.transform)
+          .toContain(`translateY(95px)`,
+              `Expected overlay translateY to equal the start Y + height + offsetY.`);
+
+      fixture.componentInstance.isOpen = false;
+      fixture.detectChanges();
+
+      fixture.componentInstance.offsetY = 55;
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+      expect(pane.style.transform)
+          .toContain(`translateY(105px)`,
+              `Expected overlay directive to reflect new offsetY if it changes.`);
     });
 
   });
