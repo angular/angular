@@ -189,6 +189,20 @@ describe('MdRadio', () => {
       expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
     });
 
+    it('should focus individual radio buttons', () => {
+      let nativeRadioInput = <HTMLElement> radioNativeElements[0].querySelector('input');
+
+      radioInstances[0].focus();
+      fixture.detectChanges();
+
+      expect(radioNativeElements[0].classList).toContain('md-radio-focused');
+
+      dispatchEvent('blur', nativeRadioInput);
+      fixture.detectChanges();
+
+      expect(radioNativeElements[0].classList).not.toContain('md-radio-focused');
+    });
+
     it('should update the group and radios when updating the group value', () => {
       expect(groupInstance.value).toBeFalsy();
 
@@ -549,6 +563,16 @@ describe('MdRadio', () => {
       fixture.detectChanges();
 
       expect(fruitRadioNativeInputs[0].getAttribute('aria-labelledby')).toBe('uvw');
+    });
+
+    it('should focus on underlying input element when focus() is called', () => {
+      for (let i = 0; i < fruitRadioInstances.length; i++) {
+        expect(document.activeElement).not.toBe(fruitRadioNativeInputs[i]);
+        fruitRadioInstances[i].focus();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(fruitRadioNativeInputs[i]);
+      }
     });
   });
 });

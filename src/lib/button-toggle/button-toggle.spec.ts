@@ -518,6 +518,16 @@ describe('MdButtonToggle', () => {
       expect(changeSpy).toHaveBeenCalledTimes(2);
     }));
 
+    it('should focus on underlying input element when focus() is called', () => {
+      let nativeRadioInput = buttonToggleDebugElement.query(By.css('input')).nativeElement;
+      expect(document.activeElement).not.toBe(nativeRadioInput);
+
+      buttonToggleInstance.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(nativeRadioInput);
+    });
+
   });
 });
 

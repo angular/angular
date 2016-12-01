@@ -336,6 +336,16 @@ describe('MdSlideToggle', () => {
       expect(inputElement.required).toBe(false);
     });
 
+    it('should focus on underlying input element when focus() is called', () => {
+      expect(slideToggleElement.classList).not.toContain('md-slide-toggle-focused');
+      expect(document.activeElement).not.toBe(inputElement);
+
+      slideToggle.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(inputElement);
+      expect(slideToggleElement.classList).toContain('md-slide-toggle-focused');
+    });
   });
 
   describe('custom template', () => {

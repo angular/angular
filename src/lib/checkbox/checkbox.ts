@@ -10,6 +10,7 @@ import {
     forwardRef,
     NgModule,
     ModuleWithProviders,
+    ViewChild,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
@@ -133,6 +134,9 @@ export class MdCheckbox implements ControlValueAccessor {
 
   /** Event emitted when the checkbox's `checked` value changes. */
   @Output() change: EventEmitter<MdCheckboxChange> = new EventEmitter<MdCheckboxChange>();
+
+  /** The native `<input type=checkbox> element */
+  @ViewChild('input') _inputElement: ElementRef;
 
   /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
   onTouched: () => any = () => {};
@@ -319,6 +323,11 @@ export class MdCheckbox implements ControlValueAccessor {
       // we don't want to trigger a change event, when the `checked` variable changes for example.
       this._emitChangeEvent();
     }
+  }
+
+  focus() {
+    this._inputElement.nativeElement.focus();
+    this._onInputFocus();
   }
 
   _onInputClick(event: Event) {

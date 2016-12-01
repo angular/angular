@@ -10,6 +10,7 @@ import {
   AfterContentInit,
   NgModule,
   ModuleWithProviders,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
@@ -85,6 +86,8 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   // Returns the unique id for the visual hidden input.
   getInputId = () => `${this.id || this._uniqueId}-input`;
+
+  @ViewChild('input') _inputElement: ElementRef;
 
   constructor(private _elementRef: ElementRef, private _renderer: Renderer) {}
 
@@ -179,6 +182,11 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
    */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+  }
+
+  focus() {
+    this._inputElement.nativeElement.focus();
+    this._onInputFocus();
   }
 
   @Input()

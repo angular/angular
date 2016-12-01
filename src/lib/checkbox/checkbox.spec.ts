@@ -281,6 +281,15 @@ describe('MdCheckbox', () => {
       expect(inputElement.required).toBe(false);
     });
 
+    it('should focus on underlying input element when focus() is called', () => {
+      expect(document.activeElement).not.toBe(inputElement);
+
+      checkboxInstance.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(inputElement);
+    });
+
     describe('color behaviour', () => {
       it('should apply class based on color attribute', () => {
         testComponent.checkboxColor = 'primary';

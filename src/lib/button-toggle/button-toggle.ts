@@ -4,6 +4,7 @@ import {
     Component,
     ContentChildren,
     Directive,
+    ElementRef,
     EventEmitter,
     HostBinding,
     Input,
@@ -11,6 +12,7 @@ import {
     Optional,
     Output,
     QueryList,
+    ViewChild,
     ViewEncapsulation,
     forwardRef,
     AfterViewInit
@@ -295,6 +297,8 @@ export class MdButtonToggle implements OnInit {
     return this._change.asObservable();
   }
 
+  @ViewChild('input') _inputElement: ElementRef;
+
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
               public buttonToggleDispatcher: MdUniqueSelectionDispatcher) {
@@ -423,6 +427,10 @@ export class MdButtonToggle implements OnInit {
     // This will lead to multiple click events.
     // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
+  }
+
+  focus() {
+    this._inputElement.nativeElement.focus();
   }
 }
 

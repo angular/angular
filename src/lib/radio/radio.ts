@@ -15,6 +15,7 @@ import {
   forwardRef,
   NgModule,
   ModuleWithProviders,
+  ViewChild,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
@@ -288,6 +289,9 @@ export class MdRadioButton implements OnInit {
   @Output()
   change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
+  /** The native `<input type=radio> element */
+  @ViewChild('input') _inputElement: ElementRef;
+
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
               public radioDispatcher: MdUniqueSelectionDispatcher) {
@@ -405,6 +409,11 @@ export class MdRadioButton implements OnInit {
    */
   _onInputFocus() {
     this._isFocused = true;
+  }
+
+  focus() {
+    this._inputElement.nativeElement.focus();
+    this._onInputFocus();
   }
 
   /** TODO: internal */
