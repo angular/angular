@@ -1,4 +1,4 @@
-#Theming your custom components
+# Theming your custom components
 In order to style your own components with Angular Material's tooling, the component's styles must be defined with Sass.
 
 ## Using `@mixin` to automatically apply a theme
@@ -12,7 +12,7 @@ We can better theming our custom components adding a `@mixin` function to its th
 
 All you need is to create a `@mixin` function in the custom-component-theme.scss
 
-```sass
+```scss
 // Import all the tools needed to customize the theme and extract parts of it
 @import '~@angular/material/core/theming/all-theme';
 
@@ -29,11 +29,11 @@ All you need is to create a `@mixin` function in the custom-component-theme.scss
   }
 }
 ```
-Now you just have have to call the `@mixin` function to apply the theme:
+Now you just have to call the `@mixin` function to apply the theme:
 
-```sass
+```scss
 // Import a pre-built theme
-@import '~@angular/material/core/theming/prebuilt/deep-purple-amber';
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber';
 // Import your custom input theme file so you can call the custom-input-theme function
 @import 'app/candy-carousel/candy-carousel-theme.scss';
 
@@ -52,8 +52,8 @@ All styles that are not affected by the theme should be placed in a `candy-carou
 Styles that are affected by the theme should be placed in a separated theming file as `_candy-carousel-theme.scss` and the file should have a `_` before the name. This file should contain the `@mixin` function responsible for applying the theme to the component.
 
 
-## Using colors from a pallete
-You can consume the theming functions from the `@angular/material/core/theming/theming` and Material pallete vars from `@angular/material/core/theming/palette`. You can use the `md-color` function to extract a specific color from a palette. For example:
+## Using colors from a palette
+You can consume the theming functions from the `@angular/material/core/theming/theming` and Material palette vars from `@angular/material/core/theming/palette`. You can use the `md-color` function to extract a specific color from a palette. For example:
 
 ```scss
 // Import theming functions
