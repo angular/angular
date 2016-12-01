@@ -140,8 +140,8 @@ class Recognizer {
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
 
     } else {
-      const children = this.processSegment(
-          childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
+      const children =
+              this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
     }
   }
