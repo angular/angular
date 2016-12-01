@@ -244,8 +244,29 @@ describe('MdSelect', () => {
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelect);
+    });
+
+    it('should take an initial view value with reactive forms', () => {
+      fixture.componentInstance.control = new FormControl('pizza-1');
       fixture.detectChanges();
 
+      const value = fixture.debugElement.query(By.css('.md-select-value'));
+      expect(value.nativeElement.textContent)
+          .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
+
+      trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+      trigger.click();
+      fixture.detectChanges();
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      expect(options[1].classList)
+          .toContain('md-selected',
+              `Expected option with the control's initial value to be selected.`);
+    });
+
+    beforeEach(() => {
+      fixture.detectChanges();
       trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
     });
 

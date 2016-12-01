@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  NgZone,
   OnDestroy,
   Optional,
   Output,
@@ -133,7 +134,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   @Output() onClose = new EventEmitter();
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
-              @Optional() private _dir: Dir, @Optional() public _control: NgControl) {
+              @Optional() private _dir: Dir, @Optional() public _control: NgControl,
+              private _ngZone: NgZone) {
     if (this._control) {
       this._control.valueAccessor = this;
     }
@@ -175,7 +177,14 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    * required to integrate with Angular's core forms API.
    */
   writeValue(value: any): void {
-    if (!this.options) { return; }
+    if (!this.options) {
+      // In reactive forms, writeValue() will be called synchronously before
+      // the select's child options have been created. It's necessary to call
+      // writeValue() again after the options have been created to ensure any
+      // initial view value is set.
+      this._ngZone.onStable.first().subscribe(() => this.writeValue(value));
+      return;
+    }
 
     this.options.forEach((option: MdOption) => {
       if (option.value === value) {

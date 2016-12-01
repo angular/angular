@@ -11,7 +11,7 @@ export class SelectDemo {
   isRequired = false;
   isDisabled = false;
   currentDrink: string;
-  foodControl = new FormControl('');
+  foodControl = new FormControl('pizza-1');
 
   foods = [
     {value: 'steak-0', viewValue: 'Steak'},
