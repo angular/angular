@@ -24,6 +24,7 @@ env:
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - ARCH=linux-x64
   - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
+  - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
   # GITHUB_TOKEN_ANGULAR
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:

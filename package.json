@@ -51,7 +51,6 @@
     "@types/node": "^6.0.34",
     "@types/run-sequence": "0.0.27",
     "@types/rx": "^2.5.33",
-    "browserstacktunnel-wrapper": "^2.0.0",
     "conventional-changelog": "^1.1.0",
     "express": "^4.14.0",
     "firebase-tools": "^2.2.1",
