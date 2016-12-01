@@ -276,6 +276,9 @@ export class MdSidenavLayout implements AfterContentInit {
   get start() { return this._start; }
   get end() { return this._end; }
 
+  /** Event emitted when the sidenav backdrop is clicked. */
+  @Output('backdrop-clicked') onBackdropClicked = new EventEmitter<void>();
+
   /** The sidenav at the start/end alignment, independent of direction. */
   private _start: MdSidenav;
   private _end: MdSidenav;
@@ -378,6 +381,11 @@ export class MdSidenavLayout implements AfterContentInit {
     }
 
     this._setDrawersValid(true);
+  }
+
+  _onBackdropClicked() {
+    this.onBackdropClicked.emit();
+    this._closeModalSidenav();
   }
 
   _closeModalSidenav() {

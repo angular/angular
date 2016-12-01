@@ -190,6 +190,49 @@ describe('MdSidenav', () => {
         tick();
       }).not.toThrow();
     }));
+
+    it('should emit the backdrop-clicked event when the backdrop is clicked', fakeAsync(() => {
+      let fixture = TestBed.createComponent(BasicTestApp);
+
+      let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
+      let openButtonElement = fixture.debugElement.query(By.css('.open'));
+      openButtonElement.nativeElement.click();
+      fixture.detectChanges();
+      tick();
+
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(testComponent.backdropClickedCount).toBe(0);
+
+      let sidenavBackdropElement = fixture.debugElement.query(By.css('.md-sidenav-backdrop'));
+      sidenavBackdropElement.nativeElement.click();
+      fixture.detectChanges();
+      tick();
+
+      expect(testComponent.backdropClickedCount).toBe(1);
+
+      endSidenavTransition(fixture);
+      tick();
+
+      openButtonElement.nativeElement.click();
+      fixture.detectChanges();
+      tick();
+
+      endSidenavTransition(fixture);
+      tick();
+
+      let closeButtonElement = fixture.debugElement.query(By.css('.close'));
+      closeButtonElement.nativeElement.click();
+      fixture.detectChanges();
+      tick();
+
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(testComponent.backdropClickedCount).toBe(1);
+    }));
+
   });
 
   describe('attributes', () => {
@@ -267,7 +310,7 @@ class SidenavLayoutTwoSidenavTestApp { }
 /** Test component that contains an MdSidenavLayout and one MdSidenav. */
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-layout (backdrop-clicked)="backdropClicked()">
       <md-sidenav #sidenav align="start"
                   (open-start)="openStart()"
                   (open)="open()"
@@ -284,6 +327,7 @@ class BasicTestApp {
   openCount: number = 0;
   closeStartCount: number = 0;
   closeCount: number = 0;
+  backdropClickedCount: number = 0;
 
   openStart() {
     this.openStartCount++;
@@ -299,6 +343,10 @@ class BasicTestApp {
 
   close() {
     this.closeCount++;
+  }
+
+  backdropClicked() {
+    this.backdropClickedCount++;
   }
 }
 
