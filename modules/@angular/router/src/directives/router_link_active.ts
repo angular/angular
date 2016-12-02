@@ -73,7 +73,6 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * This will set the active-link class on the div tag if the url is either '/user/jim' or
  * '/user/bob'.
  *
- * @selector ':not(a)[routerLink]'
  * @ngModule RouterModule
  *
  * @stable
