@@ -10,8 +10,8 @@ import * as i18n from './i18n_ast';
 
 export function digest(message: i18n.Message): string {
   return (message.id !== '') ?
-    message.id :
-    sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+      message.id :
+      sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
 }
 
 export function decimalDigest(message: i18n.Message): string {

@@ -20,7 +20,10 @@ export function main() {
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
-          [['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e', ''],
+          [
+            ['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e',
+            ''
+          ],
         ]);
       });
 
@@ -35,36 +38,36 @@ export function main() {
       });
 
       it('should extract from attributes with id', () => {
-        expect(
-          extract(
-            '<div i18n="m1|d1@i1"><span i18n-title="m2|d2@i2" title="single' +
-            ' child">nested</span></div>'))
-          .toEqual([
-                     [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', 'i1'],
-                     [['single child'], 'm2', 'd2', 'i2'],
-                   ]);
+        expect(extract(
+                   '<div i18n="m1|d1@i1"><span i18n-title="m2|d2@i2" title="single' +
+                   ' child">nested</span></div>'))
+            .toEqual([
+              [
+                ['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1',
+                'i1'
+              ],
+              [['single child'], 'm2', 'd2', 'i2'],
+            ]);
       });
 
       it('should extract from attributes without meaning and with id', () => {
-        expect(
-          extract(
-            '<div i18n="d1@i1"><span i18n-title="d2@i2" title="single' +
-            ' child">nested</span></div>'))
-          .toEqual([
-                     [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
-                     [['single child'], '', 'd2', 'i2'],
-                   ]);
+        expect(extract(
+                   '<div i18n="d1@i1"><span i18n-title="d2@i2" title="single' +
+                   ' child">nested</span></div>'))
+            .toEqual([
+              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
+              [['single child'], '', 'd2', 'i2'],
+            ]);
       });
 
       it('should extract from attributes with ONLY id', () => {
-        expect(
-          extract(
-            '<div i18n="@i1"><span i18n-title="@i2" title="single' +
-            ' child">nested</span></div>'))
-          .toEqual([
-                     [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
-                     [['single child'], '', '', 'i2'],
-                   ]);
+        expect(extract(
+                   '<div i18n="@i1"><span i18n-title="@i2" title="single' +
+                   ' child">nested</span></div>'))
+            .toEqual([
+              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
+              [['single child'], '', '', 'i2'],
+            ]);
       });
 
       it('should extract from ICU messages', () => {
@@ -101,10 +104,8 @@ export function main() {
          <!-- i18n: meaning4|desc4@id4 -->message4<!-- /i18n -->
          <!-- i18n: @id5 -->message5<!-- /i18n -->`))
             .toEqual([
-              [['message1'], 'meaning1', 'desc1', ''],
-              [['message2'], '', 'desc2', ''],
-              [['message3'], '', '', ''],
-              [['message4'], 'meaning4', 'desc4', 'id4'],
+              [['message1'], 'meaning1', 'desc1', ''], [['message2'], '', 'desc2', ''],
+              [['message3'], '', '', ''], [['message4'], 'meaning4', 'desc4', 'id4'],
               [['message5'], '', '', 'id5']
             ]);
       });
@@ -165,7 +166,10 @@ export function main() {
 
         // one message for the element content and one message for the ICU
         expect(extract('<div i18n="m|d@i">before{count, plural, =0 {text}}after</div>')).toEqual([
-          [['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm', 'd', 'i'],
+          [
+            ['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm', 'd',
+            'i'
+          ],
           [['{count, plural, =0 {[text]}}'], '', '', ''],
         ]);
       });
@@ -198,11 +202,10 @@ export function main() {
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
-        expect(
-            extract(
-                '<div i18n="m|d@i">{count, plural, =0 { {sex, select, male {<p>ignore</p>}}' +
-                ' }}</div>',
-                ['p']))
+        expect(extract(
+                   '<div i18n="m|d@i">{count, plural, =0 { {sex, select, male {<p>ignore</p>}}' +
+                       ' }}</div>',
+                   ['p']))
             .toEqual([[
               [
                 '{count, plural, =0 {[{sex, select, male {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
@@ -248,10 +251,9 @@ export function main() {
       });
 
       it('should extract from attributes in translatable ICUs', () => {
-        expect(
-            extract(
-                '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@i"' +
-                ' title="msg"></b></p>}}<!-- /i18n -->'))
+        expect(extract(
+                   '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@i"' +
+                   ' title="msg"></b></p>}}<!-- /i18n -->'))
             .toEqual([
               [['msg'], 'm', 'd', 'i'],
               [
