@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {Location} from '@angular/common';
+import {TestBed, inject} from '@angular/core/testing';
 
 import {ResolveData} from '../src/config';
 import {PreActivation, Router} from '../src/router';
@@ -30,6 +31,25 @@ describe('Router', () => {
 
       expect(r.routerState.root).toBe(root);
     });
+  });
+
+  describe('setUpLocationChangeListener', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should be indempotent', inject([Router, Location], (r: Router, location: Location) => {
+         r.setUpLocationChangeListener();
+         const a = (<any>r).locationSubscription;
+         r.setUpLocationChangeListener();
+         const b = (<any>r).locationSubscription;
+
+         expect(a).toBe(b);
+
+         r.dispose();
+         r.setUpLocationChangeListener();
+         const c = (<any>r).locationSubscription;
+
+         expect(c).not.toBe(b);
+       }));
   });
 
   describe('PreActivation', () => {
