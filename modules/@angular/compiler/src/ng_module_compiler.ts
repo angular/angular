@@ -48,7 +48,8 @@ export class NgModuleCompiler {
     const entryComponentFactories =
         ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
           const id: CompileIdentifierMetadata = {reference: null};
-          if (ngModuleMeta.bootstrapComponents.indexOf(entryComponent) > -1) {
+          if (ngModuleMeta.bootstrapComponents.some(
+                  (id) => id.reference === entryComponent.reference)) {
             bootstrapComponentFactories.push(id);
           }
           deps.push(new ComponentFactoryDependency(entryComponent, id));

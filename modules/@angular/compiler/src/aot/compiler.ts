@@ -72,9 +72,9 @@ export class AotCompiler {
 
     // write summary files
     const summaries: CompileTypeSummary[] = [
-      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref)),
+      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref)),
       ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref)),
-      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref))
+      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref))
     ];
     generatedFiles.push(this._summaryResolver.serializeSummaries(srcFileUrl, summaries));
 

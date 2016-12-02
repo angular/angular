@@ -114,14 +114,19 @@ export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata
 
 export interface CompileIdentifierMetadata { reference: any; }
 
+export enum CompileSummaryKind {
+  Template,
+  Pipe,
+  Directive,
+  NgModule
+}
+
 /**
  * A CompileSummary is the data needed to use a directive / pipe / module
  * in other modules / components. However, this data is not enough to compile
  * the directive / module itself.
  */
-export interface CompileSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
-}
+export interface CompileSummary { summaryKind: CompileSummaryKind; }
 
 export interface CompileTypeSummary extends CompileSummary { type: CompileTypeMetadata; }
 
@@ -206,7 +211,6 @@ export class CompileStylesheetMetadata {
  * Summary Metadata regarding compilation of a template.
  */
 export interface CompileTemplateSummary extends CompileSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   animations: string[];
   ngContentSelectors: string[];
   encapsulation: ViewEncapsulation;
@@ -254,7 +258,7 @@ export class CompileTemplateMetadata {
 
   toSummary(): CompileTemplateSummary {
     return {
-      isSummary: true,
+      summaryKind: CompileSummaryKind.Template,
       animations: this.animations.map(anim => anim.name),
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation
@@ -265,7 +269,6 @@ export class CompileTemplateMetadata {
 // Note: This should only use interfaces as nested data types
 // as we need to be able to serialize this from/to JSON!
 export interface CompileDirectiveSummary extends CompileTypeSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
   isComponent: boolean;
   selector: string;
@@ -421,7 +424,7 @@ export class CompileDirectiveMetadata {
 
   toSummary(): CompileDirectiveSummary {
     return {
-      isSummary: true,
+      summaryKind: CompileSummaryKind.Directive,
       type: this.type,
       isComponent: this.isComponent,
       selector: this.selector,
@@ -473,7 +476,6 @@ export function createHostComponentMeta(
 }
 
 export interface CompilePipeSummary extends CompileTypeSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
   name: string;
   pure: boolean;
@@ -495,19 +497,24 @@ export class CompilePipeMetadata {
   }
 
   toSummary(): CompilePipeSummary {
-    return {isSummary: true, type: this.type, name: this.name, pure: this.pure};
+    return {
+      summaryKind: CompileSummaryKind.Pipe,
+      type: this.type,
+      name: this.name,
+      pure: this.pure
+    };
   }
 }
 
 // Note: This should only use interfaces as nested data types
 // as we need to be able to serialize this from/to JSON!
 export interface CompileNgModuleSummary extends CompileTypeSummary {
-  isSummary: boolean /* TODO: `true` when we drop TS 1.8 support */;
   type: CompileTypeMetadata;
 
+  // Note: This is transitive over the exported modules.
   exportedDirectives: CompileIdentifierMetadata[];
+  // Note: This is transitive over the exported modules.
   exportedPipes: CompileIdentifierMetadata[];
-  exportedModules: CompileIdentifierMetadata[];
 
   // Note: This is transitive.
   entryComponents: CompileIdentifierMetadata[];
@@ -573,29 +580,72 @@ export class CompileNgModuleMetadata {
 
   toSummary(): CompileNgModuleSummary {
     return {
-      isSummary: true,
+      summaryKind: CompileSummaryKind.NgModule,
       type: this.type,
       entryComponents: this.transitiveModule.entryComponents,
       providers: this.transitiveModule.providers,
       modules: this.transitiveModule.modules,
-      exportedDirectives: this.exportedDirectives,
-      exportedPipes: this.exportedPipes,
-      exportedModules: this.exportedModules.map(m => m.type)
+      exportedDirectives: this.transitiveModule.exportedDirectives,
+      exportedPipes: this.transitiveModule.exportedPipes
     };
   }
 }
 
 export class TransitiveCompileNgModuleMetadata {
   directivesSet = new Set<any>();
+  directives: CompileIdentifierMetadata[] = [];
+  exportedDirectivesSet = new Set<any>();
+  exportedDirectives: CompileIdentifierMetadata[] = [];
   pipesSet = new Set<any>();
+  pipes: CompileIdentifierMetadata[] = [];
+  exportedPipesSet = new Set<any>();
+  exportedPipes: CompileIdentifierMetadata[] = [];
+  modulesSet = new Set<any>();
+  modules: CompileTypeMetadata[] = [];
+  entryComponentsSet = new Set<any>();
+  entryComponents: CompileIdentifierMetadata[] = [];
 
-  constructor(
-      public modules: CompileTypeMetadata[],
-      public providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[],
-      public entryComponents: CompileIdentifierMetadata[],
-      public directives: CompileIdentifierMetadata[], public pipes: CompileIdentifierMetadata[]) {
-    directives.forEach(dir => this.directivesSet.add(dir.reference));
-    pipes.forEach(pipe => this.pipesSet.add(pipe.reference));
+  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[] = [];
+
+  addProvider(provider: CompileProviderMetadata, module: CompileIdentifierMetadata) {
+    this.providers.push({provider: provider, module: module});
+  }
+
+  addDirective(id: CompileIdentifierMetadata) {
+    if (!this.directivesSet.has(id.reference)) {
+      this.directivesSet.add(id.reference);
+      this.directives.push(id);
+    }
+  }
+  addExportedDirective(id: CompileIdentifierMetadata) {
+    if (!this.exportedDirectivesSet.has(id.reference)) {
+      this.exportedDirectivesSet.add(id.reference);
+      this.exportedDirectives.push(id);
+    }
+  }
+  addPipe(id: CompileIdentifierMetadata) {
+    if (!this.pipesSet.has(id.reference)) {
+      this.pipesSet.add(id.reference);
+      this.pipes.push(id);
+    }
+  }
+  addExportedPipe(id: CompileIdentifierMetadata) {
+    if (!this.exportedPipesSet.has(id.reference)) {
+      this.exportedPipesSet.add(id.reference);
+      this.exportedPipes.push(id);
+    }
+  }
+  addModule(id: CompileTypeMetadata) {
+    if (!this.modulesSet.has(id.reference)) {
+      this.modulesSet.add(id.reference);
+      this.modules.push(id);
+    }
+  }
+  addEntryComponent(id: CompileIdentifierMetadata) {
+    if (!this.entryComponentsSet.has(id.reference)) {
+      this.entryComponentsSet.add(id.reference);
+      this.entryComponents.push(id);
+    }
   }
 }
 
