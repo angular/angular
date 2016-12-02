@@ -337,7 +337,7 @@ class _Visitor implements html.Visitor {
       return;
     }
 
-    const [meaning, description, id] = _splitMeaningAndDesc(meaningAndDesc);
+    const [meaning, description, id] = _parseI18nAttribute(meaningAndDesc);
     const message = this._createI18nMessage(ast, meaning, description, id);
     this._messages.push(message);
     return message;
@@ -368,7 +368,7 @@ class _Visitor implements html.Visitor {
     attributes.forEach(attr => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
         i18nAttributeMeanings[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-            _splitMeaningAndDesc(attr.value)[0];
+            _parseI18nAttribute(attr.value)[0];
       }
     });
 
@@ -496,15 +496,35 @@ function _getI18nAttr(p: html.Element): html.Attribute {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _splitMeaningAndDesc(i18n: string): [string, string, string] {
+function _parseI18nAttribute(i18n: string): [string, string, string] {
   if (!i18n) return ['', '', ''];
-  const arobaseIndex = i18n.indexOf('@');
   const pipeIndex = i18n.indexOf('|');
-  return arobaseIndex > -1 ?
-    pipeIndex == -1 ?
-      ['', i18n.slice(0, arobaseIndex),  i18n.slice(arobaseIndex + 1)] :
-      [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1, arobaseIndex), i18n.slice(arobaseIndex + 1)] :
-      pipeIndex == -1 ?
-        ['', i18n.slice(pipeIndex + 1), ''] :
-        [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1), ''];
+  let arobaseIndex: number, m: string, d: string;
+
+  /** Get priority on pipe to parse correctly cases like :
+   *    i18n="m@m|d"  => ['m@m', 'd', '']
+   *    i18n="m|@i"   => ['m', '', 'i']
+   *    i18n="@m|d"   => ['@m', 'd', '']
+   *    i18n="@i"     => ['', '', 'i']
+   *    i18n="d@i"    => ['', 'd', 'i']
+   */
+  if (pipeIndex > -1) {
+    m = i18n.slice(0, pipeIndex);
+    d = i18n.slice(pipeIndex + 1);
+    // find the index of the last '@' char in description
+    arobaseIndex = d.lastIndexOf('@');
+    if (arobaseIndex > -1) {
+      return [m, d.slice(0, arobaseIndex), d.slice(arobaseIndex + 1)];
+    } else {
+      return [m, d, ''];
+    }
+  } else {
+    // find the index of the last '@' char in the i18n attribute
+    arobaseIndex = i18n.lastIndexOf('@');
+    if (arobaseIndex > -1) {
+      return ['', i18n.slice(0, arobaseIndex), i18n.slice(arobaseIndex + 1)];
+    } else {
+      return ['', i18n, ''];
+    }
+  }
 }
