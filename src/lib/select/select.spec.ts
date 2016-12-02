@@ -208,16 +208,16 @@ describe('MdSelect', () => {
     }));
 
     it('should select an option that was added after initialization', () => {
-      fixture.componentInstance.foods.push({viewValue: 'Pasta', value: 'pasta-3'});
+      fixture.componentInstance.foods.push({viewValue: 'Potatoes', value: 'potatoes-8'});
       trigger.click();
       fixture.detectChanges();
 
       const options =
         overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[3].click();
+      options[8].click();
       fixture.detectChanges();
 
-      expect(trigger.textContent).toContain('Pasta');
+      expect(trigger.textContent).toContain('Potatoes');
       expect(fixture.componentInstance.select.selected)
         .toBe(fixture.componentInstance.options.last);
     });
@@ -490,79 +490,280 @@ describe('MdSelect', () => {
         expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('floating-rtl');
       });
 
-      it('should use the ltr panel state when the dir is ltr', () => {
-        dir.value = 'ltr';
-
-        trigger.click();
-        fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPanelState()).toEqual('top-ltr');
-      });
-
-      it('should use the rtl panel state when the dir is rtl', () => {
-        dir.value = 'rtl';
-
-        trigger.click();
-        fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPanelState()).toEqual('top-rtl');
-      });
-
   });
 
   describe('positioning', () => {
     let fixture: ComponentFixture<BasicSelect>;
     let trigger: HTMLElement;
+    let select: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
       trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+      select = fixture.debugElement.query(By.css('md-select')).nativeElement;
     });
 
-    it('should open below the trigger if the panel will fit', () => {
-      trigger.click();
-      fixture.detectChanges();
-
+    /**
+     * Asserts that the given option is aligned with the trigger.
+     * @param index The index of the option.
+     */
+    function checkTriggerAlignedWithOption(index: number): void {
       const overlayPane = overlayContainerElement.children[0] as HTMLElement;
-      const overlayRect = overlayPane.getBoundingClientRect();
-      const triggerRect = trigger.getBoundingClientRect();
+      const triggerTop = trigger.getBoundingClientRect().top;
+      const overlayTop = overlayPane.getBoundingClientRect().top;
+      const options = overlayPane.querySelectorAll('md-option');
+      const optionTop = options[index].getBoundingClientRect().top;
 
-      // when the select panel opens below the trigger, the tops of the trigger and the overlay
-      // should be aligned.
-      expect(overlayRect.top.toFixed(2))
-          .toEqual(triggerRect.top.toFixed(2), `Expected panel to open below by default.`);
+      // The option text should align with the trigger text. Because each option is 18px
+      // larger in height than the trigger, the option needs to be adjusted up 9 pixels.
+      expect(optionTop.toFixed(2))
+          .toEqual((triggerTop - 9).toFixed(2), `Expected trigger to align with option ${index}.`);
 
-      // animation should match the position
-      expect(fixture.componentInstance.select._getPanelState())
-          .toEqual('top-ltr', `Expected panel animation values to match the position.`);
+      // For the animation to start at the option's center, its origin must be the distance
+      // from the top of the overlay to the option top + half the option height (48/2 = 24).
+      const expectedOrigin = optionTop - overlayTop + 24;
       expect(fixture.componentInstance.select._transformOrigin)
-          .toBe('top', `Expected panel animation to originate at the top.`);
+          .toContain(`${expectedOrigin}px`,
+              `Expected panel animation to originate in the center of option ${index}.`);
+    }
+
+    describe('ample space to open', () => {
+
+      beforeEach(() => {
+        // these styles are necessary because we are first testing the overlay's position
+        // if there is room for it to open to its full extent in either direction.
+        select.style.marginTop = '300px';
+        select.style.marginLeft = '20px';
+        select.style.marginRight = '20px';
+      });
+
+      it('should align the first option with the trigger text if no option is selected', () => {
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+
+        checkTriggerAlignedWithOption(0);
+      });
+
+      it('should align a selected option too high to be centered with the trigger text', () => {
+        // Select the second option, because it can't be scrolled any further downward
+        fixture.componentInstance.control.setValue('pizza-1');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+
+        checkTriggerAlignedWithOption(1);
+      });
+
+      it('should align a selected option in the middle with the trigger text', () => {
+        // Select the fifth option, which has enough space to scroll to the center
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
+        // 192 - 256/2 + 48/2 = 88px
+        expect(scrollContainer.scrollTop)
+            .toEqual(88, `Expected overlay panel to be scrolled to center the selected option.`);
+
+        checkTriggerAlignedWithOption(4);
+      });
+
+      it('should align a selected option at the scroll max with the trigger text', () => {
+        // Select the last option in the list
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // The selected option should be scrolled to the max scroll position.
+        // This will be the height of the scrollContainer - the panel height.
+        // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
+        expect(scrollContainer.scrollTop)
+            .toEqual(128, `Expected overlay panel to be scrolled to its maximum position.`);
+
+        checkTriggerAlignedWithOption(7);
+      });
+
     });
 
-    it('should open above the trigger if there is not space below for the panel', () => {
-      // Push trigger to the bottom part of viewport, so it doesn't have space to open
-      // in its default position below the trigger.
-      trigger.style.position = 'relative';
-      trigger.style.top = '650px';
+    describe('limited space to open vertically', () => {
 
-      trigger.click();
-      fixture.detectChanges();
+      beforeEach(() => {
+        select.style.marginLeft = '20px';
+        select.style.marginRight = '20px';
+      });
 
-      const overlayPane = overlayContainerElement.children[0] as HTMLElement;
-      const overlayRect = overlayPane.getBoundingClientRect();
-      const triggerRect = trigger.getBoundingClientRect();
+      it('should adjust position of centered option if there is little space above', () => {
+        // Push the select to a position with not quite enough space on the top to open
+        // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
+        select.style.marginTop = '85px';
 
-      // In "above" position, the bottom edges of the overlay and the origin are aligned.
-      // To find the overlay top, subtract the panel height from the origin's bottom edge.
-      const expectedTop = triggerRect.bottom - overlayRect.height;
-      expect(overlayRect.top.toFixed(2))
-          .toEqual(expectedTop.toFixed(2),
-              `Expected panel to open above the trigger if below wouldn't fit.`);
+        // Select an option in the middle of the list
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
 
-      // animation should match the position
-      expect(fixture.componentInstance.select._getPanelState())
-          .toEqual('bottom-ltr', `Expected panel animation values to match the position.`);
-      expect(fixture.componentInstance.select._transformOrigin)
-          .toBe('bottom', `Expected panel animation to originate at the bottom.`);
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // Scroll should adjust by the difference between the top space available (85px + 8px
+        // viewport padding = 77px) and the height of the panel above the option (113px).
+        // 113px - 77px = 36px difference + original scrollTop 88px = 124px
+        expect(scrollContainer.scrollTop)
+            .toEqual(124, `Expected panel to adjust scroll position to fit in viewport.`);
+
+        checkTriggerAlignedWithOption(4);
+      });
+
+      it('should adjust position of centered option if there is little space below', () => {
+        // Push the select to a position with not quite enough space on the bottom to open
+        // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
+        select.style.marginTop = '600px';
+
+        // Select an option in the middle of the list
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // Scroll should adjust by the difference between the bottom space available
+        // (686px - 600px margin - 30px trigger height = 56px - 8px padding = 48px)
+        // and the height of the panel below the option (113px).
+        // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
+        expect(scrollContainer.scrollTop)
+            .toEqual(23, `Expected panel to adjust scroll position to fit in viewport.`);
+
+        checkTriggerAlignedWithOption(4);
+      });
+
+      it('should fall back to "above" positioning if scroll adjustment will not help', () => {
+        // Push the select to a position with not enough space on the bottom to open
+        select.style.marginTop = '600px';
+        fixture.detectChanges();
+
+        // Select an option that cannot be scrolled any farther upward
+        fixture.componentInstance.control.setValue('coke-0');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const triggerBottom = trigger.getBoundingClientRect().bottom;
+        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // Expect no scroll to be attempted
+        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+
+        expect(overlayBottom.toFixed(2))
+            .toEqual(triggerBottom.toFixed(2),
+                `Expected trigger bottom to align with overlay bottom.`);
+
+        expect(fixture.componentInstance.select._transformOrigin)
+            .toContain(`bottom`, `Expected panel animation to originate at the bottom.`);
+      });
+
+      it('should fall back to "below" positioning if scroll adjustment will not help', () => {
+        // Push the select to a position with not enough space on the top to open
+        select.style.marginTop = '85px';
+
+        // Select an option that cannot be scrolled any farther downward
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const overlayTop = overlayPane.getBoundingClientRect().top;
+        const scrollContainer = overlayPane.querySelector('.md-select-panel');
+
+        // Expect scroll to remain at the max scroll position
+        expect(scrollContainer.scrollTop).toEqual(128, `Expected panel to be at max scroll.`);
+
+        expect(overlayTop.toFixed(2))
+            .toEqual(triggerTop.toFixed(2), `Expected trigger top to align with overlay top.`);
+
+        expect(fixture.componentInstance.select._transformOrigin)
+            .toContain(`top`, `Expected panel animation to originate at the top.`);
+      });
+
+    });
+
+    describe('x-axis positioning', () => {
+
+      beforeEach(() => {
+        select.style.marginLeft = '20px';
+        select.style.marginRight = '20px';
+      });
+
+      it('should align the trigger and the selected option on the x-axis in ltr', () => {
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const triggerLeft = trigger.getBoundingClientRect().left;
+        const firstOptionLeft =
+            overlayPane.querySelector('md-option').getBoundingClientRect().left;
+
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(firstOptionLeft.toFixed(2))
+            .toEqual((triggerLeft - 16).toFixed(2),
+                `Expected trigger to align with the selected option on the x-axis in LTR.`);
+      });
+
+      it('should align the trigger and the selected option on the x-axis in rtl', () => {
+        dir.value = 'rtl';
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const firstOptionRight =
+            overlayPane.querySelector('md-option').getBoundingClientRect().right;
+
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(firstOptionRight.toFixed(2))
+            .toEqual((triggerRight + 16).toFixed(2),
+                `Expected trigger to align with the selected option on the x-axis in RTL.`);
+      });
+
     });
 
   });
@@ -784,6 +985,11 @@ class BasicSelect {
     { value: 'steak-0', viewValue: 'Steak' },
     { value: 'pizza-1', viewValue: 'Pizza' },
     { value: 'tacos-2', viewValue: 'Tacos', disabled: true },
+    { value: 'sandwich-3', viewValue: 'Sandwich' },
+    { value: 'chips-4', viewValue: 'Chips' },
+    { value: 'eggs-5', viewValue: 'Eggs' },
+    { value: 'pasta-6', viewValue: 'Pasta' },
+    { value: 'sushi-7', viewValue: 'Sushi' },
   ];
   control = new FormControl();
   isRequired: boolean;

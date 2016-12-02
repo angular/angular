@@ -42,25 +42,10 @@ export const transformPlaceholder: AnimationEntryMetadata = trigger('transformPl
  * When the panel is removed from the DOM, it simply fades out linearly.
  */
 export const transformPanel: AnimationEntryMetadata = trigger('transformPanel', [
-  state('top-ltr', style({
+  state('showing', style({
     opacity: 1,
     width: 'calc(100% + 32px)',
-    transform: `translate3d(-16px, -9px, 0) scaleY(1)`
-  })),
-  state('top-rtl', style({
-    opacity: 1,
-    width: 'calc(100% + 32px)',
-    transform: `translate3d(16px, -9px, 0) scaleY(1)`
-  })),
-  state('bottom-ltr', style({
-    opacity: 1,
-    width: 'calc(100% + 32px)',
-    transform: `translate3d(-16px, 8px, 0) scaleY(1)`
-  })),
-  state('bottom-rtl', style({
-    opacity: 1,
-    width: 'calc(100% + 32px)',
-    transform: `translate3d(16px, 8px, 0) scaleY(1)`
+    transform: `translate3d(0,0,0) scaleY(1)`
   })),
   transition('void => *', [
     style({

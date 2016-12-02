@@ -5,6 +5,7 @@ $md-select-trigger-height: 30px !default;
 $md-select-trigger-min-width: 112px !default;
 $md-select-arrow-size: 5px !default;
 $md-select-arrow-margin: 4px !default;
+$md-select-panel-max-height: 256px !default;
 
 md-select {
   display: inline-block;
@@ -19,6 +20,7 @@ md-select {
   min-width: $md-select-trigger-min-width;
   cursor: pointer;
   position: relative;
+  box-sizing: border-box;
 
   [aria-disabled='true'] & {
     @include md-control-disabled-underline();
@@ -78,7 +80,7 @@ md-select {
   @include md-menu-base();
   padding-top: 0;
   padding-bottom: 0;
-  transform-origin: top;
+  max-height: $md-select-panel-max-height;
 }
 
 md-option {
