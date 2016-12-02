@@ -54,7 +54,7 @@ function inlineResources(globs) {
         }))
         .then(content => writeFile(filePath, content))
         .catch(err => {
-          console.error('An error occured: ', err);
+          console.error('An error occurred: ', err);
         });
     }));
   }));
