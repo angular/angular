@@ -1,4 +1,5 @@
 import {
+    ChangeDetectorRef,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -156,7 +157,9 @@ export class MdCheckbox implements ControlValueAccessor {
 
   hasFocus: boolean = false;
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {
+  constructor(private _renderer: Renderer,
+              private _elementRef: ElementRef,
+              private _changeDetectorRef: ChangeDetectorRef) {
     this.color = 'accent';
   }
 
@@ -174,6 +177,7 @@ export class MdCheckbox implements ControlValueAccessor {
       this._checked = checked;
       this._transitionCheckState(
           this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+      this._changeDetectorRef.markForCheck();
     }
   }
 

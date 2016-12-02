@@ -100,6 +100,15 @@ describe('MdCheckbox', () => {
       expect(inputElement.indeterminate).toBe(false);
     });
 
+    it('should change native element checked when check programmatically', () => {
+      expect(inputElement.checked).toBe(false);
+
+      checkboxInstance.checked = true;
+      fixture.detectChanges();
+
+      expect(inputElement.checked).toBe(true);
+    });
+
     it('should toggle checked state on click', () => {
       expect(checkboxInstance.checked).toBe(false);
 
