@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileIdentifierMetadata, CompileTypeMetadata, CompileTypeSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
+import {CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleSummary, CompilePipeSummary, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
 import {SummaryResolver} from '../summary_resolver';
 
 import {GeneratedFile} from './generated_file';
@@ -35,7 +35,7 @@ export interface AotSummaryResolverOptions {
 }
 
 export class AotSummaryResolver implements SummaryResolver {
-  private summaryCache: {[srcFilePath: string]: CompileTypeSummary[]} = {};
+  private summaryCache: {[cacheKey: string]: CompileTypeSummary} = {};
 
   constructor(
       private host: AotSummaryResolverHost, private staticReflector: StaticReflector,
@@ -56,18 +56,32 @@ export class AotSummaryResolver implements SummaryResolver {
       }
       return value;
     };
+    const allSummaries = summaries.slice();
+    summaries.forEach((summary) => {
+      if (summary.summaryKind === CompileSummaryKind.NgModule) {
+        const moduleMeta = <CompileNgModuleSummary>summary;
+        moduleMeta.exportedDirectives.concat(moduleMeta.exportedPipes).forEach((id) => {
+          if (!filterFileByPatterns(id.reference.filePath, this.options)) {
+            allSummaries.push(this.resolveSummary(id.reference));
+          }
+        });
+      }
+    });
 
     return new GeneratedFile(
-        srcFileUrl, summaryFileName(srcFileUrl), JSON.stringify(summaries, jsonReplacer));
+        srcFileUrl, summaryFileName(srcFileUrl), JSON.stringify(allSummaries, jsonReplacer));
   }
+
+  private _cacheKey(symbol: StaticSymbol) { return `${symbol.filePath}|${symbol.name}`; }
 
   resolveSummary(staticSymbol: StaticSymbol): any {
     const filePath = staticSymbol.filePath;
     const name = staticSymbol.name;
+    const cacheKey = this._cacheKey(staticSymbol);
     if (!filterFileByPatterns(filePath, this.options)) {
-      let summaries = this.summaryCache[filePath];
+      let summary = this.summaryCache[cacheKey];
       const summaryFilePath = summaryFileName(filePath);
-      if (!summaries) {
+      if (!summary) {
         try {
           const jsonReviver = (key: string, value: any) => {
             if (key === 'reference' && value && value['__symbolic__'] === 'symbol') {
@@ -81,19 +95,23 @@ export class AotSummaryResolver implements SummaryResolver {
               return value;
             }
           };
-          summaries = JSON.parse(this.host.loadSummary(summaryFilePath), jsonReviver);
+          const readSummaries: CompileTypeSummary[] =
+              JSON.parse(this.host.loadSummary(summaryFilePath), jsonReviver);
+          readSummaries.forEach((summary) => {
+            const filePath = summary.type.reference.filePath;
+            this.summaryCache[this._cacheKey(summary.type.reference)] = summary;
+          });
+          summary = this.summaryCache[cacheKey];
         } catch (e) {
           console.error(`Error loading summary file ${summaryFilePath}`);
           throw e;
         }
-        this.summaryCache[filePath] = summaries;
       }
-      const result = summaries.find((summary) => summary.type.reference === staticSymbol);
-      if (!result) {
+      if (!summary) {
         throw new Error(
             `Could not find the symbol ${name} in the summary file ${summaryFilePath}!`);
       }
-      return result;
+      return summary;
     } else {
       return null;
     }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Injectable} from '@angular/core';
-import {CompileSummary} from './compile_metadata';
+import {CompileTypeSummary} from './compile_metadata';
 
 @Injectable()
 export class SummaryResolver {
-  resolveSummary(reference: any): CompileSummary { return null; }
+  resolveSummary(reference: any): CompileTypeSummary { return null; }
 }
