@@ -7,8 +7,9 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, Injector, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
@@ -17,7 +18,6 @@ import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Deta
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
-
 
 describe('Integration', () => {
   beforeEach(() => {
@@ -909,6 +909,37 @@ describe('Integration', () => {
   });
 
   describe('router links', () => {
+    it('should support skipping location update for anchor router links',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = TestBed.createComponent(RootCmp);
+         advance(fixture);
+
+         router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+         router.navigateByUrl('/team/22');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22');
+         expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+         const teamCmp = fixture.debugElement.childNodes[1].componentInstance;
+
+         teamCmp.routerLink = ['/team/0'];
+         advance(fixture);
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         anchor.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 0 [ , right:  ]');
+         expect(location.path()).toEqual('/team/22');
+
+         teamCmp.routerLink = ['/team/1'];
+         advance(fixture);
+         const button = fixture.debugElement.query(By.css('button')).nativeElement;
+         button.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 1 [ , right:  ]');
+         expect(location.path()).toEqual('/team/22');
+       })));
+
     it('should support string router links', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -2591,12 +2622,15 @@ class BlankCmp {
 
 @Component({
   selector: 'team-cmp',
-  template:
-      `team {{id | async}} [ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]`
+  template: `team {{id | async}} ` +
+      `[ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]` +
+      `<a [routerLink]="routerLink" skipLocationChange></a>` +
+      `<button [routerLink]="routerLink" skipLocationChange></button>`
 })
 class TeamCmp {
   id: Observable<string>;
   recordedParams: Params[] = [];
+  routerLink = ['.'];
 
   constructor(public route: ActivatedRoute) {
     this.id = map.call(route.params, (p: any) => p['id']);
