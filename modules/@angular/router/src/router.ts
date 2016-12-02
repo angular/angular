@@ -23,7 +23,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {Data, ResolveData, Routes, validateConfig} from './config';
+import {ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -38,7 +38,7 @@ import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tr
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
-declare var Zone: any;
+declare let Zone: any;
 
 /**
  * @whatItDoes Represents the extra options used during navigation.
@@ -55,16 +55,13 @@ export interface NavigationExtras {
   * [{
   *   path: 'parent',
   *   component: ParentComponent,
-  *   children: [
-  *     {
-  *       path: 'list',
-  *       component: ListComponent
-  *     },
-  *     {
-  *       path: 'child',
-  *       component: ChildComponent
-  *     }
-  *   ]
+  *   children: [{
+  *     path: 'list',
+  *     component: ListComponent
+  *   },{
+  *     path: 'child',
+  *     component: ChildComponent
+  *   }]
   * }]
   * ```
   *
