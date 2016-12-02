@@ -19,7 +19,7 @@ import 'rxjs/add/operator/first';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-dialog-container',
+  selector: 'md-dialog-container, mat-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog-container.css'],
   host: {

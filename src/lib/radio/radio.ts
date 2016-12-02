@@ -18,13 +18,13 @@ import {
   ViewChild,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {
-  NG_VALUE_ACCESSOR,
-  ControlValueAccessor
-} from '@angular/forms';
-import {MdRippleModule, MdUniqueSelectionDispatcher} from '../core';
+  MdRippleModule,
+  MdUniqueSelectionDispatcher,
+  DefaultStyleCompatibilityModeModule,
+} from '../core';
 import {coerceBooleanProperty} from '../core/coersion/boolean-property';
-
 
 
 /**
@@ -54,7 +54,7 @@ export class MdRadioChange {
 }
 
 @Directive({
-  selector: 'md-radio-group',
+  selector: 'md-radio-group, mat-radio-group',
   providers: [MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
@@ -241,7 +241,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
 @Component({
   moduleId: module.id,
-  selector: 'md-radio-button',
+  selector: 'md-radio-button, mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
   encapsulation: ViewEncapsulation.None
@@ -468,8 +468,8 @@ export class MdRadioButton implements OnInit {
 
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule],
-  exports: [MdRadioGroup, MdRadioButton],
+  imports: [CommonModule, MdRippleModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdRadioGroup, MdRadioButton, DefaultStyleCompatibilityModeModule],
   declarations: [MdRadioGroup, MdRadioButton],
 })
 export class MdRadioModule {

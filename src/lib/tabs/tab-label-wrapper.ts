@@ -3,7 +3,7 @@ import {Directive, ElementRef} from '@angular/core';
 
 /** Used in the `md-tab-group` view to display tab labels */
 @Directive({
-  selector: '[md-tab-label-wrapper]'
+  selector: '[md-tab-label-wrapper], [mat-tab-label-wrapper]'
 })
 export class MdTabLabelWrapper {
   constructor(public elementRef: ElementRef) {}

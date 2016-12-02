@@ -7,13 +7,16 @@ import {
   OverlayState,
   ComponentPortal,
   OVERLAY_PROVIDERS,
+  ComponentType,
+  A11yModule,
+  InteractivityChecker,
+  MdPlatform,
+  DefaultStyleCompatibilityModeModule,
 } from '../core';
-import {ComponentType} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
-import {A11yModule, InteractivityChecker, MdPlatform} from '../core';
 import {extendObject} from '../core/util/object-extend';
 export {MdDialogConfig} from './dialog-config';
 export {MdDialogRef} from './dialog-ref';
@@ -151,8 +154,8 @@ function _applyConfigDefaults(dialogConfig: MdDialogConfig): MdDialogConfig {
 
 
 @NgModule({
-  imports: [OverlayModule, PortalModule, A11yModule],
-  exports: [MdDialogContainer],
+  imports: [OverlayModule, PortalModule, A11yModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdDialogContainer, DefaultStyleCompatibilityModeModule],
   declarations: [MdDialogContainer],
   entryComponents: [MdDialogContainer],
 })

@@ -10,19 +10,18 @@ import {
   QueryList,
   Renderer,
   ElementRef,
-  Optional
+  Optional,
 } from '@angular/core';
 import {MdGridTile, MdGridTileText} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
-import {
-    TileStyler,
-    FitTileStyler,
-    RatioTileStyler,
-    FixedTileStyler
-} from './tile-styler';
+import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
 import {MdGridListColsError} from './grid-list-errors';
-import {Dir, MdLineModule} from '../core';
-import {coerceToString, coerceToNumber} from './grid-list-measure';
+import {Dir, MdLineModule, DefaultStyleCompatibilityModeModule} from '../core';
+import {
+  coerceToString,
+  coerceToNumber,
+} from './grid-list-measure';
+
 
 // TODO(kara): Conditional (responsive) column count / row size.
 // TODO(kara): Re-layout on window resize / media change (debounced).
@@ -32,7 +31,7 @@ const MD_FIT_MODE = 'fit';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-grid-list',
+  selector: 'md-grid-list, mat-grid-list',
   templateUrl: 'grid-list.html',
   styleUrls: ['grid-list.css'],
   encapsulation: ViewEncapsulation.None,
@@ -153,8 +152,14 @@ export class MdGridList implements OnInit, AfterContentChecked {
 
 
 @NgModule({
-  imports: [MdLineModule],
-  exports: [MdGridList, MdGridTile, MdGridTileText, MdLineModule],
+  imports: [MdLineModule, DefaultStyleCompatibilityModeModule],
+  exports: [
+    MdGridList,
+    MdGridTile,
+    MdGridTileText,
+    MdLineModule,
+    DefaultStyleCompatibilityModeModule,
+  ],
   declarations: [MdGridList, MdGridTile, MdGridTileText],
 })
 export class MdGridListModule {

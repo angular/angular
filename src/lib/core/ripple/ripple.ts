@@ -15,10 +15,11 @@ import {
   ForegroundRipple,
   ForegroundRippleState,
 } from './ripple-renderer';
+import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode';
 
 
 @Directive({
-  selector: '[md-ripple]',
+  selector: '[md-ripple], [mat-ripple]',
 })
 export class MdRipple implements OnInit, OnDestroy, OnChanges {
   /**
@@ -178,7 +179,8 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
 
 
 @NgModule({
-  exports: [MdRipple],
+  imports: [DefaultStyleCompatibilityModeModule],
+  exports: [MdRipple, DefaultStyleCompatibilityModeModule],
   declarations: [MdRipple],
 })
 export class MdRippleModule {

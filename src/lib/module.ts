@@ -7,7 +7,7 @@ import {
   OverlayModule,
   A11yModule,
   ProjectionModule,
-  StyleCompatibilityModule,
+  DefaultStyleCompatibilityModeModule,
 } from './core/index';
 
 import {MdButtonToggleModule} from './button-toggle/index';
@@ -65,7 +65,7 @@ const MATERIAL_MODULES = [
   A11yModule,
   PlatformModule,
   ProjectionModule,
-  StyleCompatibilityModule,
+  DefaultStyleCompatibilityModeModule,
 ];
 
 @NgModule({
@@ -101,7 +101,7 @@ const MATERIAL_MODULES = [
     MdTooltipModule.forRoot(),
     PlatformModule.forRoot(),
     OverlayModule.forRoot(),
-    StyleCompatibilityModule.forRoot(),
+    DefaultStyleCompatibilityModeModule.forRoot(),
   ],
   exports: MATERIAL_MODULES,
 })

@@ -26,7 +26,7 @@ import {ConnectedOverlayPositionChange} from '../core/overlay/position/connected
 
 @Component({
   moduleId: module.id,
-  selector: 'md-select',
+  selector: 'md-select, mat-select',
   templateUrl: 'select.html',
   styleUrls: ['select.css'],
   encapsulation: ViewEncapsulation.None,

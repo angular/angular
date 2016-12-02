@@ -23,9 +23,11 @@ import {
   OverlayConnectionPosition,
   OriginConnectionPosition,
   OVERLAY_PROVIDERS,
+  DefaultStyleCompatibilityModeModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+
 
 export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
 
@@ -39,7 +41,7 @@ export const TOUCHEND_HIDE_DELAY  = 1500;
  * https://material.google.com/components/tooltips.html
  */
 @Directive({
-  selector: '[md-tooltip]',
+  selector: '[md-tooltip], [mat-tooltip]',
   host: {
     '(longpress)': 'show()',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
@@ -189,7 +191,7 @@ export type TooltipVisibility = 'visible' | 'hidden';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-tooltip-component',
+  selector: 'md-tooltip-component, mat-tooltip-component',
   templateUrl: 'tooltip.html',
   styleUrls: ['tooltip.css'],
   animations: [
@@ -288,8 +290,8 @@ export class TooltipComponent {
 
 
 @NgModule({
-  imports: [OverlayModule],
-  exports: [MdTooltip, TooltipComponent],
+  imports: [OverlayModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdTooltip, TooltipComponent, DefaultStyleCompatibilityModeModule],
   declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
 })

@@ -10,6 +10,8 @@ import {
   ElementRef,
   NgZone
 } from '@angular/core';
+import {DefaultStyleCompatibilityModeModule} from '../core';
+
 
 // TODO(josephperrott): Benchpress tests.
 
@@ -37,7 +39,7 @@ type EasingFn = (currentTime: number, startValue: number,
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-progress-circle',
+  selector: 'md-progress-circle, mat-progress-circle',
   host: {
     'role': 'progressbar',
     '[attr.aria-valuemin]': '_ariaValueMin',
@@ -236,7 +238,7 @@ export class MdProgressCircle implements OnDestroy {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-spinner',
+  selector: 'md-spinner, mat-spinner',
   host: {
     'role': 'progressbar',
     'mode': 'indeterminate',
@@ -334,7 +336,8 @@ function getSvgArc(currentValue: number, rotation: number) {
 
 
 @NgModule({
-  exports: [MdProgressCircle, MdSpinner],
+  imports: [DefaultStyleCompatibilityModeModule],
+  exports: [MdProgressCircle, MdSpinner, DefaultStyleCompatibilityModeModule],
   declarations: [MdProgressCircle, MdSpinner],
 })
 export class MdProgressCircleModule {

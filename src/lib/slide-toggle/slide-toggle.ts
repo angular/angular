@@ -15,7 +15,12 @@ import {
 } from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {applyCssTransform, coerceBooleanProperty, MdGestureConfig} from '../core';
+import {
+  applyCssTransform,
+  coerceBooleanProperty,
+  MdGestureConfig,
+  DefaultStyleCompatibilityModeModule,
+} from '../core';
 import {Observable} from 'rxjs/Observable';
 
 
@@ -36,7 +41,7 @@ let nextId = 0;
 
 @Component({
   moduleId: module.id,
-  selector: 'md-slide-toggle',
+  selector: 'md-slide-toggle, mat-slide-toggle',
   host: {
     '[class.md-checked]': 'checked',
     '[class.md-disabled]': 'disabled',
@@ -330,8 +335,8 @@ class SlideToggleRenderer {
 
 
 @NgModule({
-  imports: [FormsModule],
-  exports: [MdSlideToggle],
+  imports: [FormsModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdSlideToggle, DefaultStyleCompatibilityModeModule],
   declarations: [MdSlideToggle],
 })
 export class MdSlideToggleModule {

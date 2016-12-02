@@ -13,7 +13,7 @@ import {coerceToNumber} from './grid-list-measure';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-grid-tile',
+  selector: 'md-grid-tile, mat-grid-tile',
   host: { 'role': 'listitem' },
   templateUrl: 'grid-tile.html',
   styleUrls: ['grid-list.css'],
@@ -55,7 +55,7 @@ export class MdGridTile {
 
 @Component({
   moduleId: module.id,
-  selector: 'md-grid-tile-header, md-grid-tile-footer',
+  selector: 'md-grid-tile-header, mat-grid-tile-header, md-grid-tile-footer, mat-grid-tile-footer',
   templateUrl: 'grid-tile-text.html'
 })
 export class MdGridTileText implements AfterContentInit {

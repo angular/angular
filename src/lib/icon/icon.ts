@@ -1,22 +1,21 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    OnInit,
-    Renderer,
-    SimpleChange,
-    ViewEncapsulation,
-    AfterViewChecked
+  NgModule,
+  ModuleWithProviders,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  Renderer,
+  SimpleChange,
+  ViewEncapsulation,
+  AfterViewChecked,
 } from '@angular/core';
 import {HttpModule} from '@angular/http';
-import {MdError} from '../core';
+import {MdError, DefaultStyleCompatibilityModeModule} from '../core';
 import {MdIconRegistry} from './icon-registry';
 export {MdIconRegistry} from './icon-registry';
-
 
 /** Exception thrown when an invalid icon name is passed to an md-icon component. */
 export class MdIconInvalidNameError extends MdError {
@@ -61,7 +60,7 @@ export class MdIconInvalidNameError extends MdError {
 @Component({
   moduleId: module.id,
   template: '<ng-content></ng-content>',
-  selector: 'md-icon',
+  selector: 'md-icon, mat-icon',
   styleUrls: ['icon.css'],
   host: {
     'role': 'img',
@@ -251,8 +250,8 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
 
 @NgModule({
-  imports: [HttpModule],
-  exports: [MdIcon],
+  imports: [HttpModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdIcon, DefaultStyleCompatibilityModeModule],
   declarations: [MdIcon],
 })
 export class MdIconModule {

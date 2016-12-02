@@ -5,7 +5,7 @@ import {Directive, ElementRef, Input, OnInit} from '@angular/core';
  * Directive to automatically resize a textarea to fit its content.
  */
 @Directive({
-  selector: 'textarea[md-autosize]',
+  selector: 'textarea[md-autosize], textarea[mat-autosize]',
   host: {
     '(input)': 'resizeToFitContent()',
     '[style.min-height]': '_minHeight',

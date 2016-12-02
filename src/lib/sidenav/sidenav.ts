@@ -1,21 +1,21 @@
 import {
-    NgModule,
-    ModuleWithProviders,
-    AfterContentInit,
-    Component,
-    ContentChildren,
-    ElementRef,
-    Input,
-    Optional,
-    Output,
-    QueryList,
-    ChangeDetectionStrategy,
-    EventEmitter,
-    Renderer,
-    ViewEncapsulation,
+  NgModule,
+  ModuleWithProviders,
+  AfterContentInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  Input,
+  Optional,
+  Output,
+  QueryList,
+  ChangeDetectionStrategy,
+  EventEmitter,
+  Renderer,
+  ViewEncapsulation,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, MdError, coerceBooleanProperty} from '../core';
+import {Dir, MdError, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
 
 
 /** Exception thrown when two MdSidenav are matching the same side. */
@@ -41,7 +41,7 @@ export class MdSidenavToggleResult {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-sidenav',
+  selector: 'md-sidenav, mat-sidenav',
   template: '<ng-content></ng-content>',
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
@@ -259,7 +259,7 @@ export class MdSidenav implements AfterContentInit {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-sidenav-layout',
+  selector: 'md-sidenav-layout, mat-sidenav-layout',
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
@@ -456,8 +456,8 @@ export class MdSidenavLayout implements AfterContentInit {
 
 
 @NgModule({
-  imports: [CommonModule],
-  exports: [MdSidenavLayout, MdSidenav],
+  imports: [CommonModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdSidenavLayout, MdSidenav, DefaultStyleCompatibilityModeModule],
   declarations: [MdSidenavLayout, MdSidenav],
 })
 export class MdSidenavModule {

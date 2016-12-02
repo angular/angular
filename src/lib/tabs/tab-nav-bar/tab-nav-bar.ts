@@ -17,7 +17,7 @@ import {MdRipple} from '../../core/ripple/ripple';
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-tab-nav-bar]',
+  selector: '[md-tab-nav-bar], [mat-tab-nav-bar]',
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   encapsulation: ViewEncapsulation.None,
@@ -32,7 +32,7 @@ export class MdTabNavBar {
 }
 
 @Directive({
-  selector: '[md-tab-link]',
+  selector: '[md-tab-link], [mat-tab-link]',
 })
 export class MdTabLink {
   private _isActive: boolean = false;
@@ -57,7 +57,7 @@ export class MdTabLink {
  * adds the ripple behavior to nav bar labels.
  */
 @Directive({
-  selector: '[md-tab-link]',
+  selector: '[md-tab-link], [mat-tab-link]',
 })
 export class MdTabLinkRipple extends MdRipple implements OnDestroy {
   constructor(private _element: ElementRef) {

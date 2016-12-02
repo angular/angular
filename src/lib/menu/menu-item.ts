@@ -7,7 +7,7 @@ import {MdFocusable} from '../core/a11y/list-key-manager';
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-menu-item]',
+  selector: '[md-menu-item], [mat-menu-item]',
   host: {
     'role': 'menuitem',
     '(click)': '_checkDisabled($event)',

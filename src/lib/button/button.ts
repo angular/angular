@@ -10,7 +10,8 @@ import {
   ModuleWithProviders,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdRippleModule, coerceBooleanProperty} from '../core';
+import {MdRippleModule, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
@@ -157,8 +158,8 @@ export class MdAnchor extends MdButton {
 
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule],
-  exports: [MdButton, MdAnchor],
+  imports: [CommonModule, MdRippleModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdButton, MdAnchor, DefaultStyleCompatibilityModeModule],
   declarations: [MdButton, MdAnchor],
 })
 export class MdButtonModule {

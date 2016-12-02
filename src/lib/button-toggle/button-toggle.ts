@@ -19,7 +19,12 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-import {MdUniqueSelectionDispatcher, coerceBooleanProperty} from '../core';
+import {
+  MdUniqueSelectionDispatcher,
+  coerceBooleanProperty,
+  DefaultStyleCompatibilityModeModule,
+} from '../core';
+
 
 export type ToggleType = 'checkbox' | 'radio';
 
@@ -436,8 +441,13 @@ export class MdButtonToggle implements OnInit {
 
 
 @NgModule({
-  imports: [FormsModule],
-  exports: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
+  imports: [FormsModule, DefaultStyleCompatibilityModeModule],
+  exports: [
+    MdButtonToggleGroup,
+    MdButtonToggleGroupMultiple,
+    MdButtonToggle,
+    DefaultStyleCompatibilityModeModule,
+  ],
   declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
 })
 export class MdButtonToggleModule {

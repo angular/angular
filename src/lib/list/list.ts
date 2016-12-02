@@ -11,16 +11,16 @@ import {
     NgModule,
     ModuleWithProviders,
 } from '@angular/core';
-import {MdLine, MdLineSetter, MdLineModule} from '../core';
+import {MdLine, MdLineSetter, MdLineModule, DefaultStyleCompatibilityModeModule} from '../core';
 
 @Directive({
-  selector: 'md-divider'
+  selector: 'md-divider, mat-divider'
 })
 export class MdListDivider {}
 
 @Component({
   moduleId: module.id,
-  selector: 'md-list, md-nav-list',
+  selector: 'md-list, mat-list, md-nav-list, mat-nav-list',
   host: {'role': 'list'},
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
@@ -29,12 +29,12 @@ export class MdListDivider {}
 export class MdList {}
 
 /* Need directive for a ContentChild query in list-item */
-@Directive({ selector: '[md-list-avatar]' })
+@Directive({ selector: '[md-list-avatar], [mat-list-avatar]' })
 export class MdListAvatar {}
 
 @Component({
   moduleId: module.id,
-  selector: 'md-list-item, a[md-list-item]',
+  selector: 'md-list-item, mat-list-item, a[md-list-item], a[mat-list-item]',
   host: {
     'role': 'listitem',
     '(focus)': '_handleFocus()',
@@ -73,8 +73,15 @@ export class MdListItem implements AfterContentInit {
 
 
 @NgModule({
-  imports: [MdLineModule],
-  exports: [MdList, MdListItem, MdListDivider, MdListAvatar, MdLineModule],
+  imports: [MdLineModule, DefaultStyleCompatibilityModeModule],
+  exports: [
+    MdList,
+    MdListItem,
+    MdListDivider,
+    MdListAvatar,
+    MdLineModule,
+    DefaultStyleCompatibilityModeModule,
+  ],
   declarations: [MdList, MdListItem, MdListDivider, MdListAvatar],
 })
 export class MdListModule {

@@ -6,13 +6,14 @@ import {
   ChangeDetectionStrategy,
   Directive
 } from '@angular/core';
+import {DefaultStyleCompatibilityModeModule} from '../core';
 
 
 /**
  * Content of a card, needed as it's used as a selector in the API.
  */
 @Directive({
-  selector: 'md-card-content'
+  selector: 'md-card-content, mat-card-content'
 })
 export class MdCardContent {}
 
@@ -20,7 +21,7 @@ export class MdCardContent {}
  * Title of a card, needed as it's used as a selector in the API.
  */
 @Directive({
-  selector: 'md-card-title'
+  selector: 'md-card-title, mat-card-title'
 })
 export class MdCardTitle {}
 
@@ -28,7 +29,7 @@ export class MdCardTitle {}
  * Sub-title of a card, needed as it's used as a selector in the API.
  */
 @Directive({
-  selector: 'md-card-subtitle'
+  selector: 'md-card-subtitle, mat-card-subtitle'
 })
 export class MdCardSubtitle {}
 
@@ -36,7 +37,7 @@ export class MdCardSubtitle {}
  * Action section of a card, needed as it's used as a selector in the API.
  */
 @Directive({
-  selector: 'md-card-actions'
+  selector: 'md-card-actions, mat-card-actions'
 })
 export class MdCardActions {}
 
@@ -44,7 +45,7 @@ export class MdCardActions {}
  * Footer of a card, needed as it's used as a selector in the API.
  */
 @Directive({
-  selector: 'md-card-footer'
+  selector: 'md-card-footer, mat-card-footer'
 })
 export class MdCardFooter {}
 
@@ -70,7 +71,7 @@ it also provides a number of preset styles for common card sections, including:
 
 @Component({
   moduleId: module.id,
-  selector: 'md-card',
+  selector: 'md-card, mat-card',
   templateUrl: 'card.html',
   styleUrls: ['card.css'],
   encapsulation: ViewEncapsulation.None,
@@ -95,7 +96,7 @@ TODO(kara): update link to demo site when it exists
 
 @Component({
   moduleId: module.id,
-  selector: 'md-card-header',
+  selector: 'md-card-header, mat-card-header',
   templateUrl: 'card-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -115,7 +116,7 @@ TODO(kara): update link to demo site when it exists
 
 @Component({
   moduleId: module.id,
-  selector: 'md-card-title-group',
+  selector: 'md-card-title-group, mat-card-title-group',
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -124,9 +125,17 @@ export class MdCardTitleGroup {}
 
 
 @NgModule({
+  imports: [DefaultStyleCompatibilityModeModule],
   exports: [
-    MdCard, MdCardHeader, MdCardTitleGroup, MdCardContent, MdCardTitle, MdCardSubtitle,
-    MdCardActions, MdCardFooter
+    MdCard,
+    MdCardHeader,
+    MdCardTitleGroup,
+    MdCardContent,
+    MdCardTitle,
+    MdCardSubtitle,
+    MdCardActions,
+    MdCardFooter,
+    DefaultStyleCompatibilityModeModule,
   ],
   declarations: [
     MdCard, MdCardHeader, MdCardTitleGroup, MdCardContent, MdCardTitle, MdCardSubtitle,

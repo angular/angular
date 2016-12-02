@@ -5,13 +5,15 @@ import {
     ElementRef,
     QueryList
 } from '@angular/core';
+import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode';
+
 
 /**
  * Shared directive to count lines inside a text area, such as a list item.
  * Line elements can be extracted with a @ContentChildren(MdLine) query, then
  * counted by checking the query list's length.
  */
-@Directive({ selector: '[md-line]' })
+@Directive({ selector: '[md-line], [mat-line]' })
 export class MdLine {}
 
 /* Helper that takes a query list of lines and sets the correct class on the host */
@@ -47,7 +49,8 @@ export class MdLineSetter {
 }
 
 @NgModule({
-  exports: [MdLine],
+  imports: [DefaultStyleCompatibilityModeModule],
+  exports: [MdLine, DefaultStyleCompatibilityModeModule],
   declarations: [MdLine],
 })
 export class MdLineModule { }

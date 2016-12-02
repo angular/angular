@@ -12,7 +12,12 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {MdGestureConfig, coerceBooleanProperty, coerceNumberProperty} from '../core';
+import {
+  MdGestureConfig,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  DefaultStyleCompatibilityModeModule,
+} from '../core';
 import {Input as HammerInput} from 'hammerjs';
 import {Dir} from '../core/rtl/dir';
 import {CommonModule} from '@angular/common';
@@ -24,8 +29,9 @@ import {
   LEFT_ARROW,
   UP_ARROW,
   RIGHT_ARROW,
-  DOWN_ARROW
+  DOWN_ARROW,
 } from '../core/keyboard/keycodes';
+
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -51,7 +57,7 @@ export class MdSliderChange {
 
 @Component({
   moduleId: module.id,
-  selector: 'md-slider',
+  selector: 'md-slider, mat-slider',
   providers: [MD_SLIDER_VALUE_ACCESSOR],
   host: {
     '(blur)': '_onBlur()',
@@ -475,8 +481,8 @@ export class SliderRenderer {
 
 
 @NgModule({
-  imports: [CommonModule, FormsModule],
-  exports: [MdSlider],
+  imports: [CommonModule, FormsModule, DefaultStyleCompatibilityModeModule],
+  exports: [MdSlider, DefaultStyleCompatibilityModeModule],
   declarations: [MdSlider],
   providers: [
     {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
