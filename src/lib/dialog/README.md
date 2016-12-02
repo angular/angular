@@ -7,6 +7,7 @@ MdDialog is a service, which opens dialogs components in the view.
 | Name |  Description |
 | --- | --- |
 | `open(component: ComponentType<T>, config: MdDialogConfig): MdDialogRef<T>` | Creates and opens a dialog matching material spec. |
+| `closeAll(): void` | Closes all of the dialogs that are currently open. |
 
 ### Config
 

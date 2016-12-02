@@ -214,6 +214,18 @@ describe('MdDialog', () => {
     expect(overlayPane.style.marginRight).toBe('125px');
   });
 
+  it('should close all of the dialogs', () => {
+    dialog.open(PizzaMsg);
+    dialog.open(PizzaMsg);
+    dialog.open(PizzaMsg);
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(3);
+
+    dialog.closeAll();
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(0);
+  });
+
   describe('disableClose option', () => {
     it('should prevent closing via clicks on the backdrop', () => {
       dialog.open(PizzaMsg, {

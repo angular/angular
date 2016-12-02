@@ -23,7 +23,6 @@ export {MdDialogRef} from './dialog-ref';
 
 
 // TODO(jelbourn): add support for opening with a TemplateRef
-// TODO(jelbourn): add `closeAll` method
 // TODO(jelbourn): dialog content directives (e.g., md-dialog-header)
 // TODO(jelbourn): animations
 
@@ -34,6 +33,9 @@ export {MdDialogRef} from './dialog-ref';
  */
 @Injectable()
 export class MdDialog {
+  /** Keeps track of the currently-open dialogs. */
+  private _openDialogs: MdDialogRef<any>[] = [];
+
   constructor(private _overlay: Overlay, private _injector: Injector) { }
 
   /**
@@ -46,8 +48,27 @@ export class MdDialog {
 
     let overlayRef = this._createOverlay(config);
     let dialogContainer = this._attachDialogContainer(overlayRef, config);
+    let dialogRef = this._attachDialogContent(component, dialogContainer, overlayRef);
 
-    return this._attachDialogContent(component, dialogContainer, overlayRef);
+    this._openDialogs.push(dialogRef);
+    dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
+
+    return dialogRef;
+  }
+
+  /**
+   * Closes all of the currently-open dialogs.
+   */
+  closeAll(): void {
+    let i = this._openDialogs.length;
+
+    while (i--) {
+      // The `_openDialogs` property isn't updated after close until the rxjs subscription
+      // runs on the next microtask, in addition to modifying the array as we're going
+      // through it. We loop through all of them and call close without assuming that
+      // they'll be removed from the list instantaneously.
+      this._openDialogs[i].close();
+    }
   }
 
   /**
@@ -140,6 +161,17 @@ export class MdDialog {
     strategy.width(dialogConfig.width).height(dialogConfig.height);
 
     return state;
+  }
+
+  /**
+   * Removes a dialog from the array of open dialogs.
+   */
+  private _removeOpenDialog(dialogRef: MdDialogRef<any>) {
+    let index = this._openDialogs.indexOf(dialogRef);
+
+    if (index > -1) {
+      this._openDialogs.splice(index, 1);
+    }
   }
 }
 
