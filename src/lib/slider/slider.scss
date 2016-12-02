@@ -23,131 +23,62 @@ $md-slider-tick-size: 2px !default;
 
 md-slider {
   display: inline-block;
-  box-sizing: border-box;
   position: relative;
-  height: $md-slider-thickness;
-  min-width: $md-slider-min-size;
+  box-sizing: border-box;
   padding: $md-slider-padding;
   outline: none;
   vertical-align: middle;
 }
 
 .md-slider-track {
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-  position: relative;
-  top: ($md-slider-thickness - $md-slider-track-thickness) / 2 - $md-slider-padding;
-  height: $md-slider-track-thickness;
-  transition: box-shadow $swift-ease-out-duration $swift-ease-out-timing-function;
-}
-
-.md-slider-has-ticks.md-slider-active .md-slider-track,
-.md-slider-has-ticks:hover .md-slider-track {
-  box-shadow: inset (-2 * $md-slider-tick-size) 0 0 (-$md-slider-tick-size) $md-slider-tick-color;
-}
-
-[dir='rtl'] .md-slider-has-ticks.md-slider-active .md-slider-track,
-[dir='rtl'] .md-slider-has-ticks:hover .md-slider-track {
-  box-shadow: inset (2 * $md-slider-tick-size) 0 0 (-$md-slider-tick-size) $md-slider-tick-color;
-}
-
-.md-slider-inverted .md-slider-track {
-  flex-direction: row-reverse;
+  position: absolute;
 }
 
 .md-slider-track-fill {
-  flex: 0 0 50%;
-  height: $md-slider-track-thickness;
-  transition: flex-basis $swift-ease-out-duration $swift-ease-out-timing-function;
-}
-
-.md-slider-sliding .md-slider-track-fill {
-  transition: none;
+  position: absolute;
+  transform-origin: 0 0;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-ticks-container {
   position: absolute;
   left: 0;
   top: 0;
-  height: $md-slider-track-thickness;
-  width: 100%;
   overflow: hidden;
 }
 
-[dir='rtl'] .md-slider-ticks-container {
-  // translateZ(0) prevents chrome bug where overflow: hidden; doesn't work.
-  transform: translateZ(0) rotate(180deg);
-}
-
 .md-slider-ticks {
-  background: repeating-linear-gradient(to right, $md-slider-tick-color,
-      $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
-  // Firefox doesn't draw the gradient correctly with 'to right'
-  // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
-  background: -moz-repeating-linear-gradient(0.0001deg, $md-slider-tick-color,
-      $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
-  height: $md-slider-track-thickness;
-  width: 100%;
   opacity: 0;
   transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-has-ticks.md-slider-active .md-slider-ticks,
-.md-slider-has-ticks:hover .md-slider-ticks {
-  opacity: 1;
-}
-
 .md-slider-thumb-container {
-  flex: 0 0 auto;
-  position: relative;
-  width: 0;
-  height: 0;
+  position: absolute;
+  z-index: 1;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
 .md-slider-thumb {
   position: absolute;
-  left: -$md-slider-thumb-size / 2;
-  top: -$md-slider-thumb-size / 2;
+  right: -$md-slider-thumb-size / 2;
+  bottom: -$md-slider-thumb-size / 2;
   width: $md-slider-thumb-size;
   height: $md-slider-thumb-size;
   border-radius: 50%;
-  transform-origin: 50% 50%;
   transform: scale($md-slider-thumb-default-scale);
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
 }
 
-.md-slider-active .md-slider-thumb {
-  transform: scale($md-slider-thumb-focus-scale);
-}
-
-.md-slider-active.md-slider-thumb-label-showing .md-slider-thumb {
-  transform: scale(0);
-}
-
 .md-slider-thumb-label {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   position: absolute;
-  left: -$md-slider-thumb-label-size / 2;
-  top: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
   width: $md-slider-thumb-label-size;
   height: $md-slider-thumb-label-size;
   border-radius: 50%;
-  transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap)
-      scale(0.4) rotate(45deg);
   transition: 300ms $swift-ease-in-out-timing-function;
   transition-property: transform, border-radius;
-}
-
-.md-slider-active .md-slider-thumb-label {
-  border-radius: 50% 50% 0;
-  transform: rotate(45deg);
-}
-
-md-slider:not(.md-slider-thumb-label-showing) .md-slider-thumb-label {
-  display: none;
 }
 
 .md-slider-thumb-label-text {
@@ -155,10 +86,220 @@ md-slider:not(.md-slider-thumb-label-showing) .md-slider-thumb-label {
   font-size: 12px;
   font-weight: bold;
   opacity: 0;
-  transform: rotate(-45deg);
   transition: opacity 300ms $swift-ease-in-out-timing-function;
 }
 
-.md-slider-active .md-slider-thumb-label-text {
-  opacity: 1;
+
+// Slider sliding state.
+.md-slider-sliding {
+  .md-slider-track-fill,
+  .md-slider-thumb-container {
+    transition: none;
+  }
+}
+
+
+// Slider with ticks.
+.md-slider-has-ticks {
+  .md-slider-track::after {
+    content: '';
+    position: absolute;
+    border: 0 solid $md-slider-tick-color;
+    opacity: 0;
+    transition: opacity 300ms $swift-ease-in-out-timing-function;
+  }
+
+  &.md-slider-active,
+  &:hover {
+    .md-slider-track::after {
+      opacity: 1;
+    }
+
+    .md-slider-ticks {
+      opacity: 1;
+    }
+  }
+}
+
+
+// Slider with thumb label.
+.md-slider-thumb-label-showing {
+  .md-slider-thumb-label {
+    display: flex;
+  }
+}
+
+
+// Inverted slider.
+.md-slider-axis-inverted {
+  .md-slider-track-fill {
+    transform-origin: 100% 100%;
+  }
+}
+
+
+// Active slider.
+.md-slider-active {
+  .md-slider-thumb {
+    transform: scale($md-slider-thumb-focus-scale);
+  }
+
+  &.md-slider-thumb-label-showing .md-slider-thumb {
+    transform: scale(0);
+  }
+
+  .md-slider-thumb-label {
+    border-radius: 50% 50% 0;
+  }
+
+  .md-slider-thumb-label-text {
+    opacity: 1;
+  }
+}
+
+
+// Horizontal slider.
+.md-slider-horizontal {
+  height: $md-slider-thickness;
+  min-width: $md-slider-min-size;
+
+  .md-slider-track {
+    height: $md-slider-track-thickness;
+    top: ($md-slider-thickness - $md-slider-track-thickness) / 2;
+    left: $md-slider-padding;
+    right: $md-slider-padding;
+  }
+
+  .md-slider-track::after {
+    height: $md-slider-track-thickness;
+    border-left-width: $md-slider-tick-size;
+    right: 0;
+  }
+
+  .md-slider-track-fill {
+    height: $md-slider-track-thickness;
+    width: 100%;
+    transform: scaleX(0);
+  }
+
+  .md-slider-ticks-container {
+    height: $md-slider-track-thickness;
+    width: 100%;
+  }
+
+  .md-slider-ticks {
+    background: repeating-linear-gradient(to right, $md-slider-tick-color,
+        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    // Firefox doesn't draw the gradient correctly with 'to right'
+    // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
+    background: -moz-repeating-linear-gradient(0.0001deg, $md-slider-tick-color,
+        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    height: $md-slider-track-thickness;
+    width: 100%;
+  }
+
+  .md-slider-thumb-container {
+    width: 100%;
+    height: 0;
+    top: 50%;
+  }
+
+  .md-slider-thumb-label {
+    right: -$md-slider-thumb-label-size / 2;
+    top: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
+    transform: translateY($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap) scale(0.4)
+        rotate(45deg);
+  }
+
+  .md-slider-thumb-label-text {
+    transform: rotate(-45deg);
+  }
+
+  &.md-slider-active {
+    .md-slider-thumb-label {
+      transform: rotate(45deg);
+    }
+  }
+}
+
+
+// Vertical slider.
+.md-slider-vertical {
+  width: $md-slider-thickness;
+  min-height: $md-slider-min-size;
+
+  .md-slider-track {
+    width: $md-slider-track-thickness;
+    top: $md-slider-padding;
+    bottom: $md-slider-padding;
+    left: ($md-slider-thickness - $md-slider-track-thickness) / 2;
+  }
+
+  .md-slider-track::after {
+    width: $md-slider-track-thickness;
+    border-top-width: $md-slider-tick-size;
+    bottom: 0;
+  }
+
+  .md-slider-track-fill {
+    height: 100%;
+    width: $md-slider-track-thickness;
+    transform: scaleY(0);
+  }
+
+  .md-slider-ticks-container {
+    width: $md-slider-track-thickness;
+    height: 100%;
+  }
+
+  .md-slider-ticks {
+    background: repeating-linear-gradient(to bottom, $md-slider-tick-color,
+        $md-slider-tick-color $md-slider-tick-size, transparent 0, transparent) repeat;
+    width: $md-slider-track-thickness;
+    height: 100%;
+  }
+
+  .md-slider-thumb-container {
+    height: 100%;
+    width: 0;
+    left: 50%;
+  }
+
+  .md-slider-thumb-label {
+    bottom: -$md-slider-thumb-label-size / 2;
+    left: -($md-slider-thumb-label-size + $md-slider-thumb-arrow-gap);
+    transform: translateX($md-slider-thumb-label-size / 2 + $md-slider-thumb-arrow-gap)
+        scale(0.4) rotate(-45deg);
+  }
+
+  .md-slider-thumb-label-text {
+    transform: rotate(45deg);
+  }
+
+  &.md-slider-active {
+    .md-slider-thumb-label {
+      transform: rotate(-45deg);
+    }
+  }
+}
+
+
+// Slider in RTL languages.
+[dir='rtl'] {
+  .md-slider-track::after {
+    left: 0;
+    right: auto;
+  }
+
+  .md-slider-horizontal {
+    .md-slider-track-fill {
+      transform-origin: 100% 100%;
+    }
+
+    &.md-slider-axis-inverted {
+      .md-slider-track-fill {
+        transform-origin: 0 0;
+      }
+    }
+  }
 }

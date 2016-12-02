@@ -38,6 +38,7 @@ describe('MdSlider', () => {
         SliderWithValueGreaterThanMax,
         SliderWithChangeHandler,
         SliderWithDirAndInvert,
+        VerticalSlider,
       ],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
@@ -109,21 +110,21 @@ describe('MdSlider', () => {
     });
 
     it('should update the track fill on click', () => {
-      expect(trackFillElement.style.flexBasis).toBe('0%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.flexBasis).toBe('39%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.39)');
     });
 
     it('should update the track fill on slide', () => {
-      expect(trackFillElement.style.flexBasis).toBe('0%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0)');
 
       dispatchSlideEventSequence(sliderNativeElement, 0, 0.86, gestureConfig);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.flexBasis).toBe('86%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.86)');
     });
 
     it('should add the md-slider-active class on click', () => {
@@ -276,7 +277,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is halfway on the slider.
-      expect(trackFillElement.style.flexBasis).toBe('50%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
     });
 
     it('should snap the fill to the nearest value on slide', () => {
@@ -284,7 +285,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the halfway point on the slider.
-      expect(trackFillElement.style.flexBasis).toBe('50%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
     });
 
     it('should adjust fill and ticks on mouse enter when min changes', () => {
@@ -294,11 +295,11 @@ describe('MdSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.flexBasis).toBe('75%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
       expect(ticksElement.style.backgroundSize).toBe('75% 2px');
       // Make sure it cuts off the last half tick interval.
-      expect(ticksElement.style.marginLeft).toBe('37.5%');
-      expect(ticksContainerElement.style.marginLeft).toBe('-37.5%');
+      expect(ticksElement.style.transform).toContain('translateX(37.5%)');
+      expect(ticksContainerElement.style.transform).toBe('translateX(-37.5%)');
     });
 
     it('should adjust fill and ticks on mouse enter when max changes', () => {
@@ -311,11 +312,11 @@ describe('MdSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.flexBasis).toBe('50%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
       expect(ticksElement.style.backgroundSize).toBe('50% 2px');
       // Make sure it cuts off the last half tick interval.
-      expect(ticksElement.style.marginLeft).toBe('25%');
-      expect(ticksContainerElement.style.marginLeft).toBe('-25%');
+      expect(ticksElement.style.transform).toContain('translateX(25%)');
+      expect(ticksContainerElement.style.transform).toBe('translateX(-25%)');
     });
   });
 
@@ -390,7 +391,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest step is at 75% of the slider.
-      expect(trackFillElement.style.flexBasis).toBe('75%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
     });
 
     it('should set the correct step value on slide', () => {
@@ -405,7 +406,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the end of the slider.
-      expect(trackFillElement.style.flexBasis).toBe('100%');
+      expect(trackFillElement.style.transform).toBe('scaleX(1)');
     });
   });
 
@@ -434,8 +435,8 @@ describe('MdSlider', () => {
       // Ticks should be 30px apart (therefore 30% for a 100px long slider).
       expect(ticksElement.style.backgroundSize).toBe('30% 2px');
       // Make sure it cuts off the last half tick interval.
-      expect(ticksElement.style.marginLeft).toBe('15%');
-      expect(ticksContainerElement.style.marginLeft).toBe('-15%');
+      expect(ticksElement.style.transform).toContain('translateX(15%)');
+      expect(ticksContainerElement.style.transform).toBe('translateX(-15%)');
     });
   });
 
@@ -465,8 +466,8 @@ describe('MdSlider', () => {
       // long with 100 values, this is 18%.
       expect(ticksElement.style.backgroundSize).toBe('18% 2px');
       // Make sure it cuts off the last half tick interval.
-      expect(ticksElement.style.marginLeft).toBe('9%');
-      expect(ticksContainerElement.style.marginLeft).toBe('-9%');
+      expect(ticksElement.style.transform).toContain('translateX(9%)');
+      expect(ticksContainerElement.style.transform).toBe('translateX(-9%)');
     });
   });
 
@@ -638,7 +639,7 @@ describe('MdSlider', () => {
 
     it('should initialize based on bound value', () => {
       expect(sliderInstance.value).toBe(50);
-      expect(trackFillElement.style.flexBasis).toBe('50%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
     });
 
     it('should update when bound value changes', () => {
@@ -646,7 +647,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(75);
-      expect(trackFillElement.style.flexBasis).toBe('75%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
     });
   });
 
@@ -676,7 +677,7 @@ describe('MdSlider', () => {
     });
 
     it('should set the fill to the min value', () => {
-      expect(trackFillElement.style.flexBasis).toBe('0%');
+      expect(trackFillElement.style.transform).toBe('scaleX(0)');
     });
   });
 
@@ -706,7 +707,7 @@ describe('MdSlider', () => {
     });
 
     it('should set the fill to the max value', () => {
-      expect(trackFillElement.style.flexBasis).toBe('100%');
+      expect(trackFillElement.style.transform).toBe('scaleX(1)');
     });
   });
 
@@ -892,25 +893,25 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(30);
     });
 
-    it('should decrement inverted slider by 1 on right arrow pressed', () => {
+    it('should increment inverted slider by 1 on right arrow pressed', () => {
       testComponent.invert = true;
-      sliderInstance.value = 100;
       fixture.detectChanges();
 
       dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
       fixture.detectChanges();
 
-      expect(sliderInstance.value).toBe(99);
+      expect(sliderInstance.value).toBe(1);
     });
 
-    it('should increment inverted slider by 1 on left arrow pressed', () => {
+    it('should decrement inverted slider by 1 on left arrow pressed', () => {
       testComponent.invert = true;
+      sliderInstance.value = 100;
       fixture.detectChanges();
 
       dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
       fixture.detectChanges();
 
-      expect(sliderInstance.value).toBe(1);
+      expect(sliderInstance.value).toBe(99);
     });
 
     it('should decrement RTL slider by 1 on right arrow pressed', () => {
@@ -934,27 +935,87 @@ describe('MdSlider', () => {
       expect(sliderInstance.value).toBe(1);
     });
 
-    it('should increment inverted RTL slider by 1 on right arrow pressed', () => {
-      testComponent.dir = 'rtl';
-      testComponent.invert = true;
-      fixture.detectChanges();
-
-      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
-      fixture.detectChanges();
-
-      expect(sliderInstance.value).toBe(1);
-    });
-
-    it('should decrement inverted RTL slider by 1 on left arrow pressed', () => {
+    it('should decrement inverted RTL slider by 1 on right arrow pressed', () => {
       testComponent.dir = 'rtl';
       testComponent.invert = true;
       sliderInstance.value = 100;
       fixture.detectChanges();
 
-      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      dispatchKeydownEvent(sliderNativeElement, RIGHT_ARROW);
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(99);
+    });
+
+    it('should increment inverted RTL slider by 1 on left arrow pressed', () => {
+      testComponent.dir = 'rtl';
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchKeydownEvent(sliderNativeElement, LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(1);
+    });
+  });
+
+  describe('vertical slider', () => {
+    let fixture: ComponentFixture<VerticalSlider>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderTrackElement: HTMLElement;
+    let trackFillElement: HTMLElement;
+    let sliderInstance: MdSlider;
+    let testComponent: VerticalSlider;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(VerticalSlider);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderInstance = sliderDebugElement.injector.get(MdSlider);
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
+    });
+
+    it('updates value on click', () => {
+      dispatchClickEventSequence(sliderNativeElement, 0.3);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(70);
+    });
+
+    it('updates value on click in inverted mode', () => {
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.3);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(30);
+    });
+
+    it('should update the track fill on click', () => {
+      expect(trackFillElement.style.transform).toBe('scaleY(0)');
+
+      dispatchClickEventSequence(sliderNativeElement, 0.39);
+      fixture.detectChanges();
+
+      expect(trackFillElement.style.transform).toBe('scaleY(0.61)');
+    });
+
+    it('should update the track fill on click in inverted mode', () => {
+      testComponent.invert = true;
+      fixture.detectChanges();
+
+      expect(trackFillElement.style.transform).toBe('scaleY(0)');
+
+      dispatchClickEventSequence(sliderNativeElement, 0.39);
+      fixture.detectChanges();
+
+      expect(trackFillElement.style.transform).toBe('scaleY(0.39)');
     });
   });
 });
@@ -962,7 +1023,8 @@ describe('MdSlider', () => {
 // Disable animations and make the slider an even 100px (+ 8px padding on either side)
 // so we get nice round values in tests.
 const styles = `
-  md-slider { min-width: 116px !important; }
+  .md-slider-horizontal { min-width: 116px !important; }
+  .md-slider-vertical { min-height: 116px !important; }
   .md-slider-track-fill { transition: none !important; }
 `;
 
@@ -1062,6 +1124,14 @@ class SliderWithDirAndInvert {
   invert = false;
 }
 
+@Component({
+  template: `<md-slider vertical [invert]="invert"></md-slider>`,
+  styles: [styles],
+})
+class VerticalSlider {
+  invert = false;
+}
+
 /**
  * Dispatches a click event sequence (consisting of moueseenter, click) from an element.
  * Note: The mouse event truncates the position for the click.
@@ -1072,8 +1142,8 @@ class SliderWithDirAndInvert {
 function dispatchClickEventSequence(sliderElement: HTMLElement, percentage: number): void {
   let trackElement = sliderElement.querySelector('.md-slider-track');
   let dimensions = trackElement.getBoundingClientRect();
-  let y = dimensions.top;
   let x = dimensions.left + (dimensions.width * percentage);
+  let y = dimensions.top + (dimensions.height * percentage);
 
   dispatchMouseenterEvent(sliderElement);
 
@@ -1110,9 +1180,10 @@ function dispatchSlideEvent(sliderElement: HTMLElement, percent: number,
   let trackElement = sliderElement.querySelector('.md-slider-track');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
+  let y = dimensions.top + (dimensions.height * percent);
 
   gestureConfig.emitEventForElement('slide', sliderElement, {
-    center: { x: x },
+    center: { x: x, y: y },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 }
@@ -1128,11 +1199,12 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
   let trackElement = sliderElement.querySelector('.md-slider-track');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
+  let y = dimensions.top + (dimensions.height * percent);
 
   dispatchMouseenterEvent(sliderElement);
 
   gestureConfig.emitEventForElement('slidestart', sliderElement, {
-    center: { x: x },
+    center: { x: x, y: y },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 }
@@ -1148,9 +1220,10 @@ function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number,
   let trackElement = sliderElement.querySelector('.md-slider-track');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
+  let y = dimensions.top + (dimensions.height * percent);
 
   gestureConfig.emitEventForElement('slideend', sliderElement, {
-    center: { x: x },
+    center: { x: x, y: y },
     srcEvent: { preventDefault: jasmine.createSpy('preventDefault') }
   });
 }
