@@ -77,7 +77,7 @@ class _Visitor implements html.Visitor {
   // _VisitorMode.Merge only
   private _translations: TranslationBundle;
   private _createI18nMessage:
-      (msg: html.Node[], meaning: string, description: string) => i18n.Message;
+      (msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
@@ -337,8 +337,8 @@ class _Visitor implements html.Visitor {
       return;
     }
 
-    const [meaning, description] = _splitMeaningAndDesc(meaningAndDesc);
-    const message = this._createI18nMessage(ast, meaning, description);
+    const [meaning, description, id] = _splitMeaningAndDesc(meaningAndDesc);
+    const message = this._createI18nMessage(ast, meaning, description, id);
     this._messages.push(message);
     return message;
   }
@@ -382,7 +382,7 @@ class _Visitor implements html.Visitor {
 
       if (attr.value && attr.value != '' && i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
-        const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
+        const message: i18n.Message = this._createI18nMessage([attr], meaning, '', '');
         const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes[0] instanceof html.Text) {
@@ -496,8 +496,15 @@ function _getI18nAttr(p: html.Element): html.Attribute {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _splitMeaningAndDesc(i18n: string): [string, string] {
-  if (!i18n) return ['', ''];
+function _splitMeaningAndDesc(i18n: string): [string, string, string] {
+  if (!i18n) return ['', '', ''];
+  const arobaseIndex = i18n.indexOf('@');
   const pipeIndex = i18n.indexOf('|');
-  return pipeIndex == -1 ? ['', i18n] : [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1)];
+  return arobaseIndex > -1 ?
+    pipeIndex == -1 ?
+      ['', i18n.slice(0, arobaseIndex),  i18n.slice(arobaseIndex + 1)] :
+      [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1, arobaseIndex), i18n.slice(arobaseIndex + 1)] :
+      pipeIndex == -1 ?
+        ['', i18n.slice(pipeIndex + 1), ''] :
+        [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1), ''];
 }
