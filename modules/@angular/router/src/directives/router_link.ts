@@ -102,7 +102,10 @@ export class RouterLink {
 
   @HostListener('click', [])
   onClick(): boolean {
-    const extras = {skipLocationChange: attrBoolValue(this.skipLocationChange)};
+    const extras = {
+      skipLocationChange: attrBoolValue(this.skipLocationChange),
+      replaceUrl: attrBoolValue(this.replaceUrl),
+    };
     this.router.navigateByUrl(this.urlTree, extras);
     return true;
   }
@@ -114,7 +117,6 @@ export class RouterLink {
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
       preserveFragment: attrBoolValue(this.preserveFragment),
-      replaceUrl: attrBoolValue(this.replaceUrl),
     });
   }
 }
@@ -176,7 +178,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    const extras = {skipLocationChange: attrBoolValue(this.skipLocationChange)};
+    const extras = {
+      skipLocationChange: attrBoolValue(this.skipLocationChange),
+      replaceUrl: attrBoolValue(this.replaceUrl),
+    };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;
   }
@@ -192,7 +197,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
       preserveFragment: attrBoolValue(this.preserveFragment),
-      replaceUrl: attrBoolValue(this.replaceUrl),
     });
   }
 }
