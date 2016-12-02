@@ -145,6 +145,11 @@ do
     $TSC -p ${SRCDIR}/tsconfig-testing.json
   fi
 
+  if [[ -e ${SRCDIR}/tsconfig-2015.json ]]; then
+    echo "======      COMPILING ESM: ${TSC} -p ${SRCDIR}/tsconfig-2015.json"
+    ${TSC} -p ${SRCDIR}/tsconfig-2015.json
+  fi
+
   echo "======      TSC 1.8 d.ts compat for ${DESTDIR}   ====="
   # safely strips 'readonly' specifier from d.ts files to make them compatible with tsc 1.8
   if [ "$(uname)" == "Darwin" ]; then

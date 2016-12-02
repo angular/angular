@@ -81,7 +81,8 @@ export class StaticReflector implements ReflectorReader {
       private host: StaticReflectorHost,
       private staticSymbolCache: StaticSymbolCache = new StaticSymbolCache(),
       knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
-      knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = []) {
+      knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = [],
+      private errorRecorder?: (error: any, fileName: string) => void) {
     this.initializeConversionMap();
     knownMetadataClasses.forEach(
         (kc) => this._registerDecoratorOrConstructor(
@@ -155,7 +156,10 @@ export class StaticReflector implements ReflectorReader {
 
   public parameters(type: StaticSymbol): any[] {
     if (!(type instanceof StaticSymbol)) {
-      throw new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`);
+      this.reportError(
+          new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`),
+          type);
+      return [];
     }
     try {
       let parameters = this.parameterCache.get(type);
@@ -219,8 +223,10 @@ export class StaticReflector implements ReflectorReader {
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     if (!(type instanceof StaticSymbol)) {
-      throw new Error(
-          `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`);
+      this.reportError(
+          new Error(
+              `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`),
+          type);
     }
     try {
       return !!this._methodNames(type)[lcProperty];
@@ -301,11 +307,21 @@ export class StaticReflector implements ReflectorReader {
     return this.staticSymbolCache.get(declarationFile, name, members);
   }
 
+  private reportError(error: Error, context: StaticSymbol, path?: string) {
+    if (this.errorRecorder) {
+      this.errorRecorder(error, (context && context.filePath) || path);
+    } else {
+      throw error;
+    }
+  }
+
   private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
     const resolveModule = (moduleName: string): string => {
       const resolvedModulePath = this.host.moduleNameToFileName(moduleName, filePath);
       if (!resolvedModulePath) {
-        throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
+        this.reportError(
+            new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`),
+            null, filePath);
       }
       return resolvedModulePath;
     };
@@ -338,7 +354,12 @@ export class StaticReflector implements ReflectorReader {
               if (typeof exportSymbol !== 'string') {
                 symName = exportSymbol.name;
               }
-              staticSymbol = this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
+              const resolvedModule = resolveModule(moduleExport.from);
+              if (resolvedModule) {
+                staticSymbol =
+                    this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
+                break;
+              }
             }
           }
         }
@@ -348,10 +369,12 @@ export class StaticReflector implements ReflectorReader {
           for (const moduleExport of metadata['exports']) {
             if (!moduleExport.export) {
               const resolvedModule = resolveModule(moduleExport.from);
-              const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
-              if (candidateSymbol) {
-                staticSymbol = candidateSymbol;
-                break;
+              if (resolvedModule) {
+                const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
+                if (candidateSymbol) {
+                  staticSymbol = candidateSymbol;
+                  break;
+                }
               }
             }
           }
@@ -689,7 +712,16 @@ export class StaticReflector implements ReflectorReader {
       }
     }
 
-    const result = simplifyInContext(context, value, 0);
+    const recordedSimplifyInContext = (context: StaticSymbol, value: any, depth: number) => {
+      try {
+        return simplifyInContext(context, value, depth);
+      } catch (e) {
+        this.reportError(e, context);
+      }
+    };
+
+    const result = this.errorRecorder ? recordedSimplifyInContext(context, value, 0) :
+                                        simplifyInContext(context, value, 0);
     if (shouldIgnore(result)) {
       return undefined;
     }
@@ -717,8 +749,10 @@ export class StaticReflector implements ReflectorReader {
             {__symbolic: 'module', version: SUPPORTED_SCHEMA_VERSION, module: module, metadata: {}};
       }
       if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
-        throw new Error(
-            `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`);
+        this.reportError(
+            new Error(
+                `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`),
+            null);
       }
       this.metadataCache.set(module, moduleMetadata);
     }

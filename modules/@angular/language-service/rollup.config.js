@@ -18,7 +18,7 @@ var locations = {
   'tsc-wrapped': normalize('../../../dist/tools/@angular') + '/',
 };
 
-var esm_suffixes = {};
+var esm_suffixes = {'compiler-cli': esm};
 
 function normalize(fileName) {
   return path.resolve(__dirname, fileName);

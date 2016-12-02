@@ -166,6 +166,7 @@ export class MyComponent {
     const originalContent = mockHost.getFileContent(fileName);
     const newContent = originalContent + code;
     mockHost.override(fileName, originalContent + code);
+    ngHost.updateAnalyzedModules();
     try {
       cb(fileName, newContent);
     } finally {

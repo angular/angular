@@ -88,6 +88,25 @@ export interface TemplateSource {
 export type TemplateSources = TemplateSource[] /* | undefined */;
 
 /**
+ * Error information found getting declaration information
+ *
+ * A host type; see `LanagueServiceHost`.
+ *
+ * @experimental
+ */
+export interface DeclarationError {
+  /**
+   * The span of the error in the declaration's module.
+   */
+  readonly span: Span;
+
+  /**
+   * The message to display describing the error.
+   */
+  readonly message: string;
+}
+
+/**
  * Information about the component declarations.
  *
  * A file might contain a declaration without a template because the file contains only
@@ -117,11 +136,10 @@ export interface Declaration {
    */
   readonly metadata?: CompileDirectiveMetadata;
 
-
   /**
    * Error reported trying to get the metadata.
    */
-  readonly error?: string;
+  readonly errors: DeclarationError[];
 }
 
 /**
