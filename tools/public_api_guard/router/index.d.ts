@@ -249,7 +249,7 @@ export declare class RouterLink {
     routerLink: any[] | string;
     skipLocationChange: boolean;
     urlTree: UrlTree;
-    constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
+    constructor(router: Router, route: ActivatedRoute);
     onClick(): boolean;
 }
 
@@ -279,10 +279,6 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     };
     replaceUrl: boolean;
     routerLink: any[] | string;
-    routerLinkOptions: {
-        preserveQueryParams: boolean;
-        preserveFragment: boolean;
-    };
     skipLocationChange: boolean;
     target: string;
     urlTree: UrlTree;
