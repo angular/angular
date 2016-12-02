@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, AotSummaryResolverHost, CompileTypeSummary, StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {AotSummaryResolver, AotSummaryResolverHost, CompileNgModuleSummary, CompileSummaryKind, CompileTypeSummary, StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
 import * as path from 'path';
 
 import {MockStaticReflectorHost} from './static_reflector_spec';
@@ -36,36 +36,78 @@ export function main() {
       expect(resolver.serializeSummaries('a.js', []).genFileUrl).toBe('a.ngsummary.json');
     });
 
-    it('should serialize plain data', () => {
-      init();
-      const data = <any>[{a: 'b'}];
-      expect(JSON.parse(resolver.serializeSummaries('someSourceFile', data).source)).toEqual(data);
-    });
-
     it('should serialize summary for .ts files and deserialize based on .d.ts files', () => {
       init();
       const serializedData = resolver.serializeSummaries(
-          '/tmp/some_class.ts', [{
-            isSummary: true,
+          '/tmp/some_pipe.ts', [{
+            summaryKind: CompileSummaryKind.Pipe,
             type: {
-              reference: staticReflector.getStaticSymbol('/tmp/some_class.ts', 'SomeClass'),
+              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.ts', 'SomePipe'),
               diDeps: [],
               lifecycleHooks: []
-            }
+            },
           }]);
 
       // Note: this creates a new staticReflector!
       init({[serializedData.genFileUrl]: serializedData.source});
 
       expect(resolver.resolveSummary(
-                 staticReflector.getStaticSymbol('/tmp/some_class.d.ts', 'SomeClass')))
+                 staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe')))
           .toEqual({
-            isSummary: true,
+            summaryKind: CompileSummaryKind.Pipe,
             type: {
-              reference: staticReflector.getStaticSymbol('/tmp/some_class.d.ts', 'SomeClass'),
+              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe'),
               diDeps: [],
               lifecycleHooks: []
-            }
+            },
+          });
+    });
+
+    it('should store reexports in the same file', () => {
+      init();
+      const reexportedData = resolver.serializeSummaries(
+          '/tmp/some_pipe.ts', [{
+            summaryKind: CompileSummaryKind.Pipe,
+            type: {
+              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.ts', 'SomeReexportedPipe'),
+              diDeps: [],
+              lifecycleHooks: []
+            },
+          }]);
+
+      init({[reexportedData.genFileUrl]: reexportedData.source});
+      const serializedData = resolver.serializeSummaries('/tmp/some_module.ts', [
+        <CompileNgModuleSummary>{
+          summaryKind: CompileSummaryKind.NgModule,
+          type: {
+            reference: staticReflector.getStaticSymbol('/tmp/some_module.ts', 'SomeModule'),
+            diDeps: [],
+            lifecycleHooks: []
+          },
+          exportedPipes: [{
+            reference: staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe')
+          }],
+          exportedDirectives: [],
+          providers: [],
+          entryComponents: [],
+          modules: []
+        }
+      ]);
+
+      init({[serializedData.genFileUrl]: serializedData.source});
+
+      resolver.resolveSummary(
+          staticReflector.getStaticSymbol('/tmp/some_module.d.ts', 'SomeModule'));
+      expect(resolver.resolveSummary(
+                 staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe')))
+          .toEqual({
+            summaryKind: CompileSummaryKind.Pipe,
+            type: {
+              reference:
+                  staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe'),
+              diDeps: [],
+              lifecycleHooks: []
+            },
           });
     });
 
