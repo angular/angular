@@ -32,7 +32,6 @@ import {PRIMARY_OUTLET} from '../shared';
  *   (activate)='onActivate($event)'
  *   (deactivate)='onDeactivate($event)'></router-outlet>
  * ```
- * @selector 'a[routerLink]'
  * @ngModule RouterModule
  *
  * @stable
