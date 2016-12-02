@@ -8,4 +8,8 @@ export class RelativePositionStrategy implements PositionStrategy {
     // Not yet implemented.
     return null;
   }
+
+  dispose() {
+    // Not yet implemented.
+  }
 }

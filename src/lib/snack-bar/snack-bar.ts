@@ -121,7 +121,6 @@ export class MdSnackBar {
   private _createOverlay(): OverlayRef {
     let state = new OverlayState();
     state.positionStrategy = this._overlay.position().global()
-        .fixed()
         .centerHorizontally()
         .bottom('0');
     return this._overlay.create(state);

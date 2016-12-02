@@ -1,67 +1,55 @@
-import {applyCssTransform} from '../../style/apply-transform';
 import {PositionStrategy} from './position-strategy';
 
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
- * explicit position relative to the browser's viewport.
+ * explicit position relative to the browser's viewport. We use flexbox, instead of
+ * transforms, in order to avoid issues with subpixel rendering which can cause the
+ * element to become blurry.
  */
 export class GlobalPositionStrategy implements PositionStrategy {
-  private _cssPosition: string = 'absolute';
-  private _top: string = '';
-  private _bottom: string = '';
-  private _left: string = '';
-  private _right: string = '';
+  private _cssPosition: string = 'static';
+  private _topOffset: string = '';
+  private _bottomOffset: string = '';
+  private _leftOffset: string = '';
+  private _rightOffset: string = '';
+  private _alignItems: string = '';
+  private _justifyContent: string = '';
   private _width: string = '';
   private _height: string = '';
 
-  /** Array of individual applications of translateX(). Currently only for centering. */
-  private _translateX: string[] = [];
-
-  /** Array of individual applications of translateY(). Currently only for centering. */
-  private _translateY: string[] = [];
-
-  /** Sets the element to use CSS position: fixed */
-  fixed() {
-    this._cssPosition = 'fixed';
-    return this;
-  }
-
-  /** Sets the element to use CSS position: absolute. This is the default. */
-  absolute() {
-    this._cssPosition = 'absolute';
-    return this;
-  }
+  /* A lazily-created wrapper for the overlay element that is used as a flex container.  */
+  private _wrapper: HTMLElement;
 
   /** Sets the top position of the overlay. Clears any previously set vertical position. */
   top(value: string) {
-    this._bottom = '';
-    this._translateY = [];
-    this._top = value;
+    this._bottomOffset = '';
+    this._topOffset = value;
+    this._alignItems = 'flex-start';
     return this;
   }
 
   /** Sets the left position of the overlay. Clears any previously set horizontal position. */
   left(value: string) {
-    this._right = '';
-    this._translateX = [];
-    this._left = value;
+    this._rightOffset = '';
+    this._leftOffset = value;
+    this._justifyContent = 'flex-start';
     return this;
   }
 
   /** Sets the bottom position of the overlay. Clears any previously set vertical position. */
   bottom(value: string) {
-    this._top = '';
-    this._translateY = [];
-    this._bottom = value;
+    this._topOffset = '';
+    this._bottomOffset = value;
+    this._alignItems = 'flex-end';
     return this;
   }
 
   /** Sets the right position of the overlay. Clears any previously set horizontal position. */
   right(value: string) {
-    this._left = '';
-    this._translateX = [];
-    this._right = value;
+    this._leftOffset = '';
+    this._rightOffset = value;
+    this._justifyContent = 'flex-end';
     return this;
   }
 
@@ -96,14 +84,8 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * Clears any previously set horizontal position.
    */
   centerHorizontally(offset = '') {
-    this._left = '50%';
-    this._right = '';
-    this._translateX = ['-50%'];
-
-    if (offset) {
-      this._translateX.push(offset);
-    }
-
+    this.left(offset);
+    this._justifyContent = 'center';
     return this;
   }
 
@@ -112,14 +94,8 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * Clears any previously set vertical position.
    */
   centerVertically(offset = '') {
-    this._top = '50%';
-    this._bottom = '';
-    this._translateY = ['-50%'];
-
-    if (offset) {
-      this._translateY.push(offset);
-    }
-
+    this.top(offset);
+    this._alignItems = 'center';
     return this;
   }
 
@@ -128,26 +104,37 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * TODO: internal
    */
   apply(element: HTMLElement): Promise<void> {
-    element.style.position = this._cssPosition;
-    element.style.top = this._top;
-    element.style.left = this._left;
-    element.style.bottom = this._bottom;
-    element.style.right = this._right;
-    element.style.width = this._width;
-    element.style.height = this._height;
+    if (!this._wrapper) {
+      this._wrapper = document.createElement('div');
+      this._wrapper.classList.add('md-global-overlay-wrapper');
+      element.parentNode.insertBefore(this._wrapper, element);
+      this._wrapper.appendChild(element);
+    }
 
-    // TODO(jelbourn): we don't want to always overwrite the transform property here,
-    // because it will need to be used for animations.
-    let translateX = this._reduceTranslateValues('translateX', this._translateX);
-    let translateY = this._reduceTranslateValues('translateY', this._translateY);
+    let styles = element.style;
+    let parentStyles = (element.parentNode as HTMLElement).style;
 
-    applyCssTransform(element, `${translateX} ${translateY}`);
+    styles.position = this._cssPosition;
+    styles.marginTop = this._topOffset;
+    styles.marginLeft = this._leftOffset;
+    styles.marginBottom = this._bottomOffset;
+    styles.marginRight = this._rightOffset;
+    styles.width = this._width;
+    styles.height = this._height;
+
+    parentStyles.justifyContent = this._justifyContent;
+    parentStyles.alignItems = this._alignItems;
 
     return Promise.resolve(null);
   }
 
-  /** Reduce a list of translate values to a string that can be used in the transform property */
-  private _reduceTranslateValues(translateFn: string, values: string[]) {
-    return values.map(t => `${translateFn}(${t})`).join(' ');
+  /**
+   * Removes the wrapper element from the DOM.
+   */
+  dispose(): void {
+    if (this._wrapper && this._wrapper.parentNode) {
+      this._wrapper.parentNode.removeChild(this._wrapper);
+      this._wrapper = null;
+    }
   }
 }

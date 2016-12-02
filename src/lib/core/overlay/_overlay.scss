@@ -8,10 +8,7 @@
 
   // TODO(jelbourn): change from the `md` prefix to something else for everything in the toolkit.
 
-  // The overlay-container is an invisible element which contains all individual overlays.
-  .md-overlay-container {
-    position: fixed;
-
+  .md-overlay-container, .md-global-overlay-wrapper {
     // Disable events from being captured on the overlay container.
     pointer-events: none;
 
@@ -20,7 +17,22 @@
     left: 0;
     height: 100%;
     width: 100%;
+  }
+
+  // The overlay-container is an invisible element which contains all individual overlays.
+  .md-overlay-container {
+    position: fixed;
     z-index: $md-z-index-overlay-container;
+  }
+
+  // We use an extra wrapper element in order to use make the overlay itself a flex item.
+  // This makes centering the overlay easy without running into the subpixel rendering
+  // problems tied to using `transform` and without interfering with the other position
+  // strategies.
+  .md-global-overlay-wrapper {
+    display: flex;
+    position: absolute;
+    z-index: $md-z-index-overlay;
   }
 
   // A single overlay pane.

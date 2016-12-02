@@ -60,6 +60,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   /**
+   * To be used to for any cleanup after the element gets destroyed.
+   */
+  dispose() { }
+
+  /**
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
    * TODO: internal

@@ -169,7 +169,7 @@ describe('MdDialog', () => {
 
     let overlayPane = overlayContainerElement.querySelector('.md-overlay-pane') as HTMLElement;
 
-    expect(overlayPane.style.top).toBe('100px');
+    expect(overlayPane.style.marginTop).toBe('100px');
   });
 
   it('should should override the bottom offset of the overlay pane', () => {
@@ -183,7 +183,7 @@ describe('MdDialog', () => {
 
     let overlayPane = overlayContainerElement.querySelector('.md-overlay-pane') as HTMLElement;
 
-    expect(overlayPane.style.bottom).toBe('200px');
+    expect(overlayPane.style.marginBottom).toBe('200px');
   });
 
   it('should should override the left offset of the overlay pane', () => {
@@ -197,7 +197,7 @@ describe('MdDialog', () => {
 
     let overlayPane = overlayContainerElement.querySelector('.md-overlay-pane') as HTMLElement;
 
-    expect(overlayPane.style.left).toBe('250px');
+    expect(overlayPane.style.marginLeft).toBe('250px');
   });
 
   it('should should override the right offset of the overlay pane', () => {
@@ -211,7 +211,7 @@ describe('MdDialog', () => {
 
     let overlayPane = overlayContainerElement.querySelector('.md-overlay-pane') as HTMLElement;
 
-    expect(overlayPane.style.right).toBe('125px');
+    expect(overlayPane.style.marginRight).toBe('125px');
   });
 
   describe('disableClose option', () => {
