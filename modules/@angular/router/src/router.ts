@@ -281,11 +281,11 @@ function defaultErrorHandler(error: any): any {
 type NavigationParams = {
   id: number,
   rawUrl: UrlTree,
-  prevRawUrl: UrlTree,
   extras: NavigationExtras,
   resolve: any,
   reject: any,
-  promise: Promise<boolean>
+  promise: Promise<boolean>,
+  imperative: boolean
 };
 
 
@@ -387,8 +387,19 @@ export class Router {
     // which does not work properly with zone.js in IE and Safari
     this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
       const rawUrlTree = this.urlSerializer.parse(change['url']);
+      const lastNavigation = this.navigations.value;
+
+      // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
+      // and that navigation results in 'replaceState' that leads to the same URL,
+      // we should skip those.
+      if (lastNavigation && lastNavigation.imperative &&
+          lastNavigation.rawUrl.toString() === rawUrlTree.toString()) {
+        return;
+      }
+
       setTimeout(() => {
-        this.scheduleNavigation(rawUrlTree, {skipLocationChange: change['pop'], replaceUrl: true});
+        this.scheduleNavigation(
+            rawUrlTree, false, {skipLocationChange: change['pop'], replaceUrl: true});
       }, 0);
     }));
   }
@@ -510,11 +521,12 @@ export class Router {
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
     if (url instanceof UrlTree) {
-      return this.scheduleNavigation(this.urlHandlingStrategy.merge(url, this.rawUrlTree), extras);
+      return this.scheduleNavigation(
+          this.urlHandlingStrategy.merge(url, this.rawUrlTree), true, extras);
     } else {
       const urlTree = this.urlSerializer.parse(url);
       return this.scheduleNavigation(
-          this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), extras);
+          this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), true, extras);
     }
   }
 
@@ -596,12 +608,8 @@ export class Router {
         .subscribe(() => {});
   }
 
-  private scheduleNavigation(rawUrl: UrlTree, extras: NavigationExtras): Promise<boolean> {
-    const prevRawUrl = this.navigations.value ? this.navigations.value.rawUrl : null;
-    if (prevRawUrl && prevRawUrl.toString() === rawUrl.toString()) {
-      return this.navigations.value.promise;
-    }
-
+  private scheduleNavigation(rawUrl: UrlTree, imperative: boolean, extras: NavigationExtras):
+      Promise<boolean> {
     let resolve: any = null;
     let reject: any = null;
 
@@ -611,18 +619,17 @@ export class Router {
     });
 
     const id = ++this.navigationId;
-    this.navigations.next({id, rawUrl, prevRawUrl, extras, resolve, reject, promise});
+    this.navigations.next({id, imperative, rawUrl, extras, resolve, reject, promise});
 
     // Make sure that the error is propagated even though `processNavigations` catch
     // handler does not rethrow
     return promise.catch((e: any) => Promise.reject(e));
   }
 
-  private executeScheduledNavigation({id, rawUrl, prevRawUrl, extras, resolve,
-                                      reject}: NavigationParams): void {
+  private executeScheduledNavigation({id, rawUrl, extras, resolve, reject}: NavigationParams):
+      void {
     const url = this.urlHandlingStrategy.extract(rawUrl);
-    const prevUrl = prevRawUrl ? this.urlHandlingStrategy.extract(prevRawUrl) : null;
-    const urlTransition = !prevUrl || url.toString() !== prevUrl.toString();
+    const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
     if (urlTransition && this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
       this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
@@ -635,7 +642,8 @@ export class Router {
       // we cannot process the current URL, but we could process the previous one =>
       // we need to do some cleanup
     } else if (
-        urlTransition && prevRawUrl && this.urlHandlingStrategy.shouldProcessUrl(prevRawUrl)) {
+        urlTransition && this.rawUrlTree &&
+        this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
       this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
