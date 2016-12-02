@@ -102,7 +102,8 @@ export class RouterLink {
 
   @HostListener('click', [])
   onClick(): boolean {
-    this.router.navigateByUrl(this.urlTree);
+    const extras = {skipLocationChange: attrBoolValue(this.skipLocationChange)};
+    this.router.navigateByUrl(this.urlTree, extras);
     return true;
   }
 
@@ -111,10 +112,9 @@ export class RouterLink {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment),
-      skipLocationChange: toBool(this.skipLocationChange),
-      replaceUrl: toBool(this.replaceUrl),
+      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveFragment: attrBoolValue(this.preserveFragment),
+      replaceUrl: attrBoolValue(this.replaceUrl),
     });
   }
 }
@@ -176,7 +176,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    this.router.navigateByUrl(this.urlTree);
+    const extras = {skipLocationChange: attrBoolValue(this.skipLocationChange)};
+    this.router.navigateByUrl(this.urlTree, extras);
     return false;
   }
 
@@ -189,14 +190,13 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
-      preserveQueryParams: toBool(this.preserveQueryParams),
-      preserveFragment: toBool(this.preserveFragment),
-      skipLocationChange: toBool(this.skipLocationChange),
-      replaceUrl: toBool(this.replaceUrl),
+      preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      preserveFragment: attrBoolValue(this.preserveFragment),
+      replaceUrl: attrBoolValue(this.replaceUrl),
     });
   }
 }
 
-function toBool(s: any): boolean {
+function attrBoolValue(s: any): boolean {
   return s === '' || !!s;
 }
