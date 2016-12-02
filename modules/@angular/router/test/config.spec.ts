@@ -12,7 +12,10 @@ import {PRIMARY_OUTLET} from '../src/shared';
 describe('config', () => {
   describe('validateConfig', () => {
     it('should not throw when no errors', () => {
-      validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
+      expect(
+          () => validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]))
+          .not.toThrow();
+    });
     });
 
     it('should throw for undefined route', () => {
@@ -57,8 +60,7 @@ describe('config', () => {
               `Invalid configuration of route 'a': redirectTo and component cannot be used together`);
     });
 
-
-    it('should throw when path and mathcer are used together', () => {
+    it('should throw when path and matcher are used together', () => {
       expect(() => { validateConfig([{path: 'a', matcher: <any>'someFunc', children: []}]); })
           .toThrowError(
               `Invalid configuration of route 'a': path and matcher cannot be used together`);
