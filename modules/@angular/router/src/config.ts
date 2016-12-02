@@ -392,10 +392,11 @@ function validateNode(route: Route): void {
     throw new Error(
         `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
   }
-  if (route.path === undefined) {
-    throw new Error(`Invalid route configuration: routes must have path specified`);
+  if (route.path === void 0 && route.matcher === void 0) {
+    throw new Error(
+        `Invalid route configuration: routes must have either a path or a matcher specified`);
   }
-  if (route.path.startsWith('/')) {
+  if (typeof route.path === 'string' && route.path.charAt(0) === '/') {
     throw new Error(
         `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
   }
