@@ -27,10 +27,10 @@ Declares an output property that fires events that you can subscribe to with an 
 
 @cheatsheetItem
 syntax(ts):
-`@HostBinding('[class.valid]') isValid;`|`@HostBinding('[class.valid]')`
+`@HostBinding('class.valid') isValid;`|`@HostBinding('class.valid')`
 syntax(js):
-`ng.core.HostBinding('[class.valid]',
-    'isValid', myComponent);`|`ng.core.HostBinding('[class.valid]', 'isValid'`|`);`
+`ng.core.HostBinding('class.valid',
+    'isValid', myComponent);`|`ng.core.HostBinding('class.valid', 'isValid'`|`);`
 description:
 Binds a host element property (here, the CSS class `valid`) to a directive/component property (`isValid`).
 
