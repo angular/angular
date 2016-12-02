@@ -397,6 +397,9 @@ function validateNode(route: Route): void {
     throw new Error(
         `Invalid configuration of route '${route.path}': redirectTo and component cannot be used together`);
   }
+  if (route.path === undefined && !route.matcher) {
+    throw new Error(`Invalid route configuration: routes must have path or matcher specified`);
+  }
   if (!!route.path && !!route.matcher) {
     throw new Error(
         `Invalid configuration of route '${route.path}': path and matcher cannot be used together`);
@@ -406,10 +409,7 @@ function validateNode(route: Route): void {
     throw new Error(
         `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
   }
-  if (route.path === undefined) {
-    throw new Error(`Invalid route configuration: routes must have path specified`);
-  }
-  if (route.path.startsWith('/')) {
+  if (route.path && route.path.startsWith('/')) {
     throw new Error(
         `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
   }
