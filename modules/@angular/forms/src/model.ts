@@ -384,6 +384,7 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (this.enabled) {
+      this._cancelExistingSubscription();
       this._errors = this._runValidator();
       this._status = this._calculateStatus();
 
@@ -417,7 +418,6 @@ export abstract class AbstractControl {
   private _runAsyncValidator(emitEvent: boolean): void {
     if (this.asyncValidator) {
       this._status = PENDING;
-      this._cancelExistingSubscription();
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription =
           obs.subscribe({next: (res: {[key: string]: any}) => this.setErrors(res, {emitEvent})});
