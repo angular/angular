@@ -1582,6 +1582,29 @@ export function main() {
            expect(form.valid).toEqual(true);
          }));
 
+      it('async validator should not override result of sync validator', fakeAsync(() => {
+           const fixture = initTest(FormGroupComp);
+           const control =
+               new FormControl('', Validators.required, uniqLoginAsyncValidator('expected', 100));
+           fixture.componentInstance.form = new FormGroup({'login': control});
+           fixture.detectChanges();
+           tick();
+
+           expect(control.hasError('required')).toEqual(true);
+
+           const input = fixture.debugElement.query(By.css('input'));
+           input.nativeElement.value = 'expected';
+           dispatchEvent(input.nativeElement, 'input');
+
+           expect(control.pending).toEqual(true);
+
+           input.nativeElement.value = '';
+           dispatchEvent(input.nativeElement, 'input');
+           tick(110);
+
+           expect(control.valid).toEqual(false);
+         }));
+
     });
 
     describe('errors', () => {
@@ -1829,12 +1852,12 @@ class MyInput implements ControlValueAccessor {
   dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
 }
 
-function uniqLoginAsyncValidator(expectedValue: string) {
+function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
     const promise = new Promise(res => { resolve = res; });
     const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
-    resolve(res);
+    setTimeout(() => resolve(res), timeout);
     return promise;
   };
 }
