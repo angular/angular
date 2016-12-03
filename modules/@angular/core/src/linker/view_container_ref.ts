@@ -186,7 +186,8 @@ export class ViewContainerRef_ implements ViewContainerRef {
   }
 
   indexOf(viewRef: ViewRef): number {
-    return this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView);
+    return this.length ? this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView) :
+                         -1;
   }
 
   /** @internal */
@@ -213,7 +214,7 @@ export class ViewContainerRef_ implements ViewContainerRef {
     return wtfLeave(s, view.ref);
   }
 
-  clear() {
+  clear(): void {
     for (let i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }
