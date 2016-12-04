@@ -978,7 +978,8 @@ export interface ViewChildDecorator {
 export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
-export interface ViewChildrenDecorator { (selector: Type<any> | Function | string, {read}?: {
+export interface ViewChildrenDecorator {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {

@@ -294,8 +294,35 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  */
 export interface ViewChildrenDecorator {
   /**
-   * @docsNotRequired
- */ (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
+   * @whatItDoes Configures a view query.
+   *
+   * @howToUse
+   *
+   * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
+   *
+   * @description
+   *
+   * You can use ViewChildren to get the {@link QueryList} of elements or directives from the
+   * view DOM. Any time a child element is added, removed, or moved, the query list will be updated,
+   * and the changes observable of the query list will emit a new value.
+   *
+   * View queries are set before the `ngAfterViewInit` callback is called.
+   *
+   * **Metadata Properties**:
+   *
+   * * **selector** - the directive type or the name used for querying.
+   * * **read** - read a different token from the queried elements.
+   *
+   * Let's look at an example:
+   *
+   * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
+   *
+   * **npm package**: `@angular/core`
+   *
+   * @stable
+   * @Annotation
+   */
+  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
   new (selector: Type<any>|Function|string, {read}?: {read?: any}): ViewChildren;
 }
 
@@ -307,30 +334,7 @@ export interface ViewChildrenDecorator {
 export type ViewChildren = Query;
 
 /**
- * @whatItDoes Configures a view query.
- *
- * @howToUse
- *
- * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
- *
- * @description
- *
- * You can use ViewChildren to get the {@link QueryList} of elements or directives from the
- * view DOM. Any time a child element is added, removed, or moved, the query list will be updated,
- * and the changes observable of the query list will emit a new value.
- *
- * View queries are set before the `ngAfterViewInit` callback is called.
- *
- * **Metadata Properties**:
- *
- * * **selector** - the directive type or the name used for querying.
- * * **read** - read a different token from the queried elements.
- *
- * Let's look at an example:
- *
- * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
- *
- * **npm package**: `@angular/core`
+ * ViewChildren decorator and metadata.
  *
  * @stable
  * @Annotation
