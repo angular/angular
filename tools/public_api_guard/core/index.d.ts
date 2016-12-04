@@ -277,7 +277,7 @@ export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
 export interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {
