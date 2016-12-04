@@ -234,8 +234,8 @@ export interface ContentChildDecorator {
    *
    * @description
    *
-   * You can use ContentChild to get the first element or the directive matching the selector from the
-   * content DOM. If the content DOM changes, and a new child matches the selector,
+   * You can use ContentChild to get the first element or the directive matching the selector from
+   * the content DOM. If the content DOM changes, and a new child matches the selector,
    * the property will be updated.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
