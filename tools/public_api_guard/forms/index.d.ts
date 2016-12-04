@@ -133,10 +133,11 @@ export interface ControlValueAccessor {
 }
 
 /** @stable */
-export declare class DefaultValueAccessor implements ControlValueAccessor {
+export declare class DefaultValueAccessor implements ControlValueAccessor, OnDestroy {
     onChange: (_: any) => void;
     onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
+    constructor(_renderer: Renderer, _elementRef: ElementRef, _zone: NgZone);
+    ngOnDestroy(): void;
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;

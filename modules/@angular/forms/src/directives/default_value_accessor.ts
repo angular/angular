@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, NgZone, OnDestroy, Renderer, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -36,21 +36,50 @@ export const DEFAULT_VALUE_ACCESSOR: any = {
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor implements ControlValueAccessor,
+    OnDestroy {
   onChange = (_: any) => {};
   onTouched = () => {};
+  private _prevValue: any;
+  private _intervalId: any;
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef, private _zone: NgZone) {
+  }
 
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
-  registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = (value: any) => {
+      if (value !== this._prevValue) {
+        this._prevValue = value;
+        fn(value);
+      }
+    };
+    this._zone.runOutsideAngular(() => {
+      this._intervalId = setInterval(() => {
+        const value: any = this._elementRef.nativeElement.value;
+        if (value !== this._prevValue) {
+          this._zone.run(() => {
+            this._prevValue = value;
+            fn(value);
+          });
+        }
+      }, 20);
+    });
+  }
+
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+  }
+
+  ngOnDestroy(): void {
+    if (this._intervalId != null) {
+      clearInterval(this._intervalId);
+    }
   }
 }
