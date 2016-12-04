@@ -220,12 +220,39 @@ export const ContentChildren: ContentChildrenDecorator =
 /**
  * Type of the ContentChild decorator / constructor function.
  *
+ * See {@link ContentChild}.
  *
  * @stable
  */
 export interface ContentChildDecorator {
   /**
-   * @docsNotRequired
+   * @whatItDoes Configures a content query.
+   *
+   * @howToUse
+   *
+   * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
+   *
+   * @description
+   *
+   * You can use ContentChild to get the first element or the directive matching the selector from the
+   * content DOM. If the content DOM changes, and a new child matches the selector,
+   * the property will be updated.
+   *
+   * Content queries are set before the `ngAfterContentInit` callback is called.
+   *
+   * **Metadata Properties**:
+   *
+   * * **selector** - the directive type or the name used for querying.
+   * * **read** - read a different token from the queried element.
+   *
+   * Let's look at an example:
+   *
+   * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
+   *
+   * **npm package**: `@angular/core`
+   *
+   * @stable
+   * @Annotation
    */
   (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
   new (selector: Type<any>|Function|string, {read}?: {read?: any}): ContentChild;
@@ -241,33 +268,10 @@ export interface ContentChildDecorator {
 export type ContentChild = Query;
 
 /**
- * @whatItDoes Configures a content query.
+ * ContentChild decorator and metadata.
  *
- * @howToUse
- *
- * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
- *
- * @description
- *
- * You can use ContentChild to get the first element or the directive matching the selector from the
- * content DOM. If the content DOM changes, and a new child matches the selector,
- * the property will be updated.
- *
- * Content queries are set before the `ngAfterContentInit` callback is called.
- *
- * **Metadata Properties**:
- *
- * * **selector** - the directive type or the name used for querying.
- * * **read** - read a different token from the queried element.
- *
- * Let's look at an example:
- *
- * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
- *
- * **npm package**: `@angular/core`
- *
- * @stable
- * @Annotation
+ *  @stable
+ *  @Annotation
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
     'ContentChild',
