@@ -93,13 +93,8 @@ export function main() {
           .toEqual('<h1 id="i18n-12">Balises dans les commentaires html</h1>');
       expectHtml(el, '#i18n-13')
           .toBe('<div id="i18n-13" title="dans une section traductible"></div>');
-
       expectHtml(el, '#i18n-15').toMatch(/ca <b>devrait<\/b> marcher/);
-
       expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
-
-
-
     });
   });
 }
