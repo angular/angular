@@ -179,7 +179,13 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     let createRenderNodeExpr: o.Expression;
     const debugContextExpr = this.view.createMethod.resetDebugInfoExpr(nodeIndex, ast);
     const directives = ast.directives.map(directiveAst => directiveAst.directive);
-    const component = directives.find(directive => directive.isComponent);
+    let component: CompileDirectiveSummary;
+    for (let directive of directives) {
+      if (directive.isComponent) {
+        component = directive;
+        break;
+      }
+    }
     if (ast.name === NG_CONTAINER_TAG) {
       createRenderNodeExpr = ViewProperties.renderer.callMethod(
           'createTemplateAnchor', [this._getParentRenderNode(parent), debugContextExpr]);

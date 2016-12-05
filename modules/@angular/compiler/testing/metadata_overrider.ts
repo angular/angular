@@ -112,7 +112,7 @@ function _valueProps(obj: any): string[] {
   const props: string[] = [];
   // regular public props
   Object.keys(obj).forEach((prop) => {
-    if (!prop.startsWith('_')) {
+    if (prop[0] !== '_') {
       props.push(prop);
     }
   });
@@ -122,7 +122,7 @@ function _valueProps(obj: any): string[] {
   while (proto = Object.getPrototypeOf(proto)) {
     Object.keys(proto).forEach((protoProp) => {
       const desc = Object.getOwnPropertyDescriptor(proto, protoProp);
-      if (!protoProp.startsWith('_') && desc && 'get' in desc) {
+      if (protoProp[0] !== '_' && desc && 'get' in desc) {
         props.push(protoProp);
       }
     });

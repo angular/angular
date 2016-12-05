@@ -34,9 +34,10 @@ export class SpyLocation implements Location {
   path(): string { return this._history[this._historyIndex].path; }
 
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
-    const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-    const currPath =
-        this.path().endsWith('/') ? this.path().substring(0, this.path().length - 1) : this.path();
+    const givenPath = path[path.length - 1] === '/' ? path.substring(0, path.length - 1) : path;
+    const currPath = this.path()[this.path().length - 1] === '/' ?
+        this.path().substring(0, this.path().length - 1) :
+        this.path();
 
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
   }
@@ -51,7 +52,7 @@ export class SpyLocation implements Location {
   }
 
   prepareExternalUrl(url: string): string {
-    if (url.length > 0 && !url.startsWith('/')) {
+    if (url.length > 0 && url[0] !== '/') {
       url = '/' + url;
     }
     return this._baseHref + url;

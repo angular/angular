@@ -95,12 +95,13 @@ export class IterableDiffers {
   }
 
   find(iterable: any): IterableDifferFactory {
-    const factory = this.factories.find(f => f.supports(iterable));
-    if (isPresent(factory)) {
-      return factory;
-    } else {
-      throw new Error(
-          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
+    for (let factory of this.factories) {
+      if (factory.supports(iterable)) {
+        return factory;
+      }
     }
+
+    throw new Error(
+        `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(iterable)}'`);
   }
 }

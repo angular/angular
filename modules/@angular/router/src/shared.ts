@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {Route, UrlMatchResult} from './config';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -50,7 +49,7 @@ export function defaultUrlMatcher(
     const current = segments[currentIndex];
 
     const p = parts[i];
-    const isPosParam = p.startsWith(':');
+    const isPosParam = p[0] === ':';
 
     if (!isPosParam && p !== current.path) return null;
     if (isPosParam) {

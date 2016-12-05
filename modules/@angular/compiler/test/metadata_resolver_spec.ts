@@ -109,7 +109,7 @@ export function main() {
            const value: string =
                resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.templateUrl;
            const expectedEndValue = './someUrl';
-           expect(value.endsWith(expectedEndValue)).toBe(true);
+           expect(value.substr(-expectedEndValue.length)).toEqual(expectedEndValue);
          });
        })));
 

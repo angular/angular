@@ -199,7 +199,7 @@ class ApplyRedirects {
       injector: Injector, routes: Route[], route: Route,
       outlet: string): Observable<UrlSegmentGroup> {
     const newTree = this.applyRedirectCommands([], route.redirectTo, {});
-    if (route.redirectTo.startsWith('/')) {
+    if (route.redirectTo[0] === '/') {
       return absoluteRedirect(newTree);
     } else {
       return mergeMap.call(this.lineralizeSegments(route, newTree), (newSegments: UrlSegment[]) => {
@@ -218,7 +218,7 @@ class ApplyRedirects {
 
     const newTree = this.applyRedirectCommands(
         consumedSegments, route.redirectTo, <any>positionalParamSegments);
-    if (route.redirectTo.startsWith('/')) {
+    if (route.redirectTo[0] === '/') {
       return absoluteRedirect(newTree);
     } else {
       return mergeMap.call(this.lineralizeSegments(route, newTree), (newSegments: UrlSegment[]) => {
@@ -356,8 +356,8 @@ class ApplyRedirects {
       redirectTo: string, redirectToSegments: UrlSegment[], actualSegments: UrlSegment[],
       posParams: {[k: string]: UrlSegment}): UrlSegment[] {
     return redirectToSegments.map(
-        s => s.path.startsWith(':') ? this.findPosParam(redirectTo, s, posParams) :
-                                      this.findOrReturn(s, actualSegments));
+        s => s.path[0] === ':' ? this.findPosParam(redirectTo, s, posParams) :
+                                 this.findOrReturn(s, actualSegments));
   }
 
   private findPosParam(

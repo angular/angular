@@ -96,7 +96,7 @@ export class Location {
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    */
   prepareExternalUrl(url: string): string {
-    if (url.length > 0 && !url.startsWith('/')) {
+    if (url.length > 0 && url[0] !== '/') {
       url = '/' + url;
     }
     return this._platformStrategy.prepareExternalUrl(url);
@@ -157,10 +157,10 @@ export class Location {
       return start;
     }
     let slashes = 0;
-    if (start.endsWith('/')) {
+    if (start[start.length - 1] === '/') {
       slashes++;
     }
-    if (end.startsWith('/')) {
+    if (end[0] === '/') {
       slashes++;
     }
     if (slashes == 2) {
@@ -184,7 +184,7 @@ export class Location {
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
-  if (baseHref.length > 0 && url.startsWith(baseHref)) {
+  if (baseHref.length > 0 && url.indexOf(baseHref) === 0) {
     return url.substring(baseHref.length);
   }
   return url;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
+import {CompilerOptions, Component, ComponentFactory, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {stringify} from './facade/lang';
@@ -344,8 +344,13 @@ export class TestBed implements Injector {
 
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
     this._initIfNeeded();
-    const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
-        (compFactory) => compFactory.componentType === component);
+    let componentFactory: ComponentFactory<T>;
+    for (let compFactory of this._moduleWithComponentFactories.componentFactories) {
+      if (compFactory.componentType === component) {
+        componentFactory = compFactory;
+        break;
+      }
+    }
     if (!componentFactory) {
       throw new Error(
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);

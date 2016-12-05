@@ -31,7 +31,6 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {PreparsedElementType, preparseElement} from './template_preparser';
 
 
-
 // Group 1 = "bind-"
 // Group 2 = "let-"
 // Group 3 = "ref-/#"
@@ -275,7 +274,7 @@ class TemplateParseVisitor implements html.Visitor {
       let prefixToken: string|undefined = undefined;
       if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      } else if (attr.name.indexOf(TEMPLATE_ATTR_PREFIX) === 0) {
         templateBindingsSource = attr.value;
         prefixToken = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
       }
@@ -407,7 +406,13 @@ class TemplateParseVisitor implements html.Visitor {
 
     outputs.forEach(output => {
       if (output.isAnimation) {
-        const found = animationInputs.find(input => input.name == output.name);
+        let found = false;
+        for (let input of animationInputs) {
+          if (input.name === output.name) {
+            found = true;
+            break;
+          }
+        }
         if (!found) {
           this._reportError(
               `Unable to listen on (@${output.name}.${output.phase}) because the animation trigger [@${output.name}] isn't being used on the same element`,
@@ -783,7 +788,13 @@ class ElementContext {
       providerContext: ProviderElementContext): ElementContext {
     const matcher = new SelectorMatcher();
     let wildcardNgContentIndex: number = null;
-    const component = directives.find(directive => directive.directive.isComponent);
+    let component: DirectiveAst;
+    for (let directive of directives) {
+      if (directive.directive.isComponent) {
+        component = directive;
+        break;
+      }
+    }
     if (component) {
       const ngContentSelectors = component.directive.template.ngContentSelectors;
       for (let i = 0; i < ngContentSelectors.length; i++) {

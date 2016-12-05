@@ -283,7 +283,8 @@ function _assertComponent(meta: CompileDirectiveMetadata) {
 }
 
 function _splitTypescriptSuffix(path: string): string[] {
-  if (path.endsWith('.d.ts')) {
+  const indexOfExt = path.lastIndexOf('.d.ts');
+  if (indexOfExt !== -1 && indexOfExt === path.length - 5) {
     return [path.slice(0, -5), '.ts'];
   }
 

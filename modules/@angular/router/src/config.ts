@@ -352,8 +352,8 @@ function validateNode(route: Route): void {
     throw new Error(`
       Invalid route configuration: Encountered undefined route.
       The reason might be an extra comma.
-       
-      Example: 
+
+      Example:
       const routes: Routes = [
         { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
         { path: 'dashboard',  component: DashboardComponent },, << two commas

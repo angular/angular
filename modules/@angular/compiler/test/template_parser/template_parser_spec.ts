@@ -182,7 +182,8 @@ export function main() {
         new BoundDirectivePropertyAst('foo', 'bar', null, null)
       ];
       const result = templateVisitAll(visitor, nodes, null);
-      expect(result).toEqual(new Array(nodes.length).fill(true));
+      expect(result).toEqual(
+          Array.apply(null, Array(nodes.length)).map(Boolean.prototype.valueOf, true));
     });
   });
 
@@ -780,7 +781,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
             function createToken(value: string): CompileTokenMetadata {
               let token: CompileTokenMetadata;
-              if (value.startsWith('type:')) {
+              if (value.indexOf('type:') === 0) {
                 const name = value.substring(5);
                 token = {identifier: createTypeMeta({reference: <any>name})};
               } else {
@@ -791,17 +792,17 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
             function createDep(value: string): CompileDiDependencyMetadata {
               let isOptional = false;
-              if (value.startsWith('optional:')) {
+              if (value.indexOf('optional:') === 0) {
                 isOptional = true;
                 value = value.substring(9);
               }
               let isSelf = false;
-              if (value.startsWith('self:')) {
+              if (value.indexOf('self:') === 0) {
                 isSelf = true;
                 value = value.substring(5);
               }
               let isHost = false;
-              if (value.startsWith('host:')) {
+              if (value.indexOf('host:') === 0) {
                 isHost = true;
                 value = value.substring(5);
               }
@@ -837,7 +838,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                   deps?: string[],
                   queries?: string[]
                 } = {}): CompileDirectiveSummary {
-              const isComponent = !selector.startsWith('[');
+              const isComponent = selector[0] !== '[';
               return CompileDirectiveMetadata
                   .create({
                     selector: selector,

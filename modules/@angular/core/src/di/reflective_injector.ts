@@ -283,7 +283,7 @@ export class ReflectiveInjectorDynamicStrategy implements ReflectiveInjectorStra
   constructor(
       public protoStrategy: ReflectiveProtoInjectorDynamicStrategy,
       public injector: ReflectiveInjector_) {
-    this.objs = new Array(protoStrategy.providers.length).fill(UNDEFINED);
+    this.objs = Array.apply(null, Array(protoStrategy.providers.length)).map(() => UNDEFINED);
   }
 
   resetConstructionCounter(): void { this.injector._constructionCounter = 0; }

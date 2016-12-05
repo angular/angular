@@ -93,7 +93,7 @@ export function main() {
           getDOM().removeChild(headEl, baseEl);
           getDOM().resetBaseElement();
 
-          expect(baseHref.endsWith('/base')).toBe(true);
+          expect(baseHref.substr(-5)).toEqual('/base');
         });
       });
     }

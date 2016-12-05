@@ -138,8 +138,15 @@ export class StaticReflector implements ReflectorReader {
       const members = classMetadata['members'] || {};
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
-        const prop = (<any[]>propData)
-                         .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+
+        let prop: {[key: string]: any};
+        for (let a of (<{[key: string]: any}[]>propData)) {
+          if (a['__symbolic'] === 'property' || a['__symbolic'] === 'method') {
+            prop = a;
+            break;
+          }
+        }
+
         const decorators: any[] = [];
         if (propMetadata[propName]) {
           decorators.push(...propMetadata[propName]);
@@ -148,6 +155,7 @@ export class StaticReflector implements ReflectorReader {
         if (prop && prop['decorators']) {
           decorators.push(...this.simplify(type, prop['decorators']));
         }
+        return [];
       });
       this.propertyCache.set(type, propMetadata);
     }
@@ -168,7 +176,14 @@ export class StaticReflector implements ReflectorReader {
         const members = classMetadata ? classMetadata['members'] : null;
         const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
-          const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
+          let ctor: {[key: string]: any};
+          for (let a of (<{[key: string]: any}[]>ctorData)) {
+            if (a['__symbolic'] === 'constructor') {
+              ctor = a;
+              break;
+            }
+          }
+
           const parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
           parameters = [];

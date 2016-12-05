@@ -413,21 +413,21 @@ class UrlParser {
   private remaining: string;
   constructor(private url: string) { this.remaining = url; }
 
-  peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  peekStartsWith(str: string): boolean { return this.remaining.indexOf(str) === 0; }
 
   capture(str: string): void {
-    if (!this.remaining.startsWith(str)) {
+    if (this.remaining.indexOf(str) !== 0) {
       throw new Error(`Expected "${str}".`);
     }
     this.remaining = this.remaining.substring(str.length);
   }
 
   parseRootSegment(): UrlSegmentGroup {
-    if (this.remaining.startsWith('/')) {
+    if (this.remaining[0] === '/') {
       this.capture('/');
     }
 
-    if (this.remaining === '' || this.remaining.startsWith('?') || this.remaining.startsWith('#')) {
+    if (this.remaining === '' || this.remaining[0] === '?' || this.remaining[0] === '#') {
       return new UrlSegmentGroup([], {});
     } else {
       return new UrlSegmentGroup([], this.parseChildren());
