@@ -239,6 +239,7 @@ export declare abstract class RouteReuseStrategy {
 
 /** @stable */
 export declare class RouterLink {
+    extras: NavigationExtras;
     fragment: string;
     preserveFragment: boolean;
     preserveQueryParams: boolean;
@@ -270,6 +271,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 
 /** @stable */
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
+    extras: NavigationExtras;
     fragment: string;
     href: string;
     preserveFragment: boolean;
