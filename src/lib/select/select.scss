@@ -32,11 +32,26 @@ md-select {
 }
 
 .md-select-placeholder {
+  position: relative;
   padding: 0 2px;
   transform-origin: left top;
 
+  // These values are duplicated from animation code in order to
+  // allow placeholders to sometimes float without animating,
+  // for example when the value is set programmatically.
+  // TODO(kara): Change when animations API supports skipping animation.
+  &.md-floating-placeholder {
+    top: -22px;
+    left: -2px;
+    transform: scale(0.75);
+  }
+
   [dir='rtl'] & {
     transform-origin: right top;
+
+    &.md-floating-placeholder {
+      left: 2px;
+    }
   }
 
   // TODO: Double-check accessibility of this style

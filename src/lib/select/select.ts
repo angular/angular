@@ -5,7 +5,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  NgZone,
   OnDestroy,
   Optional,
   Output,
@@ -115,6 +114,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** The scroll position of the overlay panel, calculated to center the selected option. */
   private _scrollTop = 0;
 
+  /** The animation state of the placeholder. */
+  _placeholderState = '';
+
   /** Manages keyboard events for options in the panel. */
   _keyManager: ListKeyManager;
 
@@ -193,8 +195,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   @Output() onClose = new EventEmitter();
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
-              private _ngZone: NgZone, private _viewportRuler: ViewportRuler,
-              @Optional() private _dir: Dir, @Optional() public _control: NgControl) {
+              private _viewportRuler: ViewportRuler, @Optional() private _dir: Dir,
+              @Optional() public _control: NgControl) {
     if (this._control) {
       this._control.valueAccessor = this;
     }
@@ -223,12 +225,16 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       return;
     }
     this._calculateOverlayPosition();
+    this._placeholderState = this._isRtl() ? 'floating-rtl' : 'floating-ltr';
     this._panelOpen = true;
   }
 
   /** Closes the overlay panel and focuses the host element. */
   close(): void {
     this._panelOpen = false;
+    if (!this._selected) {
+      this._placeholderState = '';
+    }
     this._focusHost();
   }
 
@@ -242,7 +248,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       // the select's child options have been created. It's necessary to call
       // writeValue() again after the options have been created to ensure any
       // initial view value is set.
-      this._ngZone.onStable.first().subscribe(() => this.writeValue(value));
+      Promise.resolve(null).then(() => this.writeValue(value));
       return;
     }
 
@@ -298,15 +304,6 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    */
   _getWidth(): number {
     return this._getTriggerRect().width;
-  }
-
-  /** The animation state of the placeholder. */
-  _getPlaceholderState(): string {
-    if (this.panelOpen || this.selected) {
-      return this._isRtl() ? 'floating-rtl' : 'floating-ltr';
-    } else {
-      return 'normal';
-    }
   }
 
   /** Ensures the panel opens if activated by the keyboard. */
@@ -403,7 +400,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   private _onSelect(option: MdOption): void {
     this._selected = option;
     this._updateOptions();
-    this.close();
+    if (this.panelOpen) {
+      this.close();
+    }
   }
 
   /** Deselect each option that doesn't match the current selection. */

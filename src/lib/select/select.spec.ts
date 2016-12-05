@@ -456,30 +456,35 @@ describe('MdSelect', () => {
       trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
     });
 
-      it('should float the placeholder when the panel is open', () => {
-        expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('normal');
+      it('should float the placeholder when the panel is open and unselected', () => {
+        expect(fixture.componentInstance.select._placeholderState)
+            .toEqual('', 'Expected placeholder to initially have a normal position.');
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('floating-ltr');
+        expect(fixture.componentInstance.select._placeholderState)
+            .toEqual('floating-ltr', 'Expected placeholder to animate up to floating position.');
 
         const backdrop =
           overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
         backdrop.click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('normal');
+        expect(fixture.componentInstance.select._placeholderState)
+            .toEqual('', 'Expected placeholder to animate back down to normal position.');
       });
 
-      it('should float the placeholder when there is a selection', () => {
-        trigger.click();
+      it('should float the placeholder without animation when value is set', () => {
+        fixture.componentInstance.control.setValue('pizza-1');
         fixture.detectChanges();
 
-        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
-        option.click();
-        fixture.detectChanges();
+        const placeholderEl =
+            fixture.debugElement.query(By.css('.md-select-placeholder')).nativeElement;
 
-        expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('floating-ltr');
+        expect(placeholderEl.classList)
+            .toContain('md-floating-placeholder', 'Expected placeholder to display as floating.');
+        expect(fixture.componentInstance.select._placeholderState)
+            .toEqual('', 'Expected animation state to be empty to avoid animation.');
       });
 
       it('should use the floating-rtl state when the dir is rtl', () => {
@@ -487,7 +492,7 @@ describe('MdSelect', () => {
 
         trigger.click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.select._getPlaceholderState()).toEqual('floating-rtl');
+        expect(fixture.componentInstance.select._placeholderState).toEqual('floating-rtl');
       });
 
   });
