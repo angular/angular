@@ -330,14 +330,14 @@ class _Visitor implements html.Visitor {
   }
 
   // add a translatable message
-  private _addMessage(ast: html.Node[], meaningAndDesc?: string): i18n.Message {
+  private _addMessage(ast: html.Node[], i18nInfo?: string): i18n.Message {
     if (ast.length == 0 ||
         ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
       // Do not create empty messages
       return;
     }
 
-    const [meaning, description, id] = _parseI18nAttribute(meaningAndDesc);
+    const [meaning, description, id] = _parsei18nInfo(i18nInfo);
     const message = this._createI18nMessage(ast, meaning, description, id);
     this._messages.push(message);
     return message;
@@ -368,7 +368,7 @@ class _Visitor implements html.Visitor {
     attributes.forEach(attr => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
         i18nAttributeMeanings[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-            _parseI18nAttribute(attr.value)[0];
+            _parsei18nInfo(attr.value)[0];
       }
     });
 
@@ -496,7 +496,7 @@ function _getI18nAttr(p: html.Element): html.Attribute {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _parseI18nAttribute(i18n: string): [string, string, string] {
+function _parsei18nInfo(i18n: string): [string, string, string] {
   if (!i18n) return ['', '', ''];
   const pipeIndex = i18n.indexOf('|');
   let arobaseIndex: number, m: string, d: string;
