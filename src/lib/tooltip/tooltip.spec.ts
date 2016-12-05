@@ -10,12 +10,13 @@ import {Component, DebugElement, AnimationTransitionEvent} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {TooltipPosition, MdTooltip, MdTooltipModule} from './tooltip';
 import {OverlayContainer} from '../core';
+import {Dir, LayoutDirection} from '../core/rtl/dir';
 
 const initialTooltipMessage = 'initial tooltip message';
 
 describe('MdTooltip', () => {
   let overlayContainerElement: HTMLElement;
-
+  let dir: {value: LayoutDirection};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,6 +26,9 @@ describe('MdTooltip', () => {
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           return {getContainerElement: () => overlayContainerElement};
+        }},
+        {provide: Dir, useFactory: () => {
+          return dir = { value: 'ltr' };
         }}
       ]
     });
@@ -155,6 +159,76 @@ describe('MdTooltip', () => {
         phaseName: '',
       }));
     }));
+
+    it('should consistently position before and after overlay origin in ltr and rtl dir', () => {
+      tooltipDirective.position = 'left';
+      const leftOrigin = tooltipDirective._getOrigin();
+      tooltipDirective.position = 'right';
+      const rightOrigin = tooltipDirective._getOrigin();
+
+      // Test expectations in LTR
+      tooltipDirective.position = 'before';
+      expect(tooltipDirective._getOrigin()).toEqual(leftOrigin);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOrigin()).toEqual(rightOrigin);
+
+      // Test expectations in LTR
+      dir.value = 'rtl';
+      tooltipDirective.position = 'before';
+      expect(tooltipDirective._getOrigin()).toEqual(rightOrigin);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOrigin()).toEqual(leftOrigin);
+    });
+
+    it('should consistently position before and after overlay position in ltr and rtl dir', () => {
+      tooltipDirective.position = 'left';
+      const leftOverlayPosition = tooltipDirective._getOverlayPosition();
+      tooltipDirective.position = 'right';
+      const rightOverlayPosition = tooltipDirective._getOverlayPosition();
+
+      // Test expectations in LTR
+      tooltipDirective.position = 'before';
+      expect(tooltipDirective._getOverlayPosition()).toEqual(leftOverlayPosition);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOverlayPosition()).toEqual(rightOverlayPosition);
+
+      // Test expectations in LTR
+      dir.value = 'rtl';
+      tooltipDirective.position = 'before';
+      expect(tooltipDirective._getOverlayPosition()).toEqual(rightOverlayPosition);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOverlayPosition()).toEqual(leftOverlayPosition);
+    });
+
+    it('should have consistent left transform origin in any dir', () => {
+      tooltipDirective.position = 'right';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+
+      tooltipDirective.position = 'after';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+
+      dir.value = 'rtl';
+      tooltipDirective.position = 'before';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+    });
+
+    it('should have consistent right transform origin in any dir', () => {
+      tooltipDirective.position = 'left';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+
+      tooltipDirective.position = 'before';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+
+      dir.value = 'rtl';
+      tooltipDirective.position = 'after';
+      tooltipDirective.show();
+      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+    });
   });
 });
 

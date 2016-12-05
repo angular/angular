@@ -13,6 +13,7 @@ import {
   animate,
   AnimationTransitionEvent,
   NgZone,
+  Optional,
 } from '@angular/core';
 import {
   Overlay,
@@ -27,9 +28,9 @@ import {
 } from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {Dir} from '../core/rtl/dir';
 
-
-export type TooltipPosition = 'before' | 'after' | 'above' | 'below';
+export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
 
 /** Time in ms to delay before changing the tooltip visibility to hidden */
 export const TOUCHEND_HIDE_DELAY  = 1500;
@@ -85,7 +86,8 @@ export class MdTooltip {
   }
 
   constructor(private _overlay: Overlay, private _elementRef: ElementRef,
-              private _viewContainerRef: ViewContainerRef, private _ngZone: NgZone) {}
+              private _viewContainerRef: ViewContainerRef, private _ngZone: NgZone,
+              @Optional() private _dir: Dir) {}
 
   /** Dispose the tooltip when destroyed */
   ngOnDestroy() {
@@ -155,22 +157,46 @@ export class MdTooltip {
   }
 
   /** Returns the origin position based on the user's position preference */
-  private _getOrigin(): OriginConnectionPosition {
-    switch (this.position) {
-      case 'before': return { originX: 'start',  originY: 'center' };
-      case 'after':  return { originX: 'end',    originY: 'center' };
-      case 'above':  return { originX: 'center', originY: 'top' };
-      case 'below':  return { originX: 'center', originY: 'bottom' };
+  _getOrigin(): OriginConnectionPosition {
+    if (this.position == 'above' || this.position == 'below') {
+      return {originX: 'center', originY: this.position == 'above' ? 'top' : 'bottom'};
+    }
+
+    const isDirectionLtr = !this._dir || this._dir.value == 'ltr';
+    if (this.position == 'left' ||
+        this.position == 'before' && isDirectionLtr ||
+        this.position == 'after' && !isDirectionLtr) {
+      return {originX: 'start', originY: 'center'};
+    }
+
+    if (this.position == 'right' ||
+        this.position == 'after' && isDirectionLtr ||
+        this.position == 'before' && !isDirectionLtr) {
+      return {originX: 'end', originY: 'center'};
     }
   }
 
   /** Returns the overlay position based on the user's preference */
-  private _getOverlayPosition(): OverlayConnectionPosition {
-    switch (this.position) {
-      case 'before': return { overlayX: 'end',    overlayY: 'center' };
-      case 'after':  return { overlayX: 'start',  overlayY: 'center' };
-      case 'above':  return { overlayX: 'center', overlayY: 'bottom' };
-      case 'below':  return { overlayX: 'center', overlayY: 'top' };
+  _getOverlayPosition(): OverlayConnectionPosition {
+    if (this.position == 'above') {
+      return {overlayX: 'center', overlayY: 'bottom'};
+    }
+
+    if (this.position == 'below') {
+      return {overlayX: 'center', overlayY: 'top'};
+    }
+
+    const isLtr = !this._dir || this._dir.value == 'ltr';
+    if (this.position == 'left' ||
+        this.position == 'before' && isLtr ||
+        this.position == 'after' && !isLtr) {
+      return {overlayX: 'end', overlayY: 'center'};
+    }
+
+    if (this.position == 'right' ||
+        this.position == 'after' && isLtr ||
+        this.position == 'before' && !isLtr) {
+      return {overlayX: 'start', overlayY: 'center'};
     }
   }
 
@@ -226,6 +252,8 @@ export class TooltipComponent {
   /** Subject for notifying that the tooltip has been hidden from the view */
   private _onHide: Subject<any> = new Subject();
 
+  constructor(@Optional() private _dir: Dir) {}
+
   /** Shows the tooltip with an animation originating from the provided origin */
   show(position: TooltipPosition): void {
     this._closeOnInteraction = false;
@@ -262,11 +290,14 @@ export class TooltipComponent {
 
   /** Sets the tooltip transform origin according to the tooltip position */
   _setTransformOrigin(value: TooltipPosition) {
+    const isLtr = !this._dir || this._dir.value == 'ltr';
     switch (value) {
-      case 'before': this._transformOrigin = 'right'; break;
-      case 'after':  this._transformOrigin = 'left'; break;
-      case 'above':  this._transformOrigin = 'bottom'; break;
-      case 'below':  this._transformOrigin = 'top'; break;
+      case 'before': this._transformOrigin = isLtr ? 'right' : 'left'; break;
+      case 'after':  this._transformOrigin = isLtr ? 'left' : 'right'; break;
+      case 'left':   this._transformOrigin = 'right'; break;
+      case 'right':  this._transformOrigin = 'left'; break;
+      case 'above':    this._transformOrigin = 'bottom'; break;
+      case 'below': this._transformOrigin = 'top'; break;
     }
   }
 
