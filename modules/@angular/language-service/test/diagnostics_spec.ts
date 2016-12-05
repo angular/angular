@@ -115,6 +115,12 @@ describe('diagnostics', () => {
       });
     });
 
+    it('should not throw for an invalid class', () => {
+      const code = ` @Component({template: ''}) class`;
+      addCode(
+          code, fileName => { expect(() => ngService.getDiagnostics(fileName)).not.toThrow(); });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);

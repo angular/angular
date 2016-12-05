@@ -325,7 +325,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       case this.ts.SyntaxKind.StringLiteral:
         let [declaration, decorator] = this.getTemplateClassDeclFromNode(node);
         let queryCache: SymbolQuery|undefined = undefined;
-        if (declaration) {
+        if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
           return this.getSourceFromDeclaration(
               fileName, version, this.stringOf(node), shrink(spanOf(node)),
