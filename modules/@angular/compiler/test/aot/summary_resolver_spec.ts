@@ -36,31 +36,34 @@ export function main() {
       expect(resolver.serializeSummaries('a.js', []).genFileUrl).toBe('a.ngsummary.json');
     });
 
-    it('should serialize summary for .ts files and deserialize based on .d.ts files', () => {
+    it('should serialize various data correctly', () => {
       init();
       const serializedData = resolver.serializeSummaries(
-          '/tmp/some_pipe.ts', [{
+          '/tmp/some_pipe.ts', [<any>{
             summaryKind: CompileSummaryKind.Pipe,
             type: {
               reference: staticReflector.getStaticSymbol('/tmp/some_pipe.ts', 'SomePipe'),
-              diDeps: [],
-              lifecycleHooks: []
             },
+            aNumber: 1,
+            aString: 'hello',
+            anArray: [1, 2],
+            aStaticSymbol:
+                staticReflector.getStaticSymbol('/tmp/some_symbol.ts', 'someName', ['someMember'])
           }]);
 
       // Note: this creates a new staticReflector!
       init({[serializedData.genFileUrl]: serializedData.source});
 
-      expect(resolver.resolveSummary(
-                 staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe')))
-          .toEqual({
-            summaryKind: CompileSummaryKind.Pipe,
-            type: {
-              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe'),
-              diDeps: [],
-              lifecycleHooks: []
-            },
-          });
+      const deserialized = resolver.resolveSummary(
+          staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe'));
+      expect(deserialized.aNumber).toBe(1);
+      expect(deserialized.aString).toBe('hello');
+      expect(deserialized.anArray).toEqual([1, 2]);
+      expect(deserialized.aStaticSymbol instanceof StaticSymbol).toBe(true);
+      // Note: change from .ts to .d.ts is expected
+      expect(deserialized.aStaticSymbol)
+          .toEqual(
+              staticReflector.getStaticSymbol('/tmp/some_symbol.d.ts', 'someName', ['someMember']));
     });
 
     it('should store reexports in the same file', () => {
