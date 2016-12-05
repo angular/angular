@@ -30,30 +30,27 @@ export function main() {
       it('should extract from attributes', () => {
         expect(
             extract(
-                '<div i18n="m1|d1"><span i18n-title="m2|d2" title="single child">nested</span></div>'))
-            .toEqual([
-              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', ''],
-              [['single child'], 'm2', 'd2', ''],
-            ]);
+              '<div i18n="m1|d1"><span i18n-title="m2|d2" title="single child">nested</span></div>'))
+              .toEqual([
+                [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', ''],
+                [['single child'], 'm2', 'd2', ''],
+              ]);
       });
 
       it('should extract from attributes with id', () => {
-        expect(extract(
-                   '<div i18n="m1|d1@i1"><span i18n-title="m2|d2@i2" title="single' +
-                   ' child">nested</span></div>'))
+        expect(
+          extract(
+            '<div i18n="m1|d1@i1"><span i18n-title="m2|d2@i2" title="single child">nested</span></div>'))
             .toEqual([
-              [
-                ['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1',
-                'i1'
-              ],
+              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', 'i1'],
               [['single child'], 'm2', 'd2', 'i2'],
             ]);
       });
 
       it('should extract from attributes without meaning and with id', () => {
-        expect(extract(
-                   '<div i18n="d1@i1"><span i18n-title="d2@i2" title="single' +
-                   ' child">nested</span></div>'))
+        expect(
+          extract(
+            '<div i18n="d1@i1"><span i18n-title="d2@i2" title="single child">nested</span></div>'))
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
               [['single child'], '', 'd2', 'i2'],
@@ -61,9 +58,9 @@ export function main() {
       });
 
       it('should extract from attributes with ONLY id', () => {
-        expect(extract(
-                   '<div i18n="@i1"><span i18n-title="@i2" title="single' +
-                   ' child">nested</span></div>'))
+        expect(
+          extract(
+            '<div i18n="@i1"><span i18n-title="@i2" title="single child">nested</span></div>'))
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
               [['single child'], '', '', 'i2'],
