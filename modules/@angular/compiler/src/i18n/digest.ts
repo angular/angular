@@ -9,15 +9,13 @@
 import * as i18n from './i18n_ast';
 
 export function digest(message: i18n.Message): string {
-  return (message.id !== '') ?
-      message.id :
-      sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+  return message.id || sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
 }
 
 export function decimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map(a => a.visit(visitor, null));
-  return (message.id !== '') ? message.id : computeMsgId(parts.join(''), message.meaning);
+  return message.id || computeMsgId(parts.join(''), message.meaning);
 }
 
 /**
