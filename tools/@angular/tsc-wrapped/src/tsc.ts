@@ -25,12 +25,21 @@ export interface CompilerInterface {
 }
 
 export class UserError extends Error {
+  private _nativeError: Error;
+
   constructor(message: string) {
-    super(message);
-    this.message = message;
-    this.name = 'UserError';
-    this.stack = new Error().stack;
+    // Errors don't use current this, instead they create a new instance.
+    // We have to do forward all of our api to the nativeInstance.
+    const nativeError = super(message) as any as Error;
+    this._nativeError = nativeError;
   }
+
+  get message() { return this._nativeError.message; }
+  set message(message) { this._nativeError.message = message; }
+  get name() { return 'UserError'; }
+  get stack() { return (this._nativeError as any).stack; }
+  set stack(value) { (this._nativeError as any).stack = value; }
+  toString() { return this._nativeError.toString(); }
 }
 
 const DEBUG = false;
