@@ -1008,7 +1008,7 @@ export interface HostListener {
 }
 
 /**
- * HostBinding decorator and metadata.
+ * HostListener decorator and metadata.
  *
  * @stable
  * @Annotation

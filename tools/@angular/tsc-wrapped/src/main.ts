@@ -16,6 +16,8 @@ import NgOptions from './options';
 import {MetadataWriterHost, DecoratorDownlevelCompilerHost, TsickleCompilerHost} from './compiler_host';
 import {CliOptions} from './cli_options';
 
+export {UserError} from './tsc';
+
 export type CodegenExtension =
     (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>
         Promise<void>;
