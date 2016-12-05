@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from '@angular/core';
 
-import {StaticSymbol, isStaticSymbol} from './aot/static_symbol';
+import {StaticSymbol} from './aot/static_symbol';
 import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
 import {LifecycleHooks, reflector} from './private_import_core';
@@ -87,7 +87,7 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata): st
     return null;
   }
   const ref = compileIdentifier.reference;
-  if (isStaticSymbol(ref)) {
+  if (ref instanceof StaticSymbol) {
     return ref.name;
   }
   if (ref['__anonymousType']) {
@@ -106,7 +106,7 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata): st
 
 export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata): string {
   const ref = compileIdentifier.reference;
-  if (isStaticSymbol(ref)) {
+  if (ref instanceof StaticSymbol) {
     return ref.filePath;
   }
   return reflector.importUri(ref);

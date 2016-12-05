@@ -8,7 +8,7 @@
 
 import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, Directive, Host, Inject, Injectable, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
 
-import {isStaticSymbol} from './aot/static_symbol';
+import {StaticSymbol} from './aot/static_symbol';
 import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
@@ -863,12 +863,12 @@ function flattenAndDedupeArray(tree: any[]): Array<any> {
 }
 
 function isValidType(value: any): boolean {
-  return isStaticSymbol(value) || (value instanceof Type);
+  return (value instanceof StaticSymbol) || (value instanceof Type);
 }
 
 export function componentModuleUrl(
     reflector: ReflectorReader, type: Type<any>, cmpMetadata: Component): string {
-  if (isStaticSymbol(type)) {
+  if (type instanceof StaticSymbol) {
     return type.filePath;
   }
 
