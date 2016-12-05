@@ -2,6 +2,7 @@
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
 
 @import 'button-base';
+@import '../a11y/_a11y';
 
 // TODO(kara): Replace attribute selectors with class selectors when possible
 [md-button], [md-icon-button] {
@@ -79,6 +80,13 @@
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
+
+  @include md-high-contrast {
+    // Note that IE will render this in the same way, no
+    // matter whether the theme is light or dark. This helps
+    // with the readability of focused buttons.
+    background-color: rgba(white, 0.5);
+  }
 }
 
 // For round buttons, the ripple container should clip child ripples to a circle.
@@ -89,9 +97,9 @@
   z-index: 1;
 }
 
-// Applies a clearer border for high-contrast mode (a11y)
-@media screen and (-ms-high-contrast: active) {
-  .md-raised-button, .md-fab, .md-mini-fab {
-    border: 1px solid #fff;
+// Add an outline to make it more visible in high contrast mode.
+@include md-high-contrast {
+  [md-button], [md-raised-button], [md-icon-button], [md-fab], [md-mini-fab] {
+    outline: solid 1px;
   }
 }

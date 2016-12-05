@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
 @import '../core/style/elevation';
+@import '../a11y/_a11y';
 
 
 $md-slide-toggle-width: 36px !default;
@@ -116,6 +117,11 @@ md-slide-toggle {
   border-radius: 50%;
 
   @include md-elevation(1);
+
+  @include md-high-contrast {
+    background: #fff;
+    border: solid 1px #000;
+  }
 }
 
 // Horizontal bar for the slide-toggle.
@@ -129,6 +135,10 @@ md-slide-toggle {
   height: $md-slide-toggle-bar-height;
 
   border-radius: 8px;
+
+  @include md-high-contrast {
+    background: #fff;
+  }
 }
 
 // The slide toggle shows a visually hidden input inside of the component, which is used

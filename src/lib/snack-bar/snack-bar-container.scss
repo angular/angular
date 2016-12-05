@@ -1,4 +1,5 @@
 @import '../core/style/elevation';
+@import '../a11y/_a11y';
 
 $md-snack-bar-padding: 14px 24px !default;
 $md-snack-bar-height: 20px !default;
@@ -19,4 +20,8 @@ $md-snack-bar-max-width: 568px !default;
   padding: $md-snack-bar-padding;
   // Initial transformation is applied to start snack bar out of view.
   transform: translateY(100%);
+
+  @include md-high-contrast {
+    border: solid 1px;
+  }
 }

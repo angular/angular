@@ -4,6 +4,7 @@
 @import '../core/style/button-common';
 @import '../core/style/layout-common';
 @import '../core/style/menu-common';
+@import '../a11y/_a11y';
 
 $md-menu-vertical-padding: 8px !default;
 
@@ -13,6 +14,10 @@ $md-menu-vertical-padding: 8px !default;
 
   // max height must be 100% of the viewport height + one row height
   max-height: calc(100vh + 48px);
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .md-menu-content {

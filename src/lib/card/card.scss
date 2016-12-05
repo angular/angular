@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
+@import '../a11y/_a11y';
 
 
 $md-card-default-padding: 24px !default;
@@ -15,6 +16,10 @@ md-card {
   padding: $md-card-default-padding;
   border-radius: $md-card-border-radius;
   font-family: $md-font-family;
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .md-card-flat {

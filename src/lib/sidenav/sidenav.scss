@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/layout-common';
+@import '../a11y/_a11y';
 
 
 // Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
@@ -82,6 +83,10 @@ md-sidenav-layout {
 
   &.md-sidenav-shown {
     visibility: visible;
+  }
+
+  @include md-high-contrast {
+    opacity: 0.5;
   }
 }
 

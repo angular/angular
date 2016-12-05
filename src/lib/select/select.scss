@@ -1,5 +1,6 @@
 @import '../core/style/menu-common';
 @import '../core/style/form-common';
+@import '../a11y/_a11y';
 
 $md-select-trigger-height: 30px !default;
 $md-select-trigger-min-width: 112px !default;
@@ -96,6 +97,10 @@ md-select {
   padding-top: 0;
   padding-bottom: 0;
   max-height: $md-select-panel-max-height;
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 md-option {
@@ -116,4 +121,9 @@ md-option {
   left: 0;
   bottom: 0;
   right: 0;
+
+  // In high contrast mode this completely covers the text.
+  @include md-high-contrast {
+    opacity: 0.5;
+  }
 }

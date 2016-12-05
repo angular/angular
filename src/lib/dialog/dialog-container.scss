@@ -1,4 +1,5 @@
 @import '../core/style/elevation';
+@import '../a11y/_a11y';
 
 
 $md-dialog-padding: 24px !default;
@@ -16,4 +17,8 @@ md-dialog-container {
   // The dialog container should completely fill its parent overlay element.
   width: 100%;
   height: 100%;
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
 }

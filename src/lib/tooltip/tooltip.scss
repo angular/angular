@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../a11y/_a11y';
 
 
 $md-tooltip-height: 22px;
@@ -18,4 +19,8 @@ $md-tooltip-padding: 8px;
   margin: $md-tooltip-margin;
   height: $md-tooltip-height;
   line-height: $md-tooltip-height;
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
 }
