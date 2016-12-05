@@ -187,7 +187,8 @@ function dateFormatter(format: string, date: Date, locale: string): string {
 
   if (fn) return fn(date, locale);
 
-  let parts = DATE_FORMATTER_CACHE.get(format);
+  const cacheKey = format;
+  let parts = DATE_FORMATTER_CACHE.get(cacheKey);
 
   if (!parts) {
     parts = [];
@@ -205,7 +206,7 @@ function dateFormatter(format: string, date: Date, locale: string): string {
       }
     }
 
-    DATE_FORMATTER_CACHE.set(format, parts);
+    DATE_FORMATTER_CACHE.set(cacheKey, parts);
   }
 
   return parts.reduce((text, part) => {
