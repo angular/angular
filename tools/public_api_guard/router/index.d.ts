@@ -172,7 +172,7 @@ export declare function provideRoutes(routes: Routes): any;
 
 /** @stable */
 export interface Resolve<T> {
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
 }
 
 /** @stable */
