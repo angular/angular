@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function isStaticSymbol(value: any): value is StaticSymbol {
-  return typeof value === 'object' && value !== null && value['name'] && value['filePath'];
-}
-
 /**
  * A token representing the a reference to a static type.
  *
