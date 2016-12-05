@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @module
- * @description
- * This module provides a set of common Pipes.
- */
+export * from './platform_location';
+export * from './location_strategy';
+export * from './hash_location_strategy';
+export * from './path_location_strategy';
+export * from './location';

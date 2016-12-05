@@ -11,12 +11,13 @@
  * @description
  * Entry point for all public APIs of the common package.
  */
-export * from './src/location';
+export * from './src/location/index';
 export {NgLocalization} from './src/localization';
 export {CommonModule} from './src/common_module';
 export {NgClass, NgFor, NgIf, NgPlural, NgPluralCase, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet} from './src/directives/index';
 export {AsyncPipe, DatePipe, I18nPluralPipe, I18nSelectPipe, JsonPipe, LowerCasePipe, CurrencyPipe, DecimalPipe, PercentPipe, SlicePipe, UpperCasePipe} from './src/pipes/index';
 import {Version} from '@angular/core';
+
 /**
  * @stable
  */
