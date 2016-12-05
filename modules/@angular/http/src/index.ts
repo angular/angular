@@ -19,3 +19,4 @@ export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, 
 export {Request} from './static_request';
 export {Response} from './static_response';
 export {QueryEncoder, URLSearchParams} from './url_search_params';
+export {VERSION} from './version';

@@ -11,11 +11,6 @@
  * @description
  * Entry point for all public APIs of the http package.
  */
-import {Version} from '@angular/core';
-/**
- * @stable
- */
-export const VERSION = new Version('0.0.0-PLACEHOLDER');
 export * from './src/index';
 
 // This file only reexports content of the `src` folder. Keep it that way.

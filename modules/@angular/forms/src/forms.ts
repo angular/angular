@@ -42,5 +42,5 @@ export {AsyncValidatorFn, MaxLengthValidator, MinLengthValidator, PatternValidat
 export {FormBuilder} from './form_builder';
 export {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
-
+export {VERSION} from './version';
 export * from './form_providers';

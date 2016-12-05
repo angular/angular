@@ -20,3 +20,8 @@ export class Version {
 
   get patch(): string { return this.full.split('.').slice(2).join('.'); }
 }
+
+/**
+ * @stable
+ */
+export const VERSION = new Version('0.0.0-PLACEHOLDER');

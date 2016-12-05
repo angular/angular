@@ -11,14 +11,6 @@
  * @description
  * Entry point for all public APIs of the common package.
  */
-export * from './src/location/index';
-export {NgLocalization} from './src/localization';
-export {CommonModule} from './src/common_module';
-export {NgClass, NgFor, NgIf, NgPlural, NgPluralCase, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet} from './src/directives/index';
-export {AsyncPipe, DatePipe, I18nPluralPipe, I18nSelectPipe, JsonPipe, LowerCasePipe, CurrencyPipe, DecimalPipe, PercentPipe, SlicePipe, UpperCasePipe} from './src/pipes/index';
-import {Version} from '@angular/core';
+export * from './src/common';
 
-/**
- * @stable
- */
-export const VERSION = new Version('0.0.0-PLACEHOLDER');
+// This file only reexports content of the `src` folder. Keep it that way.

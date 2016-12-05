@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation} from '@angular/common';
-import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, VERSION, createPlatformFactory, platformCore} from '@angular/core';
+import {ApplicationModule, ErrorHandler, NgModule, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {AnimationDriver} from '../src/dom/animation_driver';
 import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
@@ -29,7 +29,6 @@ import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_servic
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
-  {provide: PLATFORM_INITIALIZER, useValue: recordAngularVersion, multi: true},
   {provide: PlatformLocation, useClass: BrowserPlatformLocation}
 ];
 
@@ -53,14 +52,6 @@ export const platformBrowser =
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
   BrowserGetTestability.init();
-}
-
-export function recordAngularVersion(): void {
-  const domAdapter = getDOM();
-  const body = domAdapter.getElementsByTagName(domAdapter.defaultDoc(), 'body');
-  if (body.length > 0) {
-    domAdapter.setAttribute(body[0], 'ng-version', VERSION.full);
-  }
 }
 
 export function errorHandler(): ErrorHandler {
