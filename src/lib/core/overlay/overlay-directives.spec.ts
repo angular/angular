@@ -85,6 +85,24 @@ describe('Overlay directives', () => {
       expect(pane.style.height).toEqual('100vh');
     });
 
+    it('should set the min width', () => {
+      fixture.componentInstance.minWidth = 250;
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.minWidth).toEqual('250px');
+    });
+
+    it('should set the min height', () => {
+      fixture.componentInstance.minHeight = '500px';
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.minHeight).toEqual('500px');
+    });
+
     it('should create the backdrop if designated', () => {
       fixture.componentInstance.hasBackdrop = true;
       fixture.componentInstance.isOpen = true;
@@ -219,7 +237,7 @@ describe('Overlay directives', () => {
             [hasBackdrop]="hasBackdrop" backdropClass="md-test-class"
             (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
             (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
-            (detach)="detachHandler()">
+            (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight">
     <p>Menu content</p>
   </template>`,
 })
@@ -227,6 +245,8 @@ class ConnectedOverlayDirectiveTest {
   isOpen = false;
   width: number | string;
   height: number | string;
+  minWidth: number | string;
+  minHeight: number | string;
   offsetX: number = 0;
   offsetY: number = 0;
   hasBackdrop: boolean;

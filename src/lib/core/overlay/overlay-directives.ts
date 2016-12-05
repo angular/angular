@@ -106,6 +106,12 @@ export class ConnectedOverlayDirective implements OnDestroy {
   /** The height of the overlay panel. */
   @Input() height: number | string;
 
+  /** The min width of the overlay panel. */
+  @Input() minWidth: number | string;
+
+  /** The min height of the overlay panel. */
+  @Input() minHeight: number | string;
+
   /** The custom class to be set on the backdrop element. */
   @Input() backdropClass: string;
 
@@ -178,6 +184,14 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     if (this.height || this.height === 0) {
       overlayConfig.height = this.height;
+    }
+
+    if (this.minWidth || this.minWidth === 0) {
+      overlayConfig.minWidth = this.minWidth;
+    }
+
+    if (this.minHeight || this.minHeight === 0) {
+      overlayConfig.minHeight = this.minHeight;
     }
 
     overlayConfig.hasBackdrop = this.hasBackdrop;

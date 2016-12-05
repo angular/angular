@@ -147,6 +147,24 @@ describe('Overlay', () => {
       expect(pane.style.height).toEqual('100vh');
     });
 
+    it('should apply the min width set in the config', () => {
+      state.minWidth = 200;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.minWidth).toEqual('200px');
+    });
+
+
+    it('should apply the min height set in the config', () => {
+      state.minHeight = 500;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.minHeight).toEqual('500px');
+    });
+
+
     it('should support zero widths and heights', () => {
       state.width = 0;
       state.height = 0;

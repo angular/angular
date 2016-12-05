@@ -85,6 +85,14 @@ export class OverlayRef implements PortalHost {
     if (this._state.height || this._state.height === 0) {
       this._pane.style.height = formatCssUnit(this._state.height);
     }
+
+    if (this._state.minWidth || this._state.minWidth === 0) {
+      this._pane.style.minWidth = formatCssUnit(this._state.minWidth);
+    }
+
+    if (this._state.minHeight || this._state.minHeight === 0) {
+      this._pane.style.minHeight = formatCssUnit(this._state.minHeight);
+    }
   }
 
   /** Attaches a backdrop for this overlay. */
