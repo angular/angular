@@ -28,15 +28,17 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22) 
 label.
 
-High level items planned for November 2016:
-* Initial version of md-select
+High level items planned for December 2016:
+* Continued work on initial versions of md-autocomplete and md-chips
 * Continued bug bashing
-* Initial versions of autocomplete and chips
+* Continued work on https://material.angular.io site
+* Finish major refactoring for md-input (hit a few issues last month)
+* Continued expanding e2e test coverage
+* Paginated tabs.
+* Scroll / resize handling for overlays
+* Production build 
 * AoT compile e2e app
-* Continue work on https://material.angular.io site
-* Major refactoring for md-input
-* Tabs animations
-* Expanding e2e test coverage
+* Release beta.0
 
 
 #### Feature status:
