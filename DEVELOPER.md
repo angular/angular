@@ -126,7 +126,7 @@ $ gulp public-api:update
 
 Note: The command `./test.sh tools` fails when the API doesn't match the golden files.
 
-## Formatting your source code
+## <a name="clang-format"></a> Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
 is not properly formatted, the CI will fail and the PR can not be merged.
