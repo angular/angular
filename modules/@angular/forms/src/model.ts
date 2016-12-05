@@ -856,7 +856,7 @@ export class FormGroup extends AbstractControl {
    * most cases you'll want to use {@link FormGroup.addControl} instead.
    */
   registerControl(name: string, control: AbstractControl): AbstractControl {
-    if (this.controls[name]) return this.controls[name];
+    if (this.controls[name]) throw new Error(`Control with the name [${name}] already exists`);
     this.controls[name] = control;
     control.setParent(this);
     control._registerOnCollectionChange(this._onCollectionChange);
