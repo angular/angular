@@ -23,7 +23,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {Data, ResolveData, Routes, validateConfig} from './config';
+import {ResolveData, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -38,7 +38,7 @@ import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tr
 import {andObservables, forEach, merge, waitForMap, wrapIntoObservable} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
-declare var Zone: any;
+declare let Zone: any;
 
 /**
  * @whatItDoes Represents the extra options used during navigation.
@@ -55,16 +55,13 @@ export interface NavigationExtras {
   * [{
   *   path: 'parent',
   *   component: ParentComponent,
-  *   children: [
-  *     {
-  *       path: 'list',
-  *       component: ListComponent
-  *     },
-  *     {
-  *       path: 'child',
-  *       component: ChildComponent
-  *     }
-  *   ]
+  *   children: [{
+  *     path: 'list',
+  *     component: ListComponent
+  *   },{
+  *     path: 'child',
+  *     component: ChildComponent
+  *   }]
   * }]
   * ```
   *
@@ -385,23 +382,25 @@ export class Router {
   setUpLocationChangeListener(): void {
     // Zone.current.wrap is needed because of the issue with RxJS scheduler,
     // which does not work properly with zone.js in IE and Safari
-    this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
-      const rawUrlTree = this.urlSerializer.parse(change['url']);
-      const lastNavigation = this.navigations.value;
+    if (!this.locationSubscription) {
+      this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
+        const rawUrlTree = this.urlSerializer.parse(change['url']);
+        const lastNavigation = this.navigations.value;
 
-      // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
-      // and that navigation results in 'replaceState' that leads to the same URL,
-      // we should skip those.
-      if (lastNavigation && lastNavigation.imperative &&
-          lastNavigation.rawUrl.toString() === rawUrlTree.toString()) {
-        return;
-      }
+        // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
+        // and that navigation results in 'replaceState' that leads to the same URL,
+        // we should skip those.
+        if (lastNavigation && lastNavigation.imperative &&
+            lastNavigation.rawUrl.toString() === rawUrlTree.toString()) {
+          return;
+        }
 
-      setTimeout(() => {
-        this.scheduleNavigation(
-            rawUrlTree, false, {skipLocationChange: change['pop'], replaceUrl: true});
-      }, 0);
-    }));
+        setTimeout(() => {
+          this.scheduleNavigation(
+              rawUrlTree, false, {skipLocationChange: change['pop'], replaceUrl: true});
+        }, 0);
+      }));
+    }
   }
 
   /**
@@ -446,7 +445,12 @@ export class Router {
   /**
    * Disposes of the router.
    */
-  dispose(): void { this.locationSubscription.unsubscribe(); }
+  dispose(): void {
+    if (this.locationSubscription) {
+      this.locationSubscription.unsubscribe();
+      this.locationSubscription = null;
+    }
+  }
 
   /**
    * Applies an array of commands to the current url tree and creates a new url tree.

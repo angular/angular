@@ -10,7 +10,7 @@ import {SummaryResolver} from '../summary_resolver';
 
 import {GeneratedFile} from './generated_file';
 import {StaticReflector} from './static_reflector';
-import {StaticSymbol, isStaticSymbol} from './static_symbol';
+import {StaticSymbol} from './static_symbol';
 import {filterFileByPatterns} from './utils';
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
@@ -43,7 +43,7 @@ export class AotSummaryResolver implements SummaryResolver {
 
   serializeSummaries(srcFileUrl: string, summaries: CompileTypeSummary[]): GeneratedFile {
     const jsonReplacer = (key: string, value: any) => {
-      if (key === 'reference' && isStaticSymbol(value)) {
+      if (value instanceof StaticSymbol) {
         // We convert the source filenames into output filenames,
         // as the generated summary file will be used when the current
         // compilation unit is used as a library
@@ -84,7 +84,7 @@ export class AotSummaryResolver implements SummaryResolver {
       if (!summary) {
         try {
           const jsonReviver = (key: string, value: any) => {
-            if (key === 'reference' && value && value['__symbolic__'] === 'symbol') {
+            if (value && value['__symbolic__'] === 'symbol') {
               // Note: We can't use staticReflector.findDeclaration here:
               // Summary files can contain symbols of transitive compilation units
               // (via the providers), and findDeclaration needs .metadata.json / .d.ts files,

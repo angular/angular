@@ -7,8 +7,9 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, Injector, NgModule, NgModuleFactoryLoader} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {Component, NgModule, NgModuleFactoryLoader} from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
@@ -17,7 +18,6 @@ import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, Deta
 import {RouterPreloader} from '../src/router_preloader';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
-
 
 describe('Integration', () => {
   beforeEach(() => {
@@ -700,27 +700,25 @@ describe('Integration', () => {
      })));
 
   it('should not deactivate aux routes when navigating from a componentless routes',
-     fakeAsync(inject(
-         [Router, Location, NgModuleFactoryLoader],
-         (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-           const fixture = createRoot(router, TwoOutletsCmp);
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, TwoOutletsCmp);
 
-           router.resetConfig([
-             {path: 'simple', component: SimpleCmp},
-             {path: 'componentless', children: [{path: 'simple', component: SimpleCmp}]},
-             {path: 'user/:name', outlet: 'aux', component: UserCmp}
-           ]);
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'componentless', children: [{path: 'simple', component: SimpleCmp}]},
+         {path: 'user/:name', outlet: 'aux', component: UserCmp}
+       ]);
 
-           router.navigateByUrl('/componentless/simple(aux:user/victor)');
-           advance(fixture);
-           expect(location.path()).toEqual('/componentless/simple(aux:user/victor)');
-           expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
+       router.navigateByUrl('/componentless/simple(aux:user/victor)');
+       advance(fixture);
+       expect(location.path()).toEqual('/componentless/simple(aux:user/victor)');
+       expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
 
-           router.navigateByUrl('/simple(aux:user/victor)');
-           advance(fixture);
-           expect(location.path()).toEqual('/simple(aux:user/victor)');
-           expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
-         })));
+       router.navigateByUrl('/simple(aux:user/victor)');
+       advance(fixture);
+       expect(location.path()).toEqual('/simple(aux:user/victor)');
+       expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
+     })));
 
   it('should emit an event when an outlet gets activated', fakeAsync(() => {
        @Component({
@@ -766,7 +764,7 @@ describe('Integration', () => {
      }));
 
   it('should update url and router state before activating components',
-     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+     fakeAsync(inject([Router], (router: Router) => {
 
        const fixture = createRoot(router, RootCmp);
 
@@ -843,8 +841,7 @@ describe('Integration', () => {
          ]);
        })));
 
-    it('should handle errors',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+    it('should handle errors', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig(
@@ -865,8 +862,7 @@ describe('Integration', () => {
          expect(e).toEqual('error');
        })));
 
-    it('should preserve resolved data',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+    it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([{
@@ -890,7 +886,7 @@ describe('Integration', () => {
        })));
 
     it('should rerun resolvers when the urls segments of a wildcard route change',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       fakeAsync(inject([Router, Location], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([{
@@ -899,7 +895,6 @@ describe('Integration', () => {
            resolve: {numberOfUrlSegments: 'numberOfUrlSegments'}
          }]);
 
-         const e: any = null;
          router.navigateByUrl('/one/two');
          advance(fixture);
          const cmp = fixture.debugElement.children[1].componentInstance;
@@ -914,6 +909,37 @@ describe('Integration', () => {
   });
 
   describe('router links', () => {
+    it('should support skipping location update for anchor router links',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = TestBed.createComponent(RootCmp);
+         advance(fixture);
+
+         router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+         router.navigateByUrl('/team/22');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22');
+         expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+         const teamCmp = fixture.debugElement.childNodes[1].componentInstance;
+
+         teamCmp.routerLink = ['/team/0'];
+         advance(fixture);
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         anchor.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 0 [ , right:  ]');
+         expect(location.path()).toEqual('/team/22');
+
+         teamCmp.routerLink = ['/team/1'];
+         advance(fixture);
+         const button = fixture.debugElement.query(By.css('button')).nativeElement;
+         button.click();
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('team 1 [ , right:  ]');
+         expect(location.path()).toEqual('/team/22');
+       })));
+
     it('should support string router links', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -2596,12 +2622,15 @@ class BlankCmp {
 
 @Component({
   selector: 'team-cmp',
-  template:
-      `team {{id | async}} [ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]`
+  template: `team {{id | async}} ` +
+      `[ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]` +
+      `<a [routerLink]="routerLink" skipLocationChange></a>` +
+      `<button [routerLink]="routerLink" skipLocationChange></button>`
 })
 class TeamCmp {
   id: Observable<string>;
   recordedParams: Params[] = [];
+  routerLink = ['.'];
 
   constructor(public route: ActivatedRoute) {
     this.id = map.call(route.params, (p: any) => p['id']);
