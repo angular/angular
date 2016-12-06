@@ -13,17 +13,12 @@ import {
   EventEmitter,
   Renderer,
   ViewEncapsulation,
+  ViewChild
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, MdError, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
-
-
-/** Exception thrown when two MdSidenav are matching the same side. */
-export class MdDuplicatedSidenavError extends MdError {
-  constructor(align: string) {
-    super(`A sidenav was already declared for 'align="${align}"'`);
-  }
-}
+import {Dir, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+import {A11yModule} from '../core/a11y/index';
+import {FocusTrap} from '../core/a11y/focus-trap';
 
 
 /** Sidenav toggle promise result. */
@@ -42,7 +37,7 @@ export class MdSidenavToggleResult {
 @Component({
   moduleId: module.id,
   selector: 'md-sidenav, mat-sidenav',
-  template: '<ng-content></ng-content>',
+  template: '<focus-trap [disabled]="isFocusTrapDisabled"><ng-content></ng-content></focus-trap>',
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
     // must prevent the browser from aligning text based on value
@@ -61,6 +56,8 @@ export class MdSidenavToggleResult {
   encapsulation: ViewEncapsulation.None,
 })
 export class MdSidenav implements AfterContentInit {
+  @ViewChild(FocusTrap) _focusTrap: FocusTrap;
+
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
   private _align: 'start' | 'end' = 'start';
 
@@ -121,6 +118,11 @@ export class MdSidenav implements AfterContentInit {
    * `null` if no animation is in progress.
    */
   private _resolveToggleAnimationPromise: (animationFinished: boolean) => void = null;
+
+  get isFocusTrapDisabled() {
+    // The focus trap is only enabled when the sidenav is open in any mode other than side.
+    return !this.opened || this.mode == 'side';
+  }
 
   /**
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
@@ -184,6 +186,10 @@ export class MdSidenav implements AfterContentInit {
       this.onOpenStart.emit();
     } else {
       this.onCloseStart.emit();
+    }
+
+    if (!this.isFocusTrapDisabled) {
+      this._focusTrap.focusFirstTabbableElementWhenReady();
     }
 
     if (this._toggleAnimationPromise) {
@@ -456,7 +462,7 @@ export class MdSidenavLayout implements AfterContentInit {
 
 
 @NgModule({
-  imports: [CommonModule, DefaultStyleCompatibilityModeModule],
+  imports: [CommonModule, DefaultStyleCompatibilityModeModule, A11yModule],
   exports: [MdSidenavLayout, MdSidenav, DefaultStyleCompatibilityModeModule],
   declarations: [MdSidenavLayout, MdSidenav],
 })
