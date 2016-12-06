@@ -366,13 +366,13 @@ export declare abstract class UrlHandlingStrategy {
 /** @stable */
 export declare class UrlSegment {
     parameters: {
-        [key: string]: string;
+        [name: string]: string;
     };
     path: string;
     constructor(
         path: string,
         parameters: {
-        [key: string]: string;
+        [name: string]: string;
     });
     toString(): string;
 }

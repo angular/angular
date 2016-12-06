@@ -9,7 +9,6 @@
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {DirectRenderer, RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';

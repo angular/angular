@@ -11,7 +11,6 @@ import {ComponentRef} from '@angular/core';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
 
-
 /**
  * @whatItDoes Represents the detached route tree.
  *
@@ -22,14 +21,11 @@ import {TreeNode} from './utils/tree';
  */
 export type DetachedRouteHandle = {};
 
-/**
- * @internal
- */
+/** @internal */
 export type DetachedRouteHandleInternal = {
   componentRef: ComponentRef<any>,
-  route: TreeNode<ActivatedRoute>
+  route: TreeNode<ActivatedRoute>,
 };
-
 
 /**
  * @whatItDoes Provides a way to customize when activated routes get reused.
@@ -37,28 +33,18 @@ export type DetachedRouteHandleInternal = {
  * @experimental
  */
 export abstract class RouteReuseStrategy {
-  /**
-   * Determines if this route (and its subtree) should be detached to be reused later.
-   */
+  /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
 
-  /**
-   * Stores the detached route.
-   */
+  /** Stores the detached route */
   abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void;
 
-  /**
-   * Determines if this route (and its subtree) should be reattached.
-   */
+  /** Determines if this route (and its subtree) should be reattached */
   abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
 
-  /**
-   * Retrieves the previously stored route.
-   */
+  /** Retrieves the previously stored route */
   abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle;
 
-  /**
-   * Determines if a route should be reused.
-   */
+  /** Determines if a route should be reused */
   abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
 }

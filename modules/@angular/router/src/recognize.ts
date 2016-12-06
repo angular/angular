@@ -11,9 +11,9 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, ResolveData, Route, Routes, UrlMatchResult} from './config';
+import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
-import {PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
+import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
