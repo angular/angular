@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {isBlank, isPresent, stringify} from './facade/lang';
+import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
 import {InterpolationConfig} from './ml_parser/interpolation_config';
@@ -32,7 +33,7 @@ export interface PrenormalizedTemplateMetadata {
   animations?: CompileAnimationEntryMetadata[];
 }
 
-@Injectable()
+@CompilerInjectable()
 export class DirectiveNormalizer {
   private _resourceLoaderCache = new Map<string, Promise<string>>();
 

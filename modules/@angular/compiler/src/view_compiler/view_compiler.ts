@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {CompilerConfig} from '../config';
+import {CompilerInjectable} from '../injectable';
 import * as o from '../output/output_ast';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {TemplateAst} from '../template_parser/template_ast';
@@ -30,7 +29,7 @@ export class ViewCompileResult {
           Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class ViewCompiler {
   constructor(private _genConfig: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
 

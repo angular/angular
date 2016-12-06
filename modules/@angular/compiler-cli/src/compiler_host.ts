@@ -16,6 +16,8 @@ const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
 const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
+const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
+const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$/;
 
 export interface CompilerHostContext extends ts.ModuleResolutionHost {
   readResource(fileName: string): Promise<string>;
@@ -28,6 +30,7 @@ export class CompilerHost implements AotCompilerHost {
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
+  protected resolveModuleNameHost: CompilerHostContext;
 
   constructor(
       protected program: ts.Program, protected options: AngularCompilerOptions,
@@ -38,12 +41,31 @@ export class CompilerHost implements AotCompilerHost {
 
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
+    this.resolveModuleNameHost = Object.create(this.context);
+
+    // When calling ts.resolveModuleName,
+    // additional allow checks for .d.ts files to be done based on
+    // checks for .ngsummary.json files,
+    // so that our codegen depends on fewer inputs and requires to be called
+    // less often.
+    // This is needed as we use ts.resolveModuleName in reflector_host
+    // and it should be able to resolve summary file names.
+    this.resolveModuleNameHost.fileExists = (fileName: string): boolean => {
+      if (this.context.fileExists(fileName)) {
+        return true;
+      }
+      if (DTS.test(fileName)) {
+        const base = fileName.substring(0, fileName.length - 5);
+        return this.context.fileExists(base + '.ngsummary.json');
+      }
+      return false;
+    };
   }
 
   // We use absolute paths on disk as canonical.
   getCanonicalFileName(fileName: string): string { return fileName; }
 
-  moduleNameToFileName(m: string, containingFile: string) {
+  moduleNameToFileName(m: string, containingFile: string): string|null {
     if (!containingFile || !containingFile.length) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -53,7 +75,8 @@ export class CompilerHost implements AotCompilerHost {
     }
     m = m.replace(EXT, '');
     const resolved =
-        ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
+        ts.resolveModuleName(
+              m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)
             .resolvedModule;
     return resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
   };
@@ -213,10 +236,20 @@ export class CompilerHost implements AotCompilerHost {
 
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
 
-  loadSummary(filePath: string): string { return this.context.readFile(filePath); }
+  loadSummary(filePath: string): string|null {
+    if (this.context.fileExists(filePath)) {
+      return this.context.readFile(filePath);
+    }
+  }
 
   getOutputFileName(sourceFilePath: string): string {
     return sourceFilePath.replace(EXT, '') + '.d.ts';
+  }
+
+  isSourceFile(filePath: string): boolean {
+    const excludeRegex =
+        this.options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
+    return !excludeRegex.test(filePath);
   }
 }
 

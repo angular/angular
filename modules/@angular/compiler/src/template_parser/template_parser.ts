@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata} from '@angular/core';
-
+import {Inject, OpaqueToken, Optional, SchemaMetadata} from '@angular/core';
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createIdentifierToken, identifierToken} from '../identifiers';
+import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
@@ -79,7 +79,7 @@ export class TemplateParseResult {
   constructor(public templateAst?: TemplateAst[], public errors?: ParseError[]) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class TemplateParser {
   constructor(
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,

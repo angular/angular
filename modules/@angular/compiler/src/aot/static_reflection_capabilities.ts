@@ -8,6 +8,7 @@
 
 import {GetterFn, MethodFn, ReflectionCapabilities, SetterFn, reflector} from '../private_import_core';
 import {StaticReflector} from './static_reflector';
+import {StaticSymbol} from './static_symbol';
 
 export class StaticAndDynamicReflectionCapabilities {
   static install(staticDelegate: StaticReflector) {
@@ -42,7 +43,7 @@ export class StaticAndDynamicReflectionCapabilities {
   method(name: string): MethodFn { return this.dynamicDelegate.method(name); }
   importUri(type: any): string { return this.staticDelegate.importUri(type); }
   resolveIdentifier(name: string, moduleUrl: string, runtime: any) {
-    return this.staticDelegate.resolveIdentifier(name, moduleUrl, runtime);
+    return this.staticDelegate.resolveIdentifier(name, moduleUrl);
   }
   resolveEnum(enumIdentifier: any, name: string): any {
     if (isStaticType(enumIdentifier)) {

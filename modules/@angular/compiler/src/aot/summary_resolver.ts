@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleSummary, CompilePipeSummary, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
-import {SummaryResolver} from '../summary_resolver';
+import {CompileSummaryKind, CompileTypeSummary} from '../compile_metadata';
+import {Summary, SummaryResolver} from '../summary_resolver';
 
-import {GeneratedFile} from './generated_file';
-import {StaticReflector} from './static_reflector';
-import {StaticSymbol} from './static_symbol';
-import {filterFileByPatterns} from './utils';
+import {StaticSymbol, StaticSymbolCache} from './static_symbol';
+import {ResolvedStaticSymbol} from './static_symbol_resolver';
+import {deserializeSummaries, summaryFileName} from './summary_serializer';
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
@@ -19,106 +18,60 @@ export interface AotSummaryResolverHost {
   /**
    * Loads an NgModule/Directive/Pipe summary file
    */
-  loadSummary(filePath: string): string;
+  loadSummary(filePath: string): string /*|null*/;
 
   /**
-   * Returns the output file path of a source file.
-   * E.g.
-   * `some_file.ts` -> `some_file.d.ts`
+   * Returns whether a file is a source file or not.
    */
-  getOutputFileName(sourceFilePath: string): string;
+  isSourceFile(sourceFilePath: string): boolean;
 }
 
-export interface AotSummaryResolverOptions {
-  includeFilePattern?: RegExp;
-  excludeFilePattern?: RegExp;
-}
+export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
+  private summaryCache = new Map<StaticSymbol, Summary<StaticSymbol>>();
+  private loadedFilePaths = new Set<string>();
 
-export class AotSummaryResolver implements SummaryResolver {
-  private summaryCache: {[cacheKey: string]: CompileTypeSummary} = {};
+  constructor(private host: AotSummaryResolverHost, private staticSymbolCache: StaticSymbolCache) {}
 
-  constructor(
-      private host: AotSummaryResolverHost, private staticReflector: StaticReflector,
-      private options: AotSummaryResolverOptions) {}
-
-  serializeSummaries(srcFileUrl: string, summaries: CompileTypeSummary[]): GeneratedFile {
-    const jsonReplacer = (key: string, value: any) => {
-      if (value instanceof StaticSymbol) {
-        // We convert the source filenames into output filenames,
-        // as the generated summary file will be used when the current
-        // compilation unit is used as a library
-        return {
-          '__symbolic__': 'symbol',
-          'name': value.name,
-          'path': this.host.getOutputFileName(value.filePath),
-          'members': value.members
-        };
-      }
-      return value;
-    };
-    const allSummaries = summaries.slice();
-    summaries.forEach((summary) => {
-      if (summary.summaryKind === CompileSummaryKind.NgModule) {
-        const moduleMeta = <CompileNgModuleSummary>summary;
-        moduleMeta.exportedDirectives.concat(moduleMeta.exportedPipes).forEach((id) => {
-          if (!filterFileByPatterns(id.reference.filePath, this.options)) {
-            allSummaries.push(this.resolveSummary(id.reference));
-          }
-        });
-      }
-    });
-
-    return new GeneratedFile(
-        srcFileUrl, summaryFileName(srcFileUrl), JSON.stringify(allSummaries, jsonReplacer));
-  }
-
-  private _cacheKey(symbol: StaticSymbol) { return `${symbol.filePath}|${symbol.name}`; }
-
-  resolveSummary(staticSymbol: StaticSymbol): any {
-    const filePath = staticSymbol.filePath;
-    const name = staticSymbol.name;
-    const cacheKey = this._cacheKey(staticSymbol);
-    if (!filterFileByPatterns(filePath, this.options)) {
-      let summary = this.summaryCache[cacheKey];
-      const summaryFilePath = summaryFileName(filePath);
-      if (!summary) {
-        try {
-          const jsonReviver = (key: string, value: any) => {
-            if (value && value['__symbolic__'] === 'symbol') {
-              // Note: We can't use staticReflector.findDeclaration here:
-              // Summary files can contain symbols of transitive compilation units
-              // (via the providers), and findDeclaration needs .metadata.json / .d.ts files,
-              // but we don't want to depend on these for transitive dependencies.
-              return this.staticReflector.getStaticSymbol(
-                  value['path'], value['name'], value['members']);
-            } else {
-              return value;
-            }
-          };
-          const readSummaries: CompileTypeSummary[] =
-              JSON.parse(this.host.loadSummary(summaryFilePath), jsonReviver);
-          readSummaries.forEach((summary) => {
-            const filePath = summary.type.reference.filePath;
-            this.summaryCache[this._cacheKey(summary.type.reference)] = summary;
-          });
-          summary = this.summaryCache[cacheKey];
-        } catch (e) {
-          console.error(`Error loading summary file ${summaryFilePath}`);
-          throw e;
-        }
-      }
-      if (!summary) {
-        throw new Error(
-            `Could not find the symbol ${name} in the summary file ${summaryFilePath}!`);
-      }
-      return summary;
-    } else {
-      return null;
+  private _assertNoMembers(symbol: StaticSymbol) {
+    if (symbol.members.length) {
+      throw new Error(
+          `Internal state: StaticSymbols in summaries can't have members! ${JSON.stringify(symbol)}`);
     }
   }
-}
 
-function summaryFileName(fileName: string): string {
-  const fileNameWithoutSuffix = fileName.replace(STRIP_SRC_FILE_SUFFIXES, '');
-  return `${fileNameWithoutSuffix}.ngsummary.json`;
+  resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol> {
+    this._assertNoMembers(staticSymbol);
+    let summary = this.summaryCache.get(staticSymbol);
+    if (!summary) {
+      this._loadSummaryFile(staticSymbol.filePath);
+      summary = this.summaryCache.get(staticSymbol);
+    }
+    return summary;
+  }
+
+  getSymbolsOf(filePath: string): StaticSymbol[] {
+    this._loadSummaryFile(filePath);
+    return Array.from(this.summaryCache.keys()).filter((symbol) => symbol.filePath === filePath);
+  }
+
+  private _loadSummaryFile(filePath: string) {
+    if (this.loadedFilePaths.has(filePath)) {
+      return;
+    }
+    this.loadedFilePaths.add(filePath);
+    if (!this.host.isSourceFile(filePath)) {
+      const summaryFilePath = summaryFileName(filePath);
+      let json: string;
+      try {
+        json = this.host.loadSummary(summaryFilePath);
+      } catch (e) {
+        console.error(`Error loading summary file ${summaryFilePath}`);
+        throw e;
+      }
+      if (json) {
+        const readSummaries = deserializeSummaries(this.staticSymbolCache, json);
+        readSummaries.forEach((summary) => { this.summaryCache.set(summary.symbol, summary); });
+      }
+    }
+  }
 }

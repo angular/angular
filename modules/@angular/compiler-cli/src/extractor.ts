@@ -17,7 +17,6 @@ import * as compiler from '@angular/compiler';
 import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {excludeFilePattern} from './codegen';
 import {CompilerHost, ModuleResolutionHostAdapter} from './compiler_host';
 
 export class Extractor {
@@ -36,8 +35,7 @@ export class Extractor {
     if (!ngCompilerHost)
       ngCompilerHost =
           new CompilerHost(program, options, new ModuleResolutionHostAdapter(moduleResolverHost));
-    const {extractor: ngExtractor} = compiler.Extractor.create(
-        ngCompilerHost, {excludeFilePattern: excludeFilePattern(options)});
+    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost);
     return new Extractor(ngExtractor, ngCompilerHost, program);
   }
 }

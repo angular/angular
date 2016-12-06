@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, PACKAGE_ROOT_URL} from '@angular/core';
+import {Inject, PACKAGE_ROOT_URL} from '@angular/core';
 
 import {isBlank, isPresent} from './facade/lang';
+import {CompilerInjectable} from './injectable';
+
 
 /**
  * Create a {@link UrlResolver} with no package prefix.
@@ -45,7 +47,7 @@ export var DEFAULT_PACKAGE_URL_PROVIDER = {
  * Attacker-controlled data introduced by a template could expose your
  * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
  */
-@Injectable()
+@CompilerInjectable()
 export class UrlResolver {
   constructor(@Inject(PACKAGE_ROOT_URL) private _packagePrefix: string = null) {}
 

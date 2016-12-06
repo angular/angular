@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {CompilerInjectable} from '../injectable';
 
 import {getHtmlTagDefinition} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
@@ -14,7 +14,7 @@ import {ParseTreeResult, Parser} from './parser';
 
 export {ParseTreeResult, TreeError} from './parser';
 
-@Injectable()
+@CompilerInjectable()
 export class HtmlParser extends Parser {
   constructor() { super(getHtmlTagDefinition); }
 

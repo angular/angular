@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
 import {CompileDiDependencyMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, tokenName, tokenReference} from './compile_metadata';
 import {createDiTokenExpression} from './compiler_util/identifier_util';
 import {isPresent} from './facade/lang';
 import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {CompilerInjectable} from './injectable';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
@@ -31,7 +30,7 @@ export class NgModuleCompileResult {
       public dependencies: ComponentFactoryDependency[]) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class NgModuleCompiler {
   compile(ngModuleMeta: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[]):
       NgModuleCompileResult {
