@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
@@ -82,7 +82,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   exportAs: 'routerLinkActive',
 })
 export class RouterLinkActive implements OnChanges,
-    OnDestroy, AfterContentInit {
+  OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
   @ContentChildren(RouterLinkWithHref, {descendants: true})
   linksWithHrefs: QueryList<RouterLinkWithHref>;
@@ -103,22 +103,18 @@ export class RouterLinkActive implements OnChanges,
   get isActive(): boolean { return this.hasActiveLink(); }
 
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(s => this.update());
-    this.linksWithHrefs.changes.subscribe(s => this.update());
+    this.links.changes.subscribe(_ => this.update());
+    this.linksWithHrefs.changes.subscribe(_ => this.update());
     this.update();
   }
 
   @Input()
   set routerLinkActive(data: string[]|string) {
-    if (Array.isArray(data)) {
-      this.classes = <any>data;
-    } else {
-      this.classes = data.split(' ');
-    }
+    this.classes = (Array.isArray(data) ? data : data.split(' ')).filter(c => !!c);
   }
 
-  ngOnChanges(changes: {}): any { this.update(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: {}): void { this.update(); }
+  ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
@@ -133,11 +129,11 @@ export class RouterLinkActive implements OnChanges,
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
-               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+      router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
   }
 
   private hasActiveLink(): boolean {
     return this.links.some(this.isLinkActive(this.router)) ||
-        this.linksWithHrefs.some(this.isLinkActive(this.router));
+      this.linksWithHrefs.some(this.isLinkActive(this.router));
   }
 }
