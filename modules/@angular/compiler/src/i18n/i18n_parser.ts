@@ -40,7 +40,8 @@ class _I18nVisitor implements html.Visitor {
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
-  public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string): i18n.Message {
+  public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string):
+      i18n.Message {
     this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
