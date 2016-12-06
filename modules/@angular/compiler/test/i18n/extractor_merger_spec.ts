@@ -1,5 +1,5 @@
 /**
- * @license
+ * @@license
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
@@ -20,10 +20,7 @@ export function main() {
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(extract('<div i18n="m|d|e">text<span>nested</span></div>')).toEqual([
-          [
-            ['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e',
-            ''
-          ],
+          [['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e', ''],
         ]);
       });
 
@@ -40,18 +37,17 @@ export function main() {
       it('should extract from attributes with id', () => {
         expect(
           extract(
-            '<div i18n="m1|d1@i1"><span i18n-title="m2|d2@i2" title="single' +
-            ' child">nested</span></div>'))
-          .toEqual([
-                     [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', 'i1'],
-                     [['single child'], 'm2', 'd2', 'i2'],
-                   ]);
+            '<div i18n="m1|d1@@i1"><span i18n-title="m2|d2@@i2" title="single child">nested</span></div>'))
+            .toEqual([
+              [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', 'i1'],
+              [['single child'], 'm2', 'd2', 'i2'],
+            ]);
       });
 
       it('should extract from attributes without meaning and with id', () => {
         expect(
           extract(
-            '<div i18n="d1@i1"><span i18n-title="d2@i2" title="single child">nested</span></div>'))
+            '<div i18n="d1@@i1"><span i18n-title="d2@@i2" title="single child">nested</span></div>'))
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
               [['single child'], '', 'd2', 'i2'],
@@ -61,7 +57,7 @@ export function main() {
       it('should extract from attributes with ONLY id', () => {
         expect(
           extract(
-            '<div i18n="@i1"><span i18n-title="@i2" title="single child">nested</span></div>'))
+            '<div i18n="@@i1"><span i18n-title="@@i2" title="single child">nested</span></div>'))
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
               [['single child'], '', '', 'i2'],
@@ -99,8 +95,8 @@ export function main() {
         expect(extract(`<!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
          <!-- i18n: desc2 -->message2<!-- /i18n -->
          <!-- i18n -->message3<!-- /i18n -->
-         <!-- i18n: meaning4|desc4@id4 -->message4<!-- /i18n -->
-         <!-- i18n: @id5 -->message5<!-- /i18n -->`))
+         <!-- i18n: meaning4|desc4@@id4 -->message4<!-- /i18n -->
+         <!-- i18n: @@id5 -->message5<!-- /i18n -->`))
             .toEqual([
               [['message1'], 'meaning1', 'desc1', ''],
               [['message2'], '', 'desc2', ''],
@@ -142,7 +138,7 @@ export function main() {
       });
 
       it('should ignore other comments', () => {
-        expect(extract(`<!-- i18n: meaning1|desc1@id1 --><!-- other -->message1<!-- /i18n -->`))
+        expect(extract(`<!-- i18n: meaning1|desc1@@id1 --><!-- other -->message1<!-- /i18n -->`))
             .toEqual([
               [['message1'], 'meaning1', 'desc1', 'id1'],
             ]);
@@ -165,7 +161,7 @@ export function main() {
         ]);
 
         // one message for the element content and one message for the ICU
-        expect(extract('<div i18n="m|d@i">before{count, plural, =0 {text}}after</div>')).toEqual([
+        expect(extract('<div i18n="m|d@@i">before{count, plural, =0 {text}}after</div>')).toEqual([
           [
             ['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm', 'd',
             'i'
@@ -202,11 +198,10 @@ export function main() {
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
-        expect(
-            extract(
-                '<div i18n="m|d@i">{count, plural, =0 { {sex, select, male {<p>ignore</p>}}' +
-                ' }}</div>',
-                ['p']))
+        expect(extract(
+                   '<div i18n="m|d@@i">{count, plural, =0 { {sex, select, male {<p>ignore</p>}}' +
+                       ' }}</div>',
+                   ['p']))
             .toEqual([[
               [
                 '{count, plural, =0 {[{sex, select, male {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
@@ -223,13 +218,13 @@ export function main() {
 
     describe('attributes', () => {
       it('should extract from attributes outside of translatable sections', () => {
-        expect(extract('<div i18n-title="m|d@i" title="msg"></div>')).toEqual([
+        expect(extract('<div i18n-title="m|d@@i" title="msg"></div>')).toEqual([
           [['msg'], 'm', 'd', 'i'],
         ]);
       });
 
       it('should extract from attributes in translatable elements', () => {
-        expect(extract('<div i18n><p><b i18n-title="m|d@i" title="msg"></b></p></div>')).toEqual([
+        expect(extract('<div i18n><p><b i18n-title="m|d@@i" title="msg"></b></p></div>')).toEqual([
           [
             ['<ph tag name="START_PARAGRAPH"><ph tag name="START_BOLD_TEXT"></ph' +
              ' name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'],
@@ -252,10 +247,9 @@ export function main() {
       });
 
       it('should extract from attributes in translatable ICUs', () => {
-        expect(
-            extract(
-                '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@i"' +
-                ' title="msg"></b></p>}}<!-- /i18n -->'))
+        expect(extract(
+                   '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i"' +
+                   ' title="msg"></b></p>}}<!-- /i18n -->'))
             .toEqual([
               [['msg'], 'm', 'd', 'i'],
               [
