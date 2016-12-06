@@ -5,6 +5,7 @@ import {
     ContentChildren,
     Directive,
     ElementRef,
+    Renderer,
     EventEmitter,
     HostBinding,
     Input,
@@ -306,7 +307,8 @@ export class MdButtonToggle implements OnInit {
 
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
-              public buttonToggleDispatcher: MdUniqueSelectionDispatcher) {
+              public buttonToggleDispatcher: MdUniqueSelectionDispatcher,
+              private _renderer: Renderer) {
     this.buttonToggleGroup = toggleGroup;
 
     this.buttonToggleGroupMultiple = toggleGroupMultiple;
@@ -435,7 +437,7 @@ export class MdButtonToggle implements OnInit {
   }
 
   focus() {
-    this._inputElement.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
   }
 }
 

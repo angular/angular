@@ -190,7 +190,7 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   }
 
   focus() {
-    this._inputElement.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
     this._onInputFocus();
   }
 

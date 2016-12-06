@@ -96,7 +96,7 @@ export class MdButton {
 
   /** TODO(hansl): e2e test this function. */
   focus() {
-    this._elementRef.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus');
   }
 
   getHostElement() {

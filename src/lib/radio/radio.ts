@@ -4,6 +4,7 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  Renderer,
   EventEmitter,
   HostBinding,
   Input,
@@ -294,6 +295,7 @@ export class MdRadioButton implements OnInit {
 
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
+              private _renderer: Renderer,
               public radioDispatcher: MdUniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
@@ -412,7 +414,7 @@ export class MdRadioButton implements OnInit {
   }
 
   focus() {
-    this._inputElement.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
     this._onInputFocus();
   }
 

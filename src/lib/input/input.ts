@@ -10,6 +10,7 @@ import {
   ContentChildren,
   ViewChild,
   ElementRef,
+  Renderer,
   QueryList,
   OnChanges,
   EventEmitter,
@@ -237,7 +238,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
   _elementType: 'input' | 'textarea';
 
-  constructor(elementRef: ElementRef) {
+  constructor(elementRef: ElementRef, private _renderer: Renderer) {
     // Set the element type depending on normalized selector used(md-input / md-textarea)
     this._elementType = elementRef.nativeElement.nodeName.toLowerCase() === 'md-input' ?
         'input' :
@@ -246,7 +247,7 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
   /** Set focus on input */
   focus() {
-    this._inputElement.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
   }
 
   _handleFocus(event: FocusEvent) {

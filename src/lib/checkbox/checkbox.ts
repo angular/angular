@@ -331,7 +331,7 @@ export class MdCheckbox implements ControlValueAccessor {
   }
 
   focus() {
-    this._inputElement.nativeElement.focus();
+    this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
     this._onInputFocus();
   }
 

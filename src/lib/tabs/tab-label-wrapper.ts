@@ -1,4 +1,4 @@
-import {Directive, ElementRef} from '@angular/core';
+import {Directive, ElementRef, Renderer} from '@angular/core';
 
 
 /** Used in the `md-tab-group` view to display tab labels */
@@ -6,12 +6,12 @@ import {Directive, ElementRef} from '@angular/core';
   selector: '[md-tab-label-wrapper], [mat-tab-label-wrapper]'
 })
 export class MdTabLabelWrapper {
-  constructor(public elementRef: ElementRef) {}
+  constructor(public elementRef: ElementRef, private _renderer: Renderer) {}
 
   /**
    * Sets focus on the wrapper element
    */
   focus(): void {
-    this.elementRef.nativeElement.focus();
+    this._renderer.invokeElementMethod(this.elementRef.nativeElement, 'focus');
   }
 }
