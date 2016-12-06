@@ -7,11 +7,14 @@ import {
   vendorTask, sequenceTask, serverTask
 } from '../task_helpers';
 
+const gulpRunSequence = require('run-sequence');
 
 const appDir = path.join(SOURCE_ROOT, 'e2e-app');
 const outDir = DIST_ROOT;
 const PROTRACTOR_CONFIG_PATH = path.join(PROJECT_ROOT, 'test/protractor.conf.js');
 
+/** Method to stop a running e2e web server, which may have not exited properly */
+let stopE2eServer = () => {};
 
 task(':watch:e2eapp', () => {
   watch(path.join(appDir, '**/*.ts'), [':build:e2eapp:ts']);
@@ -39,17 +42,6 @@ task(':test:protractor:setup', execNodeTask('protractor', 'webdriver-manager', [
 /** Runs protractor tests (assumes that server is already running. */
 task(':test:protractor', execNodeTask('protractor', [PROTRACTOR_CONFIG_PATH]));
 
-/**
- * Forces process termination.
- *
- * This task is used because, in some cases, protractor will block and not exit the process,
- * causing Travis to timeout. This task should always be used in a synchronous sequence as
- * the last step.
- */
-task(':e2e:done', () => process.exit(0));
-
-let stopE2eServer: () => void = null;
-
 /** Starts up the e2e app server. */
 task(':serve:e2eapp', serverTask(false, stream => { stopE2eServer = () => stream.emit('kill'); }));
 
@@ -70,23 +62,27 @@ task('serve:e2eapp:watch', ['serve:e2eapp', ':watch:components', ':watch:e2eapp'
  *
  * This task should only be used when running the e2e tests locally.
  */
-task('e2e', sequenceTask(
-  ':test:protractor:setup',
-  'serve:e2eapp:watch',
-  ':test:protractor',
-  ':serve:e2eapp:stop',
-  ':e2e:done',
-));
+task('e2e', (done: (err?: string) => void) => {
+  gulpRunSequence(
+    ':test:protractor:setup',
+    'serve:e2eapp:watch',
+    ':test:protractor',
+    ':serve:e2eapp:stop',
+    (err: any) => stopE2eServer() && done(err)
+  );
+});
 
 /**
  * Runs the e2e once. Does not watch for changes.
  *
  * This task should be used when running tests on the CI server.
  */
-task('e2e:single-run', sequenceTask(
-  ':test:protractor:setup',
-  'serve:e2eapp',
-  ':test:protractor',
-  ':serve:e2eapp:stop',
-  ':e2e:done',
-));
+task('e2e:single-run', (done: (err?: string) => void) => {
+  gulpRunSequence(
+    ':test:protractor:setup',
+    'serve:e2eapp',
+    ':test:protractor',
+    ':serve:e2eapp:stop',
+    (err: any) => stopE2eServer() && done(err)
+  );
+});

@@ -10,5 +10,5 @@ task('ci:forbidden-identifiers', function() {
 
 // Travis sometimes does not exit the process and times out. This is to prevent that.
 task('ci:test', ['test:single-run'], () => process.exit(0));
-// Travis sometimes does not exit the process and times out. This is to prevent that.
-task('ci:e2e', ['e2e:single-run'], () => process.exit(0));
+
+task('ci:e2e', ['e2e:single-run']);
