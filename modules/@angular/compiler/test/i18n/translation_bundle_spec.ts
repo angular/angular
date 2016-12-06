@@ -21,7 +21,7 @@ export function main(): void {
     it('should translate a plain message', () => {
       const msgMap = {foo: [new i18n.Text('bar', null)]};
       const tb = new TranslationBundle(msgMap, (_) => 'foo');
-      const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd');
+      const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar']);
     });
 
@@ -36,7 +36,7 @@ export function main(): void {
         ph1: '*phContent*',
       };
       const tb = new TranslationBundle(msgMap, (_) => 'foo');
-      const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd');
+      const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar*phContent*']);
     });
 
@@ -51,8 +51,8 @@ export function main(): void {
           new i18n.Text('*refMsg*', null),
         ],
       };
-      const refMsg = new i18n.Message([srcNode], {}, {}, 'm', 'd');
-      const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd');
+      const refMsg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
+      const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd', 'i');
       let count = 0;
       const digest = (_: any) => count++ ? 'ref' : 'foo';
       const tb = new TranslationBundle(msgMap, digest);
@@ -69,13 +69,13 @@ export function main(): void {
           ]
         };
         const tb = new TranslationBundle(msgMap, (_) => 'foo');
-        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd');
+        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Unknown placeholder/);
       });
 
       it('should report missing translation', () => {
         const tb = new TranslationBundle({}, (_) => 'foo');
-        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd');
+        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Missing translation for message foo/);
       });
 
@@ -83,8 +83,8 @@ export function main(): void {
         const msgMap = {
           foo: [new i18n.Placeholder('', 'ph1', span)],
         };
-        const refMsg = new i18n.Message([srcNode], {}, {}, 'm', 'd');
-        const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd');
+        const refMsg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
+        const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd', 'i');
         let count = 0;
         const digest = (_: any) => count++ ? 'ref' : 'foo';
         const tb = new TranslationBundle(msgMap, digest);
@@ -102,7 +102,7 @@ export function main(): void {
           ph1: '</b>',
         };
         const tb = new TranslationBundle(msgMap, (_) => 'foo');
-        const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd');
+        const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Unexpected closing tag "b"/);
       });
     });

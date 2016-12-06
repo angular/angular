@@ -6,10 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId, sha1} from '../../src/i18n/digest';
+import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
 
 export function main(): void {
   describe('digest', () => {
+    describe('digest', () => {
+      it('must return the ID if it\'s explicit', () => {
+        expect(digest({
+          id: 'i',
+          nodes: [],
+          placeholders: {},
+          placeholderToMessage: {},
+          meaning: '',
+          description: '',
+        })).toEqual('i');
+      });
+    });
+
     describe('sha1', () => {
       it('should work on empty strings',
          () => { expect(sha1('')).toEqual('da39a3ee5e6b4b0d3255bfef95601890afd80709'); });

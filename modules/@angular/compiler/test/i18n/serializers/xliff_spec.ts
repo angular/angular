@@ -18,6 +18,8 @@ const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
 <p i18n="m|d">foo</p>
+<p i18n="m|d@@i">foo</p>
+<p i18n="@@bar">foo</p>
 <p i18n="ph names"><br><img><div></div></p>
 `;
 
@@ -38,6 +40,16 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <target/>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="i" datatype="html">
+        <source>foo</source>
+        <target/>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="bar" datatype="html">
+        <source>foo</source>
+        <target/>
       </trans-unit>
       <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
@@ -66,6 +78,16 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <target>oof</target>
         <note priority="1" from="description">d</note>
         <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="i" datatype="html">
+        <source>foo</source>
+        <target>toto</target>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="bar" datatype="html">
+        <source>foo</source>
+        <target>tata</target>
       </trans-unit>
       <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
@@ -107,6 +129,8 @@ export function main(): void {
           'ec1d033f2436133c14ab038286c4f5df4697484a':
               '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
           'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
+          'i': 'toto',
+          'bar': 'tata',
           'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
               '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
         });

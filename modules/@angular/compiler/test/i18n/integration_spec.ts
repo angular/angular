@@ -59,14 +59,17 @@ export function main() {
       tb.detectChanges();
       expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('un');
       expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('un');
+      expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('un');
       cmp.count = 2;
       tb.detectChanges();
       expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('deux');
       expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('deux');
+      expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('deux');
       cmp.count = 3;
       tb.detectChanges();
       expect(el.query(By.css('#i18n-7')).nativeElement).toHaveText('beaucoup');
       expect(el.query(By.css('#i18n-14')).nativeElement).toHaveText('beaucoup');
+      expect(el.query(By.css('#i18n-17')).nativeElement).toHaveText('beaucoup');
 
       cmp.sex = 'm';
       cmp.sexB = 'f';
@@ -90,8 +93,8 @@ export function main() {
           .toEqual('<h1 id="i18n-12">Balises dans les commentaires html</h1>');
       expectHtml(el, '#i18n-13')
           .toBe('<div id="i18n-13" title="dans une section traductible"></div>');
-
       expectHtml(el, '#i18n-15').toMatch(/ca <b>devrait<\/b> marcher/);
+      expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
     });
   });
 }
@@ -141,6 +144,8 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
 <!-- /i18n -->
 
 <div id="i18n-15"><ng-container i18n>it <b>should</b> work</ng-container></div>
+<div id="i18n-16" i18n="@@i18n16">with an explicit ID</div>
+<div id="i18n-17" i18n="@@i18n17">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
 `
 })
 class I18nComponent {
@@ -182,6 +187,9 @@ const XTB = `
     <ph name="START_TAG_DIV_1"/><ph name="ICU"/><ph name="CLOSE_TAG_DIV"></ph>
 </translation>
   <translation id="1491627405349178954">ca <ph name="START_BOLD_TEXT"/>devrait<ph name="CLOSE_BOLD_TEXT"/> marcher</translation>
+  <translation id="i18n16">avec un ID explicite</translation>
+  <translation id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph 
+  name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
 </translationbundle>`;
 
 // unused, for reference only
@@ -210,5 +218,7 @@ const XMB = `
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"/><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
 </msg>
   <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
+  <msg id="i18n16">with an explicit ID</msg>
+  <msg id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
 </messagebundle>
 `;
