@@ -29,8 +29,7 @@ describe('plugin', () => {
     }
   });
 
-  let plugin =
-      new LanguageServicePlugin({ts: ts, host: mockHost, service, registry: documentRegistry});
+  let plugin = new LanguageServicePlugin({host: mockHost, service, registry: documentRegistry});
 
   it('should not report template errors on tour of heroes', () => {
     for (let source of program.getSourceFiles()) {

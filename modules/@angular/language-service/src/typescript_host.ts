@@ -34,9 +34,8 @@ import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations
  * Create a `LanguageServiceHost`
  */
 export function createLanguageServiceFromTypescript(
-    typescript: typeof ts, host: ts.LanguageServiceHost,
-    service: ts.LanguageService): LanguageService {
-  const ngHost = new TypeScriptServiceHost(typescript, host, service);
+    host: ts.LanguageServiceHost, service: ts.LanguageService): LanguageService {
+  const ngHost = new TypeScriptServiceHost(host, service);
   const ngServer = createLanguageService(ngHost);
   ngHost.setSite(ngServer);
   return ngServer;
@@ -74,7 +73,6 @@ export class DummyResourceLoader extends ResourceLoader {
  * @expermental
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
-  private ts: typeof ts;
   private _resolver: CompileMetadataResolver;
   private _staticSymbolCache = new StaticSymbolCache();
   private _reflector: StaticReflector;
@@ -90,11 +88,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private templateReferences: string[];
   private collectedErrors: Map<string, any[]>;
 
-  constructor(
-      typescript: typeof ts, private host: ts.LanguageServiceHost,
-      private tsService: ts.LanguageService) {
-    this.ts = typescript;
-  }
+  constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
 
   setSite(service: LanguageService) { this.service = service; }
 
@@ -190,14 +184,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         if (templateSource) {
           result.push(templateSource);
         } else {
-          this.ts.forEachChild(child, visit);
+          ts.forEachChild(child, visit);
         }
       };
 
       let sourceFile = this.getSourceFile(fileName);
       if (sourceFile) {
         this.context = sourceFile.path;
-        this.ts.forEachChild(sourceFile, visit);
+        ts.forEachChild(sourceFile, visit);
       }
       return result.length ? result : undefined;
     }
@@ -304,7 +298,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
                         return new TypeWrapper(type, {node, program, checker}).members();},
         get query(): SymbolQuery{
           if (!queryCache) {
-            queryCache = new TypeScriptSymbolQuery(t.ts, t.program, t.checker, sourceFile, () => {
+            queryCache = new TypeScriptSymbolQuery(t.program, t.checker, sourceFile, () => {
               const pipes = t.service.getPipesAt(fileName, node.getStart());
               const checker = t.checker;
               const program = t.program;
@@ -321,8 +315,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     let result: TemplateSource|undefined = undefined;
     const t = this;
     switch (node.kind) {
-      case this.ts.SyntaxKind.NoSubstitutionTemplateLiteral:
-      case this.ts.SyntaxKind.StringLiteral:
+      case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+      case ts.SyntaxKind.StringLiteral:
         let [declaration, decorator] = this.getTemplateClassDeclFromNode(node);
         let queryCache: SymbolQuery|undefined = undefined;
         if (declaration) {
@@ -403,7 +397,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private getTemplateClassFromStaticSymbol(type: StaticSymbol): ts.ClassDeclaration|undefined {
     const source = this.getSourceFile(type.filePath);
     if (source) {
-      const declarationNode = this.ts.forEachChild(source, child => {
+      const declarationNode = ts.forEachChild(source, child => {
         if (child.kind === ts.SyntaxKind.ClassDeclaration) {
           const classDeclaration = child as ts.ClassDeclaration;
           if (classDeclaration.name.text === type.name) {
@@ -431,7 +425,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!parentNode) {
       return TypeScriptServiceHost.missingTemplate;
     }
-    if (parentNode.kind !== this.ts.SyntaxKind.PropertyAssignment) {
+    if (parentNode.kind !== ts.SyntaxKind.PropertyAssignment) {
       return TypeScriptServiceHost.missingTemplate;
     } else {
       // TODO: Is this different for a literal, i.e. a quoted property name like "template"?
@@ -440,23 +434,23 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       }
     }
     parentNode = parentNode.parent;  // ObjectLiteralExpression
-    if (!parentNode || parentNode.kind !== this.ts.SyntaxKind.ObjectLiteralExpression) {
+    if (!parentNode || parentNode.kind !== ts.SyntaxKind.ObjectLiteralExpression) {
       return TypeScriptServiceHost.missingTemplate;
     }
 
     parentNode = parentNode.parent;  // CallExpression
-    if (!parentNode || parentNode.kind !== this.ts.SyntaxKind.CallExpression) {
+    if (!parentNode || parentNode.kind !== ts.SyntaxKind.CallExpression) {
       return TypeScriptServiceHost.missingTemplate;
     }
     const callTarget = (<ts.CallExpression>parentNode).expression;
 
     let decorator = parentNode.parent;  // Decorator
-    if (!decorator || decorator.kind !== this.ts.SyntaxKind.Decorator) {
+    if (!decorator || decorator.kind !== ts.SyntaxKind.Decorator) {
       return TypeScriptServiceHost.missingTemplate;
     }
 
     let declaration = <ts.ClassDeclaration>decorator.parent;  // ClassDeclaration
-    if (!declaration || declaration.kind !== this.ts.SyntaxKind.ClassDeclaration) {
+    if (!declaration || declaration.kind !== ts.SyntaxKind.ClassDeclaration) {
       return TypeScriptServiceHost.missingTemplate;
     }
     return [declaration, callTarget];
@@ -515,9 +509,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   private stringOf(node: ts.Node): string|undefined {
     switch (node.kind) {
-      case this.ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+      case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
         return (<ts.LiteralExpression>node).text;
-      case this.ts.SyntaxKind.StringLiteral:
+      case ts.SyntaxKind.StringLiteral:
         return (<ts.StringLiteral>node).text;
     }
   }
@@ -527,7 +521,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
     function find(node: ts.Node): ts.Node|undefined {
       if (position >= node.getStart() && position < node.getEnd()) {
-        return _this.ts.forEachChild(node, find) || node;
+        return ts.forEachChild(node, find) || node;
       }
     }
 
@@ -540,26 +534,26 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     switch (kind) {
       case BuiltinType.Any:
         type = checker.getTypeAtLocation(<ts.Node><any>{
-          kind: this.ts.SyntaxKind.AsExpression,
-          expression: <ts.Node>{kind: this.ts.SyntaxKind.TrueKeyword},
-          type: <ts.Node>{kind: this.ts.SyntaxKind.AnyKeyword}
+          kind: ts.SyntaxKind.AsExpression,
+          expression: <ts.Node>{kind: ts.SyntaxKind.TrueKeyword},
+          type: <ts.Node>{kind: ts.SyntaxKind.AnyKeyword}
         });
         break;
       case BuiltinType.Boolean:
-        type = checker.getTypeAtLocation(<ts.Node>{kind: this.ts.SyntaxKind.TrueKeyword});
+        type = checker.getTypeAtLocation(<ts.Node>{kind: ts.SyntaxKind.TrueKeyword});
         break;
       case BuiltinType.Null:
-        type = checker.getTypeAtLocation(<ts.Node>{kind: this.ts.SyntaxKind.NullKeyword});
+        type = checker.getTypeAtLocation(<ts.Node>{kind: ts.SyntaxKind.NullKeyword});
         break;
       case BuiltinType.Number:
-        type = checker.getTypeAtLocation(<ts.Node>{kind: this.ts.SyntaxKind.NumericLiteral});
+        type = checker.getTypeAtLocation(<ts.Node>{kind: ts.SyntaxKind.NumericLiteral});
         break;
       case BuiltinType.String:
-        type = checker.getTypeAtLocation(
-            <ts.Node>{kind: this.ts.SyntaxKind.NoSubstitutionTemplateLiteral});
+        type =
+            checker.getTypeAtLocation(<ts.Node>{kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral});
         break;
       case BuiltinType.Undefined:
-        type = checker.getTypeAtLocation(<ts.Node>{kind: this.ts.SyntaxKind.VoidExpression});
+        type = checker.getTypeAtLocation(<ts.Node>{kind: ts.SyntaxKind.VoidExpression});
         break;
       default:
         throw new Error(`Internal error, unhandled literal kind ${kind}:${BuiltinType[kind]}`);
@@ -569,30 +563,27 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 }
 
 class TypeScriptSymbolQuery implements SymbolQuery {
-  private ts: typeof ts;
   private typeCache = new Map<BuiltinType, Symbol>();
   private pipesCache: SymbolTable;
 
   constructor(
-      typescript: typeof ts, private program: ts.Program, private checker: ts.TypeChecker,
-      private source: ts.SourceFile, private fetchPipes: () => SymbolTable) {
-    this.ts = typescript;
-  }
+      private program: ts.Program, private checker: ts.TypeChecker, private source: ts.SourceFile,
+      private fetchPipes: () => SymbolTable) {}
 
   getTypeKind(symbol: Symbol): BuiltinType {
     const type = this.getTsTypeOf(symbol);
     if (type) {
-      if (type.flags & this.ts.TypeFlags.Any) {
+      if (type.flags & ts.TypeFlags.Any) {
         return BuiltinType.Any;
       } else if (
-          type.flags & (this.ts.TypeFlags.String | this.ts.TypeFlags.StringLike |
-                        this.ts.TypeFlags.StringLiteral)) {
+          type.flags &
+          (ts.TypeFlags.String | ts.TypeFlags.StringLike | ts.TypeFlags.StringLiteral)) {
         return BuiltinType.String;
-      } else if (type.flags & (this.ts.TypeFlags.Number | this.ts.TypeFlags.NumberLike)) {
+      } else if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLike)) {
         return BuiltinType.Number;
-      } else if (type.flags & (this.ts.TypeFlags.Undefined)) {
+      } else if (type.flags & (ts.TypeFlags.Undefined)) {
         return BuiltinType.Undefined;
-      } else if (type.flags & (this.ts.TypeFlags.Null)) {
+      } else if (type.flags & (ts.TypeFlags.Null)) {
         return BuiltinType.Null;
       }
     }
