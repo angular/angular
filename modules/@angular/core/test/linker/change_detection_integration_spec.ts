@@ -305,6 +305,12 @@ export function main() {
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
 
+        it('should support short-circuting array index operations', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
         it('should still throw if right-side would throw', fakeAsync(() => {
              expect(() => {
                const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
@@ -1515,6 +1521,7 @@ class Person {
   age: number;
   name: string;
   address: Address = null;
+  phones: number[];
 
   init(name: string, address: Address = null) {
     this.name = name;

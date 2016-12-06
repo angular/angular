@@ -284,8 +284,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
-    return convertToStatementIfNeeded(
-        mode, this.visit(ast.obj, _Mode.Expression).key(this.visit(ast.key, _Mode.Expression)));
+    const leftMostSafe = this.leftMostSafeNode(ast);
+    if (leftMostSafe) {
+      return this.convertSafeAccess(ast, leftMostSafe, mode);
+    } else {
+      return convertToStatementIfNeeded(
+          mode, this.visit(ast.obj, _Mode.Expression).key(this.visit(ast.key, _Mode.Expression)));
+    }
   }
 
   visitKeyedWrite(ast: cdAst.KeyedWrite, mode: _Mode): any {
