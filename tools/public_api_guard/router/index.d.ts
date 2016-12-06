@@ -186,7 +186,7 @@ export interface Route {
     canActivateChild?: any[];
     canDeactivate?: any[];
     canLoad?: any[];
-    children?: Route[];
+    children?: Routes;
     component?: Type<any>;
     data?: Data;
     loadChildren?: LoadChildren;
