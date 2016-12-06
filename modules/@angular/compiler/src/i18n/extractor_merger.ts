@@ -502,17 +502,14 @@ function _parsei18nInfo(i18n: string): [string, string, string] {
   let arobaseIndex: number;
 
   if (pipeIndex > -1) {
-    let m = i18n.slice(0, pipeIndex),
-        d = i18n.slice(pipeIndex + 1);
+    let m = i18n.slice(0, pipeIndex), d = i18n.slice(pipeIndex + 1);
 
     arobaseIndex = d.lastIndexOf('@@');
-    return (arobaseIndex > -1) ?
-      [m, d.slice(0, arobaseIndex), d.slice(arobaseIndex + 2)] :
-      [m, d, ''];
+    return (arobaseIndex > -1) ? [m, d.slice(0, arobaseIndex), d.slice(arobaseIndex + 2)] :
+                                 [m, d, ''];
   } else {
     arobaseIndex = i18n.lastIndexOf('@@');
-    return (arobaseIndex > -1) ?
-      ['', i18n.slice(0, arobaseIndex), i18n.slice(arobaseIndex + 2)] :
-      ['', i18n, ''];
+    return (arobaseIndex > -1) ? ['', i18n.slice(0, arobaseIndex), i18n.slice(arobaseIndex + 2)] :
+                                 ['', i18n, ''];
   }
 }
