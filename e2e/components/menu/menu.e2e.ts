@@ -12,7 +12,7 @@ describe('menu', () => {
     page.trigger().click();
 
     page.expectMenuPresent(true);
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
+    expect(page.menu().getText()).toEqual('One\nTwo\nThree\nFour');
   });
 
   it('should close menu when menu item is clicked', () => {
@@ -39,7 +39,7 @@ describe('menu', () => {
 
   it('should support multiple triggers opening the same menu', () => {
     page.triggerTwo().click();
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
+    expect(page.menu().getText()).toEqual('One\nTwo\nThree\nFour');
     page.expectMenuAlignedWith(page.menu(), 'trigger-two');
 
     page.backdrop().click();
@@ -48,7 +48,7 @@ describe('menu', () => {
     // TODO(kara): temporary, remove when #1607 is fixed
     browser.sleep(250);
     page.trigger().click();
-    expect(page.menu().getText()).toEqual("One\nTwo\nThree\nFour");
+    expect(page.menu().getText()).toEqual('One\nTwo\nThree\nFour');
     page.expectMenuAlignedWith(page.menu(), 'trigger');
 
     page.backdrop().click();
@@ -57,7 +57,7 @@ describe('menu', () => {
 
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
-    page.menu().getAttribute('class').then((classes) => {
+    page.menu().getAttribute('class').then(classes => {
       expect(classes).toContain('md-menu-panel custom');
     });
   });
@@ -157,7 +157,7 @@ describe('menu', () => {
 
     it('should align overlay end to origin end when x-position is "before"', () => {
       page.beforeTrigger().click();
-      page.beforeTrigger().getLocation().then((trigger) => {
+      page.beforeTrigger().getLocation().then(trigger => {
 
         // the menu's right corner must be attached to the trigger's right corner.
         // menu = 112px wide. trigger = 60px wide.  112 - 60 =  52px of menu to the left of trigger.
@@ -169,7 +169,7 @@ describe('menu', () => {
 
     it('should align overlay bottom to origin bottom when y-position is "above"', () => {
       page.aboveTrigger().click();
-      page.aboveTrigger().getLocation().then((trigger) => {
+      page.aboveTrigger().getLocation().then(trigger => {
 
         // the menu's bottom corner must be attached to the trigger's bottom corner.
         // menu.x should equal trigger.x because only y position has changed.
@@ -181,7 +181,7 @@ describe('menu', () => {
 
     it('should align menu to top left of trigger when "below" and "above"', () => {
       page.combinedTrigger().click();
-      page.combinedTrigger().getLocation().then((trigger) => {
+      page.combinedTrigger().getLocation().then(trigger => {
 
         // trigger.x (left corner) - 52px (menu left of trigger) = expected menu.x
         // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y

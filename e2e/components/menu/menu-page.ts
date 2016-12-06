@@ -51,17 +51,15 @@ export class MenuPage {
     });
   }
 
-  expectMenuLocation(el: ElementFinder, {x,y}: {x: number, y: number}) {
-    el.getLocation().then((loc) => {
-      // Round the values because we expect the menu overlay to also have been rounded
-      // to avoid blurriness due to subpixel rendering.
-      expect(loc.x).toEqual(Math.round(x));
-      expect(loc.y).toEqual(Math.round(y));
+  expectMenuLocation(el: ElementFinder, {x, y}: {x: number, y: number}) {
+    el.getLocation().then(loc => {
+      expect(loc.x).toEqual(x);
+      expect(loc.y).toEqual(y);
     });
   }
 
   expectMenuAlignedWith(el: ElementFinder, id: string) {
-    element(by.id(id)).getLocation().then((loc) => {
+    element(by.id(id)).getLocation().then(loc => {
       this.expectMenuLocation(el, {x: loc.x, y: loc.y});
     });
   }

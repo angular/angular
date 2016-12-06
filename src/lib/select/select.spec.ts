@@ -515,6 +515,11 @@ describe('MdSelect', () => {
      */
     function checkTriggerAlignedWithOption(index: number): void {
       const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+
+      // We need to set the position to absolute, because the top/left positioning won't work
+      // since the component CSS isn't included in the tests.
+      overlayPane.style.position = 'absolute';
+
       const triggerTop = trigger.getBoundingClientRect().top;
       const overlayTop = overlayPane.getBoundingClientRect().top;
       const options = overlayPane.querySelectorAll('md-option');
@@ -685,6 +690,11 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+
+        // We need to set the position to absolute, because the top/left positioning won't work
+        // since the component CSS isn't included in the tests.
+        overlayPane.style.position = 'absolute';
+
         const triggerBottom = trigger.getBoundingClientRect().bottom;
         const overlayBottom = overlayPane.getBoundingClientRect().bottom;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
@@ -712,6 +722,11 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+
+        // We need to set the position to absolute, because the top/left positioning won't work
+        // since the component CSS isn't included in the tests.
+        overlayPane.style.position = 'absolute';
+
         const triggerTop = trigger.getBoundingClientRect().top;
         const overlayTop = overlayPane.getBoundingClientRect().top;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
@@ -740,6 +755,11 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+
+        // We need to set the position to absolute, because the top/left positioning won't work
+        // since the component CSS isn't included in the tests.
+        overlayPane.style.position = 'absolute';
+
         const triggerLeft = trigger.getBoundingClientRect().left;
         const firstOptionLeft =
             overlayPane.querySelector('md-option').getBoundingClientRect().left;
@@ -758,6 +778,11 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+
+        // We need to set the position to absolute, because the top/left positioning won't work
+        // since the component CSS isn't included in the tests.
+        overlayPane.style.position = 'absolute';
+
         const triggerRight = trigger.getBoundingClientRect().right;
         const firstOptionRight =
             overlayPane.querySelector('md-option').getBoundingClientRect().right;
@@ -768,7 +793,6 @@ describe('MdSelect', () => {
             .toEqual((triggerRight + 16).toFixed(2),
                 `Expected trigger to align with the selected option on the x-axis in RTL.`);
       });
-
     });
 
   });

@@ -24,7 +24,7 @@ import {
     HorizontalConnectionPos,
     VerticalConnectionPos,
 } from '../core';
-import { Subscription } from 'rxjs/Subscription';
+import {Subscription} from 'rxjs/Subscription';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 
 /**
