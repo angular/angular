@@ -98,6 +98,10 @@ export class MdTooltip {
 
   /** Shows the tooltip */
   show(): void {
+    if (!this._message || !this._message.trim()) {
+      return;
+    }
+
     if (!this._tooltipInstance) {
       this._createTooltip();
     }
