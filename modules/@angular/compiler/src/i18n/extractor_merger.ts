@@ -499,32 +499,20 @@ function _getI18nAttr(p: html.Element): html.Attribute {
 function _parsei18nInfo(i18n: string): [string, string, string] {
   if (!i18n) return ['', '', ''];
   const pipeIndex = i18n.indexOf('|');
-  let arobaseIndex: number, m: string, d: string;
+  let arobaseIndex: number;
 
-  /** Get priority on pipe to parse correctly cases like :
-   *    i18n="m@m|d"  => ['m@m', 'd', '']
-   *    i18n="m|@i"   => ['m', '', 'i']
-   *    i18n="@m|d"   => ['@m', 'd', '']
-   *    i18n="@i"     => ['', '', 'i']
-   *    i18n="d@i"    => ['', 'd', 'i']
-   */
   if (pipeIndex > -1) {
-    m = i18n.slice(0, pipeIndex);
-    d = i18n.slice(pipeIndex + 1);
-    // find the index of the last '@' char in description
-    arobaseIndex = d.lastIndexOf('@');
-    if (arobaseIndex > -1) {
-      return [m, d.slice(0, arobaseIndex), d.slice(arobaseIndex + 1)];
-    } else {
-      return [m, d, ''];
-    }
+    let m = i18n.slice(0, pipeIndex),
+        d = i18n.slice(pipeIndex + 1);
+
+    arobaseIndex = d.lastIndexOf('@@');
+    return (arobaseIndex > -1) ?
+      [m, d.slice(0, arobaseIndex), d.slice(arobaseIndex + 2)] :
+      [m, d, ''];
   } else {
-    // find the index of the last '@' char in the i18n attribute
-    arobaseIndex = i18n.lastIndexOf('@');
-    if (arobaseIndex > -1) {
-      return ['', i18n.slice(0, arobaseIndex), i18n.slice(arobaseIndex + 1)];
-    } else {
-      return ['', i18n, ''];
-    }
+    arobaseIndex = i18n.lastIndexOf('@@');
+    return (arobaseIndex > -1) ?
+      ['', i18n.slice(0, arobaseIndex), i18n.slice(arobaseIndex + 2)] :
+      ['', i18n, ''];
   }
 }
