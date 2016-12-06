@@ -29,7 +29,7 @@ import {UrlTree} from '../url_tree';
  *
  * The RouterLink directives let you link to specific parts of your app.
  *
- * Whe the link is static, you can use the directive as follows:
+ * When the link is static, you can use the directive as follows:
  * `<a routerLink="/user/bob">link to user component</a>`
  *
  * If you use dynamic values to generate the link, you can pass an array of path
