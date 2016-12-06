@@ -60,6 +60,18 @@ Import HammerJS on your app's module.
 import 'hammerjs';
 ```
 
+Finally, you need to add `hammerjs` to the `types` section of your `tsconfig.json` file:
+
+```json
+{
+  "compilerOptions": {
+    "types": [
+      "hammerjs"
+    ]
+  }
+}
+```
+
 ## Configuring SystemJS
 If your project is using SystemJS for module loading, you will need to add `@angular/material` 
 to the SystemJS configuration:
