@@ -18,8 +18,8 @@ const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
 <p i18n="m|d">foo</p>
-<p i18n="m|d@i">foo</p>
-<p i18n="@bar">foo</p>
+<p i18n="m|d@@i">foo</p>
+<p i18n="@@bar">foo</p>
 <p i18n="ph names"><br><img><div></div></p>
 `;
 

@@ -18,9 +18,9 @@ export function main(): void {
 <p i18n>translatable element <b>with placeholders</b> {{ interpolation}}</p>
 <!-- i18n -->{ count, plural, =0 {<p>test</p>}}<!-- /i18n -->
 <p i18n="m|d">foo</p>
-<p i18n="m|d@i">foo</p>
-<p i18n="@bar">foo</p>
-<p i18n="@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
+<p i18n="m|d@@i">foo</p>
+<p i18n="@@bar">foo</p>
+<p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
 <p i18n>{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>`;
 
     const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
