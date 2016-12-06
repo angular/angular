@@ -78,3 +78,12 @@ export class SyncAsyncResult<T> {
     }
   }
 }
+
+export class UserError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    this.name = 'UserError';
+    this.stack = new Error().stack;
+  }
+}
