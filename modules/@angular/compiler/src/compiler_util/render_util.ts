@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SecurityContext} from '@angular/core';
-
-import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE} from '../private_import_core';
@@ -54,16 +52,19 @@ export function writeToRenderer(
       break;
     case PropertyBindingType.Style:
       let strValue: o.Expression = renderValue.callMethod('toString', []);
-      if (isPresent(boundProp.unit)) {
+      if (boundProp.unit != null) {
         strValue = strValue.plus(o.literal(boundProp.unit));
       }
 
       renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
-      updateStmts.push(
-          renderer
-              .callMethod(
-                  'setElementStyle', [renderElement, o.literal(boundProp.name), renderValue])
-              .toStmt());
+      updateStmts.push(renderer
+                           .callMethod(
+                               'setElementStyle',
+                               [
+                                 renderElement, o.literal(boundProp.name), renderValue,
+                                 o.literal(boundProp.priority)
+                               ])
+                           .toStmt());
       break;
     case PropertyBindingType.Animation:
       throw new Error('Illegal state: Should not come here!');

@@ -19,6 +19,10 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDif
  *
  * <some-element [ngStyle]="{'max-width.px': widthExp}">...</some-element>
  *
+ * <some-element [ngStyle]="{'font-style!important': 'styleExp'}">...</some-element>
+ *
+ * <some-element [ngStyle]="{'max-width.px!important': 'widthExp'}">...</some-element>
+ *
  * <some-element [ngStyle]="objExp">...</some-element>
  * ```
  *
@@ -46,7 +50,7 @@ export class NgStyle implements DoCheck {
     }
   }
 
-  ngDoCheck() {
+  ngDoCheck(): void {
     if (this._differ) {
       const changes = this._differ.diff(this._ngStyle);
       if (changes) {
@@ -65,10 +69,11 @@ export class NgStyle implements DoCheck {
         (record: KeyValueChangeRecord) => this._setStyle(record.key, record.currentValue));
   }
 
-  private _setStyle(nameAndUnit: string, value: string): void {
+  private _setStyle(styleName: string, value: string): void {
+    const [nameAndUnit, priority] = styleName.split('!');
     const [name, unit] = nameAndUnit.split('.');
     value = value && unit ? `${value}${unit}` : value;
 
-    this._renderer.setElementStyle(this._ngEl.nativeElement, name, value);
+    this._renderer.setElementStyle(this._ngEl.nativeElement, name, value, priority);
   }
 }

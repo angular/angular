@@ -244,6 +244,7 @@ export class BindingParser {
     }
 
     let unit: string = null;
+    let priority: string = '';
     let bindingType: PropertyBindingType;
     let boundPropertyName: string = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
@@ -251,7 +252,7 @@ export class BindingParser {
 
     // Check check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
-      if (parts[0] == ATTRIBUTE_PREFIX) {
+      if (parts[0] === ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
         this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
         securityContexts = calcPossibleSecurityContexts(
@@ -265,13 +266,21 @@ export class BindingParser {
         }
 
         bindingType = PropertyBindingType.Attribute;
-      } else if (parts[0] == CLASS_PREFIX) {
+      } else if (parts[0] === CLASS_PREFIX) {
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Class;
         securityContexts = [SecurityContext.NONE];
-      } else if (parts[0] == STYLE_PREFIX) {
-        unit = parts.length > 2 ? parts[2] : null;
-        boundPropertyName = parts[1];
+      } else if (parts[0] === STYLE_PREFIX) {
+        if (parts.length > 2) {
+          const [u, p] = parts[2].split('!');
+          unit = u;
+          priority = p;
+          boundPropertyName = parts[1];
+        } else {
+          const [v, p] = parts[1].split('!');
+          priority = p;
+          boundPropertyName = v;
+        }
         bindingType = PropertyBindingType.Style;
         securityContexts = [SecurityContext.STYLE];
       }
@@ -288,7 +297,7 @@ export class BindingParser {
 
     return new BoundElementPropertyAst(
         boundPropertyName, bindingType, securityContexts.length === 1 ? securityContexts[0] : null,
-        securityContexts.length > 1, boundProp.expression, unit, boundProp.sourceSpan);
+        securityContexts.length > 1, boundProp.expression, unit, boundProp.sourceSpan, priority);
   }
 
   parseEvent(
