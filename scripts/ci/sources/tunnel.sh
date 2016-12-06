@@ -4,10 +4,10 @@
 start_tunnel() {
   case "$MODE" in
     e2e*|saucelabs*)
-      ./scripts/sauce/sauce_connect_setup.sh
+      ./scripts/saucelabs/start-tunnel.sh
       ;;
     browserstack*)
-      ./scripts/browserstack/start_tunnel.sh
+      ./scripts/browserstack/start-tunnel.sh
       ;;
     *)
       ;;
@@ -17,10 +17,10 @@ start_tunnel() {
 wait_for_tunnel() {
   case "$MODE" in
     e2e*|saucelabs*)
-      ./scripts/sauce/sauce_connect_block.sh
+      ./scripts/saucelabs/wait-tunnel.sh
       ;;
     browserstack*)
-      ./scripts/browserstack/waitfor_tunnel.sh
+      ./scripts/browserstack/wait-tunnel.sh
       ;;
     *)
       ;;
@@ -31,10 +31,10 @@ wait_for_tunnel() {
 teardown_tunnel() {
   case "$MODE" in
     e2e*|saucelabs*)
-      ./scripts/sauce/sauce_connect_teardown.sh
+      ./scripts/saucelabs/stop-tunnel.sh
       ;;
     browserstack*)
-      ./scripts/browserstack/teardown_tunnel.sh
+      ./scripts/browserstack/stop-tunnel.sh
       ;;
     *)
       ;;
