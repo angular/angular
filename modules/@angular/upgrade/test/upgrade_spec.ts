@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {UserError} from '@angular/compiler';
 import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -57,7 +58,7 @@ export function main() {
              flushMicrotasks();
            }).toThrowError();
            expect(console.error).toHaveBeenCalled();
-           expect(console.error).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
+           expect(console.error).toHaveBeenCalledWith(jasmine.any(UserError), jasmine.any(String));
          }));
     });
 
