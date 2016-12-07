@@ -264,7 +264,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     };
     constructor(router: Router, element: ElementRef, renderer: Renderer, cdr: ChangeDetectorRef);
     ngAfterContentInit(): void;
-    ngOnChanges(changes: {}): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
 }
 
