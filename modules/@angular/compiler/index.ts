@@ -21,11 +21,7 @@
  *   </p>
  * </div>
  */
-import {Version} from '@angular/core';
-/**
- * @stable
- */
-export const VERSION = new Version('0.0.0-PLACEHOLDER');
+export {VERSION} from './src/version';
 export * from './src/template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './src/template_parser/template_parser';
 export {CompilerConfig, RenderTypes} from './src/config';

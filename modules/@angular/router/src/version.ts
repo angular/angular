@@ -9,7 +9,11 @@
 /**
  * @module
  * @description
- * Adapter allowing AngularJS v1 and Angular v2 to run side by side in the same application.
+ * Entry point for all public APIs of the common package.
  */
-export {UpgradeAdapter, UpgradeAdapterRef} from './upgrade_adapter';
-export {VERSION} from './version';
+
+import {Version} from '@angular/core';
+/**
+ * @stable
+ */
+export const VERSION = new Version('0.0.0-ROUTERPLACEHOLDER');

@@ -8,3 +8,4 @@
 
 export {ServerModule, platformDynamicServer, platformServer} from './server';
 export * from './private_export';
+export {VERSION} from './version';

@@ -11,11 +11,6 @@
  * @description
  * Entry point for all public APIs of the router package.
  */
-import {Version} from '@angular/core';
-/**
- * @stable
- */
-export const VERSION = new Version('0.0.0-ROUTERPLACEHOLDER');
 export * from './src/index';
 
 // This file only reexports content of the `src` folder. Keep it that way.

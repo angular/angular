@@ -13,6 +13,7 @@ import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
+import {VERSION} from '../version';
 
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
@@ -360,6 +361,7 @@ export function selectOrCreateRenderHostElement(
     for (let i = 0; i < attrs.length; i += 2) {
       renderer.setElementAttribute(hostElement, attrs.get(i), attrs.get(i + 1));
     }
+    renderer.setElementAttribute(hostElement, 'ng-version', VERSION.full);
   } else {
     hostElement = createRenderElement(renderer, null, elementName, attrs, debugInfo);
   }
