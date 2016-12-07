@@ -21,7 +21,7 @@ describe('definitions', () => {
   let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
   let service = ts.createLanguageService(mockHost, documentRegistry);
   let program = service.getProgram();
-  let ngHost = new TypeScriptServiceHost(ts, mockHost, service);
+  let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
   ngHost.setSite(ngService);
 

@@ -19,7 +19,6 @@ import {TypeScriptServiceHost} from './typescript_host';
  * @experimental
  */
 export class LanguageServicePlugin {
-  private ts: typeof ts;
   private serviceHost: TypeScriptServiceHost;
   private service: LanguageService;
   private host: ts.LanguageServiceHost;
@@ -27,12 +26,11 @@ export class LanguageServicePlugin {
   static 'extension-kind' = 'language-service';
 
   constructor(config: {
-    ts: typeof ts; host: ts.LanguageServiceHost; service: ts.LanguageService;
+    host: ts.LanguageServiceHost; service: ts.LanguageService;
     registry?: ts.DocumentRegistry, args?: any
   }) {
-    this.ts = config.ts;
     this.host = config.host;
-    this.serviceHost = new TypeScriptServiceHost(this.ts, config.host, config.service);
+    this.serviceHost = new TypeScriptServiceHost(config.host, config.service);
     this.service = createLanguageService(this.serviceHost);
     this.serviceHost.setSite(this.service);
   }
@@ -51,7 +49,7 @@ export class LanguageServicePlugin {
           start: error.span.start,
           length: error.span.end - error.span.start,
           messageText: error.message,
-          category: this.ts.DiagnosticCategory.Error,
+          category: ts.DiagnosticCategory.Error,
           code: 0
         });
       }
