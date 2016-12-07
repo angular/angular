@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Dir, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
-import {A11yModule} from '../core/a11y/index';
+import {A11yModule, A11Y_PROVIDERS} from '../core/a11y/index';
 import {FocusTrap} from '../core/a11y/focus-trap';
 
 
@@ -470,7 +470,7 @@ export class MdSidenavModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSidenavModule,
-      providers: []
+      providers: [A11Y_PROVIDERS]
     };
   }
 }
