@@ -120,7 +120,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       result = this._resolver = new CompileMetadataResolver(
           moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
-          elementSchemaRegistry, directiveNormalizer, this.reflector);
+          elementSchemaRegistry, directiveNormalizer, this.reflector,
+          (error, type) => this.collectError(error, type && type.filePath));
     }
     return result;
   }

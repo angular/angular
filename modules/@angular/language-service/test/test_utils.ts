@@ -91,6 +91,12 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
   }
 
+  addScript(fileName: string, content: string) {
+    this.projectVersion++;
+    this.overrides.set(fileName, content);
+    this.scriptNames.push(fileName);
+  }
+
   getCompilationSettings(): ts.CompilerOptions {
     return {
       target: ts.ScriptTarget.ES5,
