@@ -1,5 +1,6 @@
 // Import all the theming functionality.
 @import '../core';
+@import '../../autocomplete/autocomplete-theme';
 @import '../../button/button-theme';
 @import '../../button-toggle/button-toggle-theme';
 @import '../../card/card-theme';
@@ -26,6 +27,7 @@
 // Create a theme.
 @mixin angular-material-theme($theme) {
   @include md-core-theme($theme);
+  @include md-autocomplete-theme($theme);
   @include md-button-theme($theme);
   @include md-button-toggle-theme($theme);
   @include md-card-theme($theme);

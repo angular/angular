@@ -20,6 +20,7 @@ export class Home {}
 })
 export class DemoApp {
   navItems = [
+    {name: 'Autocomplete', route: 'autocomplete'},
     {name: 'Button', route: 'button'},
     {name: 'Button Toggle', route: 'button-toggle'},
     {name: 'Card', route: 'card'},

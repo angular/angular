@@ -36,6 +36,7 @@ import {MenuDemo} from './menu/menu-demo';
 import {TabsDemo, SunnyTabContent, RainyTabContent, FoggyTabContent} from './tabs/tabs-demo';
 import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-demo';
 import {PlatformDemo} from './platform/platform-demo';
+import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
 
 @NgModule({
   imports: [
@@ -47,6 +48,7 @@ import {PlatformDemo} from './platform/platform-demo';
     MaterialModule.forRoot(),
   ],
   declarations: [
+    AutocompleteDemo,
     BaselineDemo,
     ButtonDemo,
     ButtonToggleDemo,

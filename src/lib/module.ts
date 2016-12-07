@@ -33,9 +33,10 @@ import {MdTooltipModule} from './tooltip/index';
 import {MdMenuModule} from './menu/index';
 import {MdDialogModule} from './dialog/index';
 import {PlatformModule} from './core/platform/platform';
-
+import {MdAutocompleteModule} from './autocomplete/index';
 
 const MATERIAL_MODULES = [
+  MdAutocompleteModule,
   MdButtonModule,
   MdButtonToggleModule,
   MdCardModule,
@@ -70,6 +71,7 @@ const MATERIAL_MODULES = [
 
 @NgModule({
   imports: [
+    MdAutocompleteModule.forRoot(),
     MdButtonModule.forRoot(),
     MdCardModule.forRoot(),
     MdChipsModule.forRoot(),

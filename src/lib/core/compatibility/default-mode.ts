@@ -5,6 +5,7 @@ export const MATERIAL_COMPATIBILITY_MODE = new OpaqueToken('md-compatibiility-mo
 
 /** Selector that matches all elements that may have style collisions with material1. */
 export const MAT_ELEMENTS_SELECTOR = `
+  mat-autocomplete,
   mat-card,
   mat-card-actions,
   mat-card-content,

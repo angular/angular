@@ -4,6 +4,7 @@ import {MATERIAL_COMPATIBILITY_MODE} from './default-mode';
 
 /** Selector that matches all elements that may have style collisions with material1. */
 export const MD_ELEMENTS_SELECTOR = `
+  md-autocomplete,
   md-card,
   md-card-actions,
   md-card-content,

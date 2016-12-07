@@ -31,9 +31,11 @@ import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 import {ProjectionDemo} from '../projection/projection-demo';
 import {TABS_DEMO_ROUTES} from '../tabs/routes';
 import {PlatformDemo} from '../platform/platform-demo';
+import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
+  {path: 'autocomplete', component: AutocompleteDemo},
   {path: 'button', component: ButtonDemo},
   {path: 'card', component: CardDemo},
   {path: 'chips', component: ChipsDemo},
