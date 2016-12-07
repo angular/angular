@@ -2096,6 +2096,8 @@ describe('Integration', () => {
          @Component({
            template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
               <p>{{rla.isActive}}</p>
+              <span *ngIf="rla.isActive"></span>
+              <span [ngClass]="{'highlight': rla.isActive}"></span>
               <router-outlet></router-outlet>`
          })
          class ComponentWithRouterLink {
@@ -2115,15 +2117,15 @@ describe('Integration', () => {
            }
          ]);
 
-         const f = TestBed.createComponent(ComponentWithRouterLink);
+         const fixture = TestBed.createComponent(ComponentWithRouterLink);
          router.navigateByUrl('/team');
-         advance(f);
+         expect(() => advance(fixture)).not.toThrow();
 
-         const paragraph = f.nativeElement.querySelector('p');
+         const paragraph = fixture.nativeElement.querySelector('p');
          expect(paragraph.textContent).toEqual('true');
 
          router.navigateByUrl('/otherteam');
-         advance(f);
+         advance(fixture);
 
          expect(paragraph.textContent).toEqual('false');
        }));
