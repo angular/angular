@@ -926,7 +926,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 * core:
   - `ApplicationRef.dispose` is deprecated. Destroy the module that was
     created during bootstrap instead by calling `NgModuleRef.destroy`.
-  - `AplicationRef.registerDisposeListener` is deprecated.
+  - `ApplicationRef.registerDisposeListener` is deprecated.
     Use the `ngOnDestroy` lifecycle hook for providers or
     `NgModuleRef.onDestroy` instead.
   - `disposePlatform` is deprecated. Use `destroyPlatform` instead.
