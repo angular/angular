@@ -26,6 +26,7 @@ import {
   OVERLAY_PROVIDERS,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
+import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
@@ -178,6 +179,8 @@ export class MdTooltip {
         this.position == 'before' && !isDirectionLtr) {
       return {originX: 'end', originY: 'center'};
     }
+
+    throw new MdTooltipInvalidPositionError(this.position);
   }
 
   /** Returns the overlay position based on the user's preference */
@@ -202,6 +205,8 @@ export class MdTooltip {
         this.position == 'before' && !isLtr) {
       return {overlayX: 'start', overlayY: 'center'};
     }
+
+    throw new MdTooltipInvalidPositionError(this.position);
   }
 
   /** Updates the tooltip message and repositions the overlay according to the new message length */
@@ -302,6 +307,7 @@ export class TooltipComponent {
       case 'right':  this._transformOrigin = 'left'; break;
       case 'above':    this._transformOrigin = 'bottom'; break;
       case 'below': this._transformOrigin = 'top'; break;
+      default: throw new MdTooltipInvalidPositionError(value);
     }
   }
 

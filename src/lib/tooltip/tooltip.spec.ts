@@ -253,6 +253,14 @@ describe('MdTooltip', () => {
       tooltipDirective.show();
       expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
     });
+
+    it('should throw when trying to assign an invalid position', () => {
+      expect(() => {
+        fixture.componentInstance.position = 'everywhere';
+        fixture.detectChanges();
+        tooltipDirective.show();
+      }).toThrowError('Tooltip position "everywhere" is invalid.');
+    });
   });
 });
 
@@ -260,13 +268,13 @@ describe('MdTooltip', () => {
   selector: 'app',
   template: `
     <button *ngIf="showButton"
-            [md-tooltip]="message" 
+            [md-tooltip]="message"
             [tooltip-position]="position">
       Button
     </button>`
 })
 class BasicTooltipDemo {
-  position: TooltipPosition = 'below';
+  position: string = 'below';
   message: string = initialTooltipMessage;
   showButton: boolean = true;
 }
