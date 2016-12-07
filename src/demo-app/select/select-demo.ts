@@ -10,6 +10,7 @@ import {FormControl} from '@angular/forms';
 export class SelectDemo {
   isRequired = false;
   isDisabled = false;
+  showSelect = false;
   currentDrink: string;
   foodControl = new FormControl('pizza-1');
 

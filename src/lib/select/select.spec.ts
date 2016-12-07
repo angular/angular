@@ -16,7 +16,7 @@ describe('MdSelect', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSelectModule.forRoot(), ReactiveFormsModule, FormsModule],
-      declarations: [BasicSelect, NgModelSelect, ManySelects],
+      declarations: [BasicSelect, NgModelSelect, ManySelects, NgIfSelect],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -96,14 +96,16 @@ describe('MdSelect', () => {
       });
     }));
 
-    it('should set the width of the overlay based on the trigger', () => {
+    it('should set the width of the overlay based on the trigger', async(() => {
       trigger.style.width = '200px';
-      trigger.click();
-      fixture.detectChanges();
 
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.width).toBe('200px');
-    });
+      fixture.whenStable().then(() => {
+        trigger.click();
+        fixture.detectChanges();
+        const pane = overlayContainerElement.children[0] as HTMLElement;
+        expect(pane.style.minWidth).toBe('200px');
+      });
+    }));
 
   });
 
@@ -997,6 +999,39 @@ describe('MdSelect', () => {
 
   });
 
+  describe('special cases', () => {
+
+    it('should handle nesting in an ngIf', async(() => {
+      const fixture = TestBed.createComponent(NgIfSelect);
+      fixture.detectChanges();
+
+      fixture.componentInstance.isShowing = true;
+      fixture.detectChanges();
+
+      const trigger = fixture.debugElement.query(By.css('.md-select-trigger')).nativeElement;
+      trigger.style.width = '300px';
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        const value = fixture.debugElement.query(By.css('.md-select-value'));
+        expect(value.nativeElement.textContent)
+            .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const pane = overlayContainerElement.children[0] as HTMLElement;
+        expect(pane.style.minWidth).toEqual('300px');
+
+        expect(fixture.componentInstance.select.panelOpen).toBe(true);
+        expect(overlayContainerElement.textContent).toContain('Steak');
+        expect(overlayContainerElement.textContent).toContain('Pizza');
+        expect(overlayContainerElement.textContent).toContain('Tacos');
+      });
+    }));
+
+  });
+
 });
 
 @Component({
@@ -1061,6 +1096,32 @@ class NgModelSelect {
   `
 })
 class ManySelects {}
+
+@Component({
+  selector: 'ng-if-select',
+  template: `
+    <div *ngIf="isShowing">
+      <md-select placeholder="Food I want to eat right now" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </div>
+  `
+
+})
+class NgIfSelect {
+  isShowing = false;
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos'}
+  ];
+  control = new FormControl('pizza-1');
+
+  @ViewChild(MdSelect) select: MdSelect;
+}
+
 
 
 /**

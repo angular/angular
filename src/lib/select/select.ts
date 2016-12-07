@@ -114,8 +114,23 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** The scroll position of the overlay panel, calculated to center the selected option. */
   private _scrollTop = 0;
 
+  /** The placeholder displayed in the trigger of the select. */
+  private _placeholder: string;
+
   /** The animation state of the placeholder. */
   _placeholderState = '';
+
+  /**
+   * The width of the trigger. Must be saved to set the min width of the overlay panel
+   * and the width of the selected value.
+   */
+  _triggerWidth: number;
+
+  /**
+   * The width of the selected option's value. Must be set programmatically
+   * to ensure its overflow is clipped, as it's absolutely positioned.
+   */
+  _selectedValueWidth: number;
 
   /** Manages keyboard events for options in the panel. */
   _keyManager: ListKeyManager;
@@ -171,7 +186,17 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   @ViewChild(ConnectedOverlayDirective) overlayDir: ConnectedOverlayDirective;
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
-  @Input() placeholder: string;
+  @Input()
+  get placeholder() {
+    return this._placeholder;
+  }
+
+  set placeholder(value: string) {
+    this._placeholder = value;
+
+    // Must wait to record the trigger width to ensure placeholder width is included.
+    Promise.resolve(null).then(() => this._triggerWidth = this._getWidth());
+  }
 
   @Input()
   get disabled() {
@@ -400,6 +425,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   private _onSelect(option: MdOption): void {
     this._selected = option;
     this._updateOptions();
+    this._setValueWidth();
     if (this.panelOpen) {
       this.close();
     }
@@ -412,6 +438,15 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
         option.deselect();
       }
     });
+  }
+
+  /**
+   * Must set the width of the selected option's value programmatically
+   * because it is absolutely positioned and otherwise will not clip
+   * overflow. The selection arrow is 9px wide, add 4px of padding = 13
+   */
+  private _setValueWidth() {
+    this._selectedValueWidth =  this._triggerWidth - 13;
   }
 
   /** Focuses the selected item. If no option is selected, it will focus

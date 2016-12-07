@@ -1,4 +1,5 @@
 @import '../core/style/menu-common';
+@import '../core/style/list-common';
 @import '../core/style/form-common';
 @import '../a11y/_a11y';
 
@@ -63,6 +64,7 @@ md-select {
 
 .md-select-value {
   position: absolute;
+  @include md-truncate-line();
 
   // Firefox and some versions of IE incorrectly keep absolutely
   // positioned children of flex containers in the flex flow when calculating

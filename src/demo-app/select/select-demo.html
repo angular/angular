@@ -1,16 +1,20 @@
 <div style="height: 1000px">This div is for testing scrolled selects.</div>
+<button md-button (click)="showSelect=!showSelect">SHOW SELECT</button>
 <div class="demo-select">
-  <md-card>
-    <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
-      <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
-    </md-select>
-    <p> Value: {{ foodControl.value }} </p>
-    <p> Touched: {{ foodControl.touched }} </p>
-    <p> Dirty: {{ foodControl.dirty }} </p>
-    <p> Status: {{ foodControl.status }} </p>
-    <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
-    <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
-  </md-card>
+  <div *ngIf="showSelect">
+    <md-card>
+      <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
+        <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }} </md-option>
+      </md-select>
+      <p> Value: {{ foodControl.value }} </p>
+      <p> Touched: {{ foodControl.touched }} </p>
+      <p> Dirty: {{ foodControl.dirty }} </p>
+      <p> Status: {{ foodControl.status }} </p>
+      <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
+      <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
+    </md-card>
+  </div>
+
 
   <md-card>
     <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="isRequired" [disabled]="isDisabled"
