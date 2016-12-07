@@ -54,7 +54,7 @@ export function initDomAdapter() {
   BrowserGetTestability.init();
 }
 
-export function errorHandler(): ErrorHandler {
+export function _errorHandler(): ErrorHandler {
   return new ErrorHandler();
 }
 
@@ -76,7 +76,7 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
  */
 @NgModule({
   providers: [
-    BROWSER_SANITIZATION_PROVIDERS, {provide: ErrorHandler, useFactory: errorHandler, deps: []},
+    BROWSER_SANITIZATION_PROVIDERS, {provide: ErrorHandler, useFactory: _errorHandler, deps: []},
     {provide: DOCUMENT, useFactory: _document, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
