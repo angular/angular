@@ -5,6 +5,7 @@ import {
   ElementRef,
   HostBinding,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -62,13 +63,13 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
 
   private _rippleRenderer: RippleRenderer;
 
-  constructor(_elementRef: ElementRef) {
+  constructor(_elementRef: ElementRef, _ngZone: NgZone) {
     // These event handlers are attached to the element that triggers the ripple animations.
     const eventHandlers = new Map<string, (e: Event) => void>();
     eventHandlers.set('mousedown', (event: MouseEvent) => this._mouseDown(event));
     eventHandlers.set('click', (event: MouseEvent) => this._click(event));
     eventHandlers.set('mouseleave', (event: MouseEvent) => this._mouseLeave(event));
-    this._rippleRenderer = new RippleRenderer(_elementRef, eventHandlers);
+    this._rippleRenderer = new RippleRenderer(_elementRef, eventHandlers, _ngZone);
   }
 
   /** TODO: internal */

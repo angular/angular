@@ -1,5 +1,6 @@
 import {
   ElementRef,
+  NgZone,
 } from '@angular/core';
 
 /** TODO: internal */
@@ -44,7 +45,9 @@ export class RippleRenderer {
   private _triggerElement: HTMLElement;
   _opacity: string;
 
-  constructor(_elementRef: ElementRef, private _eventHandlers: Map<string, (e: Event) => void>) {
+  constructor(_elementRef: ElementRef,
+              private _eventHandlers: Map<string, (e: Event) => void>,
+              private _ngZone: NgZone) {
     this._rippleElement = _elementRef.nativeElement;
     // The background div is created in createBackgroundIfNeeded when the ripple becomes enabled.
     // This avoids creating unneeded divs when the ripple is always disabled.
@@ -143,6 +146,16 @@ export class RippleRenderer {
 
     rippleDiv.addEventListener('transitionend',
         (event: TransitionEvent) => transitionEndCallback(ripple, event));
+    // Ensure that ripples are always removed, even when transitionend doesn't fire.
+    // Run this outside the Angular zone because there's nothing that Angular cares about.
+    // If it were to run inside the Angular zone, every test that used ripples would have to be
+    // either async or fakeAsync.
+    this._ngZone.runOutsideAngular(() => {
+      // The ripple lasts a time equal to the sum of fade-in, transform,
+      // and fade-out (3 * fade-in time).
+      let rippleDuration =  fadeInSeconds * 3 * 1000;
+      setTimeout(() => this.removeRippleFromDom(ripple.rippleElement), rippleDuration);
+    });
   }
 
   /** Fades out a foreground ripple after it has fully expanded and faded in. */
@@ -153,7 +166,9 @@ export class RippleRenderer {
 
   /** Removes a foreground ripple from the DOM after it has faded out. */
   removeRippleFromDom(ripple: Element) {
-    ripple.parentElement.removeChild(ripple);
+    if (ripple && ripple.parentElement) {
+      ripple.parentElement.removeChild(ripple);
+    }
   }
 
   /** Fades in the ripple background. */

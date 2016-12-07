@@ -5,9 +5,9 @@ import {
   ElementRef,
   ViewEncapsulation,
   Directive,
+  NgZone,
   OnDestroy,
 } from '@angular/core';
-
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/ripple';
 
@@ -60,8 +60,8 @@ export class MdTabLink {
   selector: '[md-tab-link], [mat-tab-link]',
 })
 export class MdTabLinkRipple extends MdRipple implements OnDestroy {
-  constructor(private _element: ElementRef) {
-    super(_element);
+  constructor(private _element: ElementRef, private _ngZone: NgZone) {
+    super(_element, _ngZone);
   }
 
   // In certain cases the parent destroy handler
