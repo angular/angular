@@ -31,6 +31,9 @@ $md-dense-three-line-height: 76px;
 @mixin md-list-item-base($font-size, $base-height, $avatar-height,
   $two-line-height, $three-line-height) {
 
+  // Prevents the wrapper `md-list-item` from collapsing due to it being `inline` by default.
+  display: block;
+
   .md-list-item {
     display: flex;
     flex-direction: row;
