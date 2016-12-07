@@ -109,9 +109,13 @@ export class XHRConnection implements Connection {
 
       this.setDetectedContentType(req, _xhr);
 
-      if (req.headers != null) {
-        req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
+      if (req.headers == null) {
+        req.headers = new Headers();
       }
+      if (!req.headers.has('Accept')) {
+        req.headers.append('Accept', 'application/json, text/plain, */*');
+      }
+      req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
 
       // Select the correct buffer type to store the response
       if (req.responseType != null && _xhr.responseType != null) {
