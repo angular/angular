@@ -67,14 +67,13 @@ High level items planned for December 2016:
 | dialog           |                           Available | [README][22] |   [#114][0114] |
 | snackbar / toast |                           Available | [README][21] |   [#115][0115] |
 | select           |        Will be released in alpha.11 |           -  |   [#118][0118] |
-| textarea         |                             Started |           -  |   [#546][0546] |
+| textarea         | Initial version, needs enhancements |           -  |              - |
 | autocomplete     |                      Design started |           -  |   [#117][0117] |
 | chips            |                             Started |           -  |   [#120][0120] |
 | theming          |   Available, need guidance overlays | [Guide][20]  |              - |
 | prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
-| layout           |      Design in-progress, prototyped |           -  |              - |
 | fab speed-dial   |                         Not started |           -  |   [#860][0860] |
 | fab toolbar      |                         Not started |           -  |              - |
 | bottom-sheet     |                         Not started |           -  |              - |
@@ -83,7 +82,9 @@ High level items planned for December 2016:
 | datepicker       |                         Not started |           -  |   [#675][0675] |
 | data-table       |                         Not started |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
+| layout           |   see [angular/flex-layout][lay_rp] |           -  |              - |
 
+ [lay_rp]:  https://github.com/angular/flex-layout
  [1]: https://github.com/angular/material2/blob/master/src/lib/button/README.md
  [2]: https://github.com/angular/material2/blob/master/src/lib/card/README.md
  [3]: https://github.com/angular/material2/blob/master/src/lib/checkbox/README.md
