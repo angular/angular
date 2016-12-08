@@ -24,8 +24,9 @@ with it.
 * `comp: forms`: `@kara`
 * `comp: http`: `@jeffbcross`
 * `comp: i18n`: `@vicb`
+* `comp: language service`: `@chuckjaz`
 * `comp: metadata-extractor`: `@chuckjaz`
-* `comp: router`: `@vsavkin`
+* `comp: router`: `@vicb`
 * `comp: testing`: `@juliemr`
 * `comp: upgrade`: `@mhevery`
 * `comp: web-worker`: `@vicb`
