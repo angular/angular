@@ -14,6 +14,8 @@ import {
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './checkbox';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 
 
 // TODO: Implement E2E tests for spacebar/click behavior for checking/unchecking
@@ -35,6 +37,9 @@ describe('MdCheckbox', () => {
         CheckboxWithChangeEvent,
         CheckboxWithFormControl,
       ],
+      providers: [
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
+      ]
     });
 
     TestBed.compileComponents();

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/ripple';
+import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -60,8 +61,8 @@ export class MdTabLink {
   selector: '[md-tab-link], [mat-tab-link]',
 })
 export class MdTabLinkRipple extends MdRipple implements OnDestroy {
-  constructor(private _element: ElementRef, private _ngZone: NgZone) {
-    super(_element, _ngZone);
+  constructor(private _element: ElementRef, private _ngZone: NgZone, _ruler: ViewportRuler) {
+    super(_element, _ngZone, _ruler);
   }
 
   // In certain cases the parent destroy handler

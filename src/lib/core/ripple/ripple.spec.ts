@@ -195,6 +195,7 @@ describe('MdRipple', () => {
       expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * expectedRadius, 1);
     });
 
+
     it('cleans up the event handlers when the container gets destroyed', () => {
       fixture = TestBed.createComponent(RippleContainerWithNgIf);
       fixture.detectChanges();
@@ -208,6 +209,68 @@ describe('MdRipple', () => {
       rippleElement.dispatchEvent(createMouseEvent('mousedown'));
       expect(rippleBackground.classList).not.toContain('md-ripple-active');
     });
+
+    describe('when page is scrolled', () => {
+      var veryLargeElement: HTMLDivElement = document.createElement('div');
+      var pageScrollTop = 500;
+      var pageScrollLeft = 500;
+
+      beforeEach(() => {
+        // Add a very large element to make the page scroll
+        veryLargeElement.style.width = '4000px';
+        veryLargeElement.style.height = '4000px';
+        document.body.appendChild(veryLargeElement);
+        document.body.scrollTop = pageScrollTop;
+        document.body.scrollLeft = pageScrollLeft;
+        // Firefox
+        document.documentElement.scrollLeft = pageScrollLeft;
+        document.documentElement.scrollTop = pageScrollTop;
+        // Mobile safari
+        window.scrollTo(pageScrollLeft, pageScrollTop);
+      });
+
+      afterEach(() => {
+        document.body.removeChild(veryLargeElement);
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+        // Firefox
+        document.documentElement.scrollLeft = 0;
+        document.documentElement.scrollTop = 0;
+        // Mobile safari
+        window.scrollTo(0, 0);
+      });
+
+      it('create ripple with correct position', () => {
+        let elementTop = 600;
+        let elementLeft = 750;
+        let left = 50;
+        let top = 75;
+
+        rippleElement.style.position = 'absolute';
+        rippleElement.style.left = `${elementLeft}px`;
+        rippleElement.style.top = `${elementTop}px`;
+
+        // Simulate a keyboard-triggered click by setting event coordinates to 0.
+        const clickEvent = createMouseEvent('click', {
+          clientX: left + elementLeft - pageScrollLeft,
+          clientY: top + elementTop - pageScrollTop,
+          screenX: left + elementLeft,
+          screenY: top + elementTop
+        });
+        rippleElement.dispatchEvent(clickEvent);
+
+        const expectedRadius = Math.sqrt(250 * 250 + 125 * 125);
+        const expectedLeft = left - expectedRadius;
+        const expectedTop = top - expectedRadius;
+
+        const ripple = <HTMLElement>rippleElement.querySelector('.md-ripple-foreground');
+        expect(pxStringToFloat(ripple.style.left)).toBeCloseTo(expectedLeft, 1);
+        expect(pxStringToFloat(ripple.style.top)).toBeCloseTo(expectedTop, 1);
+        expect(pxStringToFloat(ripple.style.width)).toBeCloseTo(2 * expectedRadius, 1);
+        expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * expectedRadius, 1);
+      });
+    });
+
   });
 
   describe('configuring behavior', () => {

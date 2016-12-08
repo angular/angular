@@ -50,12 +50,8 @@ export class ViewportRuler {
     // `scrollTop` and `scrollLeft` is inconsistent. However, using the bounding rect of
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
-    const top =  documentRect.top < 0 && document.body.scrollTop == 0 ?
-        -documentRect.top :
-        document.body.scrollTop;
-    const left = documentRect.left < 0 && document.body.scrollLeft == 0 ?
-        -documentRect.left :
-        document.body.scrollLeft;
+    const top = -documentRect.top || document.body.scrollTop || window.scrollY || 0;
+    const left = -documentRect.left || document.body.scrollLeft || window.scrollX || 0;
 
     return {top, left};
   }

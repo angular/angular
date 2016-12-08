@@ -6,6 +6,8 @@ import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {MdTab} from './tab';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 
 
 describe('MdTabGroup', () => {
@@ -19,6 +21,9 @@ describe('MdTabGroup', () => {
         AsyncTabsTestApp,
         DisabledTabsTestApp,
         TabGroupWithSimpleApi,
+      ],
+      providers: [
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
 

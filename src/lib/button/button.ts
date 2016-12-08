@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdRippleModule, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 
 
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
@@ -166,7 +167,7 @@ export class MdButtonModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdButtonModule,
-      providers: []
+      providers: [ViewportRuler]
     };
   }
 }

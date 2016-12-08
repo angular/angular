@@ -3,6 +3,8 @@ import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './radio';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 
 
 describe('MdRadio', () => {
@@ -16,6 +18,9 @@ describe('MdRadio', () => {
         RadioGroupWithFormControl,
         StandaloneRadioButtons,
       ],
+      providers: [
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
+      ]
     });
 
     TestBed.compileComponents();

@@ -30,6 +30,7 @@ import 'rxjs/add/operator/map';
 import {MdRippleModule} from '../core/ripple/ripple';
 import {MdTab} from './tab';
 import {MdTabBody} from './tab-body';
+import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -296,7 +297,7 @@ export class MdTabsModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdTabsModule,
-      providers: []
+      providers: [ViewportRuler]
     };
   }
 }

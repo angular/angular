@@ -17,6 +17,7 @@ import {
   ForegroundRippleState,
 } from './ripple-renderer';
 import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode';
+import {ViewportRuler} from '../overlay/position/viewport-ruler';
 
 
 @Directive({
@@ -62,14 +63,16 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   @HostBinding('class.md-ripple-unbounded') @Input('md-ripple-unbounded') unbounded: boolean;
 
   private _rippleRenderer: RippleRenderer;
+  _ruler: ViewportRuler;
 
-  constructor(_elementRef: ElementRef, _ngZone: NgZone) {
+  constructor(_elementRef: ElementRef, _ngZone: NgZone, _ruler: ViewportRuler) {
     // These event handlers are attached to the element that triggers the ripple animations.
     const eventHandlers = new Map<string, (e: Event) => void>();
     eventHandlers.set('mousedown', (event: MouseEvent) => this._mouseDown(event));
     eventHandlers.set('click', (event: MouseEvent) => this._click(event));
     eventHandlers.set('mouseleave', (event: MouseEvent) => this._mouseLeave(event));
     this._rippleRenderer = new RippleRenderer(_elementRef, eventHandlers, _ngZone);
+    this._ruler = _ruler;
   }
 
   /** TODO: internal */
@@ -163,7 +166,10 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
       // FIXME: This fails on IE11, which still sets pageX/Y and screenX/Y on keyboard clicks.
       const isKeyEvent =
           (event.screenX === 0 && event.screenY === 0 && event.pageX === 0 && event.pageY === 0);
-      this.end(event.pageX, event.pageY, isKeyEvent);
+
+      this.end(event.pageX - this._ruler.getViewportScrollPosition().left,
+        event.pageY - this._ruler.getViewportScrollPosition().top,
+        isKeyEvent);
     }
   }
 
@@ -188,7 +194,7 @@ export class MdRippleModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdRippleModule,
-      providers: []
+      providers: [ViewportRuler]
     };
   }
 }
