@@ -5,8 +5,6 @@ import {
   Component,
   Input,
   Output,
-  ViewChildren,
-  NgZone,
   EventEmitter,
   QueryList,
   ContentChildren,
@@ -16,9 +14,6 @@ import {
 import {CommonModule} from '@angular/common';
 import {
   PortalModule,
-  RIGHT_ARROW,
-  LEFT_ARROW,
-  ENTER,
   coerceBooleanProperty
 } from '../core';
 import {MdTabLabel} from './tab-label';
@@ -31,6 +26,7 @@ import {MdRippleModule} from '../core/ripple/ripple';
 import {MdTab} from './tab';
 import {MdTabBody} from './tab-body';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {MdTabHeader} from './tab-header';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -56,8 +52,6 @@ export class MdTabChangeEvent {
 export class MdTabGroup {
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
-  @ViewChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
-  @ViewChild(MdInkBar) _inkBar: MdInkBar;
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
 
   /** Whether this component has been initialized. */
@@ -100,10 +94,9 @@ export class MdTabGroup {
     return this._onSelectChange.asObservable();
   }
 
-  private _focusIndex: number = 0;
   private _groupId: number;
 
-  constructor(private _zone: NgZone, private _renderer: Renderer) {
+  constructor(private _renderer: Renderer) {
     this._groupId = nextId++;
   }
 
@@ -144,102 +137,11 @@ export class MdTabGroup {
    * TODO: internal
    */
   ngAfterViewChecked(): void {
-    this._zone.runOutsideAngular(() => {
-      window.requestAnimationFrame(() => {
-        this._updateInkBar();
-      });
-    });
     this._isInitialized = true;
   }
 
-  /**
-   * Determines if an index is valid.  If the tabs are not ready yet, we assume that the user is
-   * providing a valid index and return true.
-   */
-  isValidIndex(index: number): boolean {
-    if (this._tabs) {
-      const tab = this._tabs.toArray()[index];
-      return tab && !tab.disabled;
-    } else {
-      return true;
-    }
-  }
-
-  /** Tells the ink-bar to align itself to the current label wrapper */
-  private _updateInkBar(): void {
-    if (this._currentLabelWrapper) {
-      this._inkBar.alignToElement(this._currentLabelWrapper);
-    }
-  }
-
-  /**
-   * Reference to the current label wrapper; defaults to null for initial render before the
-   * ViewChildren references are ready.
-   */
-  private get _currentLabelWrapper(): HTMLElement {
-    return this._labelWrappers && this._labelWrappers.length &&
-        this._labelWrappers.toArray()[this.selectedIndex]
-        ? this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement
-        : null;
-  }
-
-  /** Tracks which element has focus; used for keyboard navigation */
-  get focusIndex(): number {
-    return this._focusIndex;
-  }
-
-  /** When the focus index is set, we must manually send focus to the correct label */
-  set focusIndex(value: number) {
-    if (this.isValidIndex(value)) {
-      this._focusIndex = value;
-
-      if (this._isInitialized) {
-        this._onFocusChange.emit(this._createChangeEvent(value));
-      }
-
-      if (this._labelWrappers && this._labelWrappers.length) {
-        this._labelWrappers.toArray()[value].focus();
-      }
-    }
-  }
-
-  handleKeydown(event: KeyboardEvent) {
-    switch (event.keyCode) {
-      case RIGHT_ARROW:
-        this.focusNextTab();
-        break;
-      case LEFT_ARROW:
-        this.focusPreviousTab();
-        break;
-      case ENTER:
-        this.selectedIndex = this.focusIndex;
-        break;
-    }
-  }
-
-  /**
-   * Moves the focus left or right depending on the offset provided.  Valid offsets are 1 and -1.
-   */
-  moveFocus(offset: number) {
-    if (this._labelWrappers) {
-      const tabs: MdTab[] = this._tabs.toArray();
-      for (let i = this.focusIndex + offset; i < tabs.length && i >= 0; i += offset) {
-        if (this.isValidIndex(i)) {
-          this.focusIndex = i;
-          return;
-        }
-      }
-    }
-  }
-
-  /** Increment the focus index by 1 until a valid tab is found. */
-  focusNextTab(): void {
-    this.moveFocus(1);
-  }
-
-  /** Decrement the focus index by 1 until a valid tab is found. */
-  focusPreviousTab(): void {
-    this.moveFocus(-1);
+  _focusChanged(index: number) {
+    this._onFocusChange.emit(this._createChangeEvent(index));
   }
 
   private _createChangeEvent(index: number): MdTabChangeEvent {
@@ -291,7 +193,7 @@ export class MdTabGroup {
   // Don't export all components because some are only to be used internally.
   exports: [MdTabGroup, MdTabLabel, MdTab, MdTabNavBar, MdTabLink, MdTabLinkRipple],
   declarations: [MdTabGroup, MdTabLabel, MdTab, MdInkBar, MdTabLabelWrapper,
-    MdTabNavBar, MdTabLink, MdTabBody, MdTabLinkRipple],
+    MdTabNavBar, MdTabLink, MdTabBody, MdTabLinkRipple, MdTabHeader],
 })
 export class MdTabsModule {
   static forRoot(): ModuleWithProviders {

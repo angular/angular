@@ -1,5 +1,6 @@
-<div class="md-tab-header" role="tablist"
-     (keydown)="handleKeydown($event)">
+<md-tab-header [selectedIndex]="selectedIndex" #tabHeader
+               (indexFocused)="_focusChanged($event)"
+               (selectFocusedIndex)="selectedIndex = $event">
   <div class="md-tab-label" role="tab" md-tab-label-wrapper md-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
@@ -7,8 +8,8 @@
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
        [class.md-tab-label-active]="selectedIndex == i"
-       [class.md-tab-disabled]="tab.disabled"
-       (click)="focusIndex = selectedIndex = i">
+       [disabled]="tab.disabled"
+       (click)="tabHeader.focusIndex = selectedIndex = i">
 
     <!-- If there is a label template, use it. -->
     <template [ngIf]="tab.templateLabel">
@@ -18,8 +19,8 @@
     <!-- If there is not a label template, fall back to the text label. -->
     <template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</template>
   </div>
-  <md-ink-bar></md-ink-bar>
-</div>
+</md-tab-header>
+
 <div class="md-tab-body-wrapper" #tabBodyWrapper>
   <md-tab-body role="tabpanel"
                *ngFor="let tab of _tabs; let i = index"

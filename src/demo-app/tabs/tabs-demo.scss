@@ -26,16 +26,33 @@
 tabs-demo md-card {
   width: 160px;
 
-  md-checkbox {
-    display: block;
-    margin-top: 8px;
+}
+
+.demo-dynamic-tabs {
+  display: flex;
+  width: 100%;
+
+  md-tab-group {
+    min-width: 200px;
+    margin-bottom: 0;
+    flex-grow: 1;
   }
 
-  md-input {
-    width: 100px;
-  }
+  md-card {
+    min-width: 160px;
+    margin-right: 16px;
 
-  button {
-    width: 100%;
+    md-checkbox {
+      display: block;
+      margin-top: 8px;
+    }
+
+    md-input {
+      width: 100px;
+    }
+
+    button {
+      width: 100%;
+    }
   }
 }

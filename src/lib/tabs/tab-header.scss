@@ -1,0 +1,85 @@
+@import '../core/style/variables';
+@import '../core/style/layout-common';
+@import 'tabs-common';
+
+.md-tab-header {
+  @include tab-header;
+}
+
+// Wraps each tab label
+.md-tab-label {
+  @include tab-label;
+  position: relative;
+}
+
+@media ($md-xsmall) {
+  .md-tab-label {
+    min-width: 72px;
+  }
+}
+
+// The ink bar that displays under the active tab label
+md-ink-bar {
+  @include ink-bar;
+}
+
+.md-tab-header-pagination {
+  position: relative;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  min-width: 32px;
+  cursor: pointer;
+  z-index: 2;
+
+  .md-tab-header-pagination-controls-enabled & {
+    display: flex;
+  }
+}
+
+// The pagination control that is displayed on the left side of the tab header.
+.md-tab-header-pagination-before, .md-tab-header-rtl .md-tab-header-pagination-after {
+  padding-left: 4px;
+  .md-tab-header-pagination-chevron {
+    transform: rotate(-135deg);
+  }
+}
+
+// The pagination control that is displayed on the right side of the tab header.
+.md-tab-header-rtl .md-tab-header-pagination-before, .md-tab-header-pagination-after {
+  padding-right: 4px;
+  .md-tab-header-pagination-chevron {
+    transform: rotate(45deg);
+  }
+}
+
+.md-tab-header-pagination-chevron {
+  border-style: solid;
+  border-width: 2px 2px 0 0;
+  content: '';
+  height: 8px;
+  width: 8px;
+}
+
+.md-tab-header-pagination-disabled {
+  box-shadow: none;
+  cursor: default;
+
+  .md-tab-header-pagination-chevron {
+    border-color: #ccc;
+  }
+}
+
+.md-tab-label-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.md-tab-list {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  transition: transform 500ms cubic-bezier(0.35, 0, 0.25, 1);
+}

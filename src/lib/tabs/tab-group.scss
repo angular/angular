@@ -8,11 +8,6 @@
   font-family: $md-font-family;
 }
 
-// Styling for the heading containing the tab labels
-.md-tab-header {
-  @include tab-header;
-}
-
 // Wraps each tab label
 .md-tab-label {
   @include tab-label;
@@ -28,11 +23,6 @@
 :host[md-stretch-tabs] .md-tab-label {
   flex-basis: 0;
   flex-grow: 1;
-}
-
-// The ink bar that displays next to the active tab
-md-ink-bar {
-  @include ink-bar;
 }
 
 // The bottom section of the view; contains the tab bodies 
