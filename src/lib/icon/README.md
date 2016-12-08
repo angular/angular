@@ -85,6 +85,19 @@ Multiple icon sets can be registered in the same namespace. If you request an ic
 
 Note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy their URLs must be on the same domain as the containing page, or their servers must be configured to allow cross-domain access.
 
+### Theming
+
+Icons can be themed to match your "primary" palette, your "accent" palette, or your "warn" palette using the `color` attribute.
+Simply pass in the palette name.
+
+Example:
+
+ ```html
+<md-icon color="primary">home</md-icon>
+<md-icon color="accent">home</md-icon>
+<md-icon color="warn">home</md-icon>
+```
+
 ### Accessibility
 
 If you set an "aria-label" attribute on the md-icon element, its value will be used as-is. If you do not, the md-icon component will attempt to set the aria-label value from one of these sources:
