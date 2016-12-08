@@ -549,7 +549,16 @@ class UrlParser {
         this.capture(value);
       }
     }
-    params[decode(key)] = decode(value);
+    const decodedKey: string = decode(key);
+    const decodedValue: string = decode(value);
+    const currentValue: any = params.hasOwnProperty(decodedKey) ? params[decodedKey] : undefined;
+    if (currentValue === undefined || currentValue === null) {
+      params[decodedKey] = decodedValue;
+    } else {
+      const valueArr = Array.isArray(currentValue) ? currentValue : [currentValue];
+      valueArr.push(decodedValue);
+      params[decodedKey] = valueArr;
+    }
   }
 
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegmentGroup} {
