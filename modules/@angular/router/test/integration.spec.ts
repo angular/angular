@@ -780,7 +780,7 @@ describe('Integration', () => {
      })));
 
   describe('data', () => {
-    class ResolveSix implements Resolve<TeamCmp> {
+    class ResolveSix implements Resolve<number> {
       resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
     }
 
