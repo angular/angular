@@ -278,7 +278,7 @@ export class UpgradeAdapter {
    * ### Example
    *
    * ```
-   * const upgradeAdapter = new UpgradeAdapter();
+   * const upgradeAdapter = new UpgradeAdapter(MyNg2Module);
    *
    * // configure the adapter with upgrade/downgrade components and services
    * upgradeAdapter.downgradeNg2Component(MyComponent);
@@ -334,7 +334,7 @@ export class UpgradeAdapter {
    * ### Example
    *
    * ```
-   * const adapter = new UpgradeAdapter();
+   * const adapter = new UpgradeAdapter(MyNg2Module);
    * const module = angular.module('myExample', []);
    * module.directive('ng2', adapter.downgradeNg2Component(Ng2));
    *
@@ -421,7 +421,7 @@ export class UpgradeAdapter {
    * module.service('server', Server);
    * module.service('login', Login);
    *
-   * const adapter = new UpgradeAdapter();
+   * const adapter = new UpgradeAdapter(MyNg2Module);
    * adapter.upgradeNg1Provider('server');
    * adapter.upgradeNg1Provider('login', {asToken: Login});
    *
@@ -450,7 +450,7 @@ export class UpgradeAdapter {
    * class Example {
    * }
    *
-   * const adapter = new UpgradeAdapter();
+   * const adapter = new UpgradeAdapter(MyNg2Module);
    *
    * const module = angular.module('myExample', []);
    * module.factory('example', adapter.downgradeNg2Provider(Example));
@@ -480,7 +480,7 @@ export class UpgradeAdapter {
    * ### Example
    *
    * ```
-   * const upgradeAdapter = new UpgradeAdapter();
+   * const upgradeAdapter = new UpgradeAdapter(MyNg2Module);
    * upgradeAdapter.declareNg1Module(['heroApp']);
    * ```
    */
