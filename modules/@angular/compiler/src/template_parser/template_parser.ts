@@ -685,7 +685,7 @@ class TemplateParseVisitor implements html.Visitor {
     }
     elementProps.forEach(prop => {
       this._reportError(
-          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section.`,
+          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
           sourceSpan);
     });
   }
@@ -704,7 +704,7 @@ class TemplateParseVisitor implements html.Visitor {
     events.forEach(event => {
       if (isPresent(event.target) || !allDirectiveEvents.has(event.name)) {
         this._reportError(
-            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
+            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
             event.sourceSpan);
       }
     });
