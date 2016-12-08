@@ -213,7 +213,7 @@ export class UnknownTrackBy {
     'ng-if-cases.ts': `
 import {Component} from '@angular/core';
 
-@Component({template: '<div ~{implicit}*ngIf="show; let l"~{implicit-end}>Showing now!</div>'})
+@Component({template: '<div ~{implicit}*ngIf="show; let l=unknown"~{implicit-end}>Showing now!</div>'})
 export class ShowIf {
   show = false;
 }
