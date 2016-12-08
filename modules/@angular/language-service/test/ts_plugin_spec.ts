@@ -187,7 +187,7 @@ describe('plugin', () => {
         expectSemanticError('app/ng-if-cases.ts', locationMarker, message);
       }
       it('should report an implicit context reference', () => {
-        expectError('implicit', 'The template context does not have an implicit value');
+        expectError('implicit', "The template context does not defined a member called 'unknown'");
       });
     });
   });
