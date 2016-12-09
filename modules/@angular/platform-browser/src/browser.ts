@@ -14,6 +14,7 @@ import {WebAnimationsDriver} from '../src/dom/web_animations_driver';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
+import {Meta} from './browser/meta';
 import {BrowserGetTestability} from './browser/testability';
 import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
@@ -46,7 +47,7 @@ export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
 /**
  * @stable
  */
-export const platformBrowser =
+export const platformBrowser: (extraProviders?: Provider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 export function initDomAdapter() {
@@ -56,6 +57,10 @@ export function initDomAdapter() {
 
 export function errorHandler(): ErrorHandler {
   return new ErrorHandler();
+}
+
+export function meta(): Meta {
+  return new Meta(getDOM());
 }
 
 export function _document(): any {
@@ -76,7 +81,8 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
  */
 @NgModule({
   providers: [
-    BROWSER_SANITIZATION_PROVIDERS, {provide: ErrorHandler, useFactory: errorHandler, deps: []},
+    BROWSER_SANITIZATION_PROVIDERS,
+    {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: DOCUMENT, useFactory: _document, deps: []},
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
@@ -85,8 +91,13 @@ export function _resolveDefaultAnimationDriver(): AnimationDriver {
     {provide: DomRootRenderer, useClass: DomRootRenderer_},
     {provide: RootRenderer, useExisting: DomRootRenderer},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
-    {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver}, DomSharedStylesHost,
-    Testability, EventManager, ELEMENT_PROBE_PROVIDERS, Title
+    {provide: AnimationDriver, useFactory: _resolveDefaultAnimationDriver},
+    {provide: Meta, useFactory: meta},
+    DomSharedStylesHost,
+    Testability,
+    EventManager,
+    ELEMENT_PROBE_PROVIDERS,
+    Title,
   ],
   exports: [CommonModule, ApplicationModule]
 })
