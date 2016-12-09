@@ -93,9 +93,9 @@ class NgIfLet {
   lastIndex = 0;
 
   nextUser() {
-    var first = this.first[this.firstIndex++];
+    let first = this.first[this.firstIndex++];
     if (this.firstIndex >= this.first.length) this.firstIndex = 0;
-    var last = this.last[this.lastIndex++];
+    let last = this.last[this.lastIndex++];
     if (this.lastIndex >= this.last.length) this.lastIndex = 0;
     this.userObservable.next({first, last});
   }
