@@ -23,12 +23,14 @@ export class AnimationTransition {
   }
 
   onStart(callback: (event: AnimationTransitionEvent) => any): void {
-    const event = this._createEvent('start');
-    this._player.onStart(() => callback(event));
+    const fn =
+        <() => void>Zone.current.wrap(() => callback(this._createEvent('start')), 'player.onStart');
+    this._player.onStart(fn);
   }
 
   onDone(callback: (event: AnimationTransitionEvent) => any): void {
-    const event = this._createEvent('done');
-    this._player.onDone(() => callback(event));
+    const fn =
+        <() => void>Zone.current.wrap(() => callback(this._createEvent('done')), 'player.onDone');
+    this._player.onDone(fn);
   }
 }

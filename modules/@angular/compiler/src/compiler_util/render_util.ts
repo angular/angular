@@ -91,8 +91,8 @@ function sanitizedValue(
 
 export function triggerAnimation(
     view: o.Expression, componentView: o.Expression, boundProp: BoundElementPropertyAst,
-    eventListener: o.Expression, renderElement: o.Expression, renderValue: o.Expression,
-    lastRenderValue: o.Expression) {
+    boundOutputs: BoundEventAst[], eventListener: o.Expression, renderElement: o.Expression,
+    renderValue: o.Expression, lastRenderValue: o.Expression) {
   const detachStmts: o.Statement[] = [];
   const updateStmts: o.Statement[] = [];
 
@@ -121,23 +121,32 @@ export function triggerAnimation(
           .set(animationFnExpr.callFn([view, renderElement, lastRenderValue, emptyStateValue]))
           .toDeclStmt());
 
-  const registerStmts = [
-    animationTransitionVar
-        .callMethod(
-            'onStart',
-            [eventListener.callMethod(
-                o.BuiltinMethod.Bind,
-                [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'start'))])])
-        .toStmt(),
-    animationTransitionVar
-        .callMethod(
-            'onDone',
-            [eventListener.callMethod(
-                o.BuiltinMethod.Bind,
-                [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'done'))])])
-        .toStmt(),
+  const registerStmts: o.Statement[] = [];
+  const animationStartMethodExists = boundOutputs.find(
+      event => event.isAnimation && event.name == animationName && event.phase == 'start');
+  if (animationStartMethodExists) {
+    registerStmts.push(
+        animationTransitionVar
+            .callMethod(
+                'onStart',
+                [eventListener.callMethod(
+                    o.BuiltinMethod.Bind,
+                    [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'start'))])])
+            .toStmt());
+  }
 
-  ];
+  const animationDoneMethodExists = boundOutputs.find(
+      event => event.isAnimation && event.name == animationName && event.phase == 'done');
+  if (animationDoneMethodExists) {
+    registerStmts.push(
+        animationTransitionVar
+            .callMethod(
+                'onDone',
+                [eventListener.callMethod(
+                    o.BuiltinMethod.Bind,
+                    [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'done'))])])
+            .toStmt());
+  }
 
   updateStmts.push(...registerStmts);
   detachStmts.push(...registerStmts);
