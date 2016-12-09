@@ -213,9 +213,8 @@ export class JitCompiler implements Compiler {
       const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
 
-      class HostClass {
-        static overriddenName = `${identifierName(compMeta.type)}_Host`;
-      }
+      const HostClass = function HostClass() {};
+      (<any>HostClass).overriddenName = `${identifierName(compMeta.type)}_Host`;
 
       const hostMeta = createHostComponentMeta(HostClass, compMeta);
       compiledTemplate = new CompiledTemplate(
