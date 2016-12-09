@@ -93,11 +93,7 @@ export class RouterLink {
 
   @Input()
   set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
-    } else {
-      this.commands = [data];
-    }
+    this.commands = Array.isArray(data) ? data : [data];
   }
 
   @HostListener('click', [])
@@ -158,15 +154,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   @Input()
   set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
-    } else {
-      this.commands = [data];
-    }
+    this.commands = Array.isArray(data) ? data : [data];
   }
 
-  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: {}): void { this.updateTargetUrlAndHref(); }
+  ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
