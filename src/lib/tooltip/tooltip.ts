@@ -74,6 +74,12 @@ export class MdTooltip {
     }
   }
 
+  /** The default delay in ms before showing the tooltip after show is called */
+  @Input('tooltipShowDelay') showDelay = 0;
+
+  /** The default delay in ms before hiding the tooltip after hide is called */
+  @Input('tooltipHideDelay') hideDelay = 0;
+
   /** The message to be displayed in the tooltip */
   private _message: string;
   @Input('md-tooltip') get message() {
@@ -97,22 +103,20 @@ export class MdTooltip {
     }
   }
 
-  /** Shows the tooltip */
-  show(): void {
-    if (!this._message || !this._message.trim()) {
-      return;
-    }
+  /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
+  show(delay: number = this.showDelay): void {
+    if (!this._message || !this._message.trim()) { return; }
 
     if (!this._tooltipInstance) {
       this._createTooltip();
     }
 
     this._setTooltipMessage(this._message);
-    this._tooltipInstance.show(this._position);
+    this._tooltipInstance.show(this._position, delay);
   }
 
-  /** Hides the tooltip after the provided delay in ms, defaulting to 0ms. */
-  hide(delay = 0): void {
+  /** Hides the tooltip after the delay in ms, defaults to tooltip-delay-hide or 0ms if no input */
+  hide(delay: number = this.hideDelay): void {
     if (this._tooltipInstance) {
       this._tooltipInstance.hide(delay);
     }
@@ -222,7 +226,7 @@ export class MdTooltip {
   }
 }
 
-export type TooltipVisibility = 'visible' | 'hidden';
+export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
 
 @Component({
   moduleId: module.id,
@@ -232,6 +236,7 @@ export type TooltipVisibility = 'visible' | 'hidden';
   animations: [
     trigger('state', [
       state('void', style({transform: 'scale(0)'})),
+      state('initial', style({transform: 'scale(0)'})),
       state('visible', style({transform: 'scale(1)'})),
       state('hidden', style({transform: 'scale(0)'})),
       transition('* => visible', animate('150ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
@@ -246,11 +251,14 @@ export class TooltipComponent {
   /** Message to display in the tooltip */
   message: string;
 
+  /** The timeout ID of any current timer set to show the tooltip */
+  _showTimeoutId: number;
+
   /** The timeout ID of any current timer set to hide the tooltip */
   _hideTimeoutId: number;
 
   /** Property watched by the animation framework to show or hide the tooltip */
-  _visibility: TooltipVisibility;
+  _visibility: TooltipVisibility = 'initial';
 
   /** Whether interactions on the page should close the tooltip */
   _closeOnInteraction: boolean = false;
@@ -264,23 +272,33 @@ export class TooltipComponent {
   constructor(@Optional() private _dir: Dir) {}
 
   /** Shows the tooltip with an animation originating from the provided origin */
-  show(position: TooltipPosition): void {
-    this._closeOnInteraction = false;
-    this._visibility = 'visible';
-    this._setTransformOrigin(position);
-
+  show(position: TooltipPosition, delay: number): void {
     // Cancel the delayed hide if it is scheduled
     if (this._hideTimeoutId) {
       clearTimeout(this._hideTimeoutId);
     }
 
-    // If this was set to true immediately, then the body click would trigger interaction and
-    // close the tooltip right after it was displayed.
-    setTimeout(() => { this._closeOnInteraction = true; }, 0);
+    // Body interactions should cancel the tooltip if there is a delay in showing.
+    this._closeOnInteraction = true;
+
+    this._setTransformOrigin(position);
+    this._showTimeoutId = setTimeout(() => {
+      this._visibility = 'visible';
+
+      // If this was set to true immediately, then a body click that triggers show() would
+      // trigger interaction and close the tooltip right after it was displayed.
+      this._closeOnInteraction = false;
+      setTimeout(() => { this._closeOnInteraction = true; }, 0);
+    }, delay);
   }
 
   /** Begins the animation to hide the tooltip after the provided delay in ms */
   hide(delay: number): void {
+    // Cancel the delayed show if it is scheduled
+    if (this._showTimeoutId) {
+      clearTimeout(this._showTimeoutId);
+    }
+
     this._hideTimeoutId = setTimeout(() => {
       this._visibility = 'hidden';
       this._closeOnInteraction = false;
