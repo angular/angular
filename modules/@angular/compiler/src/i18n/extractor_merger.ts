@@ -503,10 +503,11 @@ function _parseMessageMeta(i18n: string): {meaning: string, description: string,
 
   const idIndex = i18n.indexOf(ID_SEPARATOR);
   const descIndex = i18n.indexOf(MEANING_SEPARATOR);
-  const [meaningAndDesc, id] = (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] :
-                                                [i18n, ''];
-  const [meaning, description] = (descIndex > -1) ? [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-                                                    ['', meaningAndDesc];
+  const [meaningAndDesc, id] =
+      (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+  const [meaning, description] = (descIndex > -1) ?
+      [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
+      ['', meaningAndDesc];
 
   return {meaning, description, id};
 }
