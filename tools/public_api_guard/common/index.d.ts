@@ -224,6 +224,11 @@ export declare class SlicePipe implements PipeTransform {
 }
 
 /** @stable */
+export declare class TitleCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
+/** @stable */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
