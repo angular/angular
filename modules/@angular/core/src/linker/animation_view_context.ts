@@ -29,19 +29,19 @@ export class AnimationViewContext {
   queueAnimation(element: any, animationName: string, player: AnimationPlayer): void {
     queueAnimationGlobally(player);
     this._players.set(element, animationName, player);
+    player.onDone(() => this._players.remove(element, animationName, player));
   }
 
-  getAnimationPlayers(element: any, animationName: string, removeAllAnimations: boolean = false):
-      AnimationPlayer[] {
+  getAnimationPlayers(element: any, animationName: string = null): AnimationPlayer[] {
     const players: AnimationPlayer[] = [];
-    if (removeAllAnimations) {
-      this._players.findAllPlayersByElement(element).forEach(
-          player => { _recursePlayers(player, players); });
-    } else {
+    if (animationName) {
       const currentPlayer = this._players.find(element, animationName);
       if (currentPlayer) {
         _recursePlayers(currentPlayer, players);
       }
+    } else {
+      this._players.findAllPlayersByElement(element).forEach(
+          player => _recursePlayers(player, players));
     }
     return players;
   }
