@@ -764,69 +764,115 @@ export function main() {
            tick();
            expect(comp.selectedCity).toEqual(null);
          }));
+
+      it('should throw an error when compareWith is not a function', () => {
+        const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
+        const comp = fixture.componentInstance;
+        comp.compareFn = null;
+        expect(() => fixture.detectChanges())
+            .toThrowError(/compareWith must be a function, but received null/);
+      });
+
+      it('should compare options using provided compareWith function', fakeAsync(() => {
+           const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
+           const comp = fixture.componentInstance;
+           comp.selectedCity = {id: 1, name: 'SF'};
+           comp.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'LA'}];
+           fixture.detectChanges();
+           tick();
+
+           const select = fixture.debugElement.query(By.css('select'));
+           const sfOption = fixture.debugElement.query(By.css('option'));
+           expect(select.nativeElement.value).toEqual('0: Object');
+           expect(sfOption.nativeElement.selected).toBe(true);
+         }));
     });
 
     describe('select multiple controls', () => {
-      let fixture: ComponentFixture<NgModelSelectMultipleForm>;
-      let comp: NgModelSelectMultipleForm;
+      describe('select options', () => {
+        let fixture: ComponentFixture<NgModelSelectMultipleForm>;
+        let comp: NgModelSelectMultipleForm;
 
-      beforeEach(() => {
-        fixture = initTest(NgModelSelectMultipleForm);
-        comp = fixture.componentInstance;
-        comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
+        beforeEach(() => {
+          fixture = initTest(NgModelSelectMultipleForm);
+          comp = fixture.componentInstance;
+          comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
+        });
+
+        const detectChangesAndTick = (): void => {
+          fixture.detectChanges();
+          tick();
+        };
+
+        const setSelectedCities = (selectedCities: any): void => {
+          comp.selectedCities = selectedCities;
+          detectChangesAndTick();
+        };
+
+        const selectOptionViaUI = (valueString: string): void => {
+          const select = fixture.debugElement.query(By.css('select'));
+          select.nativeElement.value = valueString;
+          dispatchEvent(select.nativeElement, 'change');
+          detectChangesAndTick();
+        };
+
+        const assertOptionElementSelectedState = (selectedStates: boolean[]): void => {
+          const options = fixture.debugElement.queryAll(By.css('option'));
+          if (options.length !== selectedStates.length) {
+            throw 'the selected state values to assert does not match the number of options';
+          }
+          for (let i = 0; i < selectedStates.length; i++) {
+            expect(options[i].nativeElement.selected).toBe(selectedStates[i]);
+          }
+        };
+
+        it('should reflect state of model after option selected and new options subsequently added',
+           fakeAsync(() => {
+             setSelectedCities([]);
+
+             selectOptionViaUI('1: Object');
+             assertOptionElementSelectedState([false, true, false]);
+
+             comp.cities.push({'name': 'Chicago'});
+             detectChangesAndTick();
+
+             assertOptionElementSelectedState([false, true, false, false]);
+           }));
+
+        it('should reflect state of model after option selected and then other options removed',
+           fakeAsync(() => {
+             setSelectedCities([]);
+
+             selectOptionViaUI('1: Object');
+             assertOptionElementSelectedState([false, true, false]);
+
+             comp.cities.pop();
+             detectChangesAndTick();
+
+             assertOptionElementSelectedState([false, true]);
+           }));
       });
 
-      const detectChangesAndTick = (): void => {
-        fixture.detectChanges();
-        tick();
-      };
+      it('should throw an error when compareWith is not a function', () => {
+        const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
+        const comp = fixture.componentInstance;
+        comp.compareFn = null;
+        expect(() => fixture.detectChanges())
+            .toThrowError(/compareWith must be a function, but received null/);
+      });
 
-      const setSelectedCities = (selectedCities: any): void => {
-        comp.selectedCities = selectedCities;
-        detectChangesAndTick();
-      };
+      it('should compare options using provided compareWith function', fakeAsync(() => {
+           const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
+           const comp = fixture.componentInstance;
+           comp.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'LA'}];
+           comp.selectedCities = [comp.cities[0]];
+           fixture.detectChanges();
+           tick();
 
-      const selectOptionViaUI = (valueString: string): void => {
-        const select = fixture.debugElement.query(By.css('select'));
-        select.nativeElement.value = valueString;
-        dispatchEvent(select.nativeElement, 'change');
-        detectChangesAndTick();
-      };
-
-      const assertOptionElementSelectedState = (selectedStates: boolean[]): void => {
-        const options = fixture.debugElement.queryAll(By.css('option'));
-        if (options.length !== selectedStates.length) {
-          throw 'the selected state values to assert does not match the number of options';
-        }
-        for (let i = 0; i < selectedStates.length; i++) {
-          expect(options[i].nativeElement.selected).toBe(selectedStates[i]);
-        }
-      };
-
-      it('should reflect state of model after option selected and new options subsequently added',
-         fakeAsync(() => {
-           setSelectedCities([]);
-
-           selectOptionViaUI('1: Object');
-           assertOptionElementSelectedState([false, true, false]);
-
-           comp.cities.push({'name': 'Chicago'});
-           detectChangesAndTick();
-
-           assertOptionElementSelectedState([false, true, false, false]);
-         }));
-
-      it('should reflect state of model after option selected and then other options removed',
-         fakeAsync(() => {
-           setSelectedCities([]);
-
-           selectOptionViaUI('1: Object');
-           assertOptionElementSelectedState([false, true, false]);
-
-           comp.cities.pop();
-           detectChangesAndTick();
-
-           assertOptionElementSelectedState([false, true]);
+           const select = fixture.debugElement.query(By.css('select'));
+           const sfOption = fixture.debugElement.query(By.css('option'));
+           expect(select.nativeElement.value).toEqual('0: Object');
+           expect(sfOption.nativeElement.selected).toBe(true);
          }));
     });
 
@@ -1311,6 +1357,38 @@ class NgModelSelectForm {
 })
 class NgModelSelectWithNullForm {
   selectedCity: {[k: string]: string} = {};
+  cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-compare-with',
+  template: `
+    <select [(ngModel)]="selectedCity" [compareWith]="compareFn">
+      <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+    </select>
+  `
+})
+class NgModelSelectWithCustomCompareFnForm {
+  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
+    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  };
+  selectedCity: any = {};
+  cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-multiple-compare-with',
+  template: `
+    <select multiple [(ngModel)]="selectedCities" [compareWith]="compareFn">
+      <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+    </select>
+  `
+})
+class NgModelSelectMultipleWithCustomCompareFnForm {
+  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
+    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  };
+  selectedCities: any[] = [];
   cities: any[] = [];
 }
 
