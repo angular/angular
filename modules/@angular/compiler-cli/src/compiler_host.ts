@@ -15,7 +15,7 @@ import * as ts from 'typescript';
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
+const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
 
 export interface CompilerHostContext extends ts.ModuleResolutionHost {
   readResource(fileName: string): Promise<string>;
