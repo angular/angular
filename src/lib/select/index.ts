@@ -9,6 +9,8 @@ import {
   OverlayModule,
 } from '../core';
 export * from './select';
+export {MdOption} from './option';
+export {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';
 
 
 @NgModule({
