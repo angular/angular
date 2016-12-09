@@ -3,7 +3,6 @@ import {
   Component,
   HostBinding,
   Input,
-  Directive,
   AfterContentInit,
   ContentChild,
   SimpleChange,
@@ -17,13 +16,15 @@ import {
   Output,
   NgModule,
   ModuleWithProviders,
-  ViewEncapsulation,
+  ViewEncapsulation
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MdError, coerceBooleanProperty} from '../core';
 import {Observable} from 'rxjs/Observable';
+import {MdPlaceholder, MdInputContainer, MdHint, MdInputDirective} from './input-container';
 import {MdTextareaAutosize} from './autosize';
+import {PlatformModule} from '../core/platform/index';
 
 
 const noop = () => {};
@@ -64,30 +65,6 @@ export class MdInputDuplicatedHintError extends MdError {
   }
 }
 
-
-
-/**
- * The placeholder directive. The content can declare this to implement more
- * complex placeholders.
- */
-@Directive({
-  selector: 'md-placeholder'
-})
-export class MdPlaceholder {}
-
-
-/** The hint directive, used to tag content as hint labels (going under the input). */
-@Directive({
-  selector: 'md-hint',
-  host: {
-    '[class.md-right]': 'align == "end"',
-    '[class.md-hint]': 'true'
-  }
-})
-export class MdHint {
-  // Whether to align the hint label at the start or end of the line.
-  @Input() align: 'start' | 'end' = 'start';
-}
 
 /**
  * Component that represents a text input. It encapsulates the <input> HTMLElement and
@@ -369,15 +346,33 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
 
 
 @NgModule({
-  declarations: [MdPlaceholder, MdInput, MdHint, MdTextareaAutosize],
-  imports: [CommonModule, FormsModule],
-  exports: [MdPlaceholder, MdInput, MdHint, MdTextareaAutosize],
+  declarations: [
+    MdInput,
+    MdPlaceholder,
+    MdInputContainer,
+    MdHint,
+    MdTextareaAutosize,
+    MdInputDirective
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PlatformModule,
+  ],
+  exports: [
+    MdInput,
+    MdPlaceholder,
+    MdInputContainer,
+    MdHint,
+    MdTextareaAutosize,
+    MdInputDirective
+  ],
 })
 export class MdInputModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdInputModule,
-      providers: []
+      providers: PlatformModule.forRoot().providers,
     };
   }
 }

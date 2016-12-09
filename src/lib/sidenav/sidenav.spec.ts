@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdSidenav, MdSidenavModule, MdSidenavToggleResult} from './sidenav';
 import {A11yModule} from '../core/a11y/index';
-import {PlatformModule} from '../core/platform/platform';
+import {PlatformModule} from '../core/platform/index';
 import {ESCAPE} from '../core/keyboard/keycodes';
 
 

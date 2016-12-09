@@ -37,6 +37,7 @@ import {TabsDemo, SunnyTabContent, RainyTabContent, FoggyTabContent} from './tab
 import {ProjectionDemo, ProjectionTestComponent} from './projection/projection-demo';
 import {PlatformDemo} from './platform/platform-demo';
 import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
+import {InputContainerDemo} from './input/input-container-demo';
 
 @NgModule({
   imports: [
@@ -62,6 +63,7 @@ import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
     Home,
     IconDemo,
     InputDemo,
+    InputContainerDemo,
     JazzDialog,
     ListDemo,
     LiveAnnouncerDemo,

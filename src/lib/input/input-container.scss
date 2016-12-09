@@ -1,0 +1,29 @@
+@import '../core/style/variables';
+
+md-input-container {
+  display: inline-block;
+  position: relative;
+  font-family: $md-font-family;
+  line-height: normal;
+
+  // To avoid problems with text-align.
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+}
+
+.md-input-element {
+  &::placeholder {
+    visibility: hidden;
+  }
+
+  .md-end & {
+    text-align: right;
+
+    [dir='rtl'] & {
+      text-align: left;
+    }
+  }
+}

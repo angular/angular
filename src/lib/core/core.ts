@@ -31,6 +31,7 @@ export * from './projection/projection';
 
 // Platform
 export * from './platform/platform';
+export * from './platform/features';
 
 // Overlay
 export {Overlay, OVERLAY_PROVIDERS} from './overlay/overlay';

@@ -1,4 +1,4 @@
-import {Injectable, NgModule, ModuleWithProviders} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 declare const window: any;
 
@@ -12,7 +12,6 @@ const hasV8BreakIterator = (window.Intl && (window.Intl as any).v8BreakIterator)
  */
 @Injectable()
 export class MdPlatform {
-
   /** Layout Engines */
   EDGE = /(edge)/i.test(navigator.userAgent);
   TRIDENT = /(msie|trident)/i.test(navigator.userAgent);
@@ -35,15 +34,4 @@ export class MdPlatform {
 
   // Trident on mobile adds the android platform to the userAgent to trick detections.
   ANDROID = /android/i.test(navigator.userAgent) && !this.TRIDENT;
-
-}
-
-@NgModule({})
-export class PlatformModule {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: PlatformModule,
-      providers: [MdPlatform],
-    };
-  }
 }
