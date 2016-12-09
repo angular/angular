@@ -52,6 +52,9 @@ before_script:
 script:
   - ./scripts/ci/build-and-test.sh
 
+after_success:
+  - ./scripts/ci/after-success.sh
+
 cache:
   directories:
     - node_modules
