@@ -499,6 +499,7 @@ export declare class RequiredValidator implements Validator {
 
 /** @stable */
 export declare class SelectControlValueAccessor implements ControlValueAccessor {
+    compareWith: (o1: any, o2: any) => boolean;
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;
@@ -511,6 +512,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
 
 /** @stable */
 export declare class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+    compareWith: (o1: any, o2: any) => boolean;
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;

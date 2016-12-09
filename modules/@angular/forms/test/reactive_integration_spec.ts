@@ -338,6 +338,95 @@ export function main() {
 
     });
 
+    describe('select controls', () => {
+      it(`should support primitive values`, () => {
+        const fixture = initTest(FormControlNameSelect);
+        fixture.detectChanges();
+
+        // model -> view
+        const select = fixture.debugElement.query(By.css('select'));
+        const sfOption = fixture.debugElement.query(By.css('option'));
+        expect(select.nativeElement.value).toEqual('SF');
+        expect(sfOption.nativeElement.selected).toBe(true);
+
+        select.nativeElement.value = 'NY';
+        dispatchEvent(select.nativeElement, 'change');
+        fixture.detectChanges();
+
+        // view -> model
+        expect(sfOption.nativeElement.selected).toBe(false);
+        expect(fixture.componentInstance.form.value).toEqual({'city': 'NY'});
+      });
+
+      it(`should support objects`, () => {
+        const fixture = initTest(FormControlSelectNgValue);
+        fixture.detectChanges();
+
+        // model -> view
+        const select = fixture.debugElement.query(By.css('select'));
+        const sfOption = fixture.debugElement.query(By.css('option'));
+        expect(select.nativeElement.value).toEqual('0: Object');
+        expect(sfOption.nativeElement.selected).toBe(true);
+      });
+
+      it('should throw an error if compareWith is not a function', () => {
+        const fixture = initTest(FormControlSelectWithCompareFn);
+        fixture.componentInstance.compareFn = null;
+        expect(() => fixture.detectChanges())
+            .toThrowError(/compareWith must be a function, but received null/);
+      });
+
+      it('should compare options using provided compareWith function', () => {
+        const fixture = initTest(FormControlSelectWithCompareFn);
+        fixture.detectChanges();
+
+        const select = fixture.debugElement.query(By.css('select'));
+        const sfOption = fixture.debugElement.query(By.css('option'));
+        expect(select.nativeElement.value).toEqual('0: Object');
+        expect(sfOption.nativeElement.selected).toBe(true);
+      });
+    });
+
+    describe('select multiple controls', () => {
+      it('should support primitive values', () => {
+        const fixture = initTest(FormControlSelectMultiple);
+        fixture.detectChanges();
+
+        const select = fixture.debugElement.query(By.css('select'));
+        const sfOption = fixture.debugElement.query(By.css('option'));
+        expect(select.nativeElement.value).toEqual(`0: 'SF'`);
+        expect(sfOption.nativeElement.selected).toBe(true);
+      });
+
+      it('should support objects', () => {
+        const fixture = initTest(FormControlSelectMultipleNgValue);
+        fixture.detectChanges();
+
+        const select = fixture.debugElement.query(By.css('select'));
+        const sfOption = fixture.debugElement.query(By.css('option'));
+        expect(select.nativeElement.value).toEqual('0: Object');
+        expect(sfOption.nativeElement.selected).toBe(true);
+      });
+
+      it('should throw an error when compareWith is not a function', () => {
+        const fixture = initTest(FormControlSelectMultipleWithCompareFn);
+        fixture.componentInstance.compareFn = null;
+        expect(() => fixture.detectChanges())
+            .toThrowError(/compareWith must be a function, but received null/);
+      });
+
+      it('should compare options using provided compareWith function', fakeAsync(() => {
+           const fixture = initTest(FormControlSelectMultipleWithCompareFn);
+           fixture.detectChanges();
+           tick();
+
+           const select = fixture.debugElement.query(By.css('select'));
+           const sfOption = fixture.debugElement.query(By.css('option'));
+           expect(select.nativeElement.value).toEqual('0: Object');
+           expect(sfOption.nativeElement.selected).toBe(true);
+         }));
+    });
+
     describe('form arrays', () => {
       it('should support form arrays', () => {
         const fixture = initTest(FormArrayComp);
@@ -833,25 +922,6 @@ export function main() {
 
         // view -> model
         expect(control.value).toBe(false);
-      });
-
-      it('should support <select>', () => {
-        const fixture = initTest(FormControlNameSelect);
-        fixture.detectChanges();
-
-        // model -> view
-        const select = fixture.debugElement.query(By.css('select'));
-        const sfOption = fixture.debugElement.query(By.css('option'));
-        expect(select.nativeElement.value).toEqual('SF');
-        expect(sfOption.nativeElement.selected).toBe(true);
-
-        select.nativeElement.value = 'NY';
-        dispatchEvent(select.nativeElement, 'change');
-        fixture.detectChanges();
-
-        // view -> model
-        expect(sfOption.nativeElement.selected).toBe(false);
-        expect(fixture.componentInstance.form.value).toEqual({'city': 'NY'});
       });
 
       describe('should support <type=number>', () => {
@@ -2003,6 +2073,82 @@ class FormArrayNestedGroup {
 class FormControlNameSelect {
   cities = ['SF', 'NY'];
   form = new FormGroup({city: new FormControl('SF')});
+}
+
+@Component({
+  selector: 'form-control-select-ngValue',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="city">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectNgValue {
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl(this.cities[0])});
+}
+
+@Component({
+  selector: 'form-control-select-compare-with',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectWithCompareFn {
+  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
+    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  };
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
+}
+
+@Component({
+  selector: 'form-control-select-multiple',
+  template: `
+    <div [formGroup]="form">
+      <select multiple formControlName="city">
+        <option *ngFor="let c of cities" [value]="c">{{c}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectMultiple {
+  cities = ['SF', 'NY'];
+  form = new FormGroup({city: new FormControl(['SF'])});
+}
+
+@Component({
+  selector: 'form-control-select-multiple',
+  template: `
+    <div [formGroup]="form">
+      <select multiple formControlName="city">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectMultipleNgValue {
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl([this.cities[0]])});
+}
+
+@Component({
+  selector: 'form-control-select-multiple-compare-with',
+  template: `
+    <div [formGroup]="form">
+      <select multiple formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectMultipleWithCompareFn {
+  compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) => {
+    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  };
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
 
 @Component({

@@ -44,6 +44,31 @@ abstract class HTMLCollection {
 /**
  * The accessor for writing a value and listening to changes on a select element.
  *
+ *  ### Caveat: Options selection
+ *
+ * Angular uses object identity to select options. It's possible for the identities of items
+ * to change while the data does not. This can happen, for example, if the items are produced
+ * from an RPC to the server, and that RPC is re-run. Even if the data hasn't changed, the
+ * second response will produce objects with different identities.
+ *
+ * To customize the default option comparison algorithm, `<select multiple>` supports `compareWith`
+ * input. `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
+ * If `compareWith` is given, Angular selects options by the return value of the function.
+ *
+ * #### Syntax
+ *
+ * ```
+ * <select multiple [compareWith]="compareFn"  [(ngModel)]="selectedCountries">
+ *     <option *ngFor="let country of countries" [ngValue]="country">
+ *         {{country.name}}
+ *     </option>
+ * </select>
+ *
+ * compareFn(c1: Country, c2: Country): boolean {
+ *     return c1 && c2 ? c1.id === c2.id : c1 === c2;
+ * }
+ * ```
+ *
  * @stable
  */
 @Directive({
@@ -61,6 +86,16 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   onChange = (_: any) => {};
   onTouched = () => {};
+
+  @Input()
+  set compareWith(fn: (o1: any, o2: any) => boolean) {
+    if (typeof fn !== 'function') {
+      throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
+    }
+    this._compareWith = fn;
+  }
+
+  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
@@ -119,7 +154,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   /** @internal */
   _getOptionId(value: any): string {
     for (const id of Array.from(this._optionMap.keys())) {
-      if (looseIdentical(this._optionMap.get(id)._value, value)) return id;
+      if (this._compareWith(this._optionMap.get(id)._value, value)) return id;
     }
     return null;
   }
