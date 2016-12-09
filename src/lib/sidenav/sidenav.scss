@@ -107,6 +107,7 @@ md-sidenav {
   bottom: 0;
   z-index: 3;
   min-width: 5%;
+  outline: 0;
 
   // TODO(kara): revisit scrolling behavior for sidenavs
   overflow-y: auto;

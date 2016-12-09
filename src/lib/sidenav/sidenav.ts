@@ -16,9 +16,18 @@ import {
   ViewChild
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Dir, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
+import {Dir, MdError, coerceBooleanProperty, DefaultStyleCompatibilityModeModule} from '../core';
 import {A11yModule, A11Y_PROVIDERS} from '../core/a11y/index';
 import {FocusTrap} from '../core/a11y/focus-trap';
+import {ESCAPE} from '../core/keyboard/keycodes';
+
+
+/** Exception thrown when two MdSidenav are matching the same side. */
+export class MdDuplicatedSidenavError extends MdError {
+  constructor(align: string) {
+    super(`A sidenav was already declared for 'align="${align}"'`);
+  }
+}
 
 
 /** Sidenav toggle promise result. */
@@ -40,6 +49,7 @@ export class MdSidenavToggleResult {
   template: '<focus-trap [disabled]="isFocusTrapDisabled"><ng-content></ng-content></focus-trap>',
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
+    '(keydown)': 'handleKeydown($event)',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.md-sidenav-closed]': '_isClosed',
@@ -51,6 +61,7 @@ export class MdSidenavToggleResult {
     '[class.md-sidenav-push]': '_modePush',
     '[class.md-sidenav-side]': '_modeSide',
     '[class.md-sidenav-invalid]': '!valid',
+    'tabIndex': '-1'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -128,7 +139,25 @@ export class MdSidenav implements AfterContentInit {
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
    *     If not available we do not hook on transitions.
    */
-  constructor(private _elementRef: ElementRef) {}
+  constructor(private _elementRef: ElementRef, private _renderer: Renderer) {
+    this.onOpen.subscribe(() => {
+      this._elementFocusedBeforeSidenavWasOpened = document.activeElement as HTMLElement;
+
+      if (!this.isFocusTrapDisabled) {
+        this._focusTrap.focusFirstTabbableElementWhenReady();
+      }
+    });
+
+    this.onClose.subscribe(() => {
+      if (this._elementFocusedBeforeSidenavWasOpened instanceof HTMLElement) {
+        this._renderer.invokeElementMethod(this._elementFocusedBeforeSidenavWasOpened, 'focus');
+      } else {
+        this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'blur');
+      }
+
+      this._elementFocusedBeforeSidenavWasOpened = null;
+    });
+  }
 
   ngAfterContentInit() {
     // This can happen when the sidenav is set to opened in the template and the transition
@@ -188,10 +217,6 @@ export class MdSidenav implements AfterContentInit {
       this.onCloseStart.emit();
     }
 
-    if (!this.isFocusTrapDisabled) {
-      this._focusTrap.focusFirstTabbableElementWhenReady();
-    }
-
     if (this._toggleAnimationPromise) {
       this._resolveToggleAnimationPromise(false);
     }
@@ -200,6 +225,16 @@ export class MdSidenav implements AfterContentInit {
           resolve(new MdSidenavToggleResult(isOpen ? 'open' : 'close', animationFinished));
     });
     return this._toggleAnimationPromise;
+  }
+
+  /**
+   * Handles the keyboard events.
+   */
+  handleKeydown(event: KeyboardEvent) {
+    if (event.keyCode === ESCAPE) {
+      this.close();
+      event.stopPropagation();
+    }
   }
 
   /**
@@ -255,6 +290,8 @@ export class MdSidenav implements AfterContentInit {
     }
     return 0;
   }
+
+  private _elementFocusedBeforeSidenavWasOpened: HTMLElement = null;
 }
 
 /**

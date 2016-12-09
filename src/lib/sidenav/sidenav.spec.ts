@@ -4,6 +4,7 @@ import {By} from '@angular/platform-browser';
 import {MdSidenav, MdSidenavModule, MdSidenavToggleResult} from './sidenav';
 import {A11yModule} from '../core/a11y/index';
 import {PlatformModule} from '../core/platform/platform';
+import {ESCAPE} from '../core/keyboard/keycodes';
 
 
 function endSidenavTransition(fixture: ComponentFixture<any>) {
@@ -235,6 +236,59 @@ describe('MdSidenav', () => {
       expect(testComponent.backdropClickedCount).toBe(1);
     }));
 
+    it('should close when pressing escape', fakeAsync(() => {
+      let fixture = TestBed.createComponent(BasicTestApp);
+      let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
+      let sidenav: MdSidenav = fixture.debugElement
+        .query(By.directive(MdSidenav)).componentInstance;
+
+      sidenav.open();
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(testComponent.openCount).toBe(1);
+      expect(testComponent.closeCount).toBe(0);
+
+      // Simulate pressing the escape key.
+      sidenav.handleKeydown({
+        keyCode: ESCAPE,
+        stopPropagation: () => {}
+      } as KeyboardEvent);
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(testComponent.closeCount).toBe(1);
+    }));
+
+    it('should restore focus to the trigger element on close', fakeAsync(() => {
+      let fixture = TestBed.createComponent(BasicTestApp);
+      let sidenav: MdSidenav = fixture.debugElement
+        .query(By.directive(MdSidenav)).componentInstance;
+      let trigger = document.createElement('button');
+
+      document.body.appendChild(trigger);
+      trigger.focus();
+      sidenav.open();
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+
+      sidenav.close();
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(document.activeElement)
+          .toBe(trigger, 'Expected focus to be restored to the trigger on close.');
+
+      trigger.parentNode.removeChild(trigger);
+    }));
   });
 
   describe('attributes', () => {
