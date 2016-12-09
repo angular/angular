@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 
 
 @Component({
@@ -6,6 +6,7 @@ import {Component} from '@angular/core';
   selector: 'sidenav-demo',
   templateUrl: 'sidenav-demo.html',
   styleUrls: ['sidenav-demo.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class SidenavDemo {
   side = 'start';

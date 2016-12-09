@@ -46,7 +46,11 @@ export class MdSidenavToggleResult {
 @Component({
   moduleId: module.id,
   selector: 'md-sidenav, mat-sidenav',
-  template: '<focus-trap [disabled]="isFocusTrapDisabled"><ng-content></ng-content></focus-trap>',
+  // TODO(mmalerba): move template to separate file.
+  template: `
+    <focus-trap class="md-sidenav-focus-trap" [disabled]="isFocusTrapDisabled">
+      <ng-content></ng-content>
+    </focus-trap>`,
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
     '(keydown)': 'handleKeydown($event)',
