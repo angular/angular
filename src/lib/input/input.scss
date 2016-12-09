@@ -138,6 +138,8 @@ md-input, md-textarea {
 
   [dir='rtl'] & {
     transform-origin: bottom right;
+    left: auto;
+    right: 0;
   }
 }
 
