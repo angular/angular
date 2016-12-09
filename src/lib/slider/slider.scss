@@ -94,7 +94,9 @@ md-slider {
 .md-slider-sliding {
   .md-slider-track-fill,
   .md-slider-thumb-container {
-    transition: none;
+    // Must use `transition-duration: 0ms` to disable animation rather than `transition: none`.
+    // On Mobile Safari `transition: none` causes the slider thumb to appear stuck.
+    transition-duration: 0ms;
   }
 }
 
