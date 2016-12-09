@@ -7,9 +7,14 @@ behavior) just like an Angular application developer would write.
 # Running the examples
 
 ```
-./build.sh                            # run only when framework code changes 
-./modules/@angular/examples/build.sh  # run when test change
-$(npm bin)/gulp serve-examples        # start server
+# # execute the following command only when framework code changes
+./build.sh
+
+# run when test change
+./modules/@angular/examples/build.sh  
+
+# start server
+$(npm bin)/gulp serve-examples
 ```
 
 navigate to [http://localhost:8001](http://localhost:8001)
@@ -17,10 +22,13 @@ navigate to [http://localhost:8001](http://localhost:8001)
 # Running the tests
 
 ```
-./build.sh                            # run only when framework code changes 
-./modules/@angular/examples/test.sh   # run to compile tests and run them
+ # run only when framework code changes
+./build.sh
+
+# run to compile tests and run them
+./modules/@angular/examples/test.sh
 ```
 
 NOTE: sometimes the http server does not exits properly and it retans the `8001` port.
- in Such a case you can use `lsof -i:8001` to see which process it is and then use `kill` 
+ in such a case you can use `lsof -i:8001` to see which process it is and then use `kill` 
  to remove it. (Or in single command: `lsof -i:8001 -t | xargs kill`)
