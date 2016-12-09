@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+
+export class NgIfContext {
+  constructor(public $implicit?: any) {}
+}
 
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
@@ -33,19 +37,48 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
  * @stable
  */
 @Directive({selector: '[ngIf]'})
-export class NgIf {
-  private _hasView = false;
+export class NgIf implements OnChanges {
+  @Input() ngIf: any;
+  @Input() ngIfElse: TemplateRef<NgIfContext>;
 
-  constructor(private _viewContainer: ViewContainerRef, private _template: TemplateRef<Object>) {}
+  private _ref: EmbeddedViewRef<NgIfContext>;
+  private _elseRef: EmbeddedViewRef<NgIfContext>;
 
-  @Input()
-  set ngIf(condition: any) {
-    if (condition && !this._hasView) {
-      this._hasView = true;
-      this._viewContainer.createEmbeddedView(this._template);
-    } else if (!condition && this._hasView) {
-      this._hasView = false;
+  constructor(
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgIfContext>) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('ngIf' in changes) {
+      // React on ngIf changes only once all inputs have been initialized
+      const condition: any = changes['ngIf'].currentValue;
+      if (condition) {
+        this._onTrue(condition);
+      } else {
+        this._onFalse();
+      }
+    }
+  }
+
+  private _onTrue(context: any): void {
+    if (this._ref) {
+      this._ref.context.$implicit = context;
+    } else {
+      if (this._elseRef) {
+        this._elseRef = null;
+        this._viewContainer.clear();
+      }
+      this._ref = this._viewContainer.createEmbeddedView(this._template, new NgIfContext(context));
+    }
+  }
+
+  private _onFalse(): void {
+    if (this._ref) {
+      this._ref = null;
       this._viewContainer.clear();
+    }
+
+    if (!this._elseRef && this.ngIfElse) {
+      this._elseRef = this._viewContainer.createEmbeddedView(this.ngIfElse, new NgIfContext());
     }
   }
 }
