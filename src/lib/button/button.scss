@@ -2,7 +2,7 @@
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
 
 @import 'button-base';
-@import '../a11y/_a11y';
+@import '../core/a11y/a11y';
 
 // TODO(kara): Replace attribute selectors with class selectors when possible
 [md-button], [md-icon-button] {

@@ -1,7 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/layout-common';
-@import '../a11y/_a11y';
+@import '../core/a11y/a11y';
 
 
 // Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
