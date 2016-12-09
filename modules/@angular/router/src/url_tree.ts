@@ -393,21 +393,23 @@ function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
   return res;
 }
 
-const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
+const SEGMENT_RE = /^[^\/()?;=&#]+/;
 function matchSegments(str: string): string {
   SEGMENT_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_RE = /^[^=\?&#]+/;
+const QUERY_PARAM_RE = /^[^=?&#]+/;
+// Return the name of the query param at the start of the string or an empty string
 function matchQueryParams(str: string): string {
   QUERY_PARAM_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_VALUE_RE = /^[^\?&#]+/;
+const QUERY_PARAM_VALUE_RE = /^[^?&#]+/;
+// Return the value of the query param at the start of the string or an empty string
 function matchUrlQueryParamValue(str: string): string {
   QUERY_PARAM_VALUE_RE.lastIndex = 0;
   const match = str.match(QUERY_PARAM_VALUE_RE);
