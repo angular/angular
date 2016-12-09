@@ -44,16 +44,18 @@ export class ViewAnimationMap {
 
   getAllPlayers(): AnimationPlayer[] { return this._allPlayers; }
 
-  remove(element: any, animationName: string): void {
+  remove(element: any, animationName: string, targetPlayer: AnimationPlayer = null): void {
     const playersByAnimation = this._map.get(element);
     if (playersByAnimation) {
       const player = playersByAnimation[animationName];
-      delete playersByAnimation[animationName];
-      const index = this._allPlayers.indexOf(player);
-      this._allPlayers.splice(index, 1);
+      if (!targetPlayer || player === targetPlayer) {
+        delete playersByAnimation[animationName];
+        const index = this._allPlayers.indexOf(player);
+        this._allPlayers.splice(index, 1);
 
-      if (Object.keys(playersByAnimation).length === 0) {
-        this._map.delete(element);
+        if (Object.keys(playersByAnimation).length === 0) {
+          this._map.delete(element);
+        }
       }
     }
   }

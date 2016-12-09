@@ -2121,6 +2121,43 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(kf[1]).toEqual([1, {'height': '333px', 'opacity': AUTO_STYLE, 'width': '200px'}]);
          });
     });
+
+    it('should not use the previous animation\'s styling if the previous animation has already finished',
+       fakeAsync(() => {
+         TestBed.overrideComponent(DummyIfCmp, {
+           set: {
+             template: `
+            <div [@myAnimation]="exp"></div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [
+                   state('a', style({color: 'red'})), state('b', style({color: 'red'})),
+                   transition('* => *', animate(1000))
+                 ])]
+           }
+         });
+
+         const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+         const fixture = TestBed.createComponent(DummyIfCmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = 'a';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         const animation1 = driver.log.shift();
+         expect(animation1['previousStyles']).toEqual({});
+
+         animation1['player'].finish();
+
+         cmp.exp = 'b';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         const animation2 = driver.log.shift();
+         expect(animation2['previousStyles']).toEqual({});
+       }));
   });
 
   describe('full animation integration tests', () => {
