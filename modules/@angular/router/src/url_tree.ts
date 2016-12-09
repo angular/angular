@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from './shared';
-import {forEach, shallowEqual} from './utils/collection';
+import {contains, forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -29,7 +29,7 @@ function equalQueryParams(
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
-  if (!equalPath(container.segments, containee.segments)) return false;
+  if (!equalSegments(container.segments, containee.segments)) return false;
   if (container.numberOfChildren !== containee.numberOfChildren) return false;
   for (const c in containee.children) {
     if (!container.children[c]) return false;
@@ -40,8 +40,7 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 
 function containsQueryParams(
     container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
-  return Object.keys(containee) <= Object.keys(container) &&
-      Object.keys(containee).every(key => containee[key] === container[key]);
+  return contains(container, containee);
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -236,6 +235,7 @@ export function equalPath(a: UrlSegment[], b: UrlSegment[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {
     if (a[i].path !== b[i].path) return false;
+    if (!contains(a[i].parameters, b[i].parameters)) return false;
   }
   return true;
 }

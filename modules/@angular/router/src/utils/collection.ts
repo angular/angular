@@ -41,6 +41,12 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   return true;
 }
 
+export function contains(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
+  const k1 = Object.keys(a);
+  const k2 = Object.keys(b);
+  return k2.length <= k1.length && k2.every(key => b[key] === a[key]);
+}
+
 export function flatten<T>(a: T[][]): T[] {
   const target: T[] = [];
   for (let i = 0; i < a.length; ++i) {

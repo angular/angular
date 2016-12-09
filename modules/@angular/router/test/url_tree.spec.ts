@@ -27,6 +27,30 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, true)).toBe(true);
       });
 
+      it('should return true when matrix params are the same', () => {
+        const t1 = serializer.parse('/one/two;id=15;foo=foo');
+        const t2 = serializer.parse('/one/two;id=15;foo=foo');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
+      it('should return true when matrix params are the same but in different order', () => {
+        const t1 = serializer.parse('/one/two;foo=foo;id=15');
+        const t2 = serializer.parse('/one/two;id=15;foo=foo');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
+      it('should return false when matrix params are not the same', () => {
+        const t1 = serializer.parse('/one/two;id=15;foo=foo');
+        const t2 = serializer.parse('/one/two;id=15');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when container does not have matrix params', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one/two;id=15');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
       it('should return false when queryParams are not the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1');
@@ -128,6 +152,42 @@ describe('UrlTree', () => {
       it('should return false when containee has more queryParams than container', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return true when matrix params are the same', () => {
+        const t1 = serializer.parse('/one/two;id=15;foo=foo');
+        const t2 = serializer.parse('/one/two;id=15;foo=foo');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when container contains containees matrix params', () => {
+        const t1 = serializer.parse('/one/two;id=15;foo=foo');
+        const t2 = serializer.parse('/one/two;id=15');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when containee does not have matrix params', () => {
+        const t1 = serializer.parse('/one/two;id=15;foo=foo');
+        const t2 = serializer.parse('/one/two');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return false when containee has but container does not have matrix params', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one/two;id=15');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return false when containee has different matrix params', () => {
+        const t1 = serializer.parse('/one/two;foo=foo');
+        const t2 = serializer.parse('/one/two;id=15');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return false when containee has more matrix params than container', () => {
+        const t1 = serializer.parse('/one/two;id=15');
+        const t2 = serializer.parse('/one/two;id=15;foo=foo');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
     });
