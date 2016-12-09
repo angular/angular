@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
+import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type} from '@angular/core';
+
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {stringify} from './facade/lang';
@@ -268,8 +269,10 @@ export class TestBed implements Injector {
         }
       }
     }
-    this._moduleRef =
-        this._moduleWithComponentFactories.ngModuleFactory.create(this.platform.injector);
+    const ngZone = new NgZone({enableLongStackTrace: true});
+    const ngZoneInjector = ReflectiveInjector.resolveAndCreate(
+        [{provide: NgZone, useValue: ngZone}], this.platform.injector);
+    this._moduleRef = this._moduleWithComponentFactories.ngModuleFactory.create(ngZoneInjector);
     this._instantiated = true;
   }
 

@@ -44,7 +44,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
   visitElement(ast: ElementAst, parent: CompileElement): any {
     const compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
     const hasEvents = bindOutputs(ast.outputs, ast.directives, compileElement, true);
-    bindRenderInputs(ast.inputs, hasEvents, compileElement);
+    bindRenderInputs(ast.inputs, ast.outputs, hasEvents, compileElement);
     ast.directives.forEach((directiveAst, dirIndex) => {
       const directiveWrapperInstance =
           compileElement.directiveWrapperInstance.get(directiveAst.directive.type.reference);

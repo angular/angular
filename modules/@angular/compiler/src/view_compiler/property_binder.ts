@@ -17,7 +17,7 @@ import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {BoundElementPropertyAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
+import {BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
 import {DetectChangesVars} from './constants';
@@ -41,7 +41,8 @@ export function bindRenderText(
 }
 
 export function bindRenderInputs(
-    boundProps: BoundElementPropertyAst[], hasEvents: boolean, compileElement: CompileElement) {
+    boundProps: BoundElementPropertyAst[], boundOutputs: BoundEventAst[], hasEvents: boolean,
+    compileElement: CompileElement) {
   const view = compileElement.view;
   const renderNode = compileElement.renderNode;
 
@@ -67,7 +68,7 @@ export function bindRenderInputs(
       case PropertyBindingType.Animation:
         compileMethod = view.animationBindingsMethod;
         const {updateStmts, detachStmts} = triggerAnimation(
-            o.THIS_EXPR, o.THIS_EXPR, boundProp,
+            o.THIS_EXPR, o.THIS_EXPR, boundProp, boundOutputs,
             (hasEvents ? o.THIS_EXPR.prop(getHandleEventMethodName(compileElement.nodeIndex)) :
                          o.importExpr(createIdentifier(Identifiers.noop)))
                 .callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR]),

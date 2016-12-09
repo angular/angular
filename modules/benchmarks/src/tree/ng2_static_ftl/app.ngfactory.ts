@@ -6,6 +6,7 @@
 
 import * as import2 from '@angular/common/src/common_module';
 import * as import5 from '@angular/common/src/localization';
+import * as import34 from '@angular/core/src/animation/animation_queue';
 import * as import6 from '@angular/core/src/application_init';
 import * as import3 from '@angular/core/src/application_module';
 import * as import8 from '@angular/core/src/application_ref';
@@ -70,6 +71,7 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   __SharedStylesHost_26: any;
   __Title_27: import16.Title;
   __TRANSLATIONS_FORMAT_28: any;
+  __AnimationQueue_29: import34.AnimationQueue;
   constructor(parent: import17.Injector) {
     super(parent, [import18.TreeRootComponentNgFactory], [import18.TreeRootComponentNgFactory]);
   }
@@ -173,9 +175,16 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
   }
   get _ViewUtils_23(): import15.ViewUtils {
     if ((this.__ViewUtils_23 == (null as any))) {
-      (this.__ViewUtils_23 = new import15.ViewUtils(this._RootRenderer_20, this._Sanitizer_22));
+      (this.__ViewUtils_23 = new import15.ViewUtils(
+           this._RootRenderer_20, this._Sanitizer_22, this._AnimationQueue_29));
     }
     return this.__ViewUtils_23;
+  }
+  get _AnimationQueue_29(): import34.AnimationQueue {
+    if ((this.__AnimationQueue_29 == (null as any))) {
+      (this.__AnimationQueue_29 = new import34.AnimationQueue(this.parent.get(import22.NgZone)));
+    }
+    return this.__AnimationQueue_29;
   }
   get _IterableDiffers_24(): any {
     if ((this.__IterableDiffers_24 == (null as any))) {
