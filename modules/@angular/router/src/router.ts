@@ -13,7 +13,6 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
-import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
@@ -148,7 +147,6 @@ export class NavigationStart {
   constructor(
       /** @docsNotRequired */
       public id: number,
-
       /** @docsNotRequired */
       public url: string) {}
 
@@ -166,10 +164,8 @@ export class NavigationEnd {
   constructor(
       /** @docsNotRequired */
       public id: number,
-
       /** @docsNotRequired */
       public url: string,
-
       /** @docsNotRequired */
       public urlAfterRedirects: string) {}
 
@@ -189,10 +185,8 @@ export class NavigationCancel {
   constructor(
       /** @docsNotRequired */
       public id: number,
-
       /** @docsNotRequired */
       public url: string,
-
       /** @docsNotRequired */
       public reason: string) {}
 
@@ -210,10 +204,8 @@ export class NavigationError {
   constructor(
       /** @docsNotRequired */
       public id: number,
-
       /** @docsNotRequired */
       public url: string,
-
       /** @docsNotRequired */
       public error: any) {}
 
@@ -233,7 +225,6 @@ export class RoutesRecognized {
   constructor(
       /** @docsNotRequired */
       public id: number,
-
       /** @docsNotRequired */
       public url: string,
       /** @docsNotRequired */
@@ -282,7 +273,7 @@ type NavigationParams = {
   resolve: any,
   reject: any,
   promise: Promise<boolean>,
-  imperative: boolean
+  imperative: boolean,
 };
 
 
@@ -312,9 +303,8 @@ export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
 
-  private navigations: BehaviorSubject<NavigationParams> =
-      new BehaviorSubject<NavigationParams>(null);
-  private routerEvents: Subject<Event> = new Subject<Event>();
+  private navigations = new BehaviorSubject<NavigationParams>(null);
+  private routerEvents = new Subject<Event>();
 
   private currentRouterState: RouterState;
   private locationSubscription: Subscription;
@@ -353,7 +343,6 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
     this.configLoader = new RouterConfigLoader(loader, compiler);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
-
     this.processNavigations();
   }
 
@@ -403,19 +392,13 @@ export class Router {
     }
   }
 
-  /**
-   * Returns the current route state.
-   */
+  /** The current route state */
   get routerState(): RouterState { return this.currentRouterState; }
 
-  /**
-   * Returns the current url.
-   */
+  /** The current url */
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
-  /**
-   * Returns an observable of route events
-   */
+  /** An observable of router events */
   get events(): Observable<Event> { return this.routerEvents; }
 
   /**
@@ -428,7 +411,7 @@ export class Router {
    *  { path: 'team/:id', component: TeamCmp, children: [
    *    { path: 'simple', component: SimpleCmp },
    *    { path: 'user/:name', component: UserCmp }
-   *  ] }
+   *  ]}
    * ]);
    * ```
    */
@@ -437,14 +420,10 @@ export class Router {
     this.config = config;
   }
 
-  /**
-   * @docsNotRequired
-   */
+  /** @docsNotRequired */
   ngOnDestroy() { this.dispose(); }
 
-  /**
-   * Disposes of the router.
-   */
+  /** Disposes of the router */
   dispose(): void {
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
@@ -496,7 +475,7 @@ export class Router {
   createUrlTree(
       commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
-    const a = relativeTo ? relativeTo : this.routerState.root;
+    const a = relativeTo || this.routerState.root;
     const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
@@ -506,9 +485,9 @@ export class Router {
    * Navigate based on the provided url. This navigation is always absolute.
    *
    * Returns a promise that:
-   * - is resolved with 'true' when navigation succeeds
-   * - is resolved with 'false' when navigation fails
-   * - is rejected when an error happens
+   * - resolves to 'true' when navigation succeeds,
+   * - resolves to 'false' when navigation fails,
+   * - is rejected when an error happens.
    *
    * ### Usage
    *
@@ -527,11 +506,11 @@ export class Router {
     if (url instanceof UrlTree) {
       return this.scheduleNavigation(
           this.urlHandlingStrategy.merge(url, this.rawUrlTree), true, extras);
-    } else {
-      const urlTree = this.urlSerializer.parse(url);
-      return this.scheduleNavigation(
-          this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), true, extras);
     }
+
+    const urlTree = this.urlSerializer.parse(url);
+    return this.scheduleNavigation(
+        this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), true, extras);
   }
 
   /**
@@ -539,9 +518,9 @@ export class Router {
    * If no starting route is provided, the navigation is absolute.
    *
    * Returns a promise that:
-   * - is resolved with 'true' when navigation succeeds
-   * - is resolved with 'false' when navigation fails
-   * - is rejected when an error happens
+   * - resolves to 'true' when navigation succeeds,
+   * - resolves to 'false' when navigation fails,
+   * - is rejected when an error happens.
    *
    * ### Usage
    *
@@ -549,11 +528,11 @@ export class Router {
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route});
    *
    * // Navigate without updating the URL
-   * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true });
+   * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true});
    * ```
    *
-   * In opposite to `navigateByUrl`, `navigate` always takes a delta
-   * that is applied to the current URL.
+   * In opposite to `navigateByUrl`, `navigate` always takes a delta that is applied to the current
+   * URL.
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
@@ -563,19 +542,13 @@ export class Router {
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
-  /**
-   * Serializes a {@link UrlTree} into a string.
-   */
+  /** Serializes a {@link UrlTree} into a string */
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
-  /**
-   * Parses a string into a {@link UrlTree}.
-   */
+  /** Parses a string into a {@link UrlTree} */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
-  /**
-   * Returns if the url is activated or not.
-   */
+  /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
     if (url instanceof UrlTree) {
       return containsTree(this.currentUrlTree, url, exact);
