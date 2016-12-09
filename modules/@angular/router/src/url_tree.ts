@@ -370,8 +370,11 @@ function serializeParams(params: {[key: string]: string}): string {
   return pairs(params).map(p => `;${encode(p.first)}=${encode(p.second)}`).join('');
 }
 
-function serializeQueryParams(params: {[key: string]: string}): string {
-  const strs = pairs(params).map(p => `${encode(p.first)}=${encode(p.second)}`);
+function serializeQueryParams(params: {[key: string]: any}): string {
+  const strs = pairs(params).map(
+      p => Array.isArray(p.second) ?
+          p.second.map(v => `${encode(p.first)}=${encode(v)}`).join('&') :
+          `${encode(p.first)}=${encode(p.second)}`);
   return strs.length > 0 ? `?${strs.join("&")}` : '';
 }
 
@@ -549,7 +552,13 @@ class UrlParser {
         this.capture(value);
       }
     }
-    params[decode(key)] = decode(value);
+
+    if (params[key] != null) {
+      params[decode(key)] = Array.isArray(params[key]) ? params[key].concat([decode(value)]) :
+                                                         [params[key], decode(value)];
+    } else {
+      params[decode(key)] = decode(value);
+    }
   }
 
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegmentGroup} {
