@@ -24,5 +24,26 @@ export function main() {
       const options2 = options1.merge(new RequestOptions({method: RequestMethod.Delete}));
       expect(options2.method).toBe(RequestMethod.Delete);
     });
+
+    it('should accept search params as object', () => {
+      const params = {a: 1, b: 'text', c: [1, 2, '3']};
+      const options = new RequestOptions({params});
+
+      expect(options.params.paramsMap.size).toBe(3);
+      expect(options.params.paramsMap.get('a')).toEqual(['1']);
+      expect(options.params.paramsMap.get('b')).toEqual(['text']);
+      expect(options.params.paramsMap.get('c')).toEqual(['1', '2', '3']);
+    });
+
+    it('should merge search params as object', () => {
+      const options1 = new BaseRequestOptions();
+      const params = {a: 1, b: 'text', c: [1, 2, '3']};
+      const options2 = options1.merge(new RequestOptions({params}));
+
+      expect(options2.params.paramsMap.size).toBe(3);
+      expect(options2.params.paramsMap.get('a')).toEqual(['1']);
+      expect(options2.params.paramsMap.get('b')).toEqual(['text']);
+      expect(options2.params.paramsMap.get('c')).toEqual(['1', '2', '3']);
+    });
   });
 }

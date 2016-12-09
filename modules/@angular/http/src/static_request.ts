@@ -76,15 +76,15 @@ export class Request extends Body {
     // TODO: assert that url is present
     const url = requestOptions.url;
     this.url = requestOptions.url;
-    if (requestOptions.search) {
-      const search = requestOptions.search.toString();
-      if (search.length > 0) {
+    if (requestOptions.params) {
+      const params = requestOptions.params.toString();
+      if (params.length > 0) {
         let prefix = '?';
         if (this.url.indexOf('?') != -1) {
           prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
         }
         // TODO: just delete search-query-looking string in url?
-        this.url = url + prefix + search;
+        this.url = url + prefix + params;
       }
     }
     this._body = requestOptions.body;
