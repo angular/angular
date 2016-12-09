@@ -70,7 +70,7 @@ export class DirectiveWrapperCompiler {
       addCheckInputMethod(inputFieldName, builder);
     });
     addNgDoCheckMethod(builder);
-    addCheckHostMethod(hostParseResult.hostProps, builder);
+    addCheckHostMethod(hostParseResult.hostProps, hostParseResult.hostListeners, builder);
     addHandleEventMethod(hostParseResult.hostListeners, builder);
     addSubscribeMethod(dirMeta, builder);
 
@@ -235,7 +235,8 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
 }
 
 function addCheckHostMethod(
-    hostProps: BoundElementPropertyAst[], builder: DirectiveWrapperBuilder) {
+    hostProps: BoundElementPropertyAst[], hostEvents: BoundEventAst[],
+    builder: DirectiveWrapperBuilder) {
   const stmts: o.Statement[] = [];
   const methodParams: o.FnParam[] = [
     new o.FnParam(
@@ -262,7 +263,7 @@ function addCheckHostMethod(
     let checkBindingStmts: o.Statement[];
     if (hostProp.isAnimation) {
       const {updateStmts, detachStmts} = triggerAnimation(
-          VIEW_VAR, COMPONENT_VIEW_VAR, hostProp,
+          VIEW_VAR, COMPONENT_VIEW_VAR, hostProp, hostEvents,
           o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME)
               .or(o.importExpr(createIdentifier(Identifiers.noop))),
           RENDER_EL_VAR, evalResult.currValExpr, field.expression);

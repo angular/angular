@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationQueue} from '../animation/animation_queue';
 import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
 import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
@@ -14,17 +15,21 @@ import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
 import {VERSION} from '../version';
+import {NgZone} from '../zone/ng_zone';
 
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
-import {ViewContainer} from './view_container';
 
 @Injectable()
 export class ViewUtils {
   sanitizer: Sanitizer;
   private _nextCompTypeId: number = 0;
 
-  constructor(private _renderer: RootRenderer, sanitizer: Sanitizer) { this.sanitizer = sanitizer; }
+  constructor(
+      private _renderer: RootRenderer, sanitizer: Sanitizer,
+      public animationQueue: AnimationQueue) {
+    this.sanitizer = sanitizer;
+  }
 
   /** @internal */
   renderComponent(renderComponentType: RenderComponentType): Renderer {

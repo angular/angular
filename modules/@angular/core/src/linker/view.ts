@@ -63,7 +63,7 @@ export abstract class AppView<T> {
       public viewUtils: ViewUtils, public parentView: AppView<any>, public parentIndex: number,
       public parentElement: any, public cdMode: ChangeDetectorStatus,
       public declaredViewContainer: ViewContainer = null) {
-    this.ref = new ViewRef_(this);
+    this.ref = new ViewRef_(this, viewUtils.animationQueue);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
     } else {
@@ -74,7 +74,7 @@ export abstract class AppView<T> {
 
   get animationContext(): AnimationViewContext {
     if (!this._animationContext) {
-      this._animationContext = new AnimationViewContext();
+      this._animationContext = new AnimationViewContext(this.viewUtils.animationQueue);
     }
     return this._animationContext;
   }
