@@ -1031,8 +1031,9 @@ describe('Integration', () => {
          advance(fixture);
          expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
-         const native = fixture.nativeElement.querySelector('button');
-         native.click();
+         const button = fixture.nativeElement.querySelector('button');
+         expect(button.getAttribute('tabindex')).toEqual('0');
+         button.click();
          advance(fixture);
 
          expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');

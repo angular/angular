@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Directive, HostBinding, HostListener, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {NavigationEnd, Router} from '../router';
@@ -89,7 +89,13 @@ export class RouterLink {
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+      private router: Router, private route: ActivatedRoute,
+      @Attribute('tabindex') tabIndex: string, renderer: Renderer, el: ElementRef) {
+    if (tabIndex == null) {
+      renderer.setElementAttribute(el.nativeElement, 'tabindex', '0');
+    }
+  }
 
   @Input()
   set routerLink(data: any[]|string) {
