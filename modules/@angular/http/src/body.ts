@@ -47,7 +47,7 @@ export abstract class Body {
       return String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
     }
 
-    if (this._body === null) {
+    if (this._body == null) {
       return '';
     }
 
