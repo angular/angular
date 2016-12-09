@@ -18,7 +18,7 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
 
-import {Route, Routes, UrlMatchResult} from './config';
+import {Route, Routes} from './config';
 import {LoadedRouterConfig, RouterConfigLoader} from './router_config_loader';
 import {NavigationCancelingError, PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
@@ -53,7 +53,6 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
       (obs: Observer<LoadedRouterConfig>) => obs.error(new NavigationCancelingError(
           `Cannot load children because the guard of the route "path: '${route.path}'" returned false`)));
 }
-
 
 export function applyRedirects(
     injector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
