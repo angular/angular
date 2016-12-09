@@ -9,7 +9,7 @@
 import {ActivatedRoute} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {forEach, shallowEqual, last} from './utils/collection';
+import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
@@ -29,8 +29,7 @@ export function createUrlTree(
   const segmentGroup = startingPosition.processChildren ?
       updateSegmentGroupChildren(
           startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-      updateSegmentGroup(
-          startingPosition.segmentGroup, startingPosition.index, nav.commands);
+      updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
   return tree(startingPosition.segmentGroup, segmentGroup, urlTree, queryParams, fragment);
 }
 
@@ -65,7 +64,8 @@ function replaceSegment(
 }
 
 class Navigation {
-  constructor(public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {
+  constructor(
+      public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new Error('Root segment cannot have matrix parameters');
     }
@@ -148,8 +148,8 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
   const index = route.snapshot._lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
-
+  return createPositionApplyingDoubleDots(
+      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(

@@ -29,6 +29,6 @@ navigate to [http://localhost:8001](http://localhost:8001)
 ./modules/@angular/examples/test.sh
 ```
 
-NOTE: sometimes the http server does not exits properly and it retans the `8001` port.
+NOTE: sometimes the http server does not exit properly and it retains the `8001` port.
  in such a case you can use `lsof -i:8001` to see which process it is and then use `kill` 
  to remove it. (Or in single command: `lsof -i:8001 -t | xargs kill`)

@@ -20,7 +20,7 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
   }
 
   return containsQueryParams(container.queryParams, containee.queryParams) &&
-        containsSegmentGroup(container.root, containee.root);
+      containsSegmentGroup(container.root, containee.root);
 }
 
 function equalQueryParams(
