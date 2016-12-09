@@ -18,7 +18,7 @@ import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {SyncAsyncResult} from './util';
+import {SyncAsyncResult, UserError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   componentType: any;
@@ -70,7 +70,7 @@ export class DirectiveNormalizer {
     } else if (prenormData.templateUrl) {
       normalizedTemplateAsync = this.normalizeTemplateAsync(prenormData);
     } else {
-      throw new Error(
+      throw new UserError(
           `No template specified for component ${stringify(prenormData.componentType)}`);
     }
 
@@ -104,7 +104,7 @@ export class DirectiveNormalizer {
         template, stringify(prenomData.componentType), false, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
-      throw new Error(`Template parse errors:\n${errorString}`);
+      throw new UserError(`Template parse errors:\n${errorString}`);
     }
     const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
       styles: prenomData.styles,

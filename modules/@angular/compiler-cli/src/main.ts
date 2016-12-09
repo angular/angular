@@ -12,12 +12,13 @@
 import 'reflect-metadata';
 
 import * as ts from 'typescript';
-import * as tsc from '@angular/tsc-wrapped';
+import {AngularCompilerOptions, NgcCliOptions, main as tscMain, UserError as tscUserError} from '@angular/tsc-wrapped';
+import {UserError as compilerUserError} from '@angular/compiler';
 
 import {CodeGenerator} from './codegen';
 
 function codegen(
-    ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
+    ngOptions: AngularCompilerOptions, cliOptions: NgcCliOptions, program: ts.Program,
     host: ts.CompilerHost) {
   return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
 }
@@ -25,10 +26,10 @@ function codegen(
 export function main(
     args: any, consoleError: (s: string) => void = console.error): Promise<number> {
   const project = args.p || args.project || '.';
-  const cliOptions = new tsc.NgcCliOptions(args);
+  const cliOptions = new NgcCliOptions(args);
 
-  return tsc.main(project, cliOptions, codegen).then(() => 0).catch(e => {
-    if (e instanceof tsc.UserError) {
+  return tscMain(project, cliOptions, codegen).then(() => 0).catch(e => {
+    if (e instanceof tscUserError || e instanceof compilerUserError) {
       consoleError(e.message);
       return Promise.resolve(1);
     } else {
