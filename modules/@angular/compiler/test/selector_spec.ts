@@ -223,6 +223,11 @@ export function main() {
       expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
     });
 
+    it('should match * with :not selector', () => {
+      matcher.addSelectables(CssSelector.parse(':not([a])'), 1);
+      expect(matcher.match(CssSelector.parse('div')[0], () => {})).toEqual(true);
+    });
+
     it('should match with multiple :not selectors', () => {
       matcher.addSelectables(s1 = CssSelector.parse('div:not([a]):not([b])'), 1);
       expect(matcher.match(CssSelector.parse('div[a]')[0], selectableCollector)).toBe(false);
