@@ -238,7 +238,8 @@ export declare abstract class RouteReuseStrategy {
 }
 
 /** @stable */
-export declare class RouterLink {
+export declare class RouterLink implements OnChanges, OnDestroy {
+    active: boolean;
     fragment: string;
     preserveFragment: boolean;
     preserveQueryParams: boolean;
@@ -250,6 +251,8 @@ export declare class RouterLink {
     skipLocationChange: boolean;
     urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute);
+    ngOnChanges(changes: {}): void;
+    ngOnDestroy(): void;
     onClick(): boolean;
 }
 
@@ -270,6 +273,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 
 /** @stable */
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
+    active: boolean;
     fragment: string;
     href: string;
     preserveFragment: boolean;

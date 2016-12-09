@@ -80,7 +80,7 @@ import {UrlTree} from '../url_tree';
  * @stable
  */
 @Directive({selector: ':not(a)[routerLink]'})
-export class RouterLink {
+export class RouterLink implements OnChanges, OnDestroy {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
@@ -88,13 +88,20 @@ export class RouterLink {
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
+  private subscription: Subscription;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  @HostBinding('class.router-link-active') active: boolean = false;
+
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.subscription = router.events.subscribe(s => {
+      if (s instanceof NavigationEnd) {
+        this.updateActiveStatus();
+      }
+    });
+  }
 
   @Input()
-  set routerLink(data: any[]|string) {
-    this.commands = Array.isArray(data) ? data : [data];
-  }
+  set routerLink(data: any[]|string) { this.commands = Array.isArray(data) ? data : [data]; }
 
   @HostListener('click', [])
   onClick(): boolean {
@@ -106,6 +113,9 @@ export class RouterLink {
     return true;
   }
 
+  ngOnChanges(changes: {}): void { this.updateActiveStatus(); }
+  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+
   get urlTree(): UrlTree {
     return this.router.createUrlTree(this.commands, {
       relativeTo: this.route,
@@ -114,6 +124,12 @@ export class RouterLink {
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
+  }
+
+  private updateActiveStatus(): void {
+    if (this.router.navigated) {
+      this.active = this.router.isActive(this.urlTree, false);
+    }
   }
 }
 
@@ -142,6 +158,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
+  @HostBinding('class.router-link-active') active: boolean = false;
+
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
@@ -153,9 +171,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(data: any[]|string) {
-    this.commands = Array.isArray(data) ? data : [data];
-  }
+  set routerLink(data: any[]|string) { this.commands = Array.isArray(data) ? data : [data]; }
 
   ngOnChanges(changes: {}): void { this.updateTargetUrlAndHref(); }
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
@@ -179,7 +195,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    const urlTree = this.urlTree;
+    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(urlTree));
+    if (this.router.navigated) {
+      this.active = this.router.isActive(urlTree, false);
+    }
   }
 
   get urlTree(): UrlTree {
