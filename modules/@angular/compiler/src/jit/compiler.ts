@@ -213,11 +213,11 @@ export class JitCompiler implements Compiler {
       const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
 
-      const hostClass = {
-        overriddenName: `${identifierName(compMeta.type)}_Host`,
-      };
+      class HostClass {
+        static overriddenName = `${identifierName(compMeta.type)}_Host`;
+      }
 
-      const hostMeta = createHostComponentMeta(hostClass, compMeta);
+      const hostMeta = createHostComponentMeta(HostClass, compMeta);
       compiledTemplate = new CompiledTemplate(
           true, compMeta.selector, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
