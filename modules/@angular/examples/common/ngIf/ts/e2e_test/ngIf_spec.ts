@@ -20,7 +20,7 @@ describe('ngIf', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('ng-if-simple', () => {
-    var comp = 'ng-if-simple'
+    let comp = 'ng-if-simple';
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
@@ -31,7 +31,7 @@ describe('ngIf', () => {
   });
 
   describe('ng-if-else', () => {
-    var comp = 'ng-if-else'
+    let comp = 'ng-if-else';
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
@@ -43,7 +43,7 @@ describe('ngIf', () => {
   });
 
   describe('ng-if-then-else', () => {
-    var comp = 'ng-if-then-else'
+    let comp = 'ng-if-then-else';
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
@@ -59,7 +59,7 @@ describe('ngIf', () => {
   });
 
   describe('ng-if-let', () => {
-    var comp = 'ng-if-let'
+    let comp = 'ng-if-let';
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
