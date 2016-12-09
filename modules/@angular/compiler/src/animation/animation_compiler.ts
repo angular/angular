@@ -199,8 +199,9 @@ class _AnimationBuilder implements AnimationAstVisitor {
                         .set(_ANIMATION_FACTORY_VIEW_CONTEXT.callMethod(
                             'getAnimationPlayers',
                             [
-                              _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+                              _ANIMATION_FACTORY_ELEMENT_VAR,
                               _ANIMATION_NEXT_STATE_VAR.equals(o.literal(EMPTY_STATE))
+                                  .conditional(o.NULL_EXPR, o.literal(this.animationName))
                             ]))
                         .toDeclStmt());
 
