@@ -365,7 +365,9 @@ export class Router {
     this.rootComponentType = rootComponentType;
     // TODO: vsavkin router 4.0 should make the root component set to null
     // this will simplify the lifecycle of the router.
-    this.currentRouterState.root.component = this.rootComponentType;
+    if (this.currentRouterState.root) {
+      this.currentRouterState.root.component = this.rootComponentType;
+    }
   }
 
   /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+import {ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, OnDestroy, OnInit, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
 
 import {RouterOutletMap} from '../router_outlet_map';
 import {ActivatedRoute} from '../router_state';
@@ -38,18 +38,28 @@ import {PRIMARY_OUTLET} from '../shared';
  * @stable
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet implements OnDestroy {
+export class RouterOutlet implements OnInit, OnDestroy {
   private activated: ComponentRef<any>;
   private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
+  private _name: string;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
+  @Input()
+  set name(value: string) { this.registerOutlet(value); }
+
+  get name() { return this._name; }
+
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
-    parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
+      private resolver: ComponentFactoryResolver) {}
+
+  ngOnInit(): void {
+    if (!this._name) {
+      this.registerOutlet(PRIMARY_OUTLET);
+    }
   }
 
   ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
@@ -111,5 +121,13 @@ export class RouterOutlet implements OnDestroy {
     this.activated.changeDetectorRef.detectChanges();
 
     this.activateEvents.emit(this.activated.instance);
+  }
+
+  private registerOutlet(name: string): void {
+    if (this._name && this.parentOutletMap._outlets[this._name] === this) {
+      this.parentOutletMap.removeOutlet(this._name);
+    }
+    this._name = name ? name : PRIMARY_OUTLET;
+    this.parentOutletMap.registerOutlet(this._name, this);
   }
 }

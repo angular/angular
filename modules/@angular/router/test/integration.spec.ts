@@ -699,6 +699,47 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
      })));
 
+  it('should work with dynamic outlets',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, DynamicOutletsCmp);
+
+       router.resetConfig([
+         {
+           path: 'parent/:id',
+           children: [
+             {path: 'simple', component: SimpleCmp},
+             {path: 'user/:name', component: UserCmp, outlet: 'right'}
+           ]
+         },
+         {path: 'user/:name', component: UserCmp}
+       ]);
+
+
+       // navigate to a componentless route
+       router.navigateByUrl('/parent/11/(simple//right:user/victor)');
+       advance(fixture);
+       expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
+
+       // navigate to the same route with different params (reuse)
+       router.navigateByUrl('/parent/22/(simple//right:user/fedor)');
+       advance(fixture);
+       expect(location.path()).toEqual('/parent/22/(simple//right:user/fedor)');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user fedor]');
+
+       // navigate to a normal route (check deactivation)
+       router.navigateByUrl('/user/victor');
+       advance(fixture);
+       expect(location.path()).toEqual('/user/victor');
+       expect(fixture.nativeElement).toHaveText('primary [user victor] right []');
+
+       // navigate back to a componentless route
+       router.navigateByUrl('/parent/11/(simple//right:user/victor)');
+       advance(fixture);
+       expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
+       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
+     })));
+
   it('should not deactivate aux routes when navigating from a componentless routes',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
        const fixture = createRoot(router, TwoOutletsCmp);
@@ -2645,7 +2686,6 @@ class TeamCmp {
 class TwoOutletsCmp {
 }
 
-
 @Component({selector: 'user-cmp', template: `user {{name | async}}`})
 class UserCmp {
   name: Observable<string>;
@@ -2737,6 +2777,13 @@ class RootCmp {
 class RootCmpWithTwoOutlets {
 }
 
+@Component({
+  selector: 'dynamic-outlets-cmp',
+  template:
+      `primary [<router-outlet></router-outlet>] right [<router-outlet [name]="'right'"></router-outlet>]`
+})
+class DynamicOutletsCmp {
+}
 
 function advance(fixture: ComponentFixture<any>): void {
   tick();
@@ -2776,7 +2823,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DynamicOutletsCmp
   ],
 
 
@@ -2802,7 +2850,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DynamicOutletsCmp,
   ],
 
 
@@ -2829,7 +2878,8 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
+    DynamicOutletsCmp
   ]
 })
 class TestModule {
