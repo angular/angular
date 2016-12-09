@@ -34,7 +34,7 @@ task(':publish:whoami', execTask('npm', ['whoami'], {
 task(':publish:logout', execTask('npm', ['logout']));
 
 
-function _execNpmPublish(label: string): Promise<void> {
+function _execNpmPublish(label: string): Promise<{}> {
   const packageDir = DIST_COMPONENTS_ROOT;
   if (!statSync(packageDir).isDirectory()) {
     return;
