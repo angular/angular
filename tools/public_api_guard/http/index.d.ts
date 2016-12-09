@@ -139,11 +139,12 @@ export declare class RequestOptions {
     body: any;
     headers: Headers;
     method: RequestMethod | string;
+    params: URLSearchParams;
     responseType: ResponseContentType;
-    search: URLSearchParams;
+    /** @deprecated */ search: URLSearchParams;
     url: string;
     withCredentials: boolean;
-    constructor({method, headers, body, url, search, withCredentials, responseType}?: RequestOptionsArgs);
+    constructor({method, headers, body, url, search, params, withCredentials, responseType}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
@@ -152,8 +153,13 @@ export interface RequestOptionsArgs {
     body?: any;
     headers?: Headers;
     method?: string | RequestMethod;
+    params?: string | URLSearchParams | {
+        [key: string]: any | any[];
+    };
     responseType?: ResponseContentType;
-    search?: string | URLSearchParams;
+    /** @deprecated */ search?: string | URLSearchParams | {
+        [key: string]: any | any[];
+    };
     url?: string;
     withCredentials?: boolean;
 }
