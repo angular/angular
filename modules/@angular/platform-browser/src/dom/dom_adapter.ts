@@ -60,8 +60,8 @@ export abstract class DomAdapter {
       el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */): any
       /** TODO #9100 */;
   abstract onAndCancel(
-      el: any /** TODO #9100 */, evt: any /** TODO #9100 */,
-      listener: any /** TODO #9100 */): Function;
+      el: any /** TODO #9100 */, evt: any /** TODO #9100 */, listener: any /** TODO #9100 */,
+      useCapture?: boolean): Function;
   abstract dispatchEvent(el: any /** TODO #9100 */, evt: any /** TODO #9100 */): any
       /** TODO #9100 */;
   abstract createMouseEvent(eventType: any /** TODO #9100 */): any;

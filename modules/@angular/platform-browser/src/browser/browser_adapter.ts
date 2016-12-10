@@ -114,11 +114,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
-  onAndCancel(el: Node, evt: any, listener: any): Function {
-    el.addEventListener(evt, listener, false);
-    // Needed to follow Dart's subscription semantic, until fix of
-    // https://code.google.com/p/dart/issues/detail?id=17406
-    return () => { el.removeEventListener(evt, listener, false); };
+  onAndCancel(el: Node, evt: any, listener: any, useCapture: boolean = false): Function {
+    el.addEventListener(evt, listener, useCapture);
+    return () => { el.removeEventListener(evt, listener, useCapture); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
   createMouseEvent(eventType: string): MouseEvent {
