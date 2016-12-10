@@ -50,6 +50,14 @@ export function main() {
          () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
     });
 
+    describe('requiredTrue', () => {
+      it('should error on false',
+         () => expect(Validators.requiredTrue(new FormControl(false))).toEqual({'required': true}));
+
+      it('should not error on true',
+         () => expect(Validators.requiredTrue(new FormControl(true))).toBeNull());
+    });
+
     describe('minLength', () => {
       it('should not error on an empty string',
          () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });

@@ -39,7 +39,8 @@ export function main() {
           ValidationBindingsForm,
           UniqLoginValidator,
           UniqLoginWrapper,
-          NestedFormGroupComp
+          NestedFormGroupComp,
+          FormControlCheckboxRequiredValidator,
         ]
       });
     });
@@ -1311,6 +1312,24 @@ export function main() {
     });
 
     describe('validations', () => {
+      it('required validator should validate checkbox', () => {
+        const fixture = TestBed.createComponent(FormControlCheckboxRequiredValidator);
+        const control = new FormControl(false, Validators.requiredTrue);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        const checkbox = fixture.debugElement.query(By.css('input'));
+        expect(checkbox.nativeElement.checked).toBe(false);
+        expect(control.hasError('required')).toEqual(true);
+
+        checkbox.nativeElement.checked = true;
+        dispatchEvent(checkbox.nativeElement, 'change');
+        fixture.detectChanges();
+
+        expect(checkbox.nativeElement.checked).toBe(true);
+        expect(control.hasError('required')).toEqual(false);
+      });
+
       it('should use sync validators defined in html', () => {
         const fixture = TestBed.createComponent(LoginIsEmptyWrapper);
         const form = new FormGroup({
@@ -2050,6 +2069,14 @@ class ValidationBindingsForm {
   minLen: number;
   maxLen: number;
   pattern: string;
+}
+
+@Component({
+  selector: 'form-control-checkbox-validator',
+  template: `<input type="checkbox" [formControl]="control">`
+})
+class FormControlCheckboxRequiredValidator {
+  control: FormControl;
 }
 
 @Component({
