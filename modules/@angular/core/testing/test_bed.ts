@@ -134,6 +134,11 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+  static overrideTemplate(component: Type<any>, template: string): typeof TestBed {
+    getTestBed().overrideComponent(component, {set: {template, templateUrl: null}});
+    return TestBed;
+  }
+
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     return getTestBed().get(token, notFoundValue);
   }
