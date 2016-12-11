@@ -10,7 +10,7 @@ import {ViewEncapsulation} from '@angular/core';
 
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {isBlank, isPresent, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
@@ -41,9 +41,9 @@ export class DirectiveNormalizer {
       private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
       private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
-  clearCache() { this._resourceLoaderCache.clear(); }
+  clearCache(): void { this._resourceLoaderCache.clear(); }
 
-  clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
+  clearCacheFor(normalizedDirective: CompileDirectiveMetadata): void {
     if (!normalizedDirective.isComponent) {
       return;
     }
@@ -65,7 +65,7 @@ export class DirectiveNormalizer {
       SyncAsyncResult<CompileTemplateMetadata> {
     let normalizedTemplateSync: CompileTemplateMetadata = null;
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
-    if (isPresent(prenormData.template)) {
+    if (prenormData.template) {
       normalizedTemplateSync = this.normalizeTemplateSync(prenormData);
       normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
     } else if (prenormData.templateUrl) {
@@ -120,7 +120,7 @@ export class DirectiveNormalizer {
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
     let encapsulation = prenomData.encapsulation;
-    if (isBlank(encapsulation)) {
+    if (encapsulation == null) {
       encapsulation = this._config.defaultEncapsulation;
     }
 
