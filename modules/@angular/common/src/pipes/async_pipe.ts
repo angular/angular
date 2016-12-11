@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, OnDestroy, Pipe, WrappedValue} from '@angular/core';
-import {EventEmitter, Observable} from '../facade/async';
+import {$$observable, EventEmitter, Observable} from '../facade/async';
 import {isPromise} from '../private_import_core';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -116,7 +116,7 @@ export class AsyncPipe implements OnDestroy {
       return _promiseStrategy;
     }
 
-    if ((<any>obj).subscribe) {
+    if (typeof (<any>obj)[$$observable] === 'function') {
       return _observableStrategy;
     }
 

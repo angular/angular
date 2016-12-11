@@ -114,3 +114,39 @@ export class EventEmitter<T> extends Subject<T> {
     return super.subscribe(schedulerFn, errorFn, completeFn);
   }
 }
+
+let root: any;
+
+if (typeof self !== 'undefined') {
+  root = self;
+} else if (typeof window !== 'undefined') {
+  root = window;
+} else if (typeof global !== 'undefined') {
+  root = global;
+} else if (typeof module !== 'undefined') {
+  root = module;
+} else {
+  root = Function('return this')();
+}
+
+// https://github.com/blesh/symbol-observable
+
+function getSymbolObservable(context: any): any {
+  let $$observable: any;
+  const Symbol = context.Symbol;
+
+  if (typeof Symbol === 'function') {
+    if (Symbol.observable) {
+      $$observable = Symbol.observable;
+    } else {
+      $$observable = Symbol('observable');
+      Symbol.observable = $$observable;
+    }
+  } else {
+    $$observable = '@@observable';
+  }
+
+  return $$observable;
+}
+
+export const $$observable = getSymbolObservable(root);
