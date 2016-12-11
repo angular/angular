@@ -174,8 +174,9 @@ export class DirectiveNormalizer {
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
-    const allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
-                             .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
+    const allStyleUrls =
+        stylesheet.styleUrls.filter((url: string) => isStyleUrlResolvable(url, true))
+            .map(url => this._urlResolver.resolve(stylesheet.moduleUrl, url));
 
     const allStyles = stylesheet.styles.map(style => {
       const styleWithImports = extractStyleUrls(this._urlResolver, stylesheet.moduleUrl, style);

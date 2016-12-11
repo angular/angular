@@ -17,8 +17,11 @@ export class StyleWithImports {
   constructor(public style: string, public styleUrls: string[]) {}
 }
 
-export function isStyleUrlResolvable(url: string): boolean {
+export function isStyleUrlResolvable(url: string, throwIfNotCss: boolean = false): boolean {
   if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
+  if (throwIfNotCss && !CSS_FILE_REGEXP.test(url)) {
+    throw new Error(`styleUrls must be a CSS file but found '${url}'`);
+  }
   const schemeMatch = url.match(_urlWithSchemaRe);
   return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }
@@ -44,3 +47,4 @@ export function extractStyleUrls(
 
 const _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
 const _urlWithSchemaRe = /^([^:/?#]+):/;
+const CSS_FILE_REGEXP = /.\.css$/;

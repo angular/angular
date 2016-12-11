@@ -97,7 +97,11 @@ export function main() {
     });
 
     it('should not resolve urls with other schema',
-       () => { expect(isStyleUrlResolvable('http://otherurl')).toBe(false); });
+       () => expect(isStyleUrlResolvable('http://otherurl')).toBeFalsy());
+
+    it('should throw when url is not a css file',
+       () => expect(() => isStyleUrlResolvable('someUrl.html', true))
+                 .toThrowError(`styleUrls must be a CSS file but found 'someUrl.html'`));
 
     it('should not resolve urls with absolute paths', () => {
       expect(isStyleUrlResolvable('/otherurl')).toBe(false);

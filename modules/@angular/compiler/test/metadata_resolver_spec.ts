@@ -323,7 +323,7 @@ class ComponentWithInvalidModuleId {
 @Component({
   selector: 'someSelector',
   templateUrl: 'someTemplateUrl',
-  styleUrls: ['someStyleUrl'],
+  styleUrls: ['someStyleUrl.css'],
 })
 class ComponentWithExternalResources {
 }
