@@ -33,6 +33,22 @@ export function main() {
              moduleUrl: SOME_MODULE_URL,
            })).toThrowError(SyntaxError, 'No template specified for component SomeComp');
          }));
+      it('should throw if template is not a string',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           expect(
+               () => normalizer.normalizeTemplate(
+                   {componentType: SomeComp, moduleUrl: SOME_MODULE_URL, template: <any>{}}))
+               .toThrowError(
+                   SyntaxError, 'The template specified for component SomeComp is not a string');
+         }));
+      it('should throw if templateUrl is not a string',
+         inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
+           expect(
+               () => normalizer.normalizeTemplate(
+                   {componentType: SomeComp, moduleUrl: SOME_MODULE_URL, templateUrl: <any>{}}))
+               .toThrowError(
+                   SyntaxError, 'The templateUrl specified for component SomeComp is not a string');
+         }));
     });
 
     describe('normalizeTemplateSync', () => {
