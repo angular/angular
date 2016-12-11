@@ -65,10 +65,18 @@ export class DirectiveNormalizer {
       SyncAsyncResult<CompileTemplateMetadata> {
     let normalizedTemplateSync: CompileTemplateMetadata = null;
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
-    if (prenormData.template) {
+    if (prenormData.template != null) {
+      if (typeof prenormData.template !== 'string') {
+        throw new SyntaxError(
+            `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
+      }
       normalizedTemplateSync = this.normalizeTemplateSync(prenormData);
       normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
     } else if (prenormData.templateUrl) {
+      if (typeof prenormData.templateUrl !== 'string') {
+        throw new SyntaxError(
+            `The templateUrl specified for component ${stringify(prenormData.componentType)} is not a string`);
+      }
       normalizedTemplateAsync = this.normalizeTemplateAsync(prenormData);
     } else {
       throw new SyntaxError(
