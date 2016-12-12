@@ -20,6 +20,8 @@ const ANGULAR_IMPORT_LOCATIONS = {
   provider: '@angular/core/src/di/provider'
 };
 
+const HIDDEN_KEY = /^\$.*\$$/;
+
 /**
  * The host of the StaticReflector disconnects the implementation from TypeScript / other language
  * services and from underlying file systems.
@@ -806,7 +808,11 @@ function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: 
   Object.keys(input).forEach((key) => {
     const value = transform(input[key], key);
     if (!shouldIgnore(value)) {
-      result[key] = value;
+      if (HIDDEN_KEY.test(key)) {
+        Object.defineProperty(result, key, {enumerable: false, configurable: true, value: value});
+      } else {
+        result[key] = value;
+      }
     }
   });
   return result;

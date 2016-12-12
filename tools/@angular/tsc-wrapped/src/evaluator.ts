@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {CollectorOptions} from './collector';
 import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
@@ -97,7 +98,9 @@ export function errorSymbol(
  * possible.
  */
 export class Evaluator {
-  constructor(private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>) {}
+  constructor(
+      private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>,
+      private options: CollectorOptions = {}) {}
 
   nameOf(node: ts.Node): string|MetadataError {
     if (node.kind == ts.SyntaxKind.Identifier) {
@@ -223,11 +226,16 @@ export class Evaluator {
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
+        let quoted: string[] = [];
         ts.forEachChild(node, child => {
           switch (child.kind) {
             case ts.SyntaxKind.ShorthandPropertyAssignment:
             case ts.SyntaxKind.PropertyAssignment:
               const assignment = <ts.PropertyAssignment|ts.ShorthandPropertyAssignment>child;
+              if (assignment.name.kind == ts.SyntaxKind.StringLiteral) {
+                const name = (assignment.name as ts.StringLiteral).text;
+                quoted.push(name);
+              }
               const propertyName = this.nameOf(assignment.name);
               if (isMetadataError(propertyName)) {
                 error = propertyName;
@@ -245,6 +253,9 @@ export class Evaluator {
           }
         });
         if (error) return error;
+        if (this.options.quotedNames && quoted.length) {
+          obj['$quoted$'] = quoted;
+        }
         return obj;
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
