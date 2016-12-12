@@ -1839,7 +1839,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
       it('should report pipes as error that have not been defined as dependencies', () => {
         expect(() => parse('{{a | test}}', [])).toThrowError(`Template parse errors:
-The pipe 'test' could not be found ("[ERROR ->]{{a | test}}"): TestComp@0:0`);
+The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
       });
 
     });
