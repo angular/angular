@@ -74,7 +74,7 @@ export declare class Location {
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string): void;
-    subscribe(onNext: (value: any) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
+    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: (exception: any) => void, onReturn?: () => void): Object;
     static joinWithSlash(start: string, end: string): string;
     static normalizeQueryParams(params: string): string;
     static stripTrailingSlash(url: string): string;
@@ -237,6 +237,13 @@ export declare abstract class PlatformLocation {
     abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
     abstract replaceState(state: any, title: string, url: string): void;
+}
+
+/** @experimental */
+export interface PopStateEvent {
+    pop?: boolean;
+    type?: string;
+    url?: string;
 }
 
 /** @stable */
