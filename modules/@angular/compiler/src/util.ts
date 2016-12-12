@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseError} from './facade/errors';
 import {isPrimitive, isStrictStringMap} from './facade/lang';
-
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -78,3 +78,5 @@ export class SyncAsyncResult<T> {
     }
   }
 }
+
+export class SyntaxError extends BaseError {}

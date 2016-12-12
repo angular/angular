@@ -15,8 +15,8 @@ import {identifierName} from '../src/compile_metadata';
 import {stringify} from '../src/facade/lang';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
+import {SyntaxError} from '../src/util';
 import {MockResourceLoader} from '../testing/resource_loader_mock';
-
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
@@ -34,8 +34,9 @@ export function main() {
          }
 
          expect(() => resolver.getDirectiveMetadata(ComponentWithEverythingInline))
-             .toThrowError(/Illegal state/);
-         expect(() => resolver.getPipeMetadata(SomePipe)).toThrowError(/Illegal state/);
+             .toThrowError(SyntaxError, /Illegal state/);
+         expect(() => resolver.getPipeMetadata(SomePipe))
+             .toThrowError(SyntaxError, /Illegal state/);
        }));
 
     it('should read metadata in sync for components with inline resources',
@@ -121,10 +122,10 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
-                 `moduleId should be a string in "ComponentWithInvalidModuleId". See` +
-                 ` https://goo.gl/wIDDiL for more information.\n` +
-                 `If you're using Webpack you should inline the template and the styles, see` +
-                 ` https://goo.gl/X2J8zc.`);
+                 SyntaxError, `moduleId should be a string in "ComponentWithInvalidModuleId". See` +
+                     ` https://goo.gl/wIDDiL for more information.\n` +
+                     `If you're using Webpack you should inline the template and the styles, see` +
+                     ` https://goo.gl/X2J8zc.`);
        }));
 
 
@@ -145,7 +146,7 @@ export function main() {
          }
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
-             .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
+             .toThrowError(SyntaxError, `Can't resolve all parameters for MyBrokenComp1: (?).`);
        }));
     it('should throw with descriptive error message when a directive is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
@@ -155,6 +156,7 @@ export function main() {
          expect(
              () => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedComponent, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected directive 'ComponentWithoutModuleId' imported by the module 'ModuleWithImportedComponent'`);
        }));
 
@@ -168,6 +170,7 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedPipe, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'`);
        }));
 
@@ -181,6 +184,7 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithDeclaredModule, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'`);
        }));
 
@@ -191,6 +195,7 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullDeclared, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected value 'null' declared by the module 'ModuleWithNullDeclared'`);
        }));
 
@@ -201,6 +206,7 @@ export function main() {
          }
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullImported, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected value 'null' imported by the module 'ModuleWithNullImported'`);
        }));
 
@@ -212,7 +218,8 @@ export function main() {
          }
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
-             .toThrowError(`Can't resolve all parameters for NonAnnotatedService: (?).`);
+             .toThrowError(
+                 SyntaxError, `Can't resolve all parameters for NonAnnotatedService: (?).`);
        }));
 
     it('should throw with descriptive error message when one of providers is not present',
@@ -223,6 +230,7 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
+                 SyntaxError,
                  `Invalid providers for "MyBrokenComp3" - only instances of Provider and Type are allowed, got: [SimpleService, ?null?, ...]`);
        }));
 
@@ -234,6 +242,7 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
+                 SyntaxError,
                  `Invalid viewProviders for "MyBrokenComp4" - only instances of Provider and Type are allowed, got: [?null?, ...]`);
        }));
 
@@ -248,11 +257,13 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullBootstrap, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected value 'null' used in the bootstrap property of module 'ModuleWithNullBootstrap'`);
          expect(
              () =>
                  resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithUndefinedBootstrap, true))
              .toThrowError(
+                 SyntaxError,
                  `Unexpected value 'undefined' used in the bootstrap property of module 'ModuleWithUndefinedBootstrap'`);
        }));
 

@@ -51,13 +51,15 @@ export function main() {
          }));
 
       it('should output an error message to the console and re-throw', fakeAsync(() => {
-           spyOn(console, 'error');
+           let consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
              flushMicrotasks();
            }).toThrowError();
-           expect(console.error).toHaveBeenCalled();
-           expect(console.error).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
+           let args: any[] = consoleErrorSpy.calls.mostRecent().args;
+           expect(consoleErrorSpy).toHaveBeenCalled();
+           expect(args.length).toBeGreaterThan(0);
+           expect(args[0]).toEqual(jasmine.any(Error));
          }));
     });
 
