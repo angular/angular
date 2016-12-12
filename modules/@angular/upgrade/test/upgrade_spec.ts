@@ -1023,6 +1023,13 @@ export function main() {
              expect($onDestroySpy).toHaveBeenCalled();
 
              ref.dispose();
+
+             if (!(global as any)['requestAnimationFrame']) {
+               // Needed for browser which don't support RAF and use a 16.6 setTimeout instead in
+               // ng1's AnimateRunner.
+               // This setTimeout remains at the end of the test and needs to be discarded.
+               tick(20);
+             }
            });
          }));
 
