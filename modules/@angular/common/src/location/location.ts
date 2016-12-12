@@ -10,6 +10,12 @@ import {EventEmitter, Injectable} from '@angular/core';
 
 import {LocationStrategy} from './location_strategy';
 
+/** @experimental */
+export interface PopStateEvent {
+  pop?: boolean;
+  type?: string;
+  url?: string;
+}
 
 /**
  * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
@@ -122,7 +128,7 @@ export class Location {
    * Subscribe to the platform's `popState` events.
    */
   subscribe(
-      onNext: (value: any) => void, onThrow: (exception: any) => void = null,
+      onNext: (value: PopStateEvent) => void, onThrow: (exception: any) => void = null,
       onReturn: () => void = null): Object {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
