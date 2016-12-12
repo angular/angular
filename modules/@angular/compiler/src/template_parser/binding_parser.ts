@@ -377,9 +377,12 @@ export class BindingParser {
     if (isPresent(ast)) {
       const collector = new PipeCollector();
       ast.visit(collector);
-      collector.pipes.forEach((pipeName) => {
+      collector.pipes.forEach((ast, pipeName) => {
         if (!this.pipesByName.has(pipeName)) {
-          this._reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
+          this._reportError(
+              `The pipe '${pipeName}' could not be found`,
+              new ParseSourceSpan(
+                  sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
         }
       });
     }
@@ -402,9 +405,9 @@ export class BindingParser {
 }
 
 export class PipeCollector extends RecursiveAstVisitor {
-  pipes = new Set<string>();
+  pipes = new Map<string, BindingPipe>();
   visitPipe(ast: BindingPipe, context: any): any {
-    this.pipes.add(ast.name);
+    this.pipes.set(ast.name, ast);
     ast.exp.visit(this);
     this.visitAll(ast.args, context);
     return null;
