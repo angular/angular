@@ -84,8 +84,8 @@ export function main() {
        }));
 
     it('should display template if context is null', async(() => {
-         const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="null"></template>`;
+         const template = `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs>` +
+             `<ng-content *ngTemplateOutlet="currentTplRef; context: null"></ng-content>`;
          fixture = createTestComponent(template);
          detectChangesAndExpectText('');
 
@@ -97,7 +97,8 @@ export function main() {
 
     it('should reflect initial context and changes', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template let-foo="foo"><span>{{foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+             `<tpl-refs #refs="tplRefs"><template let-foo="foo"><span>{{foo}}</span></template></tpl-refs>` +
+             `<ng-content *ngTemplateOutlet="currentTplRef; context: context"></ng-content>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
@@ -114,7 +115,8 @@ export function main() {
 
     it('should reflect user defined $implicit property in the context', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template let-ctx><span>{{ctx.foo}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+             `<tpl-refs #refs="tplRefs"><template let-ctx><span>{{ctx.foo}}</span></template></tpl-refs>` +
+             `<ng-content *ngTemplateOutlet="currentTplRef; context: context"></ng-content>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
@@ -128,7 +130,8 @@ export function main() {
 
     it('should reflect context re-binding', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+             `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs>` +
+             `<ng-content *ngTemplateOutlet="currentTplRef; context: context"></ng-content>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
