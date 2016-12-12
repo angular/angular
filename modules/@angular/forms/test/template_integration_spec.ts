@@ -61,6 +61,16 @@ export function main() {
            expect(form.valid).toBe(false);
          }));
 
+      it('should add novalidate by default to form element', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelForm);
+
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.query(By.css('form'));
+           expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
+         }));
+
       it('should support ngModelGroup', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelGroupForm);
            fixture.componentInstance.first = 'Nancy';
@@ -216,6 +226,13 @@ export function main() {
         const fixture = TestBed.createComponent(NgNoFormComp);
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
+      });
+
+      it('should not add novalidate when ngNoForm is used', () => {
+        const fixture = TestBed.createComponent(NgNoFormComp);
+        fixture.detectChanges();
+        const form = fixture.debugElement.query(By.css('form'));
+        expect(form.nativeElement.hasAttribute('novalidate')).toBeFalsy();
       });
     });
 

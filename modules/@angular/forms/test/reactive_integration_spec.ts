@@ -71,6 +71,15 @@ export function main() {
         expect(input.nativeElement.value).toEqual('loginValue');
       });
 
+      it('should add novalidate by default to form', () => {
+        const fixture = TestBed.createComponent(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form'));
+        expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
+      });
+
       it('work with formGroups (view -> model)', () => {
         const fixture = TestBed.createComponent(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('oldValue')});
