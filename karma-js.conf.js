@@ -48,6 +48,7 @@ module.exports = function(config) {
 
     exclude: [
       'dist/all/@angular/**/e2e_test/**',
+      'dist/all/@angular/**/*node_only_spec.js',
       'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
       'dist/all/@angular/compiler/test/aot/**',

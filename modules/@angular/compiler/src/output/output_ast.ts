@@ -413,10 +413,13 @@ export class LiteralArrayExpr extends Expression {
   }
 }
 
+export class LiteralMapEntry {
+  constructor(public key: string, public value: Expression, public quoted: boolean = false) {}
+}
 
 export class LiteralMapExpr extends Expression {
   public valueType: Type = null;
-  constructor(public entries: [string, Expression][], type: MapType = null) {
+  constructor(public entries: LiteralMapEntry[], type: MapType = null) {
     super(type);
     if (isPresent(type)) {
       this.valueType = type.valueType;
@@ -677,7 +680,8 @@ export class ExpressionTransformer implements StatementVisitor, ExpressionVisito
 
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
     const entries = ast.entries.map(
-        (entry): [string, Expression] => [entry[0], entry[1].visitExpression(this, context), ]);
+        (entry): LiteralMapEntry => new LiteralMapEntry(
+            entry.key, entry.value.visitExpression(this, context), entry.quoted));
     return new LiteralMapExpr(entries);
   }
   visitAllExpressions(exprs: Expression[], context: any): Expression[] {
@@ -791,7 +795,7 @@ export class RecursiveExpressionVisitor implements StatementVisitor, ExpressionV
     return ast;
   }
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
-    ast.entries.forEach((entry) => (<Expression>entry[1]).visitExpression(this, context));
+    ast.entries.forEach((entry) => entry.value.visitExpression(this, context));
     return ast;
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
@@ -891,7 +895,7 @@ export function literalArr(values: Expression[], type: Type = null): LiteralArra
 }
 
 export function literalMap(values: [string, Expression][], type: MapType = null): LiteralMapExpr {
-  return new LiteralMapExpr(values, type);
+  return new LiteralMapExpr(values.map(entry => new LiteralMapEntry(entry[0], entry[1])), type);
 }
 
 export function not(expr: Expression): NotExpr {
