@@ -5,6 +5,7 @@
     "stripInternal": true,
     "experimentalDecorators": true,
     "noImplicitAny": true,
+    "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../../../dist/examples",
@@ -18,14 +19,10 @@
     "target": "es5",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
-    "types": ["jasmine", "node", "angularjs"]
+    "types": ["jasmine", "node", "angularjs", "systemjs"]
   },
   "include": [
-    "./_common/*.ts",
-    "./**/module.ts",
-    "./**/test/*.ts",
-    "./**/e2e_test/*.ts",
-    "../../system.d.ts",
+    "./**/*.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     // TODO(i): we can't use protractor's built-in typings because they contain lots of ambient definitions
     "../../../node_modules/@types/protractor/index.d.ts"

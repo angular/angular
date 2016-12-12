@@ -17,13 +17,12 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
 
 
 /**
+ * @whatItDoes Use URL for storing application location data.
+ * @description
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
  * [path](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax) of the
  * browser's URL.
- *
- * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
- * provided in {@link ROUTER_PROVIDERS}.
  *
  * If you're using `PathLocationStrategy`, you must provide a {@link APP_BASE_HREF}
  * or add a base element to the document. This URL prefix that will be preserved
@@ -36,6 +35,10 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  * Similarly, if you add `<base href='/my/app'/>` to the document and call
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
+ *
+ * ### Example
+ *
+ * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
  * @stable
  */

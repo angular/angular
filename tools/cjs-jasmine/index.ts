@@ -52,6 +52,7 @@ var specFiles: any =
                      cwd: distAll,
                      ignore: [
                        // the following code and tests are not compatible with CJS/node environment
+                       '@angular/examples/**',
                        '@angular/platform-browser/**',
                        '@angular/platform-browser-dynamic/**',
                        '@angular/core/test/zone/**',

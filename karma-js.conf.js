@@ -48,13 +48,14 @@ module.exports = function(config) {
 
     exclude: [
       'dist/all/@angular/**/e2e_test/**',
-      'dist/all/@angular/router/**',
+      'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
       'dist/all/@angular/compiler/test/aot/**',
-      'dist/all/@angular/benchpress/**',
+      'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
-      'dist/all/angular1_router.js',
+      'dist/all/@angular/router/**',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',
+      'dist/all/angular1_router.js',
       'dist/examples/**/e2e_test/**',
     ],
 

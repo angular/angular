@@ -31,6 +31,7 @@
     "@types/jasmine": "^2.2.22-alpha",
     "@types/node": "^4.0.22-alpha",
     "@types/selenium-webdriver": "^2.53.35",
+    "@types/systemjs": "^0.19.32",
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",
     "angular-mocks": "^1.5.0",
