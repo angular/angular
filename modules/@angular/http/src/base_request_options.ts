@@ -113,7 +113,7 @@ export class RequestOptions {
   merge(options?: RequestOptionsArgs): RequestOptions {
     return new RequestOptions({
       method: options && options.method != null ? options.method : this.method,
-      headers: options && options.headers != null ? options.headers : this.headers,
+      headers: options && options.headers != null ? options.headers : new Headers(this.headers),
       body: options && options.body != null ? options.body : this.body,
       url: options && options.url != null ? options.url : this.url,
       search: options && options.search != null ?

@@ -9,6 +9,7 @@
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
 import {RequestMethod} from '../src/enums';
+import {Headers} from '../src/headers';
 
 export function main() {
   describe('BaseRequestOptions', () => {
