@@ -9,6 +9,7 @@
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
 import {RequestMethod} from '../src/enums';
+import {Headers} from '../src/headers';
 
 export function main() {
   describe('BaseRequestOptions', () => {
@@ -44,6 +45,12 @@ export function main() {
       expect(options2.params.paramsMap.get('a')).toEqual(['1']);
       expect(options2.params.paramsMap.get('b')).toEqual(['text']);
       expect(options2.params.paramsMap.get('c')).toEqual(['1', '2', '3']);
+    });
+
+    it('should create a new headers object when calling merge', () => {
+      const options1 = new RequestOptions({headers: new Headers()});
+      const options2 = options1.merge();
+      expect(options2.headers).not.toBe(options1.headers);
     });
   });
 }
