@@ -156,6 +156,60 @@ function declareTests({useJit}: {useJit: boolean}) {
                expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
              }));
 
+      it('should throw an error when a provided offset for an animation step if an offset value is greater than 1',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@tooBig]="exp"></div>
+                `,
+               animations: [trigger(
+                   'tooBig',
+                   [transition(
+                       '* => *', [animate('444ms', style({'opacity': '1', offset: 1.1}))])])]
+             }
+           });
+
+           let message = '';
+           try {
+             const fixture = TestBed.createComponent(DummyIfCmp);
+           } catch (e) {
+             message = e.message;
+           }
+
+           const lines = message.split(/\n+/);
+           expect(lines[1]).toMatch(
+               /Unable to parse the animation sequence for "tooBig" on the DummyIfCmp component due to the following errors:/);
+           expect(lines[2]).toMatch(/Offset values for animations must be between 0 and 1/);
+         }));
+
+      it('should throw an error when a provided offset for an animation step if an offset value is less than 0',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@tooSmall]="exp"></div>
+                `,
+               animations: [trigger(
+                   'tooSmall',
+                   [transition(
+                       '* => *', [animate('444ms', style({'opacity': '0', offset: -1}))])])]
+             }
+           });
+
+           let message = '';
+           try {
+             const fixture = TestBed.createComponent(DummyIfCmp);
+           } catch (e) {
+             message = e.message;
+           }
+
+           const lines = message.split(/\n+/);
+           expect(lines[1]).toMatch(
+               /Unable to parse the animation sequence for "tooSmall" on the DummyIfCmp component due to the following errors:/);
+           expect(lines[2]).toMatch(/Offset values for animations must be between 0 and 1/);
+         }));
+
       describe('animation aliases', () => {
         it('should animate the ":enter" animation alias as "void => *"', fakeAsync(() => {
              TestBed.overrideComponent(DummyIfCmp, {
