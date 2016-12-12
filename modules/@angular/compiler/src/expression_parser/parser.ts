@@ -344,7 +344,7 @@ export class _ParseAST {
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
-        result = new BindingPipe(this.span(result.span.start - this.offset), result, name, args);
+        result = new BindingPipe(this.span(result.span.start), result, name, args);
       } while (this.optionalOperator('|'));
     }
 

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as chars from './chars';
 import {isPresent} from './facade/lang';
 
 export class ParseLocation {
@@ -14,6 +15,38 @@ export class ParseLocation {
 
   toString(): string {
     return isPresent(this.offset) ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
+  }
+
+  moveBy(delta: number): ParseLocation {
+    const source = this.file.content;
+    const len = source.length;
+    let offset = this.offset;
+    let line = this.line;
+    let col = this.col;
+    while (offset > 0 && delta < 0) {
+      offset--;
+      delta++;
+      const ch = source.charCodeAt(offset);
+      if (ch == chars.$LF) {
+        line--;
+        const priorLine = source.substr(0, offset - 1).lastIndexOf(String.fromCharCode(chars.$LF));
+        col = priorLine > 0 ? offset - priorLine : offset;
+      } else {
+        col--;
+      }
+    }
+    while (offset < len && delta > 0) {
+      const ch = source.charCodeAt(offset);
+      offset++;
+      delta--;
+      if (ch == chars.$LF) {
+        line++;
+        col = 0;
+      } else {
+        col++;
+      }
+    }
+    return new ParseLocation(this.file, offset, line, col);
   }
 }
 
