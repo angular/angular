@@ -174,6 +174,11 @@ function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     schema: ElementSchemaRegistry, errors: AnimationParseError[],
     permitStateReferences: boolean): {[key: string]: string | number}[] {
+  const offset = entry.offset;
+  if (offset > 1 || offset < 0) {
+    errors.push(new AnimationParseError(`Offset values for animations must be between 0 and 1`));
+  }
+
   const normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (typeof styleEntry === 'string') {
