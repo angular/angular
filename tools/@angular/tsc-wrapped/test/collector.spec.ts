@@ -50,7 +50,7 @@ describe('Collector', () => {
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
-    collector = new MetadataCollector();
+    collector = new MetadataCollector({quotedNames: true});
   });
 
   it('should not have errors in test data', () => { expectValidSources(service, program); });
@@ -164,11 +164,16 @@ describe('Collector', () => {
       version: 2,
       metadata: {
         HEROES: [
-          {'id': 11, 'name': 'Mr. Nice'}, {'id': 12, 'name': 'Narco'},
-          {'id': 13, 'name': 'Bombasto'}, {'id': 14, 'name': 'Celeritas'},
-          {'id': 15, 'name': 'Magneta'}, {'id': 16, 'name': 'RubberMan'},
-          {'id': 17, 'name': 'Dynama'}, {'id': 18, 'name': 'Dr IQ'}, {'id': 19, 'name': 'Magma'},
-          {'id': 20, 'name': 'Tornado'}
+          {'id': 11, 'name': 'Mr. Nice', '$quoted$': ['id', 'name']},
+          {'id': 12, 'name': 'Narco', '$quoted$': ['id', 'name']},
+          {'id': 13, 'name': 'Bombasto', '$quoted$': ['id', 'name']},
+          {'id': 14, 'name': 'Celeritas', '$quoted$': ['id', 'name']},
+          {'id': 15, 'name': 'Magneta', '$quoted$': ['id', 'name']},
+          {'id': 16, 'name': 'RubberMan', '$quoted$': ['id', 'name']},
+          {'id': 17, 'name': 'Dynama', '$quoted$': ['id', 'name']},
+          {'id': 18, 'name': 'Dr IQ', '$quoted$': ['id', 'name']},
+          {'id': 19, 'name': 'Magma', '$quoted$': ['id', 'name']},
+          {'id': 20, 'name': 'Tornado', '$quoted$': ['id', 'name']}
         ]
       }
     });

@@ -14,10 +14,21 @@ import {Symbols} from './symbols';
 
 
 /**
+ * A set of collector options to use when collecting metadata.
+ */
+export class CollectorOptions {
+  /**
+   * Collect a hidden field "$quoted$" in objects literals that record when the key was quoted in
+   * the source.
+   */
+  quotedNames?: boolean;
+}
+
+/**
  * Collect decorator metadata from a TypeScript module.
  */
 export class MetadataCollector {
-  constructor() {}
+  constructor(private options: CollectorOptions = {}) {}
 
   /**
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
@@ -26,7 +37,7 @@ export class MetadataCollector {
   public getMetadata(sourceFile: ts.SourceFile, strict: boolean = false): ModuleMetadata {
     const locals = new Symbols(sourceFile);
     const nodeMap = new Map<MetadataValue|ClassMetadata|FunctionMetadata, ts.Node>();
-    const evaluator = new Evaluator(locals, nodeMap);
+    const evaluator = new Evaluator(locals, nodeMap, this.options);
     let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
     let exports: ModuleExportMetadata[];
 
