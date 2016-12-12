@@ -27,9 +27,7 @@ var BROWSER_OPTIONS = {
 exports.config = {
   onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   allScriptsTimeout: 11000,
-  specs: [
-    'dist/examples/**/e2e_test/*_spec.js'
-  ],
+  specs: ['dist/examples/**/e2e_test/*_spec.js'],
   capabilities: process.env.TRAVIS ? BROWSER_OPTIONS.ChromeOnTravis : BROWSER_OPTIONS.LocalChrome,
   directConnect: true,
   baseUrl: 'http://localhost:8001/',

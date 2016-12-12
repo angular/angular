@@ -82,6 +82,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       if (console.error) {
         console.error(error);
       } else {
+        // tslint:disable-next-line:no-console
         console.log(error);
       }
     }
