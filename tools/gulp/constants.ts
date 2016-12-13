@@ -18,3 +18,5 @@ export const SASS_AUTOPREFIXER_OPTIONS = {
 export const NPM_VENDOR_FILES = [
   '@angular', 'core-js/client', 'hammerjs', 'rxjs', 'systemjs/dist', 'zone.js/dist'
 ];
+
+export const COMPONENTS_DIR = join(SOURCE_ROOT, 'lib');

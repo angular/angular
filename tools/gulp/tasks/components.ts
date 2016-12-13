@@ -1,7 +1,7 @@
 import {task, watch} from 'gulp';
 import * as path from 'path';
 
-import {SOURCE_ROOT, DIST_COMPONENTS_ROOT, PROJECT_ROOT} from '../constants';
+import {DIST_COMPONENTS_ROOT, PROJECT_ROOT, COMPONENTS_DIR} from '../constants';
 import {sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask} from '../task_helpers';
 import {writeFileSync} from 'fs';
 
@@ -17,42 +17,32 @@ const rollup = require('rollup').rollup;
 // When `tsconfig-spec.json` is used, we are outputting CommonJS modules. This is used
 // for unit tests (karma).
 
-/** Path to the root of the Angular Material component library. */
-const componentsDir = path.join(SOURCE_ROOT, 'lib');
-
 /** Path to the tsconfig used for ESM output. */
-const tsconfigPath = path.relative(PROJECT_ROOT, path.join(componentsDir, 'tsconfig.json'));
+const tsconfigPath = path.relative(PROJECT_ROOT, path.join(COMPONENTS_DIR, 'tsconfig.json'));
 
 
 /** [Watch task] Rebuilds (ESM output) whenever ts, scss, or html sources change. */
 task(':watch:components', () => {
-  watch(path.join(componentsDir, '**/*.ts'), [':build:components:rollup']);
-  watch(path.join(componentsDir, '**/*.scss'), [':build:components:rollup']);
-  watch(path.join(componentsDir, '**/*.html'), [':build:components:rollup']);
-});
-
-/** [Watch task] Rebuilds for tests (CJS output) whenever ts, scss, or html sources change. */
-task(':watch:components:spec', () => {
-  watch(path.join(componentsDir, '**/*.ts'), [':build:components:spec']);
-  watch(path.join(componentsDir, '**/*.scss'), [':build:components:scss']);
-  watch(path.join(componentsDir, '**/*.html'), [':build:components:assets']);
+  watch(path.join(COMPONENTS_DIR, '**/*.ts'), [':build:components:rollup']);
+  watch(path.join(COMPONENTS_DIR, '**/*.scss'), [':build:components:rollup']);
+  watch(path.join(COMPONENTS_DIR, '**/*.html'), [':build:components:rollup']);
 });
 
 
 /** Builds component typescript only (ESM output). */
-task(':build:components:ts', tsBuildTask(componentsDir, 'tsconfig-srcs.json'));
+task(':build:components:ts', tsBuildTask(COMPONENTS_DIR, 'tsconfig-srcs.json'));
 
 /** Builds components typescript for tests (CJS output). */
-task(':build:components:spec', tsBuildTask(componentsDir));
+task(':build:components:spec', tsBuildTask(COMPONENTS_DIR));
 
 /** Copies assets (html, markdown) to build output. */
 task(':build:components:assets', copyTask([
-  path.join(componentsDir, '**/*.!(ts|spec.ts)'),
+  path.join(COMPONENTS_DIR, '**/*.!(ts|spec.ts)'),
   path.join(PROJECT_ROOT, 'README.md'),
 ], DIST_COMPONENTS_ROOT));
 
 /** Builds scss into css. */
-task(':build:components:scss', sassBuildTask(DIST_COMPONENTS_ROOT, componentsDir));
+task(':build:components:scss', sassBuildTask(DIST_COMPONENTS_ROOT, COMPONENTS_DIR));
 
 /** Builds the UMD bundle for all of Angular Material. */
 task(':build:components:rollup', [':build:components:inline'], () => {

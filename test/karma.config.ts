@@ -58,7 +58,7 @@ export function config(config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: false,
 
     sauceLabs: {
       testName: 'material2',
