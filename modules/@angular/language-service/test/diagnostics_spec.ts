@@ -130,6 +130,18 @@ describe('diagnostics', () => {
       });
     });
 
+    // Issue #13326
+    it('should report a narrow span for invalid pipes', () => {
+      const code =
+          ` @Component({template: '<p> Using an invalid pipe {{data | dat}} </p>'}) export class MyComponent { data = 'some data'; }`;
+      addCode(code, fileName => {
+        const diagnostic =
+            ngService.getDiagnostics(fileName).filter(d => d.message.indexOf('pipe') > 0)[0];
+        expect(diagnostic).not.toBeUndefined();
+        expect(diagnostic.span.end - diagnostic.span.start).toBeLessThan(11);
+      });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
