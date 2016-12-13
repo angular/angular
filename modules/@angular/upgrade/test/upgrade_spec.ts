@@ -60,6 +60,17 @@ export function main() {
            expect(consoleErrorSpy).toHaveBeenCalled();
            expect(args.length).toBeGreaterThan(0);
            expect(args[0]).toEqual(jasmine.any(Error));
+           let supportsStacktrace = false;
+           try {
+             throw new Error();
+           } catch(e) {
+             supportsStacktrace = !!e.stack
+           }
+           if (supportsStacktrace) {
+             expect(args[1]).not.toEqual('No stack trace available in this browser.');
+           } else {
+             expect(args[1]).toEqual('No stack trace available in this browser.');
+           }
          }));
     });
 

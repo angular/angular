@@ -8,11 +8,13 @@
 
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
+  // IE9 doesn't support stacktrace
+  const stack: any = e.stack || 'No stack trace available in this browser.';
   if (console.error) {
-    console.error(e, e.stack);
+    console.error(e, stack);
   } else {
     // tslint:disable-next-line:no-console
-    console.log(e, e.stack);
+    console.log(e, stack);
   }
   throw e;
 }
