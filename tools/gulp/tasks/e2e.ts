@@ -28,7 +28,7 @@ task(':build:e2eapp:vendor', vendorTask());
 task(':build:e2eapp:ts', [':build:components:ts'], tsBuildTask(appDir));
 
 /** No-op (needed by buildAppTask). */
-task(':build:e2eapp:scss', [':build:components:scss'], sassBuildTask(outDir, appDir, []));
+task(':build:e2eapp:scss', [':build:components:scss'], sassBuildTask(outDir, appDir));
 
 /** Copies e2e app assets (html, css) to build output. */
 task(':build:e2eapp:assets', copyTask(appDir, outDir));

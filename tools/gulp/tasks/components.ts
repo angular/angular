@@ -52,9 +52,7 @@ task(':build:components:assets', copyTask([
 ], DIST_COMPONENTS_ROOT));
 
 /** Builds scss into css. */
-task(':build:components:scss', sassBuildTask(
-  DIST_COMPONENTS_ROOT, componentsDir, [path.join(componentsDir, 'core/style')]
-));
+task(':build:components:scss', sassBuildTask(DIST_COMPONENTS_ROOT, componentsDir));
 
 /** Builds the UMD bundle for all of Angular Material. */
 task(':build:components:rollup', [':build:components:inline'], () => {
