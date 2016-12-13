@@ -15,6 +15,7 @@ import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressCircleE2E} from './progress-circle/progress-circle-e2e';
 import {MaterialModule} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
+import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import {E2E_APP_ROUTES} from './e2e-app/routes';
     ListE2E,
     ProgressBarE2E,
     ProgressCircleE2E,
+    SlideToggleE2E
   ],
   bootstrap: [E2EApp],
   providers: [

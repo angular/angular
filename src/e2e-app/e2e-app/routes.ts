@@ -11,6 +11,7 @@ import {GridListE2E} from '../grid-list/grid-list-e2e';
 import {ListE2E} from '../list/list-e2e';
 import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 import {ProgressCircleE2E} from '../progress-circle/progress-circle-e2e';
+import {SlideToggleE2E} from '../slide-toggle/slide-toggle-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -25,4 +26,5 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'list', component: ListE2E},
   {path: 'progress-bar', component: ProgressBarE2E},
   {path: 'progress-circle', component: ProgressCircleE2E},
+  {path: 'slide-toggle', component: SlideToggleE2E}
 ];
