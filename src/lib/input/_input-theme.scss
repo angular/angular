@@ -15,10 +15,9 @@
   $input-required-placeholder-color: md-color($accent);
   
   // Underline colors.
-  $input-underline-color: md-color($foreground, hint-text);
+  $input-underline-color: md-color($foreground, divider);
   $input-underline-color-accent: md-color($accent);
   $input-underline-color-warn: md-color($warn);
-  $input-underline-disabled-color: md-color($foreground, hint-text);
   $input-underline-focused-color: md-color($primary);
 
   .md-input-placeholder {
