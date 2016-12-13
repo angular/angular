@@ -34,6 +34,9 @@ const MD_FIT_MODE = 'fit';
   selector: 'md-grid-list, mat-grid-list',
   templateUrl: 'grid-list.html',
   styleUrls: ['grid-list.css'],
+  host: {
+    'role': 'list'
+  },
   encapsulation: ViewEncapsulation.None,
 })
 export class MdGridList implements OnInit, AfterContentChecked {

@@ -1,14 +1,20 @@
-<a md-list-item [routerLink]="['button']">Button</a>
-<a md-list-item [routerLink]="['checkbox']">Checkbox</a>
-<a md-list-item [routerLink]="['dialog']">Dialog</a>
-<a md-list-item [routerLink]="['grid-list']">Grid list</a>
-<a md-list-item [routerLink]="['icon']">Icon</a>
-<a md-list-item [routerLink]="['list']">List</a>
-<a md-list-item [routerLink]="['menu']">Menu</a>
-<a md-list-item [routerLink]="['progress-bar']">Progress bar</a>
-<a md-list-item [routerLink]="['progress-circle']">Progress circle</a>
-<a md-list-item [routerLink]="['radio']">Radios</a>
-<a md-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
-<a md-list-item [routerLink]="['tabs']">Tabs</a>
+<button (click)="showLinks = !showLinks">Toggle Navigation Links</button>
 
-<router-outlet></router-outlet>
+<md-nav-list *ngIf="showLinks">
+  <a md-list-item [routerLink]="['button']">Button</a>
+  <a md-list-item [routerLink]="['checkbox']">Checkbox</a>
+  <a md-list-item [routerLink]="['dialog']">Dialog</a>
+  <a md-list-item [routerLink]="['grid-list']">Grid list</a>
+  <a md-list-item [routerLink]="['icon']">Icon</a>
+  <a md-list-item [routerLink]="['list']">List</a>
+  <a md-list-item [routerLink]="['menu']">Menu</a>
+  <a md-list-item [routerLink]="['progress-bar']">Progress bar</a>
+  <a md-list-item [routerLink]="['progress-circle']">Progress circle</a>
+  <a md-list-item [routerLink]="['radio']">Radios</a>
+  <a md-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
+  <a md-list-item [routerLink]="['tabs']">Tabs</a>
+</md-nav-list>
+
+<main>
+  <router-outlet role="main"></router-outlet>
+</main>
