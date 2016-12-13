@@ -7,13 +7,12 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
-
 import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
 import {NumberWrapper, isBlank, isPresent} from '../facade/lang';
-
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
+const DEFAULT_CODE: string = 'USD';
 
 function formatNumber(
     pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
@@ -155,8 +154,9 @@ export class CurrencyPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(
-      value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
+      value: any, currencyCode?: string, symbolDisplay: boolean = false,
       digits: string = null): string {
+    currencyCode = currencyCode || DEFAULT_CODE;
     return formatNumber(
         CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
         symbolDisplay);

@@ -66,7 +66,7 @@ export function main() {
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          // In old Chrome, default formatiing for USD is different
+          // In old Chrome, default formatting for USD is different
           if (browserDetection.isOldChrome) {
             expect(normalize(pipe.transform(123))).toEqual('USD123');
           } else {
@@ -76,8 +76,14 @@ export function main() {
           expect(normalize(pipe.transform(5.1234, 'USD', false, '.0-3'))).toEqual('USD5.123');
         });
 
+        it('should not throw for undefined currencyCode',
+           () => expect(() => pipe.transform(12, undefined)).not.toThrowError());
+
+        it('should not throw for null currencyCode',
+           () => expect(() => pipe.transform(12, null)).not.toThrowError());
+
         it('should not support other objects',
-           () => { expect(() => pipe.transform(new Object())).toThrowError(); });
+           () => expect(() => pipe.transform({})).toThrowError());
       });
     });
   });
