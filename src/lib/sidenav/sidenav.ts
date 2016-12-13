@@ -47,10 +47,7 @@ export class MdSidenavToggleResult {
   moduleId: module.id,
   selector: 'md-sidenav, mat-sidenav',
   // TODO(mmalerba): move template to separate file.
-  template: `
-    <focus-trap class="md-sidenav-focus-trap" [disabled]="isFocusTrapDisabled">
-      <ng-content></ng-content>
-    </focus-trap>`,
+  templateUrl: 'sidenav.html',
   host: {
     '(transitionend)': '_onTransitionEnd($event)',
     '(keydown)': 'handleKeydown($event)',
@@ -76,7 +73,7 @@ export class MdSidenav implements AfterContentInit {
   /** Alignment of the sidenav (direction neutral); whether 'start' or 'end'. */
   private _align: 'start' | 'end' = 'start';
 
-  /** Whether this md-sidenav is part of a valid md-sidenav-layout configuration. */
+  /** Whether this md-sidenav is part of a valid md-sidenav-container configuration. */
   get valid() {
     return this._valid;
   }
@@ -299,25 +296,28 @@ export class MdSidenav implements AfterContentInit {
 }
 
 /**
- * <md-sidenav-layout> component.
+ * <md-sidenav-container> component.
  *
  * This is the parent component to one or two <md-sidenav>s that validates the state internally
  * and coordinates the backdrop and content styling.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-sidenav-layout, mat-sidenav-layout',
+  selector: 'md-sidenav-container, mat-sidenav-container, md-sidenav-layout, mat-sidenav-layout',
   // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
   // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
   // changes its state.
-  templateUrl: 'sidenav.html',
+  templateUrl: 'sidenav-container.html',
   styleUrls: [
     'sidenav.css',
     'sidenav-transitions.css',
   ],
+  host: {
+    'class': 'md-sidenav-container',
+  },
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSidenavLayout implements AfterContentInit {
+export class MdSidenavContainer implements AfterContentInit {
   @ContentChildren(MdSidenav) _sidenavs: QueryList<MdSidenav>;
 
   get start() { return this._start; }
@@ -359,14 +359,14 @@ export class MdSidenavLayout implements AfterContentInit {
   }
 
   /**
-   * Subscribes to sidenav events in order to set a class on the main layout element when the
-   * sidenav is open and the backdrop is visible. This ensures any overflow on the layout element is
-   * properly hidden.
+   * Subscribes to sidenav events in order to set a class on the main container element when the
+   * sidenav is open and the backdrop is visible. This ensures any overflow on the container element
+   * is properly hidden.
    */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
     if (!sidenav || sidenav.mode === 'side') { return; }
-    sidenav.onOpen.subscribe(() => this._setLayoutClass(sidenav, true));
-    sidenav.onClose.subscribe(() => this._setLayoutClass(sidenav, false));
+    sidenav.onOpen.subscribe(() => this._setContainerClass(sidenav, true));
+    sidenav.onClose.subscribe(() => this._setContainerClass(sidenav, false));
   }
 
   /**
@@ -378,8 +378,8 @@ export class MdSidenavLayout implements AfterContentInit {
     sidenav.onAlignChanged.subscribe(() => this._validateDrawers());
   }
 
-  /** Toggles the 'md-sidenav-opened' class on the main 'md-sidenav-layout' element. */
-  private _setLayoutClass(sidenav: MdSidenav, bool: boolean): void {
+  /** Toggles the 'md-sidenav-opened' class on the main 'md-sidenav-container' element. */
+  private _setContainerClass(sidenav: MdSidenav, bool: boolean): void {
     this._renderer.setElementClass(this._element.nativeElement, 'md-sidenav-opened', bool);
   }
 
@@ -504,8 +504,8 @@ export class MdSidenavLayout implements AfterContentInit {
 
 @NgModule({
   imports: [CommonModule, DefaultStyleCompatibilityModeModule, A11yModule],
-  exports: [MdSidenavLayout, MdSidenav, DefaultStyleCompatibilityModeModule],
-  declarations: [MdSidenavLayout, MdSidenav],
+  exports: [MdSidenavContainer, MdSidenav, DefaultStyleCompatibilityModeModule],
+  declarations: [MdSidenavContainer, MdSidenav],
 })
 export class MdSidenavModule {
   static forRoot(): ModuleWithProviders {

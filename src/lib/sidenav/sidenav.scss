@@ -40,9 +40,9 @@
   transform: translate3d(0, 0, 0);
 }
 
-md-sidenav-layout {
+.md-sidenav-container {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
-  // MdSidenavLayout. This creates a new z-index stack so we use low numbered z-indices.
+  // MdSidenavContainer. This creates a new z-index stack so we use low numbered z-indices.
   // We create another stacking context in the '.md-sidenav-content' and in each sidenav so that
   // the application content does not get messed up with our own CSS.
   @include md-sidenav-stacking-context();

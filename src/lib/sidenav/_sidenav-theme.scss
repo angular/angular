@@ -14,11 +14,11 @@
   // we use a light backdrop.
   $sidenav-backdrop-color: invert(md-color($background, card, 0.6)) !default;
   $sidenav-background-color: md-color($background, dialog) !default;
-  $sidenav-layout-background-color:  md-color($background, background) !default;
+  $sidenav-container-background-color:  md-color($background, background) !default;
   $sidenav-push-background-color: md-color($background, dialog) !default;
 
-  md-sidenav-layout {
-    background-color: $sidenav-layout-background-color;
+  .md-sidenav-container {
+    background-color: $sidenav-container-background-color;
     color: md-color($foreground, text);
   }
 

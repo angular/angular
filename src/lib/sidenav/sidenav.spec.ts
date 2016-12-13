@@ -23,8 +23,8 @@ describe('MdSidenav', () => {
       imports: [MdSidenavModule.forRoot(), A11yModule.forRoot(), PlatformModule.forRoot()],
       declarations: [
         BasicTestApp,
-        SidenavLayoutTwoSidenavTestApp,
-        SidenavLayoutNoSidenavTestApp,
+        SidenavContainerTwoSidenavTestApp,
+        SidenavContainerNoSidenavTestApp,
         SidenavSetToOpenedFalse,
         SidenavSetToOpenedTrue,
         SidenavDynamicAlign,
@@ -397,24 +397,24 @@ describe('MdSidenav', () => {
 });
 
 
-/** Test component that contains an MdSidenavLayout but no MdSidenav. */
-@Component({template: `<md-sidenav-layout></md-sidenav-layout>`})
-class SidenavLayoutNoSidenavTestApp { }
+/** Test component that contains an MdSidenavContainer but no MdSidenav. */
+@Component({template: `<md-sidenav-container></md-sidenav-container>`})
+class SidenavContainerNoSidenavTestApp { }
 
-/** Test component that contains an MdSidenavLayout and 2 MdSidenav on the same side. */
+/** Test component that contains an MdSidenavContainer and 2 MdSidenav on the same side. */
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-container>
       <md-sidenav> </md-sidenav>
       <md-sidenav> </md-sidenav>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
-class SidenavLayoutTwoSidenavTestApp { }
+class SidenavContainerTwoSidenavTestApp { }
 
-/** Test component that contains an MdSidenavLayout and one MdSidenav. */
+/** Test component that contains an MdSidenavContainer and one MdSidenav. */
 @Component({
   template: `
-    <md-sidenav-layout (backdrop-clicked)="backdropClicked()">
+    <md-sidenav-container (backdrop-clicked)="backdropClicked()">
       <md-sidenav #sidenav align="start"
                   (open-start)="openStart()"
                   (open)="open()"
@@ -424,7 +424,7 @@ class SidenavLayoutTwoSidenavTestApp { }
       </md-sidenav>
       <button (click)="sidenav.open()" class="open"></button>
       <button (click)="sidenav.close()" class="close"></button>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
 class BasicTestApp {
   openStartCount: number = 0;
@@ -456,30 +456,30 @@ class BasicTestApp {
 
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-container>
       <md-sidenav #sidenav mode="side" opened="false">
         Closed Sidenav.
       </md-sidenav>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
 class SidenavSetToOpenedFalse { }
 
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-container>
       <md-sidenav #sidenav mode="side" opened="true">
         Closed Sidenav.
       </md-sidenav>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
 class SidenavSetToOpenedTrue { }
 
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-container>
       <md-sidenav #sidenav1 [align]="sidenav1Align"></md-sidenav>
       <md-sidenav #sidenav2 [align]="sidenav2Align"></md-sidenav>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
 class SidenavDynamicAlign {
   sidenav1Align = 'start';
@@ -488,12 +488,12 @@ class SidenavDynamicAlign {
 
 @Component({
   template: `
-    <md-sidenav-layout>
+    <md-sidenav-container>
       <md-sidenav align="start" [mode]="mode">
         <a class="link1" href="#">link1</a>
       </md-sidenav>
       <a class="link2" href="#">link2</a>
-    </md-sidenav-layout>`,
+    </md-sidenav-container>`,
 })
 class SidenavWitFocusableElements {
   mode: string = 'over';

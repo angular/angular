@@ -1,8 +1,3 @@
-<div class="md-sidenav-backdrop" (click)="_onBackdropClicked()"
-     [class.md-sidenav-shown]="_isShowingBackdrop()"></div>
-
-<ng-content select="md-sidenav, mat-sidenav"></ng-content>
-
-<div class="md-sidenav-content" [ngStyle]="_getStyles()">
+<focus-trap class="md-sidenav-focus-trap" [disabled]="isFocusTrapDisabled">
   <ng-content></ng-content>
-</div>
+</focus-trap>
