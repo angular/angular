@@ -3,7 +3,6 @@
 # compiled output
 /dist
 /tmp
-/typings
 /deploy
 
 # dependencies

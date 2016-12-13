@@ -23,8 +23,7 @@
       "**/.*",
       "**/node_modules/**",
       "tmp",
-      "deploy",
-      "typings"
+      "deploy"
     ]
   }
 }
