@@ -10,7 +10,8 @@ buildDir="dist/@angular/material"
 buildVersion=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 
 commitSha=$(git rev-parse --short HEAD)
-commitAuthor=$(git --no-pager show -s --format='%an <%ae>' HEAD)
+commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
+commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
 commitMessage=$(git log --oneline | head -n1)
 
 repoName="material-builds"
@@ -32,15 +33,18 @@ rm -rf $repoDir/*
 cp -r $buildDir/* $repoDir
 
 # Create the build commit and push the changes to the repository.
-cd $repoDir &&
+cd $repoDir
 
-# Setup the git repository authentication.
-git config credential.helper "store --file=.git/credentials" &&
+# Prepare Git for pushing the artifacts to the repository.
+git config user.name "$commitAuthorName"
+git config user.email "$commitAuthorEmail"
+git config credential.helper "store --file=.git/credentials"
+
 echo "$MATERIAL2_BUILDS_TOKEN" > .git/credentials
 
-git add -A &&
-git commit -m "$commitMessage" --author "$commitAuthor" &&
-git tag "$buildVersion-$commitSha" &&
+git add -A
+git commit -m "$commitMessage"
+git tag "$buildVersion-$commitSha"
 git push origin master --tags
 
 echo "Finished publishing build artifacts"
