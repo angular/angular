@@ -3,6 +3,8 @@
 # Script to publish the build artifacts to a GitHub repository.
 # Builds will be automatically published once new changes are made to the repository.
 
+set -e -o pipefail
+
 # Go to the project root directory
 cd $(dirname $0)/../..
 
@@ -40,7 +42,7 @@ git config user.name "$commitAuthorName"
 git config user.email "$commitAuthorEmail"
 git config credential.helper "store --file=.git/credentials"
 
-echo "$MATERIAL2_BUILDS_TOKEN" > .git/credentials
+echo "https://${MATERIAL2_BUILDS_TOKEN}:@github.com" > .git/credentials
 
 git add -A
 git commit -m "$commitMessage"
