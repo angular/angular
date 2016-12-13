@@ -208,12 +208,13 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
   private diagnoseExpression(ast: AST, offset: number, includeEvent: boolean) {
     const scope = this.getExpressionScope(this.path, includeEvent);
     this.diagnostics.push(
-        ...getExpressionDiagnostics(scope, ast, this.info.template.query)
-            .map(d => ({
-                   span: offsetSpan(d.ast.span, offset + this.info.template.span.start),
-                   kind: d.kind,
-                   message: d.message
-                 })));
+        ...getExpressionDiagnostics(scope, ast, this.info.template.query, {
+          event: includeEvent
+        }).map(d => ({
+                 span: offsetSpan(d.ast.span, offset + this.info.template.span.start),
+                 kind: d.kind,
+                 message: d.message
+               })));
   }
 
   private push(ast: TemplateAst) { this.path.push(ast); }

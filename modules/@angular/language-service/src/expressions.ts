@@ -16,9 +16,12 @@ import {TemplateAstChildVisitor, TemplateAstPath} from './template_path';
 import {BuiltinType, CompletionKind, Definition, DiagnosticKind, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './types';
 import {inSpan, spanOf} from './utils';
 
+export interface ExpressionDiagnosticsContext { event?: boolean; }
+
 export function getExpressionDiagnostics(
-    scope: SymbolTable, ast: AST, query: SymbolQuery): TypeDiagnostic[] {
-  const analyzer = new AstType(scope, query);
+    scope: SymbolTable, ast: AST, query: SymbolQuery,
+    context: ExpressionDiagnosticsContext = {}): TypeDiagnostic[] {
+  const analyzer = new AstType(scope, query, context);
   analyzer.getDiagnostics(ast);
   return analyzer.diagnostics;
 }
@@ -30,7 +33,7 @@ export function getExpressionCompletions(
   const tail = path.tail;
   let result: SymbolTable|undefined = scope;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query).getType(ast); }
+  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
 
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
@@ -88,7 +91,7 @@ export function getExpressionSymbol(
   if (path.empty) return undefined;
   const tail = path.tail;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query).getType(ast); }
+  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
 
   let symbol: Symbol = undefined;
   let span: Span = undefined;
@@ -189,13 +192,18 @@ export class TypeDiagnostic {
 class AstType implements ExpressionVisitor {
   public diagnostics: TypeDiagnostic[];
 
-  constructor(private scope: SymbolTable, private query: SymbolQuery) {}
+  constructor(
+      private scope: SymbolTable, private query: SymbolQuery,
+      private context: ExpressionDiagnosticsContext) {}
 
   getType(ast: AST): Symbol { return ast.visit(this); }
 
   getDiagnostics(ast: AST): TypeDiagnostic[] {
     this.diagnostics = [];
-    ast.visit(this);
+    const type: Symbol = ast.visit(this);
+    if (this.context.event && type.callable) {
+      this.reportWarning('Unexpected callable expression. Expected a method call', ast);
+    }
     return this.diagnostics;
   }
 
@@ -746,7 +754,7 @@ function refinedVariableType(
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {
       const bindingType =
-          new AstType(info.template.members, info.template.query).getType(ngForOfBinding.value);
+          new AstType(info.template.members, info.template.query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
         return info.template.query.getElementType(bindingType);
       }
