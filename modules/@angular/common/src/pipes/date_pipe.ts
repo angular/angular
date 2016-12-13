@@ -7,9 +7,12 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-import {DateFormatter} from '../facade/intl';
+
 import {NumberWrapper, isDate} from '../facade/lang';
+
+import {DateFormatter} from './intl';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+
 
 
 /**

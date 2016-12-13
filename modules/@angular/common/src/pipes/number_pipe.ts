@@ -8,9 +8,9 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
 
-import {NumberFormatStyle, NumberFormatter} from '../facade/intl';
 import {NumberWrapper, isBlank, isPresent} from '../facade/lang';
 
+import {NumberFormatStyle, NumberFormatter} from './intl';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
