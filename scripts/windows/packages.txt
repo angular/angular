@@ -5,7 +5,6 @@ compiler/testing
 core/src
 core/testing
 forms/src
-http/src
 platform-browser/src
 platform-browser/testing
 platform-browser-dynamic/src
