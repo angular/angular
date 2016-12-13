@@ -121,6 +121,15 @@ describe('diagnostics', () => {
           code, fileName => { expect(() => ngService.getDiagnostics(fileName)).not.toThrow(); });
     });
 
+    it('should not report an error for sub-types of string', () => {
+      const code =
+          ` @Component({template: \`<div *ngIf="something === 'foo'"></div>\`}) export class MyComponent { something: 'foo' | 'bar'; }`;
+      addCode(code, fileName => {
+        const diagnostics = ngService.getDiagnostics(fileName);
+        onlyModuleDiagnostics(diagnostics);
+      });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
@@ -137,6 +146,13 @@ describe('diagnostics', () => {
     function onlyModuleDiagnostics(diagnostics: Diagnostics) {
       // Expect only the 'MyComponent' diagnostic
       expect(diagnostics.length).toBe(1);
+      if (diagnostics.length > 1) {
+        for (const diagnostic of diagnostics) {
+          if (diagnostic.message.indexOf('MyComponent') >= 0) continue;
+          console.error(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
+        }
+        return;
+      }
       expect(diagnostics[0].message.indexOf('MyComponent') >= 0).toBeTruthy();
     }
   });
