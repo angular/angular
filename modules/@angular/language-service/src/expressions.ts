@@ -209,22 +209,25 @@ class AstType implements ExpressionVisitor {
 
   visitBinary(ast: Binary): Symbol {
     // Treat undefined and null as other.
-    function normalize(kind: BuiltinType): BuiltinType {
+    function normalize(kind: BuiltinType, other: BuiltinType): BuiltinType {
       switch (kind) {
         case BuiltinType.Undefined:
         case BuiltinType.Null:
-          return BuiltinType.Other;
+          return normalize(other, BuiltinType.Other);
       }
       return kind;
     }
 
     const leftType = this.getType(ast.left);
     const rightType = this.getType(ast.right);
-    const leftKind = normalize(this.query.getTypeKind(leftType));
-    const rightKind = normalize(this.query.getTypeKind(rightType));
+    const leftRawKind = this.query.getTypeKind(leftType);
+    const rightRawKind = this.query.getTypeKind(rightType);
+    const leftKind = normalize(leftRawKind, rightRawKind);
+    const rightKind = normalize(rightRawKind, leftRawKind);
 
     // The following swtich implements operator typing similar to the
     // type production tables in the TypeScript specification.
+    // https://github.com/Microsoft/TypeScript/blob/v1.8.10/doc/spec.md#4.19
     const operKind = leftKind << 8 | rightKind;
     switch (ast.operation) {
       case '*':
@@ -411,6 +414,8 @@ class AstType implements ExpressionVisitor {
         return this.query.getBuiltinType(BuiltinType.Boolean);
       case null:
         return this.query.getBuiltinType(BuiltinType.Null);
+      case undefined:
+        return this.query.getBuiltinType(BuiltinType.Undefined);
       default:
         switch (typeof ast.value) {
           case 'string':
