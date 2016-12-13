@@ -130,6 +130,16 @@ describe('diagnostics', () => {
       });
     });
 
+    // #13412
+    it('should not report an error for using undefined', () => {
+      const code =
+          ` @Component({template: \`<div *ngIf="something === undefined"></div>\`}) export class MyComponent { something = 'foo'; }})`;
+      addCode(code, fileName => {
+        const diagnostics = ngService.getDiagnostics(fileName);
+        onlyModuleDiagnostics(diagnostics);
+      });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
