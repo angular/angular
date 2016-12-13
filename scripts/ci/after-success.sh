@@ -9,7 +9,7 @@ cd $(dirname $0)/../..
 npmBin=$(npm bin)
 ciResult=$($npmBin/travis-after-modes)
 
-if [ "$ciResult" = "PASSED" ] && [ -z "$TRAVIS_PULL_REQUEST" ]; then
+if [ "$ciResult" = "PASSED" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
   echo "All travis modes passed. Publishing the build artifacts..."
   ./scripts/release/publish-build-artifacts.sh
 fi
