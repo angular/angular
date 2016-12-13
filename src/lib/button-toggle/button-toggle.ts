@@ -97,7 +97,6 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   @ContentChildren(forwardRef(() => MdButtonToggle))
   _buttonToggles: QueryList<MdButtonToggle> = null;
 
-  /** TODO: internal */
   ngAfterViewInit() {
     this._isInitialized = true;
   }
@@ -199,26 +198,17 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._change.emit(event);
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
@@ -423,9 +413,7 @@ export class MdButtonToggle implements OnInit {
     this._emitChangeEvent();
   }
 
-  /** TODO: internal */
   _onInputClick(event: Event) {
-
     // We have to stop propagation for click events on the visual hidden input element.
     // By default, when a user clicks on a label element, a generated click event will be
     // dispatched on the associated input element. Since we are using a label element as our

@@ -155,7 +155,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /**
    * Initialize properties once content children are available.
    * This allows us to propagate relevant attributes to associated buttons.
-   * TODO: internal
    */
   ngAfterContentInit() {
     // Mark this component as initialized in AfterContentInit because the initial value can
@@ -208,33 +207,22 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     }
   }
 
-  /**
-    * Implemented as part of ControlValueAccessor.
-    * TODO: internal
-    */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
-  /**
-   * Implemented as a part of ControlValueAccessor.
-   */
+  /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
@@ -383,7 +371,6 @@ export class MdRadioButton implements OnInit {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
-  /** TODO: internal */
   ngOnInit() {
     if (this.radioGroup) {
       // If the radio is inside a radio group, determine if it should be checked
@@ -419,7 +406,6 @@ export class MdRadioButton implements OnInit {
     this._onInputFocus();
   }
 
-  /** TODO: internal */
   _onInputBlur() {
     this._isFocused = false;
 
@@ -428,7 +414,6 @@ export class MdRadioButton implements OnInit {
     }
   }
 
-  /** TODO: internal */
   _onInputClick(event: Event) {
     // We have to stop propagation for click events on the visual hidden input element.
     // By default, when a user clicks on a label element, a generated click event will be
@@ -443,7 +428,6 @@ export class MdRadioButton implements OnInit {
   /**
    * Triggered when the radio button received a click or the input recognized any change.
    * Clicking on a label element, will trigger a change event on the associated input.
-   * TODO: internal
    */
   _onInputChange(event: Event) {
     // We always have to stop propagation on the change event.

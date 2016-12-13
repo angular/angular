@@ -231,33 +231,22 @@ export class MdCheckbox implements ControlValueAccessor {
     return this.disableRipple || this.disabled;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this.checked = !!value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
-  /**
-   * Implemented as a part of ControlValueAccessor.
-   */
+  /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }

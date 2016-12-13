@@ -13,7 +13,7 @@
     "sourceMap": true,
     "target": "es5",
     "inlineSources": true,
-    "stripInternal": true,
+    "stripInternal": false,
     "baseUrl": "",
     "typeRoots": [
       "../../node_modules/@types"

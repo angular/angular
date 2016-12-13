@@ -16,7 +16,10 @@ import {DefaultStyleCompatibilityModeModule} from '../compatibility/default-mode
 @Directive({ selector: '[md-line], [mat-line]' })
 export class MdLine {}
 
-/* Helper that takes a query list of lines and sets the correct class on the host */
+/**
+ * Helper that takes a query list of lines and sets the correct class on the host.
+ * @docs-private
+ */
 export class MdLineSetter {
   constructor(private _lines: QueryList<MdLine>, private _renderer: Renderer,
               private _element: ElementRef) {

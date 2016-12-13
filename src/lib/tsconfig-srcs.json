@@ -14,7 +14,7 @@
     "sourceMap": true,
     "target": "es5",
     "inlineSources": true,
-    "stripInternal": true,
+    "stripInternal": false,
     "typeRoots": [
       "../../node_modules/@types"
     ],

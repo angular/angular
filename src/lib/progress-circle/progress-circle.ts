@@ -72,11 +72,11 @@ export class MdProgressCircle implements OnDestroy {
     return this.mode == 'determinate' ? 100 : null;
   }
 
-  /** TODO: internal */
+  /** @docs-private */
   get interdeterminateInterval() {
     return this._interdeterminateInterval;
   }
-  /** TODO: internal */
+  /** @docs-private */
   set interdeterminateInterval(interval: number) {
     clearInterval(this._interdeterminateInterval);
     this._interdeterminateInterval = interval;

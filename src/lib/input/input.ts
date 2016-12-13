@@ -247,38 +247,26 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     return !!this.placeholder || this._placeholderChild != null;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this._value = value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: any) {
     this._onChangeCallback = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any) {
     this._onTouchedCallback = fn;
   }
 
-  /**
-   * Implemented as a part of ControlValueAccessor.
-   */
+  /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
 
-  /** TODO: internal */
   ngAfterContentInit() {
     this._validateConstraints();
 
@@ -288,7 +276,6 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     });
   }
 
-  /** TODO: internal */
   ngOnChanges(changes: {[key: string]: SimpleChange}) {
     this._validateConstraints();
   }

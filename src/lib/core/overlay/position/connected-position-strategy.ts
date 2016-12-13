@@ -66,7 +66,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /**
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
-   * TODO: internal
+   * @docs-private
    */
   apply(element: HTMLElement): Promise<void> {
     // We need the bounding rects for the origin and the overlay to determine how to position

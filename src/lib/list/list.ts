@@ -57,7 +57,6 @@ export class MdListItem implements AfterContentInit {
 
   constructor(private _renderer: Renderer, private _element: ElementRef) {}
 
-  /** TODO: internal */
   ngAfterContentInit() {
     this._lineSetter = new MdLineSetter(this._lines, this._renderer, this._element);
   }

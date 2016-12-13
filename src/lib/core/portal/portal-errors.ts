@@ -1,27 +1,39 @@
 import {MdError} from '../errors/error';
 
-/** Exception thrown when attempting to attach a null portal to a host. */
+/**
+ * Exception thrown when attempting to attach a null portal to a host.
+ * @docs-private
+ */
 export class MdNullPortalError extends MdError {
   constructor() {
       super('Must provide a portal to attach');
   }
 }
 
-/** Exception thrown when attempting to attach a portal to a host that is already attached. */
+/**
+ * Exception thrown when attempting to attach a portal to a host that is already attached.
+ * @docs-private
+ */
 export class MdPortalAlreadyAttachedError extends MdError {
   constructor() {
       super('Host already has a portal attached');
   }
 }
 
-/** Exception thrown when attempting to attach a portal to an already-disposed host. */
+/**
+ * Exception thrown when attempting to attach a portal to an already-disposed host.
+ * @docs-private
+ */
 export class MdPortalHostAlreadyDisposedError extends MdError {
   constructor() {
       super('This PortalHost has already been disposed');
   }
 }
 
-/** Exception thrown when attempting to attach an unknown portal type. */
+/**
+ * Exception thrown when attempting to attach an unknown portal type.
+ * @docs-private
+ */
 export class MdUnknownPortalTypeError extends MdError {
   constructor() {
       super(
@@ -30,14 +42,20 @@ export class MdUnknownPortalTypeError extends MdError {
   }
 }
 
-/** Exception thrown when attempting to attach a portal to a null host. */
+/**
+ * Exception thrown when attempting to attach a portal to a null host.
+ * @docs-private
+ */
 export class MdNullPortalHostError extends MdError {
   constructor() {
       super('Attempting to attach a portal to a null PortalHost');
   }
 }
 
-/** Exception thrown when attempting to detach a portal that is not attached. */
+/**
+ * Exception thrown when attempting to detach a portal that is not attached.
+ * @docs-private
+ */
 export class MdNoPortalAttachedError extends MdError {
   constructor() {
       super('Attempting to detach a portal that is not attached to a host');

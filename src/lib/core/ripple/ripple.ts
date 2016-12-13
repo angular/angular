@@ -75,7 +75,6 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
     this._ruler = _ruler;
   }
 
-  /** TODO: internal */
   ngOnInit() {
     // If no trigger element was explicity set, use the host element
     if (!this.trigger) {
@@ -86,13 +85,11 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  /** TODO: internal */
   ngOnDestroy() {
     // Remove event listeners on the trigger element.
     this._rippleRenderer.clearTriggerElement();
   }
 
-  /** TODO: internal */
   ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
     // If the trigger element changed (or is being initially set), add event listeners to it.
     const changedInputs = Object.keys(changes);

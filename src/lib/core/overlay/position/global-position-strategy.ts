@@ -101,7 +101,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
 
   /**
    * Apply the position to the element.
-   * TODO: internal
+   * @docs-private
    */
   apply(element: HTMLElement): Promise<void> {
     if (!this._wrapper) {

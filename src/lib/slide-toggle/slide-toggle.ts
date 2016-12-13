@@ -96,7 +96,6 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
 
   constructor(private _elementRef: ElementRef, private _renderer: Renderer) {}
 
-  /** TODO: internal */
   ngAfterContentInit() {
     this._slideRenderer = new SlideToggleRenderer(this._elementRef);
   }
@@ -158,33 +157,22 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
     this.onTouched();
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any): void {
     this.checked = value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   * TODO: internal
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
 
-  /**
-   * Implemented as a part of ControlValueAccessor.
-   */
+  /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
@@ -240,21 +228,18 @@ export class MdSlideToggle implements AfterContentInit, ControlValueAccessor {
   }
 
 
-  /** TODO: internal */
   _onDragStart() {
     if (!this.disabled) {
       this._slideRenderer.startThumbDrag(this.checked);
     }
   }
 
-  /** TODO: internal */
   _onDrag(event: HammerInput) {
     if (this._slideRenderer.isDragging()) {
       this._slideRenderer.updateThumbPosition(event.deltaX);
     }
   }
 
-  /** TODO: internal */
   _onDragEnd() {
     if (!this._slideRenderer.isDragging()) {
       return;

@@ -134,7 +134,6 @@ export class MdTabGroup {
   /**
    * Waits one frame for the view to update, then updates the ink bar
    * Note: This must be run outside of the zone or it will create an infinite change detection loop
-   * TODO: internal
    */
   ngAfterViewChecked(): void {
     this._isInitialized = true;

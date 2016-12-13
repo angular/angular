@@ -12,7 +12,10 @@ import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
 
 
-/** Exception thrown when attempting to load an icon with a name that cannot be found. */
+/**
+ * Exception thrown when attempting to load an icon with a name that cannot be found.
+ * @docs-private
+ */
 export class MdIconNameNotFoundError extends MdError {
   constructor(iconName: string) {
       super(`Unable to find icon with the name "${iconName}"`);
@@ -22,6 +25,7 @@ export class MdIconNameNotFoundError extends MdError {
 /**
  * Exception thrown when attempting to load SVG content that does not contain the expected
  * <svg> tag.
+ * @docs-private
  */
 export class MdIconSvgTagNotFoundError extends MdError {
   constructor() {
@@ -29,7 +33,10 @@ export class MdIconSvgTagNotFoundError extends MdError {
   }
 }
 
-/** Configuration for an icon, including the URL and possibly the cached SVG element. */
+/**
+ * Configuration for an icon, including the URL and possibly the cached SVG element.
+ * @docs-private
+ */
 class SvgIconConfig {
   svgElement: SVGElement = null;
   constructor(public url: string) { }

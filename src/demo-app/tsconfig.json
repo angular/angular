@@ -12,7 +12,7 @@
     "outDir": "../../dist/",
     "sourceMap": true,
     "target": "es5",
-    "stripInternal": true,
+    "stripInternal": false,
     "baseUrl": "",
     "typeRoots": [
       "../../node_modules/@types"

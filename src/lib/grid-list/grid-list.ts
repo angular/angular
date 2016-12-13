@@ -90,7 +90,6 @@ export class MdGridList implements OnInit, AfterContentChecked {
     this._setTileStyler();
   }
 
-  /** TODO: internal */
   ngOnInit() {
     this._checkCols();
     this._checkRowHeight();
@@ -99,7 +98,6 @@ export class MdGridList implements OnInit, AfterContentChecked {
   /**
    * The layout calculation is fairly cheap if nothing changes, so there's little cost
    * to run it frequently.
-   * TODO: internal
    */
   ngAfterContentChecked() {
     this._layoutTiles();

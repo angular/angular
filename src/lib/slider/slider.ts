@@ -399,9 +399,7 @@ export class MdSlider implements ControlValueAccessor {
     this.value = this._clamp(this.value + this.step * numSteps, this.min, this.max);
   }
 
-  /**
-   * Calculate the new value from the new physical location. The value will always be snapped.
-   */
+  /** Calculate the new value from the new physical location. The value will always be snapped. */
   private _updateValueFromPosition(pos: {x: number, y: number}) {
     if (!this._sliderDimensions) {
       return;
@@ -437,9 +435,7 @@ export class MdSlider implements ControlValueAccessor {
     }
   }
 
-  /**
-   * Updates the amount of space between ticks as a percentage of the width of the slider.
-   */
+  /** Updates the amount of space between ticks as a percentage of the width of the slider. */
   private _updateTickIntervalPercent() {
     if (!this.tickInterval) {
       return;
@@ -456,51 +452,37 @@ export class MdSlider implements ControlValueAccessor {
     }
   }
 
-  /**
-   * Calculates the percentage of the slider that a value is.
-   */
+  /** Calculates the percentage of the slider that a value is. */
   private _calculatePercentage(value: number) {
     return (value - this.min) / (this.max - this.min);
   }
 
-  /**
-   * Calculates the value a percentage of the slider corresponds to.
-   */
+  /** Calculates the value a percentage of the slider corresponds to. */
   private _calculateValue(percentage: number) {
     return this.min + percentage * (this.max - this.min);
   }
 
-  /**
-   * Return a number between two numbers.
-   */
+  /** Return a number between two numbers. */
   private _clamp(value: number, min = 0, max = 1) {
     return Math.max(min, Math.min(value, max));
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   */
+  /** Implemented as part of ControlValueAccessor. */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   */
+  /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
-  /**
-   * Implemented as part of ControlValueAccessor.
-   */
+  /** Implemented as part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
@@ -508,6 +490,7 @@ export class MdSlider implements ControlValueAccessor {
 
 /**
  * Renderer class in order to keep all dom manipulation in one place and outside of the main class.
+ * @docs-private
  */
 export class SliderRenderer {
   private _sliderElement: HTMLElement;
