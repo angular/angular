@@ -15,8 +15,8 @@
       </p>
       <table style="width: 100%" cellspacing="0"><tr>
         <td><md-input class="demo-full-width" placeholder="City" value="Mountain View"></md-input></td>
-        <td><md-input class="demo-full-width" placeholder="State" maxLength="2" value="CA"></md-input></td>
-        <td><md-input #postalCode class="demo-full-width" maxLength="5"
+        <td><md-input class="demo-full-width" placeholder="State" maxlength="2" value="CA"></md-input></td>
+        <td><md-input #postalCode class="demo-full-width" maxlength="5"
                       placeholder="Postal Code"
                       value="94043">
           <md-hint align="end">{{postalCode.characterCount}} / 5</md-hint>
@@ -57,7 +57,7 @@
   <md-card-content>
     <h4>Input</h4>
     <p>
-      <md-input placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
+      <md-input placeholder="Character count (100 max)" maxlength="100" class="demo-full-width"
                 value="Hello world. How are you?"
                 #characterCountHintExample>
         <md-hint align="end">{{characterCountHintExample.characterCount}} / 100</md-hint>
@@ -66,7 +66,7 @@
 
     <h4>Textarea</h4>
     <p>
-      <md-textarea placeholder="Character count (100 max)" maxLength="100" class="demo-full-width"
+      <md-textarea placeholder="Character count (100 max)" maxlength="100" class="demo-full-width"
                 value="Hello world. How are you?"
                 #characterCountHintExampleTextarea>
         <md-hint align="end">{{characterCountHintExampleTextarea.characterCount}} / 100</md-hint>
@@ -89,7 +89,7 @@
       <md-input placeholder="100% width placeholder" style="width: 100%"></md-input>
     </p>
     <p>
-      <md-input placeholder="Character count (100 max)" maxLength="100" style="width: 100%"
+      <md-input placeholder="Character count (100 max)" maxlength="100" style="width: 100%"
                 #input>
         <md-hint align="end">{{input.characterCount}} / 100</md-hint>
       </md-input>
