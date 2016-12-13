@@ -9,7 +9,7 @@
 import {fromPromise} from 'rxjs/observable/fromPromise';
 
 import {composeAsyncValidators, composeValidators} from './directives/shared';
-import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+import {AsyncValidatorFn, Errors, ObservableValidatorFn, ValidatorFn} from './directives/validators';
 import {EventEmitter, Observable} from './facade/async';
 import {isPromise} from './private_import_core';
 
@@ -89,6 +89,7 @@ export abstract class AbstractControl {
 
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
+  private _obsValidator$: EventEmitter<AbstractControl>;
   private _status: string;
   private _errors: {[key: string]: any};
   private _pristine: boolean = true;
@@ -144,7 +145,7 @@ export abstract class AbstractControl {
    * In order to have this status, the control must be in the
    * middle of conducting a validation check.
    */
-  get pending(): boolean { return this._status == PENDING; }
+  get pending(): boolean { return this._status === PENDING; }
 
   /**
    * A control is `disabled` when its `status === DISABLED`.
@@ -212,6 +213,15 @@ export abstract class AbstractControl {
   get statusChanges(): Observable<any> { return this._statusChanges; }
 
   /**
+  * Sets the observable validator that is active on this control.
+  */
+  setObservableValidator(newValidator: ObservableValidatorFn): void {
+    if (!newValidator) return;
+    this._obsValidator$ = new EventEmitter<AbstractControl>();
+    newValidator(this._obsValidator$).subsctibe((err: Errors) => this.setErrors(err));
+  }
+
+  /**
    * Sets the synchronous validators that are active on this control.  Calling
    * this will overwrite any existing sync validators.
    */
@@ -226,6 +236,11 @@ export abstract class AbstractControl {
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]): void {
     this.asyncValidator = coerceToAsyncValidator(newValidator);
   }
+
+  /**
+   * Empties out the observable validator.
+   */
+  clearObservableValidator(): void { this._obsValidator$ = null; }
 
   /**
    * Empties out the sync validator list.
@@ -384,11 +399,15 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (this.enabled) {
-      this._errors = this._runValidator();
-      this._status = this._calculateStatus();
+      if (this._obsValidator$) {
+        this._runObsValidator();
+      } else {
+        this._errors = this._runValidator();
+        this._status = this._calculateStatus();
 
-      if (this._status === VALID || this._status === PENDING) {
-        this._runAsyncValidator(emitEvent);
+        if (this._status === VALID || this._status === PENDING) {
+          this._runAsyncValidator(emitEvent);
+        }
       }
     }
 
@@ -412,6 +431,11 @@ export abstract class AbstractControl {
 
   private _runValidator(): {[key: string]: any} {
     return this.validator ? this.validator(this) : null;
+  }
+
+  private _runObsValidator(): void {
+    this._status = PENDING;
+    this._obsValidator$.next(this);
   }
 
   private _runAsyncValidator(emitEvent: boolean): void {
@@ -525,7 +549,6 @@ export abstract class AbstractControl {
     this._valueChanges = new EventEmitter();
     this._statusChanges = new EventEmitter();
   }
-
 
   private _calculateStatus(): string {
     if (this._allControlsDisabled()) return DISABLED;
