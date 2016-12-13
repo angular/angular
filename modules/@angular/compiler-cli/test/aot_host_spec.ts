@@ -174,8 +174,9 @@ describe('CompilerHost', () => {
         metadata: {
           foo: {__symbolic: 'class'},
           Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
-          BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}}
-        }
+          BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
+        },
+        exports: [{from: './lib/utils2', export: ['Export']}],
       }
     ]);
   });
@@ -211,6 +212,7 @@ const FILES: Entry = {
       },
       'metadata_versions': {
         'v1.d.ts': `
+          export {Export} from './lib/utils2';
           export declare class Bar {
             ngOnInit() {}
           }
