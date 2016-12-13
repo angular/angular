@@ -571,25 +571,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       private program: ts.Program, private checker: ts.TypeChecker, private source: ts.SourceFile,
       private fetchPipes: () => SymbolTable) {}
 
-  getTypeKind(symbol: Symbol): BuiltinType {
-    const type = this.getTsTypeOf(symbol);
-    if (type) {
-      if (type.flags & ts.TypeFlags.Any) {
-        return BuiltinType.Any;
-      } else if (
-          type.flags &
-          (ts.TypeFlags.String | ts.TypeFlags.StringLike | ts.TypeFlags.StringLiteral)) {
-        return BuiltinType.String;
-      } else if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLike)) {
-        return BuiltinType.Number;
-      } else if (type.flags & (ts.TypeFlags.Undefined)) {
-        return BuiltinType.Undefined;
-      } else if (type.flags & (ts.TypeFlags.Null)) {
-        return BuiltinType.Null;
-      }
-    }
-    return BuiltinType.Other;
-  }
+  getTypeKind(symbol: Symbol): BuiltinType { return typeKindOf(this.getTsTypeOf(symbol)); }
 
   getBuiltinType(kind: BuiltinType): Symbol {
     // TODO: Replace with typeChecker API when available.
@@ -1223,4 +1205,35 @@ function getTypeParameterOf(type: ts.Type, name: string): ts.Type {
       return typeArguments[0];
     }
   }
+}
+
+function typeKindOf(type: ts.Type): BuiltinType {
+  if (type) {
+    if (type.flags & ts.TypeFlags.Any) {
+      return BuiltinType.Any;
+    } else if (
+        type.flags & (ts.TypeFlags.String | ts.TypeFlags.StringLike | ts.TypeFlags.StringLiteral)) {
+      return BuiltinType.String;
+    } else if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLike)) {
+      return BuiltinType.Number;
+    } else if (type.flags & (ts.TypeFlags.Undefined)) {
+      return BuiltinType.Undefined;
+    } else if (type.flags & (ts.TypeFlags.Null)) {
+      return BuiltinType.Null;
+    } else if (type.flags & ts.TypeFlags.Union) {
+      // If all the constituent types of a union are the same kind, it is also that kind.
+      let candidate: BuiltinType;
+      const unionType = type as ts.UnionType;
+      if (unionType.types.length > 0) {
+        candidate = typeKindOf(unionType.types[0]);
+        for (const subType of unionType.types) {
+          if (candidate != typeKindOf(subType)) {
+            return BuiltinType.Other;
+          }
+        }
+      }
+      return candidate;
+    }
+  }
+  return BuiltinType.Other;
 }
