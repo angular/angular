@@ -189,13 +189,16 @@ export class CompilerHost implements AotCompilerHost {
         for (let prop in v1Metadata.metadata) {
           v2Metadata.metadata[prop] = v1Metadata.metadata[prop];
         }
-        const sourceText = this.context.readFile(dtsFilePath);
+
         const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
         if (exports) {
           for (let prop in exports.metadata) {
             if (!v2Metadata.metadata[prop]) {
               v2Metadata.metadata[prop] = exports.metadata[prop];
             }
+          }
+          if (exports.exports) {
+            v2Metadata.exports = exports.exports;
           }
         }
         metadatas.push(v2Metadata);
