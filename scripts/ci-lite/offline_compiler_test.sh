@@ -3,7 +3,7 @@ set -ex -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic}
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router}
   $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(
@@ -51,6 +51,7 @@ cp -v package.json $TMP
   ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xmb
 
   node test/test_summaries.js
+  node test/test_ngtools_api.js
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node
