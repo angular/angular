@@ -130,6 +130,17 @@ describe('diagnostics', () => {
       });
     });
 
+    it('should report a warning if an event results in a callable expression', () => {
+      const code =
+          ` @Component({template: \`<div (click)="onClick"></div>\`}) export class MyComponent { onClick() { } }`;
+      addCode(code, (fileName, content) => {
+        const diagnostics = ngService.getDiagnostics(fileName);
+        includeDiagnostic(
+            diagnostics, 'Unexpected callable expression. Expected a method call', 'onClick',
+            content);
+      });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
