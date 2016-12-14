@@ -95,11 +95,11 @@ export function stringify(token: any): string {
   }
 
   if (token.overriddenName) {
-    return token.overriddenName;
+    return `${token.overriddenName}`;
   }
 
   if (token.name) {
-    return token.name;
+    return `${token.name}`;
   }
 
   const res = token.toString();
