@@ -198,7 +198,7 @@ export class CompilerHost implements AotCompilerHost {
             }
           }
           if (exports.exports) {
-            v2Metadata.exports = exports.exports;
+            v3Metadata.exports = exports.exports;
           }
         }
         metadatas.push(v3Metadata);
