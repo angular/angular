@@ -218,10 +218,10 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       viewportRect: ClientRect): boolean {
 
     // TODO(jelbourn): probably also want some space between overlay edge and viewport edge.
-    return overlayPoint.x >= viewportRect.left &&
-        overlayPoint.x + overlayRect.width <= viewportRect.right &&
-        overlayPoint.y >= viewportRect.top &&
-        overlayPoint.y + overlayRect.height <= viewportRect.bottom;
+    return overlayPoint.x >= 0 &&
+        overlayPoint.x + overlayRect.width <= viewportRect.width &&
+        overlayPoint.y >= 0 &&
+        overlayPoint.y + overlayRect.height <= viewportRect.height;
   }
 
 

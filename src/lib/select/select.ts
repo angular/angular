@@ -565,10 +565,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     const viewportRect = this._viewportRuler.getViewportRect();
     const triggerRect = this._getTriggerRect();
 
-    const topSpaceAvailable =
-        triggerRect.top - viewportRect.top - SELECT_PANEL_VIEWPORT_PADDING;
+    const topSpaceAvailable = triggerRect.top - SELECT_PANEL_VIEWPORT_PADDING;
     const bottomSpaceAvailable =
-        viewportRect.bottom - triggerRect.bottom - SELECT_PANEL_VIEWPORT_PADDING;
+        viewportRect.height - triggerRect.bottom - SELECT_PANEL_VIEWPORT_PADDING;
 
     const panelHeightTop = Math.abs(this._offsetY);
     const totalPanelHeight =

@@ -745,6 +745,111 @@ describe('MdSelect', () => {
 
     });
 
+    describe('when scrolled', () => {
+
+      // Need to set the scrollTop two different ways to support
+      // both Chrome and Firefox.
+      function setScrollTop(num: number) {
+        document.body.scrollTop = num;
+        document.documentElement.scrollTop = num;
+      }
+
+      beforeEach(() => {
+        // Make the div above the select very tall, so the page will scroll
+        fixture.componentInstance.heightAbove = 2000;
+
+        // Give the select enough horizontal space to open
+        select.style.marginLeft = '20px';
+        select.style.marginRight = '20px';
+      });
+
+      afterEach(() => {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      });
+
+      it('should align the first option properly when scrolled', () => {
+        // Give the select enough space to open
+        fixture.componentInstance.heightBelow = 400;
+        fixture.detectChanges();
+
+        // Scroll the select into view
+        setScrollTop(1700);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        checkTriggerAlignedWithOption(0);
+      });
+
+
+      it('should align a centered option properly when scrolled', () => {
+        // Give the select enough space to open
+        fixture.componentInstance.heightBelow = 400;
+        fixture.detectChanges();
+
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+
+        // Scroll the select into view
+        setScrollTop(1700);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        checkTriggerAlignedWithOption(4);
+      });
+
+      it('should fall back to "above" positioning properly when scrolled', () => {
+        // Give the select insufficient space to open below the trigger
+        fixture.componentInstance.heightBelow = 100;
+        fixture.detectChanges();
+
+        // Scroll the select into view
+        setScrollTop(1400);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        // CSS styles aren't in the tests, so position must be absolute to reflect top/left
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        overlayPane.style.position = 'absolute';
+
+        const triggerBottom = trigger.getBoundingClientRect().bottom;
+        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+
+        expect(overlayBottom.toFixed(2))
+            .toEqual(triggerBottom.toFixed(2),
+                `Expected trigger bottom to align with overlay bottom.`);
+      });
+
+      it('should fall back to "below" positioning properly when scrolled', () => {
+        // Give plenty of space for the select to open below the trigger
+        fixture.componentInstance.heightBelow = 650;
+        fixture.detectChanges();
+
+        // Select an option too low in the list to fit in limited space above
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+
+        // Scroll the select so that it has insufficient space to open above the trigger
+        setScrollTop(1950);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        // CSS styles aren't in the tests, so position must be absolute to reflect top/left
+        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        overlayPane.style.position = 'absolute';
+
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const overlayTop = overlayPane.getBoundingClientRect().top;
+
+        expect(overlayTop.toFixed(2))
+            .toEqual(triggerTop.toFixed(2), `Expected trigger top to align with overlay top.`);
+      });
+    });
+
     describe('x-axis positioning', () => {
 
       beforeEach(() => {
@@ -1037,11 +1142,13 @@ describe('MdSelect', () => {
 @Component({
   selector: 'basic-select',
   template: `
+    <div [style.height.px]="heightAbove"></div>
     <md-select placeholder="Food" [formControl]="control" [required]="isRequired">
       <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
         {{ food.viewValue }}
       </md-option>
     </md-select>
+    <div [style.height.px]="heightBelow"></div>
   `
 })
 class BasicSelect {
@@ -1057,6 +1164,8 @@ class BasicSelect {
   ];
   control = new FormControl();
   isRequired: boolean;
+  heightAbove = 0;
+  heightBelow = 0;
 
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
