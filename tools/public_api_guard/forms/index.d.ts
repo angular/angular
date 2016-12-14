@@ -117,6 +117,13 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
+/** @experimental */
+export declare class CheckboxRequiredValidator extends RequiredValidator {
+    validate(c: AbstractControl): {
+        [key: string]: any;
+    };
+}
+
 /** @stable */
 export declare class ControlContainer extends AbstractControlDirective {
     formDirective: Form;
@@ -529,6 +536,9 @@ export declare class Validators {
     };
     static pattern(pattern: string | RegExp): ValidatorFn;
     static required(control: AbstractControl): {
+        [key: string]: boolean;
+    };
+    static requiredTrue(control: AbstractControl): {
         [key: string]: boolean;
     };
 }

@@ -19,11 +19,25 @@ export function main() {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
-          NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
-          NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
-          NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
-          NgModelAsyncValidation, NgModelSelectWithNullForm
+          StandaloneNgModel,
+          NgModelForm,
+          NgModelGroupForm,
+          NgModelValidBinding,
+          NgModelNgIfForm,
+          NgModelRadioForm,
+          NgModelRangeForm,
+          NgModelSelectForm,
+          NgNoFormComp,
+          InvalidNgModelNoName,
+          NgModelOptionsStandalone,
+          NgModelCustomComp,
+          NgModelCustomWrapper,
+          NgModelValidationBindings,
+          NgModelMultipleValidators,
+          NgAsyncValidator,
+          NgModelAsyncValidation,
+          NgModelSelectWithNullForm,
+          NgModelCheckboxRequiredValidator,
         ],
         imports: [FormsModule]
       });
@@ -766,6 +780,42 @@ export function main() {
 
     describe('validation directives', () => {
 
+      it('required validator should validate checkbox', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelCheckboxRequiredValidator);
+           fixture.detectChanges();
+           tick();
+
+           const control =
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox');
+
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(false);
+
+           fixture.componentInstance.required = true;
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(true);
+
+           input.nativeElement.checked = true;
+           dispatchEvent(input.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.checked).toBe(true);
+           expect(control.hasError('required')).toBe(false);
+
+           input.nativeElement.checked = false;
+           dispatchEvent(input.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(true);
+         }));
+
       it('should support dir validators using bindings', fakeAsync(() => {
            const fixture = TestBed.createComponent(NgModelValidationBindings);
            fixture.componentInstance.required = true;
@@ -1217,6 +1267,16 @@ class NgModelMultipleValidators {
   required: boolean;
   minLen: number;
   pattern: string|RegExp;
+}
+
+@Component({
+  selector: 'ng-model-checkbox-validator',
+  template:
+      `<form><input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox"></form>`
+})
+class NgModelCheckboxRequiredValidator {
+  accepted: boolean = false;
+  required: boolean = false;
 }
 
 @Directive({

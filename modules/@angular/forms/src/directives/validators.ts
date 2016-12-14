@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, Input, OnChanges, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
@@ -33,9 +33,15 @@ export interface Validator {
   registerOnValidatorChange?(fn: () => void): void;
 }
 
-export const REQUIRED_VALIDATOR: any = {
+export const REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
+  multi: true
+};
+
+export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
+  provide: NG_VALIDATORS,
+  useExisting: forwardRef(() => CheckboxRequiredValidator),
   multi: true
 };
 
@@ -52,7 +58,8 @@ export const REQUIRED_VALIDATOR: any = {
  * @stable
  */
 @Directive({
-  selector: '[required][formControlName],[required][formControl],[required][ngModel]',
+  selector:
+      ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
   host: {'[attr.required]': 'required ? "" : null'}
 })
@@ -73,6 +80,30 @@ export class RequiredValidator implements Validator {
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
+}
+
+/**
+ * A Directive that adds the `required` validator to checkbox controls marked with the
+ * `required` attribute, via the {@link NG_VALIDATORS} binding.
+ *
+ * ### Example
+ *
+ * ```
+ * <input type="checkbox" name="active" ngModel required>
+ * ```
+ *
+ * @experimental
+ */
+@Directive({
+  selector:
+      'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
+  providers: [CHECKBOX_REQUIRED_VALIDATOR],
+  host: {'[attr.required]': 'required ? "" : null'}
+})
+export class CheckboxRequiredValidator extends RequiredValidator {
+  validate(c: AbstractControl): {[key: string]: any} {
+    return this.required ? Validators.requiredTrue(c) : null;
+  }
 }
 
 /**
