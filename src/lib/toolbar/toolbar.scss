@@ -1,17 +1,27 @@
 @import '../core/style/variables';
 
+$md-toolbar-height-desktop: 64px !default;
+$md-toolbar-height-mobile-portrait: 56px !default;
+$md-toolbar-height-mobile-landscape: 48px !default;
 
-$md-toolbar-min-height: 64px !default;
 $md-toolbar-font-size: 20px !default;
 $md-toolbar-padding: 16px !default;
 
+
+@mixin md-toolbar-height($height) {
+  md-toolbar {
+    min-height: $height;
+  }
+  md-toolbar-row {
+    height: $height;
+  }
+}
 
 md-toolbar {
   display: flex;
   box-sizing: border-box;
 
   width: 100%;
-  min-height: $md-toolbar-min-height;
 
   // Font Styling
   font-size: $md-toolbar-font-size;
@@ -27,10 +37,22 @@ md-toolbar {
     box-sizing: border-box;
 
     width: 100%;
-    height: $md-toolbar-min-height;
 
     // Flexbox Vertical Alignment
     flex-direction: row;
     align-items: center;
   }
+}
+
+// Set the default height for the toolbar.
+@include md-toolbar-height($md-toolbar-height-desktop);
+
+// Specific height for mobile devices in portrait mode.
+@media ($md-xsmall) and (orientation: portrait) {
+  @include md-toolbar-height($md-toolbar-height-mobile-portrait);
+}
+
+// Specific height for mobile devices in landscape mode.
+@media ($md-small) and (orientation: landscape) {
+  @include md-toolbar-height($md-toolbar-height-mobile-landscape);
 }

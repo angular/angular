@@ -6,7 +6,10 @@ $md-body-font-size-base: rem(1.4) !default;
 $md-font-family: Roboto, 'Helvetica Neue', sans-serif !default;
 
 // Media queries
+// TODO: Find a way to respect media query ranges.
+// TODO: For example the xs-breakpoint should not interfere with the sm-breakpoint.
 $md-xsmall: 'max-width: 600px';
+$md-small: 'max-width: 960px';
 
 // TODO: Revisit all z-indices before beta
 // z-index master list
