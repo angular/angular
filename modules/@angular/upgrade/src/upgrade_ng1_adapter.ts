@@ -9,7 +9,7 @@
 import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular_js';
-import {NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
+import {DETECT_CHANGES_EVENT, NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
 import {controllerKey} from './util';
 
 const CAMEL_CASE = /([A-Z])/g;
@@ -278,6 +278,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     const destinationObj = this.destinationObj;
     const lastValues = this.checkLastValues;
     const checkProperties = this.checkProperties;
+    let foundChange = false;
     for (let i = 0; i < checkProperties.length; i++) {
       const value = destinationObj[checkProperties[i]];
       const last = lastValues[i];
@@ -285,11 +286,18 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
         if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {
           // ignore because NaN != NaN
         } else {
-          const eventEmitter: EventEmitter<any> = (this as any /** TODO #9100 */)[this.propOuts[i]];
+          const eventEmitter: EventEmitter<any> = (this as any)[this.propOuts[i]];
           eventEmitter.emit(lastValues[i] = value);
+          foundChange = true;
         }
       }
     }
+    if (foundChange) {
+      console.log('ngDoCheck: triggering change detection');
+      (this.componentScope.$root as any).$broadcast(DETECT_CHANGES_EVENT)
+    }
+    console.log('ngDoCheck: running digest');
+    this.componentScope.$digest();
     if (this.destinationObj.$doCheck && this.directive.controller) {
       this.destinationObj.$doCheck();
     }
