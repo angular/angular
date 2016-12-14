@@ -8,7 +8,7 @@
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../src/facade/lang';
@@ -354,6 +354,21 @@ export function main() {
             const compFixture = TestBed.createComponent(SomeComponent);
             compFixture.detectChanges();
             expect(compFixture.nativeElement).toHaveText('transformed hello');
+          });
+        });
+
+        describe('template', () => {
+          let testBedSpy: any;
+          beforeEach(() => {
+            testBedSpy = spyOn(getTestBed(), 'overrideComponent').and.callThrough();
+            TestBed.overrideTemplate(SomeComponent, 'newText');
+          });
+          it(`should override component's template`, () => {
+            const fixture = TestBed.createComponent(SomeComponent);
+            expect(fixture.nativeElement).toHaveText('newText');
+            expect(testBedSpy).toHaveBeenCalledWith(SomeComponent, {
+              set: {template: 'newText', templateUrl: null}
+            });
           });
         });
       });
