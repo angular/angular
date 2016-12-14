@@ -18,6 +18,11 @@ import {Symbols} from './symbols';
  */
 export class CollectorOptions {
   /**
+   * Version of the metadata to collect.
+   */
+  version?: number;
+
+  /**
    * Collect a hidden field "$quoted$" in objects literals that record when the key was quoted in
    * the source.
    */
@@ -430,7 +435,10 @@ export class MetadataCollector {
       else if (strict) {
         validateMetadata(sourceFile, nodeMap, metadata);
       }
-      const result: ModuleMetadata = {__symbolic: 'module', version: VERSION, metadata};
+      const result: ModuleMetadata = {
+        __symbolic: 'module',
+        version: this.options.version || VERSION, metadata
+      };
       if (exports) result.exports = exports;
       return result;
     }

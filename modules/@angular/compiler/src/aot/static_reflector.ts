@@ -10,7 +10,7 @@ import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, Ho
 import {ReflectorReader} from '../private_import_core';
 import {StaticSymbol} from './static_symbol';
 
-const SUPPORTED_SCHEMA_VERSION = 2;
+const SUPPORTED_SCHEMA_VERSION = 3;
 const ANGULAR_IMPORT_LOCATIONS = {
   coreDecorators: '@angular/core/src/metadata',
   diDecorators: '@angular/core/src/di/metadata',
@@ -754,10 +754,10 @@ export class StaticReflector implements ReflectorReader {
             {__symbolic: 'module', version: SUPPORTED_SCHEMA_VERSION, module: module, metadata: {}};
       }
       if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
-        this.reportError(
-            new Error(
-                `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`),
-            null);
+        const errorMessage = moduleMetadata['version'] == 2 ?
+            `Unsupported metadata version ${moduleMetadata['version']} for module ${module}. This module should be compiled with a newer version of ngc` :
+            `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
+        this.reportError(new Error(errorMessage), null);
       }
       this.metadataCache.set(module, moduleMetadata);
     }
