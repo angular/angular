@@ -75,9 +75,8 @@ export class DirectiveResolver {
           outputs.push(propName);
         }
       }
-      const hostBinding =
-          ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof HostBinding);
-      if (hostBinding) {
+      const hostBindings = propertyMetadata[propName].filter(a => a && a instanceof HostBinding);
+      hostBindings.forEach(hostBinding => {
         if (hostBinding.hostPropertyName) {
           const startWith = hostBinding.hostPropertyName[0];
           if (startWith === '(') {
@@ -90,13 +89,12 @@ export class DirectiveResolver {
         } else {
           host[`[${propName}]`] = propName;
         }
-      }
-      const hostListener =
-          ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof HostListener);
-      if (hostListener) {
+      });
+      const hostListeners = propertyMetadata[propName].filter(a => a && a instanceof HostListener)
+      hostListeners.forEach(hostListener => {
         const args = hostListener.args || [];
         host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
-      }
+      });
       const query = ListWrapper.findLast(propertyMetadata[propName], (a) => a instanceof Query);
       if (query) {
         queries[propName] = query;

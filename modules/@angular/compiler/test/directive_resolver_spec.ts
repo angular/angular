@@ -309,7 +309,8 @@ export function main() {
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.host).toEqual({'[p1]': 'p1', '[p22]': 'p2', '[p3]': 'p3'});
+        expect(directiveMetadata.host)
+            .toEqual({'[p1]': 'p1', '[p21]': 'p2', '[p22]': 'p2', '[p3]': 'p3'});
       });
 
       it('should support inheriting host listeners', () => {
@@ -329,8 +330,38 @@ export function main() {
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.host).toEqual({'(p1)': 'p1()', '(p22)': 'p2()', '(p3)': 'p3()'});
+        expect(directiveMetadata.host)
+            .toEqual({'(p1)': 'p1()', '(p21)': 'p2()', '(p22)': 'p2()', '(p3)': 'p3()'});
       });
+
+      it('should combine host bindings and listeners during inheritance', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @HostListener('p11') @HostListener('p12')
+          p1() {}
+
+          @HostBinding('p21') @HostBinding('p22')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @HostListener('c1')
+          p1() {}
+
+          @HostBinding('c2')
+          p2: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.host).toEqual({
+          '(p11)': 'p1()',
+          '(p12)': 'p1()',
+          '(c1)': 'p1()',
+          '[p21]': 'p2',
+          '[p22]': 'p2',
+          '[c2]': 'p2'
+        });
+      })
     });
 
     describe('queries', () => {
