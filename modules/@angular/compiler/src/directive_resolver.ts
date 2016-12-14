@@ -90,7 +90,7 @@ export class DirectiveResolver {
           host[`[${propName}]`] = propName;
         }
       });
-      const hostListeners = propertyMetadata[propName].filter(a => a && a instanceof HostListener)
+      const hostListeners = propertyMetadata[propName].filter(a => a && a instanceof HostListener);
       hostListeners.forEach(hostListener => {
         const args = hostListener.args || [];
         host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;

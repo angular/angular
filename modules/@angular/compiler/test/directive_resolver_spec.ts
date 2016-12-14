@@ -361,7 +361,7 @@ export function main() {
           '[p22]': 'p2',
           '[c2]': 'p2'
         });
-      })
+      });
     });
 
     describe('queries', () => {
