@@ -33,16 +33,13 @@ export class MdSnackBarRef<T> {
     this.containerInstance = containerInstance;
     // Dismiss snackbar on action.
     this.onAction().subscribe(() => this.dismiss());
+    containerInstance._onExit().subscribe(() => this._finishDismiss());
   }
 
   /** Dismisses the snack bar. */
   dismiss(): void {
     if (!this._afterClosed.closed) {
-      this.containerInstance.exit().subscribe(() => {
-        this._overlayRef.dispose();
-        this._afterClosed.next();
-        this._afterClosed.complete();
-      });
+      this.containerInstance.exit();
     }
   }
 
@@ -60,6 +57,13 @@ export class MdSnackBarRef<T> {
       this._afterOpened.next();
       this._afterOpened.complete();
     }
+  }
+
+  /** Cleans up the DOM after closing. */
+  private _finishDismiss(): void {
+    this._overlayRef.dispose();
+    this._afterClosed.next();
+    this._afterClosed.complete();
   }
 
   /** Gets an observable that is notified when the snack bar is finished closing. */

@@ -8,6 +8,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
 import {MdSnackBarConfig} from './snack-bar-config';
 import {OverlayContainer, MdLiveAnnouncer} from '../core';
@@ -148,6 +149,20 @@ describe('MdSnackBar', () => {
       expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
       expect(overlayContainerElement.childElementCount)
           .toBe(0, 'Expected the overlay container element to have no child elements');
+    });
+  }));
+
+  it('should clean itself up when the view container gets destroyed', async(() => {
+    snackBar.open(simpleMessage, null, { viewContainerRef: testViewContainerRef });
+    viewContainerFixture.detectChanges();
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
+
+    viewContainerFixture.componentInstance.childComponentExists = false;
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(overlayContainerElement.childElementCount)
+          .toBe(0, 'Expected snack bar to be removed after the view container was destroyed');
     });
   }));
 
@@ -314,10 +329,12 @@ class DirectiveWithViewContainer {
 
 @Component({
   selector: 'arbitrary-component',
-  template: `<dir-with-view-container></dir-with-view-container>`,
+  template: `<dir-with-view-container *ngIf="childComponentExists"></dir-with-view-container>`,
 })
 class ComponentWithChildViewContainer {
   @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
+
+  childComponentExists: boolean = true;
 
   get childViewContainer() {
     return this.childWithViewContainer.viewContainerRef;
@@ -337,7 +354,7 @@ const TEST_DIRECTIVES = [ComponentWithChildViewContainer,
                          BurritosNotification,
                          DirectiveWithViewContainer];
 @NgModule({
-  imports: [MdSnackBarModule],
+  imports: [CommonModule, MdSnackBarModule],
   exports: TEST_DIRECTIVES,
   declarations: TEST_DIRECTIVES,
   entryComponents: [ComponentWithChildViewContainer, BurritosNotification],
