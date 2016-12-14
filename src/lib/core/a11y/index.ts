@@ -16,7 +16,10 @@ export class A11yModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: A11yModule,
-      providers: A11Y_PROVIDERS,
+      providers: [
+        PlatformModule.forRoot().providers,
+        A11Y_PROVIDERS,
+      ],
     };
   }
 }
