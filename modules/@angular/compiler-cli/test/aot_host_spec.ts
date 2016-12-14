@@ -166,11 +166,11 @@ describe('CompilerHost', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
   });
 
-  it('should add missing v2 metadata from v1 metadata and .d.ts files', () => {
+  it('should add missing v3 metadata from v1 metadata and .d.ts files', () => {
     expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1.d.ts')).toEqual([
       {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}}, {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           foo: {__symbolic: 'class'},
           Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},

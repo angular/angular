@@ -177,31 +177,31 @@ export class CompilerHost implements AotCompilerHost {
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
       const v1Metadata = metadatas.find((m: any) => m['version'] === 1);
-      let v2Metadata = metadatas.find((m: any) => m['version'] === 2);
-      if (!v2Metadata && v1Metadata) {
-        // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
+      let v3Metadata = metadatas.find((m: any) => m['version'] === 3);
+      if (!v3Metadata && v1Metadata) {
+        // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
         // as the only difference between the versions is whether all exports are contained in
         // the metadata and the `extends` clause.
-        v2Metadata = {'__symbolic': 'module', 'version': 2, 'metadata': {}};
+        v3Metadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
         if (v1Metadata.exports) {
-          v2Metadata.exports = v1Metadata.exports;
+          v3Metadata.exports = v1Metadata.exports;
         }
         for (let prop in v1Metadata.metadata) {
-          v2Metadata.metadata[prop] = v1Metadata.metadata[prop];
+          v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
         }
 
         const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
         if (exports) {
           for (let prop in exports.metadata) {
-            if (!v2Metadata.metadata[prop]) {
-              v2Metadata.metadata[prop] = exports.metadata[prop];
+            if (!v3Metadata.metadata[prop]) {
+              v3Metadata.metadata[prop] = exports.metadata[prop];
             }
           }
           if (exports.exports) {
             v2Metadata.exports = exports.exports;
           }
         }
-        metadatas.push(v2Metadata);
+        metadatas.push(v3Metadata);
       }
       this.resolverCache.set(filePath, metadatas);
       return metadatas;

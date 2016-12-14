@@ -80,7 +80,13 @@ describe('StaticReflector', () => {
   it('should throw an exception for unsupported metadata versions', () => {
     expect(() => reflector.findDeclaration('src/version-error', 'e'))
         .toThrow(new Error(
-            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 2'));
+            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 3'));
+  });
+
+  it('should throw an exception for version 2 metadata', () => {
+    expect(() => reflector.findDeclaration('src/version-2-error', 'e'))
+        .toThrowError(
+            'Unsupported metadata version 2 for module /tmp/src/version-2-error.d.ts. This module should be compiled with a newer version of ngc');
   });
 
   it('should get and empty annotation list for an unknown class', () => {
@@ -384,7 +390,7 @@ describe('StaticReflector', () => {
     const metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         Foo: {
           __symbolic: 'class',
@@ -775,7 +781,7 @@ export class MockStaticReflectorHost implements StaticReflectorHost {
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
       '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'FORM_DIRECTIVES': [
             {
@@ -788,7 +794,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       }],
       '/tmp/@angular/common/src/directives/ng_for.d.ts': {
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'NgFor': {
             '__symbolic': 'class',
@@ -841,16 +847,16 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       },
       '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-          {version: 2, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/linker/template_ref.d.ts':
-          {version: 2, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
+          {version: 3, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-          {version: 2, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-          {version: 2, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
       '/tmp/src/app/hero-detail.component.d.ts': {
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'HeroDetailComponent': {
             '__symbolic': 'class',
@@ -1001,11 +1007,12 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           }
         }
       },
-      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 2, metadata: {s: 's'}},
+      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 3, metadata: {s: 's'}},
       '/tmp/src/version-error.d.ts': {'__symbolic': 'module', 'version': 100, metadata: {e: 's'}},
+      '/tmp/src/version-2-error.d.ts': {'__symbolic': 'module', 'version': 2, metadata: {e: 's'}},
       '/tmp/src/error-reporting.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           SomeClass: {
             __symbolic: 'class',
@@ -1035,7 +1042,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/error-references.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           Link1: {
             __symbolic: 'reference',
@@ -1057,7 +1064,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/function-declaration.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           one: {
             __symbolic: 'function',
@@ -1086,7 +1093,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/function-reference.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           one: {
             __symbolic: 'call',
@@ -1128,7 +1135,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/function-recursive.d.ts': {
         __symbolic: 'modules',
-        version: 2,
+        version: 3,
         metadata: {
           recursive: {
             __symbolic: 'function',
@@ -1188,7 +1195,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/spread.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
         }
@@ -1338,7 +1345,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       `,
       '/tmp/src/reexport/reexport.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {},
         exports: [
           {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
@@ -1347,7 +1354,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/reexport/src/origin1.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           One: {__symbolic: 'class'},
           Two: {__symbolic: 'class'},
@@ -1356,26 +1363,26 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       },
       '/tmp/src/reexport/src/origin5.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           Five: {__symbolic: 'class'},
         },
       },
       '/tmp/src/reexport/src/origin30.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           Thirty: {__symbolic: 'class'},
         },
       },
       '/tmp/src/reexport/src/originNone.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {},
       },
       '/tmp/src/reexport/src/reexport2.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {},
         exports: [{from: './originNone'}, {from: './origin30'}]
       }
