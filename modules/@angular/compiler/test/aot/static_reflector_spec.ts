@@ -307,6 +307,12 @@ describe('StaticReflector', () => {
         .toEqual('s');
   });
 
+  it('should not simplify a module reference without a name', () => {
+    const staticSymbol = new StaticSymbol('/src/cases', '');
+    expect(simplify(staticSymbol, ({__symbolic: 'reference', module: './extern', name: ''})))
+        .toEqual(staticSymbol);
+  });
+
   it('should simplify a non existing reference as a static symbol', () => {
     expect(simplify(
                new StaticSymbol('/src/cases', ''),

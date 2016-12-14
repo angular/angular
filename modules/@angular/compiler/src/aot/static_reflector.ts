@@ -640,6 +640,9 @@ export class StaticReflector implements ReflectorReader {
                   return simplifyInContext(selectContext, selectTarget[member], depth + 1);
                 return null;
               case 'reference':
+                if (!expression['name']) {
+                  return context;
+                }
                 if (!expression.module) {
                   const name: string = expression['name'];
                   const localValue = scope.resolve(name);
