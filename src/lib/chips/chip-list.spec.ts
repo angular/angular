@@ -22,7 +22,9 @@ describe('MdChipList', () => {
     });
 
     TestBed.compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(StaticChipList);
     fixture.detectChanges();
 
@@ -30,7 +32,7 @@ describe('MdChipList', () => {
     chipListNativeElement = chipListDebugElement.nativeElement;
     chipListInstance = chipListDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
-  }));
+  });
 
   describe('basic behaviors', () => {
     it('adds the `md-chip-list` class', () => {

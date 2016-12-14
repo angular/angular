@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import {MdFocusable} from '../core/a11y/list-key-manager';
-import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 export interface MdChipEvent {
   chip: MdChip;
