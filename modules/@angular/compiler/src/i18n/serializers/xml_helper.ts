@@ -18,8 +18,7 @@ class _Visitor implements IVisitor {
     const strAttrs = this._serializeAttributes(tag.attrs);
 
     if (tag.children.length == 0) {
-      return tag.canSelfClose ? `<${tag.name}${strAttrs}/>` :
-                                `<${tag.name}${strAttrs}></${tag.name}>`;
+      return `<${tag.name}${strAttrs}/>`;
     }
 
     const strChildren = tag.children.map(node => node.visit(this));
@@ -72,8 +71,8 @@ export class Tag implements Node {
   public attrs: {[k: string]: string} = {};
 
   constructor(
-      public name: string, unescapedAttrs: {[k: string]: string} = {}, public children: Node[] = [],
-      public canSelfClose: boolean = true) {
+      public name: string, unescapedAttrs: {[k: string]: string} = {},
+      public children: Node[] = []) {
     Object.keys(unescapedAttrs).forEach((k: string) => {
       this.attrs[k] = _escapeXml(unescapedAttrs[k]);
     });
