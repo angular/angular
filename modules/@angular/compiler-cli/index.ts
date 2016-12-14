@@ -11,3 +11,7 @@ export {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter, NodeComp
 export {Extractor} from './src/extractor';
 export * from '@angular/tsc-wrapped';
 export {VERSION} from './src/version';
+
+
+// TODO(hansl): moving to Angular 4 need to update this API.
+export {NgTools_InternalApi_NG_2 as __NGTOOLS_PRIVATE_API_2} from './src/ngtools_api'
