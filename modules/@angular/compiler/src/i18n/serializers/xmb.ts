@@ -119,11 +119,11 @@ class _Visitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [], false)];
+    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name}, [], false)];
+    return [new xml.Tag(_PLACEHOLDER_TAG, {name: ph.name})];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
