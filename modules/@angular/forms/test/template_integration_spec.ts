@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Input, forwardRef} from '@angular/core';
-import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -23,7 +23,7 @@ export function main() {
           NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
           NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
           NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
-          NgModelAsyncValidation, NgModelSelectWithNullForm
+          NgModelAsyncValidation, NgModelSelectMultipleForm, NgModelSelectWithNullForm
         ],
         imports: [FormsModule]
       });
@@ -740,6 +740,65 @@ export function main() {
          }));
     });
 
+    describe('select multiple controls', () => {
+      let fixture: ComponentFixture<NgModelSelectMultipleForm>;
+      let comp: NgModelSelectMultipleForm;
+
+      beforeEach(() => {
+        fixture = TestBed.createComponent(NgModelSelectMultipleForm);
+        comp = fixture.componentInstance;
+        comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
+      });
+
+      const setSelectedCities = (selectedCities: any): void => {
+        comp.selectedCities = selectedCities;
+        fixture.detectChanges();
+        tick();
+      };
+
+      const assertOptionElementSelectedState = (selectedStates: boolean[]): void => {
+        const options = fixture.debugElement.queryAll(By.css('option'));
+        if (options.length !== selectedStates.length) {
+          throw 'the selected state values to assert does not match the number of options';
+        }
+        for (let i = 0; i < selectedStates.length; i++) {
+          expect(options[i].nativeElement.selected).toBe(selectedStates[i]);
+        }
+      };
+
+      const testNewModelValueUnselectsAllOptions = (modelValue: any): void => {
+        setSelectedCities([comp.cities[1]]);
+        assertOptionElementSelectedState([false, true, false]);
+
+        setSelectedCities(modelValue);
+
+        const select = fixture.debugElement.query(By.css('select'));
+        expect(select.nativeElement.value).toEqual('');
+        assertOptionElementSelectedState([false, false, false]);
+      };
+
+      it('should support setting value to null and undefined', fakeAsync(() => {
+           testNewModelValueUnselectsAllOptions(null);
+           testNewModelValueUnselectsAllOptions(undefined);
+         }));
+
+      it('should clear all selected option elements when value of wrong type supplied',
+         fakeAsync(() => { testNewModelValueUnselectsAllOptions(''); }));
+
+      it('should set option elements to selected that are present in model', fakeAsync(() => {
+           setSelectedCities([comp.cities[0], comp.cities[2]]);
+           assertOptionElementSelectedState([true, false, true]);
+         }));
+
+      it('should clear selected option elements since removed from model', fakeAsync(() => {
+           const selectedCities: [{'name:string': string}] = <[{'name:string': string}]>[];
+           selectedCities.push.apply(selectedCities, comp.cities);
+           setSelectedCities(selectedCities);
+           setSelectedCities([comp.cities[1]]);
+           assertOptionElementSelectedState([false, true, false]);
+         }));
+    });
+
     describe('custom value accessors', () => {
       it('should support standard writing to view and model', async(() => {
            const fixture = TestBed.createComponent(NgModelCustomWrapper);
@@ -1150,6 +1209,19 @@ class NgModelSelectForm {
 })
 class NgModelSelectWithNullForm {
   selectedCity: {[k: string]: string} = {};
+  cities: any[] = [];
+}
+
+@Component({
+  selector: 'ng-model-select-multiple-form',
+  template: `
+    <select multiple [(ngModel)]="selectedCities">
+      <option *ngFor="let c of cities" [ngValue]="c"> {{c.name}} </option>
+    </select>
+  `
+})
+class NgModelSelectMultipleForm {
+  selectedCities: any[];
   cities: any[] = [];
 }
 
