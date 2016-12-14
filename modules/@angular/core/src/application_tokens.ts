@@ -19,7 +19,7 @@ import {OpaqueToken} from './di';
  * using this token.
  * @experimental
  */
-export const APP_ID: any = new OpaqueToken('AppId');
+export const APP_ID: OpaqueToken = new OpaqueToken('AppId');
 
 export function _appIdRandomProviderFactory() {
   return `${_randomChar()}${_randomChar()}${_randomChar()}`;
@@ -43,7 +43,7 @@ function _randomChar(): string {
  * A function that will be executed when a platform is initialized.
  * @experimental
  */
-export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer');
+export const PLATFORM_INITIALIZER: OpaqueToken = new OpaqueToken('Platform Initializer');
 
 /**
  * All callbacks provided via this token will be called for every component that is bootstrapped.
@@ -53,10 +53,18 @@ export const PLATFORM_INITIALIZER: any = new OpaqueToken('Platform Initializer')
  *
  * @experimental
  */
-export const APP_BOOTSTRAP_LISTENER = new OpaqueToken('appBootstrapListener');
+export const APP_BOOTSTRAP_LISTENER: OpaqueToken = new OpaqueToken('appBootstrapListener');
 
 /**
  * A token which indicates the root directory of the application
  * @experimental
  */
-export const PACKAGE_ROOT_URL: any = new OpaqueToken('Application Packages Root URL');
+export const PACKAGE_ROOT_URL: OpaqueToken = new OpaqueToken('Application Packages Root URL');
+
+/**
+ * A token which can be used to provide components to bootstrap. Useful when there are multiple
+ * applications on the same page.
+ *
+ * @experimental
+ */
+export const BOOTSTRAP_COMPONENTS: OpaqueToken = new OpaqueToken('Bootstrap Components');

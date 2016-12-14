@@ -13,8 +13,7 @@ import {stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
-import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {ChangeDetectorRef} from './change_detection/change_detector_ref';
+import {APP_BOOTSTRAP_LISTENER, BOOTSTRAP_COMPONENTS, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
 import {Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
@@ -31,6 +30,14 @@ import {NgZone} from './zone/ng_zone';
 let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
 let _platform: PlatformRef;
+
+/**
+ * @experimental
+ */
+export interface BootstrapComponent {
+  selector: string;
+  type: Type<any>;
+}
 
 /**
  * Disable Angular's development mode, which turns off assertions and other
@@ -333,7 +340,14 @@ export class PlatformRef_ extends PlatformRef {
 
   private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>) {
     const appRef = moduleRef.injector.get(ApplicationRef);
-    if (moduleRef.bootstrapFactories.length > 0) {
+    const bootComponents: BootstrapComponent[] = moduleRef.injector.get(BOOTSTRAP_COMPONENTS, []);
+    if (bootComponents.length > 0) {
+      bootComponents.forEach((cmp: BootstrapComponent) => {
+        const compFactory = moduleRef.resolveComponentFactory(cmp.type);
+        compFactory.selector = cmp.selector;
+        appRef.bootstrap(compFactory);
+      });
+    } else if (moduleRef.bootstrapFactories.length > 0) {
       moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
@@ -430,8 +444,7 @@ export class ApplicationRef_ extends ApplicationRef {
     super();
     this._enforceNoNewChanges = isDevMode();
 
-    this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+    this._zone.onMicrotaskEmpty.subscribe({next: () => this._zone.run(() => this.tick())});
   }
 
   attachView(viewRef: ViewRef): void {
@@ -508,7 +521,7 @@ export class ApplicationRef_ extends ApplicationRef {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // TODO(alxhub): Dispose of the NgZone.
     this._views.slice().forEach((view) => view.destroy());
   }

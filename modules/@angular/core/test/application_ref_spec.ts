@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {platformCoreDynamic} from '@angular/compiler';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, BOOTSTRAP_COMPONENTS, CompilerFactory, Component, NgModule, PlatformRef, Type, ViewChild, ViewContainerRef, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -30,7 +31,9 @@ export function main() {
     beforeEach(() => {
       fakeDoc = getDOM().createHtmlDocument();
       const el = getDOM().createElement('comp', fakeDoc);
+      const customEl = getDOM().createElement('custom-comp', fakeDoc);
       getDOM().appendChild(fakeDoc.body, el);
+      getDOM().appendChild(fakeDoc.body, customEl);
       mockConsole = new MockConsole();
     });
 
@@ -202,7 +205,21 @@ export function main() {
                });
          }));
 
-      it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
+      // it('should auto bootstrap components provided via BOOTSTRAP_COMPONENTS', async(() => {
+      //      const components = [
+      //        {type: SomeComponent, selector: 'comp'},
+      //        {type: SomeComponent, selector: 'custom-comp'}
+      //      ];
+      //      const providers = [{provide: BOOTSTRAP_COMPONENTS, useValue: components}];
+      //      const platform =
+      //          createPlatformFactory(platformCoreDynamic, 'bootstrapTest', providers)();
+      //      platform.bootstrapModule(createModule({ngDoBootstrap: false})).then((moduleRef) => {
+      //        const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+      //        expect(appRef.componentTypes).toEqual([SomeComponent, SomeComponent]);
+      //      });
+      //    }));
+
+      it('should error if neither `ngDoBootstrap`, nor @NgModule.bootstrap, nor BOOTSTRAP_COMPONENTS was specified',
          async(() => {
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {

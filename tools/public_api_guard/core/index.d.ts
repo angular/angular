@@ -130,7 +130,7 @@ export declare abstract class AnimationWithStepsMetadata extends AnimationMetada
 export declare const APP_BOOTSTRAP_LISTENER: OpaqueToken;
 
 /** @experimental */
-export declare const APP_ID: any;
+export declare const APP_ID: OpaqueToken;
 
 /** @experimental */
 export declare const APP_INITIALIZER: any;
@@ -168,6 +168,15 @@ export declare const Attribute: AttributeDecorator;
 
 /** @experimental */
 export declare const AUTO_STYLE: string;
+
+/** @experimental */
+export declare const BOOTSTRAP_COMPONENTS: OpaqueToken;
+
+/** @experimental */
+export interface BootstrapComponent {
+    selector: string;
+    type: Type<any>;
+}
 
 /** @stable */
 export declare enum ChangeDetectionStrategy {
@@ -665,7 +674,7 @@ export interface OptionalDecorator {
 export declare const Output: OutputDecorator;
 
 /** @experimental */
-export declare const PACKAGE_ROOT_URL: any;
+export declare const PACKAGE_ROOT_URL: OpaqueToken;
 
 /** @stable */
 export declare const Pipe: PipeDecorator;
@@ -676,7 +685,7 @@ export interface PipeTransform {
 }
 
 /** @experimental */
-export declare const PLATFORM_INITIALIZER: any;
+export declare const PLATFORM_INITIALIZER: OpaqueToken;
 
 /** @experimental */
 export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
