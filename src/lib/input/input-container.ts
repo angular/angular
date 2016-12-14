@@ -135,11 +135,11 @@ export class MdInputDirective implements AfterContentInit {
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer,
-              @Optional() private _ngControl: NgControl) {
+              @Optional() public _ngControl: NgControl) {
     // Force setter to be called in case id was not specified.
     this.id = this.id;
 
-    if (this._ngControl) {
+    if (this._ngControl && this._ngControl.valueChanges) {
       this._ngControl.valueChanges.subscribe((value) => {
         this.value = value;
       });
@@ -182,6 +182,13 @@ export class MdInputDirective implements AfterContentInit {
   host: {
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
+    '[class.ng-untouched]': '_isUntouched()',
+    '[class.ng-touched]': '_isTouched()',
+    '[class.ng-pristine]': '_isPristine()',
+    '[class.ng-dirty]': '_isDirty()',
+    '[class.ng-valid]': '_isValid()',
+    '[class.ng-invalid]': '_isInvalid()',
+    '[class.ng-pending]': '_isPending()',
     '(click)': '_focusInput()',
   },
   encapsulation: ViewEncapsulation.None,
@@ -223,12 +230,26 @@ export class MdInputContainer implements AfterContentInit {
     });
   }
 
+  _isUntouched() { return this._hasNgControl() && this._mdInputChild._ngControl.untouched; }
+
+  _isTouched() { return this._hasNgControl() && this._mdInputChild._ngControl.touched; }
+
+  _isPristine() { return this._hasNgControl() && this._mdInputChild._ngControl.pristine; }
+
+  _isDirty() { return this._hasNgControl() && this._mdInputChild._ngControl.dirty; }
+
+  _isValid() { return this._hasNgControl() && this._mdInputChild._ngControl.valid; }
+
+  _isInvalid() { return this._hasNgControl() && this._mdInputChild._ngControl.invalid; }
+
+  _isPending() { return this._hasNgControl() && this._mdInputChild._ngControl.pending; }
+
   /** Whether the input has a placeholder. */
-  _hasPlaceholder(): boolean {
-    return !!this._mdInputChild.placeholder || !!this._placeholderChild;
-  }
+  _hasPlaceholder() { return !!(this._mdInputChild.placeholder || this._placeholderChild); }
 
   _focusInput() { this._mdInputChild.focus(); }
+
+  private _hasNgControl() { return !!(this._mdInputChild && this._mdInputChild._ngControl); }
 
   /**
    * Ensure that there is only one placeholder (either `input` attribute or child element with the

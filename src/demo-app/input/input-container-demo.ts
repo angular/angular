@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {FormControl, Validators} from '@angular/forms';
 
 
 let max = 5;
@@ -22,6 +23,8 @@ export class InputContainerDemo {
     { value: 50 },
   ];
   rows = 8;
+  formControl = new FormControl('hello', Validators.required);
+  model = 'hello';
 
   addABunch(n: number) {
     for (let x = 0; x < n; x++) {

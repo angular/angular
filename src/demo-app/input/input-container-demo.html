@@ -249,6 +249,13 @@
   </md-card-content>
 </md-card>
 
+<md-card class="demo-card demo-basic">
+  <md-toolbar color="primary">Forms</md-toolbar>
+  <md-card-content>
+    <md-input-container><input md-input placeholder="reactive" [formControl]="formControl"></md-input-container>
+    <md-input-container><input md-input placeholder="template" [(ngModel)]="model" required></md-input-container>
+  </md-card-content>
+</md-card>
 
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">Textarea Autosize</md-toolbar>
