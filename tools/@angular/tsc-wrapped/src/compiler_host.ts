@@ -110,7 +110,8 @@ export class TsickleCompilerHost extends DelegatingHost {
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
-  private metadataCollector = new MetadataCollector();
+  private metadataCollector = new MetadataCollector({quotedNames: true});
+  private metadataCollector1 = new MetadataCollector({version: 1});
   constructor(delegate: ts.CompilerHost, private ngOptions: NgOptions) { super(delegate); }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
@@ -120,18 +121,9 @@ export class MetadataWriterHost extends DelegatingHost {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
       const metadata =
           this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
-      const metadatas: ModuleMetadata[] = [metadata];
-      if (metadata && metadata.metadata) {
-        if (metadata.version === 2) {
-          // Also emit a version 1 so that older clients can consume new metadata files as well.
-          // We can write the same data as version 2 is a strict super set.
-          metadatas.push({
-            __symbolic: metadata.__symbolic,
-            exports: metadata.exports,
-            metadata: metadata.metadata,
-            version: 1
-          });
-        }
+      const metadata1 = this.metadataCollector1.getMetadata(sourceFile, false);
+      const metadatas: ModuleMetadata[] = [metadata, metadata1].filter(e => !!e);
+      if (metadatas.length) {
         const metadataText = JSON.stringify(metadatas);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
       }

@@ -66,7 +66,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
@@ -107,7 +107,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         AppComponent: {
           __symbolic: 'class',
@@ -161,7 +161,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         HEROES: [
           {'id': 11, 'name': 'Mr. Nice', '$quoted$': ['id', 'name']},
@@ -240,7 +240,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(unsupported1);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
         b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
@@ -282,7 +282,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         SimpleClass: {__symbolic: 'class'},
         AbstractClass: {__symbolic: 'class'},
@@ -296,7 +296,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(exportedFunctions);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         one: {
           __symbolic: 'function',
