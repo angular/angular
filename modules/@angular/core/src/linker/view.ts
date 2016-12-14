@@ -191,7 +191,8 @@ export abstract class AppView<T> {
     } else {
       this._renderDetach();
     }
-    if (this.declaredViewContainer && this.declaredViewContainer !== this.viewContainer) {
+    if (this.declaredViewContainer && this.declaredViewContainer !== this.viewContainer &&
+        this.declaredViewContainer.projectedViews) {
       const projectedViews = this.declaredViewContainer.projectedViews;
       const index = projectedViews.indexOf(this);
       // perf: pop is faster than splice!

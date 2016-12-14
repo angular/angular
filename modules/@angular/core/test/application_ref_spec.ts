@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, CompilerFactory, Component, NgModule, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -275,9 +275,15 @@ export function main() {
         vc: ViewContainerRef;
       }
 
+      @Component({template: '<template #t>Dynamic content</template>'})
+      class EmbeddedViewComp {
+        @ViewChild(TemplateRef)
+        tplRef: TemplateRef<Object>;
+      }
+
       beforeEach(() => {
         TestBed.configureTestingModule({
-          declarations: [MyComp, ContainerComp],
+          declarations: [MyComp, ContainerComp, EmbeddedViewComp],
           providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]
         });
       });
@@ -317,6 +323,17 @@ export function main() {
 
         appRef.attachView(comp.componentRef.hostView);
         comp.destroy();
+
+        expect(appRef.viewCount).toBe(0);
+      });
+
+      it('should detach attached embedded views if they are destroyed', () => {
+        const comp = TestBed.createComponent(EmbeddedViewComp);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
+
+        appRef.attachView(embeddedViewRef);
+        embeddedViewRef.destroy();
 
         expect(appRef.viewCount).toBe(0);
       });
