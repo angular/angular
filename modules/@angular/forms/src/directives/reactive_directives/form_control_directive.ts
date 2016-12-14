@@ -7,7 +7,6 @@
  */
 
 import {Directive, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
-
 import {EventEmitter} from '../../facade/async';
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -65,7 +64,6 @@ export const formControlBinding: any = {
  *  @stable
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
-
 export class FormControlDirective extends NgControl implements OnChanges {
   viewModel: any;
 
@@ -89,6 +87,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
+                  this.form._registerOnFocus(() => this.focus());
                   if (this.control.disabled && this.valueAccessor.setDisabledState) {
                     this.valueAccessor.setDisabledState(true);
                   }
@@ -113,6 +112,10 @@ export class FormControlDirective extends NgControl implements OnChanges {
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
                 this.update.emit(newValue);
+              }
+
+              focus(): void {
+                if (this.valueAccessor.focus) this.valueAccessor.focus();
               }
 
               private _isControlChanged(changes: {[key: string]: any}): boolean {

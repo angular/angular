@@ -126,6 +126,10 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this.update.emit(newValue);
   }
 
+  focus(): void {
+    if (this.valueAccessor.focus) this.valueAccessor.focus();
+  }
+
   get path(): string[] { return controlPath(this.name, this._parent); }
 
   get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
@@ -149,9 +153,10 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  private _setUpControl() {
+  private _setUpControl(): void {
     this._checkParentType();
     this._control = this.formDirective.addControl(this);
+    this._control._registerOnFocus(() => this.focus());
     if (this.control.disabled && this.valueAccessor.setDisabledState) {
       this.valueAccessor.setDisabledState(true);
     }

@@ -74,7 +74,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   });
 }
 
-export function cleanUpControl(control: FormControl, dir: NgControl) {
+export function cleanUpControl(control: FormControl, dir: NgControl): void {
   dir.valueAccessor.registerOnChange(() => _noControlError(dir));
   dir.valueAccessor.registerOnTouched(() => _noControlError(dir));
 
@@ -90,7 +90,10 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
     }
   });
 
-  if (control) control._clearChangeFns();
+  if (control) {
+    control._clearChangeFns();
+    control._clearFocusFns();
+  }
 }
 
 export function setUpFormContainer(

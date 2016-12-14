@@ -41,6 +41,8 @@ export interface ControlValueAccessor {
    * @param isDisabled
    */
   setDisabledState?(isDisabled: boolean): void;
+
+  focus?(): void;
 }
 
 /**

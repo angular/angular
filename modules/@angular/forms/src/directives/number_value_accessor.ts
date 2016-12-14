@@ -55,4 +55,6 @@ export class NumberValueAccessor implements ControlValueAccessor {
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
+
+  focus(): void { this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus'); }
 }

@@ -126,6 +126,7 @@ export declare class ControlContainer extends AbstractControlDirective {
 
 /** @stable */
 export interface ControlValueAccessor {
+    focus?(): void;
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     setDisabledState?(isDisabled: boolean): void;
@@ -137,6 +138,7 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer, _elementRef: ElementRef);
+    focus(): void;
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
@@ -206,6 +208,7 @@ export declare class FormBuilder {
 /** @stable */
 export declare class FormControl extends AbstractControl {
     constructor(formState?: any, validator?: ValidatorFn | ValidatorFn[], asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]);
+    focus(): void;
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -238,6 +241,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     validator: ValidatorFn;
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    focus(): void;
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -254,6 +258,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     update: EventEmitter<{}>;
     validator: ValidatorFn;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    focus(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -362,6 +367,7 @@ export declare abstract class NgControl extends AbstractControlDirective {
     name: string;
     validator: ValidatorFn;
     valueAccessor: ControlValueAccessor;
+    abstract focus(): void;
     abstract viewToModelUpdate(newValue: any): void;
 }
 
@@ -419,6 +425,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     validator: ValidatorFn;
     viewModel: any;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<Validator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    focus(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -485,6 +492,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     onTouched: () => void;
     value: any;
     constructor(_renderer: Renderer, _elementRef: ElementRef);
+    focus(): void;
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
     setDisabledState(isDisabled: boolean): void;

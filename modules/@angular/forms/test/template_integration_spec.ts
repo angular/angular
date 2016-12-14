@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, forwardRef} from '@angular/core';
+import {Component, Directive, ElementRef, Input, ViewChild, forwardRef} from '@angular/core';
 import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
@@ -19,9 +19,9 @@ export function main() {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          StandaloneNgModel, NgModelForm, NgModelGroupForm, NgModelValidBinding, NgModelNgIfForm,
-          NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp, InvalidNgModelNoName,
-          NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
+          StandaloneNgModel, NgModelWithFocus, NgModelForm, NgModelGroupForm, NgModelValidBinding,
+          NgModelNgIfForm, NgModelRadioForm, NgModelRangeForm, NgModelSelectForm, NgNoFormComp,
+          InvalidNgModelNoName, NgModelOptionsStandalone, NgModelCustomComp, NgModelCustomWrapper,
           NgModelValidationBindings, NgModelMultipleValidators, NgAsyncValidator,
           NgModelAsyncValidation, NgModelSelectWithNullForm
         ],
@@ -47,6 +47,18 @@ export function main() {
 
            // view -> model
            expect(fixture.componentInstance.name).toEqual('updatedValue');
+         }));
+
+      it('should focus input using directive reference', fakeAsync(() => {
+           const fixture = TestBed.createComponent(NgModelWithFocus);
+           const testComponent = fixture.componentInstance;
+
+           expect(getDOM().defaultDoc().activeElement)
+               .not.toEqual(testComponent.element.nativeElement);
+
+           testComponent.setFocus();
+
+           expect(getDOM().defaultDoc().activeElement).toEqual(testComponent.element.nativeElement);
          }));
 
       it('should support ngModel registration with a parent form', fakeAsync(() => {
@@ -997,6 +1009,17 @@ export function main() {
 })
 class StandaloneNgModel {
   name: string;
+}
+
+@Component({
+  selector: 'focus-ng-model',
+  template: `<input type="text" [(ngModel)]="name" #ngModel="ngModel" #elem>`
+})
+class NgModelWithFocus {
+  @ViewChild('ngModel') ngModel: NgModel;
+  @ViewChild('elem') element: ElementRef;
+
+  setFocus(): void { this.ngModel.focus(); }
 }
 
 @Component({
