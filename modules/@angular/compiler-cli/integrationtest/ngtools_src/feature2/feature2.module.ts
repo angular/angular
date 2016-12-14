@@ -1,22 +1,26 @@
-import {NgModule, Component} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-@Component({
-  selector: 'feature-component',
-  template: 'foo.html'
-})
-export class FeatureComponent {}
+@Component({selector: 'feature-component', template: 'foo.html'})
+export class FeatureComponent {
+}
 
 @NgModule({
-  declarations: [
-    FeatureComponent
-  ],
-  imports: [
-    RouterModule.forChild([
-      { path: '', component: FeatureComponent },
-      { path: 'd', loadChildren: './default.module' }
-      { path: 'e', loadChildren: 'feature/feature.module#FeatureModule' }
-    ])
-  ]
+  declarations: [FeatureComponent],
+  imports: [RouterModule.forChild([
+    {path: '', component: FeatureComponent}, {path: 'd', loadChildren: './default.module'} {
+      path: 'e',
+      loadChildren: 'feature/feature.module#FeatureModule'
+    }
+  ])]
 })
-export class Feature2Module {}
+export class Feature2Module {
+}

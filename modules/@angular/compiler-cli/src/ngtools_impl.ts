@@ -1,11 +1,20 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * This is a private API for the ngtools toolkit.
  *
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
+import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
 import {NgModule} from '@angular/core';
-import {StaticSymbol, StaticReflector, AotCompilerHost} from '@angular/compiler';
+
 
 
 // We cannot depend directly to @angular/router.
@@ -19,7 +28,9 @@ export interface LazyRoute {
   routeDef: RouteDef;
   absoluteFilePath: string;
 }
-export type LazyRouteMap = {[route: string]: LazyRoute};
+export type LazyRouteMap = {
+  [route: string]: LazyRoute
+};
 
 // A route definition. Normally the short form 'path/to/module#ModuleClassName' is used by
 // the user, and this is a helper class to extract information from it.
@@ -27,9 +38,9 @@ export class RouteDef {
   private constructor(public readonly path: string, public readonly className: string = null) {}
 
   toString() {
-    return (this.className === null || this.className == 'default')
-      ? this.path
-      : `${this.path}#${this.className}`;
+    return (this.className === null || this.className == 'default') ?
+        this.path :
+        `${this.path}#${this.className}`;
   }
 
   static fromString(entry: string): RouteDef {
@@ -44,9 +55,8 @@ export class RouteDef {
  * @returns {LazyRouteMap}
  * @private
  */
-export function listLazyRoutesOfModule(entryModule: string,
-                                       host: AotCompilerHost,
-                                       reflector: StaticReflector): LazyRouteMap {
+export function listLazyRoutesOfModule(
+    entryModule: string, host: AotCompilerHost, reflector: StaticReflector): LazyRouteMap {
   const entryRouteDef = RouteDef.fromString(entryModule);
   const containingFile = _resolveModule(entryRouteDef.path, entryRouteDef.path, host);
   const modulePath = `./${containingFile.replace(/^(.*)\//, '')}`;
@@ -55,27 +65,25 @@ export function listLazyRoutesOfModule(entryModule: string,
   // List loadChildren of this single module.
   const staticSymbol = reflector.findDeclaration(modulePath, className, containingFile);
   const ROUTES = reflector.findDeclaration(ROUTER_MODULE_PATH, ROUTER_ROUTES_SYMBOL_NAME);
-  const lazyRoutes: LazyRoute[] = _extractLazyRoutesFromStaticModule(
-    staticSymbol, reflector, host, ROUTES);
+  const lazyRoutes: LazyRoute[] =
+      _extractLazyRoutesFromStaticModule(staticSymbol, reflector, host, ROUTES);
   const routes: LazyRouteMap = {};
 
-  lazyRoutes
-    .forEach((lazyRoute: LazyRoute) => {
-      const route: string = lazyRoute.routeDef.toString();
-      _assertRoute(routes, lazyRoute);
-      routes[route] = lazyRoute;
+  lazyRoutes.forEach((lazyRoute: LazyRoute) => {
+    const route: string = lazyRoute.routeDef.toString();
+    _assertRoute(routes, lazyRoute);
+    routes[route] = lazyRoute;
 
-      const lazyModuleSymbol = reflector.findDeclaration(
+    const lazyModuleSymbol = reflector.findDeclaration(
         lazyRoute.absoluteFilePath, lazyRoute.routeDef.className || 'default');
-      const subRoutes = _extractLazyRoutesFromStaticModule(
-        lazyModuleSymbol, reflector, host, ROUTES);
+    const subRoutes = _extractLazyRoutesFromStaticModule(lazyModuleSymbol, reflector, host, ROUTES);
 
-      // Populate the map using the routes we just found.
-      subRoutes.forEach(subRoute => {
-        _assertRoute(routes, subRoute);
-        routes[subRoute.routeDef.toString()] = subRoute;
-      });
+    // Populate the map using the routes we just found.
+    subRoutes.forEach(subRoute => {
+      _assertRoute(routes, subRoute);
+      routes[subRoute.routeDef.toString()] = subRoute;
     });
+  });
 
   return routes;
 }
@@ -101,10 +109,11 @@ function _resolveModule(modulePath: string, containingFile: string, host: AotCom
 function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
   const r = route.routeDef.toString();
   if (map[r] && map[r].absoluteFilePath != route.absoluteFilePath) {
-    throw new Error(`Duplicated path in loadChildren detected: "${r}" is used in 2 loadChildren, `
-      + `but they point to different modules "(${map[r].absoluteFilePath} and `
-      + `"${route.absoluteFilePath}"). Webpack cannot distinguish on context and would fail to `
-      + 'load the proper one.');
+    throw new Error(
+        `Duplicated path in loadChildren detected: "${r}" is used in 2 loadChildren, ` +
+        `but they point to different modules "(${map[r].absoluteFilePath} and ` +
+        `"${route.absoluteFilePath}"). Webpack cannot distinguish on context and would fail to ` +
+        'load the proper one.');
   }
 }
 
@@ -114,34 +123,35 @@ function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
  * module and all statically referred modules.
  * @private
  */
-function _extractLazyRoutesFromStaticModule(staticSymbol: StaticSymbol,
-                                            reflector: StaticReflector,
-                                            host: AotCompilerHost,
-                                            ROUTES: StaticSymbol): LazyRoute[] {
+function _extractLazyRoutesFromStaticModule(
+    staticSymbol: StaticSymbol, reflector: StaticReflector, host: AotCompilerHost,
+    ROUTES: StaticSymbol): LazyRoute[] {
   const moduleMetadata = _getNgModuleMetadata(staticSymbol, reflector);
-  const allRoutes: any = (moduleMetadata.imports || [])
-    .filter(i => 'providers' in i)
-    .reduce((mem: Route[], m: any) => {
-      return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
-    }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
+  const allRoutes: any =
+      (moduleMetadata.imports || [])
+          .filter(i => 'providers' in i)
+          .reduce((mem: Route[], m: any) => {
+            return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
+          }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
 
-  const lazyRoutes: LazyRoute[] = _collectLoadChildren(allRoutes)
-    .reduce((acc: LazyRoute[], route: string) => {
-      const routeDef = RouteDef.fromString(route);
-      const absoluteFilePath = _resolveModule(routeDef.path, staticSymbol.filePath, host);
-      acc.push({ routeDef, absoluteFilePath });
-      return acc;
-    }, []);
+  const lazyRoutes: LazyRoute[] =
+      _collectLoadChildren(allRoutes).reduce((acc: LazyRoute[], route: string) => {
+        const routeDef = RouteDef.fromString(route);
+        const absoluteFilePath = _resolveModule(routeDef.path, staticSymbol.filePath, host);
+        acc.push({routeDef, absoluteFilePath});
+        return acc;
+      }, []);
 
   const importedSymbols = ((moduleMetadata.imports || []) as any[])
-    .filter(i => i instanceof StaticSymbol) as StaticSymbol[];
+                              .filter(i => i instanceof StaticSymbol) as StaticSymbol[];
 
   return importedSymbols
-    .reduce((acc: LazyRoute[], i: StaticSymbol) => {
-      return acc.concat(_extractLazyRoutesFromStaticModule(
-        i, reflector, host, ROUTES));
-    }, [])
-    .concat(lazyRoutes);
+      .reduce(
+          (acc: LazyRoute[], i: StaticSymbol) => {
+            return acc.concat(_extractLazyRoutesFromStaticModule(i, reflector, host, ROUTES));
+          },
+          [])
+      .concat(lazyRoutes);
 }
 
 
@@ -150,7 +160,7 @@ function _extractLazyRoutesFromStaticModule(staticSymbol: StaticSymbol,
  * @private
  */
 function _getNgModuleMetadata(staticSymbol: StaticSymbol, reflector: StaticReflector): NgModule {
-  const ngModules = reflector.annotations(staticSymbol).filter((s: any)  => s instanceof NgModule);
+  const ngModules = reflector.annotations(staticSymbol).filter((s: any) => s instanceof NgModule);
   if (ngModules.length === 0) {
     throw new Error(`${staticSymbol.name} is not an NgModule`);
   }
@@ -162,8 +172,8 @@ function _getNgModuleMetadata(staticSymbol: StaticSymbol, reflector: StaticRefle
  * Return the routes from the provider list.
  * @private
  */
-function _collectRoutes(providers: any[], reflector: StaticReflector,
-                        ROUTES: StaticSymbol): Route[] {
+function _collectRoutes(
+    providers: any[], reflector: StaticReflector, ROUTES: StaticSymbol): Route[] {
   return providers.reduce((routeList: Route[], p: any) => {
     if (p.provide === ROUTES) {
       return routeList.concat(p.useValue);

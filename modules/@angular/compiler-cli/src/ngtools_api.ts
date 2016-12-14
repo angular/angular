@@ -1,13 +1,21 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * This is a private API for the ngtools toolkit.
  *
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
 
-import * as ts from 'typescript';
-import {StaticReflector, AotCompilerHost} from '@angular/compiler';
+import {AotCompilerHost, StaticReflector} from '@angular/compiler';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
+import * as ts from 'typescript';
 
 import {CodeGenerator} from './codegen';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
@@ -43,9 +51,7 @@ export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
 }
 
 
-export interface NgTools_InternalApi_NG_2_LazyRouteMap {
-  [route: string]: string;
-}
+export interface NgTools_InternalApi_NG_2_LazyRouteMap { [route: string]: string; }
 
 
 /**
@@ -53,14 +59,12 @@ export interface NgTools_InternalApi_NG_2_LazyRouteMap {
  * passed in the interface.
  */
 class CustomLoaderModuleResolutionHostAdapter extends ModuleResolutionHostAdapter {
-  constructor(private _readResource: (path: string) => Promise<string>,
-              host: ts.ModuleResolutionHost) {
+  constructor(
+      private _readResource: (path: string) => Promise<string>, host: ts.ModuleResolutionHost) {
     super(host);
   }
 
-  readResource(path: string) {
-    return this._readResource(path);
-  }
+  readResource(path: string) { return this._readResource(path); }
 }
 
 
@@ -74,9 +78,8 @@ export class NgTools_InternalApi_NG_2 {
    * @private
    */
   static codeGen(options: NgTools_InternalApi_NG2_CodeGen_Options): Promise<void> {
-    const hostContext: CompilerHostContext = new CustomLoaderModuleResolutionHostAdapter(
-      options.readResource, options.host
-    );
+    const hostContext: CompilerHostContext =
+        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
     const cliOptions: NgcCliOptions = {
       i18nFormat: options.i18nFormat,
       i18nFile: options.i18nFile,
@@ -86,12 +89,7 @@ export class NgTools_InternalApi_NG_2 {
 
     // Create the Code Generator.
     const codeGenerator = CodeGenerator.create(
-      options.angularCompilerOptions,
-      cliOptions,
-      options.program,
-      options.host,
-      hostContext
-    );
+        options.angularCompilerOptions, cliOptions, options.program, options.host, hostContext);
 
     return codeGenerator.codegen();
   }
@@ -101,24 +99,26 @@ export class NgTools_InternalApi_NG_2 {
    * @internal
    * @private
    */
-  static listLazyRoutes(options: NgTools_InternalApi_NG2_ListLazyRoutes_Options)
-      : NgTools_InternalApi_NG_2_LazyRouteMap {
+  static listLazyRoutes(options: NgTools_InternalApi_NG2_ListLazyRoutes_Options):
+      NgTools_InternalApi_NG_2_LazyRouteMap {
     const angularCompilerOptions = options.angularCompilerOptions;
     const program = options.program;
 
     const moduleResolutionHost = new ModuleResolutionHostAdapter(options.host);
-    const usePathMapping = !!angularCompilerOptions.rootDirs && angularCompilerOptions.rootDirs.length > 0;
-    const ngCompilerHost: AotCompilerHost = usePathMapping
-      ? new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost)
-      : new CompilerHost(program, angularCompilerOptions, moduleResolutionHost);
+    const usePathMapping =
+        !!angularCompilerOptions.rootDirs && angularCompilerOptions.rootDirs.length > 0;
+    const ngCompilerHost: AotCompilerHost = usePathMapping ?
+        new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost) :
+        new CompilerHost(program, angularCompilerOptions, moduleResolutionHost);
 
     const staticReflector = new StaticReflector(ngCompilerHost);
     const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
 
-    return Object.keys(routeMap)
-      .reduce((acc: NgTools_InternalApi_NG_2_LazyRouteMap, route: string) => {
-        acc[route] = routeMap[route].absoluteFilePath;
-        return acc;
-      }, {});
+    return Object.keys(routeMap).reduce(
+        (acc: NgTools_InternalApi_NG_2_LazyRouteMap, route: string) => {
+          acc[route] = routeMap[route].absoluteFilePath;
+          return acc;
+        },
+        {});
   }
 }
