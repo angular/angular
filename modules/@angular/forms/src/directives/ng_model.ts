@@ -20,7 +20,7 @@ import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
 import {TemplateDrivenErrors} from './template_driven_errors';
-import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
   provide: NgControl,
@@ -136,7 +136,7 @@ export class NgModel extends NgControl implements OnChanges,
 
   constructor(@Optional() @Host() parent: ControlContainer,
               @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
-              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<Validator|AsyncValidatorFn>,
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<AsyncValidator|AsyncValidatorFn>,
               @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
               valueAccessors: ControlValueAccessor[]) {
                 super();
