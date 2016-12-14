@@ -209,7 +209,7 @@ const XMB = `
     </msg>
   <msg id="5868084092545682515">{VAR_SELECT, select, m {male} f {female} }</msg>
   <msg id="4851788426695310455"><ph name="INTERPOLATION"></ph></msg>
-  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"></ph></msg>
+  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"></ph>></msg>
   <msg id="8324617391167353662"><ph name="CUSTOM_NAME"></ph></msg>
   <msg id="7685649297917455806">in a translatable section</msg>
   <msg id="2387287228265107305">
