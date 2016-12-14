@@ -576,7 +576,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   }
   stmts.push(...view.detectChangesRenderPropertiesMethod.finish());
   view.viewChildren.forEach((viewChild) => {
-    stmts.push(viewChild.callMethod('detectChanges', [DetectChangesVars.throwOnChange]).toStmt());
+    stmts.push(viewChild.callMethod('internalDetectChanges', [DetectChangesVars.throwOnChange]).toStmt());
   });
   const afterViewStmts =
       view.updateViewQueriesMethod.finish().concat(view.afterViewLifecycleCallbacksMethod.finish());
