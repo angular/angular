@@ -341,7 +341,7 @@ export class JitCompiler implements Compiler {
     if (!this._compilerConfig.useJit) {
       return interpretStatements(result.statements, result.stylesVar);
     } else {
-      return jitStatements(`/${result.meta.moduleUrl}.css.js`, result.statements, result.stylesVar);
+      return jitStatements(`/${result.meta.moduleUrl}.ngstyle.js`, result.statements, result.stylesVar);
     }
   }
 }

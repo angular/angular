@@ -66,11 +66,14 @@ describe('CompilerHost', () => {
                  '/tmp/project/src/my.other.ngfactory.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
       expect(hostNestedGenDir.fileNameToModuleName(
-                 '/tmp/project/src/my.other.css.ts', '/tmp/project/src/a/my.ngfactory.ts'))
-          .toEqual('../my.other.css');
+                 '/tmp/project/src/my.other.css.ngstyle.ts', '/tmp/project/src/a/my.ngfactory.ts'))
+          .toEqual('../my.other.css.ngstyle');
       expect(hostNestedGenDir.fileNameToModuleName(
-                 '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
-          .toEqual('./a/my.other.css.shim');
+                 '/tmp/project/src/a/my.other.shim.ngstyle.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('./a/my.other.shim.ngstyle');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/my.other.sass.ngstyle.ts', '/tmp/project/src/a/my.ngfactory.ts'))
+          .toEqual('../my.other.sass.ngstyle');
     });
 
     it('should import application from factory', () => {
@@ -83,6 +86,12 @@ describe('CompilerHost', () => {
       expect(hostNestedGenDir.fileNameToModuleName(
                  '/tmp/project/src/a/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('../a/my.other');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/a/my.other.css.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('../a/my.other.css');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('../a/my.other.css.shim');
     });
   });
 
