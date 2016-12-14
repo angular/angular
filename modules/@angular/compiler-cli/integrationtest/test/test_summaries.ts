@@ -37,6 +37,10 @@ function main() {
       readFiles.push(path.relative(basePath, s));
       return super.readResource(s);
     }
+    fileExistsImpl(fileName: string): boolean {
+      readFiles.push(fileName);
+      return super.fileExistsImpl(fileName);
+    }
   }
 
   const config = tsc.readConfiguration(project, basePath);
@@ -49,6 +53,7 @@ function main() {
       .then((exitCode: any) => {
         console.log(`>>> codegen done, asserting read files`);
         assertSomeFileMatch(readFiles, /^node_modules\/.*\.ngsummary\.json$/);
+        assertNoFileMatch(readFiles, /^node_modules\/.*\.d.ts$/);
         assertNoFileMatch(readFiles, /^node_modules\/.*\.html$/);
         assertNoFileMatch(readFiles, /^node_modules\/.*\.css$/);
 

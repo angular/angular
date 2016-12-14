@@ -217,10 +217,27 @@ export class CompilerHost implements AotCompilerHost {
   }
 }
 
-export class CompilerHostContextAdapter {
-  protected assumedExists: {[fileName: string]: boolean} = {};
+export abstract class CompilerHostContextAdapter {
+  private assumedExists: {[fileName: string]: boolean} = {};
 
   assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
+
+  protected abstract fileExistsImpl(fileName: string): boolean;
+
+  fileExists(fileName: string): boolean {
+    if (this.assumedExists[fileName]) {
+      return true;
+    }
+    if (DTS.test(fileName)) {
+      // Replace checks for .d.ts files by checks for .metadata.json / .ngsummary.json files,
+      // so that our codegen depends on less inputs and requires to be called less often.
+      const base = fileName.substring(0, fileName.length - 5);
+      return this.fileExistsImpl(base + '.ngsummary.json') ||
+          this.fileExistsImpl(base + '.metadata.json');
+    } else {
+      return this.fileExistsImpl(fileName);
+    }
+  }
 }
 
 export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter implements
@@ -234,9 +251,7 @@ export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter impl
     }
   }
 
-  fileExists(fileName: string): boolean {
-    return this.assumedExists[fileName] || this.host.fileExists(fileName);
-  }
+  fileExistsImpl(fileName: string): boolean { return this.host.fileExists(fileName); }
 
   readFile(fileName: string): string { return this.host.readFile(fileName); }
 
@@ -251,9 +266,7 @@ export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter impl
 
 export class NodeCompilerHostContext extends CompilerHostContextAdapter implements
     CompilerHostContext {
-  fileExists(fileName: string): boolean {
-    return this.assumedExists[fileName] || fs.existsSync(fileName);
-  }
+  fileExistsImpl(fileName: string): boolean { return fs.existsSync(fileName); }
 
   directoryExists(directoryName: string): boolean {
     try {
