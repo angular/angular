@@ -1,6 +1,5 @@
 import {InteractivityChecker} from './interactivity-checker';
 import {MdPlatform} from '../platform/platform';
-import {async} from '@angular/core/testing';
 
 describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;
@@ -337,22 +336,15 @@ describe('InteractivityChecker', () => {
         expect(checker.isTabbable(button)).toBe(true);
       });
 
-      it('should mark elements which are contentEditable as tabbable', async(() => {
+      it('should mark elements which are contentEditable as tabbable', () => {
         let editableEl = createFromTemplate('<div contenteditable="true">', true);
 
-        // Wait one tick, because the browser takes some time to update the tabIndex
-        // according to the contentEditable attribute.
-        setTimeout(() => {
+        expect(checker.isTabbable(editableEl)).toBe(true);
 
-          expect(checker.isTabbable(editableEl)).toBe(true);
+        editableEl.tabIndex = -1;
 
-          editableEl.tabIndex = -1;
-
-          expect(checker.isTabbable(editableEl)).toBe(false);
-
-        }, 0);
-
-      }));
+        expect(checker.isTabbable(editableEl)).toBe(false);
+      });
 
       it('should never mark iframe elements as tabbable', () => {
         let iframe = createFromTemplate('<iframe>', true);
