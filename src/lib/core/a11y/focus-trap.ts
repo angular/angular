@@ -1,6 +1,6 @@
 import {Component, ViewEncapsulation, ViewChild, ElementRef, Input, NgZone} from '@angular/core';
 import {InteractivityChecker} from './interactivity-checker';
-import {coerceBooleanProperty} from '../coersion/boolean-property';
+import {coerceBooleanProperty} from '../coercion/boolean-property';
 
 
 /**

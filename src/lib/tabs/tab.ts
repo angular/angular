@@ -3,7 +3,7 @@ import {
   ViewContainerRef, Input, TemplateRef, ViewChild, OnInit, ContentChild,
   Component
 } from '@angular/core';
-import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 import {MdTabLabel} from './tab-label';
 

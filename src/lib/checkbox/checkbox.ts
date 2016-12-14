@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {MdRippleModule, DefaultStyleCompatibilityModeModule} from '../core';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 

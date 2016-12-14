@@ -8,7 +8,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
-import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of

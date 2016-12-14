@@ -90,8 +90,8 @@ export * from './compatibility/default-mode';
 export * from './animation/animation';
 
 // Coersion
-export {coerceBooleanProperty} from './coersion/boolean-property';
-export {coerceNumberProperty} from './coersion/number-property';
+export {coerceBooleanProperty} from './coercion/boolean-property';
+export {coerceNumberProperty} from './coercion/number-property';
 
 // Compatibility
 export {DefaultStyleCompatibilityModeModule} from './compatibility/default-mode';

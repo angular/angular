@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Renderer, Input} from '@angular/core';
-import {coerceBooleanProperty} from '../core/coersion/boolean-property';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 
 /** Used in the `md-tab-group` view to display tab labels */
