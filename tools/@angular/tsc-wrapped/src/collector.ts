@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -234,6 +234,7 @@ export class MetadataCollector {
             }
           }
           break;
+
         case ts.SyntaxKind.FunctionDeclaration:
           if (!(node.flags & ts.NodeFlags.Export)) {
             // Report references to this function as an error.
@@ -249,22 +250,36 @@ export class MetadataCollector {
           break;
       }
     });
+
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
         case ts.SyntaxKind.ExportDeclaration:
           // Record export declarations
           const exportDeclaration = <ts.ExportDeclaration>node;
-          const moduleSpecifier = exportDeclaration.moduleSpecifier;
+          const {moduleSpecifier, exportClause} = exportDeclaration;
+
+          if (!moduleSpecifier) {
+            // no module specifier -> export {propName as name};
+            if (exportClause) {
+              exportClause.elements.forEach(spec => {
+                const name = spec.name.text;
+                const propNode = spec.propertyName || spec.name;
+                const value: MetadataValue = evaluator.evaluateNode(propNode);
+                if (!metadata) metadata = {};
+                metadata[name] = recordEntry(value, node);
+              });
+            }
+          }
+
           if (moduleSpecifier && moduleSpecifier.kind == ts.SyntaxKind.StringLiteral) {
             // Ignore exports that don't have string literals as exports.
             // This is allowed by the syntax but will be flagged as an error by the type checker.
             const from = (<ts.StringLiteral>moduleSpecifier).text;
             const moduleExport: ModuleExportMetadata = {from};
-            if (exportDeclaration.exportClause) {
-              moduleExport.export = exportDeclaration.exportClause.elements.map(
-                  element => element.propertyName ?
-                      {name: element.propertyName.text, as: element.name.text} :
-                      element.name.text);
+            if (exportClause) {
+              moduleExport.export = exportClause.elements.map(
+                  spec => spec.propertyName ? {name: spec.propertyName.text, as: spec.name.text} :
+                                              spec.name.text);
             }
             if (!exports) exports = [];
             exports.push(moduleExport);
@@ -281,6 +296,7 @@ export class MetadataCollector {
           }
           // Otherwise don't record metadata for the class.
           break;
+
         case ts.SyntaxKind.FunctionDeclaration:
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
@@ -297,6 +313,7 @@ export class MetadataCollector {
             }
           }
           break;
+
         case ts.SyntaxKind.EnumDeclaration:
           if (node.flags & ts.NodeFlags.Export) {
             const enumDeclaration = <ts.EnumDeclaration>node;
@@ -332,7 +349,7 @@ export class MetadataCollector {
               } else {
                 nextDefaultValue =
                     recordEntry(errorSym('Unsuppported enum member name', member.name), node);
-              };
+              }
             }
             if (writtenMembers) {
               if (!metadata) metadata = {};
@@ -340,6 +357,7 @@ export class MetadataCollector {
             }
           }
           break;
+
         case ts.SyntaxKind.VariableStatement:
           const variableStatement = <ts.VariableStatement>node;
           for (const variableDeclaration of variableStatement.declarationList.declarations) {
@@ -373,7 +391,7 @@ export class MetadataCollector {
               }
             } else {
               // Destructuring (or binding) declarations are not supported,
-              // var {<identifier>[, <identifer>]+} = <expression>;
+              // var {<identifier>[, <identifier>]+} = <expression>;
               //   or
               // var [<identifier>[, <identifier}+] = <expression>;
               // are not supported.

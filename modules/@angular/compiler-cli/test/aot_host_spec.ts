@@ -175,6 +175,7 @@ describe('CompilerHost', () => {
           foo: {__symbolic: 'class'},
           Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
           BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
+          ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
         },
         exports: [{from: './lib/utils2', export: ['Export']}],
       }
@@ -212,7 +213,11 @@ const FILES: Entry = {
       },
       'metadata_versions': {
         'v1.d.ts': `
+          import {ReExport} from './lib/utils2';
+          export {ReExport};
+
           export {Export} from './lib/utils2';
+
           export declare class Bar {
             ngOnInit() {}
           }
