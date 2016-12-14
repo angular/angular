@@ -314,8 +314,7 @@ export abstract class AppView<T> {
   detectChanges(throwOnChange: boolean): void {
     const s = _scope_check(this.clazz);
     if (this.cdMode === ChangeDetectorStatus.Checked ||
-        this.cdMode === ChangeDetectorStatus.Errored ||
-        this.cdMode === ChangeDetectorStatus.Detached)
+        this.cdMode === ChangeDetectorStatus.Errored)
       return;
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       this.throwDestroyedError('detectChanges');
