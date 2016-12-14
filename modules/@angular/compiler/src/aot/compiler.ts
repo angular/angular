@@ -272,7 +272,7 @@ function _componentFactoryName(comp: CompileIdentifierMetadata): string {
 }
 
 function _stylesModuleUrl(stylesheetUrl: string, shim: boolean, suffix: string): string {
-  return shim ? `${stylesheetUrl}.shim${suffix}` : `${stylesheetUrl}${suffix}`;
+  return `${stylesheetUrl}${shim ? '.shim' : ''}.ngstyle${suffix}`;
 }
 
 function _assertComponent(meta: CompileDirectiveMetadata) {

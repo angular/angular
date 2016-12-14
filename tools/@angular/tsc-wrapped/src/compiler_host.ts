@@ -107,7 +107,7 @@ export class TsickleCompilerHost extends DelegatingHost {
       };
 }
 
-const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
+const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
   private metadataCollector = new MetadataCollector();
