@@ -2,11 +2,67 @@
   <section>
     <h3>Static Chips</h3>
 
+    <h5>Simple</h5>
+
     <md-chip-list>
-      <md-chip>Basic Chip</md-chip>
-      <md-chip class="selected md-primary">Primary</md-chip>
-      <md-chip class="selected md-accent">Accent</md-chip>
-      <md-chip class="selected md-warn">Warn</md-chip>
+      <md-chip>Chip 1</md-chip>
+      <md-chip>Chip 2</md-chip>
+      <md-chip>Chip 3</md-chip>
+    </md-chip-list>
+
+    <h5>Advanced</h5>
+
+    <md-chip-list>
+      <md-chip class="md-accent selected">Selected/Colored</md-chip>
+      <md-chip class="md-warn" *ngIf="visible"
+               (destroy)="alert('chip destroyed')" (click)="toggleVisible()">
+        With Events
+      </md-chip>
+    </md-chip-list>
+
+    <h5>Unstyled</h5>
+
+    <md-chip-list>
+      <md-basic-chip>Basic Chip 1</md-basic-chip>
+      <md-basic-chip>Basic Chip 2</md-basic-chip>
+      <md-basic-chip>Basic Chip 3</md-basic-chip>
+    </md-chip-list>
+
+    <h3>Material Contributors</h3>
+
+    <md-chip-list>
+      <md-chip *ngFor="let person of people; let even = even" [ngClass]="[color, even ? 'selected' : '' ]">
+        {{person.name}}
+      </md-chip>
+    </md-chip-list>
+
+    <br />
+
+    <md-input #input (keyup.enter)="add(input)" (blur)="add(input)" placeholder="New Contributor...">
+    </md-input>
+
+    <h3>Stacked Chips</h3>
+
+    <p>
+      You can also stack the chips if you want them on top of each other.
+    </p>
+
+    <md-chip-list class="md-chip-list-stacked">
+      <md-chip (focus)="color = ''" class="selected">
+        None
+      </md-chip>
+
+      <md-chip (focus)="color = 'md-primary'" class="selected md-primary">
+        Primary
+      </md-chip>
+
+      <md-chip (focus)="color = 'md-accent'" class="selected md-accent">
+        Accent
+      </md-chip>
+
+      <md-chip (focus)="color = 'md-warn'" class="selected md-warn">
+        Warn
+      </md-chip>
     </md-chip-list>
   </section>
 </div>

@@ -1,2 +1,10 @@
 .chips-demo {
+  .md-chip-list-stacked {
+    display: block;
+    max-width: 200px;
+  }
+
+  md-basic-chip {
+    margin: auto 10px;
+  }
 }

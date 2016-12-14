@@ -1,4 +1,9 @@
 import {Component} from '@angular/core';
+import {MdInput} from '@angular/material';
+
+export interface Person {
+  name: string;
+}
 
 @Component({
   moduleId: module.id,
@@ -7,4 +12,30 @@ import {Component} from '@angular/core';
   styleUrls: ['chips-demo.css']
 })
 export class ChipsDemo {
+  visible: boolean = true;
+  color: string = '';
+
+  people: Person[] = [
+    { name: 'Kara' },
+    { name: 'Jeremy' },
+    { name: 'Topher' },
+    { name: 'Elad' },
+    { name: 'Kristiyan' },
+    { name: 'Paul' }
+  ];
+
+  alert(message: string): void {
+    alert(message);
+  }
+
+  add(input: MdInput): void {
+    if (input.value && input.value.trim() != '') {
+      this.people.push({ name: input.value.trim() });
+      input.value = '';
+    }
+  }
+
+  toggleVisible(): void {
+    this.visible = false;
+  }
 }

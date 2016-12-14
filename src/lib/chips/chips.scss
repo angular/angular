@@ -1,8 +1,53 @@
 $md-chip-vertical-padding: 8px;
 $md-chip-horizontal-padding: 12px;
+$md-chip-font-size: 13px;
+$md-chip-line-height: 16px;
 
-.md-chip-list {
-  padding: $md-chip-horizontal-padding;
+$md-chips-chip-margin: $md-chip-horizontal-padding / 4;
+
+.md-chip-list-wrapper {
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  /*
+   * Only apply the margins to chips
+   */
+  .md-chip {
+    margin: 0 $md-chips-chip-margin 0 $md-chips-chip-margin;
+
+    // Remove the margin from the first element (in both LTR and RTL)
+    &:first-child {
+      margin: {
+        left: 0;
+        right: $md-chips-chip-margin;
+      }
+
+      [dir='rtl'] & {
+        margin: {
+          left: $md-chips-chip-margin;
+          right: 0;
+        }
+      }
+    }
+
+    // Remove the margin from the last element (in both LTR and RTL)
+    &:last-child {
+      margin: {
+        left: $md-chips-chip-margin;
+        right: 0;
+      }
+
+      [dir='rtl'] & {
+        margin: {
+          left: 0;
+          right: $md-chips-chip-margin;
+        }
+      }
+    }
+  }
 }
 
 .md-chip {
@@ -11,6 +56,25 @@ $md-chip-horizontal-padding: 12px;
     $md-chip-vertical-padding $md-chip-horizontal-padding;
   border-radius: $md-chip-horizontal-padding * 2;
 
-  font-size: 13px;
-  line-height: 16px;
+  font-size: $md-chip-font-size;
+  line-height: $md-chip-line-height;
+}
+
+.md-chip-list-stacked .md-chip-list-wrapper {
+  display: block;
+
+  .md-chip {
+    display: block;
+    margin: 0;
+    margin-bottom: $md-chip-vertical-padding;
+
+    [dir='rtl'] & {
+      margin: 0;
+      margin-bottom: $md-chip-vertical-padding;
+    }
+
+    &:last-child, [dir='rtl'] &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }

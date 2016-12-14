@@ -13,6 +13,12 @@
   }
 
   .md-chip.selected {
+    // There is no dark theme in the current spec, so this applies to both
+    background-color: #808080;
+
+    // Use a contrast color for a grey very close to the background color
+    color: md-contrast($md-grey, 600);
+
     &.md-primary {
       background-color: md-color($primary, 500);
       color: md-contrast($primary, 500);

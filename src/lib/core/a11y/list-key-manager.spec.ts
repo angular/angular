@@ -23,7 +23,6 @@ class FakeEvent {
   }
 }
 
-
 describe('ListKeyManager', () => {
   let keyManager: ListKeyManager;
   let itemList: FakeQueryList<FakeFocusable>;
@@ -208,6 +207,16 @@ describe('ListKeyManager', () => {
       expect(keyManager.focusedItemIndex)
           .toBe(1, `Expected focusedItemIndex to be updated when setFocus() was called.`);
       expect(itemList.items[1].focus).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow setting the focused item without calling focus', () => {
+      expect(keyManager.focusedItemIndex)
+        .toBe(0, `Expected focus to be on the first item of the list.`);
+
+      keyManager.updateFocusedItemIndex(1);
+      expect(keyManager.focusedItemIndex)
+        .toBe(1, `Expected focusedItemIndex to be updated after calling updateFocusedItemIndex().`);
+      expect(itemList.items[1].focus).not.toHaveBeenCalledTimes(1);
     });
 
     it('should focus the first item when focusFirstItem() is called', () => {
