@@ -18,34 +18,26 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
   'shift': (event: KeyboardEvent) => event.shiftKey
 };
 
-export interface ParsedEvent {
-  fullKey?: string;
-  domEventName?: string;
-  useCapture?: boolean;
-}
-
 /**
  * @experimental
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  constructor() { super(); }
-
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    const parsedEvent: ParsedEvent = KeyEventsPlugin.parseEventName(eventName);
+    const parsedEvent = KeyEventsPlugin.parseEventName(eventName);
 
     const outsideHandler =
-        KeyEventsPlugin.eventCallback(parsedEvent.fullKey, handler, this.manager.getZone());
+        KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
 
     return this.manager.getZone().runOutsideAngular(() => {
       return getDOM().onAndCancel(
-          element, parsedEvent.domEventName, outsideHandler, parsedEvent.useCapture);
+          element, parsedEvent['domEventName'], outsideHandler, parsedEvent['useCapture']);
     });
   }
 
-  static parseEventName(eventName: string): ParsedEvent {
+  static parseEventName(eventName: string): {[key: string]: any} {
     const useCapture: boolean = eventName[0] === '~';
     if (useCapture) {
       eventName = eventName.substring(1);
@@ -75,7 +67,12 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    return {domEventName, fullKey, useCapture};
+    const result: {[key: string]: any} = {};
+    // Required to tell closure to prevent minification
+    result['domEventName'] = domEventName;
+    result['fullKey'] = fullKey;
+    result['useCapture'] = useCapture;
+    return result;
   }
 
   static getEventFullKey(event: KeyboardEvent): string {
