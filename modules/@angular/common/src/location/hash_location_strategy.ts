@@ -7,14 +7,9 @@
  */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-
-import {isPresent} from '../facade/lang';
-
 import {Location} from './location';
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
-
-
 
 /**
  * @whatItDoes Use URL hash for storing application location data.
@@ -40,7 +35,7 @@ export class HashLocationStrategy extends LocationStrategy {
       private _platformLocation: PlatformLocation,
       @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
     super();
-    if (isPresent(_baseHref)) {
+    if (_baseHref != null) {
       this._baseHref = _baseHref;
     }
   }
@@ -56,8 +51,9 @@ export class HashLocationStrategy extends LocationStrategy {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
     let path = this._platformLocation.hash;
-    if (!isPresent(path)) path = '#';
-
+    if (path == null) {
+      path = '#';
+    }
     return path.length > 0 ? path.substring(1) : path;
   }
 
@@ -66,7 +62,7 @@ export class HashLocationStrategy extends LocationStrategy {
     return url.length > 0 ? ('#' + url) : url;
   }
 
-  pushState(state: any, title: string, path: string, queryParams: string) {
+  pushState(state: any, title: string, path: string, queryParams: string): void {
     let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
@@ -74,9 +70,9 @@ export class HashLocationStrategy extends LocationStrategy {
     this._platformLocation.pushState(state, title, url);
   }
 
-  replaceState(state: any, title: string, path: string, queryParams: string) {
+  replaceState(state: any, title: string, path: string, queryParams: string): void {
     let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
-    if (url.length == 0) {
+    if (url.length === 0) {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.replaceState(state, title, url);
