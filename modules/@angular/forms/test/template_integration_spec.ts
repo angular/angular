@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, forwardRef} from '@angular/core';
+import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -16,37 +16,15 @@ import {dispatchEvent} from '@angular/platform-browser/testing/browser_util';
 export function main() {
   describe('template-driven forms integration tests', () => {
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        declarations: [
-          StandaloneNgModel,
-          NgModelForm,
-          NgModelGroupForm,
-          NgModelValidBinding,
-          NgModelNgIfForm,
-          NgModelRadioForm,
-          NgModelRangeForm,
-          NgModelSelectForm,
-          NgNoFormComp,
-          InvalidNgModelNoName,
-          NgModelOptionsStandalone,
-          NgModelCustomComp,
-          NgModelCustomWrapper,
-          NgModelValidationBindings,
-          NgModelMultipleValidators,
-          NgAsyncValidator,
-          NgModelAsyncValidation,
-          NgModelSelectMultipleForm,
-          NgModelSelectWithNullForm,
-          NgModelCheckboxRequiredValidator,
-        ],
-        imports: [FormsModule]
-      });
-    });
+    function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
+      TestBed.configureTestingModule(
+          {declarations: [component, ...directives], imports: [FormsModule]});
+      return TestBed.createComponent(component);
+    }
 
     describe('basic functionality', () => {
       it('should support ngModel for standalone fields', fakeAsync(() => {
-           const fixture = TestBed.createComponent(StandaloneNgModel);
+           const fixture = initTest(StandaloneNgModel);
            fixture.componentInstance.name = 'oldValue';
 
            fixture.detectChanges();
@@ -65,7 +43,7 @@ export function main() {
          }));
 
       it('should support ngModel registration with a parent form', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.componentInstance.name = 'Nancy';
 
            fixture.detectChanges();
@@ -77,7 +55,7 @@ export function main() {
          }));
 
       it('should add novalidate by default to form element', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
 
            fixture.detectChanges();
            tick();
@@ -87,7 +65,7 @@ export function main() {
          }));
 
       it('should support ngModelGroup', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelGroupForm);
+           const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.first = 'Nancy';
            fixture.componentInstance.last = 'Drew';
            fixture.componentInstance.email = 'some email';
@@ -110,7 +88,7 @@ export function main() {
          }));
 
       it('should add controls and control groups to form control model', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelGroupForm);
+           const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.first = 'Nancy';
            fixture.componentInstance.last = 'Drew';
            fixture.componentInstance.email = 'some email';
@@ -125,7 +103,7 @@ export function main() {
          }));
 
       it('should remove controls and control groups from form control model', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelNgIfForm);
+           const fixture = initTest(NgModelNgIfForm);
            fixture.componentInstance.emailShowing = true;
            fixture.componentInstance.first = 'Nancy';
            fixture.componentInstance.email = 'some email';
@@ -158,7 +136,7 @@ export function main() {
          }));
 
       it('should set status classes with ngModel', async(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
            fixture.whenStable().then(() => {
@@ -181,7 +159,7 @@ export function main() {
 
       it('should set status classes with ngModel and async validators', fakeAsync(() => {
 
-           const fixture = TestBed.createComponent(NgModelAsyncValidation);
+           const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
            fixture.whenStable().then(() => {
              fixture.detectChanges();
 
@@ -203,7 +181,7 @@ export function main() {
          }));
 
       it('should set status classes with ngModelGroup and ngForm', async(() => {
-           const fixture = TestBed.createComponent(NgModelGroupForm);
+           const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.first = '';
            fixture.detectChanges();
 
@@ -238,13 +216,13 @@ export function main() {
          }));
 
       it('should not create a template-driven form when ngNoForm is used', () => {
-        const fixture = TestBed.createComponent(NgNoFormComp);
+        const fixture = initTest(NgNoFormComp);
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].providerTokens.length).toEqual(0);
       });
 
       it('should not add novalidate when ngNoForm is used', () => {
-        const fixture = TestBed.createComponent(NgNoFormComp);
+        const fixture = initTest(NgNoFormComp);
         fixture.detectChanges();
         const form = fixture.debugElement.query(By.css('form'));
         expect(form.nativeElement.hasAttribute('novalidate')).toBeFalsy();
@@ -253,19 +231,19 @@ export function main() {
 
     describe('name and ngModelOptions', () => {
       it('should throw if ngModel has a parent form but no name attr or standalone label', () => {
-        const fixture = TestBed.createComponent(InvalidNgModelNoName);
+        const fixture = initTest(InvalidNgModelNoName);
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp(`name attribute must be set`));
       });
 
       it('should not throw if ngModel has a parent form, no name attr, and a standalone label',
          () => {
-           const fixture = TestBed.createComponent(NgModelOptionsStandalone);
+           const fixture = initTest(NgModelOptionsStandalone);
            expect(() => fixture.detectChanges()).not.toThrow();
          });
 
       it('should not register standalone ngModels with parent form', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelOptionsStandalone);
+           const fixture = initTest(NgModelOptionsStandalone);
            fixture.componentInstance.one = 'some data';
            fixture.componentInstance.two = 'should not show';
            fixture.detectChanges();
@@ -280,7 +258,7 @@ export function main() {
          }));
 
       it('should override name attribute with ngModelOptions name if provided', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.componentInstance.options = {name: 'override'};
            fixture.componentInstance.name = 'some data';
            fixture.detectChanges();
@@ -293,7 +271,7 @@ export function main() {
 
     describe('submit and reset events', () => {
       it('should emit ngSubmit event with the original submit event on submit', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.componentInstance.event = null;
 
            const form = fixture.debugElement.query(By.css('form'));
@@ -304,7 +282,7 @@ export function main() {
          }));
 
       it('should mark NgForm as submitted on submit event', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
 
            tick();
            const form = fixture.debugElement.children[0].injector.get(NgForm);
@@ -318,7 +296,7 @@ export function main() {
          }));
 
       it('should reset the form to empty when reset event is fired', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.componentInstance.name = 'should be cleared';
            fixture.detectChanges();
            tick();
@@ -341,7 +319,7 @@ export function main() {
          }));
 
       it('should reset the form submit state when reset button is clicked', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            const formEl = fixture.debugElement.query(By.css('form'));
 
@@ -359,7 +337,7 @@ export function main() {
 
     describe('valueChange and statusChange events', () => {
       it('should emit valueChanges and statusChanges on init', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            fixture.componentInstance.name = 'aa';
            fixture.detectChanges();
@@ -380,7 +358,7 @@ export function main() {
          }));
 
       it('should mark controls dirty before emitting the value change event', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            const form = fixture.debugElement.children[0].injector.get(NgForm).form;
 
            fixture.detectChanges();
@@ -397,7 +375,7 @@ export function main() {
 
       it('should mark controls pristine before emitting the value change event when resetting ',
          fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.detectChanges();
            tick();
 
@@ -419,7 +397,7 @@ export function main() {
 
     describe('disabled controls', () => {
       it('should not consider disabled controls in value or validation', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelGroupForm);
+           const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.isDisabled = false;
            fixture.componentInstance.first = '';
            fixture.componentInstance.last = 'Drew';
@@ -443,7 +421,7 @@ export function main() {
 
       it('should add disabled attribute in the UI if disable() is called programmatically',
          fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelGroupForm);
+           const fixture = initTest(NgModelGroupForm);
            fixture.componentInstance.isDisabled = false;
            fixture.componentInstance.first = 'Nancy';
            fixture.detectChanges();
@@ -459,7 +437,7 @@ export function main() {
          }));
 
       it('should disable a custom control if disabled attr is added', async(() => {
-           const fixture = TestBed.createComponent(NgModelCustomWrapper);
+           const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
            fixture.componentInstance.name = 'Nancy';
            fixture.componentInstance.isDisabled = true;
            fixture.detectChanges();
@@ -485,7 +463,7 @@ export function main() {
           `,
              }
            });
-           const fixture = TestBed.createComponent(NgModelForm);
+           const fixture = initTest(NgModelForm);
            fixture.detectChanges();
            tick();
            const form = fixture.debugElement.children[0].injector.get(NgForm);
@@ -501,7 +479,7 @@ export function main() {
          }));
 
       it('should disable radio controls properly with programmatic call', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.componentInstance.food = 'fish';
            fixture.detectChanges();
            tick();
@@ -537,7 +515,7 @@ export function main() {
 
     describe('range control', () => {
       it('should support <type=range>', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRangeForm);
+           const fixture = initTest(NgModelRangeForm);
            // model -> view
            fixture.componentInstance.val = 4;
            fixture.detectChanges();
@@ -557,7 +535,7 @@ export function main() {
 
     describe('radio controls', () => {
       it('should support <type=radio>', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.componentInstance.food = 'fish';
            fixture.detectChanges();
            tick();
@@ -576,7 +554,7 @@ export function main() {
          }));
 
       it('should support multiple named <type=radio> groups', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.componentInstance.food = 'fish';
            fixture.componentInstance.drink = 'sprite';
            fixture.detectChanges();
@@ -599,7 +577,7 @@ export function main() {
          }));
 
       it('should support initial undefined value', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.detectChanges();
            tick();
 
@@ -611,7 +589,7 @@ export function main() {
          }));
 
       it('should support resetting properly', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.componentInstance.food = 'chicken';
            fixture.detectChanges();
            tick();
@@ -627,7 +605,7 @@ export function main() {
          }));
 
       it('should support setting value to null and undefined', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelRadioForm);
+           const fixture = initTest(NgModelRadioForm);
            fixture.componentInstance.food = 'chicken';
            fixture.detectChanges();
            tick();
@@ -655,7 +633,7 @@ export function main() {
 
     describe('select controls', () => {
       it('with option values that are objects', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const fixture = initTest(NgModelSelectForm);
            const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
            comp.selectedCity = comp.cities[1];
@@ -679,7 +657,7 @@ export function main() {
          }));
 
       it('when new options are added', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const fixture = initTest(NgModelSelectForm);
            const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[1];
@@ -698,7 +676,7 @@ export function main() {
          }));
 
       it('when options are removed', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const fixture = initTest(NgModelSelectForm);
            const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[1];
@@ -716,7 +694,7 @@ export function main() {
          }));
 
       it('when option values have same content, but different identities', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelSelectForm);
+           const fixture = initTest(NgModelSelectForm);
            const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[0];
@@ -733,7 +711,7 @@ export function main() {
          }));
 
       it('should work with null option', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelSelectWithNullForm);
+           const fixture = initTest(NgModelSelectWithNullForm);
            const comp = fixture.componentInstance;
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = null;
@@ -760,7 +738,7 @@ export function main() {
       let comp: NgModelSelectMultipleForm;
 
       beforeEach(() => {
-        fixture = TestBed.createComponent(NgModelSelectMultipleForm);
+        fixture = initTest(NgModelSelectMultipleForm);
         comp = fixture.componentInstance;
         comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
       });
@@ -821,7 +799,7 @@ export function main() {
 
     describe('custom value accessors', () => {
       it('should support standard writing to view and model', async(() => {
-           const fixture = TestBed.createComponent(NgModelCustomWrapper);
+           const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
            fixture.componentInstance.name = 'Nancy';
            fixture.detectChanges();
            fixture.whenStable().then(() => {
@@ -846,7 +824,7 @@ export function main() {
     describe('validation directives', () => {
 
       it('required validator should validate checkbox', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelCheckboxRequiredValidator);
+           const fixture = initTest(NgModelCheckboxRequiredValidator);
            fixture.detectChanges();
            tick();
 
@@ -882,7 +860,7 @@ export function main() {
          }));
 
       it('should support dir validators using bindings', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelValidationBindings);
+           const fixture = initTest(NgModelValidationBindings);
            fixture.componentInstance.required = true;
            fixture.componentInstance.minLen = 3;
            fixture.componentInstance.maxLen = 3;
@@ -926,7 +904,7 @@ export function main() {
          }));
 
       it('should support optional fields with string pattern validator', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           const fixture = initTest(NgModelMultipleValidators);
            fixture.componentInstance.required = false;
            fixture.componentInstance.pattern = '[a-z]+';
            fixture.detectChanges();
@@ -948,7 +926,7 @@ export function main() {
          }));
 
       it('should support optional fields with RegExp pattern validator', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           const fixture = initTest(NgModelMultipleValidators);
            fixture.componentInstance.required = false;
            fixture.componentInstance.pattern = /^[a-z]+$/;
            fixture.detectChanges();
@@ -970,7 +948,7 @@ export function main() {
          }));
 
       it('should support optional fields with minlength validator', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelMultipleValidators);
+           const fixture = initTest(NgModelMultipleValidators);
            fixture.componentInstance.required = false;
            fixture.componentInstance.minLen = 2;
            fixture.detectChanges();
@@ -993,7 +971,7 @@ export function main() {
 
       it('changes on bound properties should change the validation state of the form',
          fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelValidationBindings);
+           const fixture = initTest(NgModelValidationBindings);
            fixture.detectChanges();
            tick();
 
@@ -1067,7 +1045,7 @@ export function main() {
     describe('ngModel corner cases', () => {
       it('should update the view when the model is set back to what used to be in the view',
          fakeAsync(() => {
-           const fixture = TestBed.createComponent(StandaloneNgModel);
+           const fixture = initTest(StandaloneNgModel);
            fixture.componentInstance.name = '';
            fixture.detectChanges();
            tick();
@@ -1095,7 +1073,7 @@ export function main() {
          }));
 
       it('should not crash when validity is checked from a binding', fakeAsync(() => {
-           const fixture = TestBed.createComponent(NgModelValidBinding);
+           const fixture = initTest(NgModelValidBinding);
            tick();
            expect(() => fixture.detectChanges()).not.toThrowError();
          }));

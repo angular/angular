@@ -253,7 +253,8 @@ export class CompileMetadataResolver {
       // Directive
       if (!selector) {
         this._reportError(
-            new SyntaxError(`Directive ${stringifyType(directiveType)} has no selector, please add it!`),
+            new SyntaxError(
+                `Directive ${stringifyType(directiveType)} has no selector, please add it!`),
             directiveType);
         selector = 'error';
       }
