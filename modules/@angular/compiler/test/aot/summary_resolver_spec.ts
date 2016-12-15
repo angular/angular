@@ -7,8 +7,7 @@
  */
 
 import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {AotSummarySerializerHost} from '@angular/compiler/src/aot/summary_serializer';
-import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
+import {AotSummarySerializerHost, deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
 import * as path from 'path';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';

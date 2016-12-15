@@ -88,7 +88,7 @@ export class StaticSymbolResolver {
       }
     } else {
       let value = baseMetadata;
-      for (var i = 0; i < members.length && value; i++) {
+      for (let i = 0; i < members.length && value; i++) {
         value = value[members[i]];
       }
       return new ResolvedStaticSymbol(staticSymbol, value);

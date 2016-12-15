@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {SyntaxError} from '@angular/compiler';
 import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
@@ -31,7 +31,7 @@ export function main() {
            expect(() => normalizer.normalizeTemplate({
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
-           })).toThrowError('No template specified for component SomeComp');
+           })).toThrowError(SyntaxError, 'No template specified for component SomeComp');
          }));
     });
 
