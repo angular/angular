@@ -73,9 +73,9 @@ function publishPackages {
     COMPONENT="${COMPONENT//_/-}"
     JS_BUILD_ARTIFACTS_DIR="${dir}"
 
-    if [[ "$1" -eq "ssh" ]]; then
+    if [[ "$1" == "ssh" ]]; then
       REPO_URL="git@github.com:${ORG}/${COMPONENT}-builds.git"
-    elif [[ "$1" -eq "http" ]]; then
+    elif [[ "$1" == "http" ]]; then
       REPO_URL="https://github.com/${ORG}/${COMPONENT}-builds.git"
     else
       die "Don't have a way to publish to scheme $1"
