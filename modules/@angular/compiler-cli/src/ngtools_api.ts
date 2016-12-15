@@ -13,7 +13,7 @@
  * something else.
  */
 
-import {AotCompilerHost, StaticReflector} from '@angular/compiler';
+import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -111,7 +111,10 @@ export class NgTools_InternalApi_NG_2 {
         new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost) :
         new CompilerHost(program, angularCompilerOptions, moduleResolutionHost);
 
-    const staticReflector = new StaticReflector(ngCompilerHost);
+    const symbolCache = new StaticSymbolCache();
+    const summaryResolver = new AotSummaryResolver(ngCompilerHost, symbolCache);
+    const symbolResolver = new StaticSymbolResolver(ngCompilerHost, symbolCache, summaryResolver);
+    const staticReflector = new StaticReflector(symbolResolver);
     const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
 
     return Object.keys(routeMap).reduce(

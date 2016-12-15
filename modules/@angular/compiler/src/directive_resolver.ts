@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Injectable, Input, Output, Query, Type, resolveForwardRef} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef} from '@angular/core';
 
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {stringify} from './facade/lang';
+import {CompilerInjectable} from './injectable';
 import {ReflectorReader, reflector} from './private_import_core';
 import {splitAtColon} from './util';
+
 
 
 /*
@@ -21,7 +23,7 @@ import {splitAtColon} from './util';
  *
  * See {@link Compiler}
  */
-@Injectable()
+@CompilerInjectable()
 export class DirectiveResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 

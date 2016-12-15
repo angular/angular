@@ -52,12 +52,9 @@ function codeGenTest() {
   const config = tsc.readConfiguration(project, basePath);
   const hostContext = new NodeCompilerHostContext();
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
-  const host: ts.CompilerHost = Object.assign({}, delegateHost, {
-    writeFile: (fileName: string, ...rest: any[]) => {
-      wroteFiles.push(fileName);
-      return delegateHost.writeFile.call(delegateHost, fileName, ...rest);
-    }
-  });
+  const host: ts.CompilerHost = Object.assign(
+      {}, delegateHost,
+      {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
   const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
 
   config.ngOptions.basePath = basePath;

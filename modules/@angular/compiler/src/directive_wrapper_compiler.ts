@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
 import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
@@ -15,6 +13,7 @@ import {triggerAnimation, writeToRenderer} from './compiler_util/render_util';
 import {CompilerConfig} from './config';
 import {Parser} from './expression_parser/parser';
 import {Identifiers, createIdentifier} from './identifiers';
+import {CompilerInjectable} from './injectable';
 import {DEFAULT_INTERPOLATION_CONFIG} from './ml_parser/interpolation_config';
 import {ClassBuilder, createClassStmt} from './output/class_builder';
 import * as o from './output/output_ast';
@@ -51,7 +50,7 @@ const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap
  *
  * So far, only `@Input` and the lifecycle hooks have been implemented.
  */
-@Injectable()
+@CompilerInjectable()
 export class DirectiveWrapperCompiler {
   static dirWrapperClassName(id: CompileIdentifierMetadata) {
     return `Wrapper_${identifierName(id)}`;

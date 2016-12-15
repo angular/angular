@@ -14,5 +14,6 @@ export abstract class ImportResolver {
    * Converts a file path to a module name that can be used as an `import.
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
    */
-  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
+  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string
+      /*|null*/;
 }

@@ -34,7 +34,10 @@ import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector} from './static_reflector';
+import {StaticSymbolCache} from './static_symbol';
+import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
+
 
 /**
  * Creates a new AotCompiler based on options and a host.
@@ -44,7 +47,10 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   let translations: string = options.translations || '';
 
   const urlResolver = createOfflineCompileUrlResolver();
-  const staticReflector = new StaticReflector(compilerHost);
+  const symbolCache = new StaticSymbolCache();
+  const summaryResolver = new AotSummaryResolver(compilerHost, symbolCache);
+  const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
+  const staticReflector = new StaticReflector(symbolResolver);
   StaticAndDynamicReflectionCapabilities.install(staticReflector);
   const htmlParser = new I18NHtmlParser(new HtmlParser(), translations, options.i18nFormat);
   const config = new CompilerConfig({
@@ -60,17 +66,16 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const console = new Console();
   const tmplParser =
       new TemplateParser(expressionParser, elementSchemaRegistry, htmlParser, console, []);
-  const summaryResolver = new AotSummaryResolver(compilerHost, staticReflector, options);
   const resolver = new CompileMetadataResolver(
       new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
   const compiler = new AotCompiler(
-      resolver, tmplParser, new StyleCompiler(urlResolver),
+      compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver),
       new ViewCompiler(config, elementSchemaRegistry),
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
       new NgModuleCompiler(), new TypeScriptEmitter(compilerHost), summaryResolver, options.locale,
-      options.i18nFormat, new AnimationParser(elementSchemaRegistry), staticReflector, options);
+      options.i18nFormat, new AnimationParser(elementSchemaRegistry), symbolResolver);
   return {compiler, reflector: staticReflector};
 }

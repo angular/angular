@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
@@ -35,7 +34,7 @@ export class AnimationEntryParseResult {
   constructor(public ast: AnimationEntryAst, public errors: AnimationParseError[]) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class AnimationParser {
   constructor(private _schema: ElementSchemaRegistry) {}
 

@@ -16,6 +16,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, stringify} from './facade/lang';
 import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {CompilerInjectable} from './injectable';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
@@ -35,7 +36,7 @@ export const ERROR_COLLECTOR_TOKEN = new OpaqueToken('ErrorCollector');
 //   But we want to report errors even when the async work is
 //   not required to check that the user would have been able
 //   to wait correctly.
-@Injectable()
+@CompilerInjectable()
 export class CompileMetadataResolver {
   private _directiveCache = new Map<Type<any>, cpl.CompileDirectiveMetadata>();
   private _summaryCache = new Map<Type<any>, cpl.CompileTypeSummary>();
@@ -45,7 +46,7 @@ export class CompileMetadataResolver {
 
   constructor(
       private _ngModuleResolver: NgModuleResolver, private _directiveResolver: DirectiveResolver,
-      private _pipeResolver: PipeResolver, private _summaryResolver: SummaryResolver,
+      private _pipeResolver: PipeResolver, private _summaryResolver: SummaryResolver<any>,
       private _schemaRegistry: ElementSchemaRegistry,
       private _directiveNormalizer: DirectiveNormalizer,
       private _reflector: ReflectorReader = reflector,
@@ -128,12 +129,13 @@ export class CompileMetadataResolver {
   }
 
   private _loadSummary(type: any, kind: cpl.CompileSummaryKind): cpl.CompileTypeSummary {
-    let summary = this._summaryCache.get(type);
-    if (!summary) {
-      summary = this._summaryResolver.resolveSummary(type);
-      this._summaryCache.set(type, summary);
+    let typeSummary = this._summaryCache.get(type);
+    if (!typeSummary) {
+      const summary = this._summaryResolver.resolveSummary(type);
+      typeSummary = summary ? summary.type : null;
+      this._summaryCache.set(type, typeSummary);
     }
-    return summary && summary.summaryKind === kind ? summary : null;
+    return typeSummary && typeSummary.summaryKind === kind ? typeSummary : null;
   }
 
   private _loadDirectiveMetadata(directiveType: any, isSync: boolean): Promise<any> {
@@ -237,7 +239,7 @@ export class CompileMetadataResolver {
       if (dirMeta.viewProviders) {
         viewProviders = this._getProvidersMetadata(
             dirMeta.viewProviders, entryComponentMetadata,
-            `viewProviders for "${stringify(directiveType)}"`, [], directiveType);
+            `viewProviders for "${stringifyType(directiveType)}"`, [], directiveType);
       }
       if (dirMeta.entryComponents) {
         entryComponentMetadata = flattenAndDedupeArray(dirMeta.entryComponents)
@@ -251,7 +253,7 @@ export class CompileMetadataResolver {
       // Directive
       if (!selector) {
         this._reportError(
-            new Error(`Directive ${stringify(directiveType)} has no selector, please add it!`),
+            new Error(`Directive ${stringifyType(directiveType)} has no selector, please add it!`),
             directiveType);
         selector = 'error';
       }
@@ -260,8 +262,8 @@ export class CompileMetadataResolver {
     let providers: cpl.CompileProviderMetadata[] = [];
     if (isPresent(dirMeta.providers)) {
       providers = this._getProvidersMetadata(
-          dirMeta.providers, entryComponentMetadata, `providers for "${stringify(directiveType)}"`,
-          [], directiveType);
+          dirMeta.providers, entryComponentMetadata,
+          `providers for "${stringifyType(directiveType)}"`, [], directiveType);
     }
     let queries: cpl.CompileQueryMetadata[] = [];
     let viewQueries: cpl.CompileQueryMetadata[] = [];
@@ -298,7 +300,7 @@ export class CompileMetadataResolver {
     if (!dirMeta) {
       this._reportError(
           new Error(
-              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringify(directiveType)}.`),
+              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringifyType(directiveType)}.`),
           directiveType);
     }
     return dirMeta;
@@ -310,7 +312,7 @@ export class CompileMetadataResolver {
     if (!dirSummary) {
       this._reportError(
           new Error(
-              `Illegal state: Could not load the summary for directive ${stringify(dirType)}.`),
+              `Illegal state: Could not load the summary for directive ${stringifyType(dirType)}.`),
           dirType);
     }
     return dirSummary;
@@ -383,7 +385,8 @@ export class CompileMetadataResolver {
           if (moduleWithProviders.providers) {
             providers.push(...this._getProvidersMetadata(
                 moduleWithProviders.providers, entryComponents,
-                `provider for the NgModule '${stringify(importedModuleType)}'`, [], importedType));
+                `provider for the NgModule '${stringifyType(importedModuleType)}'`, [],
+                importedType));
           }
         }
 
@@ -392,7 +395,7 @@ export class CompileMetadataResolver {
           if (!importedModuleSummary) {
             this._reportError(
                 new Error(
-                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`),
+                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
                 moduleType);
             return;
           }
@@ -400,7 +403,7 @@ export class CompileMetadataResolver {
         } else {
           this._reportError(
               new Error(
-                  `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`),
+                  `Unexpected value '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -412,7 +415,7 @@ export class CompileMetadataResolver {
         if (!isValidType(exportedType)) {
           this._reportError(
               new Error(
-                  `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`),
+                  `Unexpected value '${stringifyType(exportedType)}' exported by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -433,7 +436,7 @@ export class CompileMetadataResolver {
         if (!isValidType(declaredType)) {
           this._reportError(
               new Error(
-                  `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`),
+                  `Unexpected value '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -450,7 +453,7 @@ export class CompileMetadataResolver {
         } else {
           this._reportError(
               new Error(
-                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`),
+                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -469,7 +472,7 @@ export class CompileMetadataResolver {
       } else {
         this._reportError(
             new Error(
-                `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringify(exportedId.reference)} from ${stringify(moduleType)} as it was neither declared nor imported!`),
+                `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringifyType(exportedId.reference)} from ${stringifyType(moduleType)} as it was neither declared nor imported!`),
             moduleType);
       }
     });
@@ -478,13 +481,13 @@ export class CompileMetadataResolver {
     // so that they overwrite any other provider we already added.
     if (meta.providers) {
       providers.push(...this._getProvidersMetadata(
-          meta.providers, entryComponents, `provider for the NgModule '${stringify(moduleType)}'`,
-          [], moduleType));
+          meta.providers, entryComponents,
+          `provider for the NgModule '${stringifyType(moduleType)}'`, [], moduleType));
     }
 
     if (meta.entryComponents) {
-      entryComponents.push(
-          ...flattenAndDedupeArray(meta.entryComponents).map(type => this._getTypeMetadata(type)));
+      entryComponents.push(...flattenAndDedupeArray(meta.entryComponents)
+                               .map(type => this._getIdentifierMetadata(type)));
     }
 
     if (meta.bootstrap) {
@@ -492,11 +495,11 @@ export class CompileMetadataResolver {
         if (!isValidType(type)) {
           this._reportError(
               new Error(
-                  `Unexpected value '${stringify(type)}' used in the bootstrap property of module '${stringify(moduleType)}'`),
+                  `Unexpected value '${stringifyType(type)}' used in the bootstrap property of module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
-        bootstrapComponents.push(this._getTypeMetadata(type));
+        bootstrapComponents.push(this._getIdentifierMetadata(type));
       });
     }
 
@@ -555,9 +558,9 @@ export class CompileMetadataResolver {
     if (oldModule && oldModule !== moduleType) {
       this._reportError(
           new Error(
-              `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(oldModule)} and ${stringify(moduleType)}! ` +
-              `Please consider moving ${stringify(type)} to a higher module that imports ${stringify(oldModule)} and ${stringify(moduleType)}. ` +
-              `You can also create a new NgModule that exports and includes ${stringify(type)} then import that NgModule in ${stringify(oldModule)} and ${stringify(moduleType)}.`),
+              `Type ${stringifyType(type)} is part of the declarations of 2 modules: ${stringifyType(oldModule)} and ${stringifyType(moduleType)}! ` +
+              `Please consider moving ${stringifyType(type)} to a higher module that imports ${stringifyType(oldModule)} and ${stringifyType(moduleType)}. ` +
+              `You can also create a new NgModule that exports and includes ${stringifyType(type)} then import that NgModule in ${stringifyType(oldModule)} and ${stringifyType(moduleType)}.`),
           moduleType);
     }
     this._ngModuleOfTypes.set(type, moduleType);
@@ -606,6 +609,26 @@ export class CompileMetadataResolver {
     return {reference: type};
   }
 
+  isInjectable(type: any): boolean {
+    const annotations = this._reflector.annotations(type);
+    // Note: We need an exact check here as @Component / @Directive / ... inherit
+    // from @CompilerInjectable!
+    return annotations.some(ann => ann.constructor === Injectable);
+  }
+
+  getInjectableSummary(type: any): cpl.CompileTypeSummary {
+    return {summaryKind: cpl.CompileSummaryKind.Injectable, type: this._getTypeMetadata(type)};
+  }
+
+  private _getInjectableMetadata(type: Type<any>, dependencies: any[] = null):
+      cpl.CompileTypeMetadata {
+    const typeSummary = this._loadSummary(type, cpl.CompileSummaryKind.Injectable);
+    if (typeSummary) {
+      return typeSummary.type;
+    }
+    return this._getTypeMetadata(type, dependencies);
+  }
+
   private _getTypeMetadata(type: Type<any>, dependencies: any[] = null): cpl.CompileTypeMetadata {
     const identifier = this._getIdentifierMetadata(type);
     return {
@@ -631,7 +654,7 @@ export class CompileMetadataResolver {
     if (!pipeMeta) {
       this._reportError(
           new Error(
-              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringify(pipeType)}.`),
+              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringifyType(pipeType)}.`),
           pipeType);
     }
     return pipeMeta;
@@ -642,7 +665,8 @@ export class CompileMetadataResolver {
         <cpl.CompilePipeSummary>this._loadSummary(pipeType, cpl.CompileSummaryKind.Pipe);
     if (!pipeSummary) {
       this._reportError(
-          new Error(`Illegal state: Could not load the summary for pipe ${stringify(pipeType)}.`),
+          new Error(
+              `Illegal state: Could not load the summary for pipe ${stringifyType(pipeType)}.`),
           pipeType);
     }
     return pipeSummary;
@@ -722,9 +746,10 @@ export class CompileMetadataResolver {
 
     if (hasUnknownDeps) {
       const depsTokens =
-          dependenciesMetadata.map((dep) => dep ? stringify(dep.token) : '?').join(', ');
+          dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
       this._reportError(
-          new Error(`Can't resolve all parameters for ${stringify(typeOrFunc)}: (${depsTokens}).`),
+          new Error(
+              `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`),
           typeOrFunc);
     }
 
@@ -761,9 +786,9 @@ export class CompileMetadataResolver {
               (<string[]>providers.reduce(
                    (soFar: string[], seenProvider: any, seenProviderIdx: number) => {
                      if (seenProviderIdx < providerIdx) {
-                       soFar.push(`${stringify(seenProvider)}`);
+                       soFar.push(`${stringifyType(seenProvider)}`);
                      } else if (seenProviderIdx == providerIdx) {
-                       soFar.push(`?${stringify(seenProvider)}?`);
+                       soFar.push(`?${stringifyType(seenProvider)}?`);
                      } else if (seenProviderIdx == providerIdx + 1) {
                        soFar.push('...');
                      }
@@ -805,7 +830,8 @@ export class CompileMetadataResolver {
 
     extractIdentifiers(provider.useValue, collectedIdentifiers);
     collectedIdentifiers.forEach((identifier) => {
-      if (this._directiveResolver.isDirective(identifier.reference)) {
+      if (this._directiveResolver.isDirective(identifier.reference) ||
+          this._loadSummary(identifier.reference, cpl.CompileSummaryKind.Directive)) {
         components.push(identifier);
       }
     });
@@ -819,7 +845,7 @@ export class CompileMetadataResolver {
     let token: cpl.CompileTokenMetadata = this._getTokenMetadata(provider.token);
 
     if (provider.useClass) {
-      compileTypeMetadata = this._getTypeMetadata(provider.useClass, provider.dependencies);
+      compileTypeMetadata = this._getInjectableMetadata(provider.useClass, provider.dependencies);
       compileDeps = compileTypeMetadata.diDeps;
       if (provider.token === provider.useClass) {
         // use the compileTypeMetadata as it contains information about lifecycleHooks...
@@ -868,7 +894,7 @@ export class CompileMetadataResolver {
       if (!q.selector) {
         this._reportError(
             new Error(
-                `Can't construct a query for the property "${propertyName}" of "${stringify(typeOrFunc)}" since the query selector wasn't defined.`),
+                `Can't construct a query for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the query selector wasn't defined.`),
             typeOrFunc);
       }
       selectors = [this._getTokenMetadata(q.selector)];
@@ -936,7 +962,7 @@ export function componentModuleUrl(
     return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
   } else if (moduleId !== null && moduleId !== void 0) {
     throw new Error(
-        `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
+        `moduleId should be a string in "${stringifyType(type)}". See https://goo.gl/wIDDiL for more information.\n` +
         `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
   }
 
@@ -950,5 +976,13 @@ function extractIdentifiers(value: any, targetIdentifiers: cpl.CompileIdentifier
 class _CompileValueConverter extends ValueTransformer {
   visitOther(value: any, targetIdentifiers: cpl.CompileIdentifierMetadata[]): any {
     targetIdentifiers.push({reference: value});
+  }
+}
+
+function stringifyType(type: any): string {
+  if (type instanceof StaticSymbol) {
+    return `${type.name} in ${type.filePath}`;
+  } else {
+    return stringify(type);
   }
 }

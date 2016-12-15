@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, ComponentFactory, Injectable, Injector, ModuleWithComponentFactories, NgModuleFactory, SchemaMetadata, Type} from '@angular/core';
+import {Compiler, ComponentFactory, Injector, ModuleWithComponentFactories, NgModuleFactory, SchemaMetadata, Type} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
@@ -15,6 +15,7 @@ import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {stringify} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import * as ir from '../output/output_ast';
@@ -36,7 +37,7 @@ import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDepende
  * from a trusted source. Attacker-controlled data introduced by a template could expose your
  * application to XSS risks.  For more detail, see the [Security Guide](http://g.co/ng/security).
  */
-@Injectable()
+@CompilerInjectable()
 export class JitCompiler implements Compiler {
   private _compiledTemplateCache = new Map<Type<any>, CompiledTemplate>();
   private _compiledHostTemplateCache = new Map<Type<any>, CompiledTemplate>();

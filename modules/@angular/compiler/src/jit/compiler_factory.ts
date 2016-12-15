@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, Injectable, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig} from '../config';
@@ -16,6 +16,7 @@ import {DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {Lexer} from '../expression_parser/lexer';
 import {Parser} from '../expression_parser/parser';
 import * as i18n from '../i18n/index';
+import {CompilerInjectable} from '../injectable';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
@@ -83,7 +84,7 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
 ];
 
 
-@Injectable()
+@CompilerInjectable()
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
   constructor(@Inject(COMPILER_OPTIONS) defaultOptions: CompilerOptions[]) {

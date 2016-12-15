@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilerConfig, StaticReflector, StaticSymbol, StaticSymbolCache, componentModuleUrl, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {AotSummaryResolver, CompileDirectiveMetadata, CompilerConfig, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, componentModuleUrl, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {NgAnalyzedModules, analyzeNgModules, extractProgramSymbols} from '@angular/compiler/src/aot/compiler';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
@@ -28,6 +28,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+
 
 
 /**
@@ -75,6 +76,7 @@ export class DummyResourceLoader extends ResourceLoader {
 export class TypeScriptServiceHost implements LanguageServiceHost {
   private _resolver: CompileMetadataResolver;
   private _staticSymbolCache = new StaticSymbolCache();
+  private _staticSymbolResolver: StaticSymbolResolver;
   private _reflector: StaticReflector;
   private _reflectorHost: ReflectorHost;
   private _checker: ts.TypeChecker;
@@ -159,10 +161,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private ensureAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
+      const analyzeHost = {isSourceFile(filePath: string) { return true; }};
       const programSymbols = extractProgramSymbols(
-          this.reflector, this.program.getSourceFiles().map(sf => sf.fileName), {});
+          this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName),
+          analyzeHost);
 
-      analyzedModules = this.analyzedModules = analyzeNgModules(programSymbols, {}, this.resolver);
+      analyzedModules = this.analyzedModules =
+          analyzeNgModules(programSymbols, analyzeHost, this.resolver);
     }
     return analyzedModules;
   }
@@ -224,6 +229,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (this.modulesOutOfDate) {
       this.analyzedModules = null;
       this._reflector = null;
+      this._staticSymbolResolver = null;
       this.templateReferences = null;
       this.fileToComponent = null;
       this.ensureAnalyzedModules();
@@ -385,12 +391,27 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     errors.push(error);
   }
 
+  private get staticSymbolResolver(): StaticSymbolResolver {
+    let result = this._staticSymbolResolver;
+    if (!result) {
+      const summaryResolver = new AotSummaryResolver(
+          {
+            loadSummary(filePath: string) { return null; },
+            isSourceFile(sourceFilePath: string) { return true; }
+          },
+          this._staticSymbolCache);
+      result = this._staticSymbolResolver = new StaticSymbolResolver(
+          this.reflectorHost, this._staticSymbolCache, summaryResolver,
+          (e, filePath) => this.collectError(e, filePath));
+    }
+    return result;
+  }
+
   private get reflector(): StaticReflector {
     let result = this._reflector;
     if (!result) {
       result = this._reflector = new StaticReflector(
-          this.reflectorHost, this._staticSymbolCache, [], [],
-          (e, filePath) => this.collectError(e, filePath));
+          this.staticSymbolResolver, [], [], (e, filePath) => this.collectError(e, filePath));
     }
     return result;
   }

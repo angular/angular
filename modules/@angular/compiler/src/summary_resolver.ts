@@ -5,10 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Injectable} from '@angular/core';
 import {CompileTypeSummary} from './compile_metadata';
+import {CompilerInjectable} from './injectable';
 
-@Injectable()
-export class SummaryResolver {
-  resolveSummary(reference: any): CompileTypeSummary { return null; }
+export interface Summary<T> {
+  symbol: T;
+  metadata: any;
+  type?: CompileTypeSummary;
+}
+
+@CompilerInjectable()
+export class SummaryResolver<T> {
+  resolveSummary(reference: T): Summary<T> { return null; };
+  getSymbolsOf(filePath: string): T[] { return []; }
 }

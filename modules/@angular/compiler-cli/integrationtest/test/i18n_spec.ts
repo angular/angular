@@ -34,9 +34,9 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="3772663375917578720">other-3rdP-component</msg>
   <msg id="8136548302122759730" desc="desc" meaning="meaning">translate me</msg>
   <msg id="3492007542396725315">Welcome</msg>
+  <msg id="3772663375917578720">other-3rdP-component</msg>
 </messagebundle>
 `;
 
@@ -44,10 +44,6 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="63a85808f03b8181e36a952e0fa38202c2304862" datatype="html">
-        <source>other-3rdP-component</source>
-        <target/>
-      </trans-unit>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
         <target/>
@@ -56,6 +52,10 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
         <source>Welcome</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="63a85808f03b8181e36a952e0fa38202c2304862" datatype="html">
+        <source>other-3rdP-component</source>
         <target/>
       </trans-unit>
     </body>

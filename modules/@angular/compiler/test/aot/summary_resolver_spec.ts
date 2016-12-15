@@ -6,128 +6,68 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, AotSummaryResolverHost, CompileNgModuleSummary, CompileSummaryKind, CompileTypeSummary, StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
+import {AotSummarySerializerHost} from '@angular/compiler/src/aot/summary_serializer';
+import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
 import * as path from 'path';
 
-import {MockStaticReflectorHost} from './static_reflector_spec';
+import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 
 const EXT = /\.ts$|.d.ts$/;
 
 export function main() {
   describe('AotSummaryResolver', () => {
-    let resolver: AotSummaryResolver;
-    let staticReflector: StaticReflector;
+    let summaryResolver: AotSummaryResolver;
+    let symbolCache: StaticSymbolCache;
+    let host: MockAotSummaryResolverHost;
+
+    beforeEach(() => { symbolCache = new StaticSymbolCache(); });
 
     function init(summaries: {[filePath: string]: string} = {}) {
-      // Note: We don't give the static reflector metadata files,
-      // so that we can test that we can deserialize summary files
-      // without reading metadata files. This is important
-      // as summary files can contain references to files of transitive compilation
-      // dependencies, and we don't want to read their metadata files.
-      staticReflector = new StaticReflector(new MockStaticReflectorHost({}));
-      const host = new MockAotSummaryResolverHost(summaries);
-      resolver = new AotSummaryResolver(host, staticReflector, {excludeFilePattern: /\.d\.ts$/});
+      host = new MockAotSummaryResolverHost(summaries);
+      summaryResolver = new AotSummaryResolver(host, symbolCache);
     }
 
-    it('should add .ngsummary.json to the filename', () => {
-      init();
-      expect(resolver.serializeSummaries('a.ts', []).genFileUrl).toBe('a.ngsummary.json');
-      expect(resolver.serializeSummaries('a.d.ts', []).genFileUrl).toBe('a.ngsummary.json');
-      expect(resolver.serializeSummaries('a.js', []).genFileUrl).toBe('a.ngsummary.json');
+    function serialize(symbols: ResolvedStaticSymbol[], types: CompileTypeSummary[]): string {
+      // Note: Don't use the top level host / summaryResolver as they might not be created yet
+      const mockSummaryResolver = new MockSummaryResolver([]);
+      const symbolResolver = new StaticSymbolResolver(
+          new MockStaticSymbolResolverHost({}), symbolCache, mockSummaryResolver);
+      return serializeSummaries(
+          new MockAotSummarySerializerHost(), mockSummaryResolver, symbolResolver, symbols, types);
+    }
+
+    it('should load serialized summary files', () => {
+      const asymbol = symbolCache.get('/a.d.ts', 'a');
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      expect(summaryResolver.resolveSummary(asymbol)).toEqual({symbol: asymbol, metadata: 1});
     });
 
-    it('should serialize various data correctly', () => {
-      init();
-      const serializedData = resolver.serializeSummaries(
-          '/tmp/some_pipe.ts', [<any>{
-            summaryKind: CompileSummaryKind.Pipe,
-            type: {
-              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.ts', 'SomePipe'),
-            },
-            aNumber: 1,
-            aString: 'hello',
-            anArray: [1, 2],
-            aStaticSymbol:
-                staticReflector.getStaticSymbol('/tmp/some_symbol.ts', 'someName', ['someMember'])
-          }]);
+    it('should not load summaries for source files', () => {
+      init({});
+      spyOn(host, 'loadSummary').and.callThrough();
 
-      // Note: this creates a new staticReflector!
-      init({[serializedData.genFileUrl]: serializedData.source});
-
-      const deserialized = resolver.resolveSummary(
-          staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomePipe'));
-      expect(deserialized.aNumber).toBe(1);
-      expect(deserialized.aString).toBe('hello');
-      expect(deserialized.anArray).toEqual([1, 2]);
-      expect(deserialized.aStaticSymbol instanceof StaticSymbol).toBe(true);
-      // Note: change from .ts to .d.ts is expected
-      expect(deserialized.aStaticSymbol)
-          .toEqual(
-              staticReflector.getStaticSymbol('/tmp/some_symbol.d.ts', 'someName', ['someMember']));
+      expect(summaryResolver.resolveSummary(symbolCache.get('/a.ts', 'a'))).toBeFalsy();
+      expect(host.loadSummary).not.toHaveBeenCalled();
     });
 
-    it('should store reexports in the same file', () => {
-      init();
-      const reexportedData = resolver.serializeSummaries(
-          '/tmp/some_pipe.ts', [{
-            summaryKind: CompileSummaryKind.Pipe,
-            type: {
-              reference: staticReflector.getStaticSymbol('/tmp/some_pipe.ts', 'SomeReexportedPipe'),
-              diDeps: [],
-              lifecycleHooks: []
-            },
-          }]);
-
-      init({[reexportedData.genFileUrl]: reexportedData.source});
-      const serializedData = resolver.serializeSummaries('/tmp/some_module.ts', [
-        <CompileNgModuleSummary>{
-          summaryKind: CompileSummaryKind.NgModule,
-          type: {
-            reference: staticReflector.getStaticSymbol('/tmp/some_module.ts', 'SomeModule'),
-            diDeps: [],
-            lifecycleHooks: []
-          },
-          exportedPipes: [{
-            reference: staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe')
-          }],
-          exportedDirectives: [],
-          providers: [],
-          entryComponents: [],
-          modules: []
-        }
-      ]);
-
-      init({[serializedData.genFileUrl]: serializedData.source});
-
-      resolver.resolveSummary(
-          staticReflector.getStaticSymbol('/tmp/some_module.d.ts', 'SomeModule'));
-      expect(resolver.resolveSummary(
-                 staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe')))
-          .toEqual({
-            summaryKind: CompileSummaryKind.Pipe,
-            type: {
-              reference:
-                  staticReflector.getStaticSymbol('/tmp/some_pipe.d.ts', 'SomeReexportedPipe'),
-              diDeps: [],
-              lifecycleHooks: []
-            },
-          });
+    it('should cache summaries', () => {
+      const asymbol = symbolCache.get('/a.d.ts', 'a');
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      expect(summaryResolver.resolveSummary(asymbol)).toBe(summaryResolver.resolveSummary(asymbol));
     });
 
+    it('should return all sumbols in a summary', () => {
+      const asymbol = symbolCache.get('/a.d.ts', 'a');
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      expect(summaryResolver.getSymbolsOf('/a.d.ts')).toEqual([asymbol]);
+
+    });
   });
 }
 
-class MockAotSummaryResolverHost implements AotSummaryResolverHost {
-  constructor(private summaries: {[fileName: string]: string}) {}
 
-  loadSummary(filePath: string): string {
-    const result = this.summaries[filePath];
-    if (!result) {
-      throw new Error(`Could not find summary for ${filePath}`);
-    }
-    return result;
-  }
-
+export class MockAotSummarySerializerHost implements AotSummarySerializerHost {
   fileNameToModuleName(fileName: string): string {
     return './' + path.basename(fileName).replace(EXT, '');
   }
@@ -135,4 +75,13 @@ class MockAotSummaryResolverHost implements AotSummaryResolverHost {
   getOutputFileName(sourceFileName: string): string {
     return sourceFileName.replace(EXT, '') + '.d.ts';
   }
+
+  isSourceFile(filePath: string) { return !filePath.endsWith('.d.ts'); }
+}
+
+export class MockAotSummaryResolverHost extends MockAotSummarySerializerHost implements
+    AotSummaryResolverHost {
+  constructor(private summaries: {[fileName: string]: string}) { super(); }
+
+  loadSummary(filePath: string): string { return this.summaries[filePath]; }
 }
