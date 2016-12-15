@@ -253,12 +253,7 @@ export class CompileMetadataResolver {
       // Directive
       if (!selector) {
         this._reportError(
-<<<<<<< HEAD
-            new Error(`Directive ${stringifyType(directiveType)} has no selector, please add it!`),
-=======
-            new SyntaxError(
-                `Directive ${stringify(directiveType)} has no selector, please add it!`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+            new SyntaxError(`Directive ${stringifyType(directiveType)} has no selector, please add it!`),
             directiveType);
         selector = 'error';
       }
@@ -304,13 +299,8 @@ export class CompileMetadataResolver {
     const dirMeta = this._directiveCache.get(directiveType);
     if (!dirMeta) {
       this._reportError(
-<<<<<<< HEAD
-          new Error(
-              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringifyType(directiveType)}.`),
-=======
           new SyntaxError(
-              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringify(directiveType)}.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+              `Illegal state: getDirectiveMetadata can only be called after loadNgModuleMetadata for a module that declares it. Directive ${stringifyType(directiveType)}.`),
           directiveType);
     }
     return dirMeta;
@@ -321,13 +311,8 @@ export class CompileMetadataResolver {
         <cpl.CompileDirectiveSummary>this._loadSummary(dirType, cpl.CompileSummaryKind.Directive);
     if (!dirSummary) {
       this._reportError(
-<<<<<<< HEAD
-          new Error(
-              `Illegal state: Could not load the summary for directive ${stringifyType(dirType)}.`),
-=======
           new SyntaxError(
-              `Illegal state: Could not load the summary for directive ${stringify(dirType)}.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+              `Illegal state: Could not load the summary for directive ${stringifyType(dirType)}.`),
           dirType);
     }
     return dirSummary;
@@ -409,26 +394,16 @@ export class CompileMetadataResolver {
           const importedModuleSummary = this.getNgModuleSummary(importedModuleType);
           if (!importedModuleSummary) {
             this._reportError(
-<<<<<<< HEAD
-                new Error(
-                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
-=======
                 new SyntaxError(
-                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                    `Unexpected ${this._getTypeDescriptor(importedType)} '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
                 moduleType);
             return;
           }
           importedModules.push(importedModuleSummary);
         } else {
           this._reportError(
-<<<<<<< HEAD
-              new Error(
-                  `Unexpected value '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
-=======
               new SyntaxError(
-                  `Unexpected value '${stringify(importedType)}' imported by the module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                  `Unexpected value '${stringifyType(importedType)}' imported by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -439,13 +414,8 @@ export class CompileMetadataResolver {
       flattenAndDedupeArray(meta.exports).forEach((exportedType) => {
         if (!isValidType(exportedType)) {
           this._reportError(
-<<<<<<< HEAD
-              new Error(
-                  `Unexpected value '${stringifyType(exportedType)}' exported by the module '${stringifyType(moduleType)}'`),
-=======
               new SyntaxError(
-                  `Unexpected value '${stringify(exportedType)}' exported by the module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                  `Unexpected value '${stringifyType(exportedType)}' exported by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -465,13 +435,8 @@ export class CompileMetadataResolver {
       flattenAndDedupeArray(meta.declarations).forEach((declaredType) => {
         if (!isValidType(declaredType)) {
           this._reportError(
-<<<<<<< HEAD
-              new Error(
-                  `Unexpected value '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
-=======
               new SyntaxError(
-                  `Unexpected value '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                  `Unexpected value '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -487,13 +452,8 @@ export class CompileMetadataResolver {
           this._addTypeToModule(declaredType, moduleType);
         } else {
           this._reportError(
-<<<<<<< HEAD
-              new Error(
-                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
-=======
               new SyntaxError(
-                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringify(declaredType)}' declared by the module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                  `Unexpected ${this._getTypeDescriptor(declaredType)} '${stringifyType(declaredType)}' declared by the module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -511,13 +471,8 @@ export class CompileMetadataResolver {
         transitiveModule.addExportedPipe(exportedId);
       } else {
         this._reportError(
-<<<<<<< HEAD
-            new Error(
-                `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringifyType(exportedId.reference)} from ${stringifyType(moduleType)} as it was neither declared nor imported!`),
-=======
             new SyntaxError(
-                `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringify(exportedId.reference)} from ${stringify(moduleType)} as it was neither declared nor imported!`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                `Can't export ${this._getTypeDescriptor(exportedId.reference)} ${stringifyType(exportedId.reference)} from ${stringifyType(moduleType)} as it was neither declared nor imported!`),
             moduleType);
       }
     });
@@ -539,13 +494,8 @@ export class CompileMetadataResolver {
       flattenAndDedupeArray(meta.bootstrap).forEach(type => {
         if (!isValidType(type)) {
           this._reportError(
-<<<<<<< HEAD
-              new Error(
-                  `Unexpected value '${stringifyType(type)}' used in the bootstrap property of module '${stringifyType(moduleType)}'`),
-=======
               new SyntaxError(
-                  `Unexpected value '${stringify(type)}' used in the bootstrap property of module '${stringify(moduleType)}'`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                  `Unexpected value '${stringifyType(type)}' used in the bootstrap property of module '${stringifyType(moduleType)}'`),
               moduleType);
           return;
         }
@@ -607,17 +557,10 @@ export class CompileMetadataResolver {
     const oldModule = this._ngModuleOfTypes.get(type);
     if (oldModule && oldModule !== moduleType) {
       this._reportError(
-<<<<<<< HEAD
-          new Error(
+          new SyntaxError(
               `Type ${stringifyType(type)} is part of the declarations of 2 modules: ${stringifyType(oldModule)} and ${stringifyType(moduleType)}! ` +
               `Please consider moving ${stringifyType(type)} to a higher module that imports ${stringifyType(oldModule)} and ${stringifyType(moduleType)}. ` +
               `You can also create a new NgModule that exports and includes ${stringifyType(type)} then import that NgModule in ${stringifyType(oldModule)} and ${stringifyType(moduleType)}.`),
-=======
-          new SyntaxError(
-              `Type ${stringify(type)} is part of the declarations of 2 modules: ${stringify(oldModule)} and ${stringify(moduleType)}! ` +
-              `Please consider moving ${stringify(type)} to a higher module that imports ${stringify(oldModule)} and ${stringify(moduleType)}. ` +
-              `You can also create a new NgModule that exports and includes ${stringify(type)} then import that NgModule in ${stringify(oldModule)} and ${stringify(moduleType)}.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
           moduleType);
     }
     this._ngModuleOfTypes.set(type, moduleType);
@@ -710,13 +653,8 @@ export class CompileMetadataResolver {
     const pipeMeta = this._pipeCache.get(pipeType);
     if (!pipeMeta) {
       this._reportError(
-<<<<<<< HEAD
-          new Error(
-              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringifyType(pipeType)}.`),
-=======
           new SyntaxError(
-              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringify(pipeType)}.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+              `Illegal state: getPipeMetadata can only be called after loadNgModuleMetadata for a module that declares it. Pipe ${stringifyType(pipeType)}.`),
           pipeType);
     }
     return pipeMeta;
@@ -727,13 +665,8 @@ export class CompileMetadataResolver {
         <cpl.CompilePipeSummary>this._loadSummary(pipeType, cpl.CompileSummaryKind.Pipe);
     if (!pipeSummary) {
       this._reportError(
-<<<<<<< HEAD
-          new Error(
-              `Illegal state: Could not load the summary for pipe ${stringifyType(pipeType)}.`),
-=======
           new SyntaxError(
-              `Illegal state: Could not load the summary for pipe ${stringify(pipeType)}.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+              `Illegal state: Could not load the summary for pipe ${stringifyType(pipeType)}.`),
           pipeType);
     }
     return pipeSummary;
@@ -815,13 +748,8 @@ export class CompileMetadataResolver {
       const depsTokens =
           dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
       this._reportError(
-<<<<<<< HEAD
-          new Error(
-              `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`),
-=======
           new SyntaxError(
-              `Can't resolve all parameters for ${stringify(typeOrFunc)}: (${depsTokens}).`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+              `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`),
           typeOrFunc);
     }
 
@@ -966,13 +894,8 @@ export class CompileMetadataResolver {
     } else {
       if (!q.selector) {
         this._reportError(
-<<<<<<< HEAD
-            new Error(
-                `Can't construct a query for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the query selector wasn't defined.`),
-=======
             new SyntaxError(
-                `Can't construct a query for the property "${propertyName}" of "${stringify(typeOrFunc)}" since the query selector wasn't defined.`),
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+                `Can't construct a query for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the query selector wasn't defined.`),
             typeOrFunc);
       }
       selectors = [this._getTokenMetadata(q.selector)];
@@ -1039,13 +962,8 @@ export function componentModuleUrl(
     const scheme = getUrlScheme(moduleId);
     return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
   } else if (moduleId !== null && moduleId !== void 0) {
-<<<<<<< HEAD
-    throw new Error(
-        `moduleId should be a string in "${stringifyType(type)}". See https://goo.gl/wIDDiL for more information.\n` +
-=======
     throw new SyntaxError(
-        `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
->>>>>>> 8bf8ecd... refactor(compiler): don't print stack trace on template parse errors
+        `moduleId should be a string in "${stringifyType(type)}". See https://goo.gl/wIDDiL for more information.\n` +
         `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
   }
 
