@@ -6,10 +6,8 @@
 # Go to the project root directory
 cd $(dirname $0)/../..
 
-npmBin=$(npm bin)
-ciResult=$($npmBin/travis-after-modes)
-
-if [ "$ciResult" = "PASSED" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+# If not running as a PR, wait for all other travis modes to finish.
+if [ "$TRAVIS_PULL_REQUEST" = "false" ] && $(npm bin)/travis-after-modes; then
   echo "All travis modes passed. Publishing the build artifacts..."
   ./scripts/release/publish-build-artifacts.sh
 fi
