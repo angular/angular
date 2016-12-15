@@ -127,7 +127,7 @@ export enum CompileSummaryKind {
  * the directive / module itself.
  */
 export interface CompileTypeSummary {
-  summaryKind: CompileSummaryKind
+  summaryKind: CompileSummaryKind;
   type: CompileTypeMetadata;
 }
 
