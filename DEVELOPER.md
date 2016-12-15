@@ -1,6 +1,6 @@
-# Building and Testing Angular 2 for JS
+# Building and Testing Angular
 
-This document describes how to set up your development environment to build and test Angular 2 JS version. 
+This document describes how to set up your development environment to build and test Angular.
 It also explains the basic mechanics of using `git`, `node`, and `npm`.
 
 * [Prerequisite Software](#prerequisite-software)
@@ -137,4 +137,21 @@ You can automatically format your code by running:
 $ gulp format
 ```
 
+## Publishing your own personal snapshot build
 
+You may find that your un-merged change needs some validation from external participants.
+Rather than requiring them to pull your Pull Request and build Angular locally, you can
+publish the `*-builds` snapshots just like our Travis build does.
+
+First time, you need to create the github repositories:
+
+``` shell
+$ export TOKEN=[get one from https://github.com/settings/tokens]
+$ CREATE_REPOS=1 ./scripts/publish/publish-build-artifacts.sh [github username]
+```
+
+For subsequent snapshots, just run
+
+``` shell
+$ ./scripts/publish/publish-build-artifacts.sh [github username]
+```

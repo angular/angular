@@ -9,7 +9,12 @@ function publishRepo {
   BUILD_REPO="${COMPONENT}-builds"
   REPO_DIR="tmp/${BUILD_REPO}"
 
-  echo "Pushing build artifacts to angular/${BUILD_REPO}"
+  if [ -n "$CREATE_REPOS" ]; then
+    curl -u "$ORG:$TOKEN" https://api.github.com/user/repos \
+         -d '{"name":"'$BUILD_REPO'", "auto_init": true}'
+  fi
+
+  echo "Pushing build artifacts to ${ORG}/${BUILD_REPO}"
 
   # create local repo folder and clone build repo into it
   rm -rf $REPO_DIR
@@ -37,14 +42,18 @@ function publishRepo {
     for UMD_FILE in ${UMD_FILES}; do
       sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD_FILE}
     done
+
+    (
+      cd $REPO_DIR && \
+      git config credential.helper "store --file=.git/credentials" && \
+      echo "https://${GITHUB_TOKEN_ANGULAR}:@github.com" > .git/credentials
+    )
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
   echo $SHA >> $REPO_DIR/BUILD_INFO
 
   (
     cd $REPO_DIR && \
-    git config credential.helper "store --file=.git/credentials" && \
-    echo "https://${GITHUB_TOKEN_ANGULAR}:@github.com" > .git/credentials && \
     git config user.name "${COMMITTER_USER_NAME}" && \
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
@@ -55,9 +64,7 @@ function publishRepo {
 }
 
 # Publish all individual packages from packages-dist.
-if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
-      "$TRAVIS_PULL_REQUEST" == "false" && \
-      "$CI_MODE" == "e2e" ]]; then
+function publishPackages {
   for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
   do
     COMPONENT="$(basename ${dir})"
@@ -66,10 +73,13 @@ if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
     COMPONENT="${COMPONENT//_/-}"
     JS_BUILD_ARTIFACTS_DIR="${dir}"
 
-    REPO_URL="https://github.com/angular/${COMPONENT}-builds.git"
-    # Use the below URL for testing when using SSH authentication
-    # REPO_URL="git@github.com:angular/${COMPONENT}-builds.git"
-
+    if [[ "$1" -eq "ssh" ]]; then
+      REPO_URL="git@github.com:${ORG}/${COMPONENT}-builds.git"
+    elif [[ "$1" -eq "http" ]]; then
+      REPO_URL="https://github.com/${ORG}/${COMPONENT}-builds.git"
+    else
+      die "Don't have a way to publish to scheme $1"
+    fi
     SHA=`git rev-parse HEAD`
     SHORT_SHA=`git rev-parse --short HEAD`
     COMMIT_MSG=`git log --oneline | head -n1`
@@ -80,6 +90,18 @@ if [[ "$TRAVIS_REPO_SLUG" == "angular/angular" && \
   done
 
   echo "Finished publishing build artifacts"
+}
+
+# See DEVELOPER.md for help
+if [ $# -gt 0 ]; then
+  ORG=$1
+  publishPackages "ssh"
+elif [[ \
+    "$TRAVIS_REPO_SLUG" == "angular/angular" && \
+    "$TRAVIS_PULL_REQUEST" == "false" && \
+    "$CI_MODE" == "e2e" ]]; then
+  ORG="angular"
+  publishPackages "http"
 else
   echo "Not building the upstream/master branch, build artifacts won't be published."
 fi
