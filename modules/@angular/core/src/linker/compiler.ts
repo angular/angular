@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '../di';
+import {Injectable, OpaqueToken} from '../di';
 import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata';
@@ -54,6 +54,7 @@ function _throwError() {
  * of components.
  * @stable
  */
+@Injectable()
 export class Compiler {
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed

@@ -27,9 +27,14 @@ function main() {
   const basePath = path.resolve(__dirname, '..');
   const project = path.resolve(basePath, 'tsconfig-build.json');
   const readFiles: string[] = [];
+  const writtenFiles: {fileName: string, content: string}[] = [];
 
   class AssertingHostContext extends NodeCompilerHostContext {
     readFile(fileName: string): string {
+      if (/.*\/node_modules\/.*/.test(fileName) && !/.*ngsummary\.json$/.test(fileName)) {
+        // Only allow to read summaries from node_modules
+        return null;
+      }
       readFiles.push(path.relative(basePath, fileName));
       return super.readFile(fileName);
     }
@@ -45,16 +50,29 @@ function main() {
   config.ngOptions.generateCodeForLibraries = false;
 
   console.log(`>>> running codegen for ${project}`);
-  codegen(config, (host) => new AssertingHostContext())
+  codegen(
+      config,
+      (host) => {
+        host.writeFile = (fileName: string, content: string) => {
+          fileName = path.relative(basePath, fileName);
+          writtenFiles.push({fileName, content});
+        };
+        return new AssertingHostContext();
+      })
       .then((exitCode: any) => {
         console.log(`>>> codegen done, asserting read files`);
         assertSomeFileMatch(readFiles, /^node_modules\/.*\.ngsummary\.json$/);
+        assertNoFileMatch(readFiles, /^node_modules\/.*\.metadata.json$/);
         assertNoFileMatch(readFiles, /^node_modules\/.*\.html$/);
         assertNoFileMatch(readFiles, /^node_modules\/.*\.css$/);
 
         assertNoFileMatch(readFiles, /^src\/.*\.ngsummary\.json$/);
         assertSomeFileMatch(readFiles, /^src\/.*\.html$/);
         assertSomeFileMatch(readFiles, /^src\/.*\.css$/);
+
+        console.log(`>>> asserting written files`);
+        assertWrittenFile(writtenFiles, /^src\/module\.ngfactory\.ts$/, /class MainModuleInjector/);
+
         console.log(`done, no errors.`);
         process.exit(exitCode);
       })
@@ -95,6 +113,13 @@ function assertNoFileMatch(fileNames: string[], pattern: RegExp) {
   assert(
       matches.length === 0,
       `Expected no read files match ${pattern}, but found: \n${matches.join('\n')}`);
+}
+
+function assertWrittenFile(
+    files: {fileName: string, content: string}[], filePattern: RegExp, contentPattern: RegExp) {
+  assert(
+      files.some(file => filePattern.test(file.fileName) && contentPattern.test(file.content)),
+      `Expected some written files for ${filePattern} and content ${contentPattern}`);
 }
 
 main();

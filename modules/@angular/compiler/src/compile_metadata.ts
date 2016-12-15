@@ -115,10 +115,10 @@ export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata
 export interface CompileIdentifierMetadata { reference: any; }
 
 export enum CompileSummaryKind {
-  Template,
   Pipe,
   Directive,
-  NgModule
+  NgModule,
+  Injectable
 }
 
 /**
@@ -126,9 +126,10 @@ export enum CompileSummaryKind {
  * in other modules / components. However, this data is not enough to compile
  * the directive / module itself.
  */
-export interface CompileSummary { summaryKind: CompileSummaryKind; }
-
-export interface CompileTypeSummary extends CompileSummary { type: CompileTypeMetadata; }
+export interface CompileTypeSummary {
+  summaryKind: CompileSummaryKind
+  type: CompileTypeMetadata;
+}
 
 export interface CompileDiDependencyMetadata {
   isAttribute?: boolean;
@@ -210,7 +211,7 @@ export class CompileStylesheetMetadata {
 /**
  * Summary Metadata regarding compilation of a template.
  */
-export interface CompileTemplateSummary extends CompileSummary {
+export interface CompileTemplateSummary {
   animations: string[];
   ngContentSelectors: string[];
   encapsulation: ViewEncapsulation;
@@ -258,7 +259,6 @@ export class CompileTemplateMetadata {
 
   toSummary(): CompileTemplateSummary {
     return {
-      summaryKind: CompileSummaryKind.Template,
       animations: this.animations.map(anim => anim.name),
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation

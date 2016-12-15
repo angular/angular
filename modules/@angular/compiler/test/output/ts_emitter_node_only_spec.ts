@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {convertValueToOutputAst} from '@angular/compiler/src/output/value_util';
 import {MetadataCollector, isClassMetadata, isMetadataSymbolicCallExpression} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
+
+import {MockSummaryResolver} from '../aot/static_symbol_resolver_spec';
 
 describe('TypeScriptEmitter (node only)', () => {
   it('should quote identifiers quoted in the source', () => {
@@ -27,7 +29,10 @@ describe('TypeScriptEmitter (node only)', () => {
     const source = ts.createSourceFile('test.ts', sourceText, ts.ScriptTarget.Latest);
     const collector = new MetadataCollector({quotedNames: true});
     const stubHost = new StubReflectorHost();
-    const reflector = new StaticReflector(stubHost);
+    const symbolCache = new StaticSymbolCache();
+    const symbolResolver =
+        new StaticSymbolResolver(stubHost, symbolCache, new MockSummaryResolver());
+    const reflector = new StaticReflector(symbolResolver);
 
     // Get the metadata from the above source
     const metadata = collector.getMetadata(source);
@@ -62,9 +67,9 @@ describe('TypeScriptEmitter (node only)', () => {
   });
 });
 
-class StubReflectorHost implements StaticReflectorHost {
+class StubReflectorHost implements StaticSymbolResolverHost {
   getMetadataFor(modulePath: string): {[key: string]: any}[] { return []; }
-  moduleNameToFileName(moduleName: string, containingFile: string): string { return ''; }
+  moduleNameToFileName(moduleName: string, containingFile: string): string { return 'somePath'; }
 }
 
 class StubImportResolver extends ImportResolver {

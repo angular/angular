@@ -20,34 +20,34 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
+import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
 import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
-import {AotCompilerOptions} from './compiler_options';
+import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
-import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
-import {AotSummaryResolver} from './summary_resolver';
-import {filterFileByPatterns} from './utils';
+import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+import {serializeSummaries, summaryFileName} from './summary_serializer';
 
 export class AotCompiler {
   private _animationCompiler = new AnimationCompiler();
 
   constructor(
-      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _dirWrapperCompiler: DirectiveWrapperCompiler,
+      private _host: AotCompilerHost, private _metadataResolver: CompileMetadataResolver,
+      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
+      private _viewCompiler: ViewCompiler, private _dirWrapperCompiler: DirectiveWrapperCompiler,
       private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
-      private _summaryResolver: AotSummaryResolver, private _localeId: string,
+      private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string,
       private _translationFormat: string, private _animationParser: AnimationParser,
-      private _staticReflector: StaticReflector, private _options: AotCompilerOptions) {}
+      private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
 
   compileAll(rootFiles: string[]): Promise<GeneratedFile[]> {
-    const programSymbols = extractProgramSymbols(this._staticReflector, rootFiles, this._options);
+    const programSymbols = extractProgramSymbols(this._symbolResolver, rootFiles, this._host);
     const {ngModuleByPipeOrDirective, files, ngModules} =
-        analyzeAndValidateNgModules(programSymbols, this._options, this._metadataResolver);
+        analyzeAndValidateNgModules(programSymbols, this._host, this._metadataResolver);
     return Promise
         .all(ngModules.map(
             ngModule => this._metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
@@ -56,27 +56,21 @@ export class AotCompiler {
           const sourceModules = files.map(
               file => this._compileSrcFile(
                   file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.pipes,
-                  file.ngModules));
+                  file.ngModules, file.injectables));
           return ListWrapper.flatten(sourceModules);
         });
   }
 
   private _compileSrcFile(
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
-      directives: StaticSymbol[], pipes: StaticSymbol[],
-      ngModules: StaticSymbol[]): GeneratedFile[] {
+      directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: StaticSymbol[],
+      injectables: StaticSymbol[]): GeneratedFile[] {
     const fileSuffix = _splitTypescriptSuffix(srcFileUrl)[1];
     const statements: o.Statement[] = [];
     const exportedVars: string[] = [];
     const generatedFiles: GeneratedFile[] = [];
 
-    // write summary files
-    const summaries: CompileTypeSummary[] = [
-      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref)),
-      ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref)),
-      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref))
-    ];
-    generatedFiles.push(this._summaryResolver.serializeSummaries(srcFileUrl, summaries));
+    generatedFiles.push(this._createSummary(srcFileUrl, directives, pipes, ngModules, injectables));
 
     // compile all ng modules
     exportedVars.push(
@@ -121,6 +115,22 @@ export class AotCompiler {
     return generatedFiles;
   }
 
+  private _createSummary(
+      srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
+      ngModules: StaticSymbol[], injectables: StaticSymbol[]): GeneratedFile {
+    const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
+                                .map(symbol => this._symbolResolver.resolveSymbol(symbol));
+    const typeSummaries = [
+      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref)),
+      ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref)),
+      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref)),
+      ...injectables.map(ref => this._metadataResolver.getInjectableSummary(ref))
+    ];
+    const json = serializeSummaries(
+        this._host, this._summaryResolver, this._symbolResolver, symbolSummaries, typeSummaries);
+    return new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
+  }
+
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
     const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType);
     const providers: CompileProviderMetadata[] = [];
@@ -142,7 +152,7 @@ export class AotCompiler {
     const appCompileResult = this._ngModuleCompiler.compile(ngModule, providers);
 
     appCompileResult.dependencies.forEach((dep) => {
-      dep.placeholder.reference = this._staticReflector.getStaticSymbol(
+      dep.placeholder.reference = this._symbolResolver.getStaticSymbol(
           _ngfactoryModuleUrl(identifierModuleUrl(dep.comp)), _componentFactoryName(dep.comp));
     });
 
@@ -163,7 +173,7 @@ export class AotCompiler {
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata, fileSuffix: string,
       targetStatements: o.Statement[]): string {
     const hostMeta = createHostComponentMeta(
-        this._staticReflector.getStaticSymbol(
+        this._symbolResolver.getStaticSymbol(
             identifierModuleUrl(compMeta.type), `${identifierName(compMeta.type)}_Host`),
         compMeta);
     const hostViewFactoryVar = this._compileComponent(
@@ -206,16 +216,16 @@ export class AotCompiler {
         compMeta, parsedTemplate, stylesExpr, pipes, compiledAnimations);
     if (componentStyles) {
       targetStatements.push(
-          ..._resolveStyleStatements(this._staticReflector, componentStyles, fileSuffix));
+          ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));
     }
     compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
-    targetStatements.push(..._resolveViewStatements(this._staticReflector, viewResult));
+    targetStatements.push(..._resolveViewStatements(this._symbolResolver, viewResult));
     return viewResult.viewClassVar;
   }
 
   private _codgenStyles(
       fileUrl: string, stylesCompileResult: CompiledStylesheet, fileSuffix: string): GeneratedFile {
-    _resolveStyleStatements(this._staticReflector, stylesCompileResult, fileSuffix);
+    _resolveStyleStatements(this._symbolResolver, stylesCompileResult, fileSuffix);
     return this._codegenSourceModule(
         fileUrl, _stylesModuleUrl(
                      stylesCompileResult.meta.moduleUrl, stylesCompileResult.isShimmed, fileSuffix),
@@ -232,7 +242,7 @@ export class AotCompiler {
 }
 
 function _resolveViewStatements(
-    reflector: StaticReflector, compileResult: ViewCompileResult): o.Statement[] {
+    reflector: StaticSymbolResolver, compileResult: ViewCompileResult): o.Statement[] {
   compileResult.dependencies.forEach((dep) => {
     if (dep instanceof ViewClassDependency) {
       const vfd = <ViewClassDependency>dep;
@@ -253,7 +263,7 @@ function _resolveViewStatements(
 
 
 function _resolveStyleStatements(
-    reflector: StaticReflector, compileResult: CompiledStylesheet,
+    reflector: StaticSymbolResolver, compileResult: CompiledStylesheet,
     fileSuffix: string): o.Statement[] {
   compileResult.dependencies.forEach((dep) => {
     dep.valuePlaceholder.reference = reflector.getStaticSymbol(
@@ -303,26 +313,27 @@ export interface NgAnalyzedModules {
     srcUrl: string,
     directives: StaticSymbol[],
     pipes: StaticSymbol[],
-    ngModules: StaticSymbol[]
+    ngModules: StaticSymbol[],
+    injectables: StaticSymbol[]
   }>;
   symbolsMissingModule?: StaticSymbol[];
 }
 
+export interface NgAnalyzeModulesHost { isSourceFile(filePath: string): boolean; }
+
 // Returns all the source files and a mapping from modules to directives
 export function analyzeNgModules(
-    programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    programStaticSymbols: StaticSymbol[], host: NgAnalyzeModulesHost,
     metadataResolver: CompileMetadataResolver): NgAnalyzedModules {
   const {ngModules, symbolsMissingModule} =
-      _createNgModules(programStaticSymbols, options, metadataResolver);
-  return _analyzeNgModules(ngModules, symbolsMissingModule);
+      _createNgModules(programStaticSymbols, host, metadataResolver);
+  return _analyzeNgModules(programStaticSymbols, ngModules, symbolsMissingModule, metadataResolver);
 }
 
 export function analyzeAndValidateNgModules(
-    programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    programStaticSymbols: StaticSymbol[], host: NgAnalyzeModulesHost,
     metadataResolver: CompileMetadataResolver): NgAnalyzedModules {
-  const result = analyzeNgModules(programStaticSymbols, options, metadataResolver);
+  const result = analyzeNgModules(programStaticSymbols, host, metadataResolver);
   if (result.symbolsMissingModule && result.symbolsMissingModule.length) {
     const messages = result.symbolsMissingModule.map(
         s => `Cannot determine the module for class ${s.name} in ${s.filePath}!`);
@@ -332,15 +343,26 @@ export function analyzeAndValidateNgModules(
 }
 
 function _analyzeNgModules(
-    ngModuleMetas: CompileNgModuleMetadata[],
-    symbolsMissingModule: StaticSymbol[]): NgAnalyzedModules {
+    programSymbols: StaticSymbol[], ngModuleMetas: CompileNgModuleMetadata[],
+    symbolsMissingModule: StaticSymbol[],
+    metadataResolver: CompileMetadataResolver): NgAnalyzedModules {
   const moduleMetasByRef = new Map<any, CompileNgModuleMetadata>();
   ngModuleMetas.forEach((ngModule) => moduleMetasByRef.set(ngModule.type.reference, ngModule));
   const ngModuleByPipeOrDirective = new Map<StaticSymbol, CompileNgModuleMetadata>();
   const ngModulesByFile = new Map<string, StaticSymbol[]>();
   const ngDirectivesByFile = new Map<string, StaticSymbol[]>();
   const ngPipesByFile = new Map<string, StaticSymbol[]>();
+  const ngInjectablesByFile = new Map<string, StaticSymbol[]>();
   const filePaths = new Set<string>();
+
+  // Make sure we produce an analyzed file for each input file
+  programSymbols.forEach((symbol) => {
+    const filePath = symbol.filePath;
+    filePaths.add(filePath);
+    if (metadataResolver.isInjectable(symbol)) {
+      ngInjectablesByFile.set(filePath, (ngInjectablesByFile.get(filePath) || []).concat(symbol));
+    }
+  });
 
   // Looping over all modules to construct:
   // - a map from file to modules `ngModulesByFile`,
@@ -369,17 +391,20 @@ function _analyzeNgModules(
     });
   });
 
-  const files:
-      {srcUrl: string,
-       directives: StaticSymbol[],
-       pipes: StaticSymbol[],
-       ngModules: StaticSymbol[]}[] = [];
+  const files: {
+    srcUrl: string,
+    directives: StaticSymbol[],
+    pipes: StaticSymbol[],
+    ngModules: StaticSymbol[],
+    injectables: StaticSymbol[]
+  }[] = [];
 
   filePaths.forEach((srcUrl) => {
     const directives = ngDirectivesByFile.get(srcUrl) || [];
     const pipes = ngPipesByFile.get(srcUrl) || [];
     const ngModules = ngModulesByFile.get(srcUrl) || [];
-    files.push({srcUrl, directives, pipes, ngModules});
+    const injectables = ngInjectablesByFile.get(srcUrl) || [];
+    files.push({srcUrl, directives, pipes, ngModules, injectables});
   });
 
   return {
@@ -392,29 +417,20 @@ function _analyzeNgModules(
 }
 
 export function extractProgramSymbols(
-    staticReflector: StaticReflector, files: string[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp} = {}): StaticSymbol[] {
+    staticSymbolResolver: StaticSymbolResolver, files: string[],
+    host: NgAnalyzeModulesHost): StaticSymbol[] {
   const staticSymbols: StaticSymbol[] = [];
-  files.filter(fileName => filterFileByPatterns(fileName, options)).forEach(sourceFile => {
-    const moduleMetadata = staticReflector.getModuleMetadata(sourceFile);
-    if (!moduleMetadata) {
-      console.error(`WARNING: no metadata found for ${sourceFile}`);
-      return;
-    }
-
-    const metadata = moduleMetadata['metadata'];
-
-    if (!metadata) {
-      return;
-    }
-
-    for (const symbol of Object.keys(metadata)) {
-      if (metadata[symbol] && metadata[symbol].__symbolic == 'error') {
-        // Ignore symbols that are only included to record error information.
-        continue;
+  files.filter(fileName => host.isSourceFile(fileName)).forEach(sourceFile => {
+    staticSymbolResolver.getSymbolsOf(sourceFile).forEach((symbol) => {
+      const resolvedSymbol = staticSymbolResolver.resolveSymbol(symbol);
+      const symbolMeta = resolvedSymbol.metadata;
+      if (symbolMeta) {
+        if (symbolMeta.__symbolic != 'error') {
+          // Ignore symbols that are only included to record error information.
+          staticSymbols.push(resolvedSymbol.symbol);
+        }
       }
-      staticSymbols.push(staticReflector.getStaticSymbol(sourceFile, symbol));
-    }
+    });
   });
 
   return staticSymbols;
@@ -424,8 +440,7 @@ export function extractProgramSymbols(
 // that all directives / pipes that are present in the program
 // are also declared by a module.
 function _createNgModules(
-    programStaticSymbols: StaticSymbol[],
-    options: {includeFilePattern?: RegExp, excludeFilePattern?: RegExp},
+    programStaticSymbols: StaticSymbol[], host: NgAnalyzeModulesHost,
     metadataResolver: CompileMetadataResolver):
     {ngModules: CompileNgModuleMetadata[], symbolsMissingModule: StaticSymbol[]} {
   const ngModules = new Map<any, CompileNgModuleMetadata>();
@@ -433,7 +448,7 @@ function _createNgModules(
   const ngModulePipesAndDirective = new Set<StaticSymbol>();
 
   const addNgModule = (staticSymbol: any) => {
-    if (ngModules.has(staticSymbol) || !filterFileByPatterns(staticSymbol.filePath, options)) {
+    if (ngModules.has(staticSymbol) || !host.isSourceFile(staticSymbol.filePath)) {
       return false;
     }
     const ngModule = metadataResolver.getNgModuleMetadata(staticSymbol, false);

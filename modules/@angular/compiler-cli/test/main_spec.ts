@@ -29,13 +29,17 @@ describe('compiler-cli', () => {
         "types": [],
         "outDir": "built",
         "declaration": true,
-        "module": "es2015"
+        "module": "es2015",
+        "moduleResolution": "node"
       },
       "angularCompilerOptions": {
         "annotateForClosureCompiler": true
       },
       "files": ["test.ts"]
     }`);
+    const nodeModulesPath = path.resolve(basePath, 'node_modules');
+    fs.mkdirSync(nodeModulesPath);
+    fs.symlinkSync(path.resolve(__dirname, '..', '..'), path.resolve(nodeModulesPath, '@angular'));
   });
 
   // Restore reflector since AoT compiler will update it with a new static reflector

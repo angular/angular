@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, CUSTOM_ELEMENTS_SCHEMA, Injectable, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
+import {AUTO_STYLE, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
+import {CompilerInjectable} from '../injectable';
 
 import {dashCaseToCamelCase} from '../util';
 
@@ -238,7 +239,7 @@ const _ATTR_TO_PROP: {[name: string]: string} = {
   'tabindex': 'tabIndex',
 };
 
-@Injectable()
+@CompilerInjectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
 

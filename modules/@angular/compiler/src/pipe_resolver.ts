@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Pipe, Type, resolveForwardRef} from '@angular/core';
+import {Pipe, Type, resolveForwardRef} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
 import {isPresent, stringify} from './facade/lang';
+import {CompilerInjectable} from './injectable';
 import {ReflectorReader, reflector} from './private_import_core';
 
 function _isPipeMetadata(type: any): boolean {
@@ -23,7 +24,7 @@ function _isPipeMetadata(type: any): boolean {
  *
  * See {@link Compiler}
  */
-@Injectable()
+@CompilerInjectable()
 export class PipeResolver {
   constructor(private _reflector: ReflectorReader = reflector) {}
 
