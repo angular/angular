@@ -14,6 +14,7 @@ import 'reflect-metadata';
 import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
 
+import {SyntaxError} from '@angular/compiler';
 import {CodeGenerator} from './codegen';
 
 function codegen(
@@ -28,7 +29,7 @@ export function main(
   const cliOptions = new tsc.NgcCliOptions(args);
 
   return tsc.main(project, cliOptions, codegen).then(() => 0).catch(e => {
-    if (e instanceof tsc.UserError) {
+    if (e instanceof tsc.UserError || e instanceof SyntaxError) {
       consoleError(e.message);
       return Promise.resolve(1);
     } else {
