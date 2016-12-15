@@ -15,7 +15,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update"
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update && node node_modules/bower/bin/bower install"
   },
   "dependencies": {
     "core-js": "^2.4.1",
