@@ -44,7 +44,6 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
-  NgNovalidate,
   NgSelectOption,
   NgSelectMultipleOption,
   DefaultValueAccessor,
