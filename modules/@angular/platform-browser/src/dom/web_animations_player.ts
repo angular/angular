@@ -124,7 +124,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._started = false;
   }
 
-  private _resetDomPlayerState() { this._player.cancel(); }
+  private _resetDomPlayerState() {
+    if (this._player) {
+      this._player.cancel();
+    }
+  }
 
   restart(): void {
     this.reset();

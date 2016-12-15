@@ -175,6 +175,12 @@ export function main() {
       expect(data['keyframes']).toEqual([{opacity: '0.5'}, {opacity: '1'}]);
     });
 
+    it('should allow the player to be destroyed before it is initialized', () => {
+      const elm = el('<div></div>');
+      const player = new ExtendedWebAnimationsPlayer(elm, [], {});
+      expect(() => { player.destroy(); }).not.toThrowError();
+    });
+
     describe('previousStyle', () => {
       it('should merge keyframe styles based on the previous styles passed in when the player has finished its operation',
          () => {
