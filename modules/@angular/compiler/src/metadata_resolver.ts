@@ -13,9 +13,8 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
-import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, stringify} from './facade/lang';
-import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {stringify} from './facade/lang';
+import {Identifiers, resolveIdentifier} from './identifiers';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
@@ -23,7 +22,7 @@ import {ComponentStillLoadingError, LIFECYCLE_HOOKS_VALUES, ReflectorReader, ref
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
-import {MODULE_SUFFIX, SyncAsyncResult, ValueTransformer, visitValue} from './util';
+import {MODULE_SUFFIX, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 export const ERROR_COLLECTOR_TOKEN = new OpaqueToken('ErrorCollector');
@@ -258,14 +257,14 @@ export class CompileMetadataResolver {
     }
 
     let providers: cpl.CompileProviderMetadata[] = [];
-    if (isPresent(dirMeta.providers)) {
+    if (dirMeta.providers) {
       providers = this._getProvidersMetadata(
           dirMeta.providers, entryComponentMetadata, `providers for "${stringify(directiveType)}"`,
           [], directiveType);
     }
     let queries: cpl.CompileQueryMetadata[] = [];
     let viewQueries: cpl.CompileQueryMetadata[] = [];
-    if (isPresent(dirMeta.queries)) {
+    if (dirMeta.queries) {
       queries = this._getQueriesMetadata(dirMeta.queries, false, directiveType);
       viewQueries = this._getQueriesMetadata(dirMeta.queries, true, directiveType);
     }
@@ -697,14 +696,14 @@ export class CompileMetadataResolver {
             token = paramEntry.attributeName;
           } else if (paramEntry instanceof Inject) {
             token = paramEntry.token;
-          } else if (isValidType(paramEntry) && isBlank(token)) {
+          } else if (isValidType(paramEntry) && token == null) {
             token = paramEntry;
           }
         });
       } else {
         token = param;
       }
-      if (isBlank(token)) {
+      if (token == null) {
         hasUnknownDeps = true;
         return null;
       }
@@ -909,10 +908,7 @@ function flattenArray(tree: any[], out: Array<any> = []): Array<any> {
 }
 
 function dedupeArray(array: any[]): Array<any> {
-  if (array) {
-    return Array.from(new Set(array));
-  }
-  return [];
+  return array ? Array.from(new Set(array)) || [];
 }
 
 function flattenAndDedupeArray(tree: any[]): Array<any> {
@@ -934,7 +930,9 @@ export function componentModuleUrl(
   if (typeof moduleId === 'string') {
     const scheme = getUrlScheme(moduleId);
     return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
-  } else if (moduleId !== null && moduleId !== void 0) {
+  }
+
+  if (moduleId !== null && moduleId !== void 0) {
     throw new Error(
         `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
         `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
