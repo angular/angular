@@ -76,7 +76,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * Simple form:
  * - `<div *ngIf="condition">...</div>`
  * - `<div template="ngIf condition">...</div>`
- * - `<ng-container [ngIf]="condition"><div>...</div></ng-container>`
+ * - `<template [ngIf]="condition"><div>...</div></template>`
  *
  * Form with an else block:
  * ```
