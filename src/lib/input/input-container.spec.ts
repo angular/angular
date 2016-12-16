@@ -38,6 +38,7 @@ describe('MdInputContainer', function () {
         MdInputContainerTextTestController,
         MdInputContainerPasswordTestController,
         MdInputContainerNumberTestController,
+        MdInputContainerZeroTestController,
         MdTextareaWithBindings,
         MdInputContainerWithDisabled,
         MdInputContainerMissingMdInputTestController
@@ -125,6 +126,19 @@ describe('MdInputContainer', function () {
 
     el = fixture.debugElement.query(By.css('label')).nativeElement;
     expect(el.classList.contains('md-empty')).toBe(false, 'should not be empty');
+  }));
+
+  it('should not treat the number 0 as empty', async(() => {
+    let fixture = TestBed.createComponent(MdInputContainerZeroTestController);
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+
+      let el = fixture.debugElement.query(By.css('label')).nativeElement;
+      expect(el).not.toBeNull();
+      expect(el.classList.contains('md-empty')).toBe(false);
+    });
   }));
 
   it('should add id', () => {
@@ -404,6 +418,16 @@ class MdInputContainerPasswordTestController {}
     </md-input-container>`
 })
 class MdInputContainerNumberTestController {}
+
+@Component({
+  template: `
+    <md-input-container>
+      <input md-input type="number" placeholder="Placeholder" [(ngModel)]="value">
+    </md-input-container>`
+})
+class MdInputContainerZeroTestController {
+  value = 0;
+}
 
 @Component({
   template: `

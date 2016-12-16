@@ -118,7 +118,7 @@ export class MdInputDirective implements AfterContentInit {
    */
   @Output() _placeholderChange = new EventEmitter<string>();
 
-  get empty() { return (this.value == null || this.value == '') && !this._isNeverEmpty(); }
+  get empty() { return (this.value == null || this.value === '') && !this._isNeverEmpty(); }
 
   focused = false;
 
