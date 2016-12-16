@@ -33,7 +33,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
   @Input() ngTemplateOutlet: TemplateRef<Object>;
-  @Input() ngOutletContext: Object;
+  @Input() ngOutletContext: any;
 
   private _viewRef: EmbeddedViewRef<any>;
 
@@ -51,6 +51,9 @@ export class NgTemplateOutlet implements OnChanges {
             this._viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, this.ngOutletContext);
       }
     } else if (('ngOutletContext' in changes) && this._viewRef) {
+      Object.keys(this.ngOutletContext).forEach((key: string) => {
+        this._viewRef.context[key] = this.ngOutletContext[key];
+      });
       this._viewRef.context.$implicit = this.ngOutletContext;
     }
   }

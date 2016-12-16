@@ -128,7 +128,8 @@ export function main() {
 
     it('should reflect context re-binding', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs><template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
+             `<tpl-refs #refs="tplRefs"><template let-shawshank="shawshank"><span>{{shawshank}}</span></template></tpl-refs>
+<template [ngTemplateOutlet]="currentTplRef" [ngOutletContext]="context"></template>`;
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
@@ -159,7 +160,7 @@ class TestComponent {
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
-  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+  return TestBed.overrideComponent(TestComponent, {set: {template}})
       .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
       .createComponent(TestComponent);
 }
