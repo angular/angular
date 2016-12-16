@@ -11,7 +11,7 @@ import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/angular_js';
-import {UpgradeAdapter, sortProjectableNodes} from '@angular/upgrade/src/upgrade_adapter';
+import {UpgradeAdapter, UpgradeAdapterRef, sortProjectableNodes} from '@angular/upgrade/src/upgrade_adapter';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -1293,6 +1293,44 @@ export function main() {
              expect(multiTrim(document.body.textContent))
                  .toEqual('ng2[ng1[Hello World!](transclude)](project)');
              ref.dispose();
+           });
+         }));
+    });
+
+    describe('registerForNg1Tests', () => {
+      let upgradeAdapterRef: UpgradeAdapterRef;
+      let $compile: angular.ICompileService;
+      let $rootScope: angular.IRootScopeService;
+
+      beforeEach(() => {
+        const ng1Module = angular.module('ng1', []);
+
+        const Ng2 = Component({
+                      selector: 'ng2',
+                      template: 'Hello World',
+                    }).Class({constructor: function() {}});
+
+        const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+          constructor: function() {}
+        });
+
+        const upgradeAdapter = new UpgradeAdapter(Ng2Module);
+        ng1Module.directive('ng2', upgradeAdapter.downgradeNg2Component(Ng2));
+
+        upgradeAdapterRef = upgradeAdapter.registerForNg1Tests(['ng1']);
+      });
+
+      beforeEach(
+          inject((_$compile_: angular.ICompileService, _$rootScope_: angular.IRootScopeService) => {
+            $compile = _$compile_;
+            $rootScope = _$rootScope_;
+          }));
+
+      it('should be able to test ng1 components that use ng2 components', async(() => {
+           upgradeAdapterRef.ready(() => {
+             const element = $compile('<ng2></ng2>')($rootScope);
+             $rootScope.$digest();
+             expect(element[0].textContent).toContain('Hello World');
            });
          }));
     });
