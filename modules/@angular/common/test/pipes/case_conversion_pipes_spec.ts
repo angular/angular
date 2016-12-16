@@ -32,6 +32,14 @@ export function main() {
 
     it('should return titlecase', () => { expect(pipe.transform('foo')).toEqual('Foo'); });
 
+    it('should return titlecase for subsequent words',
+       () => { expect(pipe.transform('one TWO Three fouR')).toEqual('One Two Three Four'); });
+
+    it('should support empty strings', () => { expect(pipe.transform('')).toEqual(''); });
+
+    it('should persist whitespace',
+       () => { expect(pipe.transform('one   two')).toEqual('One   Two'); });
+
     it('should titlecase when there is a new value', () => {
       expect(pipe.transform('bar')).toEqual('Bar');
       expect(pipe.transform('foo')).toEqual('Foo');
