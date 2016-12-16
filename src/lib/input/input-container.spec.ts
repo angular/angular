@@ -6,6 +6,11 @@ import {MdInputModule} from './input';
 import {MdInputContainer} from './input-container';
 import {MdPlatform} from '../core/platform/platform';
 import {PlatformModule} from '../core/platform/index';
+import {
+  MdInputContainerMissingMdInputError,
+  MdInputContainerPlaceholderConflictError,
+  MdInputContainerDuplicatedHintError
+} from './input-container-errors';
 
 
 describe('MdInputContainer', function () {
@@ -35,6 +40,7 @@ describe('MdInputContainer', function () {
         MdInputContainerNumberTestController,
         MdTextareaWithBindings,
         MdInputContainerWithDisabled,
+        MdInputContainerMissingMdInputTestController
       ],
     });
 
@@ -150,25 +156,29 @@ describe('MdInputContainer', function () {
   it('validates there\'s only one hint label per side', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidHintTestController);
 
-    expect(() => fixture.detectChanges()).toThrow();
-    // TODO(jelbourn): .toThrow(new MdInputContainerDuplicatedHintError('start'));
-    // See https://github.com/angular/angular/issues/8348
+    expect(() => fixture.detectChanges()).toThrowError(
+        angularWrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
   });
 
   it('validates there\'s only one hint label per side (attribute)', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidHint2TestController);
 
-    expect(() => fixture.detectChanges()).toThrow();
-    // TODO(jelbourn): .toThrow(new MdInputContainerDuplicatedHintError('start'));
-    // See https://github.com/angular/angular/issues/8348
+    expect(() => fixture.detectChanges()).toThrowError(
+        angularWrappedErrorMessage(new MdInputContainerDuplicatedHintError('start')));
   });
 
   it('validates there\'s only one placeholder', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidPlaceholderTestController);
 
-    expect(() => fixture.detectChanges()).toThrow();
-    // TODO(jelbourn): .toThrow(new MdInputContainerPlaceholderConflictError());
-    // See https://github.com/angular/angular/issues/8348
+    expect(() => fixture.detectChanges()).toThrowError(
+        angularWrappedErrorMessage(new MdInputContainerPlaceholderConflictError()));
+  });
+
+  it('validates that md-input child is present', () => {
+    let fixture = TestBed.createComponent(MdInputContainerMissingMdInputTestController);
+
+    expect(() => fixture.detectChanges()).toThrowError(
+        angularWrappedErrorMessage(new MdInputContainerMissingMdInputError()));
   });
 
   it('validates the type', () => {
@@ -406,3 +416,21 @@ class MdTextareaWithBindings {
   cols: number = 8;
   wrap: string = 'hard';
 }
+
+@Component({
+  template: `<md-input-container><input></md-input-container>`
+})
+class MdInputContainerMissingMdInputTestController {}
+
+/**
+ * Gets a RegExp used to detect an angular wrapped error message.
+ * See https://github.com/angular/angular/issues/8348
+ */
+const angularWrappedErrorMessage = (e: Error) =>
+    new RegExp(`.*caused by: ${regexpEscape(e.message)}$`);
+
+/**
+ * Escape a string for use inside a RegExp.
+ * Based on https://github.com/sindresorhus/escape-string-regex
+ */
+const regexpEscape = (s: string) => s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');

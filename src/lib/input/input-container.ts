@@ -19,7 +19,8 @@ import {getSupportedInputTypes} from '../core/platform/features';
 import {
   MdInputContainerUnsupportedTypeError,
   MdInputContainerPlaceholderConflictError,
-  MdInputContainerDuplicatedHintError
+  MdInputContainerDuplicatedHintError,
+  MdInputContainerMissingMdInputError
 } from './input-container-errors';
 
 
@@ -218,6 +219,10 @@ export class MdInputContainer implements AfterContentInit {
   @ContentChildren(MdHint) _hintChildren: QueryList<MdHint>;
 
   ngAfterContentInit() {
+    if (!this._mdInputChild) {
+      throw new MdInputContainerMissingMdInputError();
+    }
+
     this._validateHints();
     this._validatePlaceholders();
 
