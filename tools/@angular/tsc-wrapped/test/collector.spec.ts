@@ -40,6 +40,7 @@ describe('Collector', () => {
       'private-enum.ts',
       're-exports.ts',
       're-exports-2.ts',
+      'export-as.d.ts',
       'static-field-reference.ts',
       'static-method.ts',
       'static-method-call.ts',
@@ -528,20 +529,19 @@ describe('Collector', () => {
     ]);
   });
 
+  it('should be able to collect a export as symbol', () => {
+    const source = program.getSourceFile('export-as.d.ts');
+    const metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({SomeFunction: {__symbolic: 'function'}});
+  });
+
   it('should be able to collect exports with no module specifier', () => {
     const source = program.getSourceFile('/re-exports-2.ts');
     const metadata = collector.getMetadata(source);
     expect(metadata.metadata).toEqual({
+      MyClass: Object({__symbolic: 'class'}),
       OtherModule: {__symbolic: 'reference', module: './static-field-reference', name: 'Foo'},
-      MyOtherModule: {__symbolic: 'reference', module: './static-field', name: 'MyModule'},
-      // TODO(vicb): support exported symbols - https://github.com/angular/angular/issues/13473
-      MyClass: {
-        __symbolic: 'error',
-        message: 'Reference to non-exported class',
-        line: 3,
-        character: 4,
-        context: {className: 'MyClass'}
-      },
+      MyOtherModule: {__symbolic: 'reference', module: './static-field', name: 'MyModule'}
     });
   });
 
@@ -1007,6 +1007,10 @@ const FILES: Directory = {
     class MyClass {}
     export {OtherModule, MyModule as MyOtherModule, MyClass};
   `,
+  'export-as.d.ts': `
+     declare function someFunction(): void;
+     export { someFunction as SomeFunction };
+ `,
   'local-symbol-ref.ts': `
     import {Component, Validators} from 'angular2/core';
 
