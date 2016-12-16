@@ -7,15 +7,18 @@
  */
 
 import {Inject, Injectable, OnDestroy, OpaqueToken} from '@angular/core';
-import {Meta, MetaDefinition, Title} from '@angular/platform-browser';
+import {Meta, Title} from '@angular/platform-browser';
+import {PRIMARY_OUTLET} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 
+import {Data, Head} from './config';
 import {NavigationEnd, Router} from './router';
 import {ActivatedRoute} from './router_state';
 
+/** @experimental */
 export const HELMET_CONFIG: OpaqueToken = new OpaqueToken('Helmet Config');
 
 /** @experimental */
@@ -34,12 +37,6 @@ export interface HelmetConfig {
   titleTemplate?: string;
 }
 
-/** @experimental */
-export interface Head {
-  title?: string;
-  meta?: MetaDefinition[];
-}
-
 /**
  * A document head manager.
  *
@@ -54,13 +51,15 @@ export class Helmet implements OnDestroy {
       @Inject(HELMET_CONFIG) private config: any /* Head */) {
     const navigations$ =
         filter.call(router.events, (event: NavigationEvent) => event instanceof NavigationEnd);
-    const activeRoute$ =
-        map.call(navigations$, () => this.findActiveRoute(this.router.routerState.root));
-    this.sub = mergeMap.call(activeRoute$, (route: ActivatedRoute) => route.data)
-                   .subscribe((data: any) => this.updateHead(data['head']));
+    const activatedRoute$ =
+        map.call(navigations$, () => this.findLastActivatedRoute(this.router.routerState.root));
+    const primaryRoute$ =
+        filter.call(activatedRoute$, (route: ActivatedRoute) => route.outlet === PRIMARY_OUTLET);
+    this.sub = mergeMap.call(primaryRoute$, (route: ActivatedRoute) => route.data)
+                   .subscribe((data: Data) => this.updateHead(data.head));
   }
 
-  private findActiveRoute(root: ActivatedRoute): ActivatedRoute {
+  private findLastActivatedRoute(root: ActivatedRoute): ActivatedRoute {
     while (root.firstChild) {
       root = root.firstChild;
     }

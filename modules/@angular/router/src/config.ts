@@ -7,12 +7,11 @@
  */
 
 import {Type} from '@angular/core';
+import {MetaDefinition} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 
-import {Head} from './helmet';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
-
 
 /**
  * @whatItDoes Represents router configuration.
@@ -291,13 +290,34 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
     UrlMatchResult;
 
 /**
+ * @whatItDoes Represents.
+ *
+ * ```
+ * head: {
+ *     title: 'Home page',
+ *     meta: [
+ *         {'name': 'description', 'content': 'My application'},
+ *         {'property': 'og:type', 'content': 'article'}
+ *    ]
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export interface Head {
+  title?: string;
+  meta?: MetaDefinition[];
+}
+
+/**
  * @whatItDoes Represents the static data associated with a particular route.
  * See {@link Routes} for more details.
  * @stable
  */
-export type Data = {
-  head?: Head; [name: string]: any;
-};
+export interface Data {
+  head?: Head;
+  [name: string]: any;
+}
 
 /**
  * @whatItDoes Represents the resolved data associated with a particular route.
