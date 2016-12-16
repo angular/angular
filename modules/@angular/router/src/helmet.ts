@@ -9,6 +9,9 @@
 import {Inject, Injectable, OnDestroy, OpaqueToken} from '@angular/core';
 import {Meta, MetaDefinition, Title} from '@angular/platform-browser';
 import {Subscription} from 'rxjs/Subscription';
+import {filter} from 'rxjs/operator/filter';
+import {map} from 'rxjs/operator/map';
+import {mergeMap} from 'rxjs/operator/mergeMap';
 
 import {NavigationEnd, Router} from './router';
 import {ActivatedRoute} from './router_state';
@@ -23,6 +26,10 @@ export interface HelmetConfig {
   defaultTitle?: string;
   /**
    * The title template, used to format title text in your page title.
+   *
+   * ```
+   *
+   * ```
    */
   titleTemplate?: string;
 }
@@ -45,10 +52,11 @@ export class Helmet implements OnDestroy {
   constructor(
       private router: Router, private title: Title, private meta: Meta,
       @Inject(HELMET_CONFIG) private config: any /* Head */) {
-    this.sub = router.events.filter(event => event instanceof NavigationEnd)
-                   .map(_ => this.router.routerState.root)
-                   .map((route: ActivatedRoute) => this.findActiveRoute(route))
-                   .mergeMap((route: ActivatedRoute) => route.data)
+    const navigations$ =
+        filter.call(router.events, (event: NavigationEvent) => event instanceof NavigationEnd);
+    const activeRoute$ =
+        map.call(navigations$, () => this.findActiveRoute(this.router.routerState.root));
+    this.sub = mergeMap.call(activeRoute$, (route: ActivatedRoute) => route.data)
                    .subscribe((data: any) => this.updateHead(data['head']));
   }
 

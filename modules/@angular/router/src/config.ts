@@ -8,8 +8,11 @@
 
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+
+import {Head} from './helmet';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
+
 
 /**
  * @whatItDoes Represents router configuration.
@@ -293,7 +296,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  * @stable
  */
 export type Data = {
-  [name: string]: any
+  head?: Head; [name: string]: any;
 };
 
 /**
@@ -302,7 +305,7 @@ export type Data = {
  * @stable
  */
 export type ResolveData = {
-  [name: string]: any
+  [name: string]: any;
 };
 
 /**
