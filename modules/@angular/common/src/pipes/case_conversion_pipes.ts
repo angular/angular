@@ -27,6 +27,17 @@ export class LowerCasePipe implements PipeTransform {
   }
 }
 
+
+/**
+ * Helper method to transform a single word to titlecase.
+ *
+ * @stable
+ */
+function titleCaseWord(word: string) {
+  if (!word) return word;
+  return word[0].toUpperCase() + word.substr(1).toLowerCase();
+}
+
 /**
  * Transforms text to titlecase.
  *
@@ -40,7 +51,7 @@ export class TitleCasePipe implements PipeTransform {
       throw new InvalidPipeArgumentError(TitleCasePipe, value);
     }
 
-    return value[0].toUpperCase() + value.substr(1).toLowerCase();
+    return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
   }
 }
 
