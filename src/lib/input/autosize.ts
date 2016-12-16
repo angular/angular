@@ -40,7 +40,7 @@ export class MdTextareaAutosize implements OnInit {
   }
 
   /**
-   * Cache the hight of a single-row textarea.
+   * Cache the height of a single-row textarea.
    *
    * We need to know how large a single "row" of a textarea is in order to apply minRows and
    * maxRows. For the initial version, we will assume that the height of a single line in the
