@@ -7,7 +7,7 @@ import {RouterModule} from '@angular/router';
 import {MaterialModule} from '@angular/material';
 import {DEMO_APP_ROUTES} from './demo-app/routes';
 import {ProgressBarDemo} from './progress-bar/progress-bar-demo';
-import {JazzDialog, DialogDemo} from './dialog/dialog-demo';
+import {JazzDialog, ContentElementDialog, DialogDemo} from './dialog/dialog-demo';
 import {RippleDemo} from './ripple/ripple-demo';
 import {IconDemo} from './icon/icon-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
@@ -65,6 +65,7 @@ import {InputContainerDemo} from './input/input-container-demo';
     InputDemo,
     InputContainerDemo,
     JazzDialog,
+    ContentElementDialog,
     ListDemo,
     LiveAnnouncerDemo,
     MdCheckboxDemoNestedChecklist,
@@ -96,6 +97,7 @@ import {InputContainerDemo} from './input/input-container-demo';
   entryComponents: [
     DemoApp,
     JazzDialog,
+    ContentElementDialog,
     RotiniPanel,
     ScienceJoke,
     SpagettiPanel,

@@ -1,29 +1,15 @@
-import {NgModule, ModuleWithProviders, Injector, ComponentRef, Injectable} from '@angular/core';
-import {
-  Overlay,
-  OverlayModule,
-  PortalModule,
-  OverlayRef,
-  OverlayState,
-  ComponentPortal,
-  OVERLAY_PROVIDERS,
-  ComponentType,
-  A11yModule,
-  InteractivityChecker,
-  MdPlatform,
-  DefaultStyleCompatibilityModeModule,
-} from '../core';
+import {Injector, ComponentRef, Injectable} from '@angular/core';
+
+import {Overlay, OverlayRef, ComponentType, OverlayState, ComponentPortal} from '../core';
+import {extendObject} from '../core/util/object-extend';
+
+import {DialogInjector} from './dialog-injector';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
-import {DialogInjector} from './dialog-injector';
 import {MdDialogContainer} from './dialog-container';
-import {extendObject} from '../core/util/object-extend';
-export {MdDialogConfig} from './dialog-config';
-export {MdDialogRef} from './dialog-ref';
 
 
 // TODO(jelbourn): add support for opening with a TemplateRef
-// TODO(jelbourn): dialog content directives (e.g., md-dialog-header)
 // TODO(jelbourn): animations
 
 
@@ -184,18 +170,3 @@ function _applyConfigDefaults(dialogConfig: MdDialogConfig): MdDialogConfig {
   return extendObject(new MdDialogConfig(), dialogConfig);
 }
 
-
-@NgModule({
-  imports: [OverlayModule, PortalModule, A11yModule, DefaultStyleCompatibilityModeModule],
-  exports: [MdDialogContainer, DefaultStyleCompatibilityModeModule],
-  declarations: [MdDialogContainer],
-  entryComponents: [MdDialogContainer],
-})
-export class MdDialogModule {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdDialogModule,
-      providers: [MdDialog, OVERLAY_PROVIDERS, InteractivityChecker, MdPlatform],
-    };
-  }
-}

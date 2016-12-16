@@ -22,7 +22,7 @@ import 'rxjs/add/operator/first';
   moduleId: module.id,
   selector: 'md-dialog-container, mat-dialog-container',
   templateUrl: 'dialog-container.html',
-  styleUrls: ['dialog-container.css'],
+  styleUrls: ['dialog.css'],
   host: {
     'class': 'md-dialog-container',
     '[attr.role]': 'dialogConfig?.role',

@@ -1,0 +1,54 @@
+@import '../core/style/elevation';
+@import '../core/a11y/a11y';
+
+
+$md-dialog-padding: 24px !default;
+$md-dialog-border-radius: 2px !default;
+$md-dialog-max-width: 80vw !default;
+$md-dialog-max-height: 65vh !default;
+
+md-dialog-container {
+  @include md-elevation(24);
+
+  display: block;
+  padding: $md-dialog-padding;
+  border-radius: $md-dialog-border-radius;
+  box-sizing: border-box;
+  overflow: auto;
+  max-width: $md-dialog-max-width;
+
+  // The dialog container should completely fill its parent overlay element.
+  width: 100%;
+  height: 100%;
+
+  @include md-high-contrast {
+    outline: solid 1px;
+  }
+}
+
+md-dialog-content, [md-dialog-content], mat-dialog-content, [mat-dialog-content] {
+  display: block;
+  margin: 0 $md-dialog-padding * -1;
+  padding: 0 $md-dialog-padding;
+  max-height: $md-dialog-max-height;
+  overflow: auto;
+}
+
+[md-dialog-title], [mat-dialog-title] {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 20px;
+  display: block;
+}
+
+md-dialog-actions, [md-dialog-actions], mat-dialog-actions, [mat-dialog-actions] {
+  padding: $md-dialog-padding / 2 0;
+  display: block;
+
+  &:last-child {
+    // If the actions are the last element in a dialog, we need to pull them down
+    // over the dialog padding, in order to avoid the action's padding stacking
+    // with the dialog's.
+    margin-bottom: -$md-dialog-padding;
+  }
+}
