@@ -523,7 +523,15 @@ export function main() {
         ]);
       });
 
-
+      it('should treat expansion form as text when they are not parsed', () => {
+        expect(tokenizeAndHumanizeParts('<span>{a, b, =4 {c}}</span>', false)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 'span'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, '{a, b, =4 {c}}'],
+          [lex.TokenType.TAG_CLOSE, null, 'span'],
+          [lex.TokenType.EOF],
+        ]);
+      });
     });
 
     describe('raw text', () => {

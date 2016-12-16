@@ -586,8 +586,8 @@ class _Tokenizer {
         parts.push(this._interpolationConfig.start);
         this._inInterpolation = true;
       } else if (
-          this._interpolationConfig && this._attemptStr(this._interpolationConfig.end) &&
-          this._inInterpolation) {
+          this._interpolationConfig && this._inInterpolation &&
+          this._attemptStr(this._interpolationConfig.end)) {
         parts.push(this._interpolationConfig.end);
         this._inInterpolation = false;
       } else {
