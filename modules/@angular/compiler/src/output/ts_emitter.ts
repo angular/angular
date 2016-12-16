@@ -7,18 +7,22 @@
  */
 
 
-import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from '../compile_metadata';
+import {StaticSymbol} from '../aot/static_symbol';
+import {CompileIdentifierMetadata} from '../compile_metadata';
 import {isBlank, isPresent} from '../facade/lang';
 
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import * as o from './output_ast';
 import {ImportResolver} from './path_util';
 
-const _debugModuleUrl = '/debug/lib';
+const _debugFilePath = '/debug/lib';
 
 export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
     string {
-  const converter = new _TsEmitterVisitor(_debugModuleUrl);
+  const converter = new _TsEmitterVisitor(_debugFilePath, {
+    fileNameToModuleName(filePath: string, containingFilePath: string) { return filePath; },
+    getImportAs(symbol: StaticSymbol) { return null; }
+  });
   const ctx = EmitterVisitorContext.createRoot([]);
   const asts: any[] = Array.isArray(ast) ? ast : [ast];
 
@@ -37,17 +41,23 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 }
 
 export class TypeScriptEmitter implements OutputEmitter {
-  constructor(private _importGenerator: ImportResolver) {}
-  emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
-    const converter = new _TsEmitterVisitor(moduleUrl);
+  constructor(private _importResolver: ImportResolver) {}
+  emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
+    const converter = new _TsEmitterVisitor(genFilePath, this._importResolver);
     const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
     const srcParts: string[] = [];
-    converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
+    converter.reexports.forEach((reexports, exportedFilePath) => {
+      const reexportsCode =
+          reexports.map(reexport => `${reexport.name} as ${reexport.as}`).join(',');
+      srcParts.push(
+          `export {${reexportsCode}} from '${this._importResolver.fileNameToModuleName(exportedFilePath, genFilePath)}';`);
+    });
+    converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${this._importGenerator.fileNameToModuleName(importedModuleUrl, moduleUrl)}';`);
+          `ort * as ${prefix} from '${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
@@ -55,9 +65,12 @@ export class TypeScriptEmitter implements OutputEmitter {
 }
 
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
-  constructor(private _moduleUrl: string) { super(false); }
+  constructor(private _genFilePath: string, private _importResolver: ImportResolver) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
+  reexports = new Map<string, {name: string, as: string}[]>();
 
   visitType(t: o.Type, ctx: EmitterVisitorContext, defaultType: string = 'any') {
     if (isPresent(t)) {
@@ -98,6 +111,19 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+    if (ctx.isExportedVar(stmt.name) && stmt.value instanceof o.ExternalExpr && !stmt.type) {
+      // check for a reexport
+      const {name, filePath, members} = this._resolveStaticSymbol(stmt.value.value);
+      if (members.length === 0 && filePath !== this._genFilePath) {
+        let reexports = this.reexports.get(filePath);
+        if (!reexports) {
+          reexports = [];
+          this.reexports.set(filePath, reexports);
+        }
+        reexports.push({name, as: stmt.name});
+        return null;
+      }
+    }
     if (ctx.isExportedVar(stmt.name)) {
       ctx.print(`export `);
     }
@@ -320,25 +346,29 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }, params, ctx, ',');
   }
 
+  private _resolveStaticSymbol(value: CompileIdentifierMetadata): StaticSymbol {
+    const reference = value.reference;
+    if (!(reference instanceof StaticSymbol)) {
+      throw new Error(`Internal error: unknown identifier ${JSON.stringify(value)}`);
+    }
+    return this._importResolver.getImportAs(reference) || reference;
+  }
+
   private _visitIdentifier(
       value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
-    const name = identifierName(value);
-    const moduleUrl = identifierModuleUrl(value);
-    if (isBlank(name)) {
-      throw new Error(`Internal error: unknown identifier ${value}`);
-    }
-    if (isPresent(moduleUrl) && moduleUrl != this._moduleUrl) {
-      let prefix = this.importsWithPrefixes.get(moduleUrl);
+    const {name, filePath, members} = this._resolveStaticSymbol(value);
+    if (filePath != this._genFilePath) {
+      let prefix = this.importsWithPrefixes.get(filePath);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
-        this.importsWithPrefixes.set(moduleUrl, prefix);
+        this.importsWithPrefixes.set(filePath, prefix);
       }
       ctx.print(`${prefix}.`);
     }
-    if (value.reference && value.reference.members && value.reference.members.length) {
-      ctx.print(value.reference.name);
+    if (members.length) {
+      ctx.print(name);
       ctx.print('.');
-      ctx.print(value.reference.members.join('.'));
+      ctx.print(members.join('.'));
     } else {
       ctx.print(name);
     }

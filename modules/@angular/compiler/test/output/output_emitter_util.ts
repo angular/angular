@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {assetUrl, createIdentifier} from '@angular/compiler/src/identifiers';
 import * as o from '@angular/compiler/src/output/output_ast';
@@ -262,4 +263,5 @@ export class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
     return importedUrlStr;
   }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
 }

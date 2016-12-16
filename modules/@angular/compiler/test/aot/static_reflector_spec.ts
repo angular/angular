@@ -487,6 +487,8 @@ describe('StaticReflector', () => {
             export class Child extends Parent {}
 
             export class ChildNoDecorators extends Parent {}
+
+            export class ChildInvalidParent extends a.InvalidParent {}
           `
       });
 
@@ -500,6 +502,10 @@ describe('StaticReflector', () => {
       expect(
           reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildNoDecorators')))
           .toEqual([new ClassDecorator('parent')]);
+
+      expect(reflector.annotations(
+                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual([]);
     });
 
     it('should inherit parameters', () => {
@@ -520,6 +526,8 @@ describe('StaticReflector', () => {
             export class ChildWithCtor extends Parent {
               constructor(@ParamDecorator('c') c: C) {}
             }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
           `
       });
 
@@ -537,6 +545,10 @@ describe('StaticReflector', () => {
 
       expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildWithCtor')))
           .toEqual([[reflector.getStaticSymbol('/tmp/src/main.ts', 'C'), new ParamDecorator('c')]]);
+
+      expect(
+          reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual([]);
     });
 
     it('should inherit property metadata', () => {
@@ -561,6 +573,8 @@ describe('StaticReflector', () => {
               @PropDecorator('c')
               c: C;
             }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
           `
       });
 
@@ -577,6 +591,10 @@ describe('StaticReflector', () => {
             'b': [new PropDecorator('b1'), new PropDecorator('b2')],
             'c': [new PropDecorator('c')]
           });
+
+      expect(reflector.propMetadata(
+                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual({});
     });
 
     it('should inherit lifecycle hooks', () => {
@@ -591,6 +609,8 @@ describe('StaticReflector', () => {
               hook2() {}
               hook3() {}
             }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
           `
       });
 
@@ -606,6 +626,10 @@ describe('StaticReflector', () => {
       expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'), [
         'hook1', 'hook2', 'hook3'
       ])).toEqual([true, true, true]);
+
+      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
+        'hook1', 'hook2', 'hook3'
+      ])).toEqual([false, false, false]);
     });
   });
 

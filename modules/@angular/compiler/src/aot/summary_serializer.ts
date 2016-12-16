@@ -15,25 +15,11 @@ import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolv
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
-export interface AotSummarySerializerHost {
-  /**
-   * Returns the output file path of a source file.
-   * E.g.
-   * `some_file.ts` -> `some_file.d.ts`
-   */
-  getOutputFileName(sourceFilePath: string): string;
-  /**
-   * Returns whether a file is a source file or not.
-   */
-  isSourceFile(sourceFilePath: string): boolean;
-}
-
 export function serializeSummaries(
-    host: AotSummarySerializerHost, summaryResolver: SummaryResolver<StaticSymbol>,
-    symbolResolver: StaticSymbolResolver,
-
-    symbols: ResolvedStaticSymbol[], types: CompileTypeSummary[]): string {
-  const serializer = new Serializer(host);
+    summaryResolver: SummaryResolver<StaticSymbol>, symbolResolver: StaticSymbolResolver,
+    symbols: ResolvedStaticSymbol[], types: CompileTypeSummary[]):
+    {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+  const serializer = new Serializer(symbolResolver, summaryResolver);
 
   // for symbols, we use everything except for the class metadata itself
   // (we keep the statics though), as the class metadata is contained in the
@@ -46,7 +32,7 @@ export function serializeSummaries(
   // we execute the loop!
   for (let processedIndex = 0; processedIndex < serializer.symbols.length; processedIndex++) {
     const symbol = serializer.symbols[processedIndex];
-    if (!host.isSourceFile(symbol.filePath)) {
+    if (summaryResolver.isLibraryFile(symbol.filePath)) {
       let summary = summaryResolver.resolveSummary(symbol);
       if (!summary) {
         // some symbols might originate from a plain typescript library
@@ -74,8 +60,11 @@ export function serializeSummaries(
       const ngModuleSummary = <CompileNgModuleSummary>typeSummary;
       ngModuleSummary.exportedDirectives.concat(ngModuleSummary.exportedPipes).forEach((id) => {
         const symbol: StaticSymbol = id.reference;
-        if (!host.isSourceFile(symbol.filePath)) {
-          serializer.addOrMergeSummary(summaryResolver.resolveSummary(symbol));
+        if (summaryResolver.isLibraryFile(symbol.filePath)) {
+          const summary = summaryResolver.resolveSummary(symbol);
+          if (summary) {
+            serializer.addOrMergeSummary(summary);
+          }
         }
       });
     }
@@ -83,18 +72,14 @@ export function serializeSummaries(
   return serializer.serialize();
 }
 
-export function deserializeSummaries(
-    symbolCache: StaticSymbolCache, json: string): Summary<StaticSymbol>[] {
+export function deserializeSummaries(symbolCache: StaticSymbolCache, json: string):
+    {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
   const deserializer = new Deserializer(symbolCache);
   return deserializer.deserialize(json);
 }
 
-export function summaryFileName(fileName: string): string {
-  const fileNameWithoutSuffix = fileName.replace(STRIP_SRC_FILE_SUFFIXES, '');
-  return `${fileNameWithoutSuffix}.ngsummary.json`;
-}
-
 class Serializer extends ValueTransformer {
+  // Note: This only contains symbols without members.
   symbols: StaticSymbol[] = [];
   private indexBySymbol = new Map<StaticSymbol, number>();
   // This now contains a `__symbol: number` in the place of
@@ -102,7 +87,11 @@ class Serializer extends ValueTransformer {
   private processedSummaryBySymbol = new Map<StaticSymbol, any>();
   private processedSummaries: any[] = [];
 
-  constructor(private host: AotSummarySerializerHost) { super(); }
+  constructor(
+      private symbolResolver: StaticSymbolResolver,
+      private summaryResolver: SummaryResolver<StaticSymbol>) {
+    super();
+  }
 
   addOrMergeSummary(summary: Summary<StaticSymbol>) {
     let symbolMeta = summary.metadata;
@@ -129,34 +118,44 @@ class Serializer extends ValueTransformer {
     }
   }
 
-  serialize(): string {
-    return JSON.stringify({
+  serialize(): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+    const exportAs: {symbol: StaticSymbol, exportAs: string}[] = [];
+    const json = JSON.stringify({
       summaries: this.processedSummaries,
       symbols: this.symbols.map((symbol, index) => {
+        symbol.assertNoMembers();
+        let importAs: string;
+        if (this.summaryResolver.isLibraryFile(symbol.filePath)) {
+          importAs = `${symbol.name}_${index}`;
+          exportAs.push({symbol, exportAs: importAs});
+        }
         return {
           __symbol: index,
           name: symbol.name,
           // We convert the source filenames tinto output filenames,
           // as the generated summary file will be used when teh current
           // compilation unit is used as a library
-          filePath: this.host.getOutputFileName(symbol.filePath)
+          filePath: this.summaryResolver.getLibraryFileName(symbol.filePath),
+          importAs: importAs
         };
       })
     });
+    return {json, exportAs};
   }
 
   private processValue(value: any): any { return visitValue(value, this, null); }
 
   visitOther(value: any, context: any): any {
     if (value instanceof StaticSymbol) {
-      let index = this.indexBySymbol.get(value);
+      const baseSymbol = this.symbolResolver.getStaticSymbol(value.filePath, value.name);
+      let index = this.indexBySymbol.get(baseSymbol);
       // Note: == by purpose to compare with undefined!
       if (index == null) {
         index = this.indexBySymbol.size;
-        this.indexBySymbol.set(value, index);
-        this.symbols.push(value);
+        this.indexBySymbol.set(baseSymbol, index);
+        this.symbols.push(baseSymbol);
       }
-      return {__symbol: index};
+      return {__symbol: index, members: value.members};
     }
   }
 }
@@ -166,16 +165,28 @@ class Deserializer extends ValueTransformer {
 
   constructor(private symbolCache: StaticSymbolCache) { super(); }
 
-  deserialize(json: string): Summary<StaticSymbol>[] {
+  deserialize(json: string):
+      {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
     const data: {summaries: any[], symbols: any[]} = JSON.parse(json);
-    this.symbols = data.symbols.map(
-        serializedSymbol => this.symbolCache.get(serializedSymbol.filePath, serializedSymbol.name));
-    return visitValue(data.summaries, this, null);
+    const importAs: {symbol: StaticSymbol, importAs: string}[] = [];
+    this.symbols = [];
+    data.symbols.forEach((serializedSymbol) => {
+      const symbol = this.symbolCache.get(serializedSymbol.filePath, serializedSymbol.name);
+      this.symbols.push(symbol);
+      if (serializedSymbol.importAs) {
+        importAs.push({symbol: symbol, importAs: serializedSymbol.importAs});
+      }
+    });
+    const summaries = visitValue(data.summaries, this, null);
+    return {summaries, importAs};
   }
 
   visitStringMap(map: {[key: string]: any}, context: any): any {
     if ('__symbol' in map) {
-      return this.symbols[map['__symbol']];
+      const baseSymbol = this.symbols[map['__symbol']];
+      const members = map['members'];
+      return members.length ? this.symbolCache.get(baseSymbol.filePath, baseSymbol.name, members) :
+                              baseSymbol;
     } else {
       return super.visitStringMap(map, context);
     }

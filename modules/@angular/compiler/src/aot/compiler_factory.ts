@@ -34,9 +34,10 @@ import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {StaticAndDynamicReflectionCapabilities} from './static_reflection_capabilities';
 import {StaticReflector} from './static_reflector';
-import {StaticSymbolCache} from './static_symbol';
+import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
+
 
 
 /**
@@ -69,13 +70,19 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const resolver = new CompileMetadataResolver(
       new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-      staticReflector);
+      symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
+  const importResolver = {
+    getImportAs: (symbol: StaticSymbol) => symbolResolver.getImportAs(symbol),
+    fileNameToModuleName: (fileName: string, containingFilePath: string) =>
+                              compilerHost.fileNameToModuleName(fileName, containingFilePath)
+  };
   const compiler = new AotCompiler(
       compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver),
       new ViewCompiler(config, elementSchemaRegistry),
       new DirectiveWrapperCompiler(config, expressionParser, elementSchemaRegistry, console),
-      new NgModuleCompiler(), new TypeScriptEmitter(compilerHost), summaryResolver, options.locale,
-      options.i18nFormat, new AnimationParser(elementSchemaRegistry), symbolResolver);
+      new NgModuleCompiler(), new TypeScriptEmitter(importResolver), summaryResolver,
+      options.locale, options.i18nFormat, new AnimationParser(elementSchemaRegistry),
+      symbolResolver);
   return {compiler, reflector: staticReflector};
 }

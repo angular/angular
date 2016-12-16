@@ -14,9 +14,11 @@ import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
+import {Type} from '../type';
 import {VERSION} from '../version';
 import {NgZone} from '../zone/ng_zone';
 
+import {ComponentFactory} from './component_factory';
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
 
@@ -652,3 +654,10 @@ export class InlineArrayDynamic<T> implements InlineArray<T> {
 }
 
 export const EMPTY_INLINE_ARRAY: InlineArray<any> = new InlineArray0();
+
+/**
+ * This is a private API only used by the compiler to read the view class.
+ */
+export function getComponentFactoryViewClass(componentFactory: ComponentFactory<any>): Type<any> {
+  return componentFactory._viewClass;
+}

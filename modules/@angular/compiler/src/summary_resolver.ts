@@ -16,6 +16,9 @@ export interface Summary<T> {
 
 @CompilerInjectable()
 export class SummaryResolver<T> {
+  isLibraryFile(fileName: string): boolean { return false; };
+  getLibraryFileName(fileName: string): string { return null; }
   resolveSummary(reference: T): Summary<T> { return null; };
   getSymbolsOf(filePath: string): T[] { return []; }
+  getImportAs(reference: T): T { return reference; }
 }

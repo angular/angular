@@ -71,12 +71,6 @@ export function injectFromViewParentInjector(
   return viewExpr.callMethod('injectorGet', args);
 }
 
-export function getViewClassName(
-    component: CompileDirectiveSummary | CompileDirectiveMetadata,
-    embeddedTemplateIndex: number): string {
-  return `View_${identifierName(component.type)}${embeddedTemplateIndex}`;
-}
-
 export function getHandleEventMethodName(elementIndex: number): string {
   return `handleEvent_${elementIndex}`;
 }

@@ -16,7 +16,7 @@ import * as ts from 'typescript';
 const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticSymbolResolver', () => {
-  const noContext = new StaticSymbol('', '');
+  const noContext = new StaticSymbol('', '', []);
   let host: StaticSymbolResolverHost;
   let symbolResolver: StaticSymbolResolver;
   let symbolCache: StaticSymbolCache;
@@ -24,10 +24,11 @@ describe('StaticSymbolResolver', () => {
   beforeEach(() => { symbolCache = new StaticSymbolCache(); });
 
   function init(
-      testData: {[key: string]: any} = DEFAULT_TEST_DATA, summaries: Summary<StaticSymbol>[] = []) {
+      testData: {[key: string]: any} = DEFAULT_TEST_DATA, summaries: Summary<StaticSymbol>[] = [],
+      summaryImportAs: {symbol: StaticSymbol, importAs: StaticSymbol}[] = []) {
     host = new MockStaticSymbolResolverHost(testData);
-    symbolResolver =
-        new StaticSymbolResolver(host, symbolCache, new MockSummaryResolver(summaries));
+    symbolResolver = new StaticSymbolResolver(
+        host, symbolCache, new MockSummaryResolver(summaries, summaryImportAs));
   }
 
   beforeEach(() => init());
@@ -137,6 +138,73 @@ describe('StaticSymbolResolver', () => {
     ]);
   });
 
+  describe('importAs', () => {
+
+    it('should calculate importAs relationship for non source files without summaries', () => {
+      init(
+          {
+            '/test.d.ts': [{
+              '__symbolic': 'module',
+              'version': 3,
+              'metadata': {
+                'a': {'__symbolic': 'reference', 'name': 'b', 'module': './test2'},
+              }
+            }],
+            '/test2.d.ts': [{
+              '__symbolic': 'module',
+              'version': 3,
+              'metadata': {
+                'b': {'__symbolic': 'reference', 'name': 'c', 'module': './test3'},
+              }
+            }]
+          },
+          []);
+      symbolResolver.getSymbolsOf('/test.d.ts');
+      symbolResolver.getSymbolsOf('/test2.d.ts');
+
+      expect(symbolResolver.getImportAs(symbolCache.get('/test2.d.ts', 'b')))
+          .toBe(symbolCache.get('/test.d.ts', 'a'));
+      expect(symbolResolver.getImportAs(symbolCache.get('/test3.d.ts', 'c')))
+          .toBe(symbolCache.get('/test.d.ts', 'a'));
+    });
+
+    it('should calculate importAs relationship for non source files with summaries', () => {
+      init(
+          {
+            '/test.ts': `
+          export {a} from './test2';
+        `
+          },
+          [], [{
+            symbol: symbolCache.get('/test2.d.ts', 'a'),
+            importAs: symbolCache.get('/test3.d.ts', 'b')
+          }]);
+      symbolResolver.getSymbolsOf('/test.ts');
+
+      expect(symbolResolver.getImportAs(symbolCache.get('/test2.d.ts', 'a')))
+          .toBe(symbolCache.get('/test3.d.ts', 'b'));
+    });
+
+    it('should calculate importAs for symbols with members based on importAs for symbols without',
+       () => {
+         init(
+             {
+               '/test.ts': `
+          export {a} from './test2';
+        `
+             },
+             [], [{
+               symbol: symbolCache.get('/test2.d.ts', 'a'),
+               importAs: symbolCache.get('/test3.d.ts', 'b')
+             }]);
+         symbolResolver.getSymbolsOf('/test.ts');
+
+         expect(symbolResolver.getImportAs(symbolCache.get('/test2.d.ts', 'a', ['someMember'])))
+             .toBe(symbolCache.get('/test3.d.ts', 'b', ['someMember']));
+       });
+
+  });
+
   it('should replace references by StaticSymbols', () => {
     init({
       '/test.ts': `
@@ -178,6 +246,42 @@ describe('StaticSymbolResolver', () => {
 
     expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'Default')).metadata)
         .toBeFalsy();
+  });
+
+  it('should fill references to ambient symbols with undefined', () => {
+    init({
+      '/test.ts': `
+        export var y = 1;
+        export var z = [window, z];
+      `
+    });
+
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'z')).metadata).toEqual([
+      undefined, symbolCache.get('/test.ts', 'z')
+    ]);
+  });
+
+  it('should allow to use symbols with __', () => {
+    init({
+      '/test.ts': `
+        export {__a__ as __b__} from './test2';
+        import {__c__} from './test2';
+
+        export var __x__ = 1;
+        export var __y__ = __c__;
+      `
+    });
+
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', '__x__')).metadata).toBe(1);
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', '__y__')).metadata)
+        .toBe(symbolCache.get('/test2.d.ts', '__c__'));
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', '__b__')).metadata)
+        .toBe(symbolCache.get('/test2.d.ts', '__a__'));
+
+    expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([
+      symbolCache.get('/test.ts', '__x__'), symbolCache.get('/test.ts', '__y__'),
+      symbolCache.get('/test.ts', '__b__')
+    ]);
   });
 
   it('should be able to trace a named export', () => {
@@ -240,7 +344,10 @@ describe('StaticSymbolResolver', () => {
 });
 
 export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
-  constructor(private summaries: Summary<StaticSymbol>[] = []) {}
+  constructor(private summaries: Summary<StaticSymbol>[] = [], private importAs: {
+    symbol: StaticSymbol,
+    importAs: StaticSymbol
+  }[] = []) {}
 
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
@@ -249,6 +356,13 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     return this.summaries.filter(summary => summary.symbol.filePath === filePath)
         .map(summary => summary.symbol);
   }
+  getImportAs(symbol: StaticSymbol): StaticSymbol {
+    const entry = this.importAs.find(entry => entry.symbol === symbol);
+    return entry ? entry.importAs : undefined;
+  }
+
+  isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
+  getLibraryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
 }
 
 export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {

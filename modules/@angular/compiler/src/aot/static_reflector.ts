@@ -83,8 +83,11 @@ export class StaticReflector implements ReflectorReader {
       annotations = [];
       const classMetadata = this.getTypeMetadata(type);
       if (classMetadata['extends']) {
-        const parentAnnotations = this.annotations(this.simplify(type, classMetadata['extends']));
-        annotations.push(...parentAnnotations);
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentAnnotations = this.annotations(parentType);
+          annotations.push(...parentAnnotations);
+        }
       }
       if (classMetadata['decorators']) {
         const ownAnnotations: any[] = this.simplify(type, classMetadata['decorators']);
@@ -101,10 +104,13 @@ export class StaticReflector implements ReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       propMetadata = {};
       if (classMetadata['extends']) {
-        const parentPropMetadata = this.propMetadata(this.simplify(type, classMetadata['extends']));
-        Object.keys(parentPropMetadata).forEach((parentProp) => {
-          propMetadata[parentProp] = parentPropMetadata[parentProp];
-        });
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentPropMetadata = this.propMetadata(parentType);
+          Object.keys(parentPropMetadata).forEach((parentProp) => {
+            propMetadata[parentProp] = parentPropMetadata[parentProp];
+          });
+        }
       }
 
       const members = classMetadata['members'] || {};
@@ -156,7 +162,10 @@ export class StaticReflector implements ReflectorReader {
             parameters.push(nestedResult);
           });
         } else if (classMetadata['extends']) {
-          parameters = this.parameters(this.simplify(type, classMetadata['extends']));
+          const parentType = this.simplify(type, classMetadata['extends']);
+          if (parentType instanceof StaticSymbol) {
+            parameters = this.parameters(parentType);
+          }
         }
         if (!parameters) {
           parameters = [];
@@ -176,10 +185,13 @@ export class StaticReflector implements ReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       methodNames = {};
       if (classMetadata['extends']) {
-        const parentMethodNames = this._methodNames(this.simplify(type, classMetadata['extends']));
-        Object.keys(parentMethodNames).forEach((parentProp) => {
-          methodNames[parentProp] = parentMethodNames[parentProp];
-        });
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentMethodNames = this._methodNames(parentType);
+          Object.keys(parentMethodNames).forEach((parentProp) => {
+            methodNames[parentProp] = parentMethodNames[parentProp];
+          });
+        }
       }
 
       const members = classMetadata['members'] || {};

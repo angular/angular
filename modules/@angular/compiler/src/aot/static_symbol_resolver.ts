@@ -45,11 +45,18 @@ const SUPPORTED_SCHEMA_VERSION = 3;
 /**
  * This class is responsible for loading metadata per symbol,
  * and normalizing references between symbols.
+ *
+ * Internally, it only uses symbols without members,
+ * and deduces the values for symbols with members based
+ * on these symbols.
  */
 export class StaticSymbolResolver {
   private metadataCache = new Map<string, {[key: string]: any}>();
+  // Note: this will only contain StaticSymbols without members!
   private resolvedSymbols = new Map<StaticSymbol, ResolvedStaticSymbol>();
   private resolvedFilePaths = new Set<string>();
+  // Note: this will only contain StaticSymbols without members!
+  private importAs = new Map<StaticSymbol, StaticSymbol>();
 
   constructor(
       private host: StaticSymbolResolverHost, private staticSymbolCache: StaticSymbolCache,
@@ -60,13 +67,33 @@ export class StaticSymbolResolver {
     if (staticSymbol.members.length > 0) {
       return this._resolveSymbolMembers(staticSymbol);
     }
-    let result = this._resolveSymbolFromSummary(staticSymbol);
+    let result = this.resolvedSymbols.get(staticSymbol);
+    if (result) {
+      return result;
+    }
+    result = this._resolveSymbolFromSummary(staticSymbol);
+    if (result) {
+      return result;
+    }
+    // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
+    // have summaries, only .d.ts files. So we always need to check both, the summary
+    // and metadata.
+    this._createSymbolsOf(staticSymbol.filePath);
+    result = this.resolvedSymbols.get(staticSymbol);
+    return result;
+  }
+
+  getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
+    if (staticSymbol.members.length) {
+      const baseSymbol = this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name);
+      const baseImportAs = this.getImportAs(baseSymbol);
+      return baseImportAs ?
+          this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
+          null;
+    }
+    let result = this.summaryResolver.getImportAs(staticSymbol);
     if (!result) {
-      // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
-      // have summaries, only .d.ts files. So we always need to check both, the summary
-      // and metadata.
-      this._createSymbolsOf(staticSymbol.filePath);
-      result = this.resolvedSymbols.get(staticSymbol);
+      result = this.importAs.get(staticSymbol);
     }
     return result;
   }
@@ -135,10 +162,13 @@ export class StaticSymbolResolver {
     const metadata = this.getModuleMetadata(filePath);
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
-      Object.keys(metadata['metadata']).forEach((symbolName) => {
-        const symbolMeta = metadata['metadata'][symbolName];
-        resolvedSymbols.push(
-            this.createResolvedSymbol(this.getStaticSymbol(filePath, symbolName), symbolMeta));
+      const topLevelSymbolNames =
+          new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
+      Object.keys(metadata['metadata']).forEach((metadataKey) => {
+        const symbolMeta = metadata['metadata'][metadataKey];
+        resolvedSymbols.push(this.createResolvedSymbol(
+            this.getStaticSymbol(filePath, unescapeIdentifier(metadataKey)), topLevelSymbolNames,
+            symbolMeta));
       });
     }
 
@@ -154,15 +184,16 @@ export class StaticSymbolResolver {
             } else {
               symbolName = exportSymbol.as;
             }
+            symbolName = unescapeIdentifier(symbolName);
             let symName = symbolName;
             if (typeof exportSymbol !== 'string') {
-              symName = exportSymbol.name;
+              symName = unescapeIdentifier(exportSymbol.name);
             }
             const resolvedModule = this.resolveModule(moduleExport.from, filePath);
             if (resolvedModule) {
               const targetSymbol = this.getStaticSymbol(resolvedModule, symName);
               const sourceSymbol = this.getStaticSymbol(filePath, symbolName);
-              resolvedSymbols.push(new ResolvedStaticSymbol(sourceSymbol, targetSymbol));
+              resolvedSymbols.push(this.createExport(sourceSymbol, targetSymbol));
             }
           });
         } else {
@@ -172,7 +203,7 @@ export class StaticSymbolResolver {
             const nestedExports = this.getSymbolsOf(resolvedModule);
             nestedExports.forEach((targetSymbol) => {
               const sourceSymbol = this.getStaticSymbol(filePath, targetSymbol.name);
-              resolvedSymbols.push(new ResolvedStaticSymbol(sourceSymbol, targetSymbol));
+              resolvedSymbols.push(this.createExport(sourceSymbol, targetSymbol));
             });
           }
         }
@@ -182,7 +213,9 @@ export class StaticSymbolResolver {
         (resolvedSymbol) => this.resolvedSymbols.set(resolvedSymbol.symbol, resolvedSymbol));
   }
 
-  private createResolvedSymbol(sourceSymbol: StaticSymbol, metadata: any): ResolvedStaticSymbol {
+  private createResolvedSymbol(
+      sourceSymbol: StaticSymbol, topLevelSymbolNames: Set<string>,
+      metadata: any): ResolvedStaticSymbol {
     const self = this;
 
     class ReferenceTransformer extends ValueTransformer {
@@ -196,7 +229,7 @@ export class StaticSymbolResolver {
           return result;
         } else if (symbolic === 'reference') {
           const module = map['module'];
-          const name = map['name'];
+          const name = map['name'] ? unescapeIdentifier(map['name']) : map['name'];
           if (!name) {
             return null;
           }
@@ -209,26 +242,41 @@ export class StaticSymbolResolver {
                 message: `Could not resolve ${module} relative to ${sourceSymbol.filePath}.`
               };
             }
-          } else {
-            const isFunctionParam = functionParams.indexOf(name) >= 0;
-            if (!isFunctionParam) {
-              filePath = sourceSymbol.filePath;
-            }
-          }
-          if (filePath) {
             return self.getStaticSymbol(filePath, name);
-          } else {
+          } else if (functionParams.indexOf(name) >= 0) {
             // reference to a function parameter
             return {__symbolic: 'reference', name: name};
+          } else {
+            if (topLevelSymbolNames.has(name)) {
+              return self.getStaticSymbol(sourceSymbol.filePath, name);
+            }
+            // ambient value
+            null;
           }
         } else {
           return super.visitStringMap(map, functionParams);
         }
       }
     }
-
     const transformedMeta = visitValue(metadata, new ReferenceTransformer(), []);
+    if (transformedMeta instanceof StaticSymbol) {
+      return this.createExport(sourceSymbol, transformedMeta);
+    }
     return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
+  }
+
+  private createExport(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol):
+      ResolvedStaticSymbol {
+    sourceSymbol.assertNoMembers();
+    targetSymbol.assertNoMembers();
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath)) {
+      // This case is for an ng library importing symbols from a plain ts library
+      // transitively.
+      // Note: We rely on the fact that we discover symbols in the direction
+      // from source files to library files
+      this.importAs.set(targetSymbol, this.getImportAs(sourceSymbol) || sourceSymbol);
+    }
+    return new ResolvedStaticSymbol(sourceSymbol, targetSymbol);
   }
 
   private reportError(error: Error, context: StaticSymbol, path?: string) {
@@ -286,4 +334,12 @@ export class StaticSymbolResolver {
       this.reportError(new e, null, containingFile);
     }
   }
+}
+
+const UNDERSCORE_CHAR_CODE = 95;
+
+// Remove extra underscore from escaped identifier.
+// See https://github.com/Microsoft/TypeScript/blob/master/src/compiler/utilities.ts
+export function unescapeIdentifier(identifier: string): string {
+  return identifier.startsWith('___') ? identifier.substr(1) : identifier;
 }

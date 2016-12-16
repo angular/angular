@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, dirWrapperClassName, identifierModuleUrl, identifierName} from './compile_metadata';
 import {createCheckBindingField, createCheckBindingStmt} from './compiler_util/binding_util';
 import {EventHandlerVars, convertActionBinding, convertPropertyBinding} from './compiler_util/expression_converter';
 import {triggerAnimation, writeToRenderer} from './compiler_util/render_util';
@@ -52,10 +52,6 @@ const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap
  */
 @CompilerInjectable()
 export class DirectiveWrapperCompiler {
-  static dirWrapperClassName(id: CompileIdentifierMetadata) {
-    return `Wrapper_${identifierName(id)}`;
-  }
-
   constructor(
       private compilerConfig: CompilerConfig, private _exprParser: Parser,
       private _schemaRegistry: ElementSchemaRegistry, private _console: Console) {}
@@ -149,7 +145,7 @@ class DirectiveWrapperBuilder implements ClassBuilder {
             .toStmt());
 
     return createClassStmt({
-      name: DirectiveWrapperCompiler.dirWrapperClassName(this.dirMeta.type),
+      name: dirWrapperClassName(this.dirMeta.type.reference),
       ctorParams: dirDepParamNames.map((paramName) => new o.FnParam(paramName, o.DYNAMIC_TYPE)),
       builders: [{fields, ctorStmts, methods}, this]
     });
