@@ -23,17 +23,20 @@ function publishRepo {
     cd $REPO_DIR && \
     git init && \
     git remote add origin $REPO_URL && \
-    git fetch origin master --depth=1 && \
-    git checkout origin/master && \
-    git checkout -b master
+    # use the remote branch if it exists
+    if git ls-remote --exit-code origin ${BRANCH}; then
+      git fetch origin ${BRANCH} --depth=1 && \
+      git checkout origin/${BRANCH}
+    fi
+    git checkout -b "${BRANCH}"
   )
 
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
 
-  # Replace $$ANGULAR_VESION$$ with the build version.
-  BUILD_VER="2.0.0-${SHORT_SHA}"
+  # Replace $$ANGULAR_VERSION$$ with the build version.
+  BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
   if [[ ${TRAVIS} ]]; then
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
 
@@ -59,7 +62,7 @@ function publishRepo {
     git add --all && \
     git commit -m "${COMMIT_MSG}" && \
     git tag "${BUILD_VER}" && \
-    git push origin master --tags --force
+    git push origin "${BRANCH}" --tags --force
   )
 }
 
@@ -85,6 +88,7 @@ function publishPackages {
     COMMIT_MSG=`git log --oneline | head -n1`
     COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
     COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+    LATEST_TAG=`git describe --tags --abbrev=0`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
@@ -93,6 +97,7 @@ function publishPackages {
 }
 
 # See DEVELOPER.md for help
+BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh"
@@ -103,5 +108,5 @@ elif [[ \
   ORG="angular"
   publishPackages "http"
 else
-  echo "Not building the upstream/master branch, build artifacts won't be published."
+  echo "Not building the upstream/${BRANCH} branch, build artifacts won't be published."
 fi
