@@ -94,13 +94,13 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
+    parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
     providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
   const marker = new OpaqueToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
     if (!getPlatform()) {
-      if (parentPlaformFactory) {
-        parentPlaformFactory(
+      if (parentPlatformFactory) {
+        parentPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
       } else {
         createPlatform(ReflectiveInjector.resolveAndCreate(
