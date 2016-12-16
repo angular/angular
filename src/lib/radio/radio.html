@@ -6,7 +6,7 @@
     <div class="md-radio-outer-circle"></div>
     <div class="md-radio-inner-circle"></div>
     <div md-ripple *ngIf="!_isRippleDisabled()" class="md-radio-ripple"
-         [md-ripple-trigger]="getHostElement()"
+         [md-ripple-trigger]="_getHostElement()"
          [md-ripple-centered]="true"
          [md-ripple-speed-factor]="0.3"
          md-ripple-background-color="rgba(0, 0, 0, 0)"></div>
@@ -25,7 +25,7 @@
           (click)="_onInputClick($event)">
 
   <!-- The label content for radio control. -->
-  <div class="md-radio-label-content" [class.md-radio-align-end]="align == 'end'">
+  <div class="md-radio-label-content" [class.md-radio-align-end]="align == 'after'">
     <ng-content></ng-content>
   </div>
 </label>

@@ -47,24 +47,22 @@ export class MdButton {
   private _disableRipple: boolean = false;
   private _disabled: boolean = null;
 
+  /** Whether the ripple effect for this button is disabled. */
   @Input()
   get disableRipple() { return this._disableRipple; }
   set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
+  /** Whether the button is disabled. */
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value) ? true : null; }
 
   constructor(private _elementRef: ElementRef, private _renderer: Renderer) { }
 
+  /** The color of the button. Can be `primary`, `accent`, or `warn`. */
   @Input()
-  get color(): string {
-    return this._color;
-  }
-
-  set color(value: string) {
-    this._updateColor(value);
-  }
+  get color(): string { return this._color; }
+  set color(value: string) { this._updateColor(value); }
 
   _setMousedown() {
     // We only *show* the focus style when focus has come to the button via the keyboard.
@@ -95,16 +93,16 @@ export class MdButton {
     this._isKeyboardFocused = false;
   }
 
-  /** TODO(hansl): e2e test this function. */
-  focus() {
+  /** Focuses the button. */
+  focus(): void {
     this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus');
   }
 
-  getHostElement() {
+  _getHostElement() {
     return this._elementRef.nativeElement;
   }
 
-  isRoundButton() {
+  _isRoundButton() {
     const el = this._elementRef.nativeElement;
     return el.hasAttribute('md-icon-button') ||
         el.hasAttribute('md-fab') ||
@@ -122,6 +120,7 @@ export class MdButton {
   inputs: ['color', 'disabled', 'disableRipple'],
   host: {
     '[attr.disabled]': 'disabled',
+    '[attr.aria-disabled]': '_isAriaDisabled',
     '[class.md-button-focus]': '_isKeyboardFocused',
     '(mousedown)': '_setMousedown()',
     '(focus)': '_setKeyboardFocus()',
@@ -137,14 +136,13 @@ export class MdAnchor extends MdButton {
     super(elementRef, renderer);
   }
 
+  /** @docs-private */
   @HostBinding('tabIndex')
   get tabIndex(): number {
     return this.disabled ? -1 : 0;
   }
 
-  /** Gets the aria-disabled value for the component, which must be a string for Dart. */
-  @HostBinding('attr.aria-disabled')
-  get isAriaDisabled(): string {
+  get _isAriaDisabled(): string {
     return this.disabled ? 'true' : 'false';
   }
 

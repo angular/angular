@@ -1,8 +1,8 @@
 <span class="md-button-wrapper"><ng-content></ng-content></span>
 <div md-ripple *ngIf="!_isRippleDisabled()" class="md-button-ripple"
-    [class.md-button-ripple-round]="isRoundButton()"
-    [md-ripple-trigger]="getHostElement()"
-    [md-ripple-color]="isRoundButton() ? 'rgba(255, 255, 255, 0.2)' : ''"
+    [class.md-button-ripple-round]="_isRoundButton()"
+    [md-ripple-trigger]="_getHostElement()"
+    [md-ripple-color]="_isRoundButton() ? 'rgba(255, 255, 255, 0.2)' : ''"
     md-ripple-background-color="rgba(0, 0, 0, 0)"></div>
 <!-- the touchstart handler prevents the overlay from capturing the initial tap on touch devices -->
 <div class="md-button-focus-overlay" (touchstart)="$event.preventDefault()"></div>
