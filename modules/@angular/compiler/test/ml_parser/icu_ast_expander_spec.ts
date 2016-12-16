@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, expect, it} from '../../../core/testing/testing_internal';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {ExpansionResult, expandNodes} from '../../src/ml_parser/icu_ast_expander';
@@ -93,6 +92,20 @@ export function main() {
         [html.Element, 'template', 1],
         [html.Attribute, 'ngSwitchDefault', ''],
         [html.Text, 'default', 2],
+      ]);
+    });
+
+    it('should parse an expansion form as a tag single child', () => {
+      const res = expand(`<div><span>{a, b, =4 {c}}</span></div>`);
+
+      expect(humanizeNodes(res.nodes)).toEqual([
+        [html.Element, 'div', 0],
+        [html.Element, 'span', 1],
+        [html.Element, 'ng-container', 2],
+        [html.Attribute, '[ngSwitch]', 'a'],
+        [html.Element, 'template', 3],
+        [html.Attribute, 'ngSwitchCase', '=4'],
+        [html.Text, 'c', 4],
       ]);
     });
 
