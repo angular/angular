@@ -320,7 +320,7 @@ export class UpgradeAdapter {
     windowNgMock.module(this.ng1Module.name);
     const upgrade = new UpgradeAdapterRef();
     this.ng2BootstrapDeferred.promise.then(
-        () => { (<any>upgrade)._bootstrapDone(this.moduleRef, upgrade.ng1Injector); }, onError);
+        (ng1Injector) => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); }, onError);
     return upgrade;
   }
 
