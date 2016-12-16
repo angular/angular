@@ -1,3 +1,7 @@
+**NOTE: The <code>md-sidenav-layout</code> element is deprecated. <code>md-sidenav-container</code>
+should be used instead.**
+
+
 # MdSidenav
 
 MdSidenav is the side navigation component for Material 2. It is composed of two components: `<md-sidenav-container>` and `<md-sidenav>`.

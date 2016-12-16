@@ -132,7 +132,7 @@ right-to-left languages.
 | `max` | number | Optional, the maximum number for the slider. Default = `100`. |
 | `step` | number | Optional, declares where the thumb will snap to. Default = `1`. |
 | `value` | number | Optional, the value to start the slider at. |
-| `tick-interval` | `"auto" | number` | Optional, how many steps between tick marks. |
+| `tick-interval` | `"auto"` \| number | Optional, how many steps between tick marks. |
 | `invert` | boolean | Optional, whether to invert the axis the thumb moves along. |
 | `vertical` | boolean | Optional, whether the slider should be oriented vertically. |
 | `disabled` | boolean | Optional, whether or not the slider is disabled. Default = `false`. |
