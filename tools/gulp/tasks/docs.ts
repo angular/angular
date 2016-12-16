@@ -26,4 +26,9 @@ gulp.task('docs', () => {
       .pipe(gulp.dest('dist/docs'));
 });
 
-task('api', execNodeTask('typedoc', ['--options', typedocPath, './src/lib']));
+task('api', () => {
+  const Dgeni = require('dgeni');
+  const docsPackage = require(path.resolve(__dirname, '../../dgeni'));
+  const dgeni = new Dgeni([docsPackage]);
+  return dgeni.generate();
+});

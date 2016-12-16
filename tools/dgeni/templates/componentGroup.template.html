@@ -1,0 +1,91 @@
+<style>
+  table {
+    border-collapse: collapse;
+    margin: 10px;
+    min-width: 300px;
+  }
+
+  td, th {
+    border: 1px solid black;
+    padding: 4px;
+  }
+</style>
+
+<h2>{$ doc.name $}</h2>
+<p> Module: <code>{$ doc.ngModule.name $}</code> </p>
+
+<h3>Directives</h3>
+
+{% for directive in doc.directives %}
+  <h4>{$ directive.name $}</h4>
+  <p> {$ directive.description $} </p>
+
+  {%- if directive.properties.length -%}
+    <h5> Properties </h5>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      {% for property in directive.properties %}
+        <tr>
+          <td>
+            {%- if property.isDirectiveInput -%}
+              <p>@Input</p>
+            {%- endif -%}
+
+            <p>{$ property.name $}</p>
+            <p><code>{$ property.type $}</code></p>
+          </td>
+          <td> {$ property.description $}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {%- endif -%}
+
+  {%- if directive.methods.length -%}
+    <h5> Methods </h5>
+    {% for method in directive.methods %}
+    <table>
+      <tr>
+        <th colspan="2">{$ method.name $}</th>
+      </tr>
+      <tr>
+        <td colspan="2"> {$ method.description $} </td>
+      </tr>
+
+      {%- if method.params.length -%}
+        <tr>
+          <th colspan="2"> Parameters </th>
+        </tr>
+        {% for parameter in method.params %}
+          <tr>
+            <td>
+              <p>{$ parameter.name $}</p>
+              <p>{$ parameter.type $}</p>
+            </td>
+            <td>
+              {$ parameter.description $}
+            </td>
+          </tr>
+        {% endfor %}
+      {%- endif -%}
+
+      {%- if method.showReturns -%}
+        <tr>
+          <th colspan="2"> Returns </th>
+        </tr>
+        <tr>
+          <td>{$ method.returnType $}</td>
+          <td>{$ method.returns.description $}</td>
+        </tr>
+      {%- endif -%}
+    </table>
+    {% endfor %}
+  {%- endif -%}
+
+{% endfor %}
+
+
+
+

@@ -54,6 +54,8 @@
     "axe-core": "^2.0.7",
     "axe-webdriverjs": "^0.4.0",
     "conventional-changelog": "^1.1.0",
+    "dgeni": "^0.4.2",
+    "dgeni-packages": "^0.16.2",
     "express": "^4.14.0",
     "firebase-tools": "^2.2.1",
     "fs-extra": "^0.26.5",
