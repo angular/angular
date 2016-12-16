@@ -185,7 +185,7 @@ export function main() {
            });
          }));
 
-         
+
       it('should propagate changes to a downgraded component inside the ngZone', async(() => {
            let appComponent: AppComponent;
            let upgradeRef: UpgradeAdapterRef;
@@ -232,6 +232,35 @@ export function main() {
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              upgradeRef = ref;
              appComponent.value = 5;
+           });
+         }));
+
+      it('should not trigger $digest from an async operation in a watcher', async(() => {
+           @Component({selector: 'my-app', template: ''})
+           class AppComponent {
+           }
+
+           @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []).directive(
+               'myApp', adapter.downgradeNg2Component(AppComponent));
+
+           const element = html('<my-app></my-app>');
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             let doTimeout = false;
+             let timeoutId: number;
+             ref.ng1RootScope.$watch(() => {
+               if (doTimeout && !timeoutId) {
+                 timeoutId = window.setTimeout(function() {
+                   timeoutId = null;
+                 }, 10);
+               }
+             });
+             doTimeout = true;
            });
          }));
     });
