@@ -305,7 +305,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
