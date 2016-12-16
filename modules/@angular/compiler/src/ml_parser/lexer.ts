@@ -8,6 +8,7 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+import {NG_NON_BINDABLE_ATTR} from '../template_parser/template_preparser';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import {NAMED_ENTITIES, TagContentType, TagDefinition} from './tags';
@@ -88,6 +89,7 @@ class _Tokenizer {
   private _currentTokenType: TokenType;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
+  private _nonBindableElementArr: Token[] = [];
 
   tokens: Token[] = [];
   errors: TokenError[] = [];
@@ -133,7 +135,8 @@ class _Tokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (!this._tokenizeIcu || !this._tokenizeExpansionForm()) {
+        } else if (
+            this._inNonBindableElement() || !this._tokenizeIcu || !this._tokenizeExpansionForm()) {
           this._consumeText();
         }
       } catch (e) {
@@ -514,6 +517,7 @@ class _Tokenizer {
     this._beginToken(tokenType);
     this._requireCharCode(chars.$GT);
     this._endToken([]);
+    this._updateNonBindableElementDepth();
   }
 
   private _consumeTagClose(start: ParseLocation) {
@@ -523,6 +527,7 @@ class _Tokenizer {
     this._attemptCharCodeUntilFn(isNotWhitespace);
     this._requireCharCode(chars.$GT);
     this._endToken(prefixAndName);
+    this._updateNonBindableElementDepth();
   }
 
   private _consumeExpansionFormStart() {
@@ -640,6 +645,68 @@ class _Tokenizer {
     }
   }
 
+  private _inNonBindableElement(): boolean { return this._nonBindableElementArr.length > 0; }
+
+  private _updateNonBindableElementDepth() {
+    // Determine whether or not we are in a child of NonBindableElement
+    // We need to use an array of TAG_OPEN_END tokens so that auto-closeable
+    // tags are properly removed from the depth count if the current token allows it
+    let currentToken: Token = this.tokens[this.tokens.length - 1];
+
+    if (this._inNonBindableElement() && isTagEndToken(currentToken)) {
+      this._closeSiblings(this._lastTagToken());
+    }
+
+    if (!this._inNonBindableElement()) {
+      if (currentToken.type === TokenType.TAG_OPEN_END && this._nonBindableAttrInCurrentElement()) {
+        this._nonBindableElementArr = [this._lastTagToken()];
+      }
+    } else if (currentToken.type === TokenType.TAG_OPEN_END) {
+      this._nonBindableElementArr.push(this._lastTagToken());
+    }
+  };
+
+  private _closeSiblings(currentToken: Token): void {
+    let sibling: Token;
+    let tagDef: TagDefinition;
+    if (currentToken.type == TokenType.TAG_OPEN_START) {
+      while (this._nonBindableElementArr.length > 0) {
+        sibling = this._nonBindableElementArr[this._nonBindableElementArr.length - 1];
+        tagDef = this._getTagDefinition(sibling.parts.join(''));
+        if (tagDef.isClosedByChild(currentToken.parts.join(''))) {
+          this._nonBindableElementArr.pop();
+        } else {
+          return;
+        }
+      }
+    } else if (currentToken.type == TokenType.TAG_CLOSE) {
+      while (this._nonBindableElementArr.length > 0) {
+        sibling = this._nonBindableElementArr[this._nonBindableElementArr.length - 1];
+        tagDef = this._getTagDefinition(sibling.parts.join(''));
+        if (sibling.parts.join('') == currentToken.parts.join('')) {
+          this._nonBindableElementArr.pop();
+          return;
+        } else if (tagDef.closedByParent) {
+          this._nonBindableElementArr.pop();
+        } else {
+          return;
+        }
+      }
+    }
+  }
+
+  private _lastTagToken(): Token {
+    return findPreviousToken(
+        this.tokens, t => t.type === TokenType.TAG_OPEN_START || t.type === TokenType.TAG_CLOSE);
+  }
+
+  private _nonBindableAttrInCurrentElement(): boolean {
+    return !!findPreviousToken(
+        this.tokens,
+        t => t.type === TokenType.ATTR_NAME && t.parts.join('') === NG_NON_BINDABLE_ATTR,
+        t => t.type === TokenType.TAG_OPEN_START);
+  }
+
   private _isInExpansionCase(): boolean {
     return this._expansionCaseStack.length > 0 &&
         this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
@@ -710,4 +777,20 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   }
 
   return dstTokens;
+}
+
+function findPreviousToken(
+    array: Token[], predicate: (token: Token) => boolean,
+    lastPredicate: (token: Token) => boolean = t => false): Token {
+  let index = array.length - 1;
+  for (let index = array.length - 1; index >= 0 && !lastPredicate(array[index]); index--) {
+    if (predicate(array[index])) {
+      return array[index];
+    }
+  }
+}
+
+function isTagEndToken(token: Token) {
+  return token.type === TokenType.TAG_OPEN_END || token.type === TokenType.TAG_OPEN_END_VOID ||
+      token.type === TokenType.TAG_CLOSE;
 }
