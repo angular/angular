@@ -14,7 +14,7 @@ buildVersion=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 commitSha=$(git rev-parse --short HEAD)
 commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
 commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
-commitMessage=$(git log --oneline | head -n1)
+commitMessage=$(git log --oneline -n 1)
 
 repoName="material-builds"
 repoUrl="http://github.com/DevVersion/material-builds.git"
