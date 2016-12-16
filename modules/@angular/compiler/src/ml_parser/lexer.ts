@@ -133,7 +133,7 @@ class _Tokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (!this._tokenizeIcu || !this._tokenizeExpansionForm()) {
+        } else if (!(this._tokenizeIcu && this._tokenizeExpansionForm())) {
           this._consumeText();
         }
       } catch (e) {

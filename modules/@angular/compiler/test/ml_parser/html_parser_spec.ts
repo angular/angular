@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, describe, expect, it} from '../../../core/testing/testing_internal';
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser, ParseTreeResult, TreeError} from '../../src/ml_parser/html_parser';
 import {TokenType} from '../../src/ml_parser/lexer';
@@ -302,6 +301,18 @@ export function main() {
 
           expect(humanizeDom(new ParseTreeResult(cases[1].expression, [
           ]))).toEqual([[html.Text, 'One {{message}}', 0]]);
+        });
+
+        it('should parse out expansion forms', () => {
+          const parsed =
+              parser.parse(`<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp', true);
+
+          expect(humanizeDom(parsed)).toEqual([
+            [html.Element, 'div', 0],
+            [html.Element, 'span', 1],
+            [html.Expansion, 'a', 'plural', 2],
+            [html.ExpansionCase, '=0', 3],
+          ]);
         });
 
         it('should parse out nested expansion forms', () => {
