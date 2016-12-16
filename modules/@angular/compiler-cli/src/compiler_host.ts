@@ -181,6 +181,12 @@ export class CompilerHost implements AotCompilerHost {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
         return this.readMetadata(metadataPath, filePath);
+      } else {
+        // If there is a .d.ts file but no metadata file we need to produce a
+        // v3 metadata from the .d.ts file as v3 includes the exports we need
+        // to resolve symbols.
+        return [this.upgradeVersion1Metadata(
+            {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
     } else {
       const sf = this.getSourceFile(filePath);
@@ -196,35 +202,13 @@ export class CompilerHost implements AotCompilerHost {
     }
     try {
       const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
-      const metadatas = metadataOrMetadatas ?
+      const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find((m: any) => m['version'] === 1);
-      let v3Metadata = metadatas.find((m: any) => m['version'] === 3);
+      const v1Metadata = metadatas.find(m => m.version === 1);
+      let v3Metadata = metadatas.find(m => m.version === 3);
       if (!v3Metadata && v1Metadata) {
-        // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
-        // as the only difference between the versions is whether all exports are contained in
-        // the metadata and the `extends` clause.
-        v3Metadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
-        if (v1Metadata.exports) {
-          v3Metadata.exports = v1Metadata.exports;
-        }
-        for (let prop in v1Metadata.metadata) {
-          v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
-        }
-
-        const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
-        if (exports) {
-          for (let prop in exports.metadata) {
-            if (!v3Metadata.metadata[prop]) {
-              v3Metadata.metadata[prop] = exports.metadata[prop];
-            }
-          }
-          if (exports.exports) {
-            v3Metadata.exports = exports.exports;
-          }
-        }
-        metadatas.push(v3Metadata);
+        metadatas.push(this.upgradeVersion1Metadata(v1Metadata, dtsFilePath));
       }
       this.resolverCache.set(filePath, metadatas);
       return metadatas;
@@ -232,6 +216,32 @@ export class CompilerHost implements AotCompilerHost {
       console.error(`Failed to read JSON file ${filePath}`);
       throw e;
     }
+  }
+
+  private upgradeVersion1Metadata(v1Metadata: ModuleMetadata, dtsFilePath: string): ModuleMetadata {
+    // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
+    // as the only difference between the versions is whether all exports are contained in
+    // the metadata and the `extends` clause.
+    let v3Metadata: ModuleMetadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
+    if (v1Metadata.exports) {
+      v3Metadata.exports = v1Metadata.exports;
+    }
+    for (let prop in v1Metadata.metadata) {
+      v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
+    }
+
+    const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
+    if (exports) {
+      for (let prop in exports.metadata) {
+        if (!v3Metadata.metadata[prop]) {
+          v3Metadata.metadata[prop] = exports.metadata[prop];
+        }
+      }
+      if (exports.exports) {
+        v3Metadata.exports = exports.exports;
+      }
+    }
+    return v3Metadata;
   }
 
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }

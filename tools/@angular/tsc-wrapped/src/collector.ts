@@ -224,6 +224,34 @@ export class MetadataCollector {
       return recordEntry(result, classDeclaration);
     }
 
+    // Collect all exported symbols from an exports clause.
+    const exportMap = new Map<string, string>();
+    ts.forEachChild(sourceFile, node => {
+      switch (node.kind) {
+        case ts.SyntaxKind.ExportDeclaration:
+          const exportDeclaration = <ts.ExportDeclaration>node;
+          const {moduleSpecifier, exportClause} = exportDeclaration;
+
+          if (!moduleSpecifier) {
+            exportClause.elements.forEach(spec => {
+              const exportedAs = spec.name.text;
+              const name = (spec.propertyName || spec.name).text;
+              exportMap.set(name, exportedAs);
+            });
+          }
+      }
+    });
+
+    const isExportedIdentifier = (identifier: ts.Identifier) => exportMap.has(identifier.text);
+    const isExported = (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.EnumDeclaration) =>
+        (node.flags & ts.NodeFlags.Export) || isExportedIdentifier(node.name);
+    const exportedIdentifierName = (identifier: ts.Identifier) =>
+        exportMap.get(identifier.text) || identifier.text;
+    const exportedName =
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.EnumDeclaration) =>
+            exportedIdentifierName(node.name);
+
+
     // Predeclare classes and functions
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
@@ -231,8 +259,9 @@ export class MetadataCollector {
           const classDeclaration = <ts.ClassDeclaration>node;
           if (classDeclaration.name) {
             const className = classDeclaration.name.text;
-            if (node.flags & ts.NodeFlags.Export) {
-              locals.define(className, {__symbolic: 'reference', name: className});
+            if (isExported(classDeclaration)) {
+              locals.define(
+                  className, {__symbolic: 'reference', name: exportedName(classDeclaration)});
             } else {
               locals.define(
                   className, errorSym('Reference to non-exported class', node, {className}));
@@ -241,9 +270,9 @@ export class MetadataCollector {
           break;
 
         case ts.SyntaxKind.FunctionDeclaration:
-          if (!(node.flags & ts.NodeFlags.Export)) {
+          const functionDeclaration = <ts.FunctionDeclaration>node;
+          if (!isExported(functionDeclaration)) {
             // Report references to this function as an error.
-            const functionDeclaration = <ts.FunctionDeclaration>node;
             const nameNode = functionDeclaration.name;
             if (nameNode && nameNode.text) {
               locals.define(
@@ -268,10 +297,14 @@ export class MetadataCollector {
             if (exportClause) {
               exportClause.elements.forEach(spec => {
                 const name = spec.name.text;
-                const propNode = spec.propertyName || spec.name;
-                const value: MetadataValue = evaluator.evaluateNode(propNode);
-                if (!metadata) metadata = {};
-                metadata[name] = recordEntry(value, node);
+                // If the symbol was not already exported, export a reference since it is a
+                // reference to an import
+                if (!metadata || !metadata[name]) {
+                  const propNode = spec.propertyName || spec.name;
+                  const value: MetadataValue = evaluator.evaluateNode(propNode);
+                  if (!metadata) metadata = {};
+                  metadata[name] = recordEntry(value, node);
+                }
               });
             }
           }
@@ -294,9 +327,9 @@ export class MetadataCollector {
           const classDeclaration = <ts.ClassDeclaration>node;
           if (classDeclaration.name) {
             const className = classDeclaration.name.text;
-            if (node.flags & ts.NodeFlags.Export) {
+            if (isExported(classDeclaration)) {
               if (!metadata) metadata = {};
-              metadata[className] = classMetadataOf(classDeclaration);
+              metadata[exportedName(classDeclaration)] = classMetadataOf(classDeclaration);
             }
           }
           // Otherwise don't record metadata for the class.
@@ -306,24 +339,20 @@ export class MetadataCollector {
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
           const functionDeclaration = <ts.FunctionDeclaration>node;
-          if (node.flags & ts.NodeFlags.Export) {
+          if (isExported(functionDeclaration)) {
             if (!metadata) metadata = {};
+            const name = exportedName(functionDeclaration);
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
-            if (maybeFunc) {
-              metadata[maybeFunc.name] = recordEntry(maybeFunc.func, node);
-            } else if (functionDeclaration.name.kind == ts.SyntaxKind.Identifier) {
-              const nameNode = <ts.Identifier>functionDeclaration.name;
-              const functionName = nameNode.text;
-              metadata[functionName] = {__symbolic: 'function'};
-            }
+            metadata[name] =
+                maybeFunc ? recordEntry(maybeFunc.func, node) : {__symbolic: 'function'};
           }
           break;
 
         case ts.SyntaxKind.EnumDeclaration:
-          if (node.flags & ts.NodeFlags.Export) {
-            const enumDeclaration = <ts.EnumDeclaration>node;
+          const enumDeclaration = <ts.EnumDeclaration>node;
+          if (isExported(enumDeclaration)) {
             const enumValueHolder: {[name: string]: MetadataValue} = {};
-            const enumName = enumDeclaration.name.text;
+            const enumName = exportedName(enumDeclaration);
             let nextDefaultValue: MetadataValue = 0;
             let writtenMembers = 0;
             for (const member of enumDeclaration.members) {
@@ -376,9 +405,10 @@ export class MetadataCollector {
               }
               let exported = false;
               if (variableStatement.flags & ts.NodeFlags.Export ||
-                  variableDeclaration.flags & ts.NodeFlags.Export) {
+                  variableDeclaration.flags & ts.NodeFlags.Export ||
+                  isExportedIdentifier(nameNode)) {
                 if (!metadata) metadata = {};
-                metadata[nameNode.text] = recordEntry(varValue, node);
+                metadata[exportedIdentifierName(nameNode)] = recordEntry(varValue, node);
                 exported = true;
               }
               if (isPrimitive(varValue)) {

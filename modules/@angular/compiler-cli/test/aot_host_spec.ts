@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ModuleMetadata} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../src/compiler_host';
@@ -150,12 +151,14 @@ describe('CompilerHost', () => {
 
   it('should be able to read a metadata file', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts')).toEqual([
-      {__symbolic: 'module', version: 2, metadata: {foo: {__symbolic: 'class'}}}
+      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}}
     ]);
   });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
-    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/unused.d.ts')).toEqual([
+      dummyMetadata
+    ]);
   });
 
   it('should be able to read empty metadata ', () => {
@@ -181,10 +184,21 @@ describe('CompilerHost', () => {
       }
     ]);
   });
+
+  it('should upgrade a missing metadata file into v3', () => {
+    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1_empty.d.ts')).toEqual([
+      {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
+    ]);
+  });
 });
 
 const dummyModule = 'export let foo: any[];';
-
+const dummyMetadata: ModuleMetadata = {
+  __symbolic: 'module',
+  version: 3,
+  metadata:
+      {foo: {__symbolic: 'error', message: 'Variable not initialized', line: 0, character: 11}}
+};
 const FILES: Entry = {
   'tmp': {
     'src': {
@@ -204,7 +218,7 @@ const FILES: Entry = {
         '@angular': {
           'core.d.ts': dummyModule,
           'core.metadata.json':
-              `{"__symbolic":"module", "version": 2, "metadata": {"foo": {"__symbolic": "class"}}}`,
+              `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
@@ -225,6 +239,9 @@ const FILES: Entry = {
         `,
         'v1.metadata.json':
             `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
+        'v1_empty.d.ts': `
+          export * from './lib/utils';
+        `
       }
     }
   }
