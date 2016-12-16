@@ -32,25 +32,26 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
+  @Input() ngTemplateOutlet: TemplateRef<Object>;
+  @Input() ngOutletContext: Object;
+
   private _viewRef: EmbeddedViewRef<any>;
-  private _context: Object;
-  private _templateRef: TemplateRef<any>;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
-  @Input()
-  set ngOutletContext(context: Object) { this._context = context; }
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('ngTemplateOutlet' in changes) {
+      if (this._viewRef) {
+        this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
+        this._viewRef = null;
+      }
 
-  @Input()
-  set ngTemplateOutlet(templateRef: TemplateRef<Object>) { this._templateRef = templateRef; }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (this._viewRef) {
-      this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
-    }
-
-    if (this._templateRef) {
-      this._viewRef = this._viewContainerRef.createEmbeddedView(this._templateRef, this._context);
+      if (this.ngTemplateOutlet) {
+        this._viewRef =
+            this._viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, this.ngOutletContext);
+      }
+    } else if (('ngOutletContext' in changes) && this._viewRef) {
+      this._viewRef.context.$implicit = this.ngOutletContext;
     }
   }
 }
