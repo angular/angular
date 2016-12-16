@@ -277,11 +277,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
       return;
     }
 
-    this.options.forEach((option: MdOption) => {
-      if (option.value === value) {
-        option.select();
-      }
-    });
+    this._setSelectionByValue(value);
   }
 
   /**
@@ -378,6 +374,30 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     scrollContainer.scrollTop = this._scrollTop;
   }
 
+  /**
+   * Sets the selected option based on a value. If no option can be
+   * found with the designated value, the select trigger is cleared.
+   */
+  private _setSelectionByValue(value: any): void {
+    const options = this.options.toArray();
+
+    for (let i = 0; i < this.options.length; i++) {
+      if (options[i].value === value) {
+        options[i].select();
+        return;
+      }
+    }
+
+    // Clear selection if no item was selected.
+    this._clearSelection();
+  }
+
+  /** Clears the select trigger and deselects every option in the list. */
+  private _clearSelection(): void {
+    this._selected = null;
+    this._updateOptions();
+  }
+
   private _getTriggerRect(): ClientRect {
     return this.trigger.nativeElement.getBoundingClientRect();
   }
@@ -426,6 +446,7 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     this._selected = option;
     this._updateOptions();
     this._setValueWidth();
+    this._placeholderState = '';
     if (this.panelOpen) {
       this.close();
     }

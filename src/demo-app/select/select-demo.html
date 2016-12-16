@@ -12,6 +12,7 @@
       <p> Status: {{ foodControl.status }} </p>
       <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
       <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
+      <button md-button (click)="foodControl.reset()">RESET</button>
     </md-card>
   </div>
 
@@ -30,6 +31,7 @@
     <button md-button (click)="currentDrink='sprite-1'">SET VALUE</button>
     <button md-button (click)="isRequired=!isRequired">TOGGLE REQUIRED</button>
     <button md-button (click)="isDisabled=!isDisabled">TOGGLE DISABLED</button>
+    <button md-button (click)="drinkControl.reset()">RESET</button>
   </md-card>
 
 </div>

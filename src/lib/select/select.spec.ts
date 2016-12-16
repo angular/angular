@@ -193,19 +193,19 @@ describe('MdSelect', () => {
     });
 
     it('should focus the selected option if an option is selected', async(() => {
-      trigger.click();
-      fixture.detectChanges();
-
-      const options =
-        overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      options[1].click();
-      fixture.detectChanges();
-
-      trigger.click();
-      fixture.detectChanges();
-
+      // must wait for initial writeValue promise to finish
       fixture.whenStable().then(() => {
-        expect(fixture.componentInstance.select._keyManager.focusedItemIndex).toEqual(1);
+        fixture.componentInstance.control.setValue('pizza-1');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        // must wait for animation to finish
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(fixture.componentInstance.select._keyManager.focusedItemIndex).toEqual(1);
+        });
       });
     }));
 
@@ -305,6 +305,49 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.control.value)
         .toEqual('steak-0', `Expected control's value to be set to the new option.`);
+    });
+
+    it('should clear the selection when a nonexistent option value is selected', () => {
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      fixture.componentInstance.control.setValue('gibberish');
+      fixture.detectChanges();
+
+      const value = fixture.debugElement.query(By.css('.md-select-value'));
+      expect(value).toBe(null, `Expected trigger to be cleared when option value is not found.`);
+      expect(trigger.textContent)
+          .not.toContain('Pizza', `Expected trigger to be cleared when option value is not found.`);
+
+      trigger.click();
+      fixture.detectChanges();
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      expect(options[1].classList)
+          .not.toContain('md-selected', `Expected option with the old value not to be selected.`);
+    });
+
+
+    it('should clear the selection when the control is reset', () => {
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      fixture.componentInstance.control.reset();
+      fixture.detectChanges();
+
+      const value = fixture.debugElement.query(By.css('.md-select-value'));
+      expect(value).toBe(null, `Expected trigger to be cleared when option value is not found.`);
+      expect(trigger.textContent)
+          .not.toContain('Pizza', `Expected trigger to be cleared when option value is not found.`);
+
+      trigger.click();
+      fixture.detectChanges();
+
+      const options =
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      expect(options[1].classList)
+          .not.toContain('md-selected', `Expected option with the old value not to be selected.`);
     });
 
     it('should set the control to touched when the select is touched', () => {
