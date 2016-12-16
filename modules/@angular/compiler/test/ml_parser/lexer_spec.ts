@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {describe, expect, it} from '../../../core/testing/testing_internal';
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
 import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import * as lex from '../../src/ml_parser/lexer';
@@ -524,7 +523,15 @@ export function main() {
         ]);
       });
 
-
+      it('should treat expansion form as text when they are not parsed', () => {
+        expect(tokenizeAndHumanizeParts('<span>{a, b, =4 {c}}</span>', false)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 'span'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TEXT, '{a, b, =4 {c}}'],
+          [lex.TokenType.TAG_CLOSE, null, 'span'],
+          [lex.TokenType.EOF],
+        ]);
+      });
     });
 
     describe('raw text', () => {
@@ -668,6 +675,26 @@ export function main() {
           [lex.TokenType.EXPANSION_CASE_EXP_END],
           [lex.TokenType.EXPANSION_FORM_END],
           [lex.TokenType.TEXT, 'after'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse an expansion form as a tag single child', () => {
+        expect(tokenizeAndHumanizeParts('<div><span>{a, b, =4 {c}}</span></div>', true)).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 'div'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_OPEN_START, null, 'span'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.EXPANSION_FORM_START],
+          [lex.TokenType.RAW_TEXT, 'a'],
+          [lex.TokenType.RAW_TEXT, 'b'],
+          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [lex.TokenType.EXPANSION_CASE_EXP_START],
+          [lex.TokenType.TEXT, 'c'],
+          [lex.TokenType.EXPANSION_CASE_EXP_END],
+          [lex.TokenType.EXPANSION_FORM_END],
+          [lex.TokenType.TAG_CLOSE, null, 'span'],
+          [lex.TokenType.TAG_CLOSE, null, 'div'],
           [lex.TokenType.EOF],
         ]);
       });

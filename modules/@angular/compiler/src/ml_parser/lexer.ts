@@ -133,7 +133,7 @@ class _Tokenizer {
           } else {
             this._consumeTagOpen(start);
           }
-        } else if (!this._tokenizeIcu || !this._tokenizeExpansionForm()) {
+        } else if (!(this._tokenizeIcu && this._tokenizeExpansionForm())) {
           this._consumeText();
         }
       } catch (e) {
@@ -586,8 +586,8 @@ class _Tokenizer {
         parts.push(this._interpolationConfig.start);
         this._inInterpolation = true;
       } else if (
-          this._interpolationConfig && this._attemptStr(this._interpolationConfig.end) &&
-          this._inInterpolation) {
+          this._interpolationConfig && this._inInterpolation &&
+          this._attemptStr(this._interpolationConfig.end)) {
         parts.push(this._interpolationConfig.end);
         this._inInterpolation = false;
       } else {
