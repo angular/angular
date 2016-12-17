@@ -233,6 +233,16 @@ export function main() {
                  SyntaxError, /Invalid provider for SimpleService. useClass cannot be undefined./);
        }));
 
+    it('should throw with descriptive error message when provider is undefined',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({providers: [undefined]})
+         class SomeModule {
+         }
+
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
+             .toThrowError(SyntaxError, /Encountered undefined provider!/);
+       }));
+
     it('should throw with descriptive error message when one of providers is not present',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp3]})
