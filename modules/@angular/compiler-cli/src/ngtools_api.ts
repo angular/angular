@@ -19,9 +19,9 @@ import * as ts from 'typescript';
 
 import {CodeGenerator} from './codegen';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
+import {Extractor} from './extractor';
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
-
 
 export interface NgTools_InternalApi_NG2_CodeGen_Options {
   basePath: string;
@@ -50,9 +50,18 @@ export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
   // Every new property under this line should be optional.
 }
 
-
 export interface NgTools_InternalApi_NG_2_LazyRouteMap { [route: string]: string; }
 
+export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
+  basePath: string;
+  compilerOptions: ts.CompilerOptions;
+  program: ts.Program;
+  host: ts.CompilerHost;
+  angularCompilerOptions: AngularCompilerOptions;
+  i18nFormat: string;
+  readResource: (fileName: string) => Promise<string>;
+  // Every new property under this line should be optional.
+}
 
 /**
  * A ModuleResolutionHostAdapter that overrides the readResource() method with the one
@@ -94,7 +103,6 @@ export class NgTools_InternalApi_NG_2 {
     return codeGenerator.codegen();
   }
 
-
   /**
    * @internal
    * @private
@@ -123,5 +131,20 @@ export class NgTools_InternalApi_NG_2 {
           return acc;
         },
         {});
+  }
+
+  /**
+   * @internal
+   * @private
+   */
+  static extractI18n(options: NgTools_InternalApi_NG2_ExtractI18n_Options): Promise<void> {
+    const hostContext: CompilerHostContext =
+        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
+
+    // Create the i18n extractor.
+    const extractor = Extractor.create(
+        options.angularCompilerOptions, options.program, options.host, hostContext);
+
+    return extractor.extract(options.i18nFormat);
   }
 }
