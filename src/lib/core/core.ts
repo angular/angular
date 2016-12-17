@@ -32,6 +32,7 @@ export * from './projection/projection';
 // Platform
 export * from './platform/platform';
 export * from './platform/features';
+export {PlatformModule} from './platform/index';
 
 // Overlay
 export {Overlay, OVERLAY_PROVIDERS} from './overlay/overlay';
