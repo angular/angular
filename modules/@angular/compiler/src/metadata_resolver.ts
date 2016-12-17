@@ -15,7 +15,7 @@ import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
 import {ListWrapper, StringMapWrapper} from './facade/collection';
 import {isBlank, isPresent, stringify} from './facade/lang';
-import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {Identifiers, resolveIdentifier} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import {hasLifecycleHook} from './lifecycle_reflector';
 import {NgModuleResolver} from './ng_module_resolver';
@@ -24,7 +24,7 @@ import {ComponentStillLoadingError, LIFECYCLE_HOOKS_VALUES, ReflectorReader, ref
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
-import {MODULE_SUFFIX, SyncAsyncResult, SyntaxError, ValueTransformer, visitValue} from './util';
+import {MODULE_SUFFIX, SyntaxError, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 export const ERROR_COLLECTOR_TOKEN = new OpaqueToken('ErrorCollector');
@@ -779,6 +779,7 @@ export class CompileMetadataResolver {
         provider = resolveForwardRef(provider);
         let providerMeta: cpl.ProviderMeta;
         if (provider && typeof provider == 'object' && provider.hasOwnProperty('provide')) {
+          this._validateProvider(provider);
           providerMeta = new cpl.ProviderMeta(provider.provide, provider);
         } else if (isValidType(provider)) {
           providerMeta = new cpl.ProviderMeta(provider, {useClass: provider});
@@ -810,6 +811,16 @@ export class CompileMetadataResolver {
       }
     });
     return compileProviders;
+  }
+
+  private _validateProvider(provider: any): void {
+    if (provider.hasOwnProperty('useClass') && provider.useClass == null) {
+      this._reportError(new SyntaxError(
+          `Invalid provider for ${stringifyType(provider.provide)}. useClass cannot be ${provider.useClass}.
+           Usually it happens when:
+           1. There's a circular dependency (might be caused by using index.ts (barrel) files).
+           2. Class was used before it was declared. Use forwardRef in this case.`));
+    }
   }
 
   private _getEntryComponentsFromProvider(provider: cpl.ProviderMeta, type?: any):
