@@ -389,6 +389,43 @@ describe('Integration', () => {
        expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
      })));
 
+  describe('should reset location if a navigation by location is successful', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [{
+          provide: 'in1Second',
+          useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+            let res: any = null;
+            const p = new Promise(_ => res = _);
+            setTimeout(() => res(true), 1000);
+            return p;
+          }
+        }]
+      });
+    });
+
+    it('work', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{path: 'simple', component: SimpleCmp, canActivate: ['in1Second']}]);
+
+         // Trigger two location changes to the same URL.
+         // Because of the guard the order will look as follows:
+         // - location change 'simple'
+         // - start processing the change, start a guard
+         // - location change 'simple'
+         // - the first location change gets canceled, the URL gets reset to '/'
+         // - the second location change gets finished, the URL should be reset to '/simple'
+         (<any>location).simulateUrlPop('/simple');
+         (<any>location).simulateUrlPop('/simple');
+
+         tick(2000);
+         advance(fixture);
+
+         expect(location.path()).toEqual('/simple');
+       })));
+  });
+
   it('should support secondary routes', fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
@@ -1416,7 +1453,7 @@ describe('Integration', () => {
                   log.push('called');
                   return false;
                 }
-              },
+              }
             ]
           });
         });

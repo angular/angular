@@ -266,6 +266,8 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
+type NavigationSource = 'imperative' | 'popstate' | 'hashchange';
+
 type NavigationParams = {
   id: number,
   rawUrl: UrlTree,
@@ -273,7 +275,7 @@ type NavigationParams = {
   resolve: any,
   reject: any,
   promise: Promise<boolean>,
-  imperative: boolean,
+  source: NavigationSource,
 };
 
 
@@ -374,20 +376,8 @@ export class Router {
     if (!this.locationSubscription) {
       this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
         const rawUrlTree = this.urlSerializer.parse(change['url']);
-        const lastNavigation = this.navigations.value;
-
-        // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
-        // and that navigation results in 'replaceState' that leads to the same URL,
-        // we should skip those.
-        if (lastNavigation && lastNavigation.imperative &&
-            lastNavigation.rawUrl.toString() === rawUrlTree.toString()) {
-          return;
-        }
-
-        setTimeout(() => {
-          this.scheduleNavigation(
-              rawUrlTree, false, {skipLocationChange: change['pop'], replaceUrl: true});
-        }, 0);
+        const source: NavigationSource = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
+        setTimeout(() => { this.scheduleNavigation(rawUrlTree, source, {replaceUrl: true}); }, 0);
       }));
     }
   }
@@ -505,12 +495,12 @@ export class Router {
       Promise<boolean> {
     if (url instanceof UrlTree) {
       return this.scheduleNavigation(
-          this.urlHandlingStrategy.merge(url, this.rawUrlTree), true, extras);
+          this.urlHandlingStrategy.merge(url, this.rawUrlTree), 'imperative', extras);
     }
 
     const urlTree = this.urlSerializer.parse(url);
     return this.scheduleNavigation(
-        this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), true, extras);
+        this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree), 'imperative', extras);
   }
 
   /**
@@ -585,8 +575,26 @@ export class Router {
         .subscribe(() => {});
   }
 
-  private scheduleNavigation(rawUrl: UrlTree, imperative: boolean, extras: NavigationExtras):
+  private scheduleNavigation(rawUrl: UrlTree, source: NavigationSource, extras: NavigationExtras):
       Promise<boolean> {
+    const lastNavigation = this.navigations.value;
+
+    // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
+    // and that navigation results in 'replaceState' that leads to the same URL,
+    // we should skip those.
+    if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
+        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
+      return null;  // return value is not used
+    }
+
+    // Because of a bug in IE and Edge, the location class fires two events (popstate and
+    // hashchange)
+    // every single time. The second one should be ignored. Otherwise, the URL will flicker.
+    if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
+        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
+      return null;  // return value is not used
+    }
+
     let resolve: any = null;
     let reject: any = null;
 
@@ -596,7 +604,7 @@ export class Router {
     });
 
     const id = ++this.navigationId;
-    this.navigations.next({id, imperative, rawUrl, extras, resolve, reject, promise});
+    this.navigations.next({id, source, rawUrl, extras, resolve, reject, promise});
 
     // Make sure that the error is propagated even though `processNavigations` catch
     // handler does not rethrow
