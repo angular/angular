@@ -97,5 +97,30 @@ export function main() {
 
       expect(req.text()).toEqual('');
     });
+
+    describe('Content type x-www-form-urlencoded', () => {
+      it('should return empty string when body is empty object', () => {
+        const body = {};
+        const req = new Request(new RequestOptions({
+          url: 'test',
+          method: 'GET', body,
+          headers: new Headers({'content-type': 'application/x-www-form-urlencoded'})
+        }));
+
+        expect(req.getBody()).toEqual('');
+      });
+
+      it('should return encoded object', () => {
+        const body = {foo: 'bar', id: 2};
+        const req = new Request(new RequestOptions({
+          url: 'test',
+          method: 'GET', body,
+          headers: new Headers({'content-type': 'application/x-www-form-urlencoded'})
+        }));
+
+        expect(req.getBody()).toEqual('foo=bar&id=2');
+      });
+    });
+
   });
 }

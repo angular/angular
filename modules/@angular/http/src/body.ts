@@ -38,7 +38,7 @@ export abstract class Body {
   /**
    * Returns the body as a string, presuming `toString()` can be called on the response body.
    */
-  text(): string {
+  text(encode: boolean = false): string {
     if (this._body instanceof URLSearchParams) {
       return this._body.toString();
     }
@@ -52,6 +52,16 @@ export abstract class Body {
     }
 
     if (typeof this._body === 'object') {
+      if (encode) {
+        return Object.keys(this._body)
+            .reduce(
+                (result: string[], key: string) => {
+                  result.push(`${encodeURIComponent(key)}=${encodeURIComponent(this._body[key])}`);
+                  return result;
+                },
+                [])
+            .join('&');
+      }
       return JSON.stringify(this._body, null, 2);
     }
 

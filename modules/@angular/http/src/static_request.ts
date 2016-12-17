@@ -132,7 +132,7 @@ export class Request extends Body {
       return ContentType.BLOB;
     } else if (this._body instanceof ArrayBuffer) {
       return ContentType.ARRAY_BUFFER;
-    } else if (this._body && typeof this._body == 'object') {
+    } else if (this._body && typeof this._body === 'object') {
       return ContentType.JSON;
     } else {
       return ContentType.TEXT;
@@ -148,7 +148,7 @@ export class Request extends Body {
       case ContentType.JSON:
         return this.text();
       case ContentType.FORM:
-        return this.text();
+        return this.text(true);
       case ContentType.FORM_DATA:
         return this._body;
       case ContentType.TEXT:
