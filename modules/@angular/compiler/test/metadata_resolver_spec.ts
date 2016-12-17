@@ -219,7 +219,8 @@ export function main() {
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
-                 SyntaxError, `Can't resolve all parameters for NonAnnotatedService: (?).`);
+                 SyntaxError,
+                 `Can't resolve all parameters for NonAnnotatedService: (?). Did you add @Injectable()?`);
        }));
 
     it('should throw with descriptive error message when one of providers is not present',

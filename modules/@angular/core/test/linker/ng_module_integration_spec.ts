@@ -637,7 +637,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should throw when no type and not @Inject (class case)', () => {
         expect(() => createInjector([NoAnnotations]))
-            .toThrowError('Can\'t resolve all parameters for NoAnnotations: (?).');
+            .toThrowError(
+                'Can\'t resolve all parameters for NoAnnotations: (?). Did you add @Injectable()?');
       });
 
       it('should throw when no type and not @Inject (factory case)', () => {

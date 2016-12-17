@@ -627,14 +627,16 @@ export class CompileMetadataResolver {
     if (typeSummary) {
       return typeSummary.type;
     }
-    return this._getTypeMetadata(type, dependencies);
+    return this._getTypeMetadata(type, dependencies, true);
   }
 
-  private _getTypeMetadata(type: Type<any>, dependencies: any[] = null): cpl.CompileTypeMetadata {
+  private _getTypeMetadata(
+      type: Type<any>, dependencies: any[] = null,
+      isProvider: boolean = false): cpl.CompileTypeMetadata {
     const identifier = this._getIdentifierMetadata(type);
     return {
       reference: identifier.reference,
-      diDeps: this._getDependenciesMetadata(identifier.reference, dependencies),
+      diDeps: this._getDependenciesMetadata(identifier.reference, dependencies, isProvider),
       lifecycleHooks:
           LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, identifier.reference)),
     };
@@ -695,8 +697,9 @@ export class CompileMetadataResolver {
     return pipeMeta;
   }
 
-  private _getDependenciesMetadata(typeOrFunc: Type<any>|Function, dependencies: any[]):
-      cpl.CompileDiDependencyMetadata[] {
+  private _getDependenciesMetadata(
+      typeOrFunc: Type<any>|Function, dependencies: any[],
+      isProvider: boolean = false): cpl.CompileDiDependencyMetadata[] {
     let hasUnknownDeps = false;
     const params = dependencies || this._reflector.parameters(typeOrFunc) || [];
 
@@ -748,10 +751,12 @@ export class CompileMetadataResolver {
     if (hasUnknownDeps) {
       const depsTokens =
           dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
-      this._reportError(
-          new SyntaxError(
-              `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`),
-          typeOrFunc);
+      let errMsg: string =
+          `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
+      if (isProvider) {
+        errMsg = `${errMsg} Did you add @Injectable()?`;
+      }
+      this._reportError(new SyntaxError(errMsg), typeOrFunc);
     }
 
     return dependenciesMetadata;
