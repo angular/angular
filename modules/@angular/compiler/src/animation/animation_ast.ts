@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {StaticSymbol} from '../aot/static_symbol';
 
 export abstract class AnimationAst {
   public startTime: number = 0;
@@ -47,6 +48,10 @@ export class AnimationStateDeclarationAst extends AnimationStateAst {
 
 export class AnimationStateTransitionExpression {
   constructor(public fromState: string, public toState: string) {}
+}
+
+export class AnimationStateTransitionFnExpression extends AnimationStateTransitionExpression {
+  constructor(public fn: Function|StaticSymbol) { super(null, null); }
 }
 
 export class AnimationStateTransitionAst extends AnimationStateAst {
