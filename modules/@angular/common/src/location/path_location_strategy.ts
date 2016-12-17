@@ -63,10 +63,7 @@ export class PathLocationStrategy extends LocationStrategy {
     this._baseHref = href;
   }
 
-  onPopState(fn: LocationChangeListener): void {
-    this._platformLocation.onPopState(fn);
-    this._platformLocation.onHashChange(fn);
-  }
+  onPopState(fn: LocationChangeListener): void { this._platformLocation.onPopState(fn); }
 
   getBaseHref(): string { return this._baseHref; }
 
