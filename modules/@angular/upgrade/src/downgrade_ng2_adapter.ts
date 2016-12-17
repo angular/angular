@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, NgZone, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
 
 import * as angular from './angular_js';
 import {NG1_SCOPE} from './constants';
@@ -23,6 +23,7 @@ export class DowngradeNg2ComponentAdapter {
   componentRef: ComponentRef<any> = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
+  zone: NgZone;
 
   constructor(
       private info: ComponentInfo, private element: angular.IAugmentedJQuery,
@@ -40,6 +41,7 @@ export class DowngradeNg2ComponentAdapter {
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
+    this.zone = this.componentRef.injector.get(NgZone) as NgZone;
   }
 
   setupInputs(): void {
@@ -95,7 +97,8 @@ export class DowngradeNg2ComponentAdapter {
         (<OnChanges>this.component).ngOnChanges(inputChanges);
       });
     }
-    this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
+    this.componentScope.$watch(
+        () => this.changeDetector && this.zone.run(() => this.changeDetector.detectChanges()));
   }
 
   setupOutputs() {
