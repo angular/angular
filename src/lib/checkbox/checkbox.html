@@ -16,10 +16,10 @@
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
     <div md-ripple *ngIf="!_isRippleDisabled()" class="md-checkbox-ripple"
-         [md-ripple-trigger]="_getHostElement()"
-         [md-ripple-centered]="true"
-         [md-ripple-speed-factor]="0.3"
-         md-ripple-background-color="rgba(0, 0, 0, 0)"></div>
+         [mdRippleTrigger]="_getHostElement()"
+         [mdRippleCentered]="true"
+         [mdRippleSpeedFactor]="0.3"
+         mdRippleBackgroundColor="rgba(0, 0, 0, 0)"></div>
     <div class="md-checkbox-frame"></div>
     <div class="md-checkbox-background">
       <svg version="1.1"

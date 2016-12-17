@@ -3,7 +3,7 @@
     <p>You clicked on: {{ selected }}</p>
 
     <md-toolbar>
-      <button md-icon-button [md-menu-trigger-for]="menu" aria-label="Open basic menu">
+      <button md-icon-button [mdMenuTriggerFor]="menu" aria-label="Open basic menu">
         <md-icon>more_vert</md-icon>
       </button>
     </md-toolbar>
@@ -17,7 +17,7 @@
   <div class="menu-section">
     <p> Clicking these will navigate:</p>
     <md-toolbar>
-      <button md-icon-button [md-menu-trigger-for]="anchorMenu" aria-label="Open anchor menu">
+      <button md-icon-button [mdMenuTriggerFor]="anchorMenu" aria-label="Open anchor menu">
         <md-icon>more_vert</md-icon>
       </button>
     </md-toolbar>
@@ -33,7 +33,7 @@
       Position x: before
     </p>
     <md-toolbar class="end-icon">
-      <button md-icon-button [md-menu-trigger-for]="posXMenu" aria-label="Open x-positioned menu">
+      <button md-icon-button [mdMenuTriggerFor]="posXMenu" aria-label="Open x-positioned menu">
         <md-icon>more_vert</md-icon>
       </button>
     </md-toolbar>
@@ -50,7 +50,7 @@
       Position y: above
     </p>
     <md-toolbar>
-      <button md-icon-button [md-menu-trigger-for]="posYMenu" aria-label="Open y-positioned menu">
+      <button md-icon-button [mdMenuTriggerFor]="posYMenu" aria-label="Open y-positioned menu">
         <md-icon>more_vert</md-icon>
       </button>
     </md-toolbar>

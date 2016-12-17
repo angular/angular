@@ -438,12 +438,12 @@ class BasicRippleContainer {
   template: `
     <div id="container" style="position: relative; width:300px; height:200px;"
       md-ripple
-      [md-ripple-trigger]="trigger"
-      [md-ripple-centered]="centered"
-      [md-ripple-max-radius]="maxRadius"
-      [md-ripple-disabled]="disabled"
-      [md-ripple-color]="color"
-      [md-ripple-background-color]="backgroundColor">
+      [mdRippleTrigger]="trigger"
+      [mdRippleCentered]="centered"
+      [mdRippleMaxRadius]="maxRadius"
+      [mdRippleDisabled]="disabled"
+      [mdRippleColor]="color"
+      [mdRippleBackgroundColor]="backgroundColor">
     </div>
     <div class="alternateTrigger"></div>
   `,

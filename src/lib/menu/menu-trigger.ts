@@ -32,7 +32,7 @@ import {MenuPositionX, MenuPositionY} from './menu-positions';
  * responsible for toggling the display of the provided menu instance.
  */
 @Directive({
-  selector: '[md-menu-trigger-for], [mat-menu-trigger-for]',
+  selector: '[md-menu-trigger-for], [mat-menu-trigger-for], [mdMenuTriggerFor]',
   host: {
     'aria-haspopup': 'true',
     '(mousedown)': '_handleMousedown($event)',
@@ -51,7 +51,12 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   // the first item of the list when the menu is opened via the keyboard
   private _openedByMouse: boolean = false;
 
-  @Input('md-menu-trigger-for') menu: MdMenuPanel;
+  /** @deprecated */
+  @Input('md-menu-trigger-for')
+  get _deprecatedMenuTriggerFor(): MdMenuPanel { return this.menu; }
+  set _deprecatedMenuTriggerFor(v: MdMenuPanel) { this.menu = v; }
+
+  @Input('mdMenuTriggerFor') menu: MdMenuPanel;
   @Output() onMenuOpen = new EventEmitter<void>();
   @Output() onMenuClose = new EventEmitter<void>();
 
@@ -157,7 +162,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   /**
    *  This method checks that a valid instance of MdMenu has been passed into
-   *  md-menu-trigger-for.  If not, an exception is thrown.
+   *  mdMenuTriggerFor. If not, an exception is thrown.
    */
   private _checkMenu() {
     if (!this.menu) {

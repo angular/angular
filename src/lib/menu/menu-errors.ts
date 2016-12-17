@@ -10,7 +10,7 @@ export class MdMenuMissingError extends MdError {
 
     Example:
       <md-menu #menu="mdMenu"></md-menu>
-      <button [md-menu-trigger-for]="menu"></button>
+      <button [mdMenuTriggerFor]="menu"></button>
     `);
   }
 }

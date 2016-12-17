@@ -168,7 +168,7 @@ describe('MdButton', () => {
       anchorElement = fixture.nativeElement.querySelector('a[md-button]');
     });
 
-    it('should remove ripple if md-ripple-disabled input is set', () => {
+    it('should remove ripple if mdRippleDisabled input is set', () => {
       expect(buttonElement.querySelectorAll('[md-ripple]').length).toBe(1);
 
       testComponent.rippleDisabled = true;

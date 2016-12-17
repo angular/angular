@@ -521,7 +521,7 @@ describe('MdCheckbox', () => {
       expect(inputElement.tabIndex).toBe(13);
     });
 
-    it('should remove ripple if md-ripple-disabled input is set', async(() => {
+    it('should remove ripple if mdRippleDisabled input is set', async(() => {
       testComponent.disableRipple = true;
       fixture.detectChanges();
 

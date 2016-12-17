@@ -25,7 +25,7 @@
   flex-grow: 1;
 }
 
-// The bottom section of the view; contains the tab bodies 
+// The bottom section of the view; contains the tab bodies
 .md-tab-body-wrapper {
   position: relative;
   overflow: hidden;
@@ -33,11 +33,12 @@
   transition: height $md-tab-animation-duration $ease-in-out-curve-function;
 }
 
-// Wraps each tab body 
+// Wraps each tab body
 md-tab-body {
   @include md-fill;
   display: block;
   overflow: hidden;
+
   &.md-tab-body-active {
     position: relative;
     overflow-x: hidden;
@@ -45,7 +46,8 @@ md-tab-body {
     z-index: 1;
     flex-grow: 1;
   }
-  :host[md-dynamic-height] &.md-tab-body-active {
+
+  :host.md-tab-group-dynamic-height &.md-tab-body-active {
     overflow-y: hidden;
   }
 }

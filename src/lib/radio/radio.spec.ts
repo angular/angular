@@ -249,7 +249,7 @@ describe('MdRadio', () => {
       expect(rippleElement).toBeFalsy('Expected a disabled radio button not to have a ripple');
     });
 
-    it('should remove ripple if md-ripple-disabled input is set', async(() => {
+    it('should remove ripple if mdRippleDisabled input is set', async(() => {
       fixture.detectChanges();
       for (let radioNativeElement of radioNativeElements)
       {

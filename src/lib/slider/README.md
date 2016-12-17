@@ -43,40 +43,40 @@ value on bottom.
 ### Adding a thumb label
 
 By default the exact selected value of a slider is not visible to the user. However, this value can
-be added to the thumb by adding the `thumb-label` attribute.
+be added to the thumb by adding the `thumbLabel` attribute.
 
 The [material design spec](https://material.google.com/components/sliders.html) recommends using the
-`thumb-label` attribute (along with `tick-interval="1"`) only for sliders that are used to display a
+`thumbLabel` attribute (along with `tickInterval="1"`) only for sliders that are used to display a
 discrete value (such as a 1-5 rating).
 
 ```html
-<md-slider thumb-label tick-interval="1"></md-slider>
+<md-slider thumbLabel tickInterval="1"></md-slider>
 ```
 
 ### Adding ticks
 
 By default a sliders do not show tick marks along the thumb track. They can be enabled using the
-`tick-interval` attribute. The value of `tick-interval` should be a number representing the number
-of steps between between ticks. For example a `tick-interval` of `3` with a `step` of `4` will draw
+`tickInterval` attribute. The value of `tickInterval` should be a number representing the number
+of steps between between ticks. For example a `tickInterval` of `3` with a `step` of `4` will draw
 tick marks at every `3` steps, which is the same as every `12` values.
 
 ```html
-<md-slider step="4" tick-interval="3"></md-slider>
+<md-slider step="4" tickInterval="3"></md-slider>
 ```
 
-The `tick-interval` can also be set to `auto` which will automatically choose the number of steps
+The `tickInterval` can also be set to `auto` which will automatically choose the number of steps
 such that there is at least `30px` of space between ticks.
 
 ```html
-<md-slider tick-interval="auto"></md-slider>
+<md-slider tickInterval="auto"></md-slider>
 ```
- 
+
 The slider will always show a tick at the beginning and end of the track. If the remaining space
 doesn't add up perfectly the last interval will be shortened or lengthened so that the tick can be
 shown at the end of the track.
 
 The [material design spec](https://material.google.com/components/sliders.html) recommends using the
-`tick-interval` attribute (set to `1` along with the `thumb-label` attribute) only for sliders that
+`tickInterval` attribute (set to `1` along with the `thumbLabel` attribute) only for sliders that
 are used to display a discrete value (such as a 1-5 rating).
 
 ### Disabling the slider
@@ -91,7 +91,7 @@ value.
 ### Value binding
 
 `md-slider` supports both 1-way binding and 2-way binding via `ngModel`. It also emits a `change`
-event when the value changes due to user interaction. 
+event when the value changes due to user interaction.
 
 ```html
 <md-slider [value]="myValue" (change)="onChange()"></md-slider>
@@ -132,7 +132,7 @@ right-to-left languages.
 | `max` | number | Optional, the maximum number for the slider. Default = `100`. |
 | `step` | number | Optional, declares where the thumb will snap to. Default = `1`. |
 | `value` | number | Optional, the value to start the slider at. |
-| `tick-interval` | `"auto"` \| number | Optional, how many steps between tick marks. |
+| `tickInterval` | `"auto"` \| number | Optional, how many steps between tick marks. |
 | `invert` | boolean | Optional, whether to invert the axis the thumb moves along. |
 | `vertical` | boolean | Optional, whether the slider should be oriented vertically. |
 | `disabled` | boolean | Optional, whether or not the slider is disabled. Default = `false`. |

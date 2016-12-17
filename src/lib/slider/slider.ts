@@ -103,9 +103,14 @@ export class MdSlider implements ControlValueAccessor {
   /** Whether or not to show the thumb label. */
   private _thumbLabel: boolean = false;
 
-  @Input('thumb-label')
+  @Input('thumbLabel')
   get thumbLabel(): boolean { return this._thumbLabel; }
   set thumbLabel(value) { this._thumbLabel = coerceBooleanProperty(value); }
+
+  /** @deprecated */
+  @Input('thumb-label')
+  get _thumbLabelDeprecated(): boolean { return this._thumbLabel; }
+  set _thumbLabelDeprecated(value) { this._thumbLabel = value; }
 
   private _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
@@ -140,11 +145,16 @@ export class MdSlider implements ControlValueAccessor {
    */
   private _tickInterval: 'auto' | number = 0;
 
-  @Input('tick-interval')
+  @Input()
   get tickInterval() { return this._tickInterval; }
   set tickInterval(v) {
     this._tickInterval = (v == 'auto') ? v : coerceNumberProperty(v, <number>this._tickInterval);
   }
+
+  /** @deprecated */
+  @Input('tick-interval')
+  get _tickIntervalDeprecated() { return this.tickInterval; }
+  set _tickIntervalDeprecated(v) { this.tickInterval = v; }
 
   /** The size of a tick interval as a percentage of the size of the track. */
   private _tickIntervalPercent: number = 0;

@@ -6,18 +6,18 @@ The positions `before` and `after` should be used instead of `left` and `right` 
 ### Examples
 A button with a tooltip
 ```html
-<button md-tooltip="some message" tooltip-position="below">Button</button>
+<button mdTooltip="some message" mdTooltipPosition="below">Button</button>
 ```
 
 
 
-## `[md-tooltip]`
+## `[mdTooltip]`
 ### Properties
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `md-tooltip` | `string` | The message to be displayed. |
-| `tooltip-position` | `"before"|"after"|"above"|"below"|"left"|"right"` | The position of the tooltip. |
+| `mdTooltip` | `string` | The message to be displayed. |
+| `mdTooltipPosition` | `"before"|"after"|"above"|"below"|"left"|"right"` | The position of the tooltip. |
 
 ### Methods
 

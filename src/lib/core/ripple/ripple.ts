@@ -30,37 +30,89 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
    */
   // Prevent TS metadata emit from referencing HTMLElement in ripple.js
   // That breaks tests running in node that load material components.
-  @Input('md-ripple-trigger') trigger: HTMLElement|HTMLElement;
+  @Input('mdRippleTrigger') trigger: HTMLElement|HTMLElement;
+
+  /** @deprecated */
+  @Input('md-ripple-trigger')
+  get _triggerDeprecated() { return this.trigger; }
+  set _triggerDeprecated(value: HTMLElement|HTMLElement) { this.trigger = value; };
+
   /**
    * Whether the ripple always originates from the center of the host element's bounds, rather
    * than originating from the location of the click event.
    */
-  @Input('md-ripple-centered') centered: boolean;
+  @Input('mdRippleCentered') centered: boolean;
+
+  /** @deprecated */
+  @Input('md-ripple-centered')
+  get _centeredDeprecated() { return this.centered; }
+  set _centeredDeprecated(value: boolean) { this.centered = value; };
+
   /**
    * Whether click events will not trigger the ripple. It can still be triggered by manually
    * calling start() and end().
    */
-  @Input('md-ripple-disabled') disabled: boolean;
+  @Input('mdRippleDisabled') disabled: boolean;
+
+  /** @deprecated */
+  @Input('md-ripple-disabled')
+  get _disabledDeprecated() { return this.disabled; }
+  set _disabledDeprecated(value: boolean) { this.disabled = value; };
+
   /**
    * If set, the radius in pixels of foreground ripples when fully expanded. If unset, the radius
    * will be the distance from the center of the ripple to the furthest corner of the host element's
    * bounding rectangle.
    */
-  @Input('md-ripple-max-radius') maxRadius: number = 0;
+  @Input('mdRippleMaxRadius') maxRadius: number = 0;
+
+  /** @deprecated */
+  @Input('md-ripple-max-radius')
+  get _maxRadiusDeprecated() { return this.maxRadius; }
+  set _maxRadiusDeprecated(value: number) { this.maxRadius = value; };
+
   /**
    * If set, the normal duration of ripple animations is divided by this value. For example,
    * setting it to 0.5 will cause the animations to take twice as long.
    */
-  @Input('md-ripple-speed-factor') speedFactor: number = 1;
+  @Input('mdRippleSpeedFactor') speedFactor: number = 1;
+
+  /** @deprecated */
+  @Input('md-ripple-speed-factor')
+  get _speedFactorDeprecated() { return this.speedFactor; }
+  set _speedFactorDeprecated(value: number) { this.speedFactor = value; };
+
   /** Custom color for ripples. */
-  @Input('md-ripple-color') color: string;
+  @Input('mdRippleColor') color: string;
+
+  /** @deprecated */
+  @Input('md-ripple-color')
+  get _colorDeprecated() { return this.color; }
+  set _colorDeprecated(value: string) { this.color = value; };
+
   /** Custom color for the ripple background. */
-  @Input('md-ripple-background-color') backgroundColor: string;
+  @Input('mdRippleBackgroundColor') backgroundColor: string;
+
+  /** @deprecated */
+  @Input('md-ripple-background-color')
+  get _backgroundColorDeprecated() { return this.backgroundColor; }
+  set _backgroundColorDeprecated(value: string) { this.backgroundColor = value; };
 
   /** Whether the ripple background will be highlighted to indicated a focused state. */
-  @HostBinding('class.md-ripple-focused') @Input('md-ripple-focused') focused: boolean;
+  @HostBinding('class.md-ripple-focused') @Input('mdRippleFocused') focused: boolean;
+
+  /** @deprecated */
+  @Input('md-ripple-focused')
+  get _focusedDeprecated(): boolean { return this.focused; }
+  set _focusedDeprecated(value: boolean) { this.focused = value; };
+
   /** Whether foreground ripples should be visible outside the component's bounds. */
-  @HostBinding('class.md-ripple-unbounded') @Input('md-ripple-unbounded') unbounded: boolean;
+  @HostBinding('class.md-ripple-unbounded') @Input('mdRippleUnbounded') unbounded: boolean;
+
+  /** @deprecated */
+  @Input('md-ripple-unbounded')
+  get _unboundedDeprecated(): boolean { return this.unbounded; }
+  set _unboundedDeprecated(value: boolean) { this.unbounded = value; };
 
   private _rippleRenderer: RippleRenderer;
   _ruler: ViewportRuler;

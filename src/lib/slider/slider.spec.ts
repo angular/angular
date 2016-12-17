@@ -1041,7 +1041,7 @@ class StandardSlider { }
 class DisabledSlider { }
 
 @Component({
-  template: `<md-slider [min]="min" [max]="max" tick-interval="6"></md-slider>`,
+  template: `<md-slider [min]="min" [max]="max" tickInterval="6"></md-slider>`,
   styles: [styles],
 })
 class SliderWithMinAndMax {
@@ -1062,19 +1062,19 @@ class SliderWithValue { }
 class SliderWithStep { }
 
 @Component({
-  template: `<md-slider step="5" tick-interval="auto"></md-slider>`,
+  template: `<md-slider step="5" tickInterval="auto"></md-slider>`,
   styles: [styles],
 })
 class SliderWithAutoTickInterval { }
 
 @Component({
-  template: `<md-slider step="3" tick-interval="6"></md-slider>`,
+  template: `<md-slider step="3" tickInterval="6"></md-slider>`,
   styles: [styles],
 })
 class SliderWithSetTickInterval { }
 
 @Component({
-  template: `<md-slider thumb-label></md-slider>`,
+  template: `<md-slider thumbLabel></md-slider>`,
   styles: [styles],
 })
 class SliderWithThumbLabel { }

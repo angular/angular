@@ -66,22 +66,12 @@ export class MdGridList implements OnInit, AfterContentChecked {
       @Optional() private _dir: Dir) {}
 
   @Input()
-  get cols() {
-    return this._cols;
-  }
+  get cols() { return this._cols; }
+  set cols(value: any) { this._cols = coerceToNumber(value); }
 
-  set cols(value: any) {
-    this._cols = coerceToNumber(value);
-  }
-
-  @Input('gutterSize')
-  get gutterSize() {
-    return this._gutter;
-  }
-
-  set gutterSize(value: any) {
-    this._gutter = coerceToString(value);
-  }
+  @Input()
+  get gutterSize() { return this._gutter; }
+  set gutterSize(value: any) { this._gutter = coerceToString(value); }
 
   /** Set internal representation of row height from the user-provided value. */
   @Input()

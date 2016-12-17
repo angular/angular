@@ -2,8 +2,8 @@
   <div style="float:left">
     <div id="text">{{ selected }}</div>
     <button id="start">START</button>
-    <button [md-menu-trigger-for]="menu" id="trigger">TRIGGER</button>
-    <button [md-menu-trigger-for]="menu" id="trigger-two">TRIGGER 2</button>
+    <button [mdMenuTriggerFor]="menu" id="trigger">TRIGGER</button>
+    <button [mdMenuTriggerFor]="menu" id="trigger-two">TRIGGER 2</button>
 
     <md-menu #menu="mdMenu" y-position="below" class="custom">
       <button md-menu-item (click)="selected='one'">One</button>
@@ -12,7 +12,7 @@
       <button md-menu-item>Four</button>
     </md-menu>
 
-    <button [md-menu-trigger-for]="beforeMenu" id="before-t">
+    <button [mdMenuTriggerFor]="beforeMenu" id="before-t">
       BEFORE
     </button>
     <md-menu x-position="before" y-position="below" class="before" #beforeMenu="mdMenu">
@@ -20,12 +20,12 @@
     </md-menu>
 
     <div class="bottom-row">
-      <button [md-menu-trigger-for]="aboveMenu" id="above-t">ABOVE</button>
+      <button [mdMenuTriggerFor]="aboveMenu" id="above-t">ABOVE</button>
       <md-menu y-position="above" class="above" #aboveMenu="mdMenu">
         <button md-menu-item>Item</button>
       </md-menu>
 
-      <button [md-menu-trigger-for]="combined" id="combined-t">
+      <button [mdMenuTriggerFor]="combined" id="combined-t">
         BOTH
       </button>
       <md-menu x-position="before" y-position="above" class="combined" #combined="mdMenu">
