@@ -39,7 +39,11 @@ export class CompileAnimationStateDeclarationMetadata extends CompileAnimationSt
 }
 
 export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
-  constructor(public stateChangeExpr: string, public steps: CompileAnimationMetadata) { super(); }
+  constructor(
+      public stateChangeExpr: string|StaticSymbol|((stateA: string, stateB: string) => boolean),
+      public steps: CompileAnimationMetadata) {
+    super();
+  }
 }
 
 export abstract class CompileAnimationMetadata {}

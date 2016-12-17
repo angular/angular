@@ -156,6 +156,69 @@ function declareTests({useJit}: {useJit: boolean}) {
                expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
              }));
 
+      it('should allow a transition to be a user-defined function', fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngIf="exp" [@myAnimation]="exp"></div>
+              `,
+               animations: [trigger(
+                   'myAnimation',
+                   [
+                     transition(figureItOut, [animate(1000, style({'backgroundColor': 'blue'}))]),
+                     transition(
+                         '* => *', [animate(1000, style({'backgroundColor': 'black'}))])
+                   ])]
+             }
+           });
+
+           const log: string[] = [];
+           function figureItOut(stateA: string, stateB: string): boolean {
+             log.push(`${stateA} => ${stateB}`);
+             return ['one', 'three', 'five'].indexOf(stateB) >= 0;
+           }
+
+           function assertAnimatedToFirstTransition(animation: any, firstState: boolean) {
+             const expectedColor = firstState ? 'blue' : 'black';
+             expect(animation['keyframeLookup'][1]).toEqual([
+               1, {'backgroundColor': expectedColor}
+             ]);
+           }
+
+           const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'one';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('void => one');
+
+           cmp.exp = 'two';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), false);
+           expect(log.pop()).toEqual('one => two');
+
+           cmp.exp = 'three';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('two => three');
+
+           cmp.exp = 'four';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), false);
+           expect(log.pop()).toEqual('three => four');
+
+           cmp.exp = 'five';
+           fixture.detectChanges();
+           flushMicrotasks();
+           assertAnimatedToFirstTransition(driver.log.pop(), true);
+           expect(log.pop()).toEqual('four => five');
+         }));
+
       it('should throw an error when a provided offset for an animation step if an offset value is greater than 1',
          fakeAsync(() => {
            TestBed.overrideComponent(DummyIfCmp, {
