@@ -16,6 +16,9 @@ export function main() {
       expect(getComponentInfo(ElementNameComponent).selector).toEqual('elementNameDashed');
     });
 
+    it('should extract metadata from static annotations', () => {
+      expect(getComponentInfo(ElementNameAnnotated).selector).toEqual('elementNameDashed');
+    });
 
     describe('errors', () => {
       it('should throw on missing selector', () => {
@@ -69,3 +72,13 @@ class AttributeNameComponent {
 }
 
 class NoAnnotationComponent {}
+
+interface DecoratorInvocation {
+  type: Function;
+  args?: any[];
+}
+class ElementNameAnnotated {
+  static decorators: DecoratorInvocation[] = [
+    { type: Component, args: [{selector: 'element-name-dashed', template: ''}]}
+  ];
+}
