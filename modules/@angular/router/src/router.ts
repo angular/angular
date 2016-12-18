@@ -977,9 +977,10 @@ export class PreActivation {
       const guard = this.getToken(c, curr);
       let observable: Observable<boolean>;
       if (guard.canDeactivate) {
-        observable = wrapIntoObservable(guard.canDeactivate(component, curr, this.curr));
+        observable =
+            wrapIntoObservable(guard.canDeactivate(component, curr, this.curr, this.future));
       } else {
-        observable = wrapIntoObservable(guard(component, curr, this.curr));
+        observable = wrapIntoObservable(guard(component, curr, this.curr, this.future));
       }
       return first.call(observable);
     });
