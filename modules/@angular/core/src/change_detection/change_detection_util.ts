@@ -74,8 +74,8 @@ export class ValueUnwrapper {
  * Represents a basic change from a previous to a new value.
  * @stable
  */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any) {}
+export class SimpleChange<TPrevious, TCurrent> {
+  constructor(public previousValue: TPrevious, public currentValue: TCurrent) {}
 
   /**
    * Check whether the new value is the first value assigned.
