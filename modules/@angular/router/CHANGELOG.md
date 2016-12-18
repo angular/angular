@@ -132,7 +132,7 @@ AFTER
 Only the following works:
 { path: 'a', component: ComponentA }
 
-No longer supporting index routs
+No longer supporting index routes
 
 BEFORE
 The following two routes were equivalent:
