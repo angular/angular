@@ -495,7 +495,10 @@ export interface InjectDecorator {
 
 /** @stable */
 export declare abstract class Injector {
+    get(token: any): any;
     get(token: any, notFoundValue?: any): any;
+    get<T>(token: any): T;
+    get<T, D>(token: any, notFoundValue: any): T | D;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
 }
