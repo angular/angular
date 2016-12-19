@@ -5189,7 +5189,7 @@
       "dev": true
     },
     "rxjs": {
-      "version": "5.0.0-rc.4"
+      "version": "5.0.1"
     },
     "sauce-connect-launcher": {
       "version": "0.13.0",
