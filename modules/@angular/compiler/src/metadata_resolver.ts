@@ -41,6 +41,7 @@ export class CompileMetadataResolver {
   private _directiveCache = new Map<Type<any>, cpl.CompileDirectiveMetadata>();
   private _summaryCache = new Map<Type<any>, cpl.CompileTypeSummary>();
   private _pipeCache = new Map<Type<any>, cpl.CompilePipeMetadata>();
+  private _pipeNamesCache = new Set<string>();
   private _ngModuleCache = new Map<Type<any>, cpl.CompileNgModuleMetadata>();
   private _ngModuleOfTypes = new Map<Type<any>, Type<any>>();
 
@@ -65,10 +66,11 @@ export class CompileMetadataResolver {
     }
   }
 
-  clearCache() {
+  clearCache(): void {
     this._directiveCache.clear();
     this._summaryCache.clear();
     this._pipeCache.clear();
+    this._pipeNamesCache.clear();
     this._ngModuleCache.clear();
     this._ngModuleOfTypes.clear();
     this._directiveNormalizer.clearCache();
@@ -690,6 +692,12 @@ export class CompileMetadataResolver {
       name: pipeAnnotation.name,
       pure: pipeAnnotation.pure
     });
+    if (this._pipeNamesCache.has(pipeMeta.name)) {
+      this._reportError(new SyntaxError(
+          `Error during processing of pipe '${stringifyType(pipeType)}'. Reason: pipe with the name '${pipeMeta.name}' already exists.`));
+    } else {
+      this._pipeNamesCache.add(pipeMeta.name);
+    }
     this._pipeCache.set(pipeType, pipeMeta);
     this._summaryCache.set(pipeType, pipeMeta.toSummary());
     return pipeMeta;

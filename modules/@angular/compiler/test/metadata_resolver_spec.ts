@@ -174,6 +174,24 @@ export function main() {
                  `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'`);
        }));
 
+    it(`should throw when there're multiple pipes with the same name`,
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @Pipe({name: 'somePipe'})
+         class SomePipe {
+         }
+
+         @Pipe({name: 'somePipe'})
+         class AnotherPipe {
+         }
+         @NgModule({declarations: [SomePipe, AnotherPipe]})
+         class ModuleWithImportedPipe {
+         }
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedPipe, true))
+             .toThrowError(
+                 SyntaxError,
+                 `Error during processing of pipe 'AnotherPipe'. Reason: pipe with the name 'somePipe' already exists.`);
+       }));
+
     it('should throw with descriptive error message when a module is passed to declarations',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({})
