@@ -19,7 +19,6 @@ import {AngularCompilerOptions, CodeGenerator, CompilerHostContext, NodeCompiler
 
 const glob = require('glob');
 
-
 /**
  * Main method.
  * Standalone program that executes codegen using the ngtools API and tests that files were
@@ -30,6 +29,7 @@ function main() {
 
   Promise.resolve()
       .then(() => codeGenTest())
+      .then(() => i18nTest())
       .then(() => lazyRoutesTest())
       .then(() => {
         console.log('All done!');
@@ -41,7 +41,6 @@ function main() {
         process.exit(1);
       });
 }
-
 
 function codeGenTest() {
   const basePath = path.join(__dirname, '../ngtools_src');
@@ -109,6 +108,67 @@ function codeGenTest() {
       });
 }
 
+function i18nTest() {
+  const basePath = path.join(__dirname, '../ngtools_src');
+  const project = path.join(basePath, 'tsconfig-build.json');
+  const readResources: string[] = [];
+  const wroteFiles: string[] = [];
+
+  const config = tsc.readConfiguration(project, basePath);
+  const hostContext = new NodeCompilerHostContext();
+  const delegateHost = ts.createCompilerHost(config.parsed.options, true);
+  const host: ts.CompilerHost = Object.assign(
+      {}, delegateHost,
+      {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
+  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+
+  config.ngOptions.basePath = basePath;
+
+  console.log(`>>> running i18n extraction for ${project}`);
+  return __NGTOOLS_PRIVATE_API_2
+      .extractI18n({
+        basePath,
+        compilerOptions: config.parsed.options, program, host,
+        angularCompilerOptions: config.ngOptions,
+        i18nFormat: 'xlf',
+        readResource: (fileName: string) => {
+          readResources.push(fileName);
+          return hostContext.readResource(fileName);
+        },
+      })
+      .then(() => {
+        console.log(`>>> i18n extraction done, asserting read and wrote files`);
+
+        const allFiles = glob.sync(path.join(basePath, '**/*'), {nodir: true});
+
+        assert(wroteFiles.length == 1, `Expected a single message bundle file.`);
+
+        assert(
+            wroteFiles[0].endsWith('/ngtools_src/messages.xlf'),
+            `Expected the bundle file to be "message.xlf".`);
+
+        allFiles.forEach((fileName: string) => {
+          // Skip tsconfig.
+          if (fileName.match(/tsconfig-build.json$/)) {
+            return;
+          }
+
+          // Assert that file was read.
+          if (fileName.match(/\.css$/) || fileName.match(/\.html$/)) {
+            assert(
+                readResources.indexOf(fileName) != -1,
+                `Expected resource "${fileName}" to be read.`);
+          }
+        });
+
+        console.log(`done, no errors.`);
+      })
+      .catch((e: any) => {
+        console.error(e.stack);
+        console.error('Extraction failed');
+        throw e;
+      });
+}
 
 function lazyRoutesTest() {
   const basePath = path.join(__dirname, '../ngtools_src');

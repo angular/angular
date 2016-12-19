@@ -28,7 +28,6 @@ import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleResolver} from '../ng_module_resolver';
 import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
-import {Console} from '../private_import_core';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
 
