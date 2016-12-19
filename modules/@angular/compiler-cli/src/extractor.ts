@@ -31,16 +31,20 @@ export class Extractor {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
-    const files = this.program.getSourceFiles().map(
-        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName));
-
-    const promiseBundle = this.ngExtractor.extract(files);
+    const promiseBundle = this.extractBundle();
 
     return promiseBundle.then(bundle => {
       const content = this.serialize(bundle, ext);
       const dstPath = path.join(this.options.genDir, `messages.${ext}`);
       this.host.writeFile(dstPath, content, false);
     });
+  }
+
+  extractBundle(): Promise<compiler.MessageBundle> {
+    const files = this.program.getSourceFiles().map(
+        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName));
+
+    return this.ngExtractor.extract(files);
   }
 
   serialize(bundle: compiler.MessageBundle, ext: string): string {
