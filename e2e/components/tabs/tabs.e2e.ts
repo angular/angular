@@ -1,5 +1,4 @@
-import ElementArrayFinder = protractor.ElementArrayFinder;
-import ElementFinder = protractor.ElementFinder;
+import {browser, by, element, ElementArrayFinder, ElementFinder, Key} from 'protractor';
 
 describe('tabs', () => {
   describe('basic behavior', () => {
@@ -28,22 +27,22 @@ describe('tabs', () => {
       tabLabels.get(0).click();
       expect(getFocusStates(tabLabels)).toEqual([true, false, false]);
 
-      pressKey(protractor.Key.RIGHT);
+      pressKey(Key.RIGHT);
       expect(getFocusStates(tabLabels)).toEqual([false, true, false]);
 
-      pressKey(protractor.Key.RIGHT);
+      pressKey(Key.RIGHT);
       expect(getFocusStates(tabLabels)).toEqual([false, false, true]);
 
-      pressKey(protractor.Key.RIGHT);
+      pressKey(Key.RIGHT);
       expect(getFocusStates(tabLabels)).toEqual([false, false, true]);
 
-      pressKey(protractor.Key.LEFT);
+      pressKey(Key.LEFT);
       expect(getFocusStates(tabLabels)).toEqual([false, true, false]);
 
-      pressKey(protractor.Key.LEFT);
+      pressKey(Key.LEFT);
       expect(getFocusStates(tabLabels)).toEqual([true, false, false]);
 
-      pressKey(protractor.Key.LEFT);
+      pressKey(Key.LEFT);
       expect(getFocusStates(tabLabels)).toEqual([true, false, false]);
     });
   });

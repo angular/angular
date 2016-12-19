@@ -1,3 +1,5 @@
+import {browser, by, element} from 'protractor';
+
 describe('progress-circle', () => {
   beforeEach(() => browser.get('/progress-circle'));
 

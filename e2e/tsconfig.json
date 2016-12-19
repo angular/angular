@@ -11,9 +11,12 @@
     "outDir": "../dist/e2e/",
     "rootDir": ".",
     "sourceMap": true,
-    "target": "es5"
-  },
-  "files": [
-    "e2e.d.ts"
-  ]
+    "target": "es5",
+    "typeRoots": [
+      "../node_modules/@types/"
+    ],
+    "types": [
+      "jasmine"
+    ]
+  }
 }

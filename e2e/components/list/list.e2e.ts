@@ -1,3 +1,5 @@
+import {browser, by, element} from 'protractor';
+
 describe('list', () => {
   beforeEach(() => browser.get('/list'));
 

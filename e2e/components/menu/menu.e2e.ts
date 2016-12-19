@@ -1,4 +1,5 @@
-import { MenuPage } from './menu-page';
+import {browser, Key, protractor} from 'protractor';
+import {MenuPage} from './menu-page';
 
 describe('menu', () => {
   let page: MenuPage;
@@ -57,7 +58,7 @@ describe('menu', () => {
 
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
-    page.menu().getAttribute('class').then(classes => {
+    page.menu().getAttribute('class').then((classes: string) => {
       expect(classes).toContain('md-menu-panel custom');
     });
   });
@@ -66,16 +67,16 @@ describe('menu', () => {
     beforeEach(() => {
       // click start button to avoid tabbing past navigation
       page.start().click();
-      page.pressKey(protractor.Key.TAB);
+      page.pressKey(Key.TAB);
     });
 
     it('should auto-focus the first item when opened with ENTER', () => {
-      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(Key.ENTER);
       page.expectFocusOn(page.items(0));
     });
 
     it('should auto-focus the first item when opened with SPACE', () => {
-      page.pressKey(protractor.Key.SPACE);
+      page.pressKey(Key.SPACE);
       page.expectFocusOn(page.items(0));
     });
 
@@ -85,60 +86,60 @@ describe('menu', () => {
     });
 
     it('should focus subsequent items when down arrow is pressed', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.DOWN);
       page.expectFocusOn(page.items(1));
     });
 
     it('should focus previous items when up arrow is pressed', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.DOWN);
-      page.pressKey(protractor.Key.UP);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.DOWN);
+      page.pressKey(Key.UP);
       page.expectFocusOn(page.items(0));
     });
 
     it('should skip disabled items using arrow keys', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.DOWN);
-      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.DOWN);
+      page.pressKey(Key.DOWN);
       page.expectFocusOn(page.items(3));
 
-      page.pressKey(protractor.Key.UP);
+      page.pressKey(Key.UP);
       page.expectFocusOn(page.items(1));
     });
 
     it('should close the menu when tabbing past items', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.TAB);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.TAB);
       page.expectMenuPresent(false);
 
-      page.pressKey(protractor.Key.TAB);
-      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(Key.TAB);
+      page.pressKey(Key.ENTER);
       page.expectMenuPresent(true);
 
-      page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
+      page.pressKey(protractor.Key.chord(Key.SHIFT, Key.TAB));
       page.expectMenuPresent(false);
     });
 
     it('should wrap back to menu when arrow keying past items', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.DOWN);
-      page.pressKey(protractor.Key.DOWN);
-      page.pressKey(protractor.Key.DOWN);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.DOWN);
+      page.pressKey(Key.DOWN);
+      page.pressKey(Key.DOWN);
       page.expectFocusOn(page.items(0));
 
-      page.pressKey(protractor.Key.UP);
+      page.pressKey(Key.UP);
       page.expectFocusOn(page.items(3));
     });
 
     it('should focus before and after trigger when tabbing past items', () => {
-      page.pressKey(protractor.Key.ENTER);
-      page.pressKey(protractor.Key.TAB);
+      page.pressKey(Key.ENTER);
+      page.pressKey(Key.TAB);
       page.expectFocusOn(page.triggerTwo());
 
       // navigate back to trigger
       page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
-      page.pressKey(protractor.Key.ENTER);
+      page.pressKey(Key.ENTER);
 
       page.pressKey(protractor.Key.chord(protractor.Key.SHIFT, protractor.Key.TAB));
       page.expectFocusOn(page.start());

@@ -1,4 +1,4 @@
-import ElementFinder = protractor.ElementFinder;
+import {browser, by, element, ElementFinder, ProtractorBy} from 'protractor';
 
 export class MenuPage {
 
@@ -16,9 +16,7 @@ export class MenuPage {
 
   backdrop() { return element(by.css('.md-overlay-backdrop')); }
 
-  items(index: number) {
-    return element.all(by.css('[md-menu-item]')).get(index);
-  }
+  items(index: number) { return element.all(by.css('[md-menu-item]')).get(index); }
 
   textArea() { return element(by.id('text')); }
 
@@ -35,20 +33,21 @@ export class MenuPage {
   combinedMenu() { return element(by.css('.md-menu-panel.combined')); }
 
   // TODO(kara): move to common testing utility
-  pressKey(key: any): void {
+  pressKey(key: string): void {
     browser.actions().sendKeys(key).perform();
   }
 
   // TODO(kara): move to common testing utility
-  expectFocusOn(el: ElementFinder): void {
+  expectFocusOn(el: any): void {
     expect(browser.driver.switchTo().activeElement().getInnerHtml())
         .toBe(el.getInnerHtml());
   }
 
   expectMenuPresent(expected: boolean) {
-    return browser.isElementPresent(by.css('.md-menu-panel')).then(isPresent => {
-      expect(isPresent).toBe(expected);
-    });
+    return browser.isElementPresent(by.css('.md-menu-panel') as ProtractorBy)
+        .then((isPresent: boolean) => {
+          expect(isPresent).toBe(expected);
+        });
   }
 
   expectMenuLocation(el: ElementFinder, {x, y}: {x: number, y: number}) {

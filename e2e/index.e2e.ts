@@ -1,3 +1,5 @@
+import {browser} from 'protractor';
+
 describe('hello, protractor', function () {
   describe('index', function () {
     browser.get('/');

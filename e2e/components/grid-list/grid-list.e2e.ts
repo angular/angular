@@ -1,3 +1,5 @@
+import {browser, by, element} from 'protractor';
+
 describe('grid-list', () => {
   beforeEach(() => browser.get('/grid-list'));
 

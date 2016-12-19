@@ -1,3 +1,5 @@
+import {browser, by, element} from 'protractor';
+
 describe('checkbox', function () {
   describe('check behavior', function () {
     beforeEach(function() {

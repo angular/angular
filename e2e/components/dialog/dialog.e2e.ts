@@ -1,9 +1,11 @@
+import {browser, by, element, Key, ProtractorBy} from 'protractor';
+
 describe('dialog', () => {
   beforeEach(() => browser.get('/dialog'));
 
   it('should open a dialog', () => {
     element(by.id('default')).click();
-    waitForDialog().then(isPresent => expect(isPresent).toBe(true));
+    waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(true));
   });
 
   it('should close by clicking on the backdrop', () => {
@@ -11,7 +13,7 @@ describe('dialog', () => {
 
     waitForDialog().then(() => {
       clickOnBackrop();
-      waitForDialog().then(isPresent => expect(isPresent).toBe(false));
+      waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(false));
     });
   });
 
@@ -20,7 +22,7 @@ describe('dialog', () => {
 
     waitForDialog().then(() => {
       pressEscape();
-      waitForDialog().then(isPresent => expect(isPresent).toBe(false));
+      waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(false));
     });
   });
 
@@ -29,7 +31,7 @@ describe('dialog', () => {
 
     waitForDialog().then(() => {
       element(by.id('close')).click();
-      waitForDialog().then(isPresent => expect(isPresent).toBe(false));
+      waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(false));
     });
   });
 
@@ -56,7 +58,7 @@ describe('dialog', () => {
     element(by.id('default')).click();
 
     waitForDialog().then(() => {
-      let tab = protractor.Key.TAB;
+      let tab = Key.TAB;
 
       browser.actions().sendKeys(tab, tab, tab).perform();
       expectFocusOn(element(by.id('close')));
@@ -68,7 +70,7 @@ describe('dialog', () => {
 
     waitForDialog().then(() => {
       clickOnBackrop();
-      waitForDialog().then(isPresent => expect(isPresent).toBe(true));
+      waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(true));
     });
   });
 
@@ -77,12 +79,12 @@ describe('dialog', () => {
 
     waitForDialog().then(() => {
       pressEscape();
-      waitForDialog().then(isPresent => expect(isPresent).toBe(true));
+      waitForDialog().then((isPresent: boolean) => expect(isPresent).toBe(true));
     });
   });
 
   function waitForDialog() {
-    return browser.isElementPresent(by.css('md-dialog-container'));
+    return browser.isElementPresent(by.css('md-dialog-container') as ProtractorBy);
   }
 
   function clickOnBackrop() {
@@ -95,7 +97,7 @@ describe('dialog', () => {
   }
 
   function pressEscape() {
-    browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
+    browser.actions().sendKeys(Key.ESCAPE).perform();
   }
 
   // TODO(crisbeto): should be moved to a common util. copied from the menu e2e setup.

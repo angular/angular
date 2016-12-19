@@ -1,3 +1,5 @@
+import {browser, by, element} from 'protractor';
+
 describe('button', function () {
   describe('disabling behavior', function () {
     beforeEach(function() {
