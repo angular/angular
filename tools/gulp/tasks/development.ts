@@ -24,7 +24,7 @@ task(':watch:devapp', () => {
 
 
 task(':build:devapp:vendor', vendorTask());
-task(':build:devapp:ts', [':build:components:rollup'], tsBuildTask(appDir));
+task(':build:devapp:ts', ['build:components'], tsBuildTask(appDir));
 task(':build:devapp:scss', [':build:components:scss'], sassBuildTask(outDir, appDir));
 task(':build:devapp:assets', copyTask(appDir, outDir));
 task('build:devapp', buildAppTask('devapp'));

@@ -15,6 +15,11 @@ export const SASS_AUTOPREFIXER_OPTIONS = {
   cascade: false,
 };
 
+export const HTML_MINIFIER_OPTIONS = {
+  collapseWhitespace: true,
+  removeComments: true
+};
+
 export const NPM_VENDOR_FILES = [
   '@angular', 'core-js/client', 'hammerjs', 'rxjs', 'systemjs/dist', 'zone.js/dist'
 ];
