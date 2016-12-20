@@ -3,6 +3,7 @@ import {NgModule, ModuleWithProviders} from '@angular/core';
 import {
   MdRippleModule,
   RtlModule,
+  ObserveContentModule,
   PortalModule,
   OverlayModule,
   A11yModule,
@@ -67,6 +68,7 @@ const MATERIAL_MODULES = [
   PlatformModule,
   ProjectionModule,
   DefaultStyleCompatibilityModeModule,
+  ObserveContentModule
 ];
 
 @NgModule({
@@ -89,6 +91,7 @@ const MATERIAL_MODULES = [
     PortalModule.forRoot(),
     ProjectionModule.forRoot(),
     RtlModule.forRoot(),
+    ObserveContentModule.forRoot(),
 
     // These modules include providers.
     A11yModule.forRoot(),

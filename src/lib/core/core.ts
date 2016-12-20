@@ -1,6 +1,7 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
 import {MdLineModule} from './line/line';
 import {RtlModule} from './rtl/dir';
+import {ObserveContentModule} from './observe-content/observe-content';
 import {MdRippleModule} from './ripple/ripple';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
@@ -10,6 +11,9 @@ import {OVERLAY_PROVIDERS} from './overlay/overlay';
 
 // RTL
 export {Dir, LayoutDirection, RtlModule} from './rtl/dir';
+
+// Mutation Observer
+export {ObserveContentModule, ObserveContent} from './observe-content/observe-content';
 
 // Portals
 export {
@@ -115,6 +119,7 @@ export {NoConflictStyleCompatibilityMode} from './compatibility/no-conflict-mode
     MdLineModule,
     RtlModule,
     MdRippleModule,
+    ObserveContentModule,
     PortalModule,
     OverlayModule,
     A11yModule,
@@ -123,6 +128,7 @@ export {NoConflictStyleCompatibilityMode} from './compatibility/no-conflict-mode
     MdLineModule,
     RtlModule,
     MdRippleModule,
+    ObserveContentModule,
     PortalModule,
     OverlayModule,
     A11yModule,

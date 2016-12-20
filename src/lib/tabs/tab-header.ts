@@ -101,9 +101,7 @@ export class MdTabHeader {
   ngAfterContentChecked(): void {
     // If the number of tab labels have changed, check if scrolling should be enabled
     if (this._tabLabelCount != this._labelWrappers.length) {
-      this._checkPaginationEnabled();
-      this._checkScrollingControls();
-      this._updateTabScrollPosition();
+      this._updatePagination();
       this._tabLabelCount = this._labelWrappers.length;
     }
 
@@ -148,6 +146,15 @@ export class MdTabHeader {
         this.selectFocusedIndex.emit(this.focusIndex);
         break;
     }
+  }
+
+  /**
+   * Updating the view whether pagination should be enabled or not
+   */
+  _updatePagination() {
+    this._checkPaginationEnabled();
+    this._checkScrollingControls();
+    this._updateTabScrollPosition();
   }
 
   /** When the focus index is set, we must manually send focus to the correct label */
