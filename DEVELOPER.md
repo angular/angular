@@ -79,7 +79,7 @@ use in these instructions.
 Now run `bower` to install additional dependencies:
 
 ```shell
-# Install other Angular project dependencies (package.json)
+# Install other Angular project dependencies (bower.json)
 bower install
 ```
 
