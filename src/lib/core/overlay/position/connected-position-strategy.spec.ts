@@ -211,6 +211,36 @@ describe('ConnectedPositionStrategy', () => {
       expect(overlayRect.right).toBe(originRect.left);
     });
 
+    it('should pick the fallback position that shows the largest area of the element', () => {
+      // Use the fake viewport ruler because we don't know *exactly* how big the viewport is.
+      fakeViewportRuler.fakeRect = {
+        top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+      };
+      positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+
+      originElement.style.top = '200px';
+      originElement.style.left = '475px';
+      originRect = originElement.getBoundingClientRect();
+
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'end', originY: 'center'},
+        {overlayX: 'start', overlayY: 'center'})
+        .withFallbackPosition(
+          {originX: 'end', originY: 'top'},
+          {overlayX: 'start', overlayY: 'bottom'})
+        .withFallbackPosition(
+          {originX: 'end', originY: 'top'},
+          {overlayX: 'end', overlayY: 'top'});
+
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+
+      expect(overlayRect.top).toBe(originRect.top);
+      expect(overlayRect.left).toBe(originRect.left);
+    });
+
     it('should position a panel properly when rtl', () => {
       // must make the overlay longer than the origin to properly test attachment
       overlayElement.style.width = `500px`;
