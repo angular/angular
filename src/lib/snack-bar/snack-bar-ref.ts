@@ -5,7 +5,7 @@ import {MdSnackBarContainer} from './snack-bar-container';
 
 // TODO(josephperrott): Implement onAction observable.
 
-
+Observable.of([]);
 /**
  * Reference to a snack bar dispatched from the snack bar service.
  */
