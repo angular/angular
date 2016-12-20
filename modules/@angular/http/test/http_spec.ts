@@ -18,7 +18,7 @@ import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/mock_backend';
 
 export function main() {
-  describe('injectables', () => {
+  describe('Injectables', () => {
     const url = 'http://foo.bar';
     let http: Http;
     let injector: Injector;
@@ -70,7 +70,10 @@ export function main() {
        }));
   });
 
-  describe('http', () => {
+  describe('Default options', () => {
+  });
+
+  describe('Http', () => {
     const url = 'http://foo.bar';
     let http: Http;
     let injector: Injector;

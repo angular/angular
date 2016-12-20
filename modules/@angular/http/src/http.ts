@@ -18,26 +18,6 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
   return backend.createConnection(request).response;
 }
 
-function mergeOptions(
-    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs, method: RequestMethod,
-    url: string): RequestOptions {
-  const newOptions = defaultOpts;
-  if (providedOpts) {
-    // Hack so Dart can used named parameters
-    return newOptions.merge(new RequestOptions({
-      method: providedOpts.method || method,
-      url: providedOpts.url || url,
-      search: providedOpts.search,
-      headers: providedOpts.headers,
-      body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials,
-      responseType: providedOpts.responseType
-    }));
-  }
-
-  return newOptions.merge(new RequestOptions({method, url}));
-}
-
 /**
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
@@ -111,7 +91,7 @@ export class Http {
   request(url: string|Request, options: RequestOptionsArgs = {}): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
-      options.url = options.url != null ? options.url : url;
+      options.url = url;
       options.method = options.method != null ? options.method : RequestMethod.Get;
       responseObservable =
           httpRequest(this._backend, new Request(this._defaultOptions.merge(options)));
@@ -138,7 +118,7 @@ export class Http {
   post(url: string, body: any, options: RequestOptionsArgs = {}): Observable<Response> {
     options.url = url;
     options.method = RequestMethod.Post;
-    options.body = body;
+    options.body = body != null ? body : options.body;
     return this.request(new Request(this._defaultOptions.merge(options)));
   }
 
@@ -148,14 +128,14 @@ export class Http {
   put(url: string, body: any, options: RequestOptionsArgs = {}): Observable<Response> {
     options.url = url;
     options.method = RequestMethod.Put;
-    options.body = body;
+    options.body = body != null ? body : options.body;
     return this.request(new Request(this._defaultOptions.merge(options)));
   }
 
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options: RequestOptionsArgs = {}): Observable<Response> {
+  delete(url: string, options: RequestOptionsArgs = {}): Observable<Response> {
     options.url = url;
     options.method = RequestMethod.Delete;
     return this.request(new Request(this._defaultOptions.merge(options)));
@@ -167,7 +147,7 @@ export class Http {
   patch(url: string, body: any, options: RequestOptionsArgs = {}): Observable<Response> {
     options.url = url;
     options.method = RequestMethod.Patch;
-    options.body = body;
+    options.body = body != null ? body : options.body;
     return this.request(new Request(this._defaultOptions.merge(options)));
   }
 
@@ -214,11 +194,12 @@ export class Jsonp extends Http {
    * future security issues (e.g. content sniffing).  For more detail, see the
    * [Security Guide](http://g.co/ng/security).
    */
-  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string|Request, options: RequestOptionsArgs = {}): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
-      url =
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
+      options.url = url;
+      options.method = options.method != null ? options.method : RequestMethod.Get;
+      url = new Request(this._defaultOptions.merge(options));
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {
