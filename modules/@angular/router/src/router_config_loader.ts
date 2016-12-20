@@ -16,6 +16,18 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {LoadChildren, Route} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
+export class InjectorWrapper implements Injector {
+  constructor(private inj1: Injector, private inj2: Injector) {}
+
+  get(token: any, notFoundValue?: any): any {
+    const result = this.inj1.get(token, null);
+    if (result === null) {
+      return this.inj2.get(token);
+    }
+    return result;
+  }
+}
+
 /**
  * @experimental
  */
@@ -33,7 +45,7 @@ export class RouterConfigLoader {
   load(parentInjector: Injector, loadChildren: LoadChildren): Observable<LoadedRouterConfig> {
     return map.call(this.loadModuleFactory(loadChildren), (r: NgModuleFactory<any>) => {
       const ref = r.create(parentInjector);
-      const injectorFactory = (parent: Injector) => r.create(parent).injector;
+      const injectorFactory = (parent: Injector) => new InjectorWrapper(ref.injector, parent);
       return new LoadedRouterConfig(
           flatten(ref.injector.get(ROUTES)), ref.injector, ref.componentFactoryResolver,
           injectorFactory);
