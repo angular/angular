@@ -5,6 +5,11 @@ export interface Person {
   name: string;
 }
 
+export interface DemoColor {
+  name: string;
+  color: string;
+}
+
 @Component({
   moduleId: module.id,
   selector: 'chips-demo',
@@ -22,6 +27,13 @@ export class ChipsDemo {
     { name: 'Elad' },
     { name: 'Kristiyan' },
     { name: 'Paul' }
+  ];
+
+  availableColors: DemoColor[] = [
+    { name: 'none', color: '' },
+    { name: 'Primary', color: 'primary' },
+    { name: 'Accent', color: 'accent' },
+    { name: 'Warn', color: 'warn' }
   ];
 
   alert(message: string): void {

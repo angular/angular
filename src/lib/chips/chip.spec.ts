@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement}  from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdChipList, MdChip, MdChipsModule} from './index';
+import {MdChipList, MdChip, MdChipEvent, MdChipsModule} from './index';
 
 describe('Chips', () => {
   let fixture: ComponentFixture<any>;
@@ -86,6 +86,28 @@ describe('Chips', () => {
 
         expect(testComponent.chipDestroy).toHaveBeenCalledTimes(1);
       });
+
+      it('allows color customization', () => {
+        expect(chipNativeElement.classList).toContain('md-primary');
+
+        testComponent.color = 'warn';
+        fixture.detectChanges();
+
+        expect(chipNativeElement.classList).not.toContain('md-primary');
+        expect(chipNativeElement.classList).toContain('md-warn');
+      });
+
+      it('allows selection', () => {
+        spyOn(testComponent, 'chipSelect');
+        expect(chipNativeElement.classList).not.toContain('md-chip-selected');
+
+        testComponent.selected = true;
+        fixture.detectChanges();
+
+        expect(chipNativeElement.classList).toContain('md-chip-selected');
+        expect(testComponent.chipSelect).toHaveBeenCalledWith({ chip: chipInstance });
+      });
+
     });
   });
 });
@@ -94,20 +116,30 @@ describe('Chips', () => {
   template: `
     <md-chip-list>
       <div *ngIf="shouldShow">
-        <md-chip (focus)="chipFocus($event)" (destroy)="chipDestroy($event)">
+        <md-chip [color]="color" [selected]="selected"
+                 (focus)="chipFocus($event)" (destroy)="chipDestroy($event)"
+                 (select)="chipSelect($event)" (deselect)="chipDeselect($event)">
           {{name}}
         </md-chip>
       </div>
     </md-chip-list>`
 })
 class SingleChip {
-  name: String = 'Test';
-  shouldShow: Boolean = true;
+  name: string = 'Test';
+  color: string = 'primary';
+  selected: boolean = false;
+  shouldShow: boolean = true;
 
-  chipFocus() {
+  chipFocus(event: MdChipEvent) {
   }
 
-  chipDestroy() {
+  chipDestroy(event: MdChipEvent) {
+  }
+
+  chipSelect(event: MdChipEvent) {
+  }
+
+  chipDeselect(event: MdChipEvent) {
   }
 }
 

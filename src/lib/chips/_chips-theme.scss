@@ -1,3 +1,4 @@
+@import '../core/theming/palette';
 @import '../core/theming/theming';
 
 @mixin md-chips-theme($theme) {
@@ -6,27 +7,40 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  // Use spec-recommended color for regular foreground, and utilise contrast color for a grey very
+  // close to the selected spec since no guidance is provided and to ensure palette consistency.
+  $light-foreground: rgba(0, 0, 0, 0.87);
+  $light-selected-foreground: md-contrast($md-grey, 600);
+
+  // The spec only provides guidance for light-themed chips. When inside of a dark theme, fall back
+  // to standard background and foreground colors.
+  $unselected-background: if($is-dark-theme, md-color($background, card), #e0e0e0);
+  $unselected-foreground: if($is-dark-theme, md-color($foreground, text), $light-foreground);
+
+  $selected-background: if($is-dark-theme, md-color($background, app-bar), #808080);
+  $selected-foreground: if($is-dark-theme, md-color($foreground, text), $light-selected-foreground);
 
   .md-chip {
-    background-color: #e0e0e0;
-    color: rgba(0, 0, 0, 0.87);
+    background-color: $unselected-background;
+    color: $unselected-foreground;
   }
 
-  .md-chip.selected {
-    // There is no dark theme in the current spec, so this applies to both
-    background-color: #808080;
-
-    // Use a contrast color for a grey very close to the background color
-    color: md-contrast($md-grey, 600);
+  .md-chip.md-chip-selected {
+    background-color: $selected-background;
+    color: $selected-foreground;
 
     &.md-primary {
       background-color: md-color($primary, 500);
       color: md-contrast($primary, 500);
     }
+
     &.md-accent {
       background-color: md-color($accent, 500);
       color: md-contrast($accent, 500);
     }
+
     &.md-warn {
       background-color: md-color($warn, 500);
       color: md-contrast($warn, 500);

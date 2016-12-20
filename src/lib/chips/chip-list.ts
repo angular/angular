@@ -4,6 +4,7 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  Input,
   ModuleWithProviders,
   NgModule,
   QueryList,
@@ -12,6 +13,8 @@ import {
 
 import {MdChip} from './chip';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
+import {coerceBooleanProperty} from '../core/coercion/boolean-property';
+import {SPACE} from '../core/keyboard/keycodes';
 
 /**
  * A material design chips component (named ChipList for it's similarity to the List component).
@@ -34,8 +37,8 @@ import {ListKeyManager} from '../core/a11y/list-key-manager';
     'class': 'md-chip-list',
 
     // Events
-    '(focus)': '_keyManager.focusFirstItem()',
-    '(keydown)': 'keydown($event)'
+    '(focus)': 'focus($event)',
+    '(keydown)': '_keydown($event)'
   },
   queries: {
     chips: new ContentChildren(MdChip)
@@ -49,29 +52,85 @@ export class MdChipList implements AfterContentInit {
   /** Track which chips we're listening to for focus/destruction. */
   private _subscribed: WeakMap<MdChip, boolean> = new WeakMap();
 
+  /** Whether or not the chip is selectable. */
+  protected _selectable: boolean = true;
+
   /** The ListKeyManager which handles focus. */
   _keyManager: ListKeyManager;
 
   /** The chip components contained within this chip list. */
   chips: QueryList<MdChip>;
 
-  constructor(private _elementRef: ElementRef) {}
+  constructor(private _elementRef: ElementRef) {
+  }
 
   ngAfterContentInit(): void {
     this._keyManager = new ListKeyManager(this.chips).withFocusWrap();
 
     // Go ahead and subscribe all of the initial chips
-    this.subscribeChips(this.chips);
+    this._subscribeChips(this.chips);
 
     // When the list changes, re-subscribe
     this.chips.changes.subscribe((chips: QueryList<MdChip>) => {
-      this.subscribeChips(chips);
+      this._subscribeChips(chips);
     });
   }
 
+  /**
+   * Whether or not this chip is selectable. When a chip is not selectable,
+   * it's selected state is always ignored.
+   */
+  @Input() get selectable(): boolean {
+    return this._selectable;
+  }
+
+  set selectable(value: boolean) {
+    this._selectable = coerceBooleanProperty(value);
+  }
+
+  /**
+   * Programmatically focus the chip list. This in turn focuses the first non-disabled chip in this
+   * chip list.
+   *
+   * TODO: ARIA says this should focus the first `selected` chip.
+   */
+  focus(event: Event) {
+    this._keyManager.focusFirstItem();
+  }
+
   /** Pass relevant key presses to our key manager. */
-  keydown(event: KeyboardEvent) {
-    this._keyManager.onKeydown(event);
+  _keydown(event: KeyboardEvent) {
+    switch (event.keyCode) {
+      case SPACE:
+        // If we are selectable, toggle the focused chip
+        if (this.selectable) {
+          this._toggleSelectOnFocusedChip();
+        }
+
+        // Always prevent space from scrolling the page since the list has focus
+        event.preventDefault();
+        break;
+      default:
+        this._keyManager.onKeydown(event);
+    }
+  }
+
+  /** Toggles the selected state of the currently focused chip. */
+  protected _toggleSelectOnFocusedChip(): void {
+    // Allow disabling of chip selection
+    if (!this.selectable) {
+      return;
+    }
+
+    let focusedIndex = this._keyManager.focusedItemIndex;
+
+    if (this._isValidIndex(focusedIndex)) {
+      let focusedChip: MdChip = this.chips.toArray()[focusedIndex];
+
+      if (focusedChip) {
+        focusedChip.toggleSelected();
+      }
+    }
   }
 
   /**
@@ -80,8 +139,8 @@ export class MdChipList implements AfterContentInit {
    *
    * @param chips The list of chips to be subscribed.
    */
-  protected subscribeChips(chips: QueryList<MdChip>): void {
-    chips.forEach(chip => this.addChip(chip));
+  protected _subscribeChips(chips: QueryList<MdChip>): void {
+    chips.forEach(chip => this._addChip(chip));
   }
 
   /**
@@ -92,7 +151,7 @@ export class MdChipList implements AfterContentInit {
    * @param chip The chip to be subscribed (or checked for existing
    * subscription).
    */
-  protected addChip(chip: MdChip) {
+  protected _addChip(chip: MdChip) {
     // If we've already been subscribed to a parent, do nothing
     if (this._subscribed.has(chip)) {
       return;
@@ -102,7 +161,7 @@ export class MdChipList implements AfterContentInit {
     chip.onFocus.subscribe(() => {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
 
-      if (this.isValidIndex(chipIndex)) {
+      if (this._isValidIndex(chipIndex)) {
         this._keyManager.updateFocusedItemIndex(chipIndex);
       }
     });
@@ -111,7 +170,7 @@ export class MdChipList implements AfterContentInit {
     chip.destroy.subscribe(() => {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
 
-      if (this.isValidIndex(chipIndex)) {
+      if (this._isValidIndex(chipIndex)) {
         // Check whether the chip is the last item
         if (chipIndex < this.chips.length - 1) {
           this._keyManager.setFocus(chipIndex);
@@ -133,7 +192,7 @@ export class MdChipList implements AfterContentInit {
    * @param index The index to be checked.
    * @returns {boolean} True if the index is valid for our list of chips.
    */
-  private isValidIndex(index: number): boolean {
+  private _isValidIndex(index: number): boolean {
     return index >= 0 && index < this.chips.length;
   }
 

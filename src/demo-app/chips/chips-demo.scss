@@ -4,6 +4,19 @@
     max-width: 200px;
   }
 
+  md-card {
+    padding: 0;
+    margin: 16px;
+
+    & md-toolbar {
+      margin: 0;
+    }
+
+    & md-card-content {
+      padding: 24px;
+    }
+  }
+
   md-basic-chip {
     margin: auto 10px;
   }

@@ -15,7 +15,7 @@ class FakeQueryList<T> extends QueryList<T> {
   }
 }
 
-class FakeEvent {
+export class FakeEvent {
   defaultPrevented: boolean = false;
   constructor(public keyCode: number) {}
   preventDefault() {
