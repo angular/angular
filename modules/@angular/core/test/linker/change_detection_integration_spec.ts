@@ -1135,20 +1135,20 @@ export function main() {
          }));
 
       it('Detached view can be checked locally', fakeAsync(() => {
-        const ctx = createCompFixture('<wrap-comp-with-ref></wrap-comp-with-ref>');
-        const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
-        cmp.value = 'hello';
-        cmp.changeDetectorRef.detach();
-        expect(renderLog.log).toEqual([]);
+           const ctx = createCompFixture('<wrap-comp-with-ref></wrap-comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
+           expect(renderLog.log).toEqual([]);
 
-        ctx.detectChanges();
+           ctx.detectChanges();
 
-        expect(renderLog.log).toEqual([]);
+           expect(renderLog.log).toEqual([]);
 
-        cmp.changeDetectorRef.detectChanges();
+           cmp.changeDetectorRef.detectChanges();
 
-        expect(renderLog.log).toEqual(['{{hello}}']);
-      }));
+           expect(renderLog.log).toEqual(['{{hello}}']);
+         }));
 
 
       it('Reattaches', fakeAsync(() => {
@@ -1364,10 +1364,7 @@ class CompWithRef {
   noop() {}
 }
 
-@Component({
-  selector: 'wrap-comp-with-ref',
-  template: '<comp-with-ref></comp-with-ref>'
-})
+@Component({selector: 'wrap-comp-with-ref', template: '<comp-with-ref></comp-with-ref>'})
 class WrapCompWithRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
 }
