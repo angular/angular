@@ -140,6 +140,9 @@ md-sidenav {
     box-sizing: border-box;
     height: 100%;
     overflow-y: auto; // TODO(kara): revisit scrolling behavior for sidenavs
+
+    // Prevents unnecessary repaints while scrolling.
+    transform: translateZ(0);
   }
 }
 
