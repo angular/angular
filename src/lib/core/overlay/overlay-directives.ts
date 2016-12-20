@@ -23,6 +23,7 @@ import {PortalModule} from '../portal/portal-directives';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Subscription} from 'rxjs/Subscription';
 import {Dir, LayoutDirection} from '../rtl/dir';
+import {Scrollable} from './scroll/scrollable';
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
 let defaultPositionList = [
@@ -285,8 +286,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
 @NgModule({
   imports: [PortalModule],
-  exports: [ConnectedOverlayDirective, OverlayOrigin],
-  declarations: [ConnectedOverlayDirective, OverlayOrigin],
+  exports: [ConnectedOverlayDirective, OverlayOrigin, Scrollable],
+  declarations: [ConnectedOverlayDirective, OverlayOrigin, Scrollable],
 })
 export class OverlayModule {
   static forRoot(): ModuleWithProviders {

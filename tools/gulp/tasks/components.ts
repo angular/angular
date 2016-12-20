@@ -69,6 +69,7 @@ task(':build:components:rollup', () => {
 
     // Rxjs dependencies
     'rxjs/Subject': 'Rx',
+    'rxjs/add/observable/fromEvent': 'Rx.Observable',
     'rxjs/add/observable/forkJoin': 'Rx.Observable',
     'rxjs/add/observable/of': 'Rx.Observable',
     'rxjs/add/operator/toPromise': 'Rx.Observable.prototype',

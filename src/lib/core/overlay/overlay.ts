@@ -11,6 +11,7 @@ import {OverlayRef} from './overlay-ref';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {ViewportRuler} from './position/viewport-ruler';
 import {OverlayContainer} from './overlay-container';
+import {ScrollDispatcher} from './scroll/scroll-dispatcher';
 
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
@@ -93,4 +94,5 @@ export const OVERLAY_PROVIDERS = [
   OverlayPositionBuilder,
   Overlay,
   OverlayContainer,
+  ScrollDispatcher,
 ];

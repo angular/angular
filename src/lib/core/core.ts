@@ -47,6 +47,7 @@ export {
 } from './overlay/overlay-directives';
 export * from './overlay/position/connected-position-strategy';
 export * from './overlay/position/connected-position';
+export {ScrollDispatcher} from './overlay/scroll/scroll-dispatcher';
 
 // Gestures
 export {GestureConfig} from './gestures/gesture-config';
@@ -110,8 +111,22 @@ export {NoConflictStyleCompatibilityMode} from './compatibility/no-conflict-mode
 
 
 @NgModule({
-  imports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule, A11yModule],
-  exports: [MdLineModule, RtlModule, MdRippleModule, PortalModule, OverlayModule, A11yModule],
+  imports: [
+    MdLineModule,
+    RtlModule,
+    MdRippleModule,
+    PortalModule,
+    OverlayModule,
+    A11yModule,
+  ],
+  exports: [
+    MdLineModule,
+    RtlModule,
+    MdRippleModule,
+    PortalModule,
+    OverlayModule,
+    A11yModule,
+  ],
 })
 export class MdCoreModule {
   static forRoot(): ModuleWithProviders {
