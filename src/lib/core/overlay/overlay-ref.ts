@@ -101,13 +101,13 @@ export class OverlayRef implements PortalHost {
     this._backdropElement.classList.add('cdk-overlay-backdrop');
     this._backdropElement.classList.add(this._state.backdropClass);
 
-    this._pane.parentElement.appendChild(this._backdropElement);
+    // Insert the backdrop before the pane in the DOM order,
+    // in order to handle stacked overlays properly.
+    this._pane.parentElement.insertBefore(this._backdropElement, this._pane);
 
     // Forward backdrop clicks such that the consumer of the overlay can perform whatever
     // action desired when such a click occurs (usually closing the overlay).
-    this._backdropElement.addEventListener('click', () => {
-      this._backdropClick.next(null);
-    });
+    this._backdropElement.addEventListener('click', () => this._backdropClick.next(null));
 
     // Add class to fade-in the backdrop after one frame.
     requestAnimationFrame(() => {

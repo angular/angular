@@ -235,6 +235,22 @@ describe('Overlay', () => {
       expect(backdrop.style.pointerEvents).toBe('none');
     });
 
+    it('should insert the backdrop before the overlay pane in the DOM order', () => {
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop');
+      let pane = overlayContainerElement.querySelector('.cdk-overlay-pane');
+      let children = Array.prototype.slice.call(overlayContainerElement.children);
+
+      expect(children.indexOf(backdrop)).toBeGreaterThan(-1);
+      expect(children.indexOf(pane)).toBeGreaterThan(-1);
+      expect(children.indexOf(backdrop))
+        .toBeLessThan(children.indexOf(pane), 'Expected backdrop to be before the pane in the DOM');
+    });
+
   });
 });
 

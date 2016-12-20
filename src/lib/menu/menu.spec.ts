@@ -101,7 +101,7 @@ describe('MdMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const overlayPane = overlayContainerElement.children[0];
+    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
@@ -248,7 +248,7 @@ describe('MdMenu', () => {
     });
 
     function getOverlayPane(): HTMLElement {
-      let pane = overlayContainerElement.children[0] as HTMLElement;
+      let pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
       pane.style.position = 'absolute';
       return pane;
     }

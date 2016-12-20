@@ -104,7 +104,7 @@ describe('MdSelect', () => {
       fixture.whenStable().then(() => {
         trigger.click();
         fixture.detectChanges();
-        const pane = overlayContainerElement.children[0] as HTMLElement;
+        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         expect(pane.style.minWidth).toBe('200px');
       });
     }));
@@ -561,7 +561,7 @@ describe('MdSelect', () => {
      * @param index The index of the option.
      */
     function checkTriggerAlignedWithOption(index: number): void {
-      const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+      const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
       // We need to set the position to absolute, because the top/left positioning won't work
       // since the component CSS isn't included in the tests.
@@ -599,7 +599,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // The panel should be scrolled to 0 because centering the option is not possible.
@@ -616,7 +617,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // The panel should be scrolled to 0 because centering the option is not possible.
@@ -633,7 +635,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // The selected option should be scrolled to the center of the panel.
@@ -654,7 +657,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // The selected option should be scrolled to the max scroll position.
@@ -687,7 +691,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // Scroll should adjust by the difference between the top space available (85px + 8px
@@ -711,7 +716,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         const scrollContainer = overlayPane.querySelector('.md-select-panel');
 
         // Scroll should adjust by the difference between the bottom space available
@@ -736,7 +742,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
         // We need to set the position to absolute, because the top/left positioning won't work
         // since the component CSS isn't included in the tests.
@@ -768,7 +775,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
         // We need to set the position to absolute, because the top/left positioning won't work
         // since the component CSS isn't included in the tests.
@@ -857,7 +865,8 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         // CSS styles aren't in the tests, so position must be absolute to reflect top/left
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         overlayPane.style.position = 'absolute';
 
         const triggerBottom = trigger.getBoundingClientRect().bottom;
@@ -884,7 +893,8 @@ describe('MdSelect', () => {
         fixture.detectChanges();
 
         // CSS styles aren't in the tests, so position must be absolute to reflect top/left
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         overlayPane.style.position = 'absolute';
 
         const triggerTop = trigger.getBoundingClientRect().top;
@@ -906,7 +916,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
         // We need to set the position to absolute, because the top/left positioning won't work
         // since the component CSS isn't included in the tests.
@@ -929,7 +940,8 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.children[0] as HTMLElement;
+        const overlayPane =
+            overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
 
         // We need to set the position to absolute, because the top/left positioning won't work
         // since the component CSS isn't included in the tests.
@@ -1170,7 +1182,7 @@ describe('MdSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const pane = overlayContainerElement.children[0] as HTMLElement;
+        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         expect(pane.style.minWidth).toEqual('300px');
 
         expect(fixture.componentInstance.select.panelOpen).toBe(true);
