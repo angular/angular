@@ -74,6 +74,15 @@ use in these instructions.
 *Option 2*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
 [Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
+## Installing Bower Modules
+
+Now run `bower` to install additional dependencies:
+
+```shell
+# Install other Angular project dependencies (package.json)
+bower install
+```
+
 ## Windows only
 
 In order to create the right symlinks, run **as administrator**:
