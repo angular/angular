@@ -30,6 +30,8 @@ import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
+import 'rxjs/add/operator/first';
+
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
 
