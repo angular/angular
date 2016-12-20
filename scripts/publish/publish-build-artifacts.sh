@@ -97,7 +97,7 @@ function publishPackages {
 }
 
 # See DEVELOPER.md for help
-BRANCH=`git rev-parse --abbrev-ref HEAD`
+BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh"
