@@ -89,9 +89,18 @@ export class NgForRow {
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgFor implements DoCheck, OnChanges {
   @Input() ngForOf: any;
-  @Input() ngForTrackBy: TrackByFn;
+  @Input()
+  set ngForTrackBy(fn: TrackByFn) {
+    if (typeof fn !== 'function') {
+      throw new Error(`trackBy must be a function, but received ${JSON.stringify(fn)}`);
+    }
+    this._trackByFn = fn;
+  }
+
+  get ngForTrackBy(): TrackByFn { return this._trackByFn; }
 
   private _differ: IterableDiffer = null;
+  private _trackByFn: TrackByFn;
 
   constructor(
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForRow>,
