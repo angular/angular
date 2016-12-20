@@ -111,8 +111,23 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     this._updateRadioButtonNames();
   }
 
-  /** Alignment of the radio-buttons relative to their labels. Can be 'before' or 'after'. */
-  @Input() align: 'before' | 'after';
+  /**
+   * Alignment of the radio-buttons relative to their labels. Can be 'before' or 'after'.
+   * @deprecated
+   */
+  @Input()
+  get align(): 'start' | 'end' {
+    // align refers to the checkbox relative to the label, while labelPosition refers to the
+    // label relative to the checkbox. As such, they are inverted.
+    return this.labelPosition == 'after' ? 'start' : 'end';
+  }
+
+  set align(v) {
+    this.labelPosition = (v == 'start') ? 'after' : 'before';
+  }
+
+  /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
+  @Input() labelPosition: 'before' | 'after' = 'after';
 
   @Input()
   get disabled(): boolean {
@@ -363,16 +378,31 @@ export class MdRadioButton implements OnInit {
     }
   }
 
-  private _align: 'before' | 'after';
-
-  /** Alignment of the radio-button relative to their labels. Can be 'before' or 'after'. */
+  /**
+   * Whether or not the radio-button should appear before or after the label.
+   * @deprecated
+   */
   @Input()
-  get align(): 'before' | 'after' {
-    return this._align || (this.radioGroup != null && this.radioGroup.align) || 'before';
+  get align(): 'start' | 'end' {
+    // align refers to the checkbox relative to the label, while labelPosition refers to the
+    // label relative to the checkbox. As such, they are inverted.
+    return this.labelPosition == 'after' ? 'start' : 'end';
   }
 
-  set align(value: 'before' | 'after') {
-    this._align = value;
+  set align(v) {
+    this.labelPosition = (v == 'start') ? 'after' : 'before';
+  }
+
+  private _labelPosition: 'before' | 'after';
+
+  /** Whether the label should appear after or before the radio button. Defaults to 'after' */
+  @Input()
+  get labelPosition(): 'before' | 'after' {
+    return this._labelPosition || (this.radioGroup && this.radioGroup.labelPosition) || 'after';
+  }
+
+  set labelPosition(value) {
+    this._labelPosition = value;
   }
 
   /** Whether the radio button is disabled. */

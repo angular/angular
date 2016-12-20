@@ -72,7 +72,7 @@ export class MdCheckboxChange {
     '[class.md-checkbox-indeterminate]': 'indeterminate',
     '[class.md-checkbox-checked]': 'checked',
     '[class.md-checkbox-disabled]': 'disabled',
-    '[class.md-checkbox-align-end]': 'align == "end"',
+    '[class.md-checkbox-label-before]': 'labelPosition == "before"',
     '[class.md-checkbox-focused]': '_hasFocus',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
@@ -114,8 +114,23 @@ export class MdCheckbox implements ControlValueAccessor {
   get required(): boolean { return this._required; }
   set required(value) { this._required = coerceBooleanProperty(value); }
 
-  /** Whether or not the checkbox should come before or after the label. */
-  @Input() align: 'start' | 'end' = 'start';
+  /**
+   * Whether or not the checkbox should appear before or after the label.
+   * @deprecated
+   */
+  @Input()
+  get align(): 'start' | 'end' {
+    // align refers to the checkbox relative to the label, while labelPosition refers to the
+    // label relative to the checkbox. As such, they are inverted.
+    return this.labelPosition == 'after' ? 'start' : 'end';
+  }
+
+  set align(v) {
+    this.labelPosition = (v == 'start') ? 'after' : 'before';
+  }
+
+  /** Whether the label should appear after or before the checkbox. Defaults to 'after' */
+  @Input() labelPosition: 'before' | 'after' = 'after';
 
   private _disabled: boolean = false;
 

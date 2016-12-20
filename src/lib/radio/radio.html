@@ -25,7 +25,7 @@
           (click)="_onInputClick($event)">
 
   <!-- The label content for radio control. -->
-  <div class="md-radio-label-content" [class.md-radio-align-end]="align == 'after'">
+  <div class="md-radio-label-content" [class.md-radio-label-before]="labelPosition == 'before'">
     <ng-content></ng-content>
   </div>
 </label>

@@ -213,11 +213,11 @@ describe('MdCheckbox', () => {
       expect(inputElement.tabIndex).toBe(0);
     });
 
-    it('should add a css class to end-align the checkbox', () => {
-      testComponent.alignment = 'end';
+    it('should add a css class to position the label before the checkbox', () => {
+      testComponent.labelPos = 'before';
       fixture.detectChanges();
 
-      expect(checkboxNativeElement.classList).toContain('md-checkbox-align-end');
+      expect(checkboxNativeElement.classList).toContain('md-checkbox-label-before');
     });
 
     it('should not trigger the click event multiple times', () => {
@@ -626,7 +626,7 @@ describe('MdCheckbox', () => {
     <md-checkbox
         id="simple-check"
         [required]="isRequired"
-        [align]="alignment"
+        [labelPosition]="labelPos"
         [checked]="isChecked"
         [indeterminate]="isIndeterminate"
         [disabled]="isDisabled"
@@ -639,7 +639,7 @@ describe('MdCheckbox', () => {
   </div>`
 })
 class SingleCheckbox {
-  alignment: string = 'start';
+  labelPos: 'before' | 'after' = 'after';
   isChecked: boolean = false;
   isRequired: boolean = false;
   isIndeterminate: boolean = false;
