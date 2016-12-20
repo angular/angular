@@ -8,6 +8,8 @@
 
 import {AUTO_STYLE, AnimationTransitionEvent, Component, Injector, ViewChild, animate, state, style, transition, trigger} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
+import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {ViewChild} from '@angular/core/src/metadata/di';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
@@ -203,24 +205,34 @@ export function main() {
          flushMicrotasks();
 
          uiDriver.log.shift()['player'].finish();
-         const [triggerOneStart, triggerOneDone] = log['one'];
-         expect(triggerOneStart)
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'start'}));
 
-         expect(triggerOneDone)
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'a', toState: 'b', totalTime: 500, phaseName: 'done'}));
+         const [triggerOneStart, triggerOneDone] = log['one'];
+         expect(triggerOneStart.fromState).toEqual('a');
+         expect(triggerOneStart.toState).toEqual('b');
+         expect(triggerOneStart.totalTime).toEqual(500);
+         expect(triggerOneStart.phaseName).toEqual('start');
+         expect(triggerOneStart.element instanceof ElementRef).toEqual(true);
+
+         expect(triggerOneDone.fromState).toEqual('a');
+         expect(triggerOneDone.toState).toEqual('b');
+         expect(triggerOneDone.totalTime).toEqual(500);
+         expect(triggerOneDone.phaseName).toEqual('done');
+         expect(triggerOneDone.element instanceof ElementRef).toEqual(true);
 
          uiDriver.log.shift()['player'].finish();
-         const [triggerTwoStart, triggerTwoDone] = log['two'];
-         expect(triggerTwoStart)
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'start'}));
 
-         expect(triggerTwoDone)
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'c', toState: 'd', totalTime: 1000, phaseName: 'done'}));
+         const [triggerTwoStart, triggerTwoDone] = log['two'];
+         expect(triggerTwoStart.fromState).toEqual('c');
+         expect(triggerTwoStart.toState).toEqual('d');
+         expect(triggerTwoStart.totalTime).toEqual(1000);
+         expect(triggerTwoStart.phaseName).toEqual('start');
+         expect(triggerTwoStart.element instanceof ElementRef).toEqual(true);
+
+         expect(triggerTwoDone.fromState).toEqual('c');
+         expect(triggerTwoDone.toState).toEqual('d');
+         expect(triggerTwoDone.totalTime).toEqual(1000);
+         expect(triggerTwoDone.phaseName).toEqual('done');
+         expect(triggerTwoDone.element instanceof ElementRef).toEqual(true);
        }));
 
     it('should handle .start and .done callbacks for mutliple elements that contain animations that are fired at the same time',
@@ -228,7 +240,7 @@ export function main() {
          function logFactory(
              log: {[phaseName: string]: AnimationTransitionEvent},
              phaseName: string): (event: AnimationTransitionEvent) => any {
-           return (event: AnimationTransitionEvent) => { log[phaseName] = event; };
+           return (event: AnimationTransitionEvent) => log[phaseName] = event;
          }
 
          const fixture = TestBed.createComponent(ContainerAnimationCmp);
@@ -250,25 +262,37 @@ export function main() {
 
          uiDriver.log.shift()['player'].finish();
 
-         expect(cmp1Log['start'])
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'start'}));
+         const start1 = cmp1Log['start'];
+         expect(start1.fromState).toEqual('void');
+         expect(start1.toState).toEqual('off');
+         expect(start1.totalTime).toEqual(500);
+         expect(start1.phaseName).toEqual('start');
+         expect(start1.element instanceof ElementRef).toBe(true);
 
-         expect(cmp1Log['done'])
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'off', totalTime: 500, phaseName: 'done'}));
+         const done1 = cmp1Log['done'];
+         expect(done1.fromState).toEqual('void');
+         expect(done1.toState).toEqual('off');
+         expect(done1.totalTime).toEqual(500);
+         expect(done1.phaseName).toEqual('done');
+         expect(done1.element instanceof ElementRef).toBe(true);
 
          // the * => on transition has two steps
          uiDriver.log.shift()['player'].finish();
          uiDriver.log.shift()['player'].finish();
 
-         expect(cmp2Log['start'])
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'start'}));
+         const start2 = cmp2Log['start'];
+         expect(start2.fromState).toEqual('void');
+         expect(start2.toState).toEqual('on');
+         expect(start2.totalTime).toEqual(1000);
+         expect(start2.phaseName).toEqual('start');
+         expect(start2.element instanceof ElementRef).toBe(true);
 
-         expect(cmp2Log['done'])
-             .toEqual(new AnimationTransitionEvent(
-                 {fromState: 'void', toState: 'on', totalTime: 1000, phaseName: 'done'}));
+         const done2 = cmp2Log['done'];
+         expect(done2.fromState).toEqual('void');
+         expect(done2.toState).toEqual('on');
+         expect(done2.totalTime).toEqual(1000);
+         expect(done2.phaseName).toEqual('done');
+         expect(done2.element instanceof ElementRef).toBe(true);
        }));
 
     it('should destroy the player when the animation is complete', fakeAsync(() => {
@@ -331,6 +355,7 @@ class ContainerAnimationCmp {
   selector: 'my-comp',
   template: `
     <div *ngIf="state"
+         #ref
          [@myTrigger]="state"
          (@myTrigger.start)="stateStartFn($event)"
          (@myTrigger.done)="stateDoneFn($event)">...</div>
@@ -348,6 +373,8 @@ class AnimationCmp {
   state = 'off';
   stateStartFn = (event: AnimationTransitionEvent): any => {};
   stateDoneFn = (event: AnimationTransitionEvent): any => {};
+
+  @ViewChild('ref') public elmRef: ElementRef;
 }
 
 @Component({
@@ -355,10 +382,10 @@ class AnimationCmp {
   template: `
     <div [@one]="oneTriggerState"
          (@one.start)="callback('one', $event)"
-         (@one.done)="callback('one', $event)">...</div>
+         (@one.done)="callback('one', $event)" #one>...</div>
     <div [@two]="twoTriggerState"
          (@two.start)="callback('two', $event)"
-         (@two.done)="callback('two', $event)">...</div>
+         (@two.done)="callback('two', $event)" #two>...</div>
   `,
   animations: [
     trigger(
@@ -378,5 +405,10 @@ class AnimationCmp {
 class MultiAnimationCmp {
   oneTriggerState: string;
   twoTriggerState: string;
+
+  @ViewChild('one') public elmRef1: ElementRef;
+
+  @ViewChild('two') public elmRef2: ElementRef;
+
   callback = (triggerName: string, event: AnimationTransitionEvent): any => {};
 }

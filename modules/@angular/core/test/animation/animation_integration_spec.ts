@@ -27,6 +27,7 @@ import {AnimationTransitionEvent} from '../../src/animation/animation_transition
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
 import {Input} from '../../src/core';
 import {isPresent} from '../../src/facade/lang';
+import {ElementRef} from '../../src/linker/element_ref';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
 
@@ -1762,6 +1763,36 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(doneCalls[2]).toEqual(1);
            expect(doneCalls[3]).toEqual(1);
            expect(doneCalls[4]).toEqual(1);
+         }));
+
+      it('should expose the element associated with the animation within the callback event',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngFor="let item of items"
+                  (@trigger.start)="callback($event)"
+                  @trigger class="target">{{ item }}</div>
+              `,
+               animations: [trigger('trigger', [transition('* => *', [animate(1000)])])]
+             }
+           });
+
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+
+           const elements: ElementRef[] = [];
+           cmp.callback = (e: AnimationTransitionEvent) => elements.push(e.element);
+
+           cmp.items = [0, 1, 2, 3, 4];
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const targetElements =
+               <any[]>getDOM().querySelectorAll(fixture.nativeElement, '.target');
+           for (let i = 0; i < elements.length; i++) {
+             expect(elements[i].nativeElement).toBe(targetElements[i]);
+           }
          }));
     });
 
