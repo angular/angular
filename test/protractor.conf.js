@@ -43,7 +43,11 @@ if (process.env['TRAVIS']) {
     'browserName': 'chrome',
     'tunnel-identifier': process.env['TRAVIS_JOB_NUMBER'],
     'build': process.env['TRAVIS_JOB_NUMBER'],
-    'name': 'Material 2 E2E Tests'
+    'name': 'Material 2 E2E Tests',
+
+    // By default Saucelabs tries to record the whole e2e run. This can slow down the builds.
+    'recordVideo': false,
+    'recordScreenshots': false
   };
 }
 
