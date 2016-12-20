@@ -15,7 +15,11 @@
     background-color: md-color($primary, 100);
   }
 
-  md-progress-bar[color='accent'] {
+  .md-progress-bar-fill::after {
+    background-color: md-color($primary, 600);
+  }
+
+  md-progress-bar.md-accent {
     .md-progress-bar-background {
       background: #{_md-progress-bar-buffer($accent, 100)};
     }
@@ -28,7 +32,7 @@
     }
   }
 
-  md-progress-bar[color='warn'] {
+  md-progress-bar.md-warn {
     .md-progress-bar-background {
       background: #{_md-progress-bar-buffer($warn, 100)};
     }
@@ -39,10 +43,6 @@
     .md-progress-bar-fill::after {
       background-color: md-color($warn, 600);
     }
-  }
-
-  .md-progress-bar-fill::after {
-    background-color: md-color($primary, 600);
   }
 }
 

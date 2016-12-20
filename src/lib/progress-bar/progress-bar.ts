@@ -23,6 +23,9 @@ import {DefaultStyleCompatibilityModeModule} from '../core/compatibility/default
     'role': 'progressbar',
     'aria-valuemin': '0',
     'aria-valuemax': '100',
+    '[class.md-primary]': 'color == "primary"',
+    '[class.md-accent]': 'color == "accent"',
+    '[class.md-warn]': 'color == "warn"',
   },
   templateUrl: 'progress-bar.html',
   styleUrls: ['progress-bar.css'],
@@ -31,6 +34,8 @@ import {DefaultStyleCompatibilityModeModule} from '../core/compatibility/default
 export class MdProgressBar {
   /** Value of the progressbar. Defaults to zero. Mirrored to aria-valuenow. */
   private _value: number = 0;
+
+  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
   @Input()
   @HostBinding('attr.aria-valuenow')

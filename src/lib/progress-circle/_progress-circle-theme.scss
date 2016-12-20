@@ -12,11 +12,11 @@
       stroke: md-color($primary, 600);
     }
 
-    &[color='accent'] path {
+    &.md-accent path {
       stroke: md-color($accent, 600);
     }
 
-    &[color='warn'] path {
+    &.md-warn path {
       stroke: md-color($warn, 600);
     }
   }

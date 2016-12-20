@@ -44,6 +44,9 @@ type EasingFn = (currentTime: number, startValue: number,
     'role': 'progressbar',
     '[attr.aria-valuemin]': '_ariaValueMin',
     '[attr.aria-valuemax]': '_ariaValueMax',
+    '[class.md-primary]': 'color == "primary"',
+    '[class.md-accent]': 'color == "accent"',
+    '[class.md-warn]': 'color == "warn"',
   },
   templateUrl: 'progress-circle.html',
   styleUrls: ['progress-circle.css'],
@@ -129,6 +132,8 @@ export class MdProgressCircle implements OnDestroy {
     this._mode = m;
   }
   private _mode: ProgressCircleMode = 'determinate';
+
+  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
