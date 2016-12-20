@@ -17,7 +17,9 @@ export const SASS_AUTOPREFIXER_OPTIONS = {
 
 export const HTML_MINIFIER_OPTIONS = {
   collapseWhitespace: true,
-  removeComments: true
+  removeComments: true,
+  caseSensitive: true,
+  removeAttributeQuotes: false
 };
 
 export const NPM_VENDOR_FILES = [
