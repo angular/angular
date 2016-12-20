@@ -17,8 +17,6 @@
     "stripInternal": false,
     "typeRoots": [
       "../../node_modules/@types"
-    ],
-    "types": [
     ]
   },
   "exclude": [

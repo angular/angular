@@ -50,6 +50,7 @@ export * from './overlay/position/connected-position';
 
 // Gestures
 export {GestureConfig} from './gestures/gesture-config';
+export * from './gestures/gesture-annotations';
 
 // Ripple
 export {MdRipple, MdRippleModule} from './ripple/ripple';

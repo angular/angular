@@ -14,11 +14,11 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/for
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {
   GestureConfig,
+  HammerInput,
   coerceBooleanProperty,
   coerceNumberProperty,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
-import {Input as HammerInput} from 'hammerjs';
 import {Dir} from '../core/rtl/dir';
 import {CommonModule} from '@angular/common';
 import {
@@ -31,7 +31,6 @@ import {
   RIGHT_ARROW,
   DOWN_ARROW,
 } from '../core/keyboard/keycodes';
-
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is

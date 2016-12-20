@@ -21,10 +21,7 @@
       "@angular/material": [
         "../../dist/@angular/material"
       ]
-    },
-    "types": [
-      "hammerjs"
-    ]
+    }
   },
   "angularCompilerOptions": {
     "genDir": "../../dist",

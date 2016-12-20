@@ -1,19 +1,32 @@
-import {Injectable} from '@angular/core';
+import {Injectable, isDevMode} from '@angular/core';
 import {HammerGestureConfig} from '@angular/platform-browser';
+import {HammerStatic, HammerInstance, Recognizer, RecognizerStatic} from './gesture-annotations';
 
 /* Adjusts configuration of our gesture library, Hammer. */
 @Injectable()
 export class GestureConfig extends HammerGestureConfig {
+  private _hammer: HammerStatic = typeof window !== 'undefined' ? (window as any).Hammer : null;
 
   /* List of new event names to add to the gesture support list */
-  events: string[] = [
+  events: string[] = this._hammer ? [
     'longpress',
     'slide',
     'slidestart',
     'slideend',
     'slideright',
     'slideleft'
-  ];
+  ] : [];
+
+  constructor() {
+    super();
+
+    if (!this._hammer && isDevMode()) {
+      console.warn(
+        'Could not find HammerJS. Certain Angular Material ' +
+        'components may not work correctly.'
+      );
+    }
+  }
 
   /*
    * Builds Hammer instance manually to add custom recognizers that match the Material Design spec.
@@ -28,12 +41,12 @@ export class GestureConfig extends HammerGestureConfig {
    * TODO: Confirm threshold numbers with Material Design UX Team
    * */
   buildHammer(element: HTMLElement) {
-    const mc = new Hammer(element);
+    const mc = new this._hammer(element);
 
     // Default Hammer Recognizers.
-    let pan = new Hammer.Pan();
-    let swipe = new Hammer.Swipe();
-    let press = new Hammer.Press();
+    let pan = new this._hammer.Pan();
+    let swipe = new this._hammer.Swipe();
+    let press = new this._hammer.Press();
 
     // Notice that a HammerJS recognizer can only depend on one other recognizer once.
     // Otherwise the previous `recognizeWith` will be dropped.
@@ -46,12 +59,12 @@ export class GestureConfig extends HammerGestureConfig {
     // Add customized gestures to Hammer manager
     mc.add([swipe, press, pan, slide, longpress]);
 
-    return mc;
+    return mc as HammerInstance;
   }
 
   /** Creates a new recognizer, without affecting the default recognizers of HammerJS */
   private _createRecognizer(base: Recognizer, options: any, ...inheritances: Recognizer[]) {
-    let recognizer = new (<RecognizerStatic> base.constructor)(options);
+    let recognizer = new (base.constructor as RecognizerStatic)(options);
 
     inheritances.push(base);
     inheritances.forEach(item => recognizer.recognizeWith(item));

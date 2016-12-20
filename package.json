@@ -32,10 +32,12 @@
     "@angular/http": "^2.2.0",
     "@angular/platform-browser": "^2.2.0",
     "core-js": "^2.4.1",
-    "hammerjs": "^2.0.8",
     "rxjs": "5.0.0-beta.12",
     "systemjs": "0.19.38",
     "zone.js": "^0.6.23"
+  },
+  "optionalDependencies": {
+    "hammerjs": "^2.0.8"
   },
   "devDependencies": {
     "@angular/compiler-cli": "^2.2.0",

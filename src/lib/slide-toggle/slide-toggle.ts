@@ -19,6 +19,7 @@ import {
   applyCssTransform,
   coerceBooleanProperty,
   GestureConfig,
+  HammerInput,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
