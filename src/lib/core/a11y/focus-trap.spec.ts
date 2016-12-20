@@ -3,7 +3,7 @@ import {By} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 import {FocusTrap} from './focus-trap';
 import {InteractivityChecker} from './interactivity-checker';
-import {MdPlatform} from '../platform/platform';
+import {Platform} from '../platform/platform';
 
 
 describe('FocusTrap', () => {
@@ -12,12 +12,12 @@ describe('FocusTrap', () => {
 
     let fixture: ComponentFixture<FocusTrapTestApp>;
     let focusTrapInstance: FocusTrap;
-    let platform: MdPlatform = new MdPlatform();
+    let platform: Platform = new Platform();
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         declarations: [FocusTrap, FocusTrapTestApp],
-        providers: [InteractivityChecker, MdPlatform]
+        providers: [InteractivityChecker, Platform]
       });
 
       TestBed.compileComponents();
@@ -57,7 +57,7 @@ describe('FocusTrap', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         declarations: [FocusTrap, FocusTrapTargetTestApp],
-        providers: [InteractivityChecker, MdPlatform]
+        providers: [InteractivityChecker, Platform]
       });
 
       TestBed.compileComponents();
@@ -87,10 +87,10 @@ describe('FocusTrap', () => {
 
 @Component({
   template: `
-    <focus-trap>
+    <cdk-focus-trap>
       <input>
       <button>SAVE</button>
-    </focus-trap>
+    </cdk-focus-trap>
     `
 })
 class FocusTrapTestApp { }
@@ -98,12 +98,12 @@ class FocusTrapTestApp { }
 
 @Component({
   template: `
-    <focus-trap>
+    <cdk-focus-trap>
       <input>
-      <button id="last" md-focus-end></button>
-      <button id="first" md-focus-start>SAVE</button>
+      <button id="last" cdk-focus-end></button>
+      <button id="first" cdk-focus-start>SAVE</button>
       <input>
-    </focus-trap>
+    </cdk-focus-trap>
     `
 })
 class FocusTrapTargetTestApp { }

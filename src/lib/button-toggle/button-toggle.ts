@@ -21,7 +21,7 @@ import {
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {
-  MdUniqueSelectionDispatcher,
+  UniqueSelectionDispatcher,
   coerceBooleanProperty,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
@@ -298,7 +298,7 @@ export class MdButtonToggle implements OnInit {
 
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
-              public buttonToggleDispatcher: MdUniqueSelectionDispatcher,
+              public buttonToggleDispatcher: UniqueSelectionDispatcher,
               private _renderer: Renderer) {
     this.buttonToggleGroup = toggleGroup;
 
@@ -445,7 +445,7 @@ export class MdButtonToggleModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdButtonToggleModule,
-      providers: [MdUniqueSelectionDispatcher]
+      providers: [UniqueSelectionDispatcher]
     };
   }
 }

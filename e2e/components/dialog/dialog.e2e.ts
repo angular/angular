@@ -91,7 +91,7 @@ describe('dialog', () => {
     browser.actions()
       // We need to move the cursor to the top left so
       // the dialog doesn't receive the click accidentally.
-      .mouseMove(element(by.css('.md-overlay-backdrop')).getWebElement(), { x: 0, y: 0 })
+      .mouseMove(element(by.css('.cdk-overlay-backdrop')).getWebElement(), { x: 0, y: 0 })
       .click()
       .perform();
   }

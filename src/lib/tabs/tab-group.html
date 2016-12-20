@@ -13,7 +13,7 @@
 
     <!-- If there is a label template, use it. -->
     <template [ngIf]="tab.templateLabel">
-      <template [portalHost]="tab.templateLabel"></template>
+      <template [cdkPortalHost]="tab.templateLabel"></template>
     </template>
 
     <!-- If there is not a label template, fall back to the text label. -->

@@ -6,7 +6,8 @@ import {
     TemplateRef,
     ComponentFactoryResolver,
     ViewContainerRef,
-    OnDestroy
+    OnDestroy,
+    Input,
 } from '@angular/core';
 import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal';
 
@@ -21,8 +22,8 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal'
  * </template>
  */
 @Directive({
-  selector: '[portal]',
-  exportAs: 'portal',
+  selector: '[cdk-portal], [portal]',
+  exportAs: 'cdkPortal',
 })
 export class TemplatePortalDirective extends TemplatePortal {
   constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
@@ -36,11 +37,11 @@ export class TemplatePortalDirective extends TemplatePortal {
  * directly attached to it, enabling declarative use.
  *
  * Usage:
- * <template [portalHost]="greeting"></template>
+ * <template [cdkPortalHost]="greeting"></template>
  */
 @Directive({
-  selector: '[portalHost]',
-  inputs: ['portal: portalHost']
+  selector: '[cdkPortalHost], [portalHost]',
+  inputs: ['portal: cdkPortalHost']
 })
 export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   /** The attached portal. */
@@ -51,6 +52,11 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
       private _viewContainerRef: ViewContainerRef) {
     super();
   }
+
+  /** @deprecated */
+  @Input('portalHost')
+  get _deprecatedPortal() { return this.portal; }
+  set _deprecatedPortal(v) { this.portal = v; }
 
   get portal(): Portal<any> {
     return this._portal;

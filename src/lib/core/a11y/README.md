@@ -1,5 +1,5 @@
-# MdLiveAnnouncer
-`MdLiveAnnouncer` is a service, which announces messages to several screenreaders.
+# LiveAnnouncer
+`LiveAnnouncer` is a service, which announces messages to several screenreaders.
 
 ### Methods
 
@@ -12,11 +12,11 @@ The service can be injected in a component.
 ```ts
 @Component({
   selector: 'my-component'
-  providers: [MdLiveAnnouncer]
+  providers: [LiveAnnouncer]
 })
 export class MyComponent {
 
- constructor(live: MdLiveAnnouncer) {
+ constructor(live: LiveAnnouncer) {
    live.announce("Hey Google");
  }
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MdPlatform} from '../platform/platform';
+import {Platform} from '../platform/platform';
 
 /* The InteractivityChecker leans heavily on the ally.js accessibility utilities.
  * Methods like `isTabbable` are only covering specific edge-cases for the browsers which are
@@ -13,7 +13,7 @@ import {MdPlatform} from '../platform/platform';
 @Injectable()
 export class InteractivityChecker {
 
-  constructor(private _platform: MdPlatform) {}
+  constructor(private _platform: Platform) {}
 
   /** Gets whether an element is disabled. */
   isDisabled(element: HTMLElement) {

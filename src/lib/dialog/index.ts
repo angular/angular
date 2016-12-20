@@ -5,7 +5,7 @@ import {
   OVERLAY_PROVIDERS,
   A11yModule,
   InteractivityChecker,
-  MdPlatform,
+  Platform,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
 
@@ -47,7 +47,7 @@ export class MdDialogModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdDialogModule,
-      providers: [MdDialog, OVERLAY_PROVIDERS, InteractivityChecker, MdPlatform],
+      providers: [MdDialog, OVERLAY_PROVIDERS, InteractivityChecker, Platform],
     };
   }
 }

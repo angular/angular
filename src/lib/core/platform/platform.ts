@@ -14,7 +14,7 @@ const hasV8BreakIterator = typeof(window) !== 'undefined' ?
  * @docs-private
  */
 @Injectable()
-export class MdPlatform {
+export class Platform {
   /** Layout Engines */
   EDGE = /(edge)/i.test(navigator.userAgent);
   TRIDENT = /(msie|trident)/i.test(navigator.userAgent);

@@ -119,14 +119,14 @@ describe('GlobalPositonStrategy', () => {
     expect(element.style.position).toBe('static');
   }));
 
-  it('should wrap the element in a `md-global-overlay-wrapper`', fakeAsyncTest(() => {
+  it('should wrap the element in a `cdk-global-overlay-wrapper`', fakeAsyncTest(() => {
     strategy.apply(element);
 
     flushMicrotasks();
 
     let parent = element.parentNode as HTMLElement;
 
-    expect(parent.classList.contains('md-global-overlay-wrapper')).toBe(true);
+    expect(parent.classList.contains('cdk-global-overlay-wrapper')).toBe(true);
   }));
 
 

@@ -13,7 +13,7 @@ import {
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {
-  MdGestureConfig,
+  GestureConfig,
   coerceBooleanProperty,
   coerceNumberProperty,
   DefaultStyleCompatibilityModeModule,
@@ -534,14 +534,14 @@ export class SliderRenderer {
   exports: [MdSlider, DefaultStyleCompatibilityModeModule],
   declarations: [MdSlider],
   providers: [
-    {provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig},
+    {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig},
   ],
 })
 export class MdSliderModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSliderModule,
-      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig}]
+      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
     };
   }
 }

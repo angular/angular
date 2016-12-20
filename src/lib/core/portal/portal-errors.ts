@@ -4,7 +4,7 @@ import {MdError} from '../errors/error';
  * Exception thrown when attempting to attach a null portal to a host.
  * @docs-private
  */
-export class MdNullPortalError extends MdError {
+export class NullPortalError extends MdError {
   constructor() {
       super('Must provide a portal to attach');
   }
@@ -14,7 +14,7 @@ export class MdNullPortalError extends MdError {
  * Exception thrown when attempting to attach a portal to a host that is already attached.
  * @docs-private
  */
-export class MdPortalAlreadyAttachedError extends MdError {
+export class PortalAlreadyAttachedError extends MdError {
   constructor() {
       super('Host already has a portal attached');
   }
@@ -24,7 +24,7 @@ export class MdPortalAlreadyAttachedError extends MdError {
  * Exception thrown when attempting to attach a portal to an already-disposed host.
  * @docs-private
  */
-export class MdPortalHostAlreadyDisposedError extends MdError {
+export class PortalHostAlreadyDisposedError extends MdError {
   constructor() {
       super('This PortalHost has already been disposed');
   }
@@ -34,7 +34,7 @@ export class MdPortalHostAlreadyDisposedError extends MdError {
  * Exception thrown when attempting to attach an unknown portal type.
  * @docs-private
  */
-export class MdUnknownPortalTypeError extends MdError {
+export class UnknownPortalTypeError extends MdError {
   constructor() {
       super(
         'Attempting to attach an unknown Portal type. ' +
@@ -46,7 +46,7 @@ export class MdUnknownPortalTypeError extends MdError {
  * Exception thrown when attempting to attach a portal to a null host.
  * @docs-private
  */
-export class MdNullPortalHostError extends MdError {
+export class NullPortalHostError extends MdError {
   constructor() {
       super('Attempting to attach a portal to a null PortalHost');
   }
@@ -56,7 +56,7 @@ export class MdNullPortalHostError extends MdError {
  * Exception thrown when attempting to detach a portal that is not attached.
  * @docs-private
  */
-export class MdNoPortalAttachedError extends MdError {
+export class NoPortalAttachedError extends MdError {
   constructor() {
       super('Attempting to detach a portal that is not attached to a host');
   }

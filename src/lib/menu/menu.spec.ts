@@ -72,7 +72,7 @@ describe('MdMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
 
-    const backdrop = <HTMLElement>overlayContainerElement.querySelector('.md-overlay-backdrop');
+    const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
     backdrop.click();
     fixture.detectChanges();
 

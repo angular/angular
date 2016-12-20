@@ -4,7 +4,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {MdInputModule} from './input';
 import {MdInputContainer} from './input-container';
-import {MdPlatform} from '../core/platform/platform';
+import {Platform} from '../core/platform/platform';
 import {PlatformModule} from '../core/platform/index';
 import {
   MdInputContainerMissingMdInputError,
@@ -59,7 +59,7 @@ describe('MdInputContainer', function () {
   });
 
   it('should not be treated as empty if type is date',
-      inject([MdPlatform], (platform: MdPlatform) => {
+      inject([Platform], (platform: Platform) => {
         if (!(platform.TRIDENT || platform.FIREFOX)) {
           let fixture = TestBed.createComponent(MdInputContainerDateTestController);
           fixture.detectChanges();
@@ -72,7 +72,7 @@ describe('MdInputContainer', function () {
 
   // Firefox and IE don't support type="date" and fallback to type="text".
   it('should be treated as empty if type is date on Firefox and IE',
-      inject([MdPlatform], (platform: MdPlatform) => {
+      inject([Platform], (platform: Platform) => {
         if (platform.TRIDENT || platform.FIREFOX) {
           let fixture = TestBed.createComponent(MdInputContainerDateTestController);
           fixture.detectChanges();

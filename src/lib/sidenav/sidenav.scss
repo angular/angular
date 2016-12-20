@@ -85,7 +85,7 @@
     visibility: visible;
   }
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     opacity: 0.5;
   }
 }

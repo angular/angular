@@ -18,7 +18,7 @@ import {FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/for
 import {
   applyCssTransform,
   coerceBooleanProperty,
-  MdGestureConfig,
+  GestureConfig,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
@@ -328,7 +328,7 @@ export class MdSlideToggleModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSlideToggleModule,
-      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: MdGestureConfig}]
+      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
     };
   }
 }

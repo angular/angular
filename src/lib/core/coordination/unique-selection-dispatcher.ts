@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 
 // Users of the Dispatcher never need to see this type, but TypeScript requires it to be exported.
-export type MdUniqueSelectionDispatcherListener = (id: string, name: string) => void;
+export type UniqueSelectionDispatcherListener = (id: string, name: string) => void;
 
 /**
  * Class to coordinate unique selection based on name.
@@ -14,8 +14,8 @@ export type MdUniqueSelectionDispatcherListener = (id: string, name: string) => 
  * less error-prone if they are simply passed through when the events occur.
  */
 @Injectable()
-export class MdUniqueSelectionDispatcher {
-  private _listeners: MdUniqueSelectionDispatcherListener[] = [];
+export class UniqueSelectionDispatcher {
+  private _listeners: UniqueSelectionDispatcherListener[] = [];
 
   /** Notify other items that selection for the given name has been set. */
   notify(id: string, name: string) {
@@ -25,7 +25,7 @@ export class MdUniqueSelectionDispatcher {
   }
 
   /** Listen for future changes to item selection. */
-  listen(listener: MdUniqueSelectionDispatcherListener) {
+  listen(listener: UniqueSelectionDispatcherListener) {
     this._listeners.push(listener);
   }
 }

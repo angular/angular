@@ -100,7 +100,7 @@ md-select {
   padding-bottom: 0;
   max-height: $md-select-panel-max-height;
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     outline: solid 1px;
   }
 }
@@ -125,7 +125,7 @@ md-option {
   right: 0;
 
   // In high contrast mode this completely covers the text.
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     opacity: 0.5;
   }
 }

@@ -21,7 +21,7 @@ $md-snack-bar-max-width: 568px !default;
   // Initial transformation is applied to start snack bar out of view.
   transform: translateY(100%);
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     border: solid 1px;
   }
 }

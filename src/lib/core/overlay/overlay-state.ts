@@ -14,7 +14,7 @@ export class OverlayState {
   hasBackdrop: boolean = false;
 
   /** Custom class to add to the backdrop **/
-  backdropClass: string = 'md-overlay-dark-backdrop';
+  backdropClass: string = 'cdk-overlay-dark-backdrop';
 
   /** The width of the overlay panel. If a number is provided, pixel units are assumed. **/
   width: number | string;

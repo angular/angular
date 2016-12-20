@@ -1,10 +1,10 @@
 import {InteractivityChecker} from './interactivity-checker';
-import {MdPlatform} from '../platform/platform';
+import {Platform} from '../platform/platform';
 
 describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;
   let checker: InteractivityChecker;
-  let platform: MdPlatform = new MdPlatform();
+  let platform: Platform = new Platform();
 
   beforeEach(() => {
     testContainerElement = document.createElement('div');
@@ -54,7 +54,7 @@ describe('InteractivityChecker', () => {
     it('should return false for the child of a `display: none` element', () => {
       testContainerElement.innerHTML =
         `<div style="display: none;">
-           <input> 
+           <input>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;
 
@@ -74,7 +74,7 @@ describe('InteractivityChecker', () => {
     it('should return false for the child of a `visibility: hidden` element', () => {
       testContainerElement.innerHTML =
         `<div style="visibility: hidden;">
-           <input> 
+           <input>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;
 
@@ -87,7 +87,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.innerHTML =
         `<div style="visibility: hidden;">
            <div style="visibility: visible;">
-             <input> 
+             <input>
            </div>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;
@@ -155,7 +155,7 @@ describe('InteractivityChecker', () => {
     it('should return false for the child of a `display: none` element', () => {
       testContainerElement.innerHTML =
         `<div style="display: none;">
-           <input> 
+           <input>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;
 
@@ -175,7 +175,7 @@ describe('InteractivityChecker', () => {
     it('should return false for the child of a `visibility: hidden` element', () => {
       testContainerElement.innerHTML =
         `<div style="visibility: hidden;">
-           <input> 
+           <input>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;
 
@@ -188,7 +188,7 @@ describe('InteractivityChecker', () => {
       testContainerElement.innerHTML =
         `<div style="visibility: hidden;">
            <div style="visibility: visible;">
-             <input> 
+             <input>
            </div>
          </div>`;
       let input = testContainerElement.querySelector('input') as HTMLElement;

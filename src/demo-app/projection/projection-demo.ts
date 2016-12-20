@@ -7,7 +7,7 @@ import {DomProjectionHost, DomProjection} from '@angular/material';
   template: `
     <div class="demo-outer {{cssClass}}">
       Before
-      <dom-projection-host><ng-content></ng-content></dom-projection-host>
+      <cdk-dom-projection-host><ng-content></ng-content></cdk-dom-projection-host>
       After
     </div>
   `,

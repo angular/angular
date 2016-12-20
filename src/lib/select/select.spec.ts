@@ -86,7 +86,9 @@ describe('MdSelect', () => {
       trigger.click();
       fixture.detectChanges();
 
-      const backdrop = overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+      const backdrop =
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+
       backdrop.click();
       fixture.detectChanges();
 
@@ -361,7 +363,7 @@ describe('MdSelect', () => {
         .toEqual(false, `Expected the control to stay untouched when menu opened.`);
 
       const backdrop =
-        overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+        overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
       dispatchEvent('blur', trigger);
       fixture.detectChanges();
@@ -511,7 +513,7 @@ describe('MdSelect', () => {
             .toEqual('floating-ltr', 'Expected placeholder to animate up to floating position.');
 
         const backdrop =
-          overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+          overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
         backdrop.click();
         fixture.detectChanges();
 
@@ -1099,7 +1101,7 @@ describe('MdSelect', () => {
             .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
 
         const backdrop =
-            overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
         backdrop.click();
         fixture.detectChanges();
 
@@ -1125,7 +1127,7 @@ describe('MdSelect', () => {
         expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
 
         const backdrop =
-            overlayContainerElement.querySelector('.md-overlay-backdrop') as HTMLElement;
+            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
         backdrop.click();
         fixture.detectChanges();
 

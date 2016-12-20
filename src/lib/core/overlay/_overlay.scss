@@ -1,14 +1,8 @@
 @import '../style/variables';
-@import '../theming/palette';
-@import '../theming/theming';
 
 
-@mixin md-overlay() {
-  $md-dark-backdrop-color: md-color($md-grey, 900);
-
-  // TODO(jelbourn): change from the `md` prefix to something else for everything in the toolkit.
-
-  .md-overlay-container, .md-global-overlay-wrapper {
+@mixin cdk-overlay() {
+  .cdk-overlay-container, .cdk-global-overlay-wrapper {
     // Disable events from being captured on the overlay container.
     pointer-events: none;
 
@@ -20,30 +14,30 @@
   }
 
   // The overlay-container is an invisible element which contains all individual overlays.
-  .md-overlay-container {
+  .cdk-overlay-container {
     position: fixed;
-    z-index: $md-z-index-overlay-container;
+    z-index: $cdk-z-index-overlay-container;
   }
 
   // We use an extra wrapper element in order to use make the overlay itself a flex item.
   // This makes centering the overlay easy without running into the subpixel rendering
   // problems tied to using `transform` and without interfering with the other position
   // strategies.
-  .md-global-overlay-wrapper {
+  .cdk-global-overlay-wrapper {
     display: flex;
     position: absolute;
-    z-index: $md-z-index-overlay;
+    z-index: $cdk-z-index-overlay;
   }
 
   // A single overlay pane.
-  .md-overlay-pane {
+  .cdk-overlay-pane {
     position: absolute;
     pointer-events: auto;
     box-sizing: border-box;
-    z-index: $md-z-index-overlay;
+    z-index: $cdk-z-index-overlay;
   }
 
-  .md-overlay-backdrop {
+  .cdk-overlay-backdrop {
     // TODO(jelbourn): reuse sidenav fullscreen mixin.
     position: absolute;
     top: 0;
@@ -51,24 +45,24 @@
     left: 0;
     right: 0;
 
-    z-index: $md-z-index-overlay-backdrop;
+    z-index: $cdk-z-index-overlay-backdrop;
     pointer-events: auto;
 
     // TODO(jelbourn): figure out if there are actually spec'ed colors for both light and dark
     // themes here. Currently using the values from Angular Material 1.
     transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
     opacity: 0;
+
+    &.cdk-overlay-backdrop-showing {
+      opacity: 0.48;
+    }
   }
 
-  .md-overlay-backdrop.md-overlay-backdrop-showing {
-    opacity: 0.48;
+  .cdk-overlay-dark-backdrop {
+    background: $cdk-overlay-dark-backdrop-background;
   }
 
-  .md-overlay-dark-backdrop {
-    background: $md-dark-backdrop-color;
-  }
-
-  .md-overlay-transparent-backdrop {
+  .cdk-overlay-transparent-backdrop {
     background: none;
   }
 }

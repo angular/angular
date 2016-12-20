@@ -3,7 +3,7 @@ import {HammerGestureConfig} from '@angular/platform-browser';
 
 /* Adjusts configuration of our gesture library, Hammer. */
 @Injectable()
-export class MdGestureConfig extends HammerGestureConfig {
+export class GestureConfig extends HammerGestureConfig {
 
   /* List of new event names to add to the gesture support list */
   events: string[] = [

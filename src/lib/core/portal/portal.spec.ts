@@ -320,14 +320,14 @@ class ArbitraryViewContainerRefComponent {
   selector: 'portal-test',
   template: `
   <div class="portal-container">
-    <template [portalHost]="selectedPortal"></template>
+    <template [cdkPortalHost]="selectedPortal"></template>
   </div>
 
-  <template portal>Cake</template>
+  <template cdk-portal>Cake</template>
 
-  <div *portal>Pie</div>
+  <div *cdk-portal>Pie</div>
 
-  <template portal> {{fruit}} </template>`,
+  <template cdk-portal> {{fruit}} </template>`,
 })
 class PortalTestApp {
   @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;

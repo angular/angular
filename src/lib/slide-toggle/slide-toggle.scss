@@ -118,7 +118,7 @@ md-slide-toggle {
 
   @include md-elevation(1);
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     background: #fff;
     border: solid 1px #000;
   }
@@ -136,7 +136,7 @@ md-slide-toggle {
 
   border-radius: 8px;
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     background: #fff;
   }
 }

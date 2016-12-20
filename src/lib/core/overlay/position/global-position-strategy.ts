@@ -106,7 +106,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   apply(element: HTMLElement): Promise<void> {
     if (!this._wrapper) {
       this._wrapper = document.createElement('div');
-      this._wrapper.classList.add('md-global-overlay-wrapper');
+      this._wrapper.classList.add('cdk-global-overlay-wrapper');
       element.parentNode.insertBefore(this._wrapper, element);
       this._wrapper.appendChild(element);
     }

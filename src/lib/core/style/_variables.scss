@@ -22,9 +22,12 @@ $z-index-drawer: 100 !default;
 // We want overlays to always appear over user content, so set a baseline
 // very high z-index for the overlay container, which is where we create the new
 // stacking context for all overlays.
-$md-z-index-overlay-container: 1000;
-$md-z-index-overlay: 1000;
-$md-z-index-overlay-backdrop: 1;
+$cdk-z-index-overlay-container: 1000;
+$cdk-z-index-overlay: 1000;
+$cdk-z-index-overlay-backdrop: 1;
+
+// Background color for all of the backdrops
+$cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.6);
 
 
 // Global constants

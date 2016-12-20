@@ -22,7 +22,7 @@ import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {
   MdRippleModule,
-  MdUniqueSelectionDispatcher,
+  UniqueSelectionDispatcher,
   DefaultStyleCompatibilityModeModule,
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
@@ -297,7 +297,7 @@ export class MdRadioButton implements OnInit {
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
               private _renderer: Renderer,
-              public radioDispatcher: MdUniqueSelectionDispatcher) {
+              public radioDispatcher: UniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
 
@@ -480,7 +480,7 @@ export class MdRadioModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdRadioModule,
-      providers: [MdUniqueSelectionDispatcher, ViewportRuler],
+      providers: [UniqueSelectionDispatcher, ViewportRuler],
     };
   }
 }

@@ -1,5 +1,5 @@
 import {Component, ElementRef, Input, HostBinding, Renderer} from '@angular/core';
-import {MdFocusable} from '../core/a11y/list-key-manager';
+import {Focusable} from '../core/a11y/list-key-manager';
 
 /**
  * This directive is intended to be used inside an md-menu tag.
@@ -16,7 +16,7 @@ import {MdFocusable} from '../core/a11y/list-key-manager';
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem'
 })
-export class MdMenuItem implements MdFocusable {
+export class MdMenuItem implements Focusable {
   _disabled: boolean;
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}

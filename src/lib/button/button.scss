@@ -81,7 +81,7 @@
   pointer-events: none;
   opacity: 0;
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     // Note that IE will render this in the same way, no
     // matter whether the theme is light or dark. This helps
     // with the readability of focused buttons.
@@ -98,7 +98,7 @@
 }
 
 // Add an outline to make it more visible in high contrast mode.
-@include md-high-contrast {
+@include cdk-high-contrast {
   [md-button], [md-raised-button], [md-icon-button], [md-fab], [md-mini-fab] {
     outline: solid 1px;
   }

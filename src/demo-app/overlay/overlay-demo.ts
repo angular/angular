@@ -82,7 +82,7 @@ export class OverlayDemo {
       .global()
       .centerHorizontally();
     config.hasBackdrop = true;
-    config.backdropClass = 'md-overlay-transparent-backdrop';
+    config.backdropClass = 'cdk-overlay-transparent-backdrop';
 
     let overlayRef = this.overlay.create(config);
     overlayRef.attach(this.templatePortals.first);

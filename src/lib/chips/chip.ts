@@ -9,7 +9,7 @@ import {
   Renderer
 } from '@angular/core';
 
-import {MdFocusable} from '../core/a11y/list-key-manager';
+import {Focusable} from '../core/a11y/list-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 export interface MdChipEvent {
@@ -32,7 +32,7 @@ export interface MdChipEvent {
     '(click)': '_handleClick($event)'
   }
 })
-export class MdChip implements MdFocusable, OnInit, OnDestroy {
+export class MdChip implements Focusable, OnInit, OnDestroy {
 
   /* Whether or not the chip is disabled. */
   protected _disabled: boolean = null;

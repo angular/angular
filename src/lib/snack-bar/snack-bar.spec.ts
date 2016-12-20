@@ -11,7 +11,7 @@ import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angu
 import {CommonModule} from '@angular/common';
 import {MdSnackBar, MdSnackBarModule} from './snack-bar';
 import {MdSnackBarConfig} from './snack-bar-config';
-import {OverlayContainer, MdLiveAnnouncer} from '../core';
+import {OverlayContainer, LiveAnnouncer} from '../core';
 import {SimpleSnackBar} from './simple-snack-bar';
 
 
@@ -19,7 +19,7 @@ import {SimpleSnackBar} from './simple-snack-bar';
 
 describe('MdSnackBar', () => {
   let snackBar: MdSnackBar;
-  let liveAnnouncer: MdLiveAnnouncer;
+  let liveAnnouncer: LiveAnnouncer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -41,7 +41,7 @@ describe('MdSnackBar', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar, MdLiveAnnouncer], (sb: MdSnackBar, la: MdLiveAnnouncer) => {
+  beforeEach(inject([MdSnackBar, LiveAnnouncer], (sb: MdSnackBar, la: LiveAnnouncer) => {
     snackBar = sb;
     liveAnnouncer = la;
   }));
@@ -173,7 +173,7 @@ describe('MdSnackBar', () => {
     expect(snackBarRef.instance)
       .toEqual(jasmine.any(BurritosNotification),
                'Expected the snack bar content component to be BurritosNotification');
-    expect(overlayContainerElement.textContent)
+    expect(overlayContainerElement.textContent.trim())
         .toBe('Burritos are on the way.',
               `Expected the overlay text content to be 'Burritos are on the way'`);
   });

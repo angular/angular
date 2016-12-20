@@ -98,7 +98,7 @@ export class OverlayRef implements PortalHost {
   /** Attaches a backdrop for this overlay. */
   private _attachBackdrop() {
     this._backdropElement = document.createElement('div');
-    this._backdropElement.classList.add('md-overlay-backdrop');
+    this._backdropElement.classList.add('cdk-overlay-backdrop');
     this._backdropElement.classList.add(this._state.backdropClass);
 
     this._pane.parentElement.appendChild(this._backdropElement);
@@ -112,7 +112,7 @@ export class OverlayRef implements PortalHost {
     // Add class to fade-in the backdrop after one frame.
     requestAnimationFrame(() => {
       if (this._backdropElement) {
-        this._backdropElement.classList.add('md-overlay-backdrop-showing');
+        this._backdropElement.classList.add('cdk-overlay-backdrop-showing');
       }
     });
   }
@@ -136,7 +136,7 @@ export class OverlayRef implements PortalHost {
         }
       };
 
-      backdropToDetach.classList.remove('md-overlay-backdrop-showing');
+      backdropToDetach.classList.remove('cdk-overlay-backdrop-showing');
       backdropToDetach.classList.remove(this._state.backdropClass);
       backdropToDetach.addEventListener('transitionend', finishDetach);
 

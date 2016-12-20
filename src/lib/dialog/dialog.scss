@@ -21,7 +21,7 @@ md-dialog-container {
   width: 100%;
   height: 100%;
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     outline: solid 1px;
   }
 }

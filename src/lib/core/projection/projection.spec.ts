@@ -24,7 +24,7 @@ describe('Projection', () => {
     const innerDivEl = appEl.querySelector('.inner');
 
     // Expect the reverse of the tests down there.
-    expect(appEl.querySelector('dom-projection-host')).not.toBeNull();
+    expect(appEl.querySelector('cdk-dom-projection-host')).not.toBeNull();
     expect(outerDivEl.querySelector('.inner')).not.toBe(innerDivEl);
 
     const innerHtml = appEl.innerHTML;
@@ -34,8 +34,8 @@ describe('Projection', () => {
 
     expect(appEl.innerHTML).not.toEqual(innerHtml);
 
-    // Assert `<dom-projection-host>` is not in the DOM anymore.
-    expect(appEl.querySelector('dom-projection-host')).toBeNull();
+    // Assert `<cdk-dom-projection-host>` is not in the DOM anymore.
+    expect(appEl.querySelector('cdk-dom-projection-host')).toBeNull();
 
     // Assert the outerDiv contains the innerDiv.
     expect(outerDivEl.querySelector('.inner')).toBe(innerDivEl);
@@ -51,7 +51,7 @@ describe('Projection', () => {
   selector: '[projection-test]',
   template: `
     <div class="outer">
-      <dom-projection-host><ng-content></ng-content></dom-projection-host>
+      <cdk-dom-projection-host><ng-content></ng-content></cdk-dom-projection-host>
     </div>
   `,
 })

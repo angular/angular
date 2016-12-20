@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {MdPlatform} from './platform';
+import {Platform} from './platform';
 
 export * from './platform';
 export * from './features';
@@ -10,7 +10,7 @@ export class PlatformModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: PlatformModule,
-      providers: [MdPlatform],
+      providers: [Platform],
     };
   }
 }

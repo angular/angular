@@ -9,7 +9,7 @@ function _replaceWith(toReplaceEl: HTMLElement, otherEl: HTMLElement) {
 
 /** @docs-private */
 @Directive({
-  selector: 'dom-projection-host'
+  selector: 'cdk-dom-projection-host'
 })
 export class DomProjectionHost {
   constructor(public ref: ElementRef) {}
@@ -29,10 +29,10 @@ export class DomProjection {
    * ```
    *   @Component({
    *     template: `<div>
-   *       <dom-projection-host>
+   *       <cdk-dom-projection-host>
    *         <div>other</div>
    *         <ng-content></ng-content>
-   *       </dom-projection-host>
+   *       </cdk-dom-projection-host>
    *     </div>`
    *   })
    *   class Cmpt {

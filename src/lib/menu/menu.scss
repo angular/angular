@@ -15,7 +15,7 @@ $md-menu-vertical-padding: 8px !default;
   // max height must be 100% of the viewport height + one row height
   max-height: calc(100vh + 48px);
 
-  @include md-high-contrast {
+  @include cdk-high-contrast {
     outline: solid 1px;
   }
 }
