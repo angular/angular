@@ -8,7 +8,7 @@
     "url": "https://github.com/angular/material2.git"
   },
   "scripts": {
-    "build": "gulp build",
+    "build": "gulp build:components",
     "demo-app": "gulp serve:devapp",
     "test": "gulp test",
     "tslint": "gulp lint",
