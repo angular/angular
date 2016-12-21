@@ -44,6 +44,7 @@ task(':build:components:spec', tsBuildTask(COMPONENTS_DIR));
 task(':build:components:assets', copyTask([
   path.join(COMPONENTS_DIR, '**/*.!(ts|spec.ts)'),
   path.join(PROJECT_ROOT, 'README.md'),
+  path.join(PROJECT_ROOT, 'LICENSE'),
 ], DIST_COMPONENTS_ROOT));
 
 /** Minifies the HTML and CSS assets in the distribution folder. */
