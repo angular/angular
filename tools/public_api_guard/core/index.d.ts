@@ -113,12 +113,14 @@ export declare class AnimationTransitionEvent {
     phaseName: string;
     toState: string;
     totalTime: number;
-    constructor({fromState, toState, totalTime, phaseName, element}: {
+    triggerName: string;
+    constructor({fromState, toState, totalTime, phaseName, element, triggerName}: {
         fromState: string;
         toState: string;
         totalTime: number;
         phaseName: string;
         element: any;
+        triggerName: string;
     });
 }
 

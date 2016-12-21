@@ -1794,6 +1794,48 @@ function declareTests({useJit}: {useJit: boolean}) {
              expect(elements[i].nativeElement).toBe(targetElements[i]);
            }
          }));
+
+      it('should expose the trigger associated with the animation within the callback event',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div *ngIf="exp"
+                  @t1
+                  (@t1.start)="callback($event)"
+                  (@t1.done)="callback($event)"></div>
+                <div *ngIf="exp"
+                  @t2
+                  (@t2.start)="callback($event)"
+                  (@t2.done)="callback($event)"></div>
+              `,
+               animations: [
+                 trigger('t1', [transition('* => *', [animate(1000)])]),
+                 trigger('t2', [transition('* => *', [animate(1000)])])
+               ]
+             }
+           });
+
+           const driver = TestBed.get(AnimationDriver) as InnerContentTrackingAnimationDriver;
+           const fixture = TestBed.createComponent(DummyIfCmp);
+           const cmp = fixture.componentInstance;
+
+           let triggers: string[] = [];
+           cmp.callback = (e: AnimationTransitionEvent) =>
+               triggers.push(`${e.triggerName}-${e.phaseName}`);
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(triggers).toEqual(['t1-start', 't2-start']);
+           triggers = [];
+
+           driver.log.shift()['player'].finish();
+           driver.log.shift()['player'].finish();
+
+           expect(triggers).toEqual(['t1-done', 't2-done']);
+         }));
     });
 
     describe('ng directives', () => {
