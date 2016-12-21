@@ -12,7 +12,7 @@ import {DialogE2E, TestDialog} from './dialog/dialog-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {ListE2E} from './list/list-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
-import {ProgressCircleE2E} from './progress-circle/progress-circle-e2e';
+import {ProgressSpinnerE2E} from './progress-spinner/progress-spinner-e2e';
 import {MaterialModule} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
@@ -38,7 +38,7 @@ import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
     GridListE2E,
     ListE2E,
     ProgressBarE2E,
-    ProgressCircleE2E,
+    ProgressSpinnerE2E,
     SlideToggleE2E
   ],
   bootstrap: [E2EApp],

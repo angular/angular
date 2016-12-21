@@ -1,0 +1,21 @@
+<h1>Determinate</h1>
+<div class="demo-progress-spinner">
+  <md-progress-spinner mode="determinate"
+                      [value]="progressValue"
+                      class="md-primary"></md-progress-spinner>
+  <md-progress-spinner [value]="progressValue"
+                      color="accent"></md-progress-spinner>
+</div>
+<span>Value: {{progressValue}}</span>
+<button md-raised-button (click)="step(10)">Increase</button>
+<button md-raised-button (click)="step(-10)">Decrease</button>
+
+
+
+<h1>Indeterminate</h1>
+<div class="demo-progress-spinner">
+  <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+  <md-progress-spinner mode="indeterminate"
+                      color="accent"></md-progress-spinner>
+  <md-spinner></md-spinner>
+</div>

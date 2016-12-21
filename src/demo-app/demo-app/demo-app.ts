@@ -39,7 +39,7 @@ export class DemoApp {
     {name: 'Portal', route: 'portal'},
     {name: 'Projection', route: 'projection'},
     {name: 'Progress Bar', route: 'progress-bar'},
-    {name: 'Progress Circle', route: 'progress-circle'},
+    {name: 'Progress Spinner', route: 'progress-spinner'},
     {name: 'Radio', route: 'radio'},
     {name: 'Ripple', route: 'ripple'},
     {name: 'Select', route: 'select'},

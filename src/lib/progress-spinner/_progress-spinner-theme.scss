@@ -2,12 +2,12 @@
 @import '../core/theming/theming';
 
 
-@mixin md-progress-circle-theme($theme) {
+@mixin md-progress-spinner-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  md-progress-circle, md-spinner {
+  md-progress-spinner, md-progress-circle, md-spinner {
     path {
       stroke: md-color($primary, 600);
     }

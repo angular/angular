@@ -16,7 +16,7 @@ import {CardDemo} from './card/card-demo';
 import {ChipsDemo} from './chips/chips-demo';
 import {RadioDemo} from './radio/radio-demo';
 import {ButtonToggleDemo} from './button-toggle/button-toggle-demo';
-import {ProgressCircleDemo} from './progress-circle/progress-circle-demo';
+import {ProgressSpinnerDemo} from './progress-spinner/progress-spinner-demo';
 import {TooltipDemo} from './tooltip/tooltip-demo';
 import {ListDemo} from './list/list-demo';
 import {BaselineDemo} from './baseline/baseline-demo';
@@ -74,7 +74,7 @@ import {InputContainerDemo} from './input/input-container-demo';
     OverlayDemo,
     PortalDemo,
     ProgressBarDemo,
-    ProgressCircleDemo,
+    ProgressSpinnerDemo,
     ProjectionDemo,
     ProjectionTestComponent,
     RadioDemo,

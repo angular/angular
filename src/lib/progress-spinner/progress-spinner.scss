@@ -2,22 +2,22 @@
 
 
 // Animation Durations
-$md-progress-circle-duration: 5250ms !default;
-$md-progress-circle-constant-rotate-duration: $md-progress-circle-duration * 0.55 !default;
-$md-progress-circle-sporadic-rotate-duration: $md-progress-circle-duration !default;
+$md-progress-spinner-duration: 5250ms !default;
+$md-progress-spinner-constant-rotate-duration: $md-progress-spinner-duration * 0.55 !default;
+$md-progress-spinner-sporadic-rotate-duration: $md-progress-spinner-duration !default;
 
 // Component sizing
-$md-progress-circle-stroke-width: 10px !default;
-// Height and weight of the viewport for md-progress-circle.
-$md-progress-circle-viewport-size: 100px !default;
+$md-progress-spinner-stroke-width: 10px !default;
+// Height and weight of the viewport for md-progress-spinner.
+$md-progress-spinner-viewport-size: 100px !default;
 
 
 :host {
   display: block;
-  // Height and width are provided for md-progress-circle to act as a default.
+  // Height and width are provided for md-progress-spinner to act as a default.
   // The height and width are expected to be overwritten by application css.
-  height: $md-progress-circle-viewport-size;
-  width: $md-progress-circle-viewport-size;
+  height: $md-progress-spinner-viewport-size;
+  width: $md-progress-spinner-viewport-size;
   overflow: hidden;
 
   // SVG's viewBox is defined as 0 0 100 100, this means that all SVG children will placed
@@ -34,15 +34,15 @@ $md-progress-circle-viewport-size: 100px !default;
     fill: transparent;
 
     // Stroke width of 10px defines stroke as 10% of the viewBox.
-    stroke-width: $md-progress-circle-stroke-width;
+    stroke-width: $md-progress-spinner-stroke-width;
   }
 
 
   &[mode='indeterminate'] svg {
-    animation-duration: $md-progress-circle-sporadic-rotate-duration,
-                        $md-progress-circle-constant-rotate-duration;
-    animation-name: md-progress-circle-sporadic-rotate,
-                    md-progress-circle-linear-rotate;
+    animation-duration: $md-progress-spinner-sporadic-rotate-duration,
+                        $md-progress-spinner-constant-rotate-duration;
+    animation-name: md-progress-spinner-sporadic-rotate,
+                    md-progress-spinner-linear-rotate;
     animation-timing-function: $ease-in-out-curve-function,
                                linear;
     animation-iteration-count: infinite;
@@ -52,11 +52,11 @@ $md-progress-circle-viewport-size: 100px !default;
 
 
 // Animations for indeterminate mode
-@keyframes md-progress-circle-linear-rotate {
+@keyframes md-progress-spinner-linear-rotate {
   0%       { transform: rotate(0deg); }
   100%     { transform: rotate(360deg); }
 }
-@keyframes md-progress-circle-sporadic-rotate {
+@keyframes md-progress-spinner-sporadic-rotate {
   12.5%    { transform: rotate( 135deg); }
   25%      { transform: rotate( 270deg); }
   37.5%    { transform: rotate( 405deg); }
