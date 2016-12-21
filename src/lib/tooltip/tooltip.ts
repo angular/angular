@@ -32,8 +32,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-import {OverlayPositionBuilder} from '../core/overlay/position/overlay-position-builder';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
+import {OVERLAY_PROVIDERS} from '../core/overlay/overlay';
 import 'rxjs/add/operator/first';
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
@@ -387,9 +386,7 @@ export class MdTooltipModule {
     return {
       ngModule: MdTooltipModule,
       providers: [
-        Overlay,
-        OverlayPositionBuilder,
-        ViewportRuler,
+        OVERLAY_PROVIDERS,
         ScrollDispatcher
       ]
     };
