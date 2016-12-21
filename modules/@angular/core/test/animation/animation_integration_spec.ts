@@ -17,13 +17,11 @@ import {WebAnimationsDriver} from '@angular/platform-browser/src/dom/web_animati
 import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
-
-import {DomAnimatePlayer} from '../../../platform-browser/src/dom/dom_animate_player';
 import {ApplicationRef, Component, HostBinding, HostListener, NgModule, NgZone, destroyPlatform} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer} from '../../src/animation/animation_player';
+import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
@@ -2244,6 +2242,42 @@ function declareTests({useJit}: {useJit: boolean}) {
        }));
   });
 
+  describe('error handling', () => {
+    it('should recover if an animation driver or player throws an error during an animation',
+       fakeAsync(() => {
+         TestBed.configureTestingModule({
+           declarations: [DummyIfCmp],
+           providers: [{provide: AnimationDriver, useClass: ErroneousAnimationDriver}],
+           imports: [CommonModule]
+         });
+         TestBed.overrideComponent(DummyIfCmp, {
+           set: {
+             template: `
+            <div [@myAnimation]="exp" (@myAnimation.start)="callback1($event)" (@myAnimation.done)="callback2($event)"></div>
+          `,
+             animations: [trigger('myAnimation', [transition(
+                                                     '* => *',
+                                                     [
+                                                       animate(1000, style({transform: 'noooooo'})),
+                                                     ])])]
+           }
+         });
+
+         const fixture = TestBed.createComponent(DummyIfCmp);
+         const cmp = fixture.componentInstance;
+         let started = false;
+         let done = false;
+         cmp.callback1 = (event: AnimationTransitionEvent) => started = true;
+         cmp.callback2 = (event: AnimationTransitionEvent) => done = true;
+         cmp.exp = true;
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         expect(started).toBe(true);
+         expect(done).toBe(true);
+       }));
+  });
+
   describe('full animation integration tests', () => {
     if (!getDOM().supportsWebAnimation()) return;
 
@@ -2535,5 +2569,13 @@ class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
     const player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
     this.players.push(player);
     return player;
+  }
+}
+
+class ErroneousAnimationDriver extends MockAnimationDriver {
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): WebAnimationsPlayer {
+    throw new Error();
   }
 }

@@ -9,7 +9,7 @@
 import {APP_ID, Inject, Injectable, RenderComponentType, Renderer, RootRenderer, ViewEncapsulation} from '@angular/core';
 
 import {isBlank, isPresent, stringify} from '../facade/lang';
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, RenderDebugInfo} from '../private_import_core';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, DirectRenderer, NoOpAnimationPlayer, RenderDebugInfo} from '../private_import_core';
 
 import {AnimationDriver} from './animation_driver';
 import {DOCUMENT} from './dom_tokens';
@@ -262,8 +262,12 @@ export class DomRenderer implements Renderer {
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    return this._animationDriver.animate(
-        element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
+    try {
+      return this._animationDriver.animate(
+          element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
+    } catch (e) {
+      return new NoOpAnimationPlayer();
+    }
   }
 }
 
