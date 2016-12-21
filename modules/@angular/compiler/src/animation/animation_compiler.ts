@@ -294,8 +294,8 @@ class _AnimationBuilder implements AnimationAstVisitor {
 
     statements.push(new o.ReturnStatement(
         o.importExpr(createIdentifier(Identifiers.AnimationTransition)).instantiate([
-          _ANIMATION_PLAYER_VAR, _ANIMATION_FACTORY_ELEMENT_VAR, _ANIMATION_CURRENT_STATE_VAR,
-          _ANIMATION_NEXT_STATE_VAR, _ANIMATION_TIME_VAR
+          _ANIMATION_PLAYER_VAR, _ANIMATION_FACTORY_ELEMENT_VAR, o.literal(this.animationName),
+          _ANIMATION_CURRENT_STATE_VAR, _ANIMATION_NEXT_STATE_VAR, _ANIMATION_TIME_VAR
         ])));
 
     return o.fn(
