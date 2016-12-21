@@ -294,6 +294,16 @@ export function main() {
        }));
 
     describe('track by', () => {
+      it('should throw if trackBy is not a function', async(() => {
+           const template =
+               `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="item?.id"></template>`;
+           fixture = createTestComponent(template);
+
+           getComponent().items = [{id: 1}, {id: 2}];
+           expect(() => fixture.detectChanges())
+               .toThrowError(/trackBy must be a function, but received null/);
+         }));
+
       it('should set the context to the component instance', async(() => {
            const template =
                `<template ngFor let-item [ngForOf]="items" [ngForTrackBy]="trackByContext.bind(this)"></template>`;
