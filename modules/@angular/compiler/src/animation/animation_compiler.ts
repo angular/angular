@@ -66,7 +66,7 @@ class _AnimationBuilder implements AnimationAstVisitor {
     ast.styles.forEach(entry => {
       const entries =
           Object.keys(entry).map((key): [string, o.Expression] => [key, o.literal(entry[key])]);
-      stylesArr.push(o.literalMap(entries));
+      stylesArr.push(o.literalMap(entries, null, true));
     });
 
     return o.importExpr(createIdentifier(Identifiers.AnimationStyles)).instantiate([
@@ -322,12 +322,13 @@ class _AnimationBuilder implements AnimationAstVisitor {
       if (isPresent(value)) {
         const styleMap: any[] = [];
         Object.keys(value).forEach(key => { styleMap.push([key, o.literal(value[key])]); });
-        variableValue = o.literalMap(styleMap);
+        variableValue = o.literalMap(styleMap, null, true);
       }
       lookupMap.push([stateName, variableValue]);
     });
 
-    const compiledStatesMapStmt = this._statesMapVar.set(o.literalMap(lookupMap)).toDeclStmt();
+    const compiledStatesMapStmt =
+        this._statesMapVar.set(o.literalMap(lookupMap, null, true)).toDeclStmt();
     const statements: o.Statement[] = [compiledStatesMapStmt, fnStatement];
 
     return new AnimationEntryCompileResult(this.animationName, statements, fnVariable);
