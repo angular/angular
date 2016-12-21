@@ -1,22 +1,28 @@
-<tr>
-  <td>
+<tr class="docs-api-properties-row">
+  <td class="docs-api-properties-name-cell">
     {%- if property.isDirectiveInput -%}
-      {%- if property.directiveInputAlias -%}
-        <p>@Input({$ property.directiveInputAlias $})</p>
-      {% else %}
-        <p>@Input()</p>
-      {%- endif -%}
+      <div class="docs-api-input-marker">
+        {%- if property.directiveInputAlias -%}
+        @Input(<span class="docs-api-input-alias">{$ property.directiveInputAlias $}</span>)
+        {% else %}
+          @Input()
+        {%- endif -%}
+      </div>
     {%- endif -%}
     {%- if property.isDirectiveOutput -%}
-      {%- if property.directiveOutputAlias -%}
-        <p>@Output({$ property.directiveOutputAlias $})</p>
-      {% else %}
-        <p>@Output()</p>
-      {%- endif -%}
+      <div class="docs-api-output-marker">
+        {%- if property.directiveOutputAlias -%}
+        @Output(<span class="docs-api-output-alias">{$ property.directiveOutputAlias $}</span>)
+        {% else %}
+          @Output()
+        {%- endif -%}
+      </div>
     {%- endif -%}
 
-    <p>{$ property.name $}</p>
-    <p><code>{$ property.type $}</code></p>
+    <p class="docs-api-property-name">
+      {$ property.name $}
+    </p>
+    <code class="docs-api-property-type">{$ property.type $}</code>
   </td>
-  <td> {$ property.description $}</td>
+  <td class="docs-api-property-description">{$ property.description $}</td>
 </tr>

@@ -32,14 +32,14 @@
   {% include 'class.template.html' %}
 {% endmacro %}
 
-<h1>{$ doc.name $}</h1>
-<h2>
+<h1 class="docs-api-h1">{$ doc.name $}</h1>
+<h2 class="docs-api-h2">
   Module: <code>{$ doc.ngModule.name $}</code>
 </h2>
 
 
 {%- if doc.services.length -%}
-  <h2>Services</h2>
+  <h2 class="docs-api-h2">Services</h2>
   {% for service in doc.services %}
     {$ class(service) $}
   {% endfor %}

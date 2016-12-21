@@ -1,40 +1,50 @@
-<table>
-  <tr>
-    <th colspan="2">{$ method.name $}</th>
-  </tr>
-  <tr>
-    <td colspan="2"> {$ method.description $}</td>
+<table class="docs-api-method-table">
+  <thead>
+    <tr class="docs-api-method-name-row">
+      <th colspan="2" class="docs-api-method-name-cell">{$ method.name $}</th>
+    </tr>
+  </thead>
+  <tr class="docs-api-method-description-row">
+    <td colspan="2" class="docs-api-method-description-cell">{$ method.description $}</td>
   </tr>
 
   {%- if method.params.length -%}
-  <tr>
-    <th colspan="2"> Parameters</th>
-  </tr>
+  <thead>
+    <tr class="docs-api-method-parameters-header-row">
+      <th colspan="2" class="docs-api-method-parameters-header-cell">Parameters</th>
+    </tr>
+  </thead>
   {% for parameter in method.params %}
-  <tr>
-    <td>
-      <p>
+  <tr class="docs-api-method-parameter-row">
+    <td class="docs-api-method-parameter-cell">
+      <p class="docs-api-method-parameter-name">
         {$ parameter.name $}
         {%- if parameter.isOptional -%}
-          <span>?</span>
+          <span class="docs-api-method-parameter-optional-marker">?</span>
         {%- endif -%}
       </p>
-      <p>{$ parameter.type $}</p>
+      <code class="docs-api-method-parameter-type">{$ parameter.type $}</code>
     </td>
-    <td>
-      {$ parameter.description $}
+    <td class="docs-api-method-parameter-description-cell">
+      <p class="docs-api-method-parameter-description">{$ parameter.description $}</p>
     </td>
   </tr>
   {% endfor %}
   {%- endif -%}
 
   {%- if method.showReturns -%}
+  <thead>
+    <tr class="docs-api-method-returns-header-row">
+      <th colspan="2" class="docs-api-method-returns-header-cell">Returns</th>
+    </tr>
+  </thead>
   <tr>
-    <th colspan="2"> Returns</th>
-  </tr>
-  <tr>
-    <td>{$ method.returnType $}</td>
-    <td>{$ method.returns.description $}</td>
+    <td class="docs-api-method-returns-type-cell">
+      <code class="docs-api-method-returns-type">{$ method.returnType $}</code>
+    </td>
+    <td class="docs-api-method-returns-description-cell">
+      <p class="docs-api-method-returns-description">{$ method.returns.description $}</p>
+    </td>
   </tr>
   {%- endif -%}
 </table>
