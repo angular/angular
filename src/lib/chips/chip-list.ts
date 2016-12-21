@@ -37,7 +37,7 @@ import {SPACE} from '../core/keyboard/keycodes';
     'class': 'md-chip-list',
 
     // Events
-    '(focus)': 'focus($event)',
+    '(focus)': 'focus()',
     '(keydown)': '_keydown($event)'
   },
   queries: {
