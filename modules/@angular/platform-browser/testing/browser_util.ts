@@ -11,7 +11,7 @@ import {NgZone} from '@angular/core';
 import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
-export let browserDetection: BrowserDetection = new BrowserDetection(null);
+export let browserDetection: BrowserDetection;
 
 export class BrowserDetection {
   private _overrideUa: string;
