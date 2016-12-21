@@ -1,22 +1,22 @@
-# md-progress-circle
+# md-progress-spinner
 
-`md-progress-circle` is a component for indicating progress and activity, matching the spec of 
+`md-progress-spinner` is a component for indicating progress and activity, matching the spec of 
 [Material Design Progress & Activity](https://www.google.com/design/spec/components/progress-activity.html).
 
 ### Progress Modes
 
 There are two modes:
- 1. Determinate - `<md-progress-circle mode="determinate">`
+ 1. Determinate - `<md-progress-spinner mode="determinate">`
     * Indicates how long an operation will take when the percentage complete is detectable. 
- 2. Indeterminate - `<md-progress-circle mode="indeterminate">` or `<md-spinner>`
+ 2. Indeterminate - `<md-progress-spinner mode="indeterminate">` or `<md-spinner>`
     * Indicates the user must wait while something finishes when it’s not necessary or possible to indicate how long it
       will take.
 
 Example:
 
  ```html
-<md-progress-circle mode="determinate" [value]="myValue"></md-progress-circle>
-<md-progress-circle mode="indeterminate"></md-progress-circle>
+<md-progress-spinner mode="determinate" [value]="myValue"></md-progress-spinner>
+<md-progress-spinner mode="indeterminate"></md-progress-spinner>
 <md-spinner></md-spinner>
  ```
 
@@ -27,9 +27,9 @@ All progress indicators can be themed to match your "primary" palette, your "acc
 Example:
 
  ```html
-<md-progress-circle mode="indeterminate" color="primary"></md-progress-circle>
-<md-progress-circle mode="indeterminate" color="accent"></md-progress-circle>
-<md-progress-circle mode="indeterminate" color="warn"></md-progress-circle>
+<md-progress-spinner mode="indeterminate" color="primary"></md-progress-spinner>
+<md-progress-spinner mode="indeterminate" color="accent"></md-progress-spinner>
+<md-progress-spinner mode="indeterminate" color="warn"></md-progress-spinner>
  ```
 
 ### Accessibility

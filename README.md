@@ -55,7 +55,7 @@ High level items planned for December 2016:
 | list             |                           Available | [README][8]  |   [#107][0107] |
 | grid-list        |                           Available | [README][9]  |              - |
 | icon             |                           Available | [README][10] |              - |
-| progress-circle  |                           Available | [README][11] |              - |
+| progress-spinner |                           Available | [README][11] |              - |
 | progress-bar     |                           Available | [README][12] |              - |
 | tabs             |                           Available | [README][13] |              - |
 | slide-toggle     |                           Available | [README][14] |              - |
@@ -95,7 +95,7 @@ High level items planned for December 2016:
  [8]: https://github.com/angular/material2/blob/master/src/lib/list/README.md
  [9]: https://github.com/angular/material2/blob/master/src/lib/grid-list/README.md
 [10]: https://github.com/angular/material2/blob/master/src/lib/icon/README.md
-[11]: https://github.com/angular/material2/blob/master/src/lib/progress-circle/README.md
+[11]: https://github.com/angular/material2/blob/master/src/lib/progress-spinner/README.md
 [12]: https://github.com/angular/material2/blob/master/src/lib/progress-bar/README.md
 [13]: https://github.com/angular/material2/blob/master/src/lib/tabs/README.md
 [14]: https://github.com/angular/material2/blob/master/src/lib/slide-toggle/README.md
