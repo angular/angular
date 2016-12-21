@@ -17,7 +17,11 @@ export type UniqueSelectionDispatcherListener = (id: string, name: string) => vo
 export class UniqueSelectionDispatcher {
   private _listeners: UniqueSelectionDispatcherListener[] = [];
 
-  /** Notify other items that selection for the given name has been set. */
+  /**
+   * Notify other items that selection for the given name has been set.
+   * @param id ID of the item.
+   * @param name Name of the item.
+   */
   notify(id: string, name: string) {
     for (let listener of this._listeners) {
       listener(id, name);

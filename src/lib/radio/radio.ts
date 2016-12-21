@@ -102,10 +102,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /** Name of the radio button group. All radio buttons inside this group will use this name. */
   @Input()
-  get name(): string {
-    return this._name;
-  }
-
+  get name(): string { return this._name; }
   set name(value: string) {
     this._name = value;
     this._updateRadioButtonNames();
@@ -129,21 +126,17 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
   /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
 
+  /** Whether the radio button is disabled. */
   @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
+  get disabled(): boolean { return this._disabled; }
   set disabled(value) {
     // The presence of *any* disabled value makes the component disabled, *except* for false.
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
+  /** Value of the radio button. */
   @Input()
-  get value(): any {
-    return this._value;
-  }
-
+  get value(): any { return this._value; }
   set value(newValue: any) {
     if (this._value != newValue) {
       // Set this before proceeding to ensure no circular loop occurs with selection.
@@ -160,15 +153,12 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     }
   }
 
+  /** Whether the radio button is selected. */
   @Input()
-  get selected() {
-    return this._selected;
-  }
-
+  get selected() { return this._selected; }
   set selected(selected: MdRadioButton) {
     this._selected = selected;
     this.value = selected ? selected.value : null;
-
     this._checkSelectedRadioButton();
   }
 
@@ -227,22 +217,36 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
     }
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Sets the model value. Implemented as part of ControlValueAccessor.
+   * @param value
+   */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to be triggered when the model value changes.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to be triggered when the control is touched.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
-  /** Implemented as a part of ControlValueAccessor. */
+  /**
+   * Sets the disabled state of the control. Implemented as a part of ControlValueAccessor.
+   * @param isDisabled Whether the control should be disabled.
+   */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }

@@ -396,8 +396,8 @@ class AsyncTabsTestApp {
 
   tabs: Observable<any>;
 
-  // Use ngOnInit because there is some issue with scheduling the async task in the constructor.
   ngOnInit() {
+    // Use ngOnInit because there is some issue with scheduling the async task in the constructor.
     this.tabs = Observable.create((observer: any) => {
       requestAnimationFrame(() => observer.next(this._tabs));
     });

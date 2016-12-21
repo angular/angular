@@ -78,16 +78,19 @@ export class MdHint {
   }
 })
 export class MdInputDirective implements AfterContentInit {
+  /** Whether the element is disabled. */
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
   private _disabled = false;
 
+  /** Unique id of the element. */
   @Input()
   get id() { return this._id; };
   set id(value: string) { this._id = value || this._uid; }
   private _id: string;
 
+  /** Placeholder attribute of the element. */
   @Input()
   get placeholder() { return this._placeholder; }
   set placeholder(value: string) {
@@ -98,11 +101,13 @@ export class MdInputDirective implements AfterContentInit {
   }
   private _placeholder = '';
 
+  /** Whether the element is required. */
   @Input()
   get required() { return this._required; }
   set required(value: any) { this._required = coerceBooleanProperty(value); }
   private _required = false;
 
+  /** Input type of the element. */
   @Input()
   get type() { return this._type; }
   set type(value: string) {
@@ -111,6 +116,7 @@ export class MdInputDirective implements AfterContentInit {
   }
   private _type = 'text';
 
+  /** The element's value. */
   value: any;
 
   /**
@@ -151,7 +157,7 @@ export class MdInputDirective implements AfterContentInit {
     this.value = this._elementRef.nativeElement.value;
   }
 
-  /** Focus the input element. */
+  /** Focuses the input element. */
   focus() { this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus'); }
 
   _onFocus() { this.focused = true; }
@@ -195,10 +201,13 @@ export class MdInputDirective implements AfterContentInit {
   encapsulation: ViewEncapsulation.None,
 })
 export class MdInputContainer implements AfterContentInit {
+  /** Alignment of the input container's content. */
   @Input() align: 'start' | 'end' = 'start';
 
+  /** Color of the input divider, based on the theme. */
   @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
 
+  /** Text for the input hint. */
   @Input()
   get hintLabel() { return this._hintLabel; }
   set hintLabel(value: string) {
@@ -207,6 +216,7 @@ export class MdInputContainer implements AfterContentInit {
   }
   private _hintLabel = '';
 
+  /** Text or the floating placeholder. */
   @Input()
   get floatingPlaceholder(): boolean { return this._floatingPlaceholder; }
   set floatingPlaceholder(value) { this._floatingPlaceholder = coerceBooleanProperty(value); }

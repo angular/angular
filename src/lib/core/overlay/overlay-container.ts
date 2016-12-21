@@ -9,7 +9,7 @@ export class OverlayContainer {
    * This method returns the overlay container element.  It will lazily
    * create the element the first time  it is called to facilitate using
    * the container in non-browser environments.
-   * @returns {HTMLElement} the container element
+   * @returns the container element
    */
   getContainerElement(): HTMLElement {
     if (!this._containerElement) { this._createContainer(); }

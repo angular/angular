@@ -33,6 +33,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
 
 /**
  * Internal component that wraps user-provided snack bar content.
+ * @docs-private
  */
 @Component({
   moduleId: module.id,
@@ -126,7 +127,9 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
     return this.onExit.asObservable();
   }
 
-  /** Makes sure the exit callbacks have been invoked when the element is destroyed. */
+  /**
+   * Makes sure the exit callbacks have been invoked when the element is destroyed.
+   */
   ngOnDestroy() {
     // Wait for the zone to settle before removing the element. Helps prevent
     // errors where we end up removing an element which is in the middle of an animation.

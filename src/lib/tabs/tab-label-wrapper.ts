@@ -15,6 +15,7 @@ export class MdTabLabelWrapper {
   /** Whether the tab label is disabled.  */
   private _disabled: boolean = false;
 
+  /** Whether the element is disabled. */
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }

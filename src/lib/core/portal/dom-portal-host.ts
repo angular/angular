@@ -23,7 +23,10 @@ export class DomPortalHost extends BasePortalHost {
     super();
   }
 
-  /** Attach the given ComponentPortal to DOM element using the ComponentFactoryResolver. */
+  /**
+   * Attach the given ComponentPortal to DOM element using the ComponentFactoryResolver.
+   * @param portal Portal to be attached
+   */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     let componentFactory = this._componentFactoryResolver.resolveComponentFactory(portal.component);
     let componentRef: ComponentRef<T>;
@@ -82,6 +85,10 @@ export class DomPortalHost extends BasePortalHost {
     return componentRef;
   }
 
+  /**
+   * Attaches a template portal to the DOM as an embedded view.
+   * @param portal Portal to be attached.
+   */
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     let viewContainer = portal.viewContainerRef;
     let viewRef = viewContainer.createEmbeddedView(portal.templateRef);
@@ -99,6 +106,9 @@ export class DomPortalHost extends BasePortalHost {
     return new Map<string, any>();
   }
 
+  /**
+   * Clears out a portal from the DOM.
+   */
   dispose(): void {
     super.dispose();
     if (this._hostDomElement.parentNode != null) {

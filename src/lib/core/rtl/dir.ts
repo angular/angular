@@ -11,7 +11,7 @@ import {
 export type LayoutDirection = 'ltr' | 'rtl';
 
 /**
- * Directive to listen to changes of direction of part of the DOM.
+ * Directive to listen for changes of direction of part of the DOM.
  *
  * Applications should use this directive instead of the native attribute so that Material
  * components can listen on changes of direction.
@@ -22,10 +22,13 @@ export type LayoutDirection = 'ltr' | 'rtl';
   exportAs: '$implicit'
 })
 export class Dir {
+  /** Layout direction of the element. */
   @Input('dir') _dir: LayoutDirection = 'ltr';
 
+  /** Event emitted when the direction changes. */
   @Output() dirChange = new EventEmitter<void>();
 
+  /** @docs-private */
   @HostBinding('attr.dir')
   get dir(): LayoutDirection {
     return this._dir;
@@ -38,6 +41,7 @@ export class Dir {
     }
   }
 
+  /** Current layout direction of the element. */
   get value(): LayoutDirection { return this.dir; }
   set value(v: LayoutDirection) { this.dir = v; }
 }

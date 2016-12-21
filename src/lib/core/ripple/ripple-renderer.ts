@@ -66,6 +66,8 @@ export class RippleRenderer {
   /**
    * Installs event handlers on the given trigger element, and removes event handlers from the
    * previous trigger if needed.
+   *
+   * @param newTrigger New trigger to which to attach the ripple handlers.
    */
   setTriggerElement(newTrigger: HTMLElement) {
     if (this._triggerElement !== newTrigger) {
@@ -97,6 +99,14 @@ export class RippleRenderer {
    * Creates a foreground ripple and sets its animation to expand and fade in from the position
    * given by rippleOriginLeft and rippleOriginTop (or from the center of the <md-ripple>
    * bounding rect if centered is true).
+   *
+   * @param rippleOriginLeft Left origin of the ripple.
+   * @param rippleOriginTop Top origin of the ripple.
+   * @param color Ripple color.
+   * @param centered Whether the ripple should be centered.
+   * @param radius Radius of the ripple.
+   * @param speedFactor Speed at which the ripple expands towards the edges.
+   * @param transitionEndCallback Callback to be triggered when the ripple transition is done.
    */
   createForegroundRipple(
       rippleOriginLeft: number,
@@ -158,20 +168,29 @@ export class RippleRenderer {
     });
   }
 
-  /** Fades out a foreground ripple after it has fully expanded and faded in. */
+  /**
+   * Fades out a foreground ripple after it has fully expanded and faded in.
+   * @param ripple Ripple to be faded out.
+   */
   fadeOutForegroundRipple(ripple: Element) {
     ripple.classList.remove('md-ripple-fade-in');
     ripple.classList.add('md-ripple-fade-out');
   }
 
-  /** Removes a foreground ripple from the DOM after it has faded out. */
+  /**
+   * Removes a foreground ripple from the DOM after it has faded out.
+   * @param ripple Ripple to be removed from the DOM.
+   */
   removeRippleFromDom(ripple: Element) {
     if (ripple && ripple.parentElement) {
       ripple.parentElement.removeChild(ripple);
     }
   }
 
-  /** Fades in the ripple background. */
+  /**
+   * Fades in the ripple background.
+   * @param color New background color for the ripple.
+   */
   fadeInRippleBackground(color: string) {
     this._backgroundDiv.classList.add('md-ripple-active');
     // If color is not set, this will default to the background color defined in CSS.

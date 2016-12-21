@@ -45,11 +45,7 @@ let defaultPositionList = [
   exportAs: 'cdkOverlayOrigin',
 })
 export class OverlayOrigin {
-  constructor(private _elementRef: ElementRef) { }
-
-  get elementRef() {
-    return this._elementRef;
-  }
+  constructor(public elementRef: ElementRef) { }
 }
 
 
@@ -72,7 +68,10 @@ export class ConnectedOverlayDirective implements OnDestroy {
   private _offsetY: number = 0;
   private _position: ConnectedPositionStrategy;
 
+  /** Origin for the connected overlay. */
   @Input() origin: OverlayOrigin;
+
+  /** Registered connected position pairs. */
   @Input() positions: ConnectionPositionPair[];
 
   /** The offset in pixels for the overlay connection point on the x-axis */
@@ -139,8 +138,14 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
   /** Event emitted when the backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<void>();
+
+  /** Event emitted when the position has changed. */
   @Output() positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
+
+  /** Event emitted when the overlay has been attached. */
   @Output() attach = new EventEmitter<void>();
+
+  /** Event emitted when the overlay has been detached. */
   @Output() detach = new EventEmitter<void>();
 
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
@@ -153,10 +158,12 @@ export class ConnectedOverlayDirective implements OnDestroy {
     this._templatePortal = new TemplatePortal(templateRef, viewContainerRef);
   }
 
+  /** The associated overlay reference. */
   get overlayRef(): OverlayRef {
     return this._overlayRef;
   }
 
+  /** The element's layout direction. */
   get dir(): LayoutDirection {
     return this._dir ? this._dir.value : 'ltr';
   }

@@ -40,7 +40,7 @@ export class Overlay {
   /**
    * Creates an overlay.
    * @param state State to apply to the overlay.
-   * @returns A reference to the created overlay.
+   * @returns Reference to the created overlay.
    */
   create(state: OverlayState = defaultState): OverlayRef {
     return this._createOverlayRef(this._createPaneElement(), state);
@@ -50,13 +50,13 @@ export class Overlay {
    * Returns a position builder that can be used, via fluent API,
    * to construct and configure a position strategy.
    */
-  position() {
+  position(): OverlayPositionBuilder {
     return this._positionBuilder;
   }
 
   /**
    * Creates the DOM element for an overlay and appends it to the overlay container.
-   * @returns Promise resolving to the created element.
+   * @returns Newly-created pane element
    */
   private _createPaneElement(): HTMLElement {
     let pane = document.createElement('div');
@@ -81,7 +81,6 @@ export class Overlay {
    * Creates an OverlayRef for an overlay in the given DOM element.
    * @param pane DOM element for the overlay
    * @param state
-   * @returns {OverlayRef}
    */
   private _createOverlayRef(pane: HTMLElement, state: OverlayState): OverlayRef {
     return new OverlayRef(this._createPortalHost(pane), pane, state, this._ngZone);

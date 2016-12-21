@@ -46,19 +46,21 @@ const MD_INPUT_INVALID_INPUT_TYPE = [
 
 let nextUniqueId = 0;
 
-
+/** @docs-private */
 export class MdInputPlaceholderConflictError extends MdError {
   constructor() {
     super('Placeholder attribute and child element were both specified.');
   }
 }
 
+/** @docs-private */
 export class MdInputUnsupportedTypeError extends MdError {
   constructor(type: string) {
     super(`Input type "${type}" isn't supported by md-input.`);
   }
 }
 
+/** @docs-private */
 export class MdInputDuplicatedHintError extends MdError {
   constructor(align: string) {
     super(`A hint was already declared for 'align="${align}"'.`);
@@ -98,14 +100,17 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   private _ariaRequired: boolean;
   private _ariaInvalid: boolean;
 
+  /** Mirrors the native `aria-disabled` attribute. */
   @Input('aria-disabled')
   get ariaDisabled(): boolean { return this._ariaDisabled; }
   set ariaDisabled(value) { this._ariaDisabled = coerceBooleanProperty(value); }
 
+  /** Mirrors the native `aria-required` attribute. */
   @Input('aria-required')
   get ariaRequired(): boolean { return this._ariaRequired; }
   set ariaRequired(value) { this._ariaRequired = coerceBooleanProperty(value); }
 
+  /** Mirrors the native `aria-invalid` attribute. */
   @Input('aria-invalid')
   get ariaInvalid(): boolean { return this._ariaInvalid; }
   set ariaInvalid(value) { this._ariaInvalid = coerceBooleanProperty(value); }
@@ -117,38 +122,80 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   @ContentChildren(MdHint) _hintChildren: QueryList<MdHint>;
 
   /** Readonly properties. */
+
+  /** Whether the element is focused. */
   get focused() { return this._focused; }
+
+  /** Whether the element is empty. */
   get empty() { return (this._value == null || this._value === '') && this.type !== 'date'; }
+
+  /** Amount of characters inside the element. */
   get characterCount(): number {
     return this.empty ? 0 : ('' + this._value).length;
   }
+
+  /** Unique element id. */
   get inputId(): string { return `${this.id}-input`; }
 
-  /**
-   * Bindings.
-   */
+  /** Alignment of the input container's content. */
   @Input() align: 'start' | 'end' = 'start';
+
+  /** Color of the input divider, based on the theme. */
   @Input() dividerColor: 'primary' | 'accent' | 'warn' = 'primary';
+
+  /** Text for the input hint. */
   @Input() hintLabel: string = '';
 
+  /** Mirrors the native `autocomplete` attribute. */
   @Input() autocomplete: string;
+
+  /** Mirrors the native `autocorrect` attribute. */
   @Input() autocorrect: string;
+
+  /** Mirrors the native `autocapitalize` attribute. */
   @Input() autocapitalize: string;
+
+  /** Unique id for the input element. */
   @Input() id: string = `md-input-${nextUniqueId++}`;
+
+  /** Mirrors the native `list` attribute. */
   @Input() list: string = null;
+
+  /** Mirrors the native `max` attribute. */
   @Input() max: string | number = null;
+
+  /** Mirrors the native `maxlength` attribute. */
   @Input() maxlength: number = null;
+
+  /** Mirrors the native `min` attribute. */
   @Input() min: string | number = null;
+
+  /** Mirrors the native `minlength` attribute. */
   @Input() minlength: number = null;
+
+  /** Mirrors the native `placeholder` attribute. */
   @Input() placeholder: string = null;
+
+  /** Mirrors the native `step` attribute. */
   @Input() step: number = null;
+
+  /** Mirrors the native `tabindex` attribute. */
   @Input() tabindex: number = null;
+
+  /** Mirrors the native `type` attribute. */
   @Input() type: string = 'text';
+
+  /** Mirrors the native `name` attribute. */
   @Input() name: string = null;
 
   // textarea-specific
+  /** Mirrors the native `rows` attribute. */
   @Input() rows: number = null;
+
+  /** Mirrors the native `cols` attribute. */
   @Input() cols: number = null;
+
+  /** Whether to do a soft or hard wrap of the text.. */
   @Input() wrap: 'soft' | 'hard' = null;
 
   private _floatingPlaceholder: boolean = true;
@@ -158,26 +205,32 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   private _required: boolean = false;
   private _spellcheck: boolean = false;
 
+  /** Text for the floating placeholder. */
   @Input()
   get floatingPlaceholder(): boolean { return this._floatingPlaceholder; }
   set floatingPlaceholder(value) { this._floatingPlaceholder = coerceBooleanProperty(value); }
 
+  /** Whether to automatically focus the input. */
   @Input()
   get autofocus(): boolean { return this._autofocus; }
   set autofocus(value) { this._autofocus = coerceBooleanProperty(value); }
 
+  /** Whether the input is disabled. */
   @Input()
   get disabled(): boolean { return this._disabled; }
   set disabled(value) { this._disabled = coerceBooleanProperty(value); }
 
+  /** Whether the input is readonly. */
   @Input()
   get readonly(): boolean { return this._readonly; }
   set readonly(value) { this._readonly = coerceBooleanProperty(value); }
 
+  /** Whether the input is required. */
   @Input()
   get required(): boolean { return this._required; }
   set required(value) { this._required = coerceBooleanProperty(value); }
 
+  /** Whether spellchecking is enable on the input. */
   @Input()
   get spellcheck(): boolean { return this._spellcheck; }
   set spellcheck(value) { this._spellcheck = coerceBooleanProperty(value); }
@@ -186,18 +239,22 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   private _blurEmitter: EventEmitter<FocusEvent> = new EventEmitter<FocusEvent>();
   private _focusEmitter: EventEmitter<FocusEvent> = new EventEmitter<FocusEvent>();
 
+  /** Event emitted when the input is blurred. */
   @Output('blur')
   get onBlur(): Observable<FocusEvent> {
     return this._blurEmitter.asObservable();
   }
 
+  /** Event emitted when the input is focused. */
   @Output('focus')
   get onFocus(): Observable<FocusEvent> {
     return this._focusEmitter.asObservable();
   }
 
+  /** Value of the input. */
+  @Input()
   get value(): any { return this._value; };
-  @Input() set value(v: any) {
+  set value(v: any) {
     v = this._convertValueForInputType(v);
     if (v !== this._value) {
       this._value = v;
@@ -247,22 +304,37 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
     return !!this.placeholder || this._placeholderChild != null;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Sets the model value of the input. Implemented as part of ControlValueAccessor.
+   * @param value Value to be set.
+   */
   writeValue(value: any) {
     this._value = value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to be triggered when the input value has changed.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnChange(fn: any) {
     this._onChangeCallback = fn;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to be triggered when the input has been touched.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnTouched(fn: any) {
     this._onTouchedCallback = fn;
   }
 
-  /** Implemented as a part of ControlValueAccessor. */
+  /**
+   * Sets whether the input is disabled.
+   * Implemented as a part of ControlValueAccessor.
+   * @param isDisabled Whether the input should be disabled.
+   */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }

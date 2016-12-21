@@ -17,9 +17,14 @@ export class TileStyler {
   /**
    * Adds grid-list layout info once it is available. Cannot be processed in the constructor
    * because these properties haven't been calculated by that point.
+   *
+   * @param gutterSize Size of the grid's gutter.
+   * @param tracker Instance of the TileCoordinator.
+   * @param cols Amount of columns in the grid.
+   * @param direction Layout direction of the grid.
    */
-  init(_gutterSize: string, tracker: TileCoordinator, cols: number, direction: string): void {
-    this._gutterSize = normalizeUnits(_gutterSize);
+  init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string): void {
+    this._gutterSize = normalizeUnits(gutterSize);
     this._rows = tracker.rowCount;
     this._rowspan = tracker.rowspan;
     this._cols = cols;
@@ -67,7 +72,12 @@ export class TileStyler {
   }
 
 
-  /** Gets the style properties to be applied to a tile for the given row and column index. */
+  /**
+   * Sets the style properties to be applied to a tile for the given row and column index.
+   * @param tile Tile to which to apply the styling.
+   * @param rowIndex Index of the tile's row.
+   * @param colIndex Index of the tile's column.
+   */
   setStyle(tile: MdGridTile, rowIndex: number, colIndex: number): void {
     // Percent of the available horizontal space that one column takes up.
     let percentWidthPerTile = 100 / this._cols;
@@ -93,12 +103,17 @@ export class TileStyler {
     tile._setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
   }
 
-  /** Calculates the total size taken up by gutters across one axis of a list. */
+  /**
+   * Calculates the total size taken up by gutters across one axis of a list.
+   */
   getGutterSpan(): string {
     return `${this._gutterSize} * (${this._rowspan} - 1)`;
   }
 
-  /** Calculates the total size taken up by tiles across one axis of a list. */
+  /**
+   * Calculates the total size taken up by tiles across one axis of a list.
+   * @param tileHeight Height of the tile.
+   */
   getTileSpan(tileHeight: string): string {
     return `${this._rowspan} * ${this.getTileSize(tileHeight, 1)}`;
   }
@@ -106,12 +121,14 @@ export class TileStyler {
   /**
    * Sets the vertical placement of the tile in the list.
    * This method will be implemented by each type of TileStyler.
+   * @docs-private
    */
   setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number, gutterWidth: number) {}
 
   /**
    * Calculates the computed height and returns the correct style property to set.
    * This method will be implemented by each type of TileStyler.
+   * @docs-private
    */
   getComputedHeight(): [string, string] { return null; }
 }

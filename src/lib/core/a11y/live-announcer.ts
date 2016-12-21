@@ -7,6 +7,7 @@ import {
 
 export const LIVE_ANNOUNCER_ELEMENT_TOKEN  = new OpaqueToken('liveAnnouncerElement');
 
+/** Possible politeness levels. */
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
 @Injectable()
@@ -23,8 +24,9 @@ export class LiveAnnouncer {
   }
 
   /**
+   * Announces a message to screenreaders.
    * @param message Message to be announced to the screenreader
-   * @param politeness The politeness of the announcer element.
+   * @param politeness The politeness of the announcer element
    */
   announce(message: string, politeness: AriaLivePoliteness = 'polite'): void {
     this._liveElement.textContent = '';

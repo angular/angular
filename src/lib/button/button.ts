@@ -17,7 +17,9 @@ import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
 
-
+/**
+ * Material design button.
+ */
 @Component({
   moduleId: module.id,
   selector: 'button[md-button], button[md-raised-button], button[md-icon-button], ' +
@@ -114,6 +116,9 @@ export class MdButton {
   }
 }
 
+/**
+ * Raised Material design button.
+ */
 @Component({
   moduleId: module.id,
   selector: 'a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab]',

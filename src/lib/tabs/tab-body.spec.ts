@@ -173,7 +173,7 @@ describe('MdTabBody', () => {
 
 @Component({
   template: `
-    <template>Tab Body Content</template> 
+    <template>Tab Body Content</template>
     <md-tab-body [content]="content" [position]="position" [origin]="origin"></md-tab-body>
   `
 })

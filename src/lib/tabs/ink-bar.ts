@@ -34,7 +34,6 @@ export class MdInkBar {
   /**
    * Generates the pixel distance from the left based on the provided element in string format.
    * @param element
-   * @returns {string}
    */
   private _getLeftPosition(element: HTMLElement): string {
     return element ? element.offsetLeft + 'px' : '0';
@@ -43,7 +42,6 @@ export class MdInkBar {
   /**
    * Generates the pixel width from the provided element in string format.
    * @param element
-   * @returns {string}
    */
   private _getElementWidth(element: HTMLElement): string {
     return element ? element.offsetWidth + 'px' : '0';

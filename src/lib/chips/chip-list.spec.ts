@@ -47,9 +47,7 @@ describe('MdChipList', () => {
     });
 
     it('focuses the first chip on focus', () => {
-      let FOCUS_EVENT: Event = {} as Event;
-
-      chipListInstance.focus(FOCUS_EVENT);
+      chipListInstance.focus();
       fixture.detectChanges();
 
       expect(manager.focusedItemIndex).toBe(0);
@@ -109,7 +107,6 @@ describe('MdChipList', () => {
       });
 
       it('SPACE selects/deselects the currently focused chip', () => {
-        let FOCUS_EVENT: Event = {} as Event;
         let SPACE_EVENT: KeyboardEvent = new FakeEvent(SPACE) as KeyboardEvent;
         let firstChip: MdChip = chips.toArray()[0];
 
@@ -117,7 +114,7 @@ describe('MdChipList', () => {
         spyOn(testComponent, 'chipDeselect');
 
         // Make sure we have the first chip focused
-        chipListInstance.focus(FOCUS_EVENT);
+        chipListInstance.focus();
 
         // Use the spacebar to select the chip
         chipListInstance._keydown(SPACE_EVENT);
@@ -144,14 +141,13 @@ describe('MdChipList', () => {
       });
 
       it('SPACE ignores selection', () => {
-        let FOCUS_EVENT: Event = {} as Event;
         let SPACE_EVENT: KeyboardEvent = new FakeEvent(SPACE) as KeyboardEvent;
         let firstChip: MdChip = chips.toArray()[0];
 
         spyOn(testComponent, 'chipSelect');
 
         // Make sure we have the first chip focused
-        chipListInstance.focus(FOCUS_EVENT);
+        chipListInstance.focus();
 
         // Use the spacebar to attempt to select the chip
         chipListInstance._keydown(SPACE_EVENT);

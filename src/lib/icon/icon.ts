@@ -71,21 +71,25 @@ export class MdIconInvalidNameError extends MdError {
 export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   private _color: string;
 
+  /** Name of the icon in the SVG icon set. */
   @Input() svgIcon: string;
+
+  /** Font set that the icon is a part of. */
   @Input() fontSet: string;
+
+  /** Name of an icon within a font set. */
   @Input() fontIcon: string;
+
+  /** Alt label to be used for accessibility. */
   @Input() alt: string;
 
+  /** Screenreader label for the icon. */
   @Input('aria-label') hostAriaLabel: string = '';
 
+  /** Color of the icon. */
   @Input()
-  get color(): string {
-    return this._color;
-  }
-
-  set color(value: string) {
-    this._updateColor(value);
-  }
+  get color(): string { return this._color; }
+  set color(value: string) { this._updateColor(value); }
 
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;

@@ -54,6 +54,10 @@ export class MdSliderChange {
   value: number;
 }
 
+/**
+ * Allows users to select from a range of values by moving the slider thumb. It is similar in
+ * behavior to the native `<input type="range">` element.
+ */
 @Component({
   moduleId: module.id,
   selector: 'md-slider, mat-slider',
@@ -92,16 +96,16 @@ export class MdSlider implements ControlValueAccessor {
   /** The dimensions of the slider. */
   private _sliderDimensions: ClientRect = null;
 
-  /** Whether or not the slider is disabled. */
   private _disabled: boolean = false;
 
+  /** Whether or not the slider is disabled. */
   @Input()
   get disabled(): boolean { return this._disabled; }
   set disabled(value) { this._disabled = coerceBooleanProperty(value); }
 
-  /** Whether or not to show the thumb label. */
   private _thumbLabel: boolean = false;
 
+  /** Whether or not to show the thumb label. */
   @Input('thumbLabel')
   get thumbLabel(): boolean { return this._thumbLabel; }
   set thumbLabel(value) { this._thumbLabel = coerceBooleanProperty(value); }
@@ -131,19 +135,19 @@ export class MdSlider implements ControlValueAccessor {
    */
   _isActive: boolean = false;
 
-  /** The values at which the thumb will snap. */
   private _step: number = 1;
 
+  /** The values at which the thumb will snap. */
   @Input()
   get step() { return this._step; }
   set step(v) { this._step = coerceNumberProperty(v, this._step); }
+
+  private _tickInterval: 'auto' | number = 0;
 
   /**
    * How often to show ticks. Relative to the step so that a tick always appears on a step.
    * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
    */
-  private _tickInterval: 'auto' | number = 0;
-
   @Input()
   get tickInterval() { return this._tickInterval; }
   set tickInterval(v) {
@@ -155,19 +159,19 @@ export class MdSlider implements ControlValueAccessor {
   get _tickIntervalDeprecated() { return this.tickInterval; }
   set _tickIntervalDeprecated(v) { this.tickInterval = v; }
 
-  /** The size of a tick interval as a percentage of the size of the track. */
   private _tickIntervalPercent: number = 0;
 
+  /** The size of a tick interval as a percentage of the size of the track. */
   get tickIntervalPercent() { return this._tickIntervalPercent; }
 
-  /** The percentage of the slider that coincides with the value. */
   private _percent: number = 0;
 
+  /** The percentage of the slider that coincides with the value. */
   get percent() { return this._clamp(this._percent); }
 
-  /** Value of the slider. */
   private _value: number = null;
 
+  /** Value of the slider. */
   @Input()
   get value() {
     // If the value needs to be read and it is still uninitialized, initialize it to the min.
@@ -181,9 +185,9 @@ export class MdSlider implements ControlValueAccessor {
     this._percent = this._calculatePercentage(this._value);
   }
 
-  /** The miniumum value that the slider can have. */
   private _min: number = 0;
 
+  /** The miniumum value that the slider can have. */
   @Input()
   get min() {
     return this._min;
@@ -198,9 +202,9 @@ export class MdSlider implements ControlValueAccessor {
     this._percent = this._calculatePercentage(this.value);
   }
 
-  /** The maximum value that the slider can have. */
   private _max: number = 100;
 
+  /** The maximum value that the slider can have. */
   @Input()
   get max() {
     return this._max;
@@ -294,6 +298,7 @@ export class MdSlider implements ControlValueAccessor {
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
+  /** Event emitted when the slider value has changed. */
   @Output() change = new EventEmitter<MdSliderChange>();
 
   constructor(@Optional() private _dir: Dir, elementRef: ElementRef) {
@@ -476,22 +481,37 @@ export class MdSlider implements ControlValueAccessor {
     return Math.max(min, Math.min(value, max));
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Sets the model value. Implemented as part of ControlValueAccessor.
+   * @param value
+   */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to eb triggered when the value has changed.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback to be triggered when the component is touched.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn Callback to be registered.
+   */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Sets whether the component should be disabled.
+   * Implemented as part of ControlValueAccessor.
+   * @param isDisabled
+   */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }

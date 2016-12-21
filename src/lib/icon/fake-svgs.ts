@@ -4,6 +4,7 @@ import {
 
 /**
  * Fake URLs and associated SVG documents used by tests.
+ * @docs-private
  */
 const FAKE_SVGS = (() => {
   const svgs = new Map<string, string>();
@@ -45,6 +46,7 @@ const FAKE_SVGS = (() => {
 
 /**
  * Returns an HTTP response for a fake SVG URL.
+ * @docs-private
  */
 export function getFakeSvgHttpResponse(url: string) {
   if (FAKE_SVGS.has(url)) {

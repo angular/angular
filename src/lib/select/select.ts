@@ -182,15 +182,18 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     },
   ];
 
+  /** Trigger that opens the select. */
   @ViewChild('trigger') trigger: ElementRef;
+
+  /** Overlay pane containing the options. */
   @ViewChild(ConnectedOverlayDirective) overlayDir: ConnectedOverlayDirective;
+
+  /** All of the defined select options. */
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
+  /** Placeholder to be shown if no value has been selected. */
   @Input()
-  get placeholder() {
-    return this._placeholder;
-  }
-
+  get placeholder() { return this._placeholder; }
   set placeholder(value: string) {
     this._placeholder = value;
 
@@ -198,25 +201,22 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     Promise.resolve(null).then(() => this._triggerWidth = this._getWidth());
   }
 
+  /** Whether the component is disabled. */
   @Input()
-  get disabled() {
-    return this._disabled;
-  }
-
+  get disabled() { return this._disabled; }
   set disabled(value: any) {
     this._disabled = coerceBooleanProperty(value);
   }
 
+  /** Whether the component is required. */
   @Input()
-  get required() {
-    return this._required;
-  }
+  get required() { return this._required; }
+  set required(value: any) { this._required = coerceBooleanProperty(value); }
 
-  set required(value: any) {
-    this._required = coerceBooleanProperty(value);
-  }
-
+  /** Event emitted when the select has been opened. */
   @Output() onOpen = new EventEmitter();
+
+  /** Event emitted when the select has been closed. */
   @Output() onClose = new EventEmitter();
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
@@ -266,6 +266,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /**
    * Sets the select's value. Part of the ControlValueAccessor interface
    * required to integrate with Angular's core forms API.
+   *
+   * @param value New value to be written to the model.
    */
   writeValue(value: any): void {
     if (!this.options) {
@@ -284,6 +286,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    * Saves a callback function to be invoked when the select's value
    * changes from user input. Part of the ControlValueAccessor interface
    * required to integrate with Angular's core forms API.
+   *
+   * @param fn Callback to be triggered when the value changes.
    */
   registerOnChange(fn: (value: any) => void): void {
     this._onChange = fn;
@@ -293,6 +297,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
    * Saves a callback function to be invoked when the select is blurred
    * by the user. Part of the ControlValueAccessor interface required
    * to integrate with Angular's core forms API.
+   *
+   * @param fn Callback to be triggered when the component has been touched.
    */
   registerOnTouched(fn: () => {}): void {
     this._onTouched = fn;
@@ -301,6 +307,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /**
    * Disables the select. Part of the ControlValueAccessor interface required
    * to integrate with Angular's core forms API.
+   *
+   * @param isDisabled Sets whether the component is disabled.
    */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;

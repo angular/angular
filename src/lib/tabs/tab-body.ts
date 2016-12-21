@@ -38,6 +38,9 @@ export type MdTabBodyPositionState =
  */
 export type MdTabBodyOriginState = 'left' | 'right';
 
+/**
+ * Wrapper for the contents of a tab.
+ */
 @Component({
   moduleId: module.id,
   selector: 'md-tab-body',
@@ -89,8 +92,9 @@ export class MdTabBody implements OnInit {
     }
   }
 
-  /** The origin position from which this tab should appear when it is centered into view. */
   _origin: MdTabBodyOriginState;
+
+  /** The origin position from which this tab should appear when it is centered into view. */
   @Input('origin') set origin(origin: number) {
     if (origin == null) { return; }
 

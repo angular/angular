@@ -44,7 +44,10 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   /** Config object to be passed into the menu's ngClass */
   _classList: any = {};
 
+  /** Position of the menu in the X axis. */
   positionX: MenuPositionX = 'after';
+
+  /** Position of the menu in the Y axis. */
   positionY: MenuPositionY = 'below';
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
@@ -68,7 +71,6 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this._tabSubscription.unsubscribe();
   }
 
-
   /**
    * This method takes classes set on the host md-menu element and applies them on the
    * menu template that displays in the overlay container.  Otherwise, it's difficult
@@ -84,6 +86,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this.setPositionClasses(this.positionX, this.positionY);
   }
 
+  /** Event emitted when the menu is closed. */
   @Output() close = new EventEmitter<void>();
 
   /**

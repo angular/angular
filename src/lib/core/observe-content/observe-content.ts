@@ -9,12 +9,17 @@ import {
   AfterContentInit
 } from '@angular/core';
 
+/**
+ * Directive that triggers a callback whenever the content of
+ * its associated element has changed.
+ */
 @Directive({
   selector: '[cdkObserveContent]'
 })
 export class ObserveContent implements AfterContentInit, OnDestroy {
   private _observer: MutationObserver;
 
+  /** Event emitted for each change in the element's content. */
   @Output('cdkObserveContent') event = new EventEmitter<void>();
 
   constructor(private _elementRef: ElementRef) {}

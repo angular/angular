@@ -48,7 +48,9 @@ export class FocusTrap {
     });
   }
 
-  /** Focuses the first tabbable element within the focus trap region. */
+  /**
+   * Focuses the first tabbable element within the focus trap region.
+   */
   focusFirstTabbableElement() {
     let rootElement = this.trappedContent.nativeElement;
     let redirectToElement = rootElement.querySelector('[cdk-focus-start]') as HTMLElement ||
@@ -59,7 +61,9 @@ export class FocusTrap {
     }
   }
 
-  /** Focuses the last tabbable element within the focus trap region. */
+  /**
+   * Focuses the last tabbable element within the focus trap region.
+   */
   focusLastTabbableElement() {
     let rootElement = this.trappedContent.nativeElement;
     let focusTargets = rootElement.querySelectorAll('[cdk-focus-end]');

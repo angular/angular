@@ -85,17 +85,14 @@ export class MdProgressSpinner implements OnDestroy {
     this._interdeterminateInterval = interval;
   }
 
-  /** Clean up any animations that were running. */
+  /**
+   * Clean up any animations that were running.
+   */
   ngOnDestroy() {
     this._cleanupIndeterminateAnimation();
   }
 
-  /**
-   * Value of the progress circle.
-   *
-   * Input:number
-   * _value is bound to the host as the attribute aria-valuenow.
-   */
+  /** Value of the progress circle. It is bound to the host as the attribute aria-valuenow. */
   private _value: number;
   @Input()
   @HostBinding('attr.aria-valuenow')

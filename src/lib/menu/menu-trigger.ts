@@ -56,8 +56,13 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   get _deprecatedMenuTriggerFor(): MdMenuPanel { return this.menu; }
   set _deprecatedMenuTriggerFor(v: MdMenuPanel) { this.menu = v; }
 
+  /** References the menu instance that the trigger is associated with. */
   @Input('mdMenuTriggerFor') menu: MdMenuPanel;
+
+  /** Event emitted when the associated menu is opened. */
   @Output() onMenuOpen = new EventEmitter<void>();
+
+  /** Event emitted when the associated menu is closed. */
   @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
@@ -71,12 +76,15 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() { this.destroyMenu(); }
 
+  /** Whether the menu is open. */
   get menuOpen(): boolean { return this._menuOpen; }
 
+  /** Toggles the menu between the open and closed states. */
   toggleMenu(): void {
     return this._menuOpen ? this.closeMenu() : this.openMenu();
   }
 
+  /** Opens the menu. */
   openMenu(): void {
     if (!this._menuOpen) {
       this._createOverlay();
@@ -86,6 +94,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     }
   }
 
+  /** Closes the menu. */
   closeMenu(): void {
     if (this._overlayRef) {
       this._overlayRef.detach();
@@ -94,6 +103,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     }
   }
 
+  /** Removes the menu from the DOM. */
   destroyMenu(): void {
     if (this._overlayRef) {
       this._overlayRef.dispose();
@@ -103,6 +113,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     }
   }
 
+  /** Focuses the menu trigger. */
   focus() {
     this._renderer.invokeElementMethod(this._element.nativeElement, 'focus');
   }

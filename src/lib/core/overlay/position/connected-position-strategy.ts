@@ -54,6 +54,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     this.withFallbackPosition(_originPos, _overlayPos);
   }
 
+  /** Ordered list of preferred positions, from most to least desirable. */
   get positions() {
     return this._preferredPositions;
   }
@@ -67,6 +68,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
    * @docs-private
+   *
+   * @param element Element to which to apply the CSS styles.
+   * @returns Resolves when the styles have been applied.
    */
   apply(element: HTMLElement): Promise<void> {
     // We need the bounding rects for the origin and the overlay to determine how to position
@@ -105,6 +109,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     return Promise.resolve(null);
   }
 
+  /**
+   * Adds a new preferred fallback position.
+   * @param originPos
+   * @param overlayPos
+   */
   withFallbackPosition(
       originPos: OriginConnectionPosition,
       overlayPos: OverlayConnectionPosition): this {
@@ -112,19 +121,28 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     return this;
   }
 
-  /** Sets the layout direction so the overlay's position can be adjusted to match. */
+  /**
+   * Sets the layout direction so the overlay's position can be adjusted to match.
+   * @param dir New layout direction.
+   */
   withDirection(dir: 'ltr' | 'rtl'): this {
     this._dir = dir;
     return this;
   }
 
-  /** Sets an offset for the overlay's connection point on the x-axis */
+  /**
+   * Sets an offset for the overlay's connection point on the x-axis
+   * @param offset New offset in the X axis.
+   */
   withOffsetX(offset: number): this {
     this._offsetX = offset;
     return this;
   }
 
-  /** Sets an offset for the overlay's connection point on the y-axis */
+  /**
+   * Sets an offset for the overlay's connection point on the y-axis
+   * @param  offset New offset in the Y axis.
+   */
   withOffsetY(offset: number): this {
     this._offsetY = offset;
     return this;

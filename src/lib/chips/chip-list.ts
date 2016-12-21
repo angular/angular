@@ -61,8 +61,7 @@ export class MdChipList implements AfterContentInit {
   /** The chip components contained within this chip list. */
   chips: QueryList<MdChip>;
 
-  constructor(private _elementRef: ElementRef) {
-  }
+  constructor(private _elementRef: ElementRef) { }
 
   ngAfterContentInit(): void {
     this._keyManager = new ListKeyManager(this.chips).withFocusWrap();
@@ -89,16 +88,15 @@ export class MdChipList implements AfterContentInit {
   }
 
   /**
-   * Programmatically focus the chip list. This in turn focuses the first non-disabled chip in this
-   * chip list.
-   *
-   * TODO: ARIA says this should focus the first `selected` chip.
+   * Programmatically focus the chip list. This in turn focuses the first
+   * non-disabled chip in this chip list.
    */
-  focus(event: Event) {
+  focus() {
+    // TODO: ARIA says this should focus the first `selected` chip.
     this._keyManager.focusFirstItem();
   }
 
-  /** Pass relevant key presses to our key manager. */
+  /** Passes relevant key presses to our key manager. */
   _keydown(event: KeyboardEvent) {
     switch (event.keyCode) {
       case SPACE:
@@ -190,7 +188,7 @@ export class MdChipList implements AfterContentInit {
    * Utility to ensure all indexes are valid.
    *
    * @param index The index to be checked.
-   * @returns {boolean} True if the index is valid for our list of chips.
+   * @returns True if the index is valid for our list of chips.
    */
   private _isValidIndex(index: number): boolean {
     return index >= 0 && index < this.chips.length;

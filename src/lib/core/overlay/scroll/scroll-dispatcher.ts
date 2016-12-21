@@ -30,6 +30,8 @@ export class ScrollDispatcher {
   /**
    * Registers a Scrollable with the service and listens for its scrolled events. When the
    * scrollable is scrolled, the service emits the event in its scrolled observable.
+   *
+   * @param scrollable Scrollable instance to be registered.
    */
   register(scrollable: Scrollable): void {
     const scrollSubscription = scrollable.elementScrolled().subscribe(() => this._notify());
@@ -38,6 +40,8 @@ export class ScrollDispatcher {
 
   /**
    * Deregisters a Scrollable reference and unsubscribes from its scroll event observable.
+   *
+   * @param scrollable Scrollable instance to be deregistered.
    */
   deregister(scrollable: Scrollable): void {
     this.scrollableReferences.get(scrollable).unsubscribe();
@@ -47,9 +51,9 @@ export class ScrollDispatcher {
   /**
    * Returns an observable that emits an event whenever any of the registered Scrollable
    * references (or window, document, or body) fire a scrolled event.
-   * TODO: Add an event limiter that includes throttle with the leading and trailing events.
    */
   scrolled(): Observable<void> {
+    // TODO: Add an event limiter that includes throttle with the leading and trailing events.
     return this._scrolled.asObservable();
   }
 

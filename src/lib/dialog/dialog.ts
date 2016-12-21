@@ -27,7 +27,8 @@ export class MdDialog {
   /**
    * Opens a modal dialog containing the given component.
    * @param component Type of the component to load into the load.
-   * @param config
+   * @param config Extra configuration options.
+   * @returns Reference to the newly-opened dialog.
    */
   open<T>(component: ComponentType<T>, config?: MdDialogConfig): MdDialogRef<T> {
     config = _applyConfigDefaults(config);
@@ -151,6 +152,7 @@ export class MdDialog {
 
   /**
    * Removes a dialog from the array of open dialogs.
+   * @param dialogRef Dialog to be removed.
    */
   private _removeOpenDialog(dialogRef: MdDialogRef<any>) {
     let index = this._openDialogs.indexOf(dialogRef);

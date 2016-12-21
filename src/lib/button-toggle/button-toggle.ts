@@ -26,7 +26,7 @@ import {
   DefaultStyleCompatibilityModeModule,
 } from '../core';
 
-
+/** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
 
 
@@ -102,6 +102,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._isInitialized = true;
   }
 
+  /** `name` attribute for the underlying `input` element. */
   @Input()
   get name(): string {
     return this._name;
@@ -112,6 +113,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._updateButtonToggleNames();
   }
 
+  /** Whether the toggle group is disabled. */
   @Input()
   get disabled(): boolean {
     return this._disabled;
@@ -121,6 +123,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._disabled = coerceBooleanProperty(value);
   }
 
+  /** Whether the toggle group is vertical. */
   @Input()
   get vertical(): boolean {
     return this._vertical;
@@ -130,6 +133,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._vertical = coerceBooleanProperty(value);
   }
 
+  /** Value of the toggle group. */
   @Input()
   get value(): any {
     return this._value;
@@ -149,6 +153,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     }
   }
 
+  /** Whether the toggle group is selected. */
   @Input()
   get selected() {
     return this._selected;
@@ -199,17 +204,28 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     this._change.emit(event);
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Sets the model value. Implemented as part of ControlValueAccessor.
+   * @param value Value to be set to the model.
+   */
   writeValue(value: any) {
     this.value = value;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback that will be triggered when the value has changed.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn On change callback function.
+   */
   registerOnChange(fn: (value: any) => void) {
     this._controlValueAccessorChangeFn = fn;
   }
 
-  /** Implemented as part of ControlValueAccessor. */
+  /**
+   * Registers a callback that will be triggered when the control has been touched.
+   * Implemented as part of ControlValueAccessor.
+   * @param fn On touch callback function.
+   */
   registerOnTouched(fn: any) {
     this.onTouched = fn;
   }
@@ -230,6 +246,7 @@ export class MdButtonToggleGroupMultiple {
   /** Whether the button toggle group should be vertical. */
   private _vertical: boolean = false;
 
+  /** Whether the toggle group is disabled. */
   @Input()
   get disabled(): boolean {
     return this._disabled;
@@ -239,6 +256,7 @@ export class MdButtonToggleGroupMultiple {
     this._disabled = (value != null && value !== false) ? true : null;
   }
 
+  /** Whether the toggle group is vertical. */
   @Input()
   get vertical(): boolean {
     return this._vertical;
@@ -250,6 +268,7 @@ export class MdButtonToggleGroupMultiple {
 
 }
 
+/** Single button inside of a toggle group. */
 @Component({
   moduleId: module.id,
   selector: 'md-button-toggle',
@@ -332,10 +351,12 @@ export class MdButtonToggle implements OnInit {
     }
   }
 
+  /** Unique ID for the underlying `input` element. */
   get inputId(): string {
     return `${this.id}-input`;
   }
 
+  /** Whether the button is checked. */
   @HostBinding('class.md-button-toggle-checked')
   @Input()
   get checked(): boolean {
@@ -380,6 +401,7 @@ export class MdButtonToggle implements OnInit {
     this._change.emit(event);
   }
 
+  /** Whether the button is disabled. */
   @HostBinding('class.md-button-toggle-disabled')
   @Input()
   get disabled(): boolean {
@@ -425,6 +447,7 @@ export class MdButtonToggle implements OnInit {
     event.stopPropagation();
   }
 
+  /** Focuses the button. */
   focus() {
     this._renderer.invokeElementMethod(this._inputElement.nativeElement, 'focus');
   }

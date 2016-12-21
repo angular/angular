@@ -58,6 +58,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   get _deprecatedPortal() { return this.portal; }
   set _deprecatedPortal(v) { this.portal = v; }
 
+  /** Portal associated with the Portal host. */
   get portal(): Portal<any> {
     return this._portal;
   }
@@ -72,7 +73,11 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
     this.dispose();
   }
 
-  /** Attach the given ComponentPortal to this PortalHost using the ComponentFactoryResolver. */
+  /**
+   * Attach the given ComponentPortal to this PortalHost using the ComponentFactoryResolver.
+   *
+   * @param portal Portal to be attached to the portal host.
+   */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     portal.setAttachedHost(this);
 
@@ -92,7 +97,10 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
     return ref;
   }
 
-  /** Attach the given TemplatePortal to this PortlHost as an embedded View. */
+  /**
+   * Attach the given TemplatePortal to this PortlHost as an embedded View.
+   * @param portal Portal to be attached.
+   */
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     portal.setAttachedHost(this);
 

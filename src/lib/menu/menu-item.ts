@@ -26,25 +26,18 @@ export class MdMenuItem implements Focusable {
   }
 
   // this is necessary to support anchors
+  /** Whether the menu item is disabled. */
   @HostBinding('attr.disabled')
   @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
+  get disabled(): boolean { return this._disabled; }
   set disabled(value: boolean) {
     this._disabled = (value === false || value === undefined) ? null : true;
   }
 
+  /** Sets the aria-disabled property on the menu item. */
   @HostBinding('attr.aria-disabled')
-  get isAriaDisabled(): string {
-    return String(!!this.disabled);
-  }
-
-  get _tabindex() {
-    return this.disabled ? '-1' : '0';
-  }
-
+  get isAriaDisabled(): string { return String(!!this.disabled); }
+  get _tabindex() { return this.disabled ? '-1' : '0'; }
 
   _getHostElement(): HTMLElement {
     return this._elementRef.nativeElement;

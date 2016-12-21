@@ -17,7 +17,7 @@ export interface MdChipEvent {
 }
 
 /**
- * A material design styled Chip component. Used inside the MdChipList component.
+ * Material design styled Chip component. Used inside the MdChipList component.
  */
 @Component({
   selector: 'md-basic-chip, [md-basic-chip], md-chip, [md-chip]',
@@ -56,8 +56,7 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
   /** Emitted when the chip is destroyed. */
   @Output() destroy = new EventEmitter<MdChipEvent>();
 
-  constructor(protected _renderer: Renderer, protected _elementRef: ElementRef) {
-  }
+  constructor(protected _renderer: Renderer, protected _elementRef: ElementRef) { }
 
   ngOnInit(): void {
     this._addDefaultCSSClass();
@@ -98,7 +97,10 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
     }
   }
 
-  /** Toggles the current selected state of this chip. */
+  /**
+   * Toggles the current selected state of this chip.
+   * @return Whether the chip is selected.
+   */
   toggleSelected(): boolean {
     this.selected = !this.selected;
     return this.selected;

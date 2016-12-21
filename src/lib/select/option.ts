@@ -16,6 +16,9 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
  */
 let _uniqueIdCounter = 0;
 
+/**
+ * Single option inside of a `<md-select>` element.
+ */
 @Component({
   moduleId: module.id,
   selector: 'md-option, mat-option',
@@ -48,14 +51,10 @@ export class MdOption {
   /** The form value of the option. */
   @Input() value: any;
 
+  /** Whether the option is disabled. */
   @Input()
-  get disabled() {
-    return this._disabled;
-  }
-
-  set disabled(value: any) {
-    this._disabled = coerceBooleanProperty(value);
-  }
+  get disabled() { return this._disabled; }
+  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
   /** Event emitted when the option is selected. */
   @Output() onSelect = new EventEmitter();
@@ -70,9 +69,9 @@ export class MdOption {
   /**
    * The displayed value of the option. It is necessary to show the selected option in the
    * select's trigger.
-   * TODO(kara): Add input property alternative for node envs.
    */
   get viewValue(): string {
+    // TODO(kara): Add input property alternative for node envs.
     return this._getHostElement().textContent.trim();
   }
 
