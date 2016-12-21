@@ -31,6 +31,7 @@ export class MdToolbar {
 
   constructor(private elementRef: ElementRef, private renderer: Renderer) { }
 
+  /** The color of the toolbar. Can be primary, accent, or warn. */
   @Input()
   get color(): string {
     return this._color;
