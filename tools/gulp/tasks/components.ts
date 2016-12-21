@@ -5,11 +5,10 @@ import {
   DIST_COMPONENTS_ROOT, PROJECT_ROOT, COMPONENTS_DIR, HTML_MINIFIER_OPTIONS
 } from '../constants';
 import {sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask} from '../task_helpers';
-import {writeFileSync} from 'fs';
 
 // No typings for these.
 const inlineResources = require('../../../scripts/release/inline-resources');
-const rollup = require('rollup').rollup;
+const gulpRollup = require('gulp-better-rollup');
 const gulpMinifyCss = require('gulp-clean-css');
 const gulpMinifyHtml = require('gulp-htmlmin');
 const gulpIf = require('gulp-if');
@@ -85,30 +84,23 @@ task(':build:components:rollup', () => {
     'rxjs/Observable': 'Rx'
   };
 
-  // Rollup the @angular/material UMD bundle from all ES5 + imports JavaScript files built.
-  return rollup({
-    entry: path.join(DIST_COMPONENTS_ROOT, 'index.js'),
+  const rollupOptions = {
     context: 'this',
     external: Object.keys(globals)
-  }).then((bundle: { generate: any }) => {
-    const result = bundle.generate({
-      moduleName: 'ng.material',
-      format: 'umd',
-      globals,
-      sourceMap: true,
-      dest: path.join(DIST_COMPONENTS_ROOT, 'material.umd.js')
-    });
+  };
 
-    // Add source map URL to the code.
-    result.code += '\n\n//# sourceMappingURL=./material.umd.js.map\n';
-    // Format mapping to show properly in the browser. Rollup by default will put the path
-    // as relative to the file, and since that path is in src/lib and the file is in
-    // dist/@angular/material, we need to kill a few `../`.
-    result.map.sources = result.map.sources.map((s: string) => s.replace(/^(\.\.\/)+/, ''));
+  const rollupGenerateOptions = {
+    // Keep the moduleId empty because we don't want to force developers to a specific moduleId.
+    moduleId: '',
+    moduleName: 'ng.material',
+    format: 'umd',
+    globals,
+    dest: 'material.umd.js'
+  };
 
-    writeFileSync(path.join(DIST_COMPONENTS_ROOT, 'material.umd.js'), result.code, 'utf8');
-    writeFileSync(path.join(DIST_COMPONENTS_ROOT, 'material.umd.js.map'), result.map, 'utf8');
-  });
+  return src(path.join(DIST_COMPONENTS_ROOT, 'index.js'))
+    .pipe(gulpRollup(rollupOptions, rollupGenerateOptions))
+    .pipe(dest(path.join(DIST_COMPONENTS_ROOT, 'bundles')));
 });
 
 /** Builds components with resources (html, css) inlined into the built JS (ESM output). */

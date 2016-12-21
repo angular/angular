@@ -19,14 +19,11 @@ System.config({
       'vendor/@angular/platform-browser/bundles/platform-browser-testing.umd.js',
     '@angular/platform-browser-dynamic':
       'vendor/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
+    '@angular/material': '@angular/material/bundles/material.umd.js'
   },
   packages: {
     // Thirdparty barrels.
     'rxjs': { main: 'index' },
-    '@angular/material': {
-      format: 'cjs',
-      main: 'material.umd.js'
-    },
     // Set the default extension for the root package, because otherwise the demo-app can't
     // be built within the production mode. Due to missing file extensions.
     '.': {
