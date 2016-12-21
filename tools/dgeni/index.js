@@ -130,6 +130,9 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'common.template.html'
   ];
 
+  // dgeni disables autoescape by default, but we want this turned on.
+  templateEngine.config.autoescape = true;
+
   // Nunjucks and Angular conflict in their template bindings so change Nunjucks
   templateEngine.config.tags = {
     variableStart: '{$',

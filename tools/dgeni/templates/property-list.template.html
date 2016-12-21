@@ -1,0 +1,12 @@
+{%- if propertyList.length -%}
+  <h5> Properties </h5>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+    {% for p in propertyList %}
+      {$ property(p) $}
+    {% endfor %}
+  </table>
+{%- endif -%}

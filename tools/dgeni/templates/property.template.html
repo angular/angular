@@ -1,0 +1,22 @@
+<tr>
+  <td>
+    {%- if property.isDirectiveInput -%}
+      {%- if property.directiveInputAlias -%}
+        <p>@Input({$ property.directiveInputAlias $})</p>
+      {% else %}
+        <p>@Input()</p>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if property.isDirectiveOutput -%}
+      {%- if property.directiveOutputAlias -%}
+        <p>@Output({$ property.directiveOutputAlias $})</p>
+      {% else %}
+        <p>@Output()</p>
+      {%- endif -%}
+    {%- endif -%}
+
+    <p>{$ property.name $}</p>
+    <p><code>{$ property.type $}</code></p>
+  </td>
+  <td> {$ property.description $}</td>
+</tr>

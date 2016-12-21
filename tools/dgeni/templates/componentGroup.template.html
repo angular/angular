@@ -11,81 +11,44 @@
   }
 </style>
 
-<h2>{$ doc.name $}</h2>
-<p> Module: <code>{$ doc.ngModule.name $}</code> </p>
+{# Defines macros for reusable templates. #}
+{% macro method(method) -%}
+  {% include 'method.template.html' %}
+{% endmacro %}
 
-<h3>Directives</h3>
+{% macro property(property) -%}
+  {% include 'property.template.html' %}
+{% endmacro %}
 
-{% for directive in doc.directives %}
-  <h4>{$ directive.name $}</h4>
-  <p> {$ directive.description $} </p>
+{% macro methodList(methodList) -%}
+  {% include 'method-list.template.html' %}
+{% endmacro %}
 
-  {%- if directive.properties.length -%}
-    <h5> Properties </h5>
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-      {% for property in directive.properties %}
-        <tr>
-          <td>
-            {%- if property.isDirectiveInput -%}
-              <p>@Input</p>
-            {%- endif -%}
+{% macro propertyList(propertyList) -%}
+  {% include 'property-list.template.html' %}
+{% endmacro %}
 
-            <p>{$ property.name $}</p>
-            <p><code>{$ property.type $}</code></p>
-          </td>
-          <td> {$ property.description $}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  {%- endif -%}
+{% macro class(class) -%}
+  {% include 'class.template.html' %}
+{% endmacro %}
 
-  {%- if directive.methods.length -%}
-    <h5> Methods </h5>
-    {% for method in directive.methods %}
-    <table>
-      <tr>
-        <th colspan="2">{$ method.name $}</th>
-      </tr>
-      <tr>
-        <td colspan="2"> {$ method.description $} </td>
-      </tr>
-
-      {%- if method.params.length -%}
-        <tr>
-          <th colspan="2"> Parameters </th>
-        </tr>
-        {% for parameter in method.params %}
-          <tr>
-            <td>
-              <p>{$ parameter.name $}</p>
-              <p>{$ parameter.type $}</p>
-            </td>
-            <td>
-              {$ parameter.description $}
-            </td>
-          </tr>
-        {% endfor %}
-      {%- endif -%}
-
-      {%- if method.showReturns -%}
-        <tr>
-          <th colspan="2"> Returns </th>
-        </tr>
-        <tr>
-          <td>{$ method.returnType $}</td>
-          <td>{$ method.returns.description $}</td>
-        </tr>
-      {%- endif -%}
-    </table>
-    {% endfor %}
-  {%- endif -%}
-
-{% endfor %}
+<h1>{$ doc.name $}</h1>
+<h2>
+  Module: <code>{$ doc.ngModule.name $}</code>
+</h2>
 
 
+{%- if doc.services.length -%}
+  <h2>Services</h2>
+  {% for service in doc.services %}
+    {$ class(service) $}
+  {% endfor %}
+{%- endif -%}
 
 
+{%- if doc.directives.length -%}
+  <h2>Directives</h2>
+  {% for directive in doc.directives %}
+    {$ class(directive) $}
+  {% endfor %}
+{%- endif -%}

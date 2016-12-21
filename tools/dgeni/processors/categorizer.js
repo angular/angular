@@ -34,7 +34,10 @@ module.exports = function categorizer() {
           doc.isNgModule = true;
         } else if (doc.docType == 'member') {
           doc.isDirectiveInput = isDirectiveInput(doc);
+          doc.directiveInputAlias = getDirectiveInputAlias(doc);
+
           doc.isDirectiveOutput = isDirectiveOutput(doc);
+          doc.directiveOutputAlias = getDirectiveOutputAlias(doc);
 
           doc.classDoc.properties ?
               doc.classDoc.properties.push(doc) :
@@ -61,6 +64,14 @@ function normalizeMethodParameters(method) {
     method.parameters.forEach(parameter => {
       let [parameterName, parameterType] = parameter.split(':');
 
+      // If the parameter is optional, the name here will contain a '?'. We store whether the
+      // parameter is optional and remove the '?' for comparison.
+      let isOptional = false;
+      if (parameterName.includes('?')) {
+        isOptional = true;
+        parameterName = parameterName.replace('?', '');
+      }
+
       if (!method.params) {
         method.params = [];
       }
@@ -73,6 +84,7 @@ function normalizeMethodParameters(method) {
       }
 
       jsDocParam.type = parameterType.trim();
+      jsDocParam.isOptional = isOptional;
     });
   }
 }
@@ -95,6 +107,14 @@ function isDirectiveOutput(doc) {
 
 function isDirectiveInput(doc) {
   return hasMemberDecorator(doc, 'Input');
+}
+
+function getDirectiveInputAlias(doc) {
+  return isDirectiveInput(doc) ? doc.decorators.find(d => d.name == 'Input').arguments[0] : '';
+}
+
+function getDirectiveOutputAlias(doc) {
+  return isDirectiveOutput(doc) ? doc.decorators.find(d => d.name == 'Output').arguments[0] : '';
 }
 
 function hasMemberDecorator(doc, decoratorName) {
