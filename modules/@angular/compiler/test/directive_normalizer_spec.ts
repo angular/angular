@@ -373,8 +373,8 @@ export function main() {
                  styles: [],
                  styleUrls: []
                },
-               '<link rel="stylesheet" href="aUrl">', 'package:some/module/');
-           expect(template.styleUrls).toEqual(['package:some/module/aUrl']);
+               '<link rel="stylesheet" href="aUrl.css">', 'package:some/module/');
+           expect(template.styleUrls).toEqual(['package:some/module/aUrl.css']);
          }));
 
       it('should collect styleUrls in elements',
@@ -387,8 +387,8 @@ export function main() {
                  styles: [],
                  styleUrls: []
                },
-               '<div><link rel="stylesheet" href="aUrl"></div>', 'package:some/module/');
-           expect(template.styleUrls).toEqual(['package:some/module/aUrl']);
+               '<div><link rel="stylesheet" href="aUrl.css"></div>', 'package:some/module/');
+           expect(template.styleUrls).toEqual(['package:some/module/aUrl.css']);
          }));
 
       it('should ignore link elements with non stylesheet rel attribute',
