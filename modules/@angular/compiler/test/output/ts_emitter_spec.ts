@@ -113,6 +113,14 @@ export function main() {
       expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
     });
 
+    it('should apply quotes to each entry within a map produced with literalMap when true', () => {
+      expect(
+          emitStmt(
+              o.literalMap([['a', o.literal('a')], ['*', o.literal('star')]], null, true).toStmt())
+              .replace(/\s+/gm, ''))
+          .toEqual(`{'a':'a','*':'star'};`);
+    });
+
     it('should support blank literals', () => {
       expect(emitStmt(o.literal(null).toStmt())).toEqual('(null as any);');
       expect(emitStmt(o.literal(undefined).toStmt())).toEqual('(undefined as any);');

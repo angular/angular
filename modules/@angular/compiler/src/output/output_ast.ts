@@ -894,8 +894,10 @@ export function literalArr(values: Expression[], type: Type = null): LiteralArra
   return new LiteralArrayExpr(values, type);
 }
 
-export function literalMap(values: [string, Expression][], type: MapType = null): LiteralMapExpr {
-  return new LiteralMapExpr(values.map(entry => new LiteralMapEntry(entry[0], entry[1])), type);
+export function literalMap(
+    values: [string, Expression][], type: MapType = null, quoted: boolean = false): LiteralMapExpr {
+  return new LiteralMapExpr(
+      values.map(entry => new LiteralMapEntry(entry[0], entry[1], quoted)), type);
 }
 
 export function not(expr: Expression): NotExpr {
