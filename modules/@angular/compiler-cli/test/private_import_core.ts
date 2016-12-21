@@ -9,5 +9,5 @@
 import {__core_private__ as r} from '@angular/core';
 
 export type ReflectionCapabilities = typeof r._ReflectionCapabilities;
-export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
-export var reflector: typeof r.reflector = r.reflector;
+export const ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
+export const reflector: typeof r.reflector = r.reflector;

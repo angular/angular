@@ -11,6 +11,8 @@ import {NgZone} from '@angular/core';
 import {global} from './facade/lang';
 import {getDOM} from './private_import_platform-browser';
 
+export let browserDetection: BrowserDetection = new BrowserDetection(null);
+
 export class BrowserDetection {
   private _overrideUa: string;
   private get _ua(): string {
@@ -132,8 +134,6 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
   return result;
 }
-
-export var browserDetection: BrowserDetection = new BrowserDetection(null);
 
 export function createNgZone(): NgZone {
   return new NgZone({enableLongStackTrace: true});

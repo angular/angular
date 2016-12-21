@@ -8,6 +8,6 @@
 
 import {__router_private__ as _} from '@angular/router';
 
-export var ROUTER_PROVIDERS: typeof _.ROUTER_PROVIDERS = _.ROUTER_PROVIDERS;
-export var ROUTES: typeof _.ROUTES = _.ROUTES;
-export var flatten: typeof _.flatten = _.flatten;
+export const ROUTER_PROVIDERS: typeof _.ROUTER_PROVIDERS = _.ROUTER_PROVIDERS;
+export const ROUTES: typeof _.ROUTES = _.ROUTES;
+export const flatten: typeof _.flatten = _.flatten;

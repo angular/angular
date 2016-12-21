@@ -8,31 +8,31 @@
 
 import {Math} from '@angular/facade/src/math';
 
-export var ITEMS = 1000;
-export var ITEM_HEIGHT = 40;
-export var VISIBLE_ITEMS = 17;
+export const ITEMS = 1000;
+export const ITEM_HEIGHT = 40;
+export const VISIBLE_ITEMS = 17;
 
-export var HEIGHT = ITEMS * ITEM_HEIGHT;
-export var VIEW_PORT_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
+export const HEIGHT = ITEMS * ITEM_HEIGHT;
+export const VIEW_PORT_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS;
 
-export var COMPANY_NAME_WIDTH = 100;
-export var OPPORTUNITY_NAME_WIDTH = 100;
-export var OFFERING_NAME_WIDTH = 100;
-export var ACCOUNT_CELL_WIDTH = 50;
-export var BASE_POINTS_WIDTH = 50;
-export var KICKER_POINTS_WIDTH = 50;
-export var STAGE_BUTTONS_WIDTH = 220;
-export var BUNDLES_WIDTH = 120;
-export var DUE_DATE_WIDTH = 100;
-export var END_DATE_WIDTH = 100;
-export var AAT_STATUS_WIDTH = 100;
-export var ROW_WIDTH = COMPANY_NAME_WIDTH + OPPORTUNITY_NAME_WIDTH + OFFERING_NAME_WIDTH +
+export const COMPANY_NAME_WIDTH = 100;
+export const OPPORTUNITY_NAME_WIDTH = 100;
+export const OFFERING_NAME_WIDTH = 100;
+export const ACCOUNT_CELL_WIDTH = 50;
+export const BASE_POINTS_WIDTH = 50;
+export const KICKER_POINTS_WIDTH = 50;
+export const STAGE_BUTTONS_WIDTH = 220;
+export const BUNDLES_WIDTH = 120;
+export const DUE_DATE_WIDTH = 100;
+export const END_DATE_WIDTH = 100;
+export const AAT_STATUS_WIDTH = 100;
+export const ROW_WIDTH = COMPANY_NAME_WIDTH + OPPORTUNITY_NAME_WIDTH + OFFERING_NAME_WIDTH +
     ACCOUNT_CELL_WIDTH + BASE_POINTS_WIDTH + KICKER_POINTS_WIDTH + STAGE_BUTTONS_WIDTH +
     BUNDLES_WIDTH + DUE_DATE_WIDTH + END_DATE_WIDTH + AAT_STATUS_WIDTH;
 
-export var STATUS_LIST = ['Planned', 'Pitched', 'Won', 'Lost'];
+export const STATUS_LIST = ['Planned', 'Pitched', 'Won', 'Lost'];
 
-export var AAT_STATUS_LIST = ['Active', 'Passive', 'Abandoned'];
+export const AAT_STATUS_LIST = ['Active', 'Passive', 'Abandoned'];
 
 // Imitate Streamy entities.
 

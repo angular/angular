@@ -8,4 +8,4 @@
 
 import {__platform_browser_dynamic_private__ as _} from '@angular/platform-browser-dynamic';
 
-export var ResourceLoaderImpl: typeof _.ResourceLoaderImpl = _.ResourceLoaderImpl;
+export const ResourceLoaderImpl: typeof _.ResourceLoaderImpl = _.ResourceLoaderImpl;

@@ -19,12 +19,12 @@ export {inject} from './test_bed';
 export * from './logger';
 export * from './ng_zone_mock';
 
-export var proxy: ClassDecorator = (t: any) => t;
+export const proxy: ClassDecorator = (t: any) => t;
 
 const _global = <any>(typeof window === 'undefined' ? global : window);
 
-export var afterEach: Function = _global.afterEach;
-export var expect: (actual: any) => jasmine.Matchers = _global.expect;
+export const afterEach: Function = _global.afterEach;
+export const expect: (actual: any) => jasmine.Matchers = _global.expect;
 
 const jsmBeforeEach = _global.beforeEach;
 const jsmDescribe = _global.describe;

@@ -57,7 +57,7 @@ export interface IRootScopeService {
   [key: string]: any;
 }
 export interface IScope extends IRootScopeService {}
-;
+
 export interface IAngularBootstrapConfig { strictDi?: boolean; }
 export interface IDirective {
   compile?: IDirectiveCompileFn;
@@ -190,9 +190,9 @@ try {
   // ignore in CJS mode.
 }
 
-export var bootstrap = angular.bootstrap;
-export var module = angular.module;
-export var element = angular.element;
-export var version = angular.version;
-export var resumeBootstrap = angular.resumeBootstrap;
-export var getTestability = angular.getTestability;
+export const bootstrap = angular.bootstrap;
+export const module = angular.module;
+export const element = angular.element;
+export const version = angular.version;
+export const resumeBootstrap = angular.resumeBootstrap;
+export const getTestability = angular.getTestability;

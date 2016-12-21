@@ -332,7 +332,7 @@ export function main() {
           static ctorParameters = () =>
               [{type: A, decorators: [{type: ParamDecorator, args: ['a']}]},
                {type: B, decorators: [{type: ParamDecorator, args: ['b']}]},
-          ];
+          ]
         }
 
         class Child extends Parent {}
