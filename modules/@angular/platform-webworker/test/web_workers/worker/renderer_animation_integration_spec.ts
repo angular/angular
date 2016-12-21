@@ -9,7 +9,6 @@
 import {AUTO_STYLE, AnimationTransitionEvent, Component, Injector, ViewChild, animate, state, style, transition, trigger} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {ViewChild} from '@angular/core/src/metadata/di';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {MockAnimationPlayer} from '@angular/core/testing/testing_internal';
@@ -207,12 +206,14 @@ export function main() {
          uiDriver.log.shift()['player'].finish();
 
          const [triggerOneStart, triggerOneDone] = log['one'];
+         expect(triggerOneStart.triggerName).toEqual('one');
          expect(triggerOneStart.fromState).toEqual('a');
          expect(triggerOneStart.toState).toEqual('b');
          expect(triggerOneStart.totalTime).toEqual(500);
          expect(triggerOneStart.phaseName).toEqual('start');
          expect(triggerOneStart.element instanceof ElementRef).toEqual(true);
 
+         expect(triggerOneDone.triggerName).toEqual('one');
          expect(triggerOneDone.fromState).toEqual('a');
          expect(triggerOneDone.toState).toEqual('b');
          expect(triggerOneDone.totalTime).toEqual(500);
@@ -222,12 +223,14 @@ export function main() {
          uiDriver.log.shift()['player'].finish();
 
          const [triggerTwoStart, triggerTwoDone] = log['two'];
+         expect(triggerTwoStart.triggerName).toEqual('two');
          expect(triggerTwoStart.fromState).toEqual('c');
          expect(triggerTwoStart.toState).toEqual('d');
          expect(triggerTwoStart.totalTime).toEqual(1000);
          expect(triggerTwoStart.phaseName).toEqual('start');
          expect(triggerTwoStart.element instanceof ElementRef).toEqual(true);
 
+         expect(triggerTwoDone.triggerName).toEqual('two');
          expect(triggerTwoDone.fromState).toEqual('c');
          expect(triggerTwoDone.toState).toEqual('d');
          expect(triggerTwoDone.totalTime).toEqual(1000);
@@ -263,6 +266,7 @@ export function main() {
          uiDriver.log.shift()['player'].finish();
 
          const start1 = cmp1Log['start'];
+         expect(start1.triggerName).toEqual('myTrigger');
          expect(start1.fromState).toEqual('void');
          expect(start1.toState).toEqual('off');
          expect(start1.totalTime).toEqual(500);
@@ -270,6 +274,7 @@ export function main() {
          expect(start1.element instanceof ElementRef).toBe(true);
 
          const done1 = cmp1Log['done'];
+         expect(done1.triggerName).toEqual('myTrigger');
          expect(done1.fromState).toEqual('void');
          expect(done1.toState).toEqual('off');
          expect(done1.totalTime).toEqual(500);
@@ -281,6 +286,7 @@ export function main() {
          uiDriver.log.shift()['player'].finish();
 
          const start2 = cmp2Log['start'];
+         expect(start2.triggerName).toEqual('myTrigger');
          expect(start2.fromState).toEqual('void');
          expect(start2.toState).toEqual('on');
          expect(start2.totalTime).toEqual(1000);
@@ -288,6 +294,7 @@ export function main() {
          expect(start2.element instanceof ElementRef).toBe(true);
 
          const done2 = cmp2Log['done'];
+         expect(done2.triggerName).toEqual('myTrigger');
          expect(done2.fromState).toEqual('void');
          expect(done2.toState).toEqual('on');
          expect(done2.totalTime).toEqual(1000);

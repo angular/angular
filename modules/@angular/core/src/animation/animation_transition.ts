@@ -12,8 +12,8 @@ import {AnimationTransitionEvent} from './animation_transition_event';
 
 export class AnimationTransition {
   constructor(
-      private _player: AnimationPlayer, private _element: ElementRef, private _fromState: string,
-      private _toState: string, private _totalTime: number) {}
+      private _player: AnimationPlayer, private _element: ElementRef, private _triggerName: string,
+      private _fromState: string, private _toState: string, private _totalTime: number) {}
 
   private _createEvent(phaseName: string): AnimationTransitionEvent {
     return new AnimationTransitionEvent({
@@ -21,7 +21,8 @@ export class AnimationTransition {
       toState: this._toState,
       totalTime: this._totalTime,
       phaseName: phaseName,
-      element: this._element
+      element: this._element,
+      triggerName: this._triggerName
     });
   }
 
