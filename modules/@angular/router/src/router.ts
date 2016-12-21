@@ -384,10 +384,7 @@ export class Router {
           return;
         }
 
-        setTimeout(() => {
-          this.scheduleNavigation(
-              rawUrlTree, false, {skipLocationChange: change['pop'], replaceUrl: true});
-        }, 0);
+        setTimeout(() => { this.scheduleNavigation(rawUrlTree, false, {replaceUrl: true}); }, 0);
       }));
     }
   }
