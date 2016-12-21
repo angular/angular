@@ -103,7 +103,10 @@ export class TsickleCompilerHost extends DelegatingHost {
         let {output, externs, diagnostics} =
             tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
         this.diagnostics = diagnostics;
-        return ts.createSourceFile(fileName, output, languageVersion, true);
+        const annotatedSourceFile = ts.createSourceFile(fileName, output, languageVersion, true);
+        let {output: fixedImports} = tsickle.fixIndexImports(this.oldProgram, annotatedSourceFile, this.options, this.delegate);
+
+        return ts.createSourceFile(fileName, fixedImports, languageVersion, true);
       };
 }
 
