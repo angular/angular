@@ -92,7 +92,8 @@ export class NgFor implements DoCheck, OnChanges {
   @Input()
   set ngForTrackBy(fn: TrackByFn) {
     if (typeof fn !== 'function') {
-      throw new Error(`trackBy must be a function, but received ${JSON.stringify(fn)}`);
+      throw new Error(`trackBy must be a function, but received ${JSON.stringify(fn)}.
+      See https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation for more information.`);
     }
     this._trackByFn = fn;
   }
