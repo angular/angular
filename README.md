@@ -22,7 +22,7 @@ Playing with the latest changes from [master](https://github.com/angular/materia
 
 ### Getting started
 
-See our [Getting Started Guide](https://github.com/angular/material2/blob/master/GETTING_STARTED.md)
+See our [Getting Started Guide][getting-started]
 if you're building your first project with Angular Material 2.
 
 ### Project status
@@ -114,7 +114,7 @@ High level items planned for December 2016:
 [17]: https://github.com/angular/material2/blob/master/src/lib/menu/README.md
 [18]: https://github.com/angular/material2/blob/master/src/lib/tooltip/README.md
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
-[20]: https://github.com/angular/material2/blob/master/docs/theming.md
+[20]: https://github.com/angular/material2/blob/master/guides/theming.md
 [21]: https://github.com/angular/material2/blob/master/src/lib/snack-bar/README.md
 [22]: https://github.com/angular/material2/blob/master/src/lib/dialog/README.md
 
@@ -135,6 +135,9 @@ High level items planned for December 2016:
 [0823]: https://github.com/angular/material2/issues/823
 [0675]: https://github.com/angular/material2/issues/675
 [0581]: https://github.com/angular/material2/issues/581
+
+[getting-started]: https://github.com/angular/material2/blob/master/guides/theming.md
+[theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 
 
 "Available" means that the components or feature is published and available for use, but may still

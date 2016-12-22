@@ -191,7 +191,7 @@ contains all of the components. Build tools such as [`rollup.js`](http://rollupj
 tree-shaking to eliminate the code for components that you aren't using.
 
 The addition of theming as also changed the directory structure for bringing the core css into your
-application. See the new [theming guide](docs/theming.md) for more information.
+application. See the new [theming guide](guides/theming.md) for more information.
 
 
 ### Features

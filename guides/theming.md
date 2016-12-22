@@ -106,7 +106,7 @@ With this, any element inside of a parent with the `unicorn-dark-theme` class wi
 dark theme.
 
 ### Theming your own components
-For more details about theming your own components, see [theming-your-components.md](https://github.com/angular/material2/blob/master/docs/theming-your-components.md)
+For more details about theming your own components, see [theming-your-components.md](https://github.com/angular/material2/blob/master/guides/theming-your-components.md)
 
 ### Future work
 * Once CSS variables (custom properties) are available in all the browsers we support,

@@ -12,7 +12,7 @@ import * as path from 'path';
 const EXAMPLE_PATTERN = /<!--\W*example\(([^)]+)\)\W*-->/g;
 
 gulp.task('docs', () => {
-  return gulp.src(['src/lib/**/*.md'])
+  return gulp.src(['src/lib/**/*.md', 'guides/*.md'])
       .pipe(markdown({
         // Add syntax highlight using highlight.js
         highlight: (code: string, language: string) => {
