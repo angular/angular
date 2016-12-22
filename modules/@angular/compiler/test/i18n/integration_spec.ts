@@ -144,14 +144,25 @@ function expectHtml(el: DebugElement, cssSelector: string): any {
 <!-- /i18n -->
 
 <div id="i18n-15"><ng-container i18n>it <b>should</b> work</ng-container></div>
+
 <div id="i18n-16" i18n="@@i18n16">with an explicit ID</div>
 <div id="i18n-17" i18n="@@i18n17">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
+
+<!-- make sure that ICU messages are not treated as text nodes -->
+<div i18n="desc">{
+    response.getItemsList().length,
+    plural,
+    =0 {Found no results}
+    =1 {Found one result}
+    other {Found {{response.getItemsList().length}} results}
+}</div>
 `
 })
 class I18nComponent {
   count: number;
   sex: string;
   sexB: string;
+  response: any = {getItemsList: (): any[] => []};
 }
 
 class FrLocalization extends NgLocalization {
@@ -190,6 +201,7 @@ const XTB = `
   <translation id="i18n16">avec un ID explicite</translation>
   <translation id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph 
   name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
+  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>  
 </translationbundle>`;
 
 // unused, for reference only
@@ -205,20 +217,21 @@ const XMB = `
   <msg id="8670732454866344690">on translatable node</msg>
   <msg id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
   <msg id="1746565782635215">
-        <ph name="ICU"/>
+        <ph name="ICU"><ex>ICU</ex></ph>
     </msg>
   <msg id="5868084092545682515">{VAR_SELECT, select, m {male} f {female} }</msg>
-  <msg id="4851788426695310455"><ph name="INTERPOLATION"/></msg>
-  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"/></msg>
-  <msg id="8324617391167353662"><ph name="CUSTOM_NAME"/></msg>
+  <msg id="4851788426695310455"><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="9013357158046221374">sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="8324617391167353662"><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
   <msg id="7685649297917455806">in a translatable section</msg>
   <msg id="2387287228265107305">
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>   
     <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
-    <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"/><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
+    <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"><ex>ICU</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
 </msg>
   <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
   <msg id="i18n16">with an explicit ID</msg>
   <msg id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="4085484936881858615">{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
 </messagebundle>
 `;
