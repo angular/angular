@@ -167,10 +167,12 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       });
     }
 
-    this.callLifecycleHook('$onInit', this.controllerInstance);
+    if (this.controllerInstance && isFunction(this.controllerInstance.$onInit)) {
+      this.controllerInstance.$onInit();
+    }
 
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.callLifecycleHook('$doCheck', this.controllerInstance);
+      const callDoCheck = () => this.controllerInstance.$doCheck();
 
       this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -200,7 +202,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    this.callLifecycleHook('$postLink', this.controllerInstance);
+    if (this.controllerInstance && isFunction(this.controllerInstance.$postLink)) {
+      this.controllerInstance.$postLink();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -208,7 +212,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     Object.keys(changes).forEach(
         propName => this.bindingDestination[propName] = changes[propName].currentValue);
 
-    this.callLifecycleHook('$onChanges', this.bindingDestination, changes);
+    if (isFunction(this.bindingDestination.$onChanges)) {
+      this.bindingDestination.$onChanges(changes);
+    }
   }
 
   ngDoCheck() {
@@ -231,14 +237,10 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.callLifecycleHook('$onDestroy', this.controllerInstance);
-    this.$componentScope.$destroy();
-  }
-
-  private callLifecycleHook(method: LifecycleHook, context: IBindingDestination, arg?: any) {
-    if (context && isFunction(context[method])) {
-      context[method](arg);
+    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
+      this.controllerInstance.$onDestroy();
     }
+    this.$componentScope.$destroy();
   }
 
   private getDirective(name: string): angular.IDirective {
