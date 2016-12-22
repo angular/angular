@@ -248,14 +248,14 @@ class TemplateParseVisitor implements html.Visitor {
       return null;
     }
 
-    const matchableAttrs: string[][] = [];
+    const matchableAttrs: [string, string][] = [];
     const elementOrDirectiveProps: BoundProperty[] = [];
     const elementOrDirectiveRefs: ElementOrDirectiveRef[] = [];
     const elementVars: VariableAst[] = [];
     const events: BoundEventAst[] = [];
 
     const templateElementOrDirectiveProps: BoundProperty[] = [];
-    const templateMatchableAttrs: string[][] = [];
+    const templateMatchableAttrs: [string, string][] = [];
     const templateElementVars: VariableAst[] = [];
 
     let hasInlineTemplates = false;
@@ -748,7 +748,7 @@ class NonBindableVisitor implements html.Visitor {
       return null;
     }
 
-    const attrNameAndValues = ast.attrs.map(attrAst => [attrAst.name, attrAst.value]);
+    const attrNameAndValues = ast.attrs.map((attr): [string, string] => [attr.name, attr.value]);
     const selector = createElementCssSelector(ast.name, attrNameAndValues);
     const ngContentIndex = parent.findNgContentIndex(selector);
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
@@ -817,16 +817,16 @@ class ElementContext {
 }
 
 export function createElementCssSelector(
-    elementName: string, matchableAttrs: string[][]): CssSelector {
+    elementName: string, attributes: [string, string][]): CssSelector {
   const cssSelector = new CssSelector();
   const elNameNoNs = splitNsName(elementName)[1];
 
   cssSelector.setElement(elNameNoNs);
 
-  for (let i = 0; i < matchableAttrs.length; i++) {
-    const attrName = matchableAttrs[i][0];
+  for (let i = 0; i < attributes.length; i++) {
+    const attrName = attributes[i][0];
     const attrNameNoNs = splitNsName(attrName)[1];
-    const attrValue = matchableAttrs[i][1];
+    const attrValue = attributes[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);
     if (attrName.toLowerCase() == CLASS_ATTR) {

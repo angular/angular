@@ -21,9 +21,9 @@ export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
 }
 
-export function getAttributesAsArray(node: Node): string[][] {
+export function getAttributesAsArray(node: Node): [string, string][] {
   const attributes = node.attributes;
-  let asArray: string[][];
+  let asArray: [string, string][];
   if (attributes) {
     let attrLen = attributes.length;
     asArray = new Array(attrLen);
