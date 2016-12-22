@@ -13,14 +13,14 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * Conditionally includes a template based on the value of an `expression`.
  *
  * `ngIf` evaluates the `expression` and then renders the `then` or `else` template in its place
- * when expression is thruthy or falsy respectively. Typically the:
+ * when expression is truthy or falsy respectively. Typically the:
  *  - `then` template is the inline template of `ngIf` unless bound to a different value.
- *  - `else` template is blank unless its bound.
+ *  - `else` template is blank unless it is bound.
  *
  * # Most common usage
  *
- * The most common usage of the `ngIf` is to conditionally show the inline template as seen in this
- * example:
+ * The most common usage of the `ngIf` directive is to conditionally show the inline template as
+ * seen in this example:
  * {@example common/ngIf/ts/module.ts region='NgIfSimple'}
  *
  * # Showing an alternative template using `else`
@@ -36,13 +36,13 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *
  * Usually the `then` template is the inlined template of the `ngIf`, but it can be changed using
  * a binding (just like `else`). Because `then` and `else` are bindings, the template references can
- * change at runtime as shown in thise example.
+ * change at runtime as shown in this example.
  *
  * {@example common/ngIf/ts/module.ts region='NgIfThenElse'}
  *
  * # Storing conditional result in a variable
  *
- * A common patter is that we need to show a set of properties from the same object. if the
+ * A common pattern is that we need to show a set of properties from the same object. If the
  * object is undefined, then we have to use the safe-traversal-operator `?.` to guard against
  * dereferencing a `null` value. This is especially the case when waiting on async data such as
  * when using the `async` pipe as shown in folowing example:
@@ -51,10 +51,10 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * Hello {{ (userStream|async)?.last }}, {{ (userStream|async)?.first }}!
  * ```
  *
- * There are several inefficiencies in the above example.
- *  - We create multiple subscriptions on the `userStream`. One for each `async` pipe, or two
- *    as shown in the example above.
- *  - We can not display an alternative screen while waiting for the data to arrive asynchronously.
+ * There are several inefficiencies in the above example:
+ *  - We create multiple subscriptions on `userStream`. One for each `async` pipe, or two in the
+ *    example above.
+ *  - We cannot display an alternative screen while waiting for the data to arrive asynchronously.
  *  - We have to use the safe-traversal-operator `?.` to access properties, which is cumbersome.
  *  - We have to place the `async` pipe in parenthesis.
  *
@@ -66,7 +66,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * Notice that:
  *  - We use only one `async` pipe and hence only one subscription gets created.
  *  - `ngIf` stores the result of the `userStream|async` in the local variable `user`.
- *  - The local `user` can than be bound repeatedly in a more efficient way.
+ *  - The local `user` can then be bound repeatedly in a more efficient way.
  *  - No need to use the safe-traversal-operator `?.` to access properties as `ngIf` will only
  *    display the data if `userStream` returns a value.
  *  - We can display an alternative template while waiting for the data.
