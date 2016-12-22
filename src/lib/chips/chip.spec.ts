@@ -38,8 +38,9 @@ describe('Chips', () => {
       document.body.removeChild(chipNativeElement);
     });
 
-    it('does not add the `md-chip` class', () => {
-      expect(chipNativeElement.classList).not.toContain('md-chip');
+    it('adds the `md-basic-chip` class', () => {
+      expect(chipNativeElement.classList).toContain('md-chip');
+      expect(chipNativeElement.classList).toContain('md-basic-chip');
     });
   });
 
@@ -67,6 +68,10 @@ describe('Chips', () => {
 
       it('adds the `md-chip` class', () => {
         expect(chipNativeElement.classList).toContain('md-chip');
+      });
+
+      it('does not add the `md-basic-chip` class', () => {
+        expect(chipNativeElement.classList).not.toContain('md-basic-chip');
       });
 
       it('emits focus on click', () => {

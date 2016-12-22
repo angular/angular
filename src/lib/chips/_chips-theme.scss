@@ -22,12 +22,12 @@
   $selected-background: if($is-dark-theme, md-color($background, app-bar), #808080);
   $selected-foreground: if($is-dark-theme, md-color($foreground, text), $light-selected-foreground);
 
-  .md-chip {
+  .md-chip:not(.md-basic-chip) {
     background-color: $unselected-background;
     color: $unselected-foreground;
   }
 
-  .md-chip.md-chip-selected {
+  .md-chip.md-chip-selected:not(.md-basic-chip) {
     background-color: $selected-background;
     color: $selected-foreground;
 

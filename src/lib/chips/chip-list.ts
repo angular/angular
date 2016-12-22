@@ -14,7 +14,7 @@ import {
 import {MdChip} from './chip';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
-import {SPACE} from '../core/keyboard/keycodes';
+import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 
 /**
  * A material design chips component (named ChipList for it's similarity to the List component).
@@ -98,18 +98,31 @@ export class MdChipList implements AfterContentInit {
 
   /** Passes relevant key presses to our key manager. */
   _keydown(event: KeyboardEvent) {
-    switch (event.keyCode) {
-      case SPACE:
-        // If we are selectable, toggle the focused chip
-        if (this.selectable) {
-          this._toggleSelectOnFocusedChip();
-        }
+    let target = event.target as HTMLElement;
 
-        // Always prevent space from scrolling the page since the list has focus
-        event.preventDefault();
-        break;
-      default:
-        this._keyManager.onKeydown(event);
+    // If they are on a chip, check for space/left/right, otherwise pass to our key manager
+    if (target && target.classList.contains('md-chip')) {
+      switch (event.keyCode) {
+        case SPACE:
+          // If we are selectable, toggle the focused chip
+          if (this.selectable) {
+            this._toggleSelectOnFocusedChip();
+          }
+
+          // Always prevent space from scrolling the page since the list has focus
+          event.preventDefault();
+          break;
+        case LEFT_ARROW:
+          this._keyManager.focusPreviousItem();
+          event.preventDefault();
+          break;
+        case RIGHT_ARROW:
+          this._keyManager.focusNextItem();
+          event.preventDefault();
+          break;
+        default:
+          this._keyManager.onKeydown(event);
+      }
     }
   }
 

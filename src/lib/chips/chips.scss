@@ -15,7 +15,7 @@ $md-chips-chip-margin: $md-chip-horizontal-padding / 4;
   /*
    * Only apply the margins to chips
    */
-  .md-chip {
+  .md-chip:not(.md-basic-chip) {
     margin: 0 $md-chips-chip-margin 0 $md-chips-chip-margin;
 
     // Remove the margin from the first element (in both LTR and RTL)
@@ -50,7 +50,7 @@ $md-chips-chip-margin: $md-chip-horizontal-padding / 4;
   }
 }
 
-.md-chip {
+.md-chip:not(.md-basic-chip) {
   display: inline-block;
   padding: $md-chip-vertical-padding $md-chip-horizontal-padding
     $md-chip-vertical-padding $md-chip-horizontal-padding;
@@ -63,7 +63,7 @@ $md-chips-chip-margin: $md-chip-horizontal-padding / 4;
 .md-chip-list-stacked .md-chip-list-wrapper {
   display: block;
 
-  .md-chip {
+  .md-chip:not(.md-basic-chip) {
     display: block;
     margin: 0;
     margin-bottom: $md-chip-vertical-padding;

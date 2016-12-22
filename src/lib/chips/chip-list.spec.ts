@@ -4,7 +4,15 @@ import {By} from '@angular/platform-browser';
 import {MdChip, MdChipList, MdChipsModule} from './index';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {FakeEvent} from '../core/a11y/list-key-manager.spec';
-import {SPACE} from '../core/keyboard/keycodes';
+import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
+
+class FakeKeyboardEvent extends FakeEvent {
+  constructor(keyCode: number, protected target: HTMLElement) {
+    super(keyCode);
+
+    this.target = target;
+  }
+}
 
 describe('MdChipList', () => {
   let fixture: ComponentFixture<any>;
@@ -101,6 +109,50 @@ describe('MdChipList', () => {
   });
 
   describe('keyboard behavior', () => {
+    beforeEach(() => {
+      manager = chipListInstance._keyManager;
+    });
+
+    it('left arrow focuses previous item', () => {
+      let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+      let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
+
+      let LEFT_EVENT = new FakeKeyboardEvent(LEFT_ARROW, lastNativeChip) as any;
+      let array = chips.toArray();
+      let lastIndex = array.length - 1;
+      let lastItem = array[lastIndex];
+
+      // Focus the last item in the array
+      lastItem.focus();
+      expect(manager.focusedItemIndex).toEqual(lastIndex);
+
+      // Press the LEFT arrow
+      chipListInstance._keydown(LEFT_EVENT);
+      fixture.detectChanges();
+
+      // It focuses the next-to-last item
+      expect(manager.focusedItemIndex).toEqual(lastIndex - 1);
+    });
+
+    it('right arrow focuses next item', () => {
+      let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+      let firstNativeChip = nativeChips[0] as HTMLElement;
+
+      let RIGHT_EVENT: KeyboardEvent = new FakeKeyboardEvent(RIGHT_ARROW, firstNativeChip) as any;
+      let array = chips.toArray();
+      let firstItem = array[0];
+
+      // Focus the last item in the array
+      firstItem.focus();
+      expect(manager.focusedItemIndex).toEqual(0);
+
+      // Press the RIGHT arrow
+      chipListInstance._keydown(RIGHT_EVENT);
+      fixture.detectChanges();
+
+      // It focuses the next-to-last item
+      expect(manager.focusedItemIndex).toEqual(1);
+    });
 
     describe('when selectable is true', () => {
       beforeEach(() => {
@@ -109,7 +161,10 @@ describe('MdChipList', () => {
       });
 
       it('SPACE selects/deselects the currently focused chip', () => {
-        let SPACE_EVENT: KeyboardEvent = new FakeEvent(SPACE) as KeyboardEvent;
+        let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+        let firstNativeChip = nativeChips[0] as HTMLElement;
+
+        let SPACE_EVENT: KeyboardEvent = new FakeKeyboardEvent(SPACE, firstNativeChip) as any;
         let firstChip: MdChip = chips.toArray()[0];
 
         spyOn(testComponent, 'chipSelect');
@@ -181,6 +236,9 @@ class StaticChipList {
   selectable: boolean = true;
   remove: Number;
 
-  chipSelect(index: Number) {}
-  chipDeselect(index: Number) {}
+  chipSelect(index: Number) {
+  }
+
+  chipDeselect(index: Number) {
+  }
 }

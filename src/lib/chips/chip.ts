@@ -136,8 +136,12 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
   private _addDefaultCSSClass() {
     let el: HTMLElement = this._elementRef.nativeElement;
 
-    if (el.nodeName.toLowerCase() == 'md-chip' || el.hasAttribute('md-chip')) {
-      el.classList.add('md-chip');
+    // Always add the `md-chip` class
+    el.classList.add('md-chip');
+
+    // If we are a basic chip, also add the `md-basic-chip` class for :not() targeting
+    if (el.nodeName.toLowerCase() == 'md-basic-chip' || el.hasAttribute('md-basic-chip')) {
+      el.classList.add('md-basic-chip');
     }
   }
 
