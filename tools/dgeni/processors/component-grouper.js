@@ -14,6 +14,7 @@ class ComponentGroup {
     this.docType = 'componentGroup';
     this.directives = [];
     this.services = [];
+    this.additionalClasses = [];
     this.ngModule = null;
   }
 }
@@ -50,6 +51,8 @@ module.exports = function componentGrouper() {
           group.services.push(doc);
         } else if (doc.isNgModule) {
           group.ngModule = doc;
+        } else if (doc.docType == 'class') {
+          group.additionalClasses.push(doc);
         }
       });
 

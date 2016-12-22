@@ -9,11 +9,18 @@ import {MdSnackBarContainer} from './snack-bar-container';
  * Reference to a snack bar dispatched from the snack bar service.
  */
 export class MdSnackBarRef<T> {
-  /** The instance of the component making up the content of the snack bar. */
-  readonly instance: T;
+  private _instance: T;
 
   /** The instance of the component making up the content of the snack bar. */
-  readonly containerInstance: MdSnackBarContainer;
+  get instance(): T {
+    return this._instance;
+  }
+
+  /**
+   * The instance of the component making up the content of the snack bar.
+   * @docs-private
+   */
+  containerInstance: MdSnackBarContainer;
 
   /** Subject for notifying the user that the snack bar has closed. */
   private _afterClosed: Subject<any> = new Subject();
@@ -28,7 +35,7 @@ export class MdSnackBarRef<T> {
               containerInstance: MdSnackBarContainer,
               private _overlayRef: OverlayRef) {
     // Sets the readonly instance of the snack bar content component.
-    this.instance = instance;
+    this._instance = instance;
     this.containerInstance = containerInstance;
     // Dismiss snackbar on action.
     this.onAction().subscribe(() => this.dismiss());

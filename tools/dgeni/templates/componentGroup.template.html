@@ -52,3 +52,10 @@
     {$ class(directive) $}
   {% endfor %}
 {%- endif -%}
+
+{%- if doc.additionalClasses.length -%}
+  <h2>Additional classes</h2>
+  {% for other in doc.additionalClasses %}
+    {$ class(other) $}
+  {% endfor %}
+{%- endif -%}
