@@ -12,7 +12,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 /**
  * Transforms text to lowercase.
  *
- * {@example  core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe' }
+ * {@example  common/pipes/ts/lowerupper_pipe.ts region='LowerUpperPipe' }
  *
  * @stable
  */
