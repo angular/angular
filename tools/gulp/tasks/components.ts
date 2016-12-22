@@ -2,7 +2,7 @@ import {task, watch, src, dest} from 'gulp';
 import * as path from 'path';
 
 import {
-  DIST_COMPONENTS_ROOT, PROJECT_ROOT, COMPONENTS_DIR, HTML_MINIFIER_OPTIONS
+  DIST_COMPONENTS_ROOT, PROJECT_ROOT, COMPONENTS_DIR, HTML_MINIFIER_OPTIONS, LICENSE_BANNER
 } from '../constants';
 import {sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask} from '../task_helpers';
 
@@ -95,6 +95,7 @@ task(':build:components:rollup', () => {
     moduleName: 'ng.material',
     format: 'umd',
     globals,
+    banner: LICENSE_BANNER,
     dest: 'material.umd.js'
   };
 
