@@ -18,7 +18,10 @@ Note: 4.0.0-beta.1 release also contains all the changes present in the 2.4.0 an
 * **core:** improve error message when component factory cannot be found ([#13541](https://github.com/angular/angular/issues/13541)) ([b9e979e](https://github.com/angular/angular/commit/b9e979e)), closes [#12678](https://github.com/angular/angular/issues/12678)
 * **router:** should reset location if a navigation by location is successful ([#13545](https://github.com/angular/angular/issues/13545)) ([a38f14b](https://github.com/angular/angular/commit/a38f14b)), closes [#13491](https://github.com/angular/angular/issues/13491)
 
+### Note ###
 
+With [#13420](https://github.com/angular/angular/pull/13420) incorrect usages of `trackBy` will lead to an error which may break your application. The only valid usage of `trackBy` is providing a function, as stated
+in the [docs](https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation)
 
 <a name="2.4.0"></a>
 # [2.4.0 stability-interjection](https://github.com/angular/angular/compare/2.3.1...2.4.0) (2016-12-20)
