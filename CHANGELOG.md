@@ -1,3 +1,12 @@
+<a name="4.0.0-beta.1"></a>
+# [4.0.0-beta.1](https://github.com/angular/angular/compare/2.4.0-marker...4.0.0-beta.1) (2016-12-22)
+
+### Features
+
+* **upgrade:** support the `$doCheck()` lifecycle hook in `UpgradeComponent` ([#13015](https://github.com/angular/angular/issues/13015)) ([9da4c25](https://github.com/angular/angular/commit/9da4c25))
+
+Note: 4.0.0-beta.1 release also contains all the changes present in the 2.4.0 and the 2.4.1 releases.
+
 <a name="2.4.1"></a>
 ## [2.4.1](https://github.com/angular/angular/compare/2.4.0...2.4.1) (2016-12-21)
 
