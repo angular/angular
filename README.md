@@ -10,22 +10,32 @@ This is the home for the Angular team's Material Design components built on top 
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md),
 [Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
 
-### Getting started 
+### Installation
+
+The latest release of Angular Material can be installed from npm
+
+`npm install @angular/material`
+
+Playing with the latest changes from [master](https://github.com/angular/material2/tree/master) is also possible
+
+`npm install https://github.com/angular/material2-builds.git`
+
+### Getting started
 
 See our [Getting Started Guide](https://github.com/angular/material2/blob/master/GETTING_STARTED.md)
 if you're building your first project with Angular Material 2.
 
 ### Project status
-Angular Material 2 is currently in alpha and under active development. 
+Angular Material 2 is currently in alpha and under active development.
 During alpha, breaking API and behavior changes will be occurring regularly.
 
-Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory) 
+Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory)
 for more insight into our process.
 
-If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/material2/blob/master/CONTRIBUTING.md). 
-You can look through the issues (which should be up-to-date on who is working on which features 
-and which pieces are blocked) and make a comment. 
-Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22) 
+If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/material2/blob/master/CONTRIBUTING.md).
+You can look through the issues (which should be up-to-date on who is working on which features
+and which pieces are blocked) and make a comment.
+Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
 High level items planned for December 2016:
@@ -36,7 +46,7 @@ High level items planned for December 2016:
 * Continued expanding e2e test coverage
 * Paginated tabs.
 * Scroll / resize handling for overlays
-* Production build 
+* Production build
 * AoT compile e2e app
 * Release beta.0
 
@@ -131,8 +141,8 @@ High level items planned for December 2016:
 be missing some behaviors or polish.
 
 ## The goal of Angular Material
-Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript, 
-following the Material Design spec. These 
+Our goal is to build a set of high-quality UI components built with Angular 2 and TypeScript,
+following the Material Design spec. These
 components will serve as an example of how to write Angular code following best practices.
 
 ### What do we mean by "high-quality"?
@@ -145,7 +155,7 @@ components will serve as an example of how to write Angular code following best 
 * Code is clean and well-documented to serve as an example for Angular devs.
 
 ## Browser and screen reader support
-Angular Material supports the most recent two versions of all major browsers: 
+Angular Material supports the most recent two versions of all major browsers:
 Chrome (including Android), Firefox, Safari (including iOS), and IE11 / Edge
 
 We also aim for great user experience with the following screen readers:
