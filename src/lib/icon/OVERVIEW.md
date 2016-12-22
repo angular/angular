@@ -1,7 +1,7 @@
 `md-icon` makes it easier to use _vector-based_ icons in your app.  This directive supports both
 icon fonts and SVG icons, but not bitmap-based formats (png, jpg, etc.).
 
-<!-- example(icon-example) -->
+<!-- example(icon-overview) -->
 
 ### Registering icons
 

@@ -1,6 +1,6 @@
 `MdSnackBar` is a service for displaying snack-bar notifications.
 
-<!-- example(snackbar-overview) -->
+<!-- example(snack-bar-overview) -->
 
 ### Opening a snack-bar
 A snack-bar can contain either a string message or a given component.
