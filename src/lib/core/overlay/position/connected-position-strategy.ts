@@ -2,13 +2,26 @@ import {PositionStrategy} from './position-strategy';
 import {ElementRef} from '@angular/core';
 import {ViewportRuler} from './viewport-ruler';
 import {
-    ConnectionPositionPair,
-    OriginConnectionPosition,
-    OverlayConnectionPosition,
-    ConnectedOverlayPositionChange
+  ConnectionPositionPair,
+  OriginConnectionPosition,
+  OverlayConnectionPosition,
+  ConnectedOverlayPositionChange, ScrollableViewProperties
 } from './connected-position';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {Scrollable} from '../scroll/scrollable';
+
+/**
+ * Container to hold the bounding positions of a particular element with respect to the viewport,
+ * where top and bottom are the y-axis coordinates of the bounding rectangle and left and right are
+ * the x-axis coordinates.
+ */
+export type ElementBoundingPositions = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
@@ -26,6 +39,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /** The offset in pixels for the overlay connection point on the y-axis */
   private _offsetY: number = 0;
 
+  /** The Scrollable containers used to check scrollable view properties on position change. */
+  private scrollables: Scrollable[] = [];
+
   /** Whether the we're dealing with an RTL context */
   get _isRtl() {
     return this._dir === 'rtl';
@@ -37,7 +53,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /** The origin element against which the overlay will be positioned. */
   private _origin: HTMLElement;
 
-  private _onPositionChange:
+  _onPositionChange:
       Subject<ConnectedOverlayPositionChange> = new Subject<ConnectedOverlayPositionChange>();
 
   /** Emits an event when the connection point changes. */
@@ -95,7 +111,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       // If the overlay in the calculated position fits on-screen, put it there and we're done.
       if (overlayPoint.fitsInViewport) {
         this._setElementPosition(element, overlayPoint);
-        this._onPositionChange.next(new ConnectedOverlayPositionChange(pos));
+
+        // Notify that the position has been changed along with its change properties.
+        const scrollableViewProperties = this.getScrollableViewProperties(element);
+        const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
+        this._onPositionChange.next(positionChange);
+
         return Promise.resolve(null);
       } else if (!fallbackPoint || fallbackPoint.visibleArea < overlayPoint.visibleArea) {
         fallbackPoint = overlayPoint;
@@ -107,6 +128,15 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     this._setElementPosition(element, fallbackPoint);
 
     return Promise.resolve(null);
+  }
+
+  /**
+   * Sets the list of Scrollable containers that host the origin element so that
+   * on reposition we can evaluate if it or the overlay has been clipped or outside view. Every
+   * Scrollable must be an ancestor element of the strategy's origin element.
+   */
+  withScrollableContainers(scrollables: Scrollable[]) {
+    this.scrollables = scrollables;
   }
 
   /**
@@ -242,6 +272,53 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   /**
+   * Gets the view properties of the trigger and overlay, including whether they are clipped
+   * or completely outside the view of any of the strategy's scrollables.
+   */
+  private getScrollableViewProperties(overlay: HTMLElement): ScrollableViewProperties {
+    const originBounds = this._getElementBounds(this._origin);
+    const overlayBounds = this._getElementBounds(overlay);
+    const scrollContainerBounds = this.scrollables.map((scrollable: Scrollable) => {
+      return this._getElementBounds(scrollable.getElementRef().nativeElement);
+    });
+
+    return {
+      isOriginClipped: this.isElementClipped(originBounds, scrollContainerBounds),
+      isOriginOutsideView: this.isElementOutsideView(originBounds, scrollContainerBounds),
+      isOverlayClipped: this.isElementClipped(overlayBounds, scrollContainerBounds),
+      isOverlayOutsideView: this.isElementOutsideView(overlayBounds, scrollContainerBounds),
+    };
+  }
+
+  /** Whether the element is completely out of the view of any of the containers. */
+  private isElementOutsideView(
+      elementBounds: ElementBoundingPositions,
+      containersBounds: ElementBoundingPositions[]): boolean {
+    return containersBounds.some((containerBounds: ElementBoundingPositions) => {
+      const outsideAbove = elementBounds.bottom < containerBounds.top;
+      const outsideBelow = elementBounds.top > containerBounds.bottom;
+      const outsideLeft = elementBounds.right < containerBounds.left;
+      const outsideRight = elementBounds.left > containerBounds.right;
+
+      return outsideAbove || outsideBelow || outsideLeft || outsideRight;
+    });
+  }
+
+  /** Whether the element is clipped by any of the containers. */
+  private isElementClipped(
+      elementBounds: ElementBoundingPositions,
+      containersBounds: ElementBoundingPositions[]): boolean {
+    return containersBounds.some((containerBounds: ElementBoundingPositions) => {
+      const clippedAbove = elementBounds.top < containerBounds.top;
+      const clippedBelow = elementBounds.bottom > containerBounds.bottom;
+      const clippedLeft = elementBounds.left < containerBounds.left;
+      const clippedRight = elementBounds.right > containerBounds.right;
+
+      return clippedAbove || clippedBelow || clippedLeft || clippedRight;
+    });
+  }
+
+  /**
    * Physically positions the overlay element to the given coordinate.
    * @param element
    * @param overlayPoint
@@ -249,6 +326,17 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   private _setElementPosition(element: HTMLElement, overlayPoint: Point) {
     element.style.left = overlayPoint.x + 'px';
     element.style.top = overlayPoint.y + 'px';
+  }
+
+  /** Returns the bounding positions of the provided element with respect to the viewport. */
+  private _getElementBounds(element: HTMLElement): ElementBoundingPositions {
+    const boundingClientRect = element.getBoundingClientRect();
+    return {
+      top: boundingClientRect.top,
+      right: boundingClientRect.left + boundingClientRect.width,
+      bottom: boundingClientRect.top + boundingClientRect.height,
+      left: boundingClientRect.left
+    };
   }
 
   /**
@@ -265,7 +353,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 interface Point {
   x: number;
   y: number;
-};
+}
 
 /**
  * Expands the simple (x, y) coordinate by adding info about whether the

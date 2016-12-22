@@ -22,7 +22,6 @@ import {FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {OverlayModule} from '../core/overlay/overlay-directives';
 import {InteractivityChecker} from '../core/a11y/interactivity-checker';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
 
 /** Exception thrown when two MdSidenav are matching the same side. */
@@ -516,7 +515,7 @@ export class MdSidenavModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSidenavModule,
-      providers: [InteractivityChecker, ScrollDispatcher]
+      providers: [InteractivityChecker]
     };
   }
 }
