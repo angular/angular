@@ -79,6 +79,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-transform": "^1.1.0",
     "gulp-typescript": "^2.13.6",
+    "highlight.js": "^9.9.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.1",
     "karma-browserstack-launcher": "^1.0.1",
