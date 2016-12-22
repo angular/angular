@@ -211,12 +211,12 @@ export class UpgradeAdapter {
    *   - `compile`: not supported because the host element is owned by Angular 2+, which does
    *     not allow modifying DOM structure during compilation.
    *   - `controller`: supported. (NOTE: injection of `$attrs` and `$transclude` is not supported.)
-   *   - `controllerAs': supported.
-   *   - `bindToController': supported.
-   *   - `link': supported. (NOTE: only pre-link function is supported.)
-   *   - `name': supported.
-   *   - `priority': ignored.
-   *   - `replace': not supported.
+   *   - `controllerAs`: supported.
+   *   - `bindToController`: supported.
+   *   - `link`: supported. (NOTE: only pre-link function is supported.)
+   *   - `name`: supported.
+   *   - `priority`: ignored.
+   *   - `replace`: not supported.
    *   - `require`: supported.
    *   - `restrict`: must be set to 'E'.
    *   - `scope`: supported.
