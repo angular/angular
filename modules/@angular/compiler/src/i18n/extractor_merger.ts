@@ -422,7 +422,7 @@ class _Visitor implements html.Visitor {
   }
 
   /**
-   * Marks the start of a section, see `_endSection`
+   * Marks the start of a section, see `_closeTranslatableSection`
    */
   private _openTranslatableSection(node: html.Node): void {
     if (this._isInTranslatableSection) {
