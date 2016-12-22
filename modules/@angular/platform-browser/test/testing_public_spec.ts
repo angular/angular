@@ -503,7 +503,7 @@ export function main() {
                                            {declarations: [CompWithUrlTemplate]},
                                            () => TestBed.createComponent(CompWithUrlTemplate))))
                  .toThrowError(
-                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
+                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
                      `Please call "TestBed.compileComponents" before your test.`);
 
              restoreJasmineIt();
