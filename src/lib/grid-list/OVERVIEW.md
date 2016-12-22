@@ -1,11 +1,7 @@
-# md-grid-list
-
-`md-grid-list` is an alternative list view that arranges cells into grid-based layout. 
+`md-grid-list` is a two-dimensional list view that arranges cells into grid-based layout. 
 See Material Design spec [here](https://www.google.com/design/spec/components/grid-lists.html).
 
 <!-- example(grid-list-overview) -->
-
-## Usage
 
 ### Setting the number of columns
 

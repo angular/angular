@@ -1,5 +1,5 @@
 `<md-checkbox>` provides the same functionality as a native `<input type="checkbox">`
-enhanced Material Design styling and animations.
+enhanced with Material Design styling and animations.
 
 <!-- example(checkbox-overview) -->
 

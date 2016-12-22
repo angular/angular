@@ -1,23 +1,14 @@
-# md-icon
-
 `md-icon` makes it easier to use _vector-based_ icons in your app.  This directive supports both
 icon fonts and SVG icons, but not bitmap-based formats (png, jpg, etc.).
 
 <!-- example(icon-example) -->
 
-## Usage
-
-### Registering new icons
+### Registering icons
 
 `MdIconRegistry` is an injectable service that allows you to associate icon names with SVG URLs and
 define aliases for CSS font classes. Its methods are discussed below and listed in the API summary.
 
-In order to prevent XSS vulnerabilities, any URLs passed to the `MdIconRegistry` must be marked as
-trusted resource URLs by using Angular's `DomSanitizer` service.
-
-### Font icons
-
-#### Ligatures
+### Font icons with ligatures
 
 Some fonts are designed to show icons by using
 [ligatures](https://en.wikipedia.org/wiki/Typographic_ligature), for example by rendering the text
@@ -31,7 +22,7 @@ You can specify a different font by setting the `fontSet` input to either the CS
 use the desired font, or to an alias previously registered with
 `MdIconRegistry.registerFontClassAlias`.
 
-#### Font icons via CSS
+### Font icons with CSS
 
 Fonts can also display icons by defining a CSS class for each icon glyph, which typically uses a
 `:before` selector to cause the icon to appear.
@@ -48,14 +39,17 @@ explicitly set by calling `MdIconRegistry.setDefaultFontSetClass`.
 When an `md-icon` component displays an SVG icon, it does so by directly inlining the SVG content
 into the page as a child of the component. (Rather than using an <img> tag or a div background
 image). This makes it easier to apply CSS styles to SVG icons. For example, the default color of the
-SVG content is the CSS [currentColor](http://www.quirksmode.org/css/color/currentcolor.html) value.
-This makes SVG icons by default have the same color as surrounding text, and allows you to change
-the color by setting the "color" style on the `md-icon` element.
+SVG content is the CSS 
+[currentColor](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword) 
+value. This makes SVG icons by default have the same color as surrounding text, and allows you to 
+change the color by setting the "color" style on the `md-icon` element.
 
-#### Icons from URLs
+In order to prevent XSS vulnerabilities, any SVG URLs passed to the `MdIconRegistry` must be 
+marked as trusted resource URLs by using Angular's `DomSanitizer` service.
 
-SVG icons can be used either by directly specifying the icon's URL, or by associating an icon name
-with a URL and then referring to the name. To use a URL directly, set the `svgSrc` input.
+Also note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy, 
+their URLs must be on the same domain as the containing page, or their servers must be configured 
+to allow cross-domain access.
 
 #### Named icons
 
@@ -78,14 +72,11 @@ as for individually registered icons.
 Multiple icon sets can be registered in the same namespace. Requesting an icon whose id appears in
 more than one icon set, the icon from the most recently registered set will be used.
 
-Note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy their URLs
-must be on the same domain as the containing page, or their servers must be configured to allow
-cross-domain access.
-
 ### Theming
 
-Icons can be themed to match your "primary" palette, your "accent" palette, or your "warn" palette
-using the `color` attribute. Simply pass in the desired palette name.
+By default, icons will use the current font color (`currentColor`). this color can be changed to 
+match the current theme's colors using the `color` attribute. This can be changed to 
+`'primary'`, `'accent'`, or `'warn'`.
 
 ### Accessibility
 

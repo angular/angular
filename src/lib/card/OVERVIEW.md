@@ -1,4 +1,4 @@
-Cards are content containers for text, photos, and actions. Cards are intended to provide 
+`<md-card>` is a content container for text, photos, and actions. Cards are intended to provide 
 information on a single subject.
 
 <!-- example(card-overview) -->

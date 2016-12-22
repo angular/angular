@@ -1,29 +1,25 @@
-# md-input-container
+`<md-input-container>` is a wrapper for native `input` and `textarea` elements. This container 
+applies Material Design styles and behavior while still allowing direct access to the underlying
+native element.
 
-Inputs are the basic input component of Material 2. The spec can be found
-[here](https://www.google.com/design/spec/components/text-fields.html). `md-input-container` acts as
-a wrapper for native `input` and `textarea` elements that is used to add material design styles and
-behavior. The native element wrapped by the `md-input-container` must be marked with the `md-input`
-directive.
+The native element wrapped by the `md-input-container` must be marked with the `mdInput` directive.
 
 <!-- example(input-overview) -->
-
-## Usage
 
 ### `input` and `textarea` attributes
 
 All of the attributes that can be used with normal `input` and `textarea` elements can be used on
-elements within the `md-input-container` as well. This includes angular specific ones such as
+elements inside `md-input-container` as well. This includes Angular directives such as
 `ngModel` and `formControl`.
 
 The only limitations are that the `type` attribute can only be one of the values supported by
 `md-input-container` and the native element cannot specify a `placeholder` attribute if the
 `md-input-container` also contains a `md-placeholder` element. 
 
-#### Supported `input` types
+### Supported `input` types
 
-The following [input types](http://www.w3schools.com/TAGs/att_input_type.asp) can be used with
-`md-input-container`:
+The following [input types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) can
+be used with `md-input-container`:
 * date
 * datetime-local
 * email

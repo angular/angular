@@ -1,6 +1,6 @@
-Button-toggles are on/off toggles with the appearance of a button. These toggles can be configured
-to behave as either radio-buttons or checkboxes. While they can be standalone, they are typically 
-part of a `md-button-toggle-group`.
+`<md-button-toggle>` are on/off toggles with the appearance of a button. These toggles can be 
+configured to behave as either radio-buttons or checkboxes. While they can be standalone, they are 
+typically part of a `md-button-toggle-group`.
 
 
 <!-- example(button-toggle-overview) -->

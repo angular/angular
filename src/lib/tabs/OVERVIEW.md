@@ -1,4 +1,4 @@
-The Angular Material tab group helps organize content into separate views where only one view can be
+Angular Material tabs organize content into separate views where only one view can be
 visible at a time. Each tab's label is shown in the tab header and the active
 tab's label is designated with the animated ink bar. When the list of tab labels exceeds the width
 of the header, pagination controls appear to let the user scroll left and right across the labels.
@@ -58,3 +58,24 @@ For more complex labels, add a template with the `md-tab-label` directive inside
 By default, the tab group will not change its height to the height of the currently active tab. To
 change this, set the `dynamicHeight` input to true. The tab body will animate its height according
  to the height of the active tab.
+ 
+### Tabs and navigation
+While `<md-tab-group>` is used to switch between views within a single route, `<nav md-tab-nav-bar>`
+provides a tab-like UI for navigating between routes.
+```html
+<nav md-tab-nav-bar>
+  <a md-tab-link
+     *ngFor="let link of navLinks"
+     [routerLink]="link"
+     routerLinkActive #rla="routerLinkActive"
+     [active]="rla.isActive">
+    {{tabLink.label}}
+  </a>
+</nav>
+
+<router-outlet></router-outlet>
+```
+
+The tab-nav-bar is not tied to any particular router; it works with normal `<a>` elements and uses
+the `active` property to determine which tab is currently active. The corresponding 
+`<router-outlet>` can be placed anywhere in the view. 
