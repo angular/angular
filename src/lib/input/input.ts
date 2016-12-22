@@ -71,6 +71,8 @@ export class MdInputDuplicatedHintError extends MdError {
 /**
  * Component that represents a text input. It encapsulates the <input> HTMLElement and
  * improve on its behaviour, along with styling it according to the Material Design.
+ * @deprecated
+ * @docs-private
  */
 @Component({
   moduleId: module.id,
