@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
@@ -102,11 +102,12 @@ export class DirectiveNormalizer {
       templateAbsUrl: string): CompileTemplateMetadata {
     const interpolationConfig = InterpolationConfig.fromArray(prenomData.interpolation);
     const rootNodesAndErrors = this._htmlParser.parse(
-        template, stringify(prenomData.componentType), false, interpolationConfig);
+        template, stringify(prenomData.componentType), true, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
       throw new SyntaxError(`Template parse errors:\n${errorString}`);
     }
+
     const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
       styles: prenomData.styles,
       styleUrls: prenomData.styleUrls,
@@ -228,9 +229,13 @@ class TemplatePreparseVisitor implements html.Visitor {
     return null;
   }
 
+  visitExpansion(ast: html.Expansion, context: any): any { html.visitAll(this, ast.cases); }
+
+  visitExpansionCase(ast: html.ExpansionCase, context: any): any {
+    html.visitAll(this, ast.expression);
+  }
+
   visitComment(ast: html.Comment, context: any): any { return null; }
   visitAttribute(ast: html.Attribute, context: any): any { return null; }
   visitText(ast: html.Text, context: any): any { return null; }
-  visitExpansion(ast: html.Expansion, context: any): any { return null; }
-  visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
 }

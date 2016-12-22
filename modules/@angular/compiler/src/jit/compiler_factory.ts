@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, OpaqueToken, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig} from '../config';
@@ -40,6 +40,8 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
           `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
 };
 
+const baseHtmlParser = new OpaqueToken('HtmlParser');
+
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
  * template compilation.
@@ -52,16 +54,23 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   Console,
   Lexer,
   Parser,
-  HtmlParser,
+  {
+    provide: baseHtmlParser,
+    useClass: HtmlParser,
+  },
   {
     provide: i18n.I18NHtmlParser,
     useFactory: (parser: HtmlParser, translations: string, format: string) =>
                     new i18n.I18NHtmlParser(parser, translations, format),
     deps: [
-      HtmlParser,
+      baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
       [new Optional(), new Inject(TRANSLATIONS_FORMAT)],
     ]
+  },
+  {
+    provide: HtmlParser,
+    useExisting: i18n.I18NHtmlParser,
   },
   TemplateParser,
   DirectiveNormalizer,
