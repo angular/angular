@@ -623,6 +623,23 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
              ]);
            });
 
+        it('should parse directive dotted properties', () => {
+          const dirA =
+              CompileDirectiveMetadata
+                  .create({
+                    selector: '[dot.name]',
+                    type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                    inputs: ['localName: dot.name'],
+                  })
+                  .toSummary();
+
+          expect(humanizeTplAst(parse('<div [dot.name]="expr"></div>', [dirA]))).toEqual([
+            [ElementAst, 'div'],
+            [DirectiveAst, dirA],
+            [BoundDirectivePropertyAst, 'localName', 'expr'],
+          ]);
+        });
+
         it('should locate directives in property bindings', () => {
           const dirA =
               CompileDirectiveMetadata
@@ -1244,8 +1261,15 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         it('should parse variables via let ...', () => {
-          expect(humanizeTplAst(parse('<div *ngIf="let a=b">', [
-          ]))).toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
+          const targetAst = [
+            [EmbeddedTemplateAst],
+            [VariableAst, 'a', 'b'],
+            [ElementAst, 'div'],
+          ];
+
+          expect(humanizeTplAst(parse('<div *ngIf="let a=b">', []))).toEqual(targetAst);
+
+          expect(humanizeTplAst(parse('<div data-*ngIf="let a=b">', []))).toEqual(targetAst);
         });
 
         describe('directives', () => {

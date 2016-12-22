@@ -149,7 +149,7 @@ export class TemplateParser {
       return new TemplateParseResult(result, errors);
     }
 
-    if (isPresent(this.transforms)) {
+    if (this.transforms) {
       this.transforms.forEach(
           (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
@@ -218,7 +218,7 @@ class TemplateParseVisitor implements html.Visitor {
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan);
-    if (isPresent(expr)) {
+    if (expr) {
       return new BoundTextAst(expr, ngContentIndex, text.sourceSpan);
     } else {
       return new TextAst(text.value, ngContentIndex, text.sourceSpan);
@@ -268,14 +268,17 @@ class TemplateParseVisitor implements html.Visitor {
           isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, events,
           elementOrDirectiveRefs, elementVars);
 
-      let templateBindingsSource: string|undefined = undefined;
-      let prefixToken: string|undefined = undefined;
-      if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
+      let templateBindingsSource: string|undefined;
+      let prefixToken: string|undefined;
+      let normalizedName = this._normalizeAttributeName(attr.name);
+
+      if (normalizedName == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
-        prefixToken = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
+        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
       }
+
       const hasTemplateBinding = isPresent(templateBindingsSource);
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
@@ -541,10 +544,12 @@ class TemplateParseVisitor implements html.Visitor {
       elementSourceSpan: ParseSourceSpan, targetReferences: ReferenceAst[]): DirectiveAst[] {
     const matchedReferences = new Set<string>();
     let component: CompileDirectiveSummary = null;
+
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
           elementSourceSpan.start, elementSourceSpan.end,
           `Directive ${identifierName(directive.type)}`);
+
       if (directive.isComponent) {
         component = directive;
       }
@@ -567,6 +572,7 @@ class TemplateParseVisitor implements html.Visitor {
       return new DirectiveAst(
           directive, directiveProperties, hostProperties, hostEvents, sourceSpan);
     });
+
     elementOrDirectiveRefs.forEach((elOrDirRef) => {
       if (elOrDirRef.value.length > 0) {
         if (!matchedReferences.has(elOrDirRef.name)) {
@@ -581,7 +587,7 @@ class TemplateParseVisitor implements html.Visitor {
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    });  // fix syntax highlighting issue: `
+    });
     return directiveAsts;
   }
 
