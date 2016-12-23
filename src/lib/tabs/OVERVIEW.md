@@ -6,7 +6,7 @@ of the header, pagination controls appear to let the user scroll left and right 
 The active tab may be set using the `selectedIndex` input or when the user selects one of the
 tab labels in the header.
 
-<!-- example(tab-overview) -->
+<!-- example(tabs-overview) -->
 
 ### Events
 
