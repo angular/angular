@@ -14,7 +14,7 @@ If you don't want the label to appear next to the checkbox, you can use
 specify an appropriate label.
 
 ### Use with `@angular/forms`
-`<md-checkobx>` is compatible with `@angular/forms` and supports both `FormsModule` 
+`<md-checkbox>` is compatible with `@angular/forms` and supports both `FormsModule` 
 and `ReactiveFormsModule`.
 
 ### Indeterminate state
