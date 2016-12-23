@@ -103,7 +103,7 @@
     "ts-node": "^0.7.3",
     "tslint": "^3.13.0",
     "typedoc": "^0.5.1",
-    "typescript": "^2.0.2",
+    "typescript": "~2.0.10",
     "which": "^1.2.4"
   }
 }
