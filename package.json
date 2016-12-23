@@ -36,9 +36,6 @@
     "systemjs": "0.19.38",
     "zone.js": "^0.6.23"
   },
-  "optionalDependencies": {
-    "hammerjs": "^2.0.8"
-  },
   "devDependencies": {
     "@angular/compiler-cli": "^2.2.0",
     "@angular/platform-browser-dynamic": "^2.2.0",
@@ -79,6 +76,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-transform": "^1.1.0",
     "gulp-typescript": "^2.13.6",
+    "hammerjs": "^2.0.8",
     "highlight.js": "^9.9.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.1",
