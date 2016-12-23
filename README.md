@@ -136,7 +136,7 @@ High level items planned for December 2016:
 [0675]: https://github.com/angular/material2/issues/675
 [0581]: https://github.com/angular/material2/issues/581
 
-[getting-started]: https://github.com/angular/material2/blob/master/guides/theming.md
+[getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
 [theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 
 
