@@ -1,3 +1,11 @@
+<a name="2.0.0-beta.1"></a>
+# [2.0.0-beta.1 rebar-teacup](https://github.com/angular/material2/compare/2.0.0-beta.0...2.0.0-beta.1) (2016-12-23)
+
+### Bug Fixes
+* Remove `MdAutocompleteModule` that was accidentally included in beta.0
+* Correct path to umd bundle in package.json ([#2368](https://github.com/angular/material2/issues/2368)) ([d286e6d](https://github.com/angular/material2/commit/d286e6d6472910ab41b8437d405cd3e902c9c848)), closes [#2366](https://github.com/angular/material2/issues/2366)
+
+
 <a name="2.0.0-beta.0"></a>
 # [2.0.0-beta.0 velvet-pizza](https://github.com/angular/material2/compare/2.0.0-alpha.9...2.0.0-beta.0) (2016-12-22)
 

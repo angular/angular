@@ -26,8 +26,8 @@ See our [Getting Started Guide][getting-started]
 if you're building your first project with Angular Material 2.
 
 ### Project status
-Angular Material 2 is currently in alpha and under active development.
-During alpha, breaking API and behavior changes will be occurring regularly.
+Angular Material 2 is currently in beta and under active development.
+During beta, new features will be added regularly and APIs will evolve based on user feedback.
 
 Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory)
 for more insight into our process.
@@ -38,17 +38,14 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level items planned for December 2016:
-* Continued work on initial versions of md-autocomplete and md-chips
-* Continued bug bashing
-* Continued work on https://material.angular.io site
-* Finish major refactoring for md-input (hit a few issues last month)
+High level items planned for January 2017:
+* Initial version of md-autocomplete
+* Prototyping for data-table
+* Improvements to https://material.angular.io
 * Continued expanding e2e test coverage
-* Paginated tabs.
-* Scroll / resize handling for overlays
-* Production build
-* AoT compile e2e app
-* Release beta.0
+* More work on scroll / resize handling for overlays
+* Screenshot tests
+* Better development automation
 
 
 #### Feature status:
@@ -72,16 +69,15 @@ High level items planned for December 2016:
 | button-toggle    |                           Available | [README][15] |              - |
 | slider           |                           Available | [README][16] |              - |
 | menu             |                           Available | [README][17] |   [#119][0119] |
-| tooltip          | Initial version, needs enhancements | [README][18] |              - |
+| tooltip          |                           Available | [README][18] |              - |
 | ripples          |                           Available | [README][19] |   [#108][0108] |
 | dialog           |                           Available | [README][22] |   [#114][0114] |
 | snackbar / toast |                           Available | [README][21] |   [#115][0115] |
-| select           |        Will be released in alpha.11 |           -  |   [#118][0118] |
-| textarea         | Initial version, needs enhancements |           -  |              - |
-| autocomplete     |                      Design started |           -  |   [#117][0117] |
-| chips            |                             Started |           -  |   [#120][0120] |
+| select           |                           Available |           -  |   [#118][0118] |
+| textarea         |                           Available |           -  |              - |
+| autocomplete     |                         In-progress |           -  |   [#117][0117] |
+| chips            |  Initial version, features evolving |           -  |   [#120][0120] |
 | theming          |   Available, need guidance overlays | [Guide][20]  |              - |
-| prod build       |                         Not started |           -  |              - |
 | docs site        |   UX design and tooling in progress |           -  |              - |
 | typography       |                         Not started |           -  |   [#205][0205] |
 | fab speed-dial   |                         Not started |           -  |   [#860][0860] |
@@ -90,7 +86,7 @@ High level items planned for December 2016:
 | bottom-nav       |                         Not started |           -  |   [#408][0408] |
 | virtual-repeat   |                         Not started |           -  |   [#823][0823] |
 | datepicker       |                         Not started |           -  |   [#675][0675] |
-| data-table       |                         Not started |           -  |   [#581][0581] |
+| data-table       |                  Design in-progress |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
 | layout           |   see [angular/flex-layout][lay_rp] |           -  |              - |
 
