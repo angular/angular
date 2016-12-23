@@ -79,7 +79,7 @@ The slider has the following keyboard bindings:
 |-------------|------------------------------------------------------------------------------------|
 | Right arrow | Increment the slider value by one step (decrements in RTL).                        |
 | Up arrow    | Increment the slider value by one step.                                            |
-| Left arrow  | Decrement the slider value by one step (decrements in RTL).                        |
+| Left arrow  | Decrement the slider value by one step (increments in RTL).                        |
 | Down arrow  | Decrement the slider value by one step.                                            |
 | Page up     | Increment the slider value by 10 steps.                                            |
 | Page down   | Decrement the slider value by 10 steps.                                            |
