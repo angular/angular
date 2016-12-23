@@ -13,8 +13,7 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
-import {ListWrapper, StringMapWrapper} from './facade/collection';
-import {isBlank, isPresent, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
 import {Identifiers, resolveIdentifier} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import {hasLifecycleHook} from './lifecycle_reflector';
@@ -65,7 +64,7 @@ export class CompileMetadataResolver {
     }
   }
 
-  clearCache() {
+  clearCache(): void {
     this._directiveCache.clear();
     this._summaryCache.clear();
     this._pipeCache.clear();
@@ -261,14 +260,14 @@ export class CompileMetadataResolver {
     }
 
     let providers: cpl.CompileProviderMetadata[] = [];
-    if (isPresent(dirMeta.providers)) {
+    if (dirMeta.providers != null) {
       providers = this._getProvidersMetadata(
           dirMeta.providers, entryComponentMetadata,
           `providers for "${stringifyType(directiveType)}"`, [], directiveType);
     }
     let queries: cpl.CompileQueryMetadata[] = [];
     let viewQueries: cpl.CompileQueryMetadata[] = [];
-    if (isPresent(dirMeta.queries)) {
+    if (dirMeta.queries != null) {
       queries = this._getQueriesMetadata(dirMeta.queries, false, directiveType);
       viewQueries = this._getQueriesMetadata(dirMeta.queries, true, directiveType);
     }
@@ -722,14 +721,14 @@ export class CompileMetadataResolver {
             token = paramEntry.attributeName;
           } else if (paramEntry instanceof Inject) {
             token = paramEntry.token;
-          } else if (isValidType(paramEntry) && isBlank(token)) {
+          } else if (isValidType(paramEntry) && token == null) {
             token = paramEntry;
           }
         });
       } else {
         token = param;
       }
-      if (isBlank(token)) {
+      if (token == null) {
         hasUnknownDeps = true;
         return null;
       }
