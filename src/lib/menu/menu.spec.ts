@@ -248,9 +248,7 @@ describe('MdMenu', () => {
     });
 
     function getOverlayPane(): HTMLElement {
-      let pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-      pane.style.position = 'absolute';
-      return pane;
+      return overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
     }
   });
 

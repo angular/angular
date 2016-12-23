@@ -247,7 +247,6 @@ describe('MdRipple', () => {
         let left = 50;
         let top = 75;
 
-        rippleElement.style.position = 'absolute';
         rippleElement.style.left = `${elementLeft}px`;
         rippleElement.style.top = `${elementTop}px`;
 
