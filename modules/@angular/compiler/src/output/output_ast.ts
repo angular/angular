@@ -690,7 +690,8 @@ export class ExpressionTransformer implements StatementVisitor, ExpressionVisito
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
     return new DeclareVarStmt(
-        stmt.name, stmt.value.visitExpression(this, context), stmt.type, stmt.modifiers);
+        stmt.name, stmt.value != null ? stmt.value.visitExpression(this, context) : null, stmt.type,
+        stmt.modifiers);
   }
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     // Don't descend into nested functions
@@ -803,7 +804,9 @@ export class RecursiveExpressionVisitor implements StatementVisitor, ExpressionV
   }
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
-    stmt.value.visitExpression(this, context);
+    if (stmt.value != null) {
+      stmt.value.visitExpression(this, context);
+    }
     return stmt;
   }
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {

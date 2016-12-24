@@ -89,7 +89,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
-    ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
+    ctx.vars.set(stmt.name, stmt.value != null ? stmt.value.visitExpression(this, ctx) : null);
     return null;
   }
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: _ExecutionContext): any {

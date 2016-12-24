@@ -82,9 +82,14 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(`var ${stmt.name} = `);
-    stmt.value.visitExpression(this, ctx);
-    ctx.println(`;`);
+    if (stmt.value == null) {
+      // No initializer
+      ctx.print(`var ${stmt.name};`);
+    } else {
+      ctx.print(`var ${stmt.name} = `);
+      stmt.value.visitExpression(this, ctx);
+      ctx.println(`;`);
+    }
     return null;
   }
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
