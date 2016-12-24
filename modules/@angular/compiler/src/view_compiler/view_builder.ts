@@ -143,21 +143,32 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderText)));
     const renderNode = o.THIS_EXPR.prop(fieldName);
     const compileNode = new CompileNode(parent, this.view, this.view.nodes.length, renderNode, ast);
-    if (isBound) {
-      const createRenderNode =
-          o.THIS_EXPR.prop(fieldName)
-              .set(ViewProperties.renderer.callMethod(
-                  'createText',
-                  [
-                    this._getParentRenderNode(parent), o.literal(value),
-                    this.view.createMethod.resetDebugInfoExpr(this.view.nodes.length, ast)
-                  ]))
-              .toStmt();
-      this.view.nodes.push(compileNode);
-      this.view.createMethod.addStmt(createRenderNode);
-    } else {
-      this.view.nodes.push(compileNode);
-    }
+    // if (isBound) {
+    //   const createRenderNode =
+    //       o.THIS_EXPR.prop(fieldName)
+    //           .set(ViewProperties.renderer.callMethod(
+    //               'createText',
+    //               [
+    //                 this._getParentRenderNode(parent), o.literal(value),
+    //                 this.view.createMethod.resetDebugInfoExpr(this.view.nodes.length, ast)
+    //               ]))
+    //           .toStmt();
+    //   this.view.nodes.push(compileNode);
+    //   this.view.createMethod.addStmt(createRenderNode);
+    // } else {
+    //   this.view.nodes.push(compileNode);
+    // }
+    const createRenderNode =
+      o.THIS_EXPR.prop(fieldName)
+        .set(ViewProperties.renderer.callMethod(
+          'createText',
+          [
+            this._getParentRenderNode(parent), o.literal(value),
+            this.view.createMethod.resetDebugInfoExpr(this.view.nodes.length, ast)
+          ]))
+      .toStmt();
+    this.view.nodes.push(compileNode);
+    this.view.createMethod.addStmt(createRenderNode);
     this._addRootNodeAndProject(compileNode);
     return renderNode;
   }
