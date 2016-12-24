@@ -119,28 +119,42 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   }
 
   visitBoundText(ast: BoundTextAst, parent: CompileElement): any {
-    return this._visitText(ast, '', parent);
+    return this._visitText(ast, '', parent, true);
   }
   visitText(ast: TextAst, parent: CompileElement): any {
-    return this._visitText(ast, ast.value, parent);
+    return this._visitText(ast, ast.value, parent, false);
   }
-  private _visitText(ast: TemplateAst, value: string, parent: CompileElement): o.Expression {
+  private _visitText(ast: TemplateAst, value: string, parent: CompileElement, isBound: boolean):
+      o.Expression {
     const fieldName = `_text_${this.view.nodes.length}`;
-    this.view.fields.push(
-        new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderText)));
-    const renderNode = o.THIS_EXPR.prop(fieldName);
+    let renderNode: o.Expression;
+    const type = o.importType(this.view.genConfig.renderTypes.renderText);
+    // If Text field is bound, we need access to the renderNode beyond
+    // createInternal method and write reference to class member.
+    // Otherwise we can create a local variable and not baloon class prototype.
+    if (isBound) {
+      this.view.fields.push(new o.ClassField(fieldName, type));
+      renderNode = o.THIS_EXPR.prop(fieldName);
+    } else {
+      this.view.createMethod.addStmt(new o.DeclareVarStmt(fieldName, o.literal(value), type));
+      renderNode = new o.ReadVarExpr(fieldName);
+    }
     const compileNode = new CompileNode(parent, this.view, this.view.nodes.length, renderNode, ast);
-    const createRenderNode =
-        o.THIS_EXPR.prop(fieldName)
-            .set(ViewProperties.renderer.callMethod(
-                'createText',
-                [
-                  this._getParentRenderNode(parent), o.literal(value),
-                  this.view.createMethod.resetDebugInfoExpr(this.view.nodes.length, ast)
-                ]))
-            .toStmt();
-    this.view.nodes.push(compileNode);
-    this.view.createMethod.addStmt(createRenderNode);
+    if (isBound) {
+      const createRenderNode =
+          o.THIS_EXPR.prop(fieldName)
+              .set(ViewProperties.renderer.callMethod(
+                  'createText',
+                  [
+                    this._getParentRenderNode(parent), o.literal(value),
+                    this.view.createMethod.resetDebugInfoExpr(this.view.nodes.length, ast)
+                  ]))
+              .toStmt();
+      this.view.nodes.push(compileNode);
+      this.view.createMethod.addStmt(createRenderNode);
+    } else {
+      this.view.nodes.push(compileNode);
+    }
     this._addRootNodeAndProject(compileNode);
     return renderNode;
   }
