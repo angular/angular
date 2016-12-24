@@ -127,18 +127,21 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   private _visitText(ast: TemplateAst, value: string, parent: CompileElement, isBound: boolean):
       o.Expression {
     const fieldName = `_text_${this.view.nodes.length}`;
-    let renderNode: o.Expression;
-    const type = o.importType(this.view.genConfig.renderTypes.renderText);
-    // If Text field is bound, we need access to the renderNode beyond
-    // createInternal method and write reference to class member.
-    // Otherwise we can create a local variable and not baloon class prototype.
-    if (isBound) {
-      this.view.fields.push(new o.ClassField(fieldName, type));
-      renderNode = o.THIS_EXPR.prop(fieldName);
-    } else {
-      this.view.createMethod.addStmt(new o.DeclareVarStmt(fieldName, o.literal(value), type));
-      renderNode = new o.ReadVarExpr(fieldName);
-    }
+    // let renderNode: o.Expression;
+    // const type = o.importType(this.view.genConfig.renderTypes.renderText);
+    // // If Text field is bound, we need access to the renderNode beyond
+    // // createInternal method and write reference to class member.
+    // // Otherwise we can create a local variable and not baloon class prototype.
+    // if (isBound) {
+    //   this.view.fields.push(new o.ClassField(fieldName, type));
+    //   renderNode = o.THIS_EXPR.prop(fieldName);
+    // } else {
+    //   this.view.createMethod.addStmt(new o.DeclareVarStmt(fieldName, o.literal(value), type));
+    //   renderNode = new o.ReadVarExpr(fieldName);
+    // }
+    this.view.fields.push(
+      new o.ClassField(fieldName, o.importType(this.view.genConfig.renderTypes.renderText)));
+    const renderNode = o.THIS_EXPR.prop(fieldName);
     const compileNode = new CompileNode(parent, this.view, this.view.nodes.length, renderNode, ast);
     if (isBound) {
       const createRenderNode =
