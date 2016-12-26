@@ -9,7 +9,7 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
 
 import * as angular from './angular_js';
-import {NG1_SCOPE} from './constants';
+import {DETECT_CHANGES_EVENT, NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
 
 const INITIAL_VALUE = {
@@ -95,7 +95,10 @@ export class DowngradeNg2ComponentAdapter {
         (<OnChanges>this.component).ngOnChanges(inputChanges);
       });
     }
-    this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
+    this.componentScope.$on(DETECT_CHANGES_EVENT, () => {
+      console.log('handling change detection event');
+      this.changeDetector && this.changeDetector.detectChanges()
+    });
   }
 
   setupOutputs() {

@@ -11,7 +11,7 @@ import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModul
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from './angular_js';
-import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
+import {DETECT_CHANGES_EVENT, NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR} from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {ComponentInfo, getComponentInfo} from './metadata';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
@@ -577,10 +577,6 @@ export class UpgradeAdapter {
                       })
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
-                    let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
-                      next: (_: any) => this.ngZone.runOutsideAngular(() => rootScope.$evalAsync())
-                    });
-                    rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                     this.ngZone.run(() => {
                       if (rootScopePrototype) {
                         rootScopePrototype.$apply = original$applyFn;  // restore original $apply
@@ -742,6 +738,12 @@ export class UpgradeAdapterRef {
     this.ng2Injector = ngModuleRef.injector;
     this.ng1Injector = ng1Injector;
     this.ng1RootScope = ng1Injector.get(NG1_ROOT_SCOPE);
+    const zone = (this.ng2Injector.get(NgZone) as NgZone);
+    const subscription = zone.onMicrotaskEmpty.subscribe({
+      next: (_: any) => this.triggerChangeDetection()
+    });
+    this.ng1RootScope.$on('$destroy', () => { subscription.unsubscribe(); });
+    this.triggerChangeDetection();
     this._readyFn && this._readyFn(this);
   }
 
@@ -760,6 +762,14 @@ export class UpgradeAdapterRef {
   public dispose() {
     this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
     this.ng2ModuleRef.destroy();
+  }
+
+  /**
+   * @internal
+   */
+  public triggerChangeDetection() {
+    console.log('triggering change detection');
+    (this.ng1RootScope as any).$broadcast(DETECT_CHANGES_EVENT);
   }
 }
 
