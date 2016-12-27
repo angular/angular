@@ -120,7 +120,7 @@ function newErrorToken(index: number, message: string): Token {
   return new Token(index, TokenType.Error, 0, message);
 }
 
-export var EOF: Token = new Token(-1, TokenType.Character, 0, '');
+export const EOF: Token = new Token(-1, TokenType.Character, 0, '');
 
 class _Scanner {
   length: number;

@@ -133,4 +133,4 @@ type EventSummary = {
   name: string,
   target: string,
   phase: string
-}
+};

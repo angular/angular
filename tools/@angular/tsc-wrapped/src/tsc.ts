@@ -160,4 +160,4 @@ export class Tsc implements CompilerInterface {
     return emitResult.emitSkipped ? 1 : 0;
   }
 }
-export var tsc: CompilerInterface = new Tsc();
+export const tsc: CompilerInterface = new Tsc();

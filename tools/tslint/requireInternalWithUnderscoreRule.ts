@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuleFailure} from 'tslint/lib';
 import {RuleWalker} from 'tslint/lib/language/walker';
-import {RuleFailure} from 'tslint/lib/lint';
 import {AbstractRule} from 'tslint/lib/rules';
 import * as ts from 'typescript';
 

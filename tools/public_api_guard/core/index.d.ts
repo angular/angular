@@ -1026,13 +1026,13 @@ export declare class WrappedValue {
 }
 
 /** @experimental */
-export declare var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
+export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
 
 /** @experimental */
-export declare var wtfEndTimeRange: (range: any) => void;
+export declare const wtfEndTimeRange: (range: any) => void;
 
 /** @experimental */
-export declare var wtfLeave: <T>(scope: any, returnValue?: T) => T;
+export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
 
 /** @experimental */
 export interface WtfScopeFn {
@@ -1040,4 +1040,4 @@ export interface WtfScopeFn {
 }
 
 /** @experimental */
-export declare var wtfStartTimeRange: (rangeType: string, action: string) => any;
+export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;

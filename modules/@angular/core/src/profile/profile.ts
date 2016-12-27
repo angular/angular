@@ -50,7 +50,7 @@ function noopScope(arg0?: any, arg1?: any): any {
  *
  * @experimental
  */
-export var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
+export const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
     wtfEnabled ? createScope : (signature: string, flags?: any) => noopScope;
 
 /**
@@ -62,7 +62,7 @@ export var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
  * Returns the `returnValue for easy chaining.
  * @experimental
  */
-export var wtfLeave: <T>(scope: any, returnValue?: T) => T =
+export const wtfLeave: <T>(scope: any, returnValue?: T) => T =
     wtfEnabled ? leave : (s: any, r?: any) => r;
 
 /**
@@ -78,7 +78,7 @@ export var wtfLeave: <T>(scope: any, returnValue?: T) => T =
  *     }
  * @experimental
  */
-export var wtfStartTimeRange: (rangeType: string, action: string) => any =
+export const wtfStartTimeRange: (rangeType: string, action: string) => any =
     wtfEnabled ? startTimeRange : (rangeType: string, action: string) => null;
 
 /**
@@ -87,4 +87,4 @@ export var wtfStartTimeRange: (rangeType: string, action: string) => any =
  * enabled.
  * @experimental
  */
-export var wtfEndTimeRange: (range: any) => void = wtfEnabled ? endTimeRange : (r: any) => null;
+export const wtfEndTimeRange: (range: any) => void = wtfEnabled ? endTimeRange : (r: any) => null;

@@ -19,7 +19,7 @@ export type MockData = string | MockDirectory;
 
 export type MockDirectory = {
   [name: string]: MockData | undefined;
-}
+};
 
 const angularts = /@angular\/(\w|\/|-)+\.tsx?$/;
 const rxjsts = /rxjs\/(\w|\/)+\.tsx?$/;

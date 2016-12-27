@@ -44,7 +44,7 @@ const baseErrorIdentifier = {
   runtime: BaseError
 };
 
-export var codegenExportsVars = [
+export const codegenExportsVars = [
   'getExpressions',
 ];
 
@@ -190,7 +190,7 @@ const _getExpressionsStmts: o.Statement[] = [
   ]))
 ];
 
-export var codegenStmts: o.Statement[] = [
+export const codegenStmts: o.Statement[] = [
   new o.CommentStmt('This is a comment'),
 
   new o.ClassStmt(

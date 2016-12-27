@@ -80,7 +80,7 @@ interface DecoratorInvocation {
           }
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
-      };
+      }
 }
 
 export class TsickleCompilerHost extends DelegatingHost {
@@ -104,7 +104,7 @@ export class TsickleCompilerHost extends DelegatingHost {
             tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
         this.diagnostics = diagnostics;
         return ts.createSourceFile(fileName, output, languageVersion, true);
-      };
+      }
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
@@ -156,5 +156,5 @@ export class MetadataWriterHost extends DelegatingHost {
           throw new Error('Bundled emit with --out is not supported');
         }
         this.writeMetadata(fileName, sourceFiles[0]);
-      };
+      }
 }
