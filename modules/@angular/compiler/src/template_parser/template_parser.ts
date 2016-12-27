@@ -149,7 +149,7 @@ export class TemplateParser {
       return new TemplateParseResult(result, errors);
     }
 
-    if (isPresent(this.transforms)) {
+    if (this.transforms) {
       this.transforms.forEach(
           (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
@@ -218,7 +218,7 @@ class TemplateParseVisitor implements html.Visitor {
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan);
-    if (isPresent(expr)) {
+    if (expr) {
       return new BoundTextAst(expr, ngContentIndex, text.sourceSpan);
     } else {
       return new TextAst(text.value, ngContentIndex, text.sourceSpan);
@@ -248,14 +248,14 @@ class TemplateParseVisitor implements html.Visitor {
       return null;
     }
 
-    const matchableAttrs: string[][] = [];
+    const matchableAttrs: [string, string][] = [];
     const elementOrDirectiveProps: BoundProperty[] = [];
     const elementOrDirectiveRefs: ElementOrDirectiveRef[] = [];
     const elementVars: VariableAst[] = [];
     const events: BoundEventAst[] = [];
 
     const templateElementOrDirectiveProps: BoundProperty[] = [];
-    const templateMatchableAttrs: string[][] = [];
+    const templateMatchableAttrs: [string, string][] = [];
     const templateElementVars: VariableAst[] = [];
 
     let hasInlineTemplates = false;
@@ -268,14 +268,17 @@ class TemplateParseVisitor implements html.Visitor {
           isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, events,
           elementOrDirectiveRefs, elementVars);
 
-      let templateBindingsSource: string|undefined = undefined;
-      let prefixToken: string|undefined = undefined;
-      if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
+      let templateBindingsSource: string|undefined;
+      let prefixToken: string|undefined;
+      let normalizedName = this._normalizeAttributeName(attr.name);
+
+      if (normalizedName == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
-        prefixToken = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
+        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
       }
+
       const hasTemplateBinding = isPresent(templateBindingsSource);
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
@@ -541,10 +544,12 @@ class TemplateParseVisitor implements html.Visitor {
       elementSourceSpan: ParseSourceSpan, targetReferences: ReferenceAst[]): DirectiveAst[] {
     const matchedReferences = new Set<string>();
     let component: CompileDirectiveSummary = null;
+
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
           elementSourceSpan.start, elementSourceSpan.end,
           `Directive ${identifierName(directive.type)}`);
+
       if (directive.isComponent) {
         component = directive;
       }
@@ -567,6 +572,7 @@ class TemplateParseVisitor implements html.Visitor {
       return new DirectiveAst(
           directive, directiveProperties, hostProperties, hostEvents, sourceSpan);
     });
+
     elementOrDirectiveRefs.forEach((elOrDirRef) => {
       if (elOrDirRef.value.length > 0) {
         if (!matchedReferences.has(elOrDirRef.name)) {
@@ -581,7 +587,7 @@ class TemplateParseVisitor implements html.Visitor {
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    });  // fix syntax highlighting issue: `
+    });
     return directiveAsts;
   }
 
@@ -742,7 +748,7 @@ class NonBindableVisitor implements html.Visitor {
       return null;
     }
 
-    const attrNameAndValues = ast.attrs.map(attrAst => [attrAst.name, attrAst.value]);
+    const attrNameAndValues = ast.attrs.map((attr): [string, string] => [attr.name, attr.value]);
     const selector = createElementCssSelector(ast.name, attrNameAndValues);
     const ngContentIndex = parent.findNgContentIndex(selector);
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
@@ -811,16 +817,16 @@ class ElementContext {
 }
 
 export function createElementCssSelector(
-    elementName: string, matchableAttrs: string[][]): CssSelector {
+    elementName: string, attributes: [string, string][]): CssSelector {
   const cssSelector = new CssSelector();
   const elNameNoNs = splitNsName(elementName)[1];
 
   cssSelector.setElement(elNameNoNs);
 
-  for (let i = 0; i < matchableAttrs.length; i++) {
-    const attrName = matchableAttrs[i][0];
+  for (let i = 0; i < attributes.length; i++) {
+    const attrName = attributes[i][0];
     const attrNameNoNs = splitNsName(attrName)[1];
-    const attrValue = matchableAttrs[i][1];
+    const attrValue = attributes[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);
     if (attrName.toLowerCase() == CLASS_ATTR) {

@@ -7,6 +7,7 @@
  */
 
 import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
+import {createElementCssSelector} from '@angular/compiler/src/template_parser/template_parser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 
@@ -30,14 +31,14 @@ export function main() {
     it('should select by element name case sensitive', () => {
       matcher.addSelectables(s1 = CssSelector.parse('someTag'), 1);
 
-      expect(matcher.match(CssSelector.parse('SOMEOTHERTAG')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({tag: 'SOMEOTHERTAG'}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('SOMETAG')[0], selectableCollector)).toEqual(false);
+      expect(matcher.match(getSelectorFor({tag: 'SOMETAG'}), selectableCollector)).toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('someTag')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(getSelectorFor({tag: 'someTag'}), selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
 
@@ -45,21 +46,22 @@ export function main() {
       matcher.addSelectables(s1 = CssSelector.parse('.someClass'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('.someClass.class2'), 2);
 
-      expect(matcher.match(CssSelector.parse('.SOMEOTHERCLASS')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({classes: 'SOMEOTHERCLASS'}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('.SOMECLASS')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(getSelectorFor({classes: 'SOMECLASS'}), selectableCollector))
+          .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
 
       reset();
-      expect(matcher.match(CssSelector.parse('.someClass.class2')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({classes: 'someClass class2'}), selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
 
     it('should not throw for class name "constructor"', () => {
-      expect(matcher.match(CssSelector.parse('.constructor')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({classes: 'constructor'}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
     });
@@ -68,36 +70,43 @@ export function main() {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr]'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('[someAttr][someAttr2]'), 2);
 
-      expect(matcher.match(CssSelector.parse('[SOMEOTHERATTR]')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({attrs: [['SOMEOTHERATTR', '']]}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('[SOMEATTR]')[0], selectableCollector)).toEqual(false);
-      expect(matched).toEqual([]);
-
-      expect(matcher.match(CssSelector.parse('[SOMEATTR=someValue]')[0], selectableCollector))
+      expect(matcher.match(getSelectorFor({attrs: [['SOMEATTR', '']]}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('[someAttr][someAttr2]')[0], selectableCollector))
+      expect(
+          matcher.match(getSelectorFor({attrs: [['SOMEATTR', 'someValue']]}), selectableCollector))
+          .toEqual(false);
+      expect(matched).toEqual([]);
+
+      expect(
+          matcher.match(
+              getSelectorFor({attrs: [['someAttr', ''], ['someAttr2', '']]}), selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
       expect(matcher.match(
-                 CssSelector.parse('[someAttr=someValue][someAttr2]')[0], selectableCollector))
+                 getSelectorFor({attrs: [['someAttr', 'someValue'], ['someAttr2', '']]}),
+                 selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
       expect(matcher.match(
-                 CssSelector.parse('[someAttr2][someAttr=someValue]')[0], selectableCollector))
+                 getSelectorFor({attrs: [['someAttr2', ''], ['someAttr', 'someValue']]}),
+                 selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
 
       reset();
       expect(matcher.match(
-                 CssSelector.parse('[someAttr2=someValue][someAttr]')[0], selectableCollector))
+                 getSelectorFor({attrs: [['someAttr2', 'someValue'], ['someAttr', '']]}),
+                 selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
@@ -105,11 +114,13 @@ export function main() {
     it('should support "." in attribute names', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[foo.bar]'), 1);
 
-      expect(matcher.match(CssSelector.parse('[barfoo]')[0], selectableCollector)).toEqual(false);
+      expect(matcher.match(getSelectorFor({attrs: [['barfoo', '']]}), selectableCollector))
+          .toEqual(false);
       expect(matched).toEqual([]);
 
       reset();
-      expect(matcher.match(CssSelector.parse('[foo.bar]')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(getSelectorFor({attrs: [['foo.bar', '']]}), selectableCollector))
+          .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
 
@@ -127,15 +138,18 @@ export function main() {
     it('should select by attr name case sensitive and value case insensitive', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr=someValue]'), 1);
 
-      expect(matcher.match(CssSelector.parse('[SOMEATTR=SOMEOTHERATTR]')[0], selectableCollector))
+      expect(matcher.match(
+                 getSelectorFor({attrs: [['SOMEATTR', 'SOMEOTHERATTR']]}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('[SOMEATTR=SOMEVALUE]')[0], selectableCollector))
+      expect(
+          matcher.match(getSelectorFor({attrs: [['SOMEATTR', 'SOMEVALUE']]}), selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('[someAttr=SOMEVALUE]')[0], selectableCollector))
+      expect(
+          matcher.match(getSelectorFor({attrs: [['someAttr', 'SOMEVALUE']]}), selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -143,31 +157,38 @@ export function main() {
     it('should select by element name, class name and attribute name with value', () => {
       matcher.addSelectables(s1 = CssSelector.parse('someTag.someClass[someAttr=someValue]'), 1);
 
+      expect(
+          matcher.match(
+              getSelectorFor(
+                  {tag: 'someOtherTag', classes: 'someOtherClass', attrs: [['someOtherAttr', '']]}),
+              selectableCollector))
+          .toEqual(false);
+      expect(matched).toEqual([]);
+
       expect(matcher.match(
-                 CssSelector.parse('someOtherTag.someOtherClass[someOtherAttr]')[0],
+                 getSelectorFor(
+                     {tag: 'someTag', classes: 'someOtherClass', attrs: [['someOtherAttr', '']]}),
                  selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(
-          matcher.match(
-              CssSelector.parse('someTag.someOtherClass[someOtherAttr]')[0], selectableCollector))
+      expect(matcher.match(
+                 getSelectorFor(
+                     {tag: 'someTag', classes: 'someClass', attrs: [['someOtherAttr', '']]}),
+                 selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
       expect(matcher.match(
-                 CssSelector.parse('someTag.someClass[someOtherAttr]')[0], selectableCollector))
+                 getSelectorFor({tag: 'someTag', classes: 'someClass', attrs: [['someAttr', '']]}),
+                 selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(
-          matcher.match(CssSelector.parse('someTag.someClass[someAttr]')[0], selectableCollector))
-          .toEqual(false);
-      expect(matched).toEqual([]);
-
-      expect(
-          matcher.match(
-              CssSelector.parse('someTag.someClass[someAttr=someValue]')[0], selectableCollector))
+      expect(matcher.match(
+                 getSelectorFor(
+                     {tag: 'someTag', classes: 'someClass', attrs: [['someAttr', 'someValue']]}),
+                 selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -217,7 +238,9 @@ export function main() {
       matcher.addSelectables(CssSelector.parse(':not(p)'), 4);
       matcher.addSelectables(CssSelector.parse(':not(p[someAttr])'), 5);
 
-      expect(matcher.match(CssSelector.parse('p.someClass[someAttr]')[0], selectableCollector))
+      expect(matcher.match(
+                 getSelectorFor({tag: 'p', classes: 'someClass', attrs: [['someAttr', '']]}),
+                 selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
     });
@@ -228,32 +251,38 @@ export function main() {
       matcher.addSelectables(s3 = CssSelector.parse(':not(.someClass)'), 3);
       matcher.addSelectables(s4 = CssSelector.parse(':not(.someOtherClass[someAttr])'), 4);
 
-      expect(matcher.match(
-                 CssSelector.parse('p[someOtherAttr].someOtherClass')[0], selectableCollector))
+      expect(
+          matcher.match(
+              getSelectorFor({tag: 'p', attrs: [['someOtherAttr', '']], classes: 'someOtherClass'}),
+              selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2, s3[0], 3, s4[0], 4]);
     });
 
     it('should match * with :not selector', () => {
       matcher.addSelectables(CssSelector.parse(':not([a])'), 1);
-      expect(matcher.match(CssSelector.parse('div')[0], () => {})).toEqual(true);
+      expect(matcher.match(getSelectorFor({tag: 'div'}), () => {})).toEqual(true);
     });
 
     it('should match with multiple :not selectors', () => {
       matcher.addSelectables(s1 = CssSelector.parse('div:not([a]):not([b])'), 1);
-      expect(matcher.match(CssSelector.parse('div[a]')[0], selectableCollector)).toBe(false);
-      expect(matcher.match(CssSelector.parse('div[b]')[0], selectableCollector)).toBe(false);
-      expect(matcher.match(CssSelector.parse('div[c]')[0], selectableCollector)).toBe(true);
+      expect(matcher.match(getSelectorFor({tag: 'div', attrs: [['a', '']]}), selectableCollector))
+          .toBe(false);
+      expect(matcher.match(getSelectorFor({tag: 'div', attrs: [['b', '']]}), selectableCollector))
+          .toBe(false);
+      expect(matcher.match(getSelectorFor({tag: 'div', attrs: [['c', '']]}), selectableCollector))
+          .toBe(true);
     });
 
     it('should select with one match in a list', () => {
       matcher.addSelectables(s1 = CssSelector.parse('input[type=text], textbox'), 1);
 
-      expect(matcher.match(CssSelector.parse('textbox')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(getSelectorFor({tag: 'textbox'}), selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[1], 1]);
 
       reset();
-      expect(matcher.match(CssSelector.parse('input[type=text]')[0], selectableCollector))
+      expect(matcher.match(
+                 getSelectorFor({tag: 'input', attrs: [['type', 'text']]}), selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -261,7 +290,8 @@ export function main() {
     it('should not select twice with two matches in a list', () => {
       matcher.addSelectables(s1 = CssSelector.parse('input, .someClass'), 1);
 
-      expect(matcher.match(CssSelector.parse('input.someclass')[0], selectableCollector))
+      expect(
+          matcher.match(getSelectorFor({tag: 'input', classes: 'someclass'}), selectableCollector))
           .toEqual(true);
       expect(matched.length).toEqual(2);
       expect(matched).toEqual([s1[0], 1]);
@@ -403,4 +433,17 @@ export function main() {
       expect(template).toEqual('<input fancy/>');
     });
   });
+}
+
+function getSelectorFor(
+    {tag = '', attrs = [], classes = ''}: {tag?: string, attrs?: any[], classes?: string} = {}):
+    CssSelector {
+  const selector = new CssSelector();
+  selector.setElement(tag);
+
+  attrs.forEach(nameValue => { selector.addAttribute(nameValue[0], nameValue[1]); });
+
+  classes.trim().split(/\s+/g).forEach(cName => { selector.addClassName(cName); });
+
+  return selector;
 }
