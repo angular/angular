@@ -222,6 +222,17 @@ export function main() {
                  SyntaxError, `Can't resolve all parameters for NonAnnotatedService: (?).`);
        }));
 
+    it('should throw with descriptive error message when encounter invalid provider',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({providers: [{provide: SimpleService, useClass: undefined}]})
+         class SomeModule {
+         }
+
+         expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
+             .toThrowError(
+                 SyntaxError, /Invalid provider for SimpleService. useClass cannot be undefined./);
+       }));
+
     it('should throw with descriptive error message when one of providers is not present',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp3]})
