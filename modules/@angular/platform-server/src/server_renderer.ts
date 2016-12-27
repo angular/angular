@@ -10,7 +10,7 @@ import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, RootR
 import {AnimationDriver, DOCUMENT} from '@angular/platform-browser';
 
 import {isBlank, isPresent, stringify} from './facade/lang';
-import {AnimationKeyframe, AnimationPlayer, AnimationStyles, NoOpAnimationPlayer, RenderDebugInfo} from './private_import_core';
+import {AnimationKeyframe, AnimationPlayer, AnimationStyles, RenderDebugInfo} from './private_import_core';
 import {NAMESPACE_URIS, SharedStylesHost, flattenStyles, getDOM, isNamespaced, shimContentAttribute, shimHostAttribute, splitNamespace} from './private_import_platform-browser';
 
 const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
@@ -208,12 +208,8 @@ export class ServerRenderer implements Renderer {
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    try {
-      return this._animationDriver.animate(
-          element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
-    } catch (e) {
-      return new NoOpAnimationPlayer();
-    }
+    return this._animationDriver.animate(
+        element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
   }
 }
 
