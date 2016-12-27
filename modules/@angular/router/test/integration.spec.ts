@@ -2378,6 +2378,32 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy/loaded');
            })));
 
+    it('should work with wildcard route',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({selector: 'lazy', template: 'lazy-loaded'})
+             class LazyLoadedComponent {
+             }
+
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               imports: [RouterModule.forChild([{path: '', component: LazyLoadedComponent}])],
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {lazy: LoadedModule};
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{path: '**', loadChildren: 'lazy'}]);
+
+             router.navigateByUrl('/lazy');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/lazy');
+           })));
+
     describe('preloading', () => {
       beforeEach(() => {
         TestBed.configureTestingModule(
