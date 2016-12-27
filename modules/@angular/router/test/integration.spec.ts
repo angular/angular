@@ -551,13 +551,17 @@ describe('Integration', () => {
        const user = fixture.debugElement.children[1].children[1].componentInstance;
 
        expect(team.recordedParams).toEqual([{id: '22'}]);
+       expect(team.snapshotParams).toEqual([{id: '22'}]);
        expect(user.recordedParams).toEqual([{name: 'victor'}]);
+       expect(user.snapshotParams).toEqual([{name: 'victor'}]);
 
        router.navigateByUrl('/team/22/user/fedor');
        advance(fixture);
 
        expect(team.recordedParams).toEqual([{id: '22'}]);
+       expect(team.snapshotParams).toEqual([{id: '22'}]);
        expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+       expect(user.snapshotParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
      })));
 
   it('should work when navigating to /', fakeAsync(inject([Router], (router: Router) => {
@@ -2777,11 +2781,15 @@ class BlankCmp {
 class TeamCmp {
   id: Observable<string>;
   recordedParams: Params[] = [];
+  snapshotParams: Params[] = [];
   routerLink = ['.'];
 
   constructor(public route: ActivatedRoute) {
     this.id = map.call(route.params, (p: any) => p['id']);
-    route.params.forEach(_ => this.recordedParams.push(_));
+    route.params.forEach(p => {
+      this.recordedParams.push(p);
+      this.snapshotParams.push(route.snapshot.params);
+    });
   }
 }
 
@@ -2797,10 +2805,14 @@ class TwoOutletsCmp {
 class UserCmp {
   name: Observable<string>;
   recordedParams: Params[] = [];
+  snapshotParams: Params[] = [];
 
   constructor(route: ActivatedRoute) {
     this.name = map.call(route.params, (p: any) => p['name']);
-    route.params.forEach(_ => this.recordedParams.push(_));
+    route.params.forEach(p => {
+      this.recordedParams.push(p);
+      this.snapshotParams.push(route.snapshot.params);
+    });
   }
 }
 
@@ -2923,7 +2935,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
   ],
 
 
@@ -2949,7 +2961,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
   ],
 
 
@@ -2976,7 +2988,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
-    EmptyQueryParamsCmp
+    EmptyQueryParamsCmp,
   ]
 })
 class TestModule {
