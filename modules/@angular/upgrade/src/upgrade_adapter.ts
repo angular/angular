@@ -578,7 +578,7 @@ export class UpgradeAdapter {
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
                     let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
-                      next: (_: any) => this.ngZone.runOutsideAngular(() => rootScope.$evalAsync())
+                      next: (_: any) => this.ngZone.runOutsideAngular(() => rootScope.$apply())
                     });
                     rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                     this.ngZone.run(() => {
