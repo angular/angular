@@ -97,12 +97,11 @@ export class CompileElement extends CompileNode {
   }
 
   private _createComponentFactoryResolver() {
-    const entryComponents =
-        this.component.entryComponents.map((entryComponent: CompileIdentifierMetadata) => {
-          const id: CompileIdentifierMetadata = {reference: null};
-          this.view.targetDependencies.push(new ComponentFactoryDependency(entryComponent, id));
-          return id;
-        });
+    const entryComponents = this.component.entryComponents.map((entryComponent) => {
+      this.view.targetDependencies.push(
+          new ComponentFactoryDependency(entryComponent.componentType));
+      return {reference: entryComponent.componentFactory};
+    });
     if (!entryComponents || entryComponents.length === 0) {
       return;
     }
@@ -179,11 +178,11 @@ export class CompileElement extends CompileNode {
           const depsExpr =
               deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep));
           if (isDirectiveWrapper) {
-            const directiveWrapperIdentifier: CompileIdentifierMetadata = {reference: null};
-            this.view.targetDependencies.push(new DirectiveWrapperDependency(
-                provider.useClass, DirectiveWrapperCompiler.dirWrapperClassName(provider.useClass),
-                directiveWrapperIdentifier));
-            return DirectiveWrapperExpressions.create(directiveWrapperIdentifier, depsExpr);
+            const dirMeta =
+                this._directives.find(dir => dir.type.reference === provider.useClass.reference);
+            this.view.targetDependencies.push(
+                new DirectiveWrapperDependency(dirMeta.type.reference));
+            return DirectiveWrapperExpressions.create({reference: dirMeta.wrapperType}, depsExpr);
           } else {
             return o.importExpr(provider.useClass)
                 .instantiate(depsExpr, o.importType(provider.useClass));

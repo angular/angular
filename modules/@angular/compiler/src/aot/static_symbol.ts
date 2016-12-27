@@ -12,7 +12,14 @@
  * This token is unique for a filePath and name and can be used as a hash table key.
  */
 export class StaticSymbol {
-  constructor(public filePath: string, public name: string, public members?: string[]) {}
+  constructor(public filePath: string, public name: string, public members: string[]) {}
+
+  assertNoMembers() {
+    if (this.members.length) {
+      throw new Error(
+          `Illegal state: symbol without members expected, but got ${JSON.stringify(this)}.`);
+    }
+  }
 }
 
 /**

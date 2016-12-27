@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '@angular/core';
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName, viewClassName} from '../compile_metadata';
 import {createSharedBindingVariablesIfNeeded} from '../compiler_util/expression_converter';
 import {createDiTokenExpression, createInlineArray} from '../compiler_util/identifier_util';
 import {isPresent} from '../facade/lang';
@@ -22,8 +22,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView, CompileViewRootNode, CompileViewRootNodeType} from './compile_view';
 import {ChangeDetectorStatusEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
-import {getViewClassName} from './util';
+import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const CLASS_ATTR = 'class';
@@ -36,7 +35,8 @@ const rootSelectorVar = o.variable('rootSelector');
 export function buildView(
     view: CompileView, template: TemplateAst[],
     targetDependencies:
-        Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>): number {
+        Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>):
+    number {
   const builderVisitor = new ViewBuilderVisitor(view, targetDependencies);
   const parentEl =
       view.declarationElement.isNull() ? view.declarationElement : view.declarationElement.parent;
@@ -63,7 +63,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
   constructor(
       public view: CompileView,
       public targetDependencies:
-          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
+          Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 
   private _isRootNode(parent: CompileElement): boolean { return parent.view !== this.view; }
 
@@ -214,9 +214,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     this.view.nodes.push(compileElement);
     let compViewExpr: o.ReadPropExpr = null;
     if (isPresent(component)) {
-      const nestedComponentIdentifier: CompileIdentifierMetadata = {reference: null};
-      this.targetDependencies.push(new ViewClassDependency(
-          component.type, getViewClassName(component, 0), nestedComponentIdentifier));
+      this.targetDependencies.push(new ComponentViewDependency(component.type.reference));
 
       compViewExpr = o.THIS_EXPR.prop(`compView_${nodeIndex}`);  // fix highlighting: `
       this.view.fields.push(new o.ClassField(
@@ -226,7 +224,7 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
       compileElement.setComponentView(compViewExpr);
       this.view.createMethod.addStmt(
           compViewExpr
-              .set(o.importExpr(nestedComponentIdentifier).instantiate([
+              .set(o.importExpr({reference: component.componentViewType}).instantiate([
                 ViewProperties.viewUtils, o.THIS_EXPR, o.literal(nodeIndex), renderNode
               ]))
               .toStmt());

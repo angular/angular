@@ -7,7 +7,8 @@
  */
 
 import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
-import {AotSummarySerializerHost, deserializeSummaries, serializeSummaries, summaryFileName} from '@angular/compiler/src/aot/summary_serializer';
+import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
+import {summaryFileName} from '@angular/compiler/src/aot/util';
 
 import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
 import {MockAotSummaryResolverHost} from './summary_resolver_spec';
@@ -42,7 +43,7 @@ export function main() {
     it('should serialize various data correctly', () => {
       init();
       const serializedData = serializeSummaries(
-          host, summaryResolver, symbolResolver,
+          summaryResolver, symbolResolver,
           [
             {
               symbol: symbolCache.get('/tmp/some_values.ts', 'Values'),
@@ -50,7 +51,9 @@ export function main() {
                 aNumber: 1,
                 aString: 'hello',
                 anArray: [1, 2],
-                aStaticSymbol: symbolCache.get('/tmp/some_symbol.ts', 'someName')
+                aStaticSymbol: symbolCache.get('/tmp/some_symbol.ts', 'someName'),
+                aStaticSymbolWithMembers:
+                    symbolCache.get('/tmp/some_symbol.ts', 'someName', ['someMember']),
               }
             },
             {
@@ -66,11 +69,11 @@ export function main() {
             summaryKind: CompileSummaryKind.Injectable,
             type: {
               reference: symbolCache.get('/tmp/some_service.ts', 'SomeService'),
-            },
+            }
           }]);
 
 
-      const summaries = deserializeSummaries(symbolCache, serializedData);
+      const summaries = deserializeSummaries(symbolCache, serializedData.json).summaries;
       expect(summaries.length).toBe(2);
 
       // Note: change from .ts to .d.ts is expected
@@ -79,7 +82,9 @@ export function main() {
         aNumber: 1,
         aString: 'hello',
         anArray: [1, 2],
-        aStaticSymbol: symbolCache.get('/tmp/some_symbol.d.ts', 'someName')
+        aStaticSymbol: symbolCache.get('/tmp/some_symbol.d.ts', 'someName'),
+        aStaticSymbolWithMembers:
+            symbolCache.get('/tmp/some_symbol.d.ts', 'someName', ['someMember'])
       });
 
       expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/some_service.d.ts', 'SomeService'));
@@ -91,8 +96,8 @@ export function main() {
 
     it('should automatically add exported directives / pipes of NgModules that are not source files',
        () => {
-         init({});
-         const externalSerialized = serializeSummaries(host, summaryResolver, symbolResolver, [], [
+         init();
+         const externalSerialized = serializeSummaries(summaryResolver, symbolResolver, [], [
            <any>{
              summaryKind: CompileSummaryKind.Pipe,
              type: {
@@ -107,11 +112,11 @@ export function main() {
            }
          ]);
          init({
-           '/tmp/external.ngsummary.json': externalSerialized,
+           '/tmp/external.ngsummary.json': externalSerialized.json,
          });
 
          const serialized = serializeSummaries(
-             host, summaryResolver, symbolResolver, [], [<any>{
+             summaryResolver, symbolResolver, [], [<any>{
                summaryKind: CompileSummaryKind.NgModule,
                type: {reference: symbolCache.get('/tmp/some_module.ts', 'SomeModule')},
                exportedPipes: [
@@ -124,7 +129,7 @@ export function main() {
                ]
              }]);
 
-         const summaries = deserializeSummaries(symbolCache, serialized);
+         const summaries = deserializeSummaries(symbolCache, serialized.json).summaries;
          expect(summaries.length).toBe(3);
          expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/some_module.d.ts', 'SomeModule'));
          expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir'));
@@ -134,8 +139,9 @@ export function main() {
 
     it('should automatically add the metadata of referenced symbols that are not in the soure files',
        () => {
+         init();
          const externalSerialized = serializeSummaries(
-             host, summaryResolver, symbolResolver,
+             summaryResolver, symbolResolver,
              [
                {
                  symbol: symbolCache.get('/tmp/external.ts', 'PROVIDERS'),
@@ -154,7 +160,7 @@ export function main() {
              }]);
          init(
              {
-               '/tmp/external.ngsummary.json': externalSerialized,
+               '/tmp/external.ngsummary.json': externalSerialized.json,
              },
              {
                '/tmp/local.ts': `
@@ -164,7 +170,7 @@ export function main() {
                    {__symbolic: 'module', version: 3, metadata: {'external': 'b'}}
              });
          const serialized = serializeSummaries(
-             host, summaryResolver, symbolResolver, [{
+             summaryResolver, symbolResolver, [{
                symbol: symbolCache.get('/tmp/test.ts', 'main'),
                metadata: {
                  local: symbolCache.get('/tmp/local.ts', 'local'),
@@ -174,7 +180,7 @@ export function main() {
              }],
              []);
 
-         const summaries = deserializeSummaries(symbolCache, serialized);
+         const summaries = deserializeSummaries(symbolCache, serialized.json).summaries;
          // Note: local should not show up!
          expect(summaries.length).toBe(4);
          expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/test.d.ts', 'main'));
@@ -195,5 +201,28 @@ export function main() {
          expect(summaries[3].type.type.reference)
              .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
        });
+
+    it('should create "importAs" names for non source symbols', () => {
+      init();
+      const serialized = serializeSummaries(
+          summaryResolver, symbolResolver, [{
+            symbol: symbolCache.get('/tmp/test.ts', 'main'),
+            metadata: [
+              symbolCache.get('/tmp/external.d.ts', 'lib'),
+              symbolCache.get('/tmp/external.d.ts', 'lib', ['someMember']),
+            ]
+          }],
+          []);
+      // Note: no entry for the symbol with members!
+      expect(serialized.exportAs).toEqual([
+        {symbol: symbolCache.get('/tmp/external.d.ts', 'lib'), exportAs: 'lib_1'}
+      ]);
+
+      const deserialized = deserializeSummaries(symbolCache, serialized.json);
+      // Note: no entry for the symbol with members!
+      expect(deserialized.importAs).toEqual([
+        {symbol: symbolCache.get('/tmp/external.d.ts', 'lib'), importAs: 'lib_1'}
+      ]);
+    });
   });
 }

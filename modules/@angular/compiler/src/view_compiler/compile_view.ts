@@ -7,7 +7,7 @@
  */
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary, tokenName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary, tokenName, viewClassName} from '../compile_metadata';
 import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
 import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
@@ -20,8 +20,8 @@ import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
-import {getPropertyInView, getViewClassName} from './util';
+import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
+import {getPropertyInView} from './util';
 
 export enum CompileViewRootNodeType {
   Node,
@@ -87,7 +87,7 @@ export class CompileView implements NameResolver {
       public animations: AnimationEntryCompileResult[], public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][],
       public targetDependencies:
-          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
+          Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
     this.createMethod = new CompileMethod(this);
     this.animationBindingsMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
@@ -103,7 +103,7 @@ export class CompileView implements NameResolver {
     this.detachMethod = new CompileMethod(this);
 
     this.viewType = getViewType(component, viewIndex);
-    this.className = getViewClassName(component, viewIndex);
+    this.className = viewClassName(component.type.reference, viewIndex);
     this.classType = o.expressionType(o.variable(this.className));
     this.classExpr = o.variable(this.className);
     if (this.viewType === ViewType.COMPONENT || this.viewType === ViewType.HOST) {

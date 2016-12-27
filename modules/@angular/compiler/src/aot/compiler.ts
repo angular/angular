@@ -10,7 +10,7 @@ import {SchemaMetadata} from '@angular/core';
 
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTypeSummary, createHostComponentMeta, identifierModuleUrl, identifierName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, identifierModuleUrl, identifierName} from '../compile_metadata';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveWrapperCompileResult, DirectiveWrapperCompiler} from '../directive_wrapper_compiler';
 import {ListWrapper} from '../facade/collection';
@@ -22,13 +22,14 @@ import * as o from '../output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
+import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency, ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
 import {StaticSymbol} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
-import {serializeSummaries, summaryFileName} from './summary_serializer';
+import {serializeSummaries} from './summary_serializer';
+import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName} from './util';
 
 export class AotCompiler {
   private _animationCompiler = new AnimationCompiler();
@@ -65,12 +66,13 @@ export class AotCompiler {
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: StaticSymbol[],
       injectables: StaticSymbol[]): GeneratedFile[] {
-    const fileSuffix = _splitTypescriptSuffix(srcFileUrl)[1];
+    const fileSuffix = splitTypescriptSuffix(srcFileUrl)[1];
     const statements: o.Statement[] = [];
     const exportedVars: string[] = [];
     const generatedFiles: GeneratedFile[] = [];
 
-    generatedFiles.push(this._createSummary(srcFileUrl, directives, pipes, ngModules, injectables));
+    generatedFiles.push(this._createSummary(
+        srcFileUrl, directives, pipes, ngModules, injectables, statements, exportedVars));
 
     // compile all ng modules
     exportedVars.push(
@@ -109,7 +111,7 @@ export class AotCompiler {
     });
     if (statements.length > 0) {
       const srcModule = this._codegenSourceModule(
-          srcFileUrl, _ngfactoryModuleUrl(srcFileUrl), statements, exportedVars);
+          srcFileUrl, ngfactoryFilePath(srcFileUrl), statements, exportedVars);
       generatedFiles.unshift(srcModule);
     }
     return generatedFiles;
@@ -117,7 +119,8 @@ export class AotCompiler {
 
   private _createSummary(
       srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
-      ngModules: StaticSymbol[], injectables: StaticSymbol[]): GeneratedFile {
+      ngModules: StaticSymbol[], injectables: StaticSymbol[], targetStatements: o.Statement[],
+      targetExportedVars: string[]): GeneratedFile {
     const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
                                 .map(symbol => this._symbolResolver.resolveSymbol(symbol));
     const typeSummaries = [
@@ -126,8 +129,13 @@ export class AotCompiler {
       ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref)),
       ...injectables.map(ref => this._metadataResolver.getInjectableSummary(ref))
     ];
-    const json = serializeSummaries(
-        this._host, this._summaryResolver, this._symbolResolver, symbolSummaries, typeSummaries);
+    const {json, exportAs} = serializeSummaries(
+        this._summaryResolver, this._symbolResolver, symbolSummaries, typeSummaries);
+    exportAs.forEach((entry) => {
+      targetStatements.push(
+          o.variable(entry.exportAs).set(o.importExpr({reference: entry.symbol})).toDeclStmt());
+      targetExportedVars.push(entry.exportAs);
+    });
     return new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
   }
 
@@ -150,12 +158,6 @@ export class AotCompiler {
     }
 
     const appCompileResult = this._ngModuleCompiler.compile(ngModule, providers);
-
-    appCompileResult.dependencies.forEach((dep) => {
-      dep.placeholder.reference = this._symbolResolver.getStaticSymbol(
-          _ngfactoryModuleUrl(identifierModuleUrl(dep.comp)), _componentFactoryName(dep.comp));
-    });
-
     targetStatements.push(...appCompileResult.statements);
     return appCompileResult.ngModuleFactoryVar;
   }
@@ -172,13 +174,12 @@ export class AotCompiler {
   private _compileComponentFactory(
       compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata, fileSuffix: string,
       targetStatements: o.Statement[]): string {
+    const hostType = this._metadataResolver.getHostComponentType(compMeta.type.reference);
     const hostMeta = createHostComponentMeta(
-        this._symbolResolver.getStaticSymbol(
-            identifierModuleUrl(compMeta.type), `${identifierName(compMeta.type)}_Host`),
-        compMeta);
+        hostType, compMeta, this._metadataResolver.getHostComponentViewClass(hostType));
     const hostViewFactoryVar = this._compileComponent(
         hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements);
-    const compFactoryVar = _componentFactoryName(compMeta.type);
+    const compFactoryVar = componentFactoryName(compMeta.type.reference);
     targetStatements.push(
         o.variable(compFactoryVar)
             .set(o.importExpr(
@@ -219,7 +220,7 @@ export class AotCompiler {
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));
     }
     compiledAnimations.forEach(entry => targetStatements.push(...entry.statements));
-    targetStatements.push(..._resolveViewStatements(this._symbolResolver, viewResult));
+    targetStatements.push(...viewResult.statements);
     return viewResult.viewClassVar;
   }
 
@@ -241,27 +242,6 @@ export class AotCompiler {
   }
 }
 
-function _resolveViewStatements(
-    reflector: StaticSymbolResolver, compileResult: ViewCompileResult): o.Statement[] {
-  compileResult.dependencies.forEach((dep) => {
-    if (dep instanceof ViewClassDependency) {
-      const vfd = <ViewClassDependency>dep;
-      vfd.placeholder.reference =
-          reflector.getStaticSymbol(_ngfactoryModuleUrl(identifierModuleUrl(vfd.comp)), dep.name);
-    } else if (dep instanceof ComponentFactoryDependency) {
-      const cfd = <ComponentFactoryDependency>dep;
-      cfd.placeholder.reference = reflector.getStaticSymbol(
-          _ngfactoryModuleUrl(identifierModuleUrl(cfd.comp)), _componentFactoryName(cfd.comp));
-    } else if (dep instanceof DirectiveWrapperDependency) {
-      const dwd = <DirectiveWrapperDependency>dep;
-      dwd.placeholder.reference =
-          reflector.getStaticSymbol(_ngfactoryModuleUrl(identifierModuleUrl(dwd.dir)), dwd.name);
-    }
-  });
-  return compileResult.statements;
-}
-
-
 function _resolveStyleStatements(
     reflector: StaticSymbolResolver, compileResult: CompiledStylesheet,
     fileSuffix: string): o.Statement[] {
@@ -270,15 +250,6 @@ function _resolveStyleStatements(
         _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, fileSuffix), dep.name);
   });
   return compileResult.statements;
-}
-
-function _ngfactoryModuleUrl(dirUrl: string): string {
-  const urlWithSuffix = _splitTypescriptSuffix(dirUrl);
-  return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
-}
-
-function _componentFactoryName(comp: CompileIdentifierMetadata): string {
-  return `${identifierName(comp)}NgFactory`;
 }
 
 function _stylesModuleUrl(stylesheetUrl: string, shim: boolean, suffix: string): string {
@@ -290,20 +261,6 @@ function _assertComponent(meta: CompileDirectiveMetadata) {
     throw new Error(
         `Could not compile '${identifierName(meta.type)}' because it is not a component.`);
   }
-}
-
-function _splitTypescriptSuffix(path: string): string[] {
-  if (path.endsWith('.d.ts')) {
-    return [path.slice(0, -5), '.ts'];
-  }
-
-  const lastDot = path.lastIndexOf('.');
-
-  if (lastDot !== -1) {
-    return [path.substring(0, lastDot), path.substring(lastDot)];
-  }
-
-  return [path, ''];
 }
 
 export interface NgAnalyzedModules {

@@ -19,9 +19,12 @@ import {LifecycleHooks} from './private_import_core';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {ProviderAst} from './template_parser/template_ast';
 
+/**
+ * This is currently not read, but will probably be used in the future.
+ * We keep it as we already pass it through all the rigth places...
+ */
 export class ComponentFactoryDependency {
-  constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+  constructor(public compType: any) {}
 }
 
 export class NgModuleCompileResult {
@@ -46,13 +49,12 @@ export class NgModuleCompiler {
     const bootstrapComponentFactories: CompileIdentifierMetadata[] = [];
     const entryComponentFactories =
         ngModuleMeta.transitiveModule.entryComponents.map((entryComponent) => {
-          const id: CompileIdentifierMetadata = {reference: null};
           if (ngModuleMeta.bootstrapComponents.some(
-                  (id) => id.reference === entryComponent.reference)) {
-            bootstrapComponentFactories.push(id);
+                  (id) => id.reference === entryComponent.componentType)) {
+            bootstrapComponentFactories.push({reference: entryComponent.componentFactory});
           }
-          deps.push(new ComponentFactoryDependency(entryComponent, id));
-          return id;
+          deps.push(new ComponentFactoryDependency(entryComponent.componentType));
+          return {reference: entryComponent.componentFactory};
         });
     const builder = new _InjectorBuilder(
         ngModuleMeta, entryComponentFactories, bootstrapComponentFactories, sourceSpan);

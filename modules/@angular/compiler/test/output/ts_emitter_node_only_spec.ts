@@ -74,4 +74,5 @@ class StubReflectorHost implements StaticSymbolResolverHost {
 
 class StubImportResolver extends ImportResolver {
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string { return ''; }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
 }

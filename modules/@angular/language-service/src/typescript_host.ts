@@ -122,7 +122,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       result = this._resolver = new CompileMetadataResolver(
           moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
-          elementSchemaRegistry, directiveNormalizer, this.reflector,
+          elementSchemaRegistry, directiveNormalizer, this._staticSymbolCache, this.reflector,
           (error, type) => this.collectError(error, type && type.filePath));
     }
     return result;
@@ -397,7 +397,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const summaryResolver = new AotSummaryResolver(
           {
             loadSummary(filePath: string) { return null; },
-            isSourceFile(sourceFilePath: string) { return true; }
+            isSourceFile(sourceFilePath: string) { return true; },
+            getOutputFileName(sourceFilePath: string) { return null; }
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(

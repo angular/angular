@@ -16,17 +16,17 @@ import {TemplateAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
+import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 import {bindView} from './view_binder';
 import {buildView, finishView} from './view_builder';
 
-export {ComponentFactoryDependency, DirectiveWrapperDependency, ViewClassDependency} from './deps';
+export {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 
 export class ViewCompileResult {
   constructor(
       public statements: o.Statement[], public viewClassVar: string,
       public dependencies:
-          Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
+          Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {}
 }
 
 @CompilerInjectable()
@@ -38,7 +38,7 @@ export class ViewCompiler {
       pipes: CompilePipeSummary[],
       compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
     const dependencies:
-        Array<ViewClassDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
+        Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
     const view = new CompileView(
         component, this._genConfig, pipes, styles, compiledAnimations, 0,
         CompileElement.createNull(), [], dependencies);

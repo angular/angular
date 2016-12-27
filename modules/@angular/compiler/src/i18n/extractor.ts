@@ -109,7 +109,7 @@ export class Extractor {
     const resolver = new CompileMetadataResolver(
         new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
         new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-        staticReflector);
+        symbolCache, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {});
