@@ -98,15 +98,15 @@ export class RouterLink {
   }
 
   @Input()
-  set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
+  set routerLink(commands: any[]|string) {
+    if (commands != null) {
+      this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
-      this.commands = [data];
+      this.commands = [];
     }
   }
 
-  @HostListener('click', [])
+  @HostListener('click')
   onClick(): boolean {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
@@ -163,11 +163,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(data: any[]|string) {
-    if (Array.isArray(data)) {
-      this.commands = data;
+  set routerLink(commands: any[]|string) {
+    if (commands != null) {
+      this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
-      this.commands = [data];
+      this.commands = [];
     }
   }
 

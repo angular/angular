@@ -1022,6 +1022,26 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 
+    it('should not throw when commands is null', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template:
+               `<router-outlet></router-outlet><a [routerLink]="null">Link</a><button [routerLink]="null">Button</button>`
+         })
+         class CmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+         const anchor = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('button');
+         expect(() => anchor.click()).not.toThrow();
+         expect(() => button.click()).not.toThrow();
+       }));
+
     it('should update hrefs when query params or fragment change', fakeAsync(() => {
 
          @Component({
