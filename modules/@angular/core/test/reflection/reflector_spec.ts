@@ -190,6 +190,8 @@ export function main() {
 
         class ChildNoDecorators extends Parent {}
 
+        class NoDecorators {}
+
         // Check that metadata for Parent was not changed!
         expect(reflector.annotations(Parent)).toEqual([new ClassDecorator({value: 'parent'})]);
 
@@ -199,6 +201,11 @@ export function main() {
 
         expect(reflector.annotations(ChildNoDecorators)).toEqual([new ClassDecorator(
             {value: 'parent'})]);
+
+        expect(reflector.annotations(NoDecorators)).toEqual([]);
+        expect(reflector.annotations(<any>{})).toEqual([]);
+        expect(reflector.annotations(<any>1)).toEqual([]);
+        expect(reflector.annotations(null)).toEqual([]);
       });
 
       it('should inherit parameters', () => {
@@ -226,6 +233,8 @@ export function main() {
           constructor(a: any, b: any, c: any) { super(null, null); }
         }
 
+        class NoDecorators {}
+
         // Check that metadata for Parent was not changed!
         expect(reflector.parameters(Parent)).toEqual([
           [A, new ParamDecorator('a')], [B, new ParamDecorator('b')]
@@ -242,6 +251,11 @@ export function main() {
         expect(reflector.parameters(ChildWithCtorNoDecorator)).toEqual([
           undefined, undefined, undefined
         ]);
+
+        expect(reflector.parameters(NoDecorators)).toEqual([]);
+        expect(reflector.parameters(<any>{})).toEqual([]);
+        expect(reflector.parameters(<any>1)).toEqual([]);
+        expect(reflector.parameters(null)).toEqual([]);
       });
 
       it('should inherit property metadata', () => {
@@ -263,6 +277,8 @@ export function main() {
           c: C;
         }
 
+        class NoDecorators {}
+
         // Check that metadata for Parent was not changed!
         expect(reflector.propMetadata(Parent)).toEqual({
           'a': [new PropDecorator('a')],
@@ -274,6 +290,11 @@ export function main() {
           'b': [new PropDecorator('b1'), new PropDecorator('b2')],
           'c': [new PropDecorator('c')]
         });
+
+        expect(reflector.propMetadata(NoDecorators)).toEqual({});
+        expect(reflector.propMetadata(<any>{})).toEqual({});
+        expect(reflector.propMetadata(<any>1)).toEqual({});
+        expect(reflector.propMetadata(null)).toEqual({});
       });
 
       it('should inherit lifecycle hooks', () => {
