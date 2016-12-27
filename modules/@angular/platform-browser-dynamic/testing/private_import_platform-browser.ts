@@ -8,4 +8,4 @@
 
 import {__platform_browser_private__ as _} from '@angular/platform-browser';
 
-export var getDOM: typeof _.getDOM = _.getDOM;
+export const getDOM: typeof _.getDOM = _.getDOM;

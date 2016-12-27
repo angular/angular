@@ -9,7 +9,7 @@
 
 import {INTERNAL_SERVER_PLATFORM_PROVIDERS, SERVER_RENDER_PROVIDERS} from './server';
 
-export var __platform_server_private__: {
+export const __platform_server_private__: {
   INTERNAL_SERVER_PLATFORM_PROVIDERS: typeof INTERNAL_SERVER_PLATFORM_PROVIDERS,
   SERVER_RENDER_PROVIDERS: typeof SERVER_RENDER_PROVIDERS,
 } = {

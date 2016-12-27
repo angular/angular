@@ -8,6 +8,6 @@
 
 import {__core_private__ as r} from '@angular/core';
 
-export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
-export var reflector: typeof r.reflector = r.reflector;
-export var Console: typeof r.Console = r.Console;
+export const ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
+export const reflector: typeof r.reflector = r.reflector;
+export const Console: typeof r.Console = r.Console;

@@ -122,11 +122,9 @@ export class MockCompilerHost implements ts.CompilerHost {
     return ts.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback = (fileName, text) => { this.context.writeFile(fileName, text); }
+  writeFile: ts.WriteFileCallback = (fileName, text) => { this.context.writeFile(fileName, text); };
 
-  getCurrentDirectory(): string {
-    return this.context.currentDirectory;
-  }
+  getCurrentDirectory(): string { return this.context.currentDirectory; }
 
   getCanonicalFileName(fileName: string): string { return fileName; }
 

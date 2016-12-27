@@ -68,13 +68,13 @@ export class MapType extends Type {
   visitType(visitor: TypeVisitor, context: any): any { return visitor.visitMapType(this, context); }
 }
 
-export var DYNAMIC_TYPE = new BuiltinType(BuiltinTypeName.Dynamic);
-export var BOOL_TYPE = new BuiltinType(BuiltinTypeName.Bool);
-export var INT_TYPE = new BuiltinType(BuiltinTypeName.Int);
-export var NUMBER_TYPE = new BuiltinType(BuiltinTypeName.Number);
-export var STRING_TYPE = new BuiltinType(BuiltinTypeName.String);
-export var FUNCTION_TYPE = new BuiltinType(BuiltinTypeName.Function);
-export var NULL_TYPE = new BuiltinType(BuiltinTypeName.Null);
+export const DYNAMIC_TYPE = new BuiltinType(BuiltinTypeName.Dynamic);
+export const BOOL_TYPE = new BuiltinType(BuiltinTypeName.Bool);
+export const INT_TYPE = new BuiltinType(BuiltinTypeName.Int);
+export const NUMBER_TYPE = new BuiltinType(BuiltinTypeName.Number);
+export const STRING_TYPE = new BuiltinType(BuiltinTypeName.String);
+export const FUNCTION_TYPE = new BuiltinType(BuiltinTypeName.Function);
+export const NULL_TYPE = new BuiltinType(BuiltinTypeName.Null);
 
 export interface TypeVisitor {
   visitBuiltintType(type: BuiltinType, context: any): any;
@@ -451,12 +451,12 @@ export interface ExpressionVisitor {
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any;
 }
 
-export var THIS_EXPR = new ReadVarExpr(BuiltinVar.This);
-export var SUPER_EXPR = new ReadVarExpr(BuiltinVar.Super);
-export var CATCH_ERROR_VAR = new ReadVarExpr(BuiltinVar.CatchError);
-export var CATCH_STACK_VAR = new ReadVarExpr(BuiltinVar.CatchStack);
-export var NULL_EXPR = new LiteralExpr(null, null);
-export var TYPED_NULL_EXPR = new LiteralExpr(null, NULL_TYPE);
+export const THIS_EXPR = new ReadVarExpr(BuiltinVar.This);
+export const SUPER_EXPR = new ReadVarExpr(BuiltinVar.Super);
+export const CATCH_ERROR_VAR = new ReadVarExpr(BuiltinVar.CatchError);
+export const CATCH_STACK_VAR = new ReadVarExpr(BuiltinVar.CatchStack);
+export const NULL_EXPR = new LiteralExpr(null, null);
+export const TYPED_NULL_EXPR = new LiteralExpr(null, NULL_TYPE);
 
 //// Statements
 export enum StmtModifier {
