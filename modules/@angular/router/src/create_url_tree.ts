@@ -34,7 +34,7 @@ export function createUrlTree(
 }
 
 function isMatrixParams(command: any): boolean {
-  return typeof command === 'object' && !command.outlets && !command.segmentPath;
+  return typeof command === 'object' && command != null && !command.outlets && !command.segmentPath;
 }
 
 function tree(
@@ -70,7 +70,7 @@ class Navigation {
       throw new Error('Root segment cannot have matrix parameters');
     }
 
-    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c.outlets);
+    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c != null && c.outlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new Error('{outlets:{}} has to be the last command');
     }
@@ -91,7 +91,7 @@ function computeNavigation(commands: any[]): Navigation {
   let isAbsolute = false;
 
   const res: any[] = commands.reduce((res, cmd, cmdIdx) => {
-    if (typeof cmd === 'object') {
+    if (typeof cmd === 'object' && cmd != null) {
       if (cmd.outlets) {
         const outlets: {[k: string]: any} = {};
         forEach(cmd.outlets, (commands: any, name: string) => {
@@ -169,7 +169,9 @@ function createPositionApplyingDoubleDots(
 }
 
 function getPath(command: any): any {
-  if (typeof command === 'object' && command.outlets) return command.outlets[PRIMARY_OUTLET];
+  if (typeof command === 'object' && command != null && command.outlets) {
+    return command.outlets[PRIMARY_OUTLET];
+  }
   return `${command}`;
 }
 
