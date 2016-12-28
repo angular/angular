@@ -125,6 +125,69 @@ export function main() {
       });
     });
 
+    describe('min', () => {
+      it('should not error on an empty string',
+        () => { expect(Validators.min(2)(new FormControl(''))).toBeNull(); });
+
+      it('should not error on null',
+        () => { expect(Validators.min(2)(new FormControl(null))).toBeNull(); });
+
+      it('should not error on undefined',
+        () => { expect(Validators.min(2)(new FormControl(undefined))).toBeNull(); });
+
+      it('should error on strings', () => {
+        expect(Validators.min(2)(new FormControl('a'))).toEqual({
+          'min': {'min': 2, 'actual': 'a'}
+        });
+      });
+
+      it('should error on small values', () => {
+        expect(Validators.min(2)(new FormControl(1))).toEqual({
+          'min': {'min': 2, 'actual': 1}
+        });
+      });
+
+      it('should not error on big values', () => {
+        expect(Validators.min(2)(new FormControl(3))).toBeNull();
+      });
+
+      it('should not error on equals values', () => {
+        expect(Validators.min(2)(new FormControl(2))).toBeNull();
+      });
+    });
+
+    describe('max', () => {
+      it('should not error on an empty string',
+        () => { expect(Validators.max(2)(new FormControl(''))).toBeNull(); });
+
+      it('should not error on null',
+        () => { expect(Validators.max(2)(new FormControl(null))).toBeNull(); });
+
+      it('should not error on undefined',
+        () => { expect(Validators.max(2)(new FormControl(undefined))).toBeNull(); });
+
+      it('should error on strings', () => {
+        expect(Validators.max(2)(new FormControl('aaa'))).toEqual({
+          'max': {'max': 2, 'actual': 'aaa'}
+        });
+      });
+
+      it('should error on big values', () => {
+        expect(Validators.max(2)(new FormControl(3))).toEqual({
+          'max': {'max': 2, 'actual': 3}
+        });
+      });
+
+      it('should not error on small values', () => {
+        expect(Validators.max(2)(new FormControl(1))).toBeNull();
+      });
+
+      it('should not error on equals values', () => {
+        expect(Validators.max(2)(new FormControl(2))).toBeNull();
+      });
+    });
+
+
     describe('pattern', () => {
       it('should not error on an empty string',
          () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(''))).toBeNull(); });

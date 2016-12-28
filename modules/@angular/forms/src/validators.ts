@@ -100,6 +100,34 @@ export class Validators {
   }
 
   /**
+   * Validator that requires controls to have a value of a minimum number.
+   */
+  static min(min: number): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} => {
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      return typeof control.value !== 'number' || control.value < min ?
+      {'min': {'min': min, 'actual': control.value}} :
+        null;
+    };
+  }
+
+  /**
+   * Validator that requires controls to have a value of a maximum number.
+   */
+  static max(max: number): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} => {
+      if (isEmptyInputValue(control.value)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      return typeof control.value !== 'number' || control.value > max ?
+      {'max': {'max': max, 'actual': control.value}} :
+        null;
+    };
+  }
+
+  /**
    * Validator that requires a control to match a regex to its value.
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
