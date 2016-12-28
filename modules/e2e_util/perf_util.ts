@@ -35,9 +35,12 @@ export function runBenchmark(config: {
   microMetrics?: {[key: string]: string},
   work?: () => void,
   prepare?: () => void,
+  setup?: () => void
 }): Promise<any> {
   openBrowser(config);
-
+  if (config.setup) {
+    config.setup();
+  }
   const description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
   config.params.forEach((param) => { description[param.name] = param.value; });
   return runner.sample({
