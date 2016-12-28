@@ -4,7 +4,10 @@ import * as path from 'path';
 import {
   DIST_COMPONENTS_ROOT, PROJECT_ROOT, COMPONENTS_DIR, HTML_MINIFIER_OPTIONS, LICENSE_BANNER
 } from '../constants';
-import {sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask} from '../task_helpers';
+import {
+  sassBuildTask, tsBuildTask, execNodeTask, copyTask, sequenceTask,
+  triggerLivereload
+} from '../task_helpers';
 
 // No typings for these.
 const inlineResources = require('../../../scripts/release/inline-resources');
@@ -27,9 +30,9 @@ const tsconfigPath = path.relative(PROJECT_ROOT, path.join(COMPONENTS_DIR, 'tsco
 
 /** [Watch task] Rebuilds (ESM output) whenever ts, scss, or html sources change. */
 task(':watch:components', () => {
-  watch(path.join(COMPONENTS_DIR, '**/*.ts'), ['build:components']);
-  watch(path.join(COMPONENTS_DIR, '**/*.scss'), ['build:components']);
-  watch(path.join(COMPONENTS_DIR, '**/*.html'), ['build:components']);
+  watch(path.join(COMPONENTS_DIR, '**/*.ts'), ['build:components', triggerLivereload]);
+  watch(path.join(COMPONENTS_DIR, '**/*.scss'), ['build:components', triggerLivereload]);
+  watch(path.join(COMPONENTS_DIR, '**/*.html'), ['build:components', triggerLivereload]);
 });
 
 
