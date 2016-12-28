@@ -48,13 +48,16 @@ export function buildView(
 }
 
 export function finishView(view: CompileView, targetStatements: o.Statement[]) {
-  view.afterNodes();
-  createViewTopLevelStmts(view, targetStatements);
   view.nodes.forEach((node) => {
-    if (node instanceof CompileElement && node.hasEmbeddedView) {
-      finishView(node.embeddedView, targetStatements);
+    if (node instanceof CompileElement) {
+      node.finish();
+      if (node.hasEmbeddedView) {
+        finishView(node.embeddedView, targetStatements);
+      }
     }
   });
+  view.finish();
+  createViewTopLevelStmts(view, targetStatements);
 }
 
 class ViewBuilderVisitor implements TemplateAstVisitor {
@@ -416,7 +419,9 @@ function createStaticNodeDebugInfo(node: CompileNode): o.Expression {
   let componentToken: o.Expression = o.NULL_EXPR;
   const varTokenEntries: any[] = [];
   if (isPresent(compileElement)) {
-    providerTokens = compileElement.getProviderTokens();
+    providerTokens =
+        compileElement.getProviderTokens().map((token) => createDiTokenExpression(token));
+
     if (isPresent(compileElement.component)) {
       componentToken = createDiTokenExpression(identifierToken(compileElement.component.type));
     }

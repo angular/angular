@@ -43,6 +43,8 @@ export function main() {
         NeedsContentChildWithRead,
         NeedsViewChildrenWithRead,
         NeedsViewChildWithRead,
+        NeedsContentChildTemplateRef,
+        NeedsContentChildTemplateRefApp,
         NeedsViewContainerWithRead,
         ManualProjecting
       ]
@@ -260,6 +262,15 @@ export function main() {
         const comp: NeedsContentChildWithRead =
             view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
         expect(comp.textDirChild.text).toEqual('ca');
+      });
+
+      it('should contain the first descendant content child templateRef', () => {
+        const template = '<needs-content-child-template-ref-app>' +
+            '</needs-content-child-template-ref-app>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+        view.detectChanges();
+        expect(view.nativeElement).toHaveText('OUTER');
       });
 
       it('should contain the first view child', () => {
@@ -728,6 +739,23 @@ class NeedsContentChildrenWithRead {
 class NeedsContentChildWithRead {
   @ContentChild('q', {read: TextDirective}) textDirChild: TextDirective;
   @ContentChild('nonExisting', {read: TextDirective}) nonExistingVar: TextDirective;
+}
+
+@Component({
+  selector: 'needs-content-child-template-ref',
+  template: '<div [ngTemplateOutlet]="templateRef"></div>'
+})
+class NeedsContentChildTemplateRef {
+  @ContentChild(TemplateRef) templateRef: TemplateRef<any>;
+}
+
+@Component({
+  selector: 'needs-content-child-template-ref-app',
+  template: '<needs-content-child-template-ref>' +
+      '<template>OUTER<template>INNER</template></template>' +
+      '</needs-content-child-template-ref>'
+})
+class NeedsContentChildTemplateRefApp {
 }
 
 @Component({
