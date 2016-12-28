@@ -7,7 +7,7 @@
  */
 
 import {global, isPresent, stringify} from '../facade/lang';
-import {Type} from '../type';
+import {Type, isType} from '../type';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
@@ -105,7 +105,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   parameters(type: Type<any>): any[][] {
     // Note: only report metadata if we have at least one class decorator
     // to stay in sync with the static reflector.
-    const parentCtor = Object.getPrototypeOf(type.prototype).constructor;
+    if (!isType(type)) {
+      return [];
+    }
+    const parentCtor = getParentCtor(type);
     let parameters = this._ownParameters(type, parentCtor);
     if (!parameters && parentCtor !== Object) {
       parameters = this.parameters(parentCtor);
@@ -135,7 +138,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   annotations(typeOrFunc: Type<any>): any[] {
-    const parentCtor = Object.getPrototypeOf(typeOrFunc.prototype).constructor;
+    if (!isType(typeOrFunc)) {
+      return [];
+    }
+    const parentCtor = getParentCtor(typeOrFunc);
     const ownAnnotations = this._ownAnnotations(typeOrFunc, parentCtor) || [];
     const parentAnnotations = parentCtor !== Object ? this.annotations(parentCtor) : [];
     return parentAnnotations.concat(ownAnnotations);
@@ -170,7 +176,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   propMetadata(typeOrFunc: any): {[key: string]: any[]} {
-    const parentCtor = Object.getPrototypeOf(typeOrFunc.prototype).constructor;
+    if (!isType(typeOrFunc)) {
+      return {};
+    }
+    const parentCtor = getParentCtor(typeOrFunc);
     const propMetadata: {[key: string]: any[]} = {};
     if (parentCtor !== Object) {
       const parentPropMetadata = this.propMetadata(parentCtor);
@@ -232,4 +241,12 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[]
     const annotationArgs = decoratorInvocation.args ? decoratorInvocation.args : [];
     return new annotationCls(...annotationArgs);
   });
+}
+
+function getParentCtor(ctor: Function): Type<any> {
+  const parentProto = Object.getPrototypeOf(ctor.prototype);
+  const parentCtor = parentProto ? parentProto.constructor : null;
+  // Note: We always use `Object` as the null value
+  // to simplify checking later on.
+  return parentCtor || Object;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -119,7 +119,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      it('should support providers with an anonymous function', () => {
+      it('should support providers with an anonymous function as token', () => {
         const token = () => true;
         const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
@@ -147,6 +147,22 @@ function declareTests({useJit}: {useJit: boolean}) {
         const injector = createInjector([{provide: 'someToken', useValue: data}]);
         expect(injector.get('someToken')).toEqual(data);
       });
+
+      describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
+
+        it('should support class instances', () => {
+          class SomeObject {
+            someMethod() {}
+          }
+
+          expect(
+              () => createInjector([
+                {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}
+              ]))
+              .not.toThrow();
+        });
+      });
+
     });
 
     it('should allow logging a previous elements class binding via interpolation', () => {
