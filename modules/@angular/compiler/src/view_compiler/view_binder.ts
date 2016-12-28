@@ -15,6 +15,7 @@ import {CompileView} from './compile_view';
 import {bindOutputs} from './event_binder';
 import {bindDirectiveAfterContentLifecycleCallbacks, bindDirectiveAfterViewLifecycleCallbacks, bindDirectiveWrapperLifecycleCallbacks, bindInjectableDestroyLifecycleCallbacks, bindPipeDestroyLifecycleCallbacks} from './lifecycle_binder';
 import {bindDirectiveHostProps, bindDirectiveInputs, bindRenderInputs, bindRenderText} from './property_binder';
+import {bindQueryValues} from './query_binder';
 
 export function bindView(
     view: CompileView, parsedTemplate: TemplateAst[], schemaRegistry: ElementSchemaRegistry): void {
@@ -43,6 +44,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
 
   visitElement(ast: ElementAst, parent: CompileElement): any {
     const compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
+    bindQueryValues(compileElement);
     const hasEvents = bindOutputs(ast.outputs, ast.directives, compileElement, true);
     bindRenderInputs(ast.inputs, ast.outputs, hasEvents, compileElement);
     ast.directives.forEach((directiveAst, dirIndex) => {
@@ -75,6 +77,7 @@ class ViewBinderVisitor implements TemplateAstVisitor {
 
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, parent: CompileElement): any {
     const compileElement = <CompileElement>this.view.nodes[this._nodeIndex++];
+    bindQueryValues(compileElement);
     bindOutputs(ast.outputs, ast.directives, compileElement, false);
     ast.directives.forEach((directiveAst, dirIndex) => {
       const directiveInstance = compileElement.instances.get(directiveAst.directive.type.reference);
