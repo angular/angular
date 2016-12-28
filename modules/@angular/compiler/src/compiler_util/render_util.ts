@@ -92,7 +92,7 @@ function sanitizedValue(
 export function triggerAnimation(
     view: o.Expression, componentView: o.Expression, boundProp: BoundElementPropertyAst,
     boundOutputs: BoundEventAst[], eventListener: o.Expression, renderElement: o.Expression,
-    renderValue: o.Expression, lastRenderValue: o.Expression) {
+    renderValue: o.Expression, lastRenderValue: o.Expression, isFirstCheck: o.Expression) {
   const detachStmts: o.Statement[] = [];
   const updateStmts: o.Statement[] = [];
 
@@ -104,17 +104,14 @@ export function triggerAnimation(
   // it's important to normalize the void value as `void` explicitly
   // so that the styles data can be obtained from the stringmap
   const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
-  const unitializedValue = o.importExpr(createIdentifier(Identifiers.UNINITIALIZED));
   const animationTransitionVar = o.variable('animationTransition_' + animationName);
 
-  updateStmts.push(
-      animationTransitionVar
-          .set(animationFnExpr.callFn([
-            view, renderElement,
-            lastRenderValue.equals(unitializedValue).conditional(emptyStateValue, lastRenderValue),
-            renderValue.equals(unitializedValue).conditional(emptyStateValue, renderValue)
-          ]))
-          .toDeclStmt());
+  updateStmts.push(animationTransitionVar
+                       .set(animationFnExpr.callFn([
+                         view, renderElement,
+                         isFirstCheck.conditional(emptyStateValue, lastRenderValue), renderValue
+                       ]))
+                       .toDeclStmt());
 
   detachStmts.push(
       animationTransitionVar

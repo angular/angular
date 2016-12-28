@@ -55,8 +55,4 @@ export class InjectMethodVars {
   static notFoundResult = o.variable('notFoundResult');
 }
 
-export class DetectChangesVars {
-  static throwOnChange = o.variable(`throwOnChange`);
-  static changes = o.variable(`changes`);
-  static changed = o.variable(`changed`);
-}
+export class DetectChangesVars { static throwOnChange = o.variable(`throwOnChange`); }

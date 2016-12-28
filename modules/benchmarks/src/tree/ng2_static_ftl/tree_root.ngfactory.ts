@@ -86,7 +86,6 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
     this._appEl_0 = new import2.ViewContainer(0, (null as any), this, this._anchor_0);
     this._TemplateRef_0_5 = new import11.TemplateRef_(this, 0, this._anchor_0);
     this._NgIf_0_6 = new import10.NgIf(this._appEl_0.vcRef, this._TemplateRef_0_5);
-    this._expr_0 = import7.UNINITIALIZED;
     this.init([], [this._anchor_0], []);
     return (null as any);
   }
@@ -108,7 +107,7 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
   }
   detectChangesInternal(throwOnChange: boolean): void {
     const currVal_0: any = (this.context.data.left != (null as any));
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal_0)) {
+    if (import4.checkBinding(throwOnChange, false, this._expr_0, currVal_0)) {
       this._NgIf_0_6.ngIf = currVal_0;
       this._expr_0 = currVal_0;
     }

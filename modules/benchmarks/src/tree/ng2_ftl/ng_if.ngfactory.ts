@@ -8,11 +8,10 @@ export class NgIfWrapper {
   _expr_0: any;
   constructor(viewContainerRef: ViewContainerRef, templateRef: TemplateRef<any>) {
     this.directive = new NgIf(viewContainerRef, templateRef);
-    this._expr_0 = import7.UNINITIALIZED;
   }
 
   updateNgIf(throwOnChange: boolean, currVal: any) {
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal)) {
+    if (import4.checkBinding(throwOnChange, false, this._expr_0, currVal)) {
       this.directive.ngIf = currVal;
       this._expr_0 = currVal;
     }

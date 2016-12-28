@@ -8,7 +8,6 @@
 
 import {AnimationQueue} from '../animation/animation_queue';
 import {SimpleChange, devModeEqual} from '../change_detection/change_detection';
-import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {Inject, Injectable} from '../di';
 import {isPresent, looseIdentical} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata/view';
@@ -102,14 +101,15 @@ function _toStringWithNull(v: any): string {
   return v != null ? v.toString() : '';
 }
 
-export function checkBinding(throwOnChange: boolean, oldValue: any, newValue: any): boolean {
+export function checkBinding(
+    throwOnChange: boolean, isFirstCheck: boolean, oldValue: any, newValue: any): boolean {
   if (throwOnChange) {
-    if (!devModeEqual(oldValue, newValue)) {
-      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue);
+    if (isFirstCheck || !devModeEqual(oldValue, newValue)) {
+      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue, isFirstCheck);
     }
     return false;
   } else {
-    return !looseIdentical(oldValue, newValue);
+    return isFirstCheck || !looseIdentical(oldValue, newValue);
   }
 }
 
@@ -121,11 +121,12 @@ export const EMPTY_ARRAY: any[] = [];
 export const EMPTY_MAP = {};
 
 export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
+  let v0: any;
 
   return (p0) => {
-    if (!looseIdentical(v0, p0)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0)) {
       v0 = p0;
       result = fn(p0);
     }
@@ -134,12 +135,13 @@ export function pureProxy1<P0, R>(fn: (p0: P0) => R): (p0: P0) => R {
 }
 
 export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P1) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
-  let v1: any = UNINITIALIZED;
+  let v0: any;
+  let v1: any;
 
   return (p0, p1) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1)) {
       v0 = p0;
       v1 = p1;
       result = fn(p0, p1);
@@ -150,13 +152,15 @@ export function pureProxy2<P0, P1, R>(fn: (p0: P0, p1: P1) => R): (p0: P0, p1: P
 
 export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
     p0: P0, p1: P1, p2: P2) => R {
+  let numberOfChecks = 0;
   let result: R;
-  let v0: any = UNINITIALIZED;
-  let v1: any = UNINITIALIZED;
-  let v2: any = UNINITIALIZED;
+  let v0: any;
+  let v1: any;
+  let v2: any;
 
   return (p0, p1, p2) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -168,12 +172,13 @@ export function pureProxy3<P0, P1, P2, R>(fn: (p0: P0, p1: P1, p2: P2) => R): (
 
 export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P3) => R): (
     p0: P0, p1: P1, p2: P2, p3: P3) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any;
-  v0 = v1 = v2 = v3 = UNINITIALIZED;
+  v0 = v1 = v2 = v3;
   return (p0, p1, p2, p3) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -187,12 +192,13 @@ export function pureProxy4<P0, P1, P2, P3, R>(fn: (p0: P0, p1: P1, p2: P2, p3: P
 export function pureProxy5<P0, P1, P2, P3, P4, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) =>
     R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any;
-  v0 = v1 = v2 = v3 = v4 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4;
   return (p0, p1, p2, p3, p4) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -208,12 +214,14 @@ export function pureProxy5<P0, P1, P2, P3, P4, R>(
 export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5;
   return (p0, p1, p2, p3, p4, p5) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -229,13 +237,14 @@ export function pureProxy6<P0, P1, P2, P3, P4, P5, R>(
 export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6;
   return (p0, p1, p2, p3, p4, p5, p6) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -252,13 +261,14 @@ export function pureProxy7<P0, P1, P2, P3, P4, P5, P6, R>(
 export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7;
   return (p0, p1, p2, p3, p4, p5, p6, p7) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -276,13 +286,15 @@ export function pureProxy8<P0, P1, P2, P3, P4, P5, P6, P7, R>(
 export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7) || !looseIdentical(v8, p8)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7) ||
+        !looseIdentical(v8, p8)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
@@ -301,14 +313,15 @@ export function pureProxy9<P0, P1, P2, P3, P4, P5, P6, P7, P8, R>(
 export function pureProxy10<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(
     fn: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) =>
         R): (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7, p8: P8, p9: P9) => R {
+  let numberOfChecks = 0;
   let result: R;
   let v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any, v9: any;
-  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = v9 = UNINITIALIZED;
+  v0 = v1 = v2 = v3 = v4 = v5 = v6 = v7 = v8 = v9;
   return (p0, p1, p2, p3, p4, p5, p6, p7, p8, p9) => {
-    if (!looseIdentical(v0, p0) || !looseIdentical(v1, p1) || !looseIdentical(v2, p2) ||
-        !looseIdentical(v3, p3) || !looseIdentical(v4, p4) || !looseIdentical(v5, p5) ||
-        !looseIdentical(v6, p6) || !looseIdentical(v7, p7) || !looseIdentical(v8, p8) ||
-        !looseIdentical(v9, p9)) {
+    if (!numberOfChecks++ || !looseIdentical(v0, p0) || !looseIdentical(v1, p1) ||
+        !looseIdentical(v2, p2) || !looseIdentical(v3, p3) || !looseIdentical(v4, p4) ||
+        !looseIdentical(v5, p5) || !looseIdentical(v6, p6) || !looseIdentical(v7, p7) ||
+        !looseIdentical(v8, p8) || !looseIdentical(v9, p9)) {
       v0 = p0;
       v1 = p1;
       v2 = p2;
