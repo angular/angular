@@ -18,7 +18,6 @@ import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 
 
-// TODO: Implement E2E tests for spacebar/click behavior for checking/unchecking
 
 describe('MdCheckbox', () => {
   let fixture: ComponentFixture<any>;
