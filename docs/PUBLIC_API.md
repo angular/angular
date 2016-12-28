@@ -19,7 +19,7 @@ One intentional omission from this list is `@angular/compiler`, which is current
 
 Additionally only the command line usage (not direct use of APIs) of `@angular/compiler-cli` is covered.
 
-Other projects developed by the Angular team like angular-cli, Angular Material, Universal, will be covered by these or similar guarantees in the future as they mature.
+Other projects developed by the Angular team like angular-cli, Angular Material, will be covered by these or similar guarantees in the future as they mature.
 
 Within the supported packages, we provide guarantees for:
 
