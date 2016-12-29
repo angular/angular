@@ -47,16 +47,11 @@ export class ViewConstructorVars {
 export class ViewProperties {
   static renderer = o.THIS_EXPR.prop('renderer');
   static viewUtils = o.THIS_EXPR.prop('viewUtils');
+  static throwOnChange = o.THIS_EXPR.prop('throwOnChange');
 }
 
 export class InjectMethodVars {
   static token = o.variable('token');
   static requestNodeIndex = o.variable('requestNodeIndex');
   static notFoundResult = o.variable('notFoundResult');
-}
-
-export class DetectChangesVars {
-  static throwOnChange = o.variable(`throwOnChange`);
-  static changes = o.variable(`changes`);
-  static changed = o.variable(`changed`);
 }
