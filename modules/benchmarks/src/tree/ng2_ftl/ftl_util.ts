@@ -7,6 +7,9 @@
  */
 
 import {ComponentFactory, ComponentRef, ElementRef, Injector, TemplateRef, ViewContainerRef, ViewRef} from '@angular/core';
+import {devModeEqual, looseIdentical} from '@angular/core/src/change_detection/change_detection_util';
+import {ExpressionChangedAfterItHasBeenCheckedError} from '@angular/core/src/linker/errors';
+
 
 export function unimplemented(): any {
   throw new Error('unimplemented');
@@ -204,4 +207,15 @@ export function createAnchorAndAppend(parent: any) {
   const txt = document.createComment('');
   parent.appendChild(txt);
   return txt;
+}
+
+export function checkBinding(throwOnChange: boolean, oldValue: any, newValue: any): boolean {
+  if (throwOnChange) {
+    if (!devModeEqual(oldValue, newValue)) {
+      throw new ExpressionChangedAfterItHasBeenCheckedError(oldValue, newValue, false);
+    }
+    return false;
+  } else {
+    return !looseIdentical(oldValue, newValue);
+  }
 }
