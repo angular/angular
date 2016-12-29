@@ -16,7 +16,7 @@ import * as import8 from '@angular/core/src/metadata/view';
 import * as import0 from '@angular/core/src/render/api';
 import * as import12 from '@angular/core/src/security';
 
-import {createAnchorAndAppend, createElementAndAppend, createTextAndAppend} from './ftl_util';
+import {checkBinding, createAnchorAndAppend, createElementAndAppend, createTextAndAppend} from './ftl_util';
 import * as import3 from './tree';
 import * as import11 from './tree_leaf.ngfactory';
 
@@ -42,16 +42,15 @@ export class View_TreeTreeComponent {
     this._el_3 = createElementAndAppend(parentRenderNode, 'tree');
     this._TreeComponent20_3_4View = depth > 0 ? new View_TreeTreeComponent(depth - 1, this._el_3) :
                                                 new import11.View_TreeLeafComponent(this._el_3);
-    this._expr_0 = import7.UNINITIALIZED;
-    this._expr_1 = import7.UNINITIALIZED;
-    this._expr_2 = import7.UNINITIALIZED;
+    this._expr_1 = undefined;
+    this._expr_2 = undefined;
   }
   destroyInternal() {
     this._TreeComponent20_2_4View.destroyInternal();
     this._TreeComponent20_3_4View.destroyInternal();
   }
   updateData(currVal_2: any) {
-    if (import4.checkBinding(false, this._expr_2, currVal_2)) {
+    if (checkBinding(false, this._expr_2, currVal_2)) {
       this.context.data = currVal_2;
       this._expr_2 = currVal_2;
     }
@@ -61,12 +60,12 @@ export class View_TreeTreeComponent {
     this._TreeComponent20_3_4View.updateData(this.context.data.left);
 
     const currVal_0: any = ((this.context.data.depth % 2) ? '' : 'grey');
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal_0)) {
+    if (checkBinding(throwOnChange, this._expr_0, currVal_0)) {
       this._el_0.style.backgroundColor = currVal_0;
       this._expr_0 = currVal_0;
     }
     const currVal_1: any = import4.inlineInterpolate(1, ' ', this.context.data.value, ' ');
-    if (import4.checkBinding(throwOnChange, this._expr_1, currVal_1)) {
+    if (checkBinding(throwOnChange, this._expr_1, currVal_1)) {
       this._text_1.nodeValue = currVal_1;
       this._expr_1 = currVal_1;
     }
