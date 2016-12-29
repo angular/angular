@@ -45,6 +45,9 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
 
+const EMAIL_REGEXP =
+    /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
+
 /**
  * Provides a set of validators used by form controls.
  *
@@ -72,6 +75,13 @@ export class Validators {
    */
   static requiredTrue(control: AbstractControl): {[key: string]: boolean} {
     return control.value === true ? null : {'required': true};
+  }
+
+  /**
+   * Validator that performs email validation.
+   */
+  static email(control: AbstractControl): {[key: string]: boolean} {
+    return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
   /**

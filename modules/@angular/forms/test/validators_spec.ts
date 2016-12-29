@@ -64,6 +64,14 @@ export function main() {
          () => expect(Validators.requiredTrue(new FormControl(true))).toBeNull());
     });
 
+    describe('email', () => {
+      it('should error on invalid email',
+         () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
+
+      it('should not error on valid email',
+         () => expect(Validators.email(new FormControl('test@gmail.com'))).toBeNull());
+    });
+
     describe('minLength', () => {
       it('should not error on an empty string',
          () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });

@@ -859,6 +859,41 @@ export function main() {
            expect(control.hasError('required')).toBe(true);
          }));
 
+      it('should validate email', fakeAsync(() => {
+           const fixture = initTest(NgModelEmailValidator);
+           fixture.detectChanges();
+           tick();
+
+           const control =
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('email');
+
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(control.hasError('email')).toBe(false);
+
+           fixture.componentInstance.validatorEnabled = true;
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('');
+           expect(control.hasError('email')).toBe(true);
+
+           input.nativeElement.value = 'test@gmail.com';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('test@gmail.com');
+           expect(control.hasError('email')).toBe(false);
+
+           input.nativeElement.value = 'text';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           tick();
+
+           expect(input.nativeElement.value).toEqual('text');
+           expect(control.hasError('email')).toBe(true);
+         }));
+
       it('should support dir validators using bindings', fakeAsync(() => {
            const fixture = initTest(NgModelValidationBindings);
            fixture.componentInstance.required = true;
@@ -1333,6 +1368,14 @@ class NgModelMultipleValidators {
 class NgModelCheckboxRequiredValidator {
   accepted: boolean = false;
   required: boolean = false;
+}
+
+@Component({
+  selector: 'ng-model-email',
+  template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email"></form>`
+})
+class NgModelEmailValidator {
+  validatorEnabled: boolean = false;
 }
 
 @Directive({
