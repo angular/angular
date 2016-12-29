@@ -150,6 +150,15 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
+/** @experimental */
+export declare class EmailValidator implements Validator {
+    email: boolean | string;
+    registerOnValidatorChange(fn: () => void): void;
+    validate(c: AbstractControl): {
+        [key: string]: any;
+    };
+}
+
 /** @stable */
 export interface Form {
     addControl(dir: NgControl): void;
@@ -529,6 +538,9 @@ export interface ValidatorFn {
 export declare class Validators {
     static compose(validators: ValidatorFn[]): ValidatorFn;
     static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;
+    static email(control: AbstractControl): {
+        [key: string]: boolean;
+    };
     static maxLength(maxLength: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
     static nullValidator(c: AbstractControl): {
