@@ -286,7 +286,7 @@ export function main() {
           const formValidator = (c: any /** TODO #9100 */) => ({'custom': true});
           const f = new FormGroupDirective([formValidator], []);
           f.form = formModel;
-          f.ngOnChanges({'form': new SimpleChange(null, null)});
+          f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
           expect(formModel.errors).toEqual({'custom': true});
         });
@@ -294,7 +294,7 @@ export function main() {
         it('should set up an async validator', fakeAsync(() => {
              const f = new FormGroupDirective([], [asyncValidator('expected')]);
              f.form = formModel;
-             f.ngOnChanges({'form': new SimpleChange(null, null)});
+             f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
              tick();
 
@@ -514,7 +514,7 @@ export function main() {
       it('should reexport new control properties', () => {
         const newControl = new FormControl(null);
         controlDir.form = newControl;
-        controlDir.ngOnChanges({'form': new SimpleChange(control, newControl)});
+        controlDir.ngOnChanges({'form': new SimpleChange(control, newControl, false)});
 
         checkProperties(newControl);
       });
@@ -523,7 +523,7 @@ export function main() {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.ngOnChanges({'form': new SimpleChange(null, control)});
+        controlDir.ngOnChanges({'form': new SimpleChange(null, control, false)});
 
         expect(control.valid).toBe(false);
       });
@@ -596,39 +596,39 @@ export function main() {
          }));
 
       it('should mark as disabled properly', fakeAsync(() => {
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', undefined, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', null)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', null, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', false)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', false, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 'false', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, '', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'true', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, true, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else')});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange(null, 'anything else', false)});
            tick();
            expect(ngModel.control.disabled).toEqual(true);
 
