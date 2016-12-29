@@ -16,6 +16,7 @@ import * as import8 from '@angular/core/src/metadata/view';
 import * as import0 from '@angular/core/src/render/api';
 import * as import10 from '@angular/core/src/security';
 
+import {checkBinding} from './ftl_util';
 import * as import3 from './tree';
 
 export class View_TreeLeafComponent {
@@ -31,11 +32,9 @@ export class View_TreeLeafComponent {
     parentRenderNode.appendChild(this._el_0);
     this._text_1 = document.createTextNode('');
     this._el_0.appendChild(this._text_1);
-    this._expr_0 = import7.UNINITIALIZED;
-    this._expr_1 = import7.UNINITIALIZED;
   }
   updateData(currVal_2: any) {
-    if (import4.checkBinding(false, this._expr_2, currVal_2)) {
+    if (checkBinding(false, this._expr_2, currVal_2)) {
       this.context.data = currVal_2;
       this._expr_2 = currVal_2;
     }
@@ -43,12 +42,12 @@ export class View_TreeLeafComponent {
   destroyInternal() {}
   detectChangesInternal(throwOnChange: boolean): void {
     const currVal_0: any = ((this.context.data.depth % 2) ? '' : 'grey');
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal_0)) {
+    if (checkBinding(throwOnChange, this._expr_0, currVal_0)) {
       this._el_0.style.backgroundColor = currVal_0;
       this._expr_0 = currVal_0;
     }
     const currVal_1: any = import4.inlineInterpolate(1, ' ', this.context.data.value, ' ');
-    if (import4.checkBinding(throwOnChange, this._expr_1, currVal_1)) {
+    if (checkBinding(throwOnChange, this._expr_1, currVal_1)) {
       this._text_1.nodeValue = currVal_1;
       this._expr_1 = currVal_1;
     }
