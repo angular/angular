@@ -843,7 +843,7 @@ export declare function setTestabilityGetter(getter: GetTestability): void;
 export declare class SimpleChange {
     currentValue: any;
     previousValue: any;
-    constructor(previousValue: any, currentValue: any);
+    constructor(previousValue: any, currentValue: any, _isFirstChange?: boolean);
     isFirstChange(): boolean;
 }
 

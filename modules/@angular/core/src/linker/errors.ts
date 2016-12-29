@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UNINITIALIZED} from '../change_detection/change_detection_util';
 import {BaseError, WrappedError} from '../facade/errors';
 
 import {DebugContext} from './debug_context';
@@ -45,10 +44,10 @@ import {DebugContext} from './debug_context';
  * @stable
  */
 export class ExpressionChangedAfterItHasBeenCheckedError extends BaseError {
-  constructor(oldValue: any, currValue: any) {
+  constructor(oldValue: any, currValue: any, isFirstCheck: boolean) {
     let msg =
         `Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
-    if (oldValue === UNINITIALIZED) {
+    if (isFirstCheck) {
       msg +=
           ` It seems like the view has been created after its parent and its children have been dirty checked.` +
           ` Has it been created in a change detection hook ?`;

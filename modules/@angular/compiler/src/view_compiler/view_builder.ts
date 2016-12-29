@@ -21,7 +21,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView, CompileViewRootNode, CompileViewRootNodeType} from './compile_view';
-import {ChangeDetectorStatusEnum, DetectChangesVars, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
+import {ChangeDetectorStatusEnum, InjectMethodVars, ViewConstructorVars, ViewEncapsulationEnum, ViewProperties, ViewTypeEnum} from './constants';
 import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -483,9 +483,7 @@ function createViewClass(
         ],
         addReturnValuefNotEmpty(view.injectorGetMethod.finish(), InjectMethodVars.notFoundResult),
         o.DYNAMIC_TYPE),
-    new o.ClassMethod(
-        'detectChangesInternal', [new o.FnParam(DetectChangesVars.throwOnChange.name, o.BOOL_TYPE)],
-        generateDetectChangesMethod(view)),
+    new o.ClassMethod('detectChangesInternal', [], generateDetectChangesMethod(view)),
     new o.ClassMethod('dirtyParentQueriesInternal', [], view.dirtyParentQueriesMethod.finish()),
     new o.ClassMethod('destroyInternal', [], generateDestroyMethod(view)),
     new o.ClassMethod('detachInternal', [], view.detachMethod.finish()),
@@ -569,36 +567,26 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
   stmts.push(...view.detectChangesInInputsMethod.finish());
   view.viewContainers.forEach((viewContainer) => {
     stmts.push(
-        viewContainer.callMethod('detectChangesInNestedViews', [DetectChangesVars.throwOnChange])
+        viewContainer.callMethod('detectChangesInNestedViews', [ViewProperties.throwOnChange])
             .toStmt());
   });
   const afterContentStmts = view.updateContentQueriesMethod.finish().concat(
       view.afterContentLifecycleCallbacksMethod.finish());
   if (afterContentStmts.length > 0) {
-    stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterContentStmts));
+    stmts.push(new o.IfStmt(o.not(ViewProperties.throwOnChange), afterContentStmts));
   }
   stmts.push(...view.detectChangesRenderPropertiesMethod.finish());
   view.viewChildren.forEach((viewChild) => {
     stmts.push(
-        viewChild.callMethod('internalDetectChanges', [DetectChangesVars.throwOnChange]).toStmt());
+        viewChild.callMethod('internalDetectChanges', [ViewProperties.throwOnChange]).toStmt());
   });
   const afterViewStmts =
       view.updateViewQueriesMethod.finish().concat(view.afterViewLifecycleCallbacksMethod.finish());
   if (afterViewStmts.length > 0) {
-    stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterViewStmts));
+    stmts.push(new o.IfStmt(o.not(ViewProperties.throwOnChange), afterViewStmts));
   }
 
-  const varStmts: any[] = [];
-  const readVars = o.findReadVarNames(stmts);
-  if (readVars.has(DetectChangesVars.changed.name)) {
-    varStmts.push(DetectChangesVars.changed.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE));
-  }
-  if (readVars.has(DetectChangesVars.changes.name)) {
-    varStmts.push(
-        DetectChangesVars.changes.set(o.NULL_EXPR)
-            .toDeclStmt(new o.MapType(o.importType(createIdentifier(Identifiers.SimpleChange)))));
-  }
-  varStmts.push(...createSharedBindingVariablesIfNeeded(stmts));
+  const varStmts = createSharedBindingVariablesIfNeeded(stmts);
   return varStmts.concat(stmts);
 }
 

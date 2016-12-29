@@ -9,7 +9,6 @@
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary, tokenName, viewClassName} from '../compile_metadata';
 import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
-import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
