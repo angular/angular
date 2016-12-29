@@ -191,14 +191,14 @@ export declare class ResponseOptions {
 }
 
 /** @experimental */
-export declare type ResponseOptionsArgs = {
+export interface ResponseOptionsArgs {
     body?: string | Object | FormData | ArrayBuffer | Blob;
+    headers?: Headers;
     status?: number;
     statusText?: string;
-    headers?: Headers;
     type?: ResponseType;
     url?: string;
-};
+}
 
 /** @experimental */
 export declare enum ResponseType {
