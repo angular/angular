@@ -1239,11 +1239,22 @@ function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOut
   return outlet;
 }
 
+const WILDCARD = '**';
+
+/**
+ * Redirects up, wildcards down.
+ */
 export function redirectsFirst(a: Route, b: Route): number {
-  if (a.path === '**' || b.path === '**') {
+  if (a.path === WILDCARD && b.path === WILDCARD) {
     return 0;
   }
-  if (a.redirectTo != null && a.redirectTo == null) {
+  if (a.path === WILDCARD) {
+    return 1;
+  }
+  if (b.path === WILDCARD) {
+    return -1;
+  }
+  if (a.redirectTo != null && b.redirectTo == null) {
     return -1;
   }
   if (b.redirectTo != null && a.redirectTo == null) {
