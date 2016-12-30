@@ -1240,6 +1240,9 @@ function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOut
 }
 
 export function redirectsFirst(a: Route, b: Route): number {
+  if (a.path === '**' || b.path === '**') {
+    return 0;
+  }
   if (a.redirectTo != null && a.redirectTo == null) {
     return -1;
   }
