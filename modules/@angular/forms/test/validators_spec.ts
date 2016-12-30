@@ -81,6 +81,10 @@ export function main() {
       it('should error on null',
          () => { expect(Validators.required(new FormControl(null))).toEqual({'required': true}); });
 
+      it('should not error on undefined', () => {
+        expect(Validators.required(new FormControl(undefined))).toEqual({'required': true});
+      });
+
       it('should not error on a non-empty string',
          () => { expect(Validators.required(new FormControl('not empty'))).toBeNull(); });
 
@@ -118,7 +122,7 @@ export function main() {
          () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
 
       it('should not error on undefined',
-         () => { expect(Validators.minLength(2)(new FormControl(null))).toBeNull(); });
+         () => { expect(Validators.minLength(2)(new FormControl(undefined))).toBeNull(); });
 
       it('should not error on valid strings',
          () => { expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull(); });
@@ -149,6 +153,9 @@ export function main() {
       it('should not error on null',
          () => { expect(Validators.maxLength(2)(new FormControl(null))).toBeNull(); });
 
+      it('should not error on undefined',
+         () => { expect(Validators.maxLength(2)(new FormControl(undefined))).toBeNull(); });
+
       it('should not error on valid strings',
          () => { expect(Validators.maxLength(2)(new FormControl('aa'))).toBeNull(); });
 
@@ -178,8 +185,9 @@ export function main() {
       it('should not error on null',
          () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
 
-      it('should not error on undefined',
-         () => { expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull(); });
+      it('should not error on undefined', () => {
+        expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(undefined))).toBeNull();
+      });
 
       it('should not error on null value and "null" pattern',
          () => { expect(Validators.pattern('null')(new FormControl(null))).toBeNull(); });
