@@ -14,7 +14,6 @@ import {every} from 'rxjs/operator/every';
 import * as l from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeAll} from 'rxjs/operator/mergeAll';
-
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {

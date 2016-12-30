@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {ResolveData, Routes, validateConfig} from './config';
+import {ResolveData, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RouterOutlet} from './directives/router_outlet';
@@ -407,7 +407,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     validateConfig(config);
-    this.config = config;
+    this.config = config.sort(redirectsFirst);
   }
 
   /** @docsNotRequired */
@@ -1237,4 +1237,14 @@ function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOut
     }
   }
   return outlet;
+}
+
+export function redirectsFirst(a: Route, b: Route): number {
+  if (a.redirectTo != null && a.redirectTo == null) {
+    return -1;
+  }
+  if (b.redirectTo != null && a.redirectTo == null) {
+    return 1;
+  }
+  return 0;
 }
