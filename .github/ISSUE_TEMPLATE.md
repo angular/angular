@@ -35,5 +35,6 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 <!-- All browsers where this could be reproduced -->
  
 * **Language:** [all | TypeScript X.X | ES6/7 | ES5]
+<!-- Please provide using TypeScript version if the bug may relate to AoT -->
 
 * **Node (for AoT issues):** `node --version` =   
