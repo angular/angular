@@ -35,40 +35,60 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
-export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
+export function visitValue(
+    value: any, visitor: ValueVisitor, context: any,
+    visited: WeakMap<any, any> = new WeakMap()): any {
   if (Array.isArray(value)) {
-    return visitor.visitArray(<any[]>value, context);
+    return visitor.visitArray(<any[]>value, context, visited);
   }
 
   if (isStrictStringMap(value)) {
-    return visitor.visitStringMap(<{[key: string]: any}>value, context);
+    return visitor.visitStringMap(<{[key: string]: any}>value, context, visited);
   }
 
   if (value == null || isPrimitive(value)) {
-    return visitor.visitPrimitive(value, context);
+    return visitor.visitPrimitive(value, context, visited);
   }
 
-  return visitor.visitOther(value, context);
+  return visitor.visitOther(value, context, visited);
 }
 
 export interface ValueVisitor {
-  visitArray(arr: any[], context: any): any;
-  visitStringMap(map: {[key: string]: any}, context: any): any;
-  visitPrimitive(value: any, context: any): any;
-  visitOther(value: any, context: any): any;
+  visitArray(arr: any[], context: any, visited: WeakMap<any, any>): any;
+  visitStringMap(map: {[key: string]: any}, context: any, visited: WeakMap<any, any>): any;
+  visitPrimitive(value: any, context: any, visited: WeakMap<any, any>): any;
+  visitOther(value: any, context: any, visited: WeakMap<any, any>): any;
 }
 
 export class ValueTransformer implements ValueVisitor {
-  visitArray(arr: any[], context: any): any {
-    return arr.map(value => visitValue(value, this, context));
-  }
-  visitStringMap(map: {[key: string]: any}, context: any): any {
-    const result: {[key: string]: any} = {};
-    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
+  visitArray(arr: any[], context: any, visited: WeakMap<any, any> = new WeakMap()): any {
+    if (visited.has(arr)) {
+      return visited.get(arr);
+    }
+    const result: any[] = [];
+    visited.set(arr, result);
+    for (const value of arr) {
+      result.push(visitValue(value, this, context, visited));
+    }
     return result;
   }
-  visitPrimitive(value: any, context: any): any { return value; }
-  visitOther(value: any, context: any): any { return value; }
+  visitStringMap(
+      map: {[key: string]: any}, context: any, visited: WeakMap<any, any> = new WeakMap()): any {
+    if (visited.has(map)) {
+      return visited.get(map);
+    }
+    const result: {[key: string]: any} = {};
+    visited.set(map, result);
+    Object.keys(map).forEach(
+        key => { result[key] = visitValue(map[key], this, context, visited); });
+    return result;
+  }
+  visitPrimitive(value: any, context: any, visited: WeakMap<any, any> = new WeakMap()): any {
+    return value;
+  }
+  visitOther(value: any, context: any, visited: WeakMap<any, any> = new WeakMap()): any {
+    return value;
+  }
 }
 
 export class SyncAsyncResult<T> {

@@ -9,7 +9,7 @@
 import {fakeAsync} from '@angular/core/testing/fake_async';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
 
-import {SyncAsyncResult, splitAtColon} from '../src/util';
+import {SyncAsyncResult, ValueTransformer, splitAtColon} from '../src/util';
 
 export function main() {
   describe('util', () => {
@@ -34,6 +34,22 @@ export function main() {
 
       it('should use the default value when no ":" is present', () => {
         expect(splitAtColon('ab', ['c', 'd'])).toEqual(['c', 'd']);
+      });
+    });
+
+    describe('ValueTransformer', () => {
+      it('should traverse recursive objects', () => {
+        const transformer: ValueTransformer = new ValueTransformer();
+        const foo: any = {bar: true};
+        foo['foo'] = foo;
+        expect(transformer.visitStringMap(foo, {})).toEqual(foo);
+      });
+
+      it('should traverse recursive arrays', () => {
+        const transformer: ValueTransformer = new ValueTransformer();
+        const foo: any[] = [{bar: true}];
+        foo.push(foo);
+        expect(transformer.visitArray(foo, {})).toEqual(foo);
       });
     });
   });
