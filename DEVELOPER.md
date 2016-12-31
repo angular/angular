@@ -133,7 +133,8 @@ If you happen to modify the public API of Angular, API golden files must be upda
 $ gulp public-api:update
 ```
 
-Note: The command `./test.sh tools` fails when the API doesn't match the golden files.
+Note: The command `gulp public-api:enforce` fails when the API doesn't match the golden files. Make sure to rebuild
+the project before trying to verify after an API change.
 
 ## <a name="clang-format"></a> Formatting your source code
 
@@ -144,6 +145,14 @@ You can automatically format your code by running:
 
 ``` shell
 $ gulp format
+```
+
+## Linting/verifying your source code
+
+You can check that your code is properly formatted and adheres to coding style by running:
+
+``` shell
+$ gulp lint
 ```
 
 ## Publishing your own personal snapshot build
