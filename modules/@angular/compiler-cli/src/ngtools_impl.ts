@@ -198,7 +198,7 @@ function _collectRoutes(
  */
 function _collectLoadChildren(routes: Route[]): string[] {
   return routes.reduce((m, r) => {
-    if (r.loadChildren) {
+    if (r.loadChildren && typeof r.loadChildren === 'string') {
       return m.concat(r.loadChildren);
     } else if (Array.isArray(r)) {
       return m.concat(_collectLoadChildren(r));
