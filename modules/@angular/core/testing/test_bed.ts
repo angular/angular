@@ -325,10 +325,10 @@ export class TestBed implements Injector {
     return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue) : result;
   }
 
-  execute(tokens: any[], fn: Function): any {
+  execute(tokens: any[], fn: Function, context?: any): any {
     this._initIfNeeded();
     const params = tokens.map(t => this.get(t));
-    return fn(...params);
+    return fn.apply(context, params);
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
@@ -413,17 +413,19 @@ export function getTestBed() {
 export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
   if (tokens.indexOf(AsyncTestCompleter) >= 0) {
-    return () =>
-               // Return an async test method that returns a Promise if AsyncTestCompleter is one of
-        // the
-        // injected tokens.
-        testBed.compileComponents().then(() => {
-          const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
-          testBed.execute(tokens, fn);
-          return completer.promise;
-        });
+    // Not using an arrow function to preserve context passed from call site
+    return function() {
+      // Return an async test method that returns a Promise if AsyncTestCompleter is one of
+      // the injected tokens.
+      return testBed.compileComponents().then(() => {
+        const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
+        testBed.execute(tokens, fn, this);
+        return completer.promise;
+      });
+    };
   } else {
-    return () => testBed.execute(tokens, fn);
+    // Not using an arrow function to preserve context passed from call site
+    return function() { return testBed.execute(tokens, fn, this); };
   }
 }
 
@@ -441,9 +443,11 @@ export class InjectSetupWrapper {
   }
 
   inject(tokens: any[], fn: Function): () => any {
-    return () => {
-      this._addModule();
-      return inject(tokens, fn)();
+    const self = this;
+    // Not using an arrow function to preserve context passed from call site
+    return function() {
+      self._addModule();
+      return inject(tokens, fn).call(this);
     };
   }
 }
@@ -456,12 +460,13 @@ export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => a
 export function withModule(moduleDef: TestModuleMetadata, fn: Function = null): (() => any)|
     InjectSetupWrapper {
   if (fn) {
-    return () => {
+    // Not using an arrow function to preserve context passed from call site
+    return function() {
       const testBed = getTestBed();
       if (moduleDef) {
         testBed.configureTestingModule(moduleDef);
       }
-      return fn();
+      return fn.apply(this);
     };
   }
   return new InjectSetupWrapper(() => moduleDef);
