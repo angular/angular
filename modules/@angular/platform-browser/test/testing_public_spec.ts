@@ -114,29 +114,61 @@ class CompWithUrlTemplate {
 
 export function main() {
   describe('public testing API', () => {
-    describe('using the async helper', () => {
-      let actuallyDone: boolean;
+    describe('using the async helper with context passing', () => {
+      beforeEach(function() { this.actuallyDone = false; });
 
-      beforeEach(() => actuallyDone = false);
+      afterEach(function() { expect(this.actuallyDone).toEqual(true); });
 
-      afterEach(() => expect(actuallyDone).toEqual(true));
+      it('should run normal tests', function() { this.actuallyDone = true; });
 
-      it('should run normal tests', () => actuallyDone = true);
-
-      it('should run normal async tests', (done) => {
+      it('should run normal async tests', function(done) {
         setTimeout(() => {
-          actuallyDone = true;
+          this.actuallyDone = true;
           done();
         }, 0);
       });
 
       it('should run async tests with tasks',
-         async(() => setTimeout(() => actuallyDone = true, 0)));
+         async(function() { setTimeout(() => this.actuallyDone = true, 0); }));
 
-      it('should run async tests with promises', async(() => {
+      it('should run async tests with promises', async(function() {
            const p = new Promise((resolve, reject) => setTimeout(resolve, 10));
-           p.then(() => actuallyDone = true);
+           p.then(() => this.actuallyDone = true);
          }));
+    });
+
+    describe('basic context passing to inject, fakeAsync and withModule helpers', () => {
+      const moduleConfig = {
+        providers: [FancyService],
+      };
+
+      beforeEach(function() { this.contextModified = false; });
+
+      afterEach(function() { expect(this.contextModified).toEqual(true); });
+
+      it('should pass context to inject helper',
+         inject([], function() { this.contextModified = true; }));
+
+      it('should pass context to fakeAsync helper',
+         fakeAsync(function() { this.contextModified = true; }));
+
+      it('should pass context to withModule helper - simple',
+         withModule(moduleConfig, function() { this.contextModified = true; }));
+
+      it('should pass context to withModule helper - advanced',
+         withModule(moduleConfig).inject([FancyService], function(service: FancyService) {
+           expect(service.value).toBe('real value');
+           this.contextModified = true;
+         }));
+
+      it('should preserve context when async and inject helpers are combined',
+         async(inject([], function() { setTimeout(() => this.contextModified = true, 0); })));
+
+      it('should preserve context when fakeAsync and inject helpers are combined',
+         fakeAsync(inject([], function() {
+           setTimeout(() => this.contextModified = true, 0);
+           tick(1);
+         })));
     });
 
     describe('using the test injector with the inject helper', () => {

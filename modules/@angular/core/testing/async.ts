@@ -31,14 +31,15 @@ export function async(fn: Function): (done: any) => any {
   // If we're running using the Jasmine test framework, adapt to call the 'done'
   // function when asynchronous activity is finished.
   if (_global.jasmine) {
-    return (done: any) => {
+    // Not using an arrow function to preserve context passed from call site
+    return function(done: any) {
       if (!done) {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
         done = function() {};
         done.fail = function(e: any) { throw e; };
       }
-      runInTestZone(fn, done, (err: any) => {
+      runInTestZone(fn, this, done, (err: any) => {
         if (typeof err === 'string') {
           return done.fail(new Error(<string>err));
         } else {
@@ -50,12 +51,16 @@ export function async(fn: Function): (done: any) => any {
   // Otherwise, return a promise which will resolve when asynchronous activity
   // is finished. This will be correctly consumed by the Mocha framework with
   // it('...', async(myFn)); or can be used in a custom framework.
-  return () => new Promise<void>((finishCallback, failCallback) => {
-           runInTestZone(fn, finishCallback, failCallback);
-         });
+  // Not using an arrow function to preserve context passed from call site
+  return function() {
+    return new Promise<void>((finishCallback, failCallback) => {
+      runInTestZone(fn, this, finishCallback, failCallback);
+    });
+  };
 }
 
-function runInTestZone(fn: Function, finishCallback: Function, failCallback: Function) {
+function runInTestZone(
+    fn: Function, context: any, finishCallback: Function, failCallback: Function) {
   const currentZone = Zone.current;
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   if (AsyncTestZoneSpec === undefined) {
@@ -103,5 +108,5 @@ function runInTestZone(fn: Function, finishCallback: Function, failCallback: Fun
         'test');
     proxyZoneSpec.setDelegate(testZoneSpec);
   });
-  return Zone.current.runGuarded(fn);
+  return Zone.current.runGuarded(fn, context);
 }
