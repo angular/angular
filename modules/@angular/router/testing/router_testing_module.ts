@@ -8,12 +8,9 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
+import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {NoPreloading, PreloadingStrategy, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes} from '@angular/router';
-
-import {ROUTER_PROVIDERS, ROUTES, flatten} from './private_import_router';
-
-
+import {ROUTER_PROVIDERS} from './private_import_router';
 
 /**
  * @whatItDoes Allows to simulate the loading of ng modules in tests.
@@ -81,14 +78,15 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 /**
  * Router setup factory function used for testing.
  *
- * @stable
+ * @deprecated use RouterTestingModule instead
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
     urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
-      null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
+      urlSerializer, outletMap, location, injector, loader, compiler, routes, null,
+      urlHandlingStrategy);
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }
@@ -123,17 +121,13 @@ export function setupTestingRouter(
 @NgModule({
   exports: [RouterModule],
   providers: [
-    ROUTER_PROVIDERS, {provide: Location, useClass: SpyLocation},
+    Router,
+    ROUTER_PROVIDERS,
+    provideRoutes([]),
+    {provide: Location, useClass: SpyLocation},
     {provide: LocationStrategy, useClass: MockLocationStrategy},
-    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader}, {
-      provide: Router,
-      useFactory: setupTestingRouter,
-      deps: [
-        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES,
-        [UrlHandlingStrategy, new Optional()]
-      ]
-    },
-    {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])
+    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader},
+    {provide: PreloadingStrategy, useExisting: NoPreloading},
   ]
 })
 export class RouterTestingModule {

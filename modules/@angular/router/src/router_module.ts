@@ -7,24 +7,17 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, Compiler, ComponentRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
-
-import {Route, Routes} from './config';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, ApplicationRef, ComponentRef, Inject, InjectionToken, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
+import {Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
-import {getDOM} from './private_import_platform-browser';
-import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, Router} from './router';
+import {ExtraOptions, ROUTER_CONFIGURATION, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {RouterOutletMap} from './router_outlet_map';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ActivatedRoute} from './router_state';
-import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
-import {flatten} from './utils/collection';
-
-
 
 /**
  * @whatItDoes Contains a list of directives
@@ -33,34 +26,20 @@ import {flatten} from './utils/collection';
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
 /**
- * @whatItDoes Is used in DI to configure the router.
- * @stable
- */
-export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
-
-/**
  * @docsNotRequired
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>('ROUTER_FORROOT_GUARD');
 
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
-  {provide: UrlSerializer, useClass: DefaultUrlSerializer},
-  {
-    provide: Router,
-    useFactory: setupRouter,
-    deps: [
-      ApplicationRef, UrlSerializer, RouterOutletMap, Location, Injector, NgModuleFactoryLoader,
-      Compiler, ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
-      [RouteReuseStrategy, new Optional()]
-    ]
-  },
+  Router,
   RouterOutletMap,
-  {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
   RouterPreloader,
   NoPreloading,
   PreloadAllModules,
+  {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
+  {provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader},
+  {provide: UrlSerializer, useClass: DefaultUrlSerializer},
   {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}},
 ];
 
@@ -206,72 +185,6 @@ export function provideRoutes(routes: Routes): any {
     {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
     {provide: ROUTES, multi: true, useValue: routes},
   ];
-}
-
-
-/**
- * @whatItDoes Represents options to configure the router.
- *
- * @stable
- */
-export interface ExtraOptions {
-  /**
-   * Makes the router log all its internal events to the console.
-   */
-  enableTracing?: boolean;
-
-  /**
-   * Enables the location strategy that uses the URL fragment instead of the history API.
-   */
-  useHash?: boolean;
-
-  /**
-   * Disables the initial navigation.
-   */
-  initialNavigation?: boolean;
-
-  /**
-   * A custom error handler.
-   */
-  errorHandler?: ErrorHandler;
-
-  /**
-   * Configures a preloading strategy. See {@link PreloadAllModules}.
-   */
-  preloadingStrategy?: any;
-}
-
-export function setupRouter(
-    ref: ApplicationRef, urlSerializer: UrlSerializer, outletMap: RouterOutletMap,
-    location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler,
-    config: Route[][], opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
-  const router = new Router(
-      null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(config));
-
-  if (urlHandlingStrategy) {
-    router.urlHandlingStrategy = urlHandlingStrategy;
-  }
-
-  if (routeReuseStrategy) {
-    router.routeReuseStrategy = routeReuseStrategy;
-  }
-
-  if (opts.errorHandler) {
-    router.errorHandler = opts.errorHandler;
-  }
-
-  if (opts.enableTracing) {
-    const dom = getDOM();
-    router.events.subscribe(e => {
-      dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
-      dom.log(e.toString());
-      dom.log(e);
-      dom.logGroupEnd();
-    });
-  }
-
-  return router;
 }
 
 export function rootRoute(router: Router): ActivatedRoute {
