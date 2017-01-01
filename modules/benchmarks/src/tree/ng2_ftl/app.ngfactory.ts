@@ -227,9 +227,8 @@ class AppModuleInjector extends import0.NgModuleInjector<import1.AppModule> {
         new import6.ApplicationInitStatus(this.parent.get(import6.APP_INITIALIZER, (null as any)));
     this._Testability_8 = new import7.Testability(this.parent.get(import22.NgZone));
     this._ApplicationRef__9 = new import8.ApplicationRef_(
-        this.parent.get(import22.NgZone), this.parent.get(import24.Console), this,
-        this._ErrorHandler_6, this, this._ApplicationInitStatus_7,
-        this.parent.get(import7.TestabilityRegistry, (null as any)), this._Testability_8);
+        this.parent.get(import22.NgZone), this.parent.get(import24.Console), this, this,
+        this._ApplicationInitStatus_7);
     return this._AppModule_3;
   }
   getInternal(token: any, notFoundResult: any): any {
