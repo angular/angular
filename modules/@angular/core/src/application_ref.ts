@@ -326,7 +326,7 @@ export class PlatformRef_ extends PlatformRef {
         .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
   }
 
-  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>) {
+  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef.bootstrapFactories.length > 0) {
       moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
@@ -337,6 +337,7 @@ export class PlatformRef_ extends PlatformRef {
           `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
           `Please define one of these.`);
     }
+    this._modules.push(moduleRef);
   }
 }
 
