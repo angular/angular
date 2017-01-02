@@ -7,57 +7,54 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-
+import {getDOM} from './dom_adapter';
 import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {
   /** @internal */
-  _styles: string[] = [];
-  /** @internal */
-  _stylesSet = new Set<string>();
+  protected _stylesSet = new Set<string>();
 
-  constructor() {}
-
-  addStyles(styles: string[]) {
-    const additions: any[] /** TODO #9100 */ = [];
+  addStyles(styles: string[]): void {
+    const additions = new Set<string>();
     styles.forEach(style => {
       if (!this._stylesSet.has(style)) {
         this._stylesSet.add(style);
-        this._styles.push(style);
-        additions.push(style);
+        additions.add(style);
       }
     });
     this.onStylesAdded(additions);
   }
 
-  onStylesAdded(additions: string[]) {}
+  onStylesAdded(additions: Set<string>): void {}
 
-  getAllStyles(): string[] { return this._styles; }
+  getAllStyles(): string[] { return Array.from(this._stylesSet); }
 }
 
 @Injectable()
 export class DomSharedStylesHost extends SharedStylesHost {
   private _hostNodes = new Set<Node>();
-  constructor(@Inject(DOCUMENT) doc: any) {
+  constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
-    this._hostNodes.add(doc.head);
+    this._hostNodes.add(_doc.head);
   }
-  /** @internal */
-  _addStylesToHost(styles: string[], host: Node) {
-    for (let i = 0; i < styles.length; i++) {
-      const styleEl = document.createElement('style');
-      styleEl.textContent = styles[i];
+
+  private _addStylesToHost(styles: Set<string>, host: Node): void {
+    styles.forEach((style: string) => {
+      const styleEl = this._doc.createElement('style');
+      styleEl.textContent = style;
       host.appendChild(styleEl);
-    }
+    });
   }
-  addHost(hostNode: Node) {
-    this._addStylesToHost(this._styles, hostNode);
+
+  addHost(hostNode: Node): void {
+    this._addStylesToHost(this._stylesSet, hostNode);
     this._hostNodes.add(hostNode);
   }
-  removeHost(hostNode: Node) { this._hostNodes.delete(hostNode); }
 
-  onStylesAdded(additions: string[]) {
-    this._hostNodes.forEach((hostNode) => { this._addStylesToHost(additions, hostNode); });
+  removeHost(hostNode: Node): void { this._hostNodes.delete(hostNode); }
+
+  onStylesAdded(additions: Set<string>): void {
+    this._hostNodes.forEach(hostNode => this._addStylesToHost(additions, hostNode));
   }
 }
