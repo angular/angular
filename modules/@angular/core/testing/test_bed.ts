@@ -324,10 +324,10 @@ export class TestBed implements Injector {
     return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue) : result;
   }
 
-  execute(tokens: any[], fn: Function): any {
+  execute(tokens: any[], fn: Function, context?: any): any {
     this._initIfNeeded();
     const params = tokens.map(t => this.get(t));
-    return fn(...params);
+    return fn.apply(context, params);
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
@@ -418,13 +418,13 @@ export function inject(tokens: any[], fn: Function): () => any {
       // the injected tokens.
       return testBed.compileComponents().then(() => {
         const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
-        testBed.execute(tokens, fn.bind(this));
+        testBed.execute(tokens, fn, this);
         return completer.promise;
       });
     };
   } else {
     // Not using an arrow function to preserve context passed from call site
-    return function() { return testBed.execute(tokens, fn.bind(this)); };
+    return function() { return testBed.execute(tokens, fn, this); };
   }
 }
 
