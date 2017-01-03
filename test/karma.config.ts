@@ -4,7 +4,7 @@ import path = require('path');
 import {
   customLaunchers,
   platformMap,
-} from './browser-providers.ts';
+} from './browser-providers';
 
 
 export function config(config) {
@@ -16,7 +16,8 @@ export function config(config) {
       require('karma-browserstack-launcher'),
       require('karma-sauce-launcher'),
       require('karma-chrome-launcher'),
-      require('karma-firefox-launcher')
+      require('karma-firefox-launcher'),
+      require('karma-sourcemap-loader')
     ],
     files: [
       {pattern: 'dist/vendor/core-js/client/core.js', included: true, watched: false},
@@ -55,7 +56,9 @@ export function config(config) {
     customLaunchers: customLaunchers,
 
     exclude: [],
-    preprocessors: {},
+    preprocessors: {
+      '**/*.js': ['sourcemap']
+    },
     reporters: ['dots'],
     port: 9876,
     colors: true,
@@ -92,7 +95,7 @@ export function config(config) {
   });
 
   if (process.env['TRAVIS']) {
-    var buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
+    let buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
 
     // The MODE variable is the indicator of what row in the test matrix we're running.
     // It will look like <platform>_<alias>, where platform is one of 'saucelabs' or 'browserstack',
@@ -100,10 +103,10 @@ export function config(config) {
     // browser-providers.ts.
     let [platform, alias] = process.env.MODE.split('_');
 
-    if (platform == 'saucelabs') {
+    if (platform === 'saucelabs') {
       config.sauceLabs.build = buildId;
       config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    } else if (platform == 'browserstack') {
+    } else if (platform === 'browserstack') {
       config.browserStack.build = buildId;
       config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
     } else {

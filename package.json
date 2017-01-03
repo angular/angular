@@ -85,6 +85,7 @@
     "karma-firefox-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-sauce-launcher": "^1.0.0",
+    "karma-sourcemap-loader": "^0.3.7",
     "madge": "^0.6.0",
     "merge2": "^1.0.2",
     "minimist": "^1.2.0",
