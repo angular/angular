@@ -26,7 +26,7 @@ export const HTML_MINIFIER_OPTIONS = {
 
 export const LICENSE_BANNER = `/**
   * @license Angular Material v${MATERIAL_VERSION}
-  * Copyright (c) 2016 Google, Inc. https://material.angular.io/
+  * Copyright (c) 2017 Google, Inc. https://material.angular.io/
   * License: MIT
   */`;
 
