@@ -612,7 +612,33 @@ describe('MdSlider', () => {
       expect(sliderInstance.disabled).toBe(false);
     });
 
-    // TODO: Add tests for ng-pristine, ng-touched, ng-invalid.
+    it('should have the correct control state initially and after interaction', () => {
+      let sliderControl = testComponent.control;
+
+      // The control should start off valid, pristine, and untouched.
+      expect(sliderControl.valid).toBe(true);
+      expect(sliderControl.pristine).toBe(true);
+      expect(sliderControl.touched).toBe(false);
+
+      // After changing the value, the control should become dirty (not pristine),
+      // but remain untouched.
+      dispatchClickEventSequence(sliderNativeElement, 0.5);
+      fixture.detectChanges();
+
+      expect(sliderControl.valid).toBe(true);
+      expect(sliderControl.pristine).toBe(false);
+      expect(sliderControl.touched).toBe(false);
+
+      // If the control has been visited due to interaction, the control should remain
+      // dirty and now also be touched.
+      sliderInstance._onBlur();
+      fixture.detectChanges();
+
+      expect(sliderControl.valid).toBe(true);
+      expect(sliderControl.pristine).toBe(false);
+      expect(sliderControl.touched).toBe(true);
+    });
+
   });
 
   describe('slider with value property binding', () => {
