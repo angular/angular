@@ -8,7 +8,7 @@
 
 <div class="md-tab-label-container" #tabListContainer
      (keydown)="_handleKeydown($event)">
-  <div class="md-tab-list" #tabList role="tablist" (cdkObserveContent)="_updatePagination()">
+  <div class="md-tab-list" #tabList role="tablist" (cdkObserveContent)="_onContentChanges()">
     <ng-content></ng-content>
     <md-ink-bar></md-ink-bar>
   </div>
