@@ -58,6 +58,7 @@
     "dgeni": "^0.4.2",
     "dgeni-packages": "^0.16.2",
     "express": "^4.14.0",
+    "firebase-admin": "^4.0.4",
     "firebase-tools": "^2.2.1",
     "fs-extra": "^0.26.5",
     "glob": "^6.0.4",
@@ -103,6 +104,7 @@
     "tslint": "^3.13.0",
     "typedoc": "^0.5.1",
     "typescript": "~2.0.10",
+    "uglify-js": "^2.7.5",
     "which": "^1.2.4"
   }
 }

@@ -16,6 +16,7 @@ const gulpSourcemaps = require('gulp-sourcemaps');
 const gulpAutoprefixer = require('gulp-autoprefixer');
 const gulpConnect = require('gulp-connect');
 const resolveBin = require('resolve-bin');
+const firebaseAdmin = require('firebase-admin');
 
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
@@ -210,4 +211,25 @@ export function sequenceTask(...args: any[]) {
       done
     );
   };
+}
+
+/** Opens a connection to the firebase realtime database. */
+export function openFirebaseDatabase() {
+  // Initialize the Firebase application with admin credentials.
+  // Credentials need to be for a Service Account, which can be created in the Firebase console.
+  firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert({
+      project_id: 'material2-dashboard',
+      client_email: 'firebase-adminsdk-ch1ob@material2-dashboard.iam.gserviceaccount.com',
+      private_key: process.env['MATERIAL2_FIREBASE_PRIVATE_KEY']
+    }),
+    databaseURL: 'https://material2-dashboard.firebaseio.com'
+  });
+
+  return firebaseAdmin.database();
+}
+
+/** Whether gulp currently runs inside of Travis as a push. */
+export function isTravisPushBuild() {
+  return process.env['TRAVIS_PULL_REQUEST'] === 'false';
 }

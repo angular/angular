@@ -12,3 +12,7 @@ is_lint() {
 is_aot() {
   [[ "$MODE" = aot ]]
 }
+
+is_payload() {
+  [[ "$MODE" = payload ]]
+}
