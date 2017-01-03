@@ -1,7 +1,7 @@
 @import '../theming/theming';
 
 
-$mdRippleFocused-opacity: 0.1;
+$md-ripple-focused-opacity: 0.1;
 $md-ripple-background-fade-duration: 300ms;
 $md-ripple-background-default-color: rgba(0, 0, 0, 0.0588);
 $md-ripple-foreground-initial-opacity: 0.25;
@@ -15,7 +15,7 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
     overflow: hidden;
   }
 
-  [md-ripple].mdRippleUnbounded {
+  [md-ripple].md-ripple-unbounded {
     overflow: visible;
   }
 
@@ -30,7 +30,7 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
     bottom: 0;
   }
 
-  .mdRippleUnbounded .md-ripple-background {
+  .md-ripple-unbounded .md-ripple-background {
     display: none;
   }
 
@@ -38,7 +38,7 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
     opacity: 1;
   }
 
-  .mdRippleFocused .md-ripple-background {
+  .md-ripple-focused .md-ripple-background {
     opacity: 1;
   }
 
@@ -64,8 +64,8 @@ $md-ripple-foreground-default-color: rgba(0, 0, 0, 0.0588);
 @mixin md-ripple-theme($theme) {
   $accent: map-get($theme, accent);
 
-  .mdRippleFocused .md-ripple-background {
-    background-color: md-color($accent, $mdRippleFocused-opacity);
+  .md-ripple-focused .md-ripple-background {
+    background-color: md-color($accent, $md-ripple-focused-opacity);
   }
 }
 
