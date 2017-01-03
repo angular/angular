@@ -47,7 +47,7 @@ task(':serve:e2eapp', serverTask(false));
 task(':serve:e2eapp:stop', gulpConnect.serverClose);
 
 /** Builds and serves the e2e app. */
-task('serve:e2eapp', sequenceTask('build:components', 'build:e2eapp', ':serve:e2eapp'));
+task('serve:e2eapp', sequenceTask('build:e2eapp', ':serve:e2eapp'));
 
 /**
  * [Watch task] Builds and serves e2e app, rebuilding whenever the sources change.
