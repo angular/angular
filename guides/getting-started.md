@@ -37,10 +37,10 @@ export class PizzaPartyAppModule { }
 This is **required** to apply all of the core and theme styles to your application. You can either
 use a pre-built theme, or define your own custom theme.
 
-:trident:  See the [theming guide](guides/theming.md) for instructions.
+:trident:  See the [theming guide](./theming.md) for instructions.
 
 ### Additional setup for gestures
-Some components ()`md-slide-toggle`, `md-slider`, `mdTooltip`) rely on 
+Some components (`md-slide-toggle`, `md-slider`, `mdTooltip`) rely on 
 [HammerJS](http://hammerjs.github.io/) for gestures. In order to get the full feature-set of these
 components, HammerJS must be loaded into the application.
 
