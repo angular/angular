@@ -50,9 +50,6 @@ export class _View_TreeComponent0 implements FtlView<import3.TreeComponent> {
     this._TemplateRef_3_5 = new FtlTemplateRef(3, this);
     this._vc_3 = new FtlViewContainerRef(this._anchor_3);
     this._NgIf_3_6 = new NgIfWrapper(this._vc_3, this._TemplateRef_3_5);
-    this._expr_0 = import7.UNINITIALIZED;
-    this._expr_1 = import7.UNINITIALIZED;
-    this._expr_2 = import7.UNINITIALIZED;
   }
   detectChangesInternal(throwOnChange: boolean): void {
     this._NgIf_2_6.updateNgIf(throwOnChange, (this.context.data.right != (null as any)));
@@ -60,12 +57,12 @@ export class _View_TreeComponent0 implements FtlView<import3.TreeComponent> {
     this._vc_2.detectChangesInternal(throwOnChange);
     this._vc_3.detectChangesInternal(throwOnChange);
     const currVal_0: any = ((this.context.data.depth % 2) ? '' : 'grey');
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal_0)) {
+    if (import4.checkBinding(throwOnChange, false, this._expr_0, currVal_0)) {
       this._el_0.style.backgroundColor = currVal_0;
       this._expr_0 = currVal_0;
     }
     const currVal_1: any = import4.inlineInterpolate(1, ' ', this.context.data.value, ' ');
-    if (import4.checkBinding(throwOnChange, this._expr_1, currVal_1)) {
+    if (import4.checkBinding(throwOnChange, false, this._expr_1, currVal_1)) {
       this._text_1.nodeValue = currVal_1;
       this._expr_1 = currVal_1;
     }
@@ -75,7 +72,7 @@ export class _View_TreeComponent0 implements FtlView<import3.TreeComponent> {
     this._vc_3.destroyInternal();
   }
   updateData(throwOnChange: boolean, currVal: any) {
-    if (import4.checkBinding(throwOnChange, this._expr_2, currVal)) {
+    if (import4.checkBinding(throwOnChange, false, this._expr_2, currVal)) {
       this.context.data = currVal;
       this._expr_2 = currVal;
     }

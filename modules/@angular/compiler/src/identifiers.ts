@@ -10,7 +10,7 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionS
 
 import {StaticSymbol} from './aot/static_symbol';
 import {CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
+import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
 
 const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
@@ -161,8 +161,6 @@ export class Identifiers {
   };
   static SimpleChange:
       IdentifierSpec = {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: SimpleChange};
-  static UNINITIALIZED:
-      IdentifierSpec = {name: 'UNINITIALIZED', moduleUrl: CD_MODULE_URL, runtime: UNINITIALIZED};
   static ChangeDetectorStatus: IdentifierSpec = {
     name: 'ChangeDetectorStatus',
     moduleUrl: CD_MODULE_URL,

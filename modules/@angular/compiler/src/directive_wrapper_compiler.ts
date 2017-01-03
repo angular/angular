@@ -28,6 +28,7 @@ export class DirectiveWrapperCompileResult {
 }
 
 const CONTEXT_FIELD_NAME = 'context';
+const CHECK_COUNT_FIELD_NAME = 'numberOfChecks';
 const CHANGES_FIELD_NAME = '_changes';
 const CHANGED_FIELD_NAME = '_changed';
 const EVENT_HANDLER_FIELD_NAME = '_eventHandler';
@@ -41,6 +42,7 @@ const RENDER_EL_VAR = o.variable('el');
 const EVENT_NAME_VAR = o.variable('eventName');
 
 const RESET_CHANGES_STMT = o.THIS_EXPR.prop(CHANGES_FIELD_NAME).set(o.literalMap([])).toStmt();
+const IS_FIRST_CHECK = o.not(o.THIS_EXPR.prop(CHECK_COUNT_FIELD_NAME));
 
 /**
  * We generate directive wrappers to prevent code bloat when a directive is used.
@@ -129,9 +131,12 @@ class DirectiveWrapperBuilder implements ClassBuilder {
       new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE, [o.StmtModifier.Private]),
       new o.ClassField(CONTEXT_FIELD_NAME, o.importType(this.dirMeta.type)),
       new o.ClassField(CHANGED_FIELD_NAME, o.BOOL_TYPE, [o.StmtModifier.Private]),
+      new o.ClassField(CHECK_COUNT_FIELD_NAME, o.NUMBER_TYPE, [o.StmtModifier.Private])
     ];
-    const ctorStmts: o.Statement[] =
-        [o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(false)).toStmt()];
+    const ctorStmts: o.Statement[] = [
+      o.THIS_EXPR.prop(CHANGED_FIELD_NAME).set(o.literal(false)).toStmt(),
+      o.THIS_EXPR.prop(CHECK_COUNT_FIELD_NAME).set(o.literal(0)).toStmt(),
+    ];
     if (this.genChanges) {
       fields.push(new o.ClassField(
           CHANGES_FIELD_NAME, new o.MapType(o.DYNAMIC_TYPE), [o.StmtModifier.Private]));
@@ -180,7 +185,7 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
 
   if (builder.ngOnInit) {
     lifecycleStmts.push(new o.IfStmt(
-        VIEW_VAR.prop('numberOfChecks').identical(new o.LiteralExpr(0)),
+        IS_FIRST_CHECK,
         [o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).callMethod('ngOnInit', []).toStmt()]));
   }
   if (builder.ngDoCheck) {
@@ -189,6 +194,9 @@ function addNgDoCheckMethod(builder: DirectiveWrapperBuilder) {
   if (lifecycleStmts.length > 0) {
     stmts.push(new o.IfStmt(o.not(THROW_ON_CHANGE_VAR), lifecycleStmts));
   }
+  stmts.push(o.THIS_EXPR.prop(CHECK_COUNT_FIELD_NAME)
+                 .set(o.THIS_EXPR.prop(CHECK_COUNT_FIELD_NAME).plus(o.literal(1)))
+                 .toStmt());
   stmts.push(new o.ReturnStatement(changedVar));
 
   builder.methods.push(new o.ClassMethod(
@@ -209,22 +217,24 @@ function addCheckInputMethod(input: string, builder: DirectiveWrapperBuilder) {
     o.THIS_EXPR.prop(CONTEXT_FIELD_NAME).prop(input).set(CURR_VALUE_VAR).toStmt(),
   ];
   if (builder.genChanges) {
-    onChangeStatements.push(o.THIS_EXPR.prop(CHANGES_FIELD_NAME)
-                                .key(o.literal(input))
-                                .set(o.importExpr(createIdentifier(Identifiers.SimpleChange))
-                                         .instantiate([field.expression, CURR_VALUE_VAR]))
-                                .toStmt());
+    onChangeStatements.push(
+        o.THIS_EXPR.prop(CHANGES_FIELD_NAME)
+            .key(o.literal(input))
+            .set(o.importExpr(createIdentifier(Identifiers.SimpleChange)).instantiate([
+              field.expression, CURR_VALUE_VAR, IS_FIRST_CHECK
+            ]))
+            .toStmt());
   }
 
   const methodBody: o.Statement[] = createCheckBindingStmt(
       {currValExpr: CURR_VALUE_VAR, forceUpdate: FORCE_UPDATE_VAR, stmts: []}, field.expression,
-      THROW_ON_CHANGE_VAR, onChangeStatements);
+      THROW_ON_CHANGE_VAR, IS_FIRST_CHECK, onChangeStatements);
   builder.methods.push(new o.ClassMethod(
       `check_${input}`,
       [
         new o.FnParam(CURR_VALUE_VAR.name, o.DYNAMIC_TYPE),
         new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
-        new o.FnParam(FORCE_UPDATE_VAR.name, o.BOOL_TYPE),
+        new o.FnParam(FORCE_UPDATE_VAR.name, o.BOOL_TYPE)
       ],
       methodBody));
 }
@@ -242,6 +252,9 @@ function addCheckHostMethod(
     new o.FnParam(RENDER_EL_VAR.name, o.DYNAMIC_TYPE),
     new o.FnParam(THROW_ON_CHANGE_VAR.name, o.BOOL_TYPE),
   ];
+  // Note: need to check for checkCount === 1 as ngDoCheck incremented it before
+  // this is called.
+  const IS_FIRST_CHECK = o.THIS_EXPR.prop(CHECK_COUNT_FIELD_NAME).equals(o.literal(1));
   hostProps.forEach((hostProp, hostPropIdx) => {
     const field = createCheckBindingField(builder);
     const evalResult = convertPropertyBinding(
@@ -261,7 +274,7 @@ function addCheckHostMethod(
           VIEW_VAR, COMPONENT_VIEW_VAR, hostProp, hostEvents,
           o.THIS_EXPR.prop(EVENT_HANDLER_FIELD_NAME)
               .or(o.importExpr(createIdentifier(Identifiers.noop))),
-          RENDER_EL_VAR, evalResult.currValExpr, field.expression);
+          RENDER_EL_VAR, evalResult.currValExpr, field.expression, IS_FIRST_CHECK);
       checkBindingStmts = updateStmts;
       builder.detachStmts.push(...detachStmts);
     } else {
@@ -271,7 +284,7 @@ function addCheckHostMethod(
     }
 
     stmts.push(...createCheckBindingStmt(
-        evalResult, field.expression, THROW_ON_CHANGE_VAR, checkBindingStmts));
+        evalResult, field.expression, THROW_ON_CHANGE_VAR, IS_FIRST_CHECK, checkBindingStmts));
   });
   builder.methods.push(new o.ClassMethod('checkHost', methodParams, stmts));
 }

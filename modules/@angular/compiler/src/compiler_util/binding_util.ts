@@ -21,17 +21,15 @@ export function createCheckBindingField(builder: ClassBuilder): CheckBindingFiel
   const fieldExpr = createBindFieldExpr(bindingId);
   // private is fine here as no child view will reference the cached value...
   builder.fields.push(new o.ClassField(fieldExpr.name, null, [o.StmtModifier.Private]));
-  builder.ctorStmts.push(o.THIS_EXPR.prop(fieldExpr.name)
-                             .set(o.importExpr(createIdentifier(Identifiers.UNINITIALIZED)))
-                             .toStmt());
   return new CheckBindingField(fieldExpr, bindingId);
 }
 
 export function createCheckBindingStmt(
     evalResult: ConvertPropertyBindingResult, fieldExpr: o.ReadPropExpr,
-    throwOnChangeVar: o.Expression, actions: o.Statement[]): o.Statement[] {
+    throwOnChangeVar: o.Expression, firstCheck: o.Expression,
+    actions: o.Statement[]): o.Statement[] {
   let condition: o.Expression = o.importExpr(createIdentifier(Identifiers.checkBinding)).callFn([
-    throwOnChangeVar, fieldExpr, evalResult.currValExpr
+    throwOnChangeVar, firstCheck, fieldExpr, evalResult.currValExpr
   ]);
   if (evalResult.forceUpdate) {
     condition = evalResult.forceUpdate.or(condition);

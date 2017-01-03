@@ -74,3 +74,7 @@ export function injectFromViewParentInjector(
 export function getHandleEventMethodName(elementIndex: number): string {
   return `handleEvent_${elementIndex}`;
 }
+
+export function firstViewCheck(view: o.Expression): o.Expression {
+  return o.not(view.prop('numberOfChecks'));
+}

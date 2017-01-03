@@ -588,17 +588,7 @@ function generateDetectChangesMethod(view: CompileView): o.Statement[] {
     stmts.push(new o.IfStmt(o.not(DetectChangesVars.throwOnChange), afterViewStmts));
   }
 
-  const varStmts: any[] = [];
-  const readVars = o.findReadVarNames(stmts);
-  if (readVars.has(DetectChangesVars.changed.name)) {
-    varStmts.push(DetectChangesVars.changed.set(o.literal(true)).toDeclStmt(o.BOOL_TYPE));
-  }
-  if (readVars.has(DetectChangesVars.changes.name)) {
-    varStmts.push(
-        DetectChangesVars.changes.set(o.NULL_EXPR)
-            .toDeclStmt(new o.MapType(o.importType(createIdentifier(Identifiers.SimpleChange)))));
-  }
-  varStmts.push(...createSharedBindingVariablesIfNeeded(stmts));
+  const varStmts = createSharedBindingVariablesIfNeeded(stmts);
   return varStmts.concat(stmts);
 }
 

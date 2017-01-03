@@ -18,10 +18,11 @@ import * as o from '../output/output_ast';
 import {isDefaultChangeDetectionStrategy} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, PropertyBindingType} from '../template_parser/template_ast';
+
 import {CompileElement, CompileNode} from './compile_element';
 import {CompileView} from './compile_view';
 import {DetectChangesVars} from './constants';
-import {getHandleEventMethodName} from './util';
+import {firstViewCheck, getHandleEventMethodName} from './util';
 
 export function bindRenderText(
     boundText: BoundTextAst, compileNode: CompileNode, view: CompileView): void {
@@ -35,6 +36,7 @@ export function bindRenderText(
   view.detectChangesRenderPropertiesMethod.resetDebugInfo(compileNode.nodeIndex, boundText);
   view.detectChangesRenderPropertiesMethod.addStmts(createCheckBindingStmt(
       evalResult, valueField.expression, DetectChangesVars.throwOnChange,
+      firstViewCheck(o.THIS_EXPR),
       [o.THIS_EXPR.prop('renderer')
            .callMethod('setText', [compileNode.renderNode, evalResult.currValExpr])
            .toStmt()]));
@@ -72,13 +74,15 @@ export function bindRenderInputs(
             (hasEvents ? o.THIS_EXPR.prop(getHandleEventMethodName(compileElement.nodeIndex)) :
                          o.importExpr(createIdentifier(Identifiers.noop)))
                 .callMethod(o.BuiltinMethod.Bind, [o.THIS_EXPR]),
-            compileElement.renderNode, evalResult.currValExpr, bindingField.expression);
+            compileElement.renderNode, evalResult.currValExpr, bindingField.expression,
+            firstViewCheck(o.THIS_EXPR));
         checkBindingStmts.push(...updateStmts);
         view.detachMethod.addStmts(detachStmts);
         break;
     }
     compileMethod.addStmts(createCheckBindingStmt(
-        evalResult, bindingField.expression, DetectChangesVars.throwOnChange, checkBindingStmts));
+        evalResult, bindingField.expression, DetectChangesVars.throwOnChange,
+        firstViewCheck(o.THIS_EXPR), checkBindingStmts));
   });
 }
 
