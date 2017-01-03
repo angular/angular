@@ -56,31 +56,14 @@ task('serve:e2eapp', sequenceTask('build:components', 'build:e2eapp', ':serve:e2
 task('serve:e2eapp:watch', ['serve:e2eapp', ':watch:components', ':watch:e2eapp']);
 
 /**
- * [Watch task] Serves the e2e app and runs the protractor tests. Rebuilds when sources change.
- *
- * This task should only be used when running the e2e tests locally.
+ * Builds and serves the e2e-app and runs protractor once the e2e-app is ready.
  */
 task('e2e', (done: (err?: string) => void) => {
-  gulpRunSequence(
-    ':test:protractor:setup',
-    'serve:e2eapp:watch',
-    ':test:protractor',
-    ':serve:e2eapp:stop',
-    (err: any) => gulpConnect.serverClose() && done(err)
-  );
-});
-
-/**
- * Runs the e2e once. Does not watch for changes.
- *
- * This task should be used when running tests on the CI server.
- */
-task('e2e:single-run', (done: (err?: string) => void) => {
   gulpRunSequence(
     ':test:protractor:setup',
     'serve:e2eapp',
     ':test:protractor',
     ':serve:e2eapp:stop',
-    (err: any) => gulpConnect.serverClose() && done(err)
+    (err: any) => done(err)
   );
 });
