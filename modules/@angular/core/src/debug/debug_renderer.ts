@@ -22,7 +22,7 @@ export class DebugDomRootRenderer implements RootRenderer {
   }
 }
 
-export class DebugDomRenderer {
+export class DebugDomRenderer implements Renderer {
   constructor(private _delegate: Renderer) {}
 
   selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any {
@@ -134,12 +134,12 @@ export class DebugDomRenderer {
     this._delegate.setElementClass(renderElement, className, isAdd);
   }
 
-  setElementStyle(renderElement: any, styleName: string, styleValue: string) {
+  setElementStyle(renderElement: any, styleName: string, styleValue: string, priority: string) {
     const debugEl = getDebugNode(renderElement);
     if (isPresent(debugEl) && debugEl instanceof DebugElement) {
       debugEl.styles[styleName] = styleValue;
     }
-    this._delegate.setElementStyle(renderElement, styleName, styleValue);
+    this._delegate.setElementStyle(renderElement, styleName, styleValue, priority);
   }
 
   invokeElementMethod(renderElement: any, methodName: string, args?: any[]) {

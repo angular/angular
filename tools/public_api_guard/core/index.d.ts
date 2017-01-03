@@ -776,7 +776,7 @@ export declare abstract class Renderer {
     abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;
     abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
+    abstract setElementStyle(renderElement: any, styleName: string, styleValue: string, priority?: string): void;
     abstract setText(renderNode: any, text: string): void;
 }
 
