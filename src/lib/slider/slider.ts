@@ -187,7 +187,7 @@ export class MdSlider implements ControlValueAccessor {
 
   private _min: number = 0;
 
-  /** The miniumum value that the slider can have. */
+  /** The minimum value that the slider can have. */
   @Input()
   get min() {
     return this._min;
