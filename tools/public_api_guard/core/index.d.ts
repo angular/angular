@@ -842,8 +842,9 @@ export declare function setTestabilityGetter(getter: GetTestability): void;
 /** @stable */
 export declare class SimpleChange {
     currentValue: any;
+    firstChange: boolean;
     previousValue: any;
-    constructor(previousValue: any, currentValue: any, _isFirstChange?: boolean);
+    constructor(previousValue: any, currentValue: any, firstChange: boolean);
     isFirstChange(): boolean;
 }
 

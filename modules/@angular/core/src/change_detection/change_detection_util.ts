@@ -71,15 +71,10 @@ export class ValueUnwrapper {
  * @stable
  */
 export class SimpleChange {
-  constructor(
-      public previousValue: any, public currentValue: any, _isFirstChange: boolean = false) {
-    // Store this in a non declared field
-    // to prevent a breaking change (users might have `implement`ed SimpleChange before)
-    (<any>this)._firstChange = _isFirstChange;
-  }
+  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return (<any>this)._firstChange; }
+  isFirstChange(): boolean { return this.firstChange; }
 }
