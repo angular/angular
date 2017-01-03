@@ -46,8 +46,6 @@ describe('menu', () => {
     page.backdrop().click();
     page.expectMenuPresent(false);
 
-    // TODO(kara): temporary, remove when #1607 is fixed
-    browser.sleep(250);
     page.trigger().click();
     expect(page.menu().getText()).toEqual('One\nTwo\nThree\nFour');
     page.expectMenuAlignedWith(page.menu(), 'trigger');
