@@ -28,6 +28,7 @@ module.exports = function categorizer() {
               doc.classDoc.methods = [doc];
         } else if (isDirective(doc)) {
           doc.isDirective = true;
+          doc.directiveExportAs = getDirectiveExportAs(doc);
         } else if (isService(doc)) {
           doc.isService = true;
         } else if (isNgModule(doc)) {
@@ -115,6 +116,17 @@ function getDirectiveInputAlias(doc) {
 
 function getDirectiveOutputAlias(doc) {
   return isDirectiveOutput(doc) ? doc.decorators.find(d => d.name == 'Output').arguments[0] : '';
+}
+
+function getDirectiveExportAs(doc) {
+  let metadata = doc.decorators
+      .find(d => d.name === 'Component' || d.name === 'Directive').arguments[0];
+
+  // Use a Regex to determine the exportAs metadata because we can't parse the JSON due to
+  // environment variables inside of the JSON.
+  let exportMatches = /exportAs\s*:\s*(?:"|')(\w+)(?:"|')/g.exec(metadata);
+
+  return exportMatches && exportMatches[1];
 }
 
 function hasMemberDecorator(doc, decoratorName) {

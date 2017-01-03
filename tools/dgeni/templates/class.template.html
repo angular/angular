@@ -1,6 +1,11 @@
 <h3 class="docs-api-h3 docs-api-class-name">{$ class.name $}</h3>
 <p class="docs-api-class-description">{$ class.description $}</p>
 
+{%- if class.directiveExportAs -%}
+<span class="docs-api-h4 docs-api-class-export-label">Exported as:</span>
+<span class="docs-api-class-export-name">{$ class.directiveExportAs $}</span>
+{%- endif -%}
+
 {$ propertyList(class.properties) $}
 
 {$ methodList(class.methods) $}
