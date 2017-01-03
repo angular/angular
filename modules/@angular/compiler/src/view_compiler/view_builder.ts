@@ -275,7 +275,6 @@ class ViewBuilderVisitor implements TemplateAstVisitor {
     this.nestedViewCount++;
     const embeddedView = new CompileView(
         this.view.component, this.view.genConfig, this.view.pipeMetas, o.NULL_EXPR,
-        this.view.animationQueries,
         this.view.animations, this.view.viewIndex + this.nestedViewCount, compileElement,
         templateVariableBindings, this.targetDependencies, parentWithAnimations);
     this.nestedViewCount += buildView(embeddedView, ast.children, this.targetDependencies);

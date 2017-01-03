@@ -89,8 +89,8 @@ export class CompileView implements NameResolver {
   constructor(
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
       public pipeMetas: CompilePipeSummary[], public styles: o.Expression,
-      public animationQueries: {[triggerName: string]: AnimationQueryAst[]},
-      private _compiledAnimations: AnimationEntryCompileResult[], public viewIndex: number,
+      public animations: AnimationEntryCompileResult[],
+      public viewIndex: number,
       public declarationElement: CompileElement, public templateVariableBindings: string[][],
       public targetDependencies:
           Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>,
@@ -138,14 +138,15 @@ export class CompileView implements NameResolver {
         }
       });
 
-      Object.keys(this.animationQueries).forEach(triggerName => {
+      this.animations.forEach(entry => {
+        const triggerName = entry.name;
         if (hostTriggerLookup.has(triggerName)) {
-          this.animationQueries[triggerName].forEach(queryAst => {
-            const queryMeta = buildQueryMetadataFromAnimation(queryAst);
+          entry.queryStmts.forEach((statements, metadata) => {
+            const queryMeta = buildQueryMetadataFromAnimation(metadata);
             this._registerQuery(queryMeta);
           });
         }
-      });
+      })
     }
 
     templateVariableBindings.forEach(
@@ -154,10 +155,6 @@ export class CompileView implements NameResolver {
     if (!this.declarationElement.isNull()) {
       this.declarationElement.setEmbeddedView(this);
     }
-  }
-
-  get animations() {
-    return this._compiledAnimations;
   }
 
   private _registerQuery(queryMeta: CompileQueryMetadata, propName: string = null): string {

@@ -36,14 +36,13 @@ export class ViewCompiler {
 
   compileComponent(
       component: CompileDirectiveMetadata, template: TemplateAst[],
-      animationQueryMap: {[triggerName: string]: AnimationQueryAst[]},
+      animations: AnimationEntryCompileResult[],
       styles: o.Expression,
-      pipes: CompilePipeSummary[],
-      compiledAnimations: AnimationEntryCompileResult[]): ViewCompileResult {
+      pipes: CompilePipeSummary[]): ViewCompileResult {
     const dependencies:
         Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency> = [];
     const view = new CompileView(
-        component, this._genConfig, pipes, styles, animationQueryMap, compiledAnimations, 0,
+        component, this._genConfig, pipes, styles, animations, 0,
         CompileElement.createNull(), [], dependencies);
 
     const statements: o.Statement[] = [];

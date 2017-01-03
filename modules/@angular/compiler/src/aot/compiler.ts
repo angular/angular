@@ -214,7 +214,7 @@ export class AotCompiler {
     const compiledAnimations =
         this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations.entryAsts);
     const viewResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, parsedAnimations.queryAsts, stylesExpr, pipes, compiledAnimations);
+        compMeta, parsedTemplate, compiledAnimations, stylesExpr, pipes);
     if (componentStyles) {
       targetStatements.push(
           ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));

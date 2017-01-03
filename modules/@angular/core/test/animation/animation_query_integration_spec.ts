@@ -76,7 +76,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(getHTML(animation['element'])).toEqual('CHILD');
     }));
 
-    it('should invoke the steps within a query as an animation sequence', fakeAsync(() => {
+    fit('should invoke the steps within a query as an animation sequence', fakeAsync(() => {
       TestBed.overrideComponent(CmpWithAnimations, {
         set: {
           template: `

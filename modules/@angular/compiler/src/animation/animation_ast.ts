@@ -1,3 +1,4 @@
+import {CompileAnimationQueryMetadata} from "../compile_metadata";
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -115,7 +116,7 @@ export class AnimationSequenceAst extends AnimationWithStepsAst {
 
 export class AnimationQueryAst extends AnimationAst {
   public containsAnimateChildStatement = false;
-  constructor(public id: string, public criteria: any, public animation: AnimationWithStepsAst) { super(); }
+  constructor(public id: string, public criteria: any, public metadata: CompileAnimationQueryMetadata, public animation: AnimationWithStepsAst) { super(); }
   visit(visitor: AnimationAstVisitor, context: any): any {
     return visitor.visitAnimationQuery(this, context);
   }

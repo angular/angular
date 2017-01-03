@@ -7,13 +7,10 @@
  */
 
 import {Injector} from '../di/injector';
-import {isPresent} from '../facade/lang';
-
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
 import {ViewContainerRef_} from './view_container_ref';
 import {ViewType} from './view_type';
-import {ListWrapper} from "../../../benchpress/src/facade/collection";
 
 /**
  * A ViewContainer is created for elements that have a ViewContainerRef
@@ -129,120 +126,5 @@ export class ViewContainer {
     }
     view.detach();
     return view;
-  }
-}
-
-export class ViewContainerWithAnimations extends ViewContainer {
-  public removedNestedViews: Array<AppView<any>[]> = null;
-
-  mapNestedAnimationViews(nestedViewClass: any, callback: Function): any[] {
-    const result: any[] = [];
-    if (this.nestedViews) {
-      const removedViews: any[] = this.removedNestedViews || [];
-      for (let i = 0; i < this.nestedViews.length; i++) {
-        const nextRemovedViews: any[] = removedViews.shift();
-        if (nextRemovedViews && nextRemovedViews.length) {
-          nextRemovedViews.forEach(view => {
-            if (view.clazz === nestedViewClass) {
-              result.push([view, callback(view)]);
-            }
-          });
-        }
-
-        const view = this.nestedViews[i];
-        if (view.clazz === nestedViewClass) {
-          result.push([view, callback(view)]);
-        }
-      }
-    }
-
-    if (this.removedNestedViews) {
-      while (this.removedNestedViews.length) {
-        let entries = this.removedNestedViews.shift();
-        if (entries) {
-          entries.forEach((view: any) => {
-            if (view.clazz === nestedViewClass) {
-              result.push([view, callback(view)]);
-            }
-          });
-        }
-      }
-    }
-
-    return result;
-  }
-
-  moveView(view: AppView<any>, currentIndex: number) {
-    const previousIndex = this.nestedViews.indexOf(view);
-    super.moveView(view, currentIndex);
-    if (this.removedNestedViews) {
-      const limit = this.removedNestedViews ? this.removedNestedViews.length - 1 : 0;
-      if (currentIndex < previousIndex) {
-        if (limit >= currentIndex) {
-          this.removedNestedViews.splice(currentIndex, 0, null);
-        }
-        if (limit >= previousIndex) {
-          this.removedNestedViews.splice(previousIndex, 1);
-        }
-      } else if (previousIndex > currentIndex) {
-        if (limit >= currentIndex) {
-          this.removedNestedViews.splice(currentIndex, 1);
-        }
-        if (limit >= previousIndex) {
-          this.removedNestedViews.splice(previousIndex, 1, null);
-        }
-      }
-    }
-  }
-
-  attachView(view: AppView<any>, viewIndex: number) {
-    super.attachView(view, viewIndex);
-    const limit = this.removedNestedViews ? this.removedNestedViews.length - 1 : -1;
-    if (limit >= 0 && viewIndex <= limit) {
-      this.removedNestedViews.splice(viewIndex, 0, null);
-    }
-  }
-
-  detachView(viewIndex: number): AppView<any> {
-    let oldView = this.nestedViews[viewIndex];
-    if (oldView != null) {
-      oldView = super.detachView(viewIndex);
-      if (!this.removedNestedViews) {
-        this.removedNestedViews = [];
-      }
-      if (viewIndex < this.removedNestedViews.length - 1) {
-        // we have shrunk the size of the view array
-        // therefore we need to also shrink the remove array
-        this.removedNestedViews.splice(viewIndex, 1);
-        let views = this.removedNestedViews[viewIndex];
-        if (views) {
-          views.unshift(oldView);
-        } else {
-          this.removedNestedViews[viewIndex] = [oldView];
-        }
-      } else {
-        // we need to grow the remove array to be the same
-        // length up to the length of the view array
-        pushUntil(this.removedNestedViews, viewIndex, null);
-        let views = this.removedNestedViews[viewIndex];
-        if (views) {
-          views.push(oldView);
-        } else {
-          this.removedNestedViews[viewIndex] = [oldView];
-        }
-      }
-    }
-    return oldView;
-  }
-}
-
-function pushUntil(arr: any[], limit: number, value: any) {
-  for (var i = 0; i <= limit; i++) {
-    if (i < arr.length) {
-      const value = arr[i];
-      if (!value) arr[i] = value;
-    } else {
-      arr.push(value);
-    }
   }
 }

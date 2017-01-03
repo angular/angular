@@ -91,10 +91,6 @@ export class CompileQuery {
   }
 }
 
-export class CompileQueryForAnimation extends CompileQuery {
-  get notifyOnChange(): boolean { return false; }
-}
-
 function createQueryValues(
     queryMeta: CompileQueryMetadata, viewValues: ViewQueryValues): o.Expression[] {
   if (queryMeta.isAnimationQuery) {

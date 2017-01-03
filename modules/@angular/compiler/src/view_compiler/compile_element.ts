@@ -17,7 +17,7 @@ import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType, ReferenceAst, TemplateAst, BoundElementPropertyAst} from '../template_parser/template_ast';
 
 import {CompileMethod} from './compile_method';
-import {CompileQuery, addQueryToTokenMap, createQueryList, CompileQueryForAnimation} from './compile_query';
+import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
 import {CompileView, CompileViewRootNode} from './compile_view';
 import {InjectMethodVars, ViewProperties} from './constants';
 import {ComponentFactoryDependency, DirectiveWrapperDependency} from './deps';
@@ -54,6 +54,7 @@ export class CompileElement extends CompileNode {
   public referenceTokens: {[key: string]: CompileTokenMetadata};
 
   public animationQueryProps: {[triggerName: string]: string[]} = {};
+  public animationQueryStmts: o.Statement[];
 
   constructor(
       parent: CompileElement, view: CompileView, nodeIndex: number, renderNode: o.Expression,
@@ -86,14 +87,13 @@ export class CompileElement extends CompileNode {
     const fieldName = `_vc_${this.nodeIndex}`;
     const parentNodeIndex = this.isRootElement() ? null : this.parent.nodeIndex;
     // private is fine here as no child view will reference a ViewContainer
+    const viewContainerIdent = o.importType(createIdentifier(Identifiers.ViewContainer));
     this.view.fields.push(new o.ClassField(
-        fieldName, o.importType(createIdentifier(Identifiers.ViewContainer)),
+        fieldName, viewContainerIdent,
         [o.StmtModifier.Private]));
-    const containsAnimations = this.view.parentWithAnimations || this.view.animations.length > 0;
-    const viewContainerIdent = createIdentifier(containsAnimations ? Identifiers.ViewContainerWithAnimations : Identifiers.ViewContainer);
     const statement =
         o.THIS_EXPR.prop(fieldName)
-            .set(o.importExpr(viewContainerIdent).instantiate([
+            .set(viewContainerIdent.instantiate([
               o.literal(this.nodeIndex), o.literal(parentNodeIndex), o.THIS_EXPR, this.renderNode
             ]))
             .toStmt();
@@ -166,18 +166,24 @@ export class CompileElement extends CompileNode {
     var inputTriggerLookup = new Set<string>();
     this._inputs.forEach(input => input.isAnimation && inputTriggerLookup.add(input.name));
 
-    Object.keys(this.view.animationQueries).forEach(triggerName => {
+    this.view.animations.forEach(entry => {
+      const triggerName = entry.name;
       if (inputTriggerLookup.has(triggerName)) {
         this.animationQueryProps[triggerName] = [];
-        this.view.animationQueries[triggerName].forEach(queryAst => {
-          const queryMetadata = buildQueryMetadataFromAnimation(queryAst);
-          const criteria = queryAst.criteria;
-          const criteriaName = criteria.name
-            ? criteria.name
-            : criteria.toString().replace(/[^\w-]+/g, '_');
-          const propName = `query_${triggerName}_${criteriaName}_${this.nodeIndex}`;
-          this._addQuery(queryMetadata, null, propName, true);
+        entry.queryStmts.forEach((statements, metadata) => {
+          const queryMetadata = buildQueryMetadataFromAnimation(metadata);
+          const [propName, compiledQuery] = this._addQuery(queryMetadata, null);
           this.animationQueryProps[triggerName].push(propName);
+          const animationPlayerProp = `query_player_${triggerName}_${this._queryCount}_${this.nodeIndex}`;
+
+          const animationPlayerExp =
+            o.importExpr(createIdentifier(Identifiers.AnimationSequencePlayer)).instantiate(statements);
+
+          const viewQueryPlayerProp = o.THIS_EXPR.prop(animationPlayerProp);
+          const preconditionStmt = o.literal(true);
+          const checkStmt = preconditionStmt.conditional(viewQueryPlayerProp.set(animationPlayerExp), o.NULL_EXPR);
+          this.animationQueryStmts.push();
+          compiledQuery.addValue(viewQueryPlayerProp, this.view);
         });
       }
     });
@@ -234,7 +240,7 @@ export class CompileElement extends CompileNode {
     for (let i = 0; i < this._directives.length; i++) {
       const directive = this._directives[i];
       const directiveInstance = this.instances.get(tokenReference(identifierToken(directive.type)));
-      directive.queries.forEach((queryMeta) => { this._addQuery(queryMeta, directiveInstance, null, false); });
+      directive.queries.forEach((queryMeta) => this._addQuery(queryMeta, directiveInstance));
     }
 
     Object.keys(this.referenceTokens).forEach(varName => {
@@ -270,12 +276,8 @@ export class CompileElement extends CompileNode {
     Array.from(this._queries.values())
         .forEach(
             queries => queries.forEach(
-                q => {
-                  const compileMethod = q instanceof CompileQueryForAnimation
-                    ? this.view.updateAnimationQueriesMethod
-                    : this.view.updateContentQueriesMethod;
-                  q.generateStatements(this.view.createMethod, compileMethod);
-                }));
+                q => q.generateStatements(this.view.createMethod, this.view.updateContentQueriesMethod)));
+    this.view.updateAnimationQueriesMethod.push(...this.animationQueryStmts);
   }
 
   addContentNode(ngContentIndex: number, nodeExpr: CompileViewRootNode) {
@@ -314,19 +316,13 @@ export class CompileElement extends CompileNode {
     return result;
   }
 
-  private _addQuery(queryMeta: CompileQueryMetadata, directiveInstance: o.Expression, propName: string, isAnimationQuery: boolean = false):
-      CompileQuery {
+  private _addQuery(queryMeta: CompileQueryMetadata, directiveInstance: o.Expression): CompileQuery {
     this._queryCount++;
-    propName = propName || `_query_${tokenName(queryMeta.selectors[0])}_${this.nodeIndex}_${this._queryCount}`;
+    const propName = `_query_${tokenName(queryMeta.selectors[0])}_${this.nodeIndex}_${this._queryCount}`;
     const queryList = createQueryList(queryMeta, directiveInstance, propName, this.view);
-    let query: CompileQuery;
-    if (isAnimationQuery) {
-      query = new CompileQueryForAnimation(queryMeta, queryList, directiveInstance, this.view);
-    } else {
-      query = new CompileQuery(queryMeta, queryList, directiveInstance, this.view);
-    }
+    const query = new CompileQuery(queryMeta, queryList, directiveInstance, this.view);
     addQueryToTokenMap(this._queries, query);
-    return query;
+    return [propName, query];
   }
 
   private _getLocalDependency(

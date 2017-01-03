@@ -79,4 +79,3 @@ export type MethodFn = typeof r._MethodFn;
 export const animateQuery: typeof r.animateQuery = r.animateQuery;
 export const fetchElementAnimation: typeof r.fetchElementAnimation = r.fetchElementAnimation;
 export const AnimationElementIdMap: typeof r.AnimationElementIdMap = r.AnimationElementIdMap;
-export const ViewContainerWithAnimations: typeof r.ViewContainerWithAnimations = r.ViewContainerWithAnimations;

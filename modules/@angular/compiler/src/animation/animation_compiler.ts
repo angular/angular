@@ -13,9 +13,13 @@ import * as o from '../output/output_ast';
 import {ANY_STATE, DEFAULT_STATE, EMPTY_STATE} from '../private_import_core';
 
 import * as asts from './animation_ast';
+import {CompileAnimationQueryMetadata} from "../compile_metadata";
 
 export class AnimationEntryCompileResult {
-  constructor(public name: string, public statements: o.Statement[], public fnExp: o.Expression) {}
+  constructor(public name: string,
+              public statements: o.Statement[],
+              public queryStmts: Map<CompileAnimationQueryMetadata, o.Statement[]>,
+              public fnExp: o.Expression) {}
 }
 
 export class AnimationCompiler {
@@ -146,7 +150,7 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
       o.literal(ast.delay), o.literal(ast.easing), previousStylesValue
     ]);
     const index = context.animateSteps.length;
-    context.animateSteps.push(_ANIMATION_STEPS.key(exp).set(exp).toStmt());
+    context.animateSteps.push(exp);
     return _ANIMATION_STEPS.key(o.literal(index));
   }
 
@@ -203,11 +207,12 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
   }
 
   visitAnimationQuery(ast: asts.AnimationQueryAst, context: _AnimationBuilderContext): any {
-    var idAsNum = parseInt(ast.id);
-    var previousQueryId = context.parentQueryIndex;
-    context.parentQueryIndex = idAsNum;
-    var innerAnimationExpr = ast.animation.visit(this, context);
-    context.parentQueryIndex = previousQueryId;
+    const idAsNum = parseInt(ast.id);
+    const previousSteps = context.animateSteps;
+    const innerSteps = context.animateSteps = [];
+    const innerAnimationExpr = ast.animation.visit(this, context);
+    context.animateQuerySteps.set(ast.metadata, innerSteps);
+    context.animateSteps = previousSteps;
 
     // collecting parent players should only happen BEFORE the very first
     // animation step has occurred.
@@ -241,7 +246,6 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
       ast: asts.AnimationStateTransitionAst, context: _AnimationBuilderContext): any {
     context.totalTransitionTime = 0;
     context.isExpectingFirstStyleStep = true;
-    context.parentQueryIndex = 0;
 
     const stateChangePreconditions: o.Expression[] = [];
 
@@ -272,7 +276,7 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
     ]);
 
     return new o.IfStmt(precondition, [
-      ...context.animateSteps,
+      _ANIMATION_STEPS.set(o.literalArr(context.animateSteps)).toStmt(),
       new o.ReturnStatement(animationClosure)
     ]);
   }
@@ -293,6 +297,7 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
     statements.push(_ANIMATION_QUERIED_ELEMENT_ID.set(o.literal(0)).toDeclStmt());
     statements.push(_ANIMATION_PLAYER_VAR.set(o.NULL_EXPR).toDeclStmt());
     statements.push(_ANIMATION_TIME_VAR.set(o.literal(0)).toDeclStmt());
+    statements.push(_ANIMATION_STEPS.set(o.NULL_EXPR).toDeclStmt());
 
     statements.push(
         _ANIMATION_DEFAULT_STATE_VAR.set(this._statesMapVar.key(o.literal(DEFAULT_STATE)))
@@ -420,16 +425,16 @@ class _AnimationBuilder implements asts.AnimationAstVisitor {
         this._statesMapVar.set(o.literalMap(lookupMap, null, true)).toDeclStmt();
     const statements: o.Statement[] = [compiledStatesMapStmt, fnStatement];
 
-    return new AnimationEntryCompileResult(this.animationName, statements, fnVariable);
+    return new AnimationEntryCompileResult(this.animationName, statements, context.animateQuerySteps, fnVariable);
   }
 }
 
 class _AnimationBuilderContext {
-  animateSteps: o.Statement[] = [];
+  animateSteps: o.Expression[] = [];
+  animateQuerySteps = new Map<CompileAnimationQueryMetadata, o.Expression[]>();
   stateMap = new _AnimationBuilderStateMap();
   isExpectingFirstStyleStep = false;
   totalTransitionTime = 0;
-  parentQueryIndex = 0;
   entryAst: asts.AnimationEntryAst = null;
 }
 

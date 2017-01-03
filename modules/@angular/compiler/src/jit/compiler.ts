@@ -300,8 +300,8 @@ export class JitCompiler implements Compiler {
     const compiledAnimations =
         this._animationCompiler.compile(identifierName(compMeta.type), parsedAnimations.entryAsts);
     const compileResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, parsedAnimations.queryAsts, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
-        pipes, compiledAnimations);
+        compMeta, parsedTemplate, compiledAnimations, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
+        pipes);
     const statements = stylesCompileResult.componentStylesheet.statements
                            .concat(...compiledAnimations.map(ca => ca.statements))
                            .concat(compileResult.statements);

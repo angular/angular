@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationQueryAst} from "../animation/animation_ast";
-import {CompileQueryMetadata, CompileTokenMetadata} from "../compile_metadata";
+import {CompileQueryMetadata, CompileTokenMetadata, CompileAnimationQueryMetadata} from "../compile_metadata";
 
 const ANIMATE_PROP_PREFIX = 'animate-';
 
@@ -14,15 +13,15 @@ export function generateDelayedDetachPropName(nodeIndex: number): string {
   return `_delayedDetach_${nodeIndex}`;
 }
 
-export function buildQueryMetadataFromAnimation(queryAst: AnimationQueryAst): CompileQueryMetadata {
+export function buildQueryMetadataFromAnimation(metadata: CompileAnimationQueryMetadata): CompileQueryMetadata {
   return <CompileQueryMetadata>{
-    isAnimationQuery: true,
+    animationMetadata: metadata,
     first: false,
     propertyName: '',
     read: null,
     descendants: false,
     selectors: [
-      <CompileTokenMetadata>{value: queryAst.criteria}
+      <CompileTokenMetadata>{value: metadata.criteria}
     ]
   };
 }

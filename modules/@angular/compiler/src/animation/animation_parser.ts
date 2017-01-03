@@ -132,7 +132,7 @@ function _parseAnimationStateTransition(
       expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
   const entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   const animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
-  const rootQuery = new asts.AnimationQueryAst(_ROOT_QUERY_ID, null, null);
+  const rootQuery = new asts.AnimationQueryAst(_ROOT_QUERY_ID, null, null, null);
   const animationAst = _parseTransitionAnimation(animation, rootQuery, 0, styles, stateStyles, queryMap, errors);
   if (errors.length == 0) {
     _fillAnimationAstStartingKeyframes(animationAst, rootQuery, styles, queryMap, errors);
@@ -446,7 +446,7 @@ function _parseTransitionAnimation(
   if (entry instanceof compileAsts.CompileAnimationQueryMetadata) {
     const innerQueryId = queryMap.getOrCreateQueryId(entry);
     const innerEntry = _normalizeAnimationEntry(entry.animation);
-    const queryAst = new asts.AnimationQueryAst(innerQueryId, entry.criteria, null);
+    const queryAst = new asts.AnimationQueryAst(innerQueryId, entry.criteria, entry, null);
     queryAst.animation = <asts.AnimationWithStepsAst>_parseTransitionAnimation(innerEntry, queryAst, currentTime, collectedStyles, stateStyles, queryMap, errors);
     queryMap.registerQueryAst(innerQueryId, queryAst);
     ast = queryAst;

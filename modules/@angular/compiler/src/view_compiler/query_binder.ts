@@ -28,10 +28,13 @@ export function bindQueryValues(ce: CompileElement) {
         ...ce.getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
   });
   queriesWithReads.forEach((queryWithRead) => {
+    // animation queries are populated directly within
+    // the compile_element logic because they reference
+    // animation player values on the view directly...
+    if (queryWithRead.query.meta.isAnimationQuery) return;
+    
     let value: o.Expression;
-    if (queryWithRead.query.meta.isAnimationQuery) {
-      value = this.renderNode;
-    } else if (queryWithRead.read.identifier) {
+    if (queryWithRead.read.identifier) {
       // query for an identifier
       value = ce.instances.get(tokenReference(queryWithRead.read));
     } else {
