@@ -355,13 +355,13 @@ export declare class MinLengthValidator implements Validator, OnChanges {
 }
 
 /** @stable */
-export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
+export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 
 /** @stable */
-export declare const NG_VALIDATORS: OpaqueToken;
+export declare const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 
 /** @stable */
-export declare const NG_VALUE_ACCESSOR: OpaqueToken;
+export declare const NG_VALUE_ACCESSOR: InjectionToken<ControlValueAccessor>;
 
 /** @stable */
 export declare abstract class NgControl extends AbstractControlDirective {

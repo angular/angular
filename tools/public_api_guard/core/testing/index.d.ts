@@ -20,10 +20,10 @@ export declare class ComponentFixture<T> {
 }
 
 /** @experimental */
-export declare const ComponentFixtureAutoDetect: OpaqueToken;
+export declare const ComponentFixtureAutoDetect: InjectionToken<boolean[]>;
 
 /** @experimental */
-export declare const ComponentFixtureNoNgZone: OpaqueToken;
+export declare const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
 
 /** @experimental */
 export declare function discardPeriodicTasks(): void;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 
 import {Options} from '../common_options';
 import {MeasureValues} from '../measure_values';
@@ -21,7 +21,7 @@ import {formatStats, sortedProps} from './util';
  */
 @Injectable()
 export class JsonFileReporter extends Reporter {
-  static PATH = new OpaqueToken('JsonFileReporter.path');
+  static PATH = new InjectionToken('JsonFileReporter.path');
   static PROVIDERS = [JsonFileReporter, {provide: JsonFileReporter.PATH, useValue: '.'}];
 
   constructor(
