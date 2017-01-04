@@ -23,6 +23,9 @@
       ]
     }
   },
+  "exclude": [
+    "*-aot.ts"
+  ],
   "angularCompilerOptions": {
     "genDir": "../../dist",
     "skipTemplateCodegen": true,
