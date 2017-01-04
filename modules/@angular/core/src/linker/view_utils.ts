@@ -15,7 +15,6 @@ import {ViewEncapsulation} from '../metadata/view';
 import {RenderComponentType, RenderDebugInfo, Renderer, RootRenderer} from '../render/api';
 import {Sanitizer} from '../security';
 import {VERSION} from '../version';
-import {NgZone} from '../zone/ng_zone';
 
 import {ExpressionChangedAfterItHasBeenCheckedError} from './errors';
 import {AppView} from './view';
@@ -23,7 +22,6 @@ import {AppView} from './view';
 @Injectable()
 export class ViewUtils {
   sanitizer: Sanitizer;
-  private _nextCompTypeId: number = 0;
 
   constructor(
       private _renderer: RootRenderer, sanitizer: Sanitizer,

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPresent} from '../facade/lang';
 import * as o from '../output/output_ast';
 import {TemplateAst} from '../template_parser/template_ast';
 
@@ -34,7 +33,7 @@ export class CompileMethod {
     if (this._newState.nodeIndex !== this._currState.nodeIndex ||
         this._newState.sourceAst !== this._currState.sourceAst) {
       const expr = this._updateDebugContext(this._newState);
-      if (isPresent(expr)) {
+      if (expr) {
         this._bodyStatements.push(expr.toStmt());
       }
     }
@@ -43,13 +42,12 @@ export class CompileMethod {
   private _updateDebugContext(newState: _DebugState): o.Expression {
     this._currState = this._newState = newState;
     if (this._debugEnabled) {
-      const sourceLocation =
-          isPresent(newState.sourceAst) ? newState.sourceAst.sourceSpan.start : null;
+      const sourceLocation = newState.sourceAst ? newState.sourceAst.sourceSpan.start : null;
 
       return o.THIS_EXPR.callMethod('debug', [
         o.literal(newState.nodeIndex),
-        isPresent(sourceLocation) ? o.literal(sourceLocation.line) : o.NULL_EXPR,
-        isPresent(sourceLocation) ? o.literal(sourceLocation.col) : o.NULL_EXPR
+        sourceLocation ? o.literal(sourceLocation.line) : o.NULL_EXPR,
+        sourceLocation ? o.literal(sourceLocation.col) : o.NULL_EXPR
       ]);
     } else {
       return null;

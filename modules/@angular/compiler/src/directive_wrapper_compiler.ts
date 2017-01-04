@@ -128,7 +128,6 @@ class DirectiveWrapperBuilder implements ClassBuilder {
       new o.ClassMethod('ngOnDestroy', [], this.destroyStmts),
     ];
 
-
     const fields: o.ClassField[] = [
       new o.ClassField(EVENT_HANDLER_FIELD_NAME, o.FUNCTION_TYPE, [o.StmtModifier.Private]),
       new o.ClassField(CONTEXT_FIELD_NAME, o.importType(this.dirMeta.type)),

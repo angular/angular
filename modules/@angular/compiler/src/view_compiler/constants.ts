@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-import {ChangeDetectorStatus, ViewType} from '../private_import_core';
+import {ViewType} from '../private_import_core';
 
 export class ViewTypeEnum {
   static fromValue(value: ViewType): o.Expression {
@@ -22,12 +22,6 @@ export class ViewTypeEnum {
 export class ViewEncapsulationEnum {
   static fromValue(value: ViewEncapsulation): o.Expression {
     return createEnumExpression(Identifiers.ViewEncapsulation, value);
-  }
-}
-
-export class ChangeDetectionStrategyEnum {
-  static fromValue(value: ChangeDetectionStrategy): o.Expression {
-    return createEnumExpression(Identifiers.ChangeDetectionStrategy, value);
   }
 }
 

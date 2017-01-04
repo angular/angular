@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchemaMetadata} from '@angular/core';
-
 import {AnimationCompiler} from '../animation/animation_compiler';
 import {AnimationParser} from '../animation/animation_parser';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileTypeSummary, createHostComponentMeta, identifierModuleUrl, identifierName} from '../compile_metadata';

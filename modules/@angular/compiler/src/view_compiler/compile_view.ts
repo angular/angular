@@ -12,7 +12,6 @@ import {EventHandlerVars, NameResolver} from '../compiler_util/expression_conver
 import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
-import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
@@ -119,7 +118,7 @@ export class CompileView implements NameResolver {
       const directiveInstance = o.THIS_EXPR.prop('context');
       this.component.viewQueries.forEach((queryMeta, queryIndex) => {
         const propName = `_viewQuery_${tokenName(queryMeta.selectors[0])}_${queryIndex}`;
-        const queryList = createQueryList(queryMeta, directiveInstance, propName, this);
+        const queryList = createQueryList(propName, this);
         const query = new CompileQuery(queryMeta, queryList, directiveInstance, this);
         addQueryToTokenMap(viewQueries, query);
       });

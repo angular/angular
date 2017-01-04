@@ -10,8 +10,8 @@ import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, Ho
 
 import {ReflectorReader} from '../private_import_core';
 
-import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+import {StaticSymbol} from './static_symbol';
+import {StaticSymbolResolver} from './static_symbol_resolver';
 
 const ANGULAR_IMPORT_LOCATIONS = {
   coreDecorators: '@angular/core/src/metadata',
@@ -650,10 +650,6 @@ class PopulatedScope extends BindingScope {
   resolve(name: string): any {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
   }
-}
-
-function sameSymbol(a: StaticSymbol, b: StaticSymbol): boolean {
-  return a === b;
 }
 
 function shouldIgnore(value: any): boolean {
