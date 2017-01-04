@@ -19,7 +19,7 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 <!--
 If the current behavior is a bug or you can illustrate your feature request better with an example, 
 please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
-https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5).
+https://plnkr.co or similar (you can use this template as a starting point: https://plnkr.co/edit/4FS2y3ibae8ZC2XvMN1d?p=preview).
 -->
 
 **What is the motivation / use case for changing the behavior?**
