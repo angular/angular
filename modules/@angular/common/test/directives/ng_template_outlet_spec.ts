@@ -159,7 +159,7 @@ class TestComponent {
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
-  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+  return TestBed.overrideComponent(TestComponent, {set: {template}})
       .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
       .createComponent(TestComponent);
 }
