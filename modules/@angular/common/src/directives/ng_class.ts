@@ -25,6 +25,8 @@ import {isPresent, stringify} from '../facade/lang';
  *     <some-element [ngClass]="{'first': true, 'second': true, 'third': false}">...</some-element>
  *
  *     <some-element [ngClass]="stringExp|arrayExp|objExp">...</some-element>
+ *
+ *     <some-element [ngClass]="{'class1 class2 class3' : true}">...</some-element>
  * ```
  *
  * @description
