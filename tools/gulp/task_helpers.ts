@@ -221,7 +221,9 @@ export function openFirebaseDatabase() {
     credential: firebaseAdmin.credential.cert({
       project_id: 'material2-dashboard',
       client_email: 'firebase-adminsdk-ch1ob@material2-dashboard.iam.gserviceaccount.com',
-      private_key: process.env['MATERIAL2_FIREBASE_PRIVATE_KEY']
+      // In Travis CI the private key will be incorrect because the line-breaks are escaped.
+      // The line-breaks need to persist in the service account private key.
+      private_key: (process.env['MATERIAL2_FIREBASE_PRIVATE_KEY'] || '').replace(/\\n/g, '\n')
     }),
     databaseURL: 'https://material2-dashboard.firebaseio.com'
   });
