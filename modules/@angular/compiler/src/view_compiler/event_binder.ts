@@ -15,7 +15,6 @@ import {BoundEventAst, DirectiveAst} from '../template_parser/template_ast';
 
 import {CompileElement} from './compile_element';
 import {CompileMethod} from './compile_method';
-import {ViewProperties} from './constants';
 import {getHandleEventMethodName} from './util';
 
 export function bindOutputs(

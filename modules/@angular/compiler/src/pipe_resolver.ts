@@ -9,7 +9,7 @@
 import {Pipe, Type, resolveForwardRef} from '@angular/core';
 
 import {ListWrapper} from './facade/collection';
-import {isPresent, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';
 import {ReflectorReader, reflector} from './private_import_core';
 
@@ -38,9 +38,9 @@ export class PipeResolver {
    */
   resolve(type: Type<any>, throwIfNotFound = true): Pipe {
     const metas = this._reflector.annotations(resolveForwardRef(type));
-    if (isPresent(metas)) {
+    if (metas) {
       const annotation = ListWrapper.findLast(metas, _isPipeMetadata);
-      if (isPresent(annotation)) {
+      if (annotation) {
         return annotation;
       }
     }

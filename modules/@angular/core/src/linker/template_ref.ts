@@ -8,7 +8,6 @@
 
 import {ElementRef} from './element_ref';
 import {AppView} from './view';
-import {ViewContainer} from './view_container';
 import {EmbeddedViewRef} from './view_ref';
 
 

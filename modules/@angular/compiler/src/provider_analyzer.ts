@@ -9,7 +9,7 @@
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenName, tokenReference} from './compile_metadata';
 import {isBlank, isPresent} from './facade/lang';
-import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {Identifiers, resolveIdentifier} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, ReferenceAst} from './template_parser/template_ast';
 
@@ -114,7 +114,7 @@ export class ProviderElementContext {
     let queries: CompileQueryMetadata[];
     while (currentEl !== null) {
       queries = currentEl._contentQueries.get(tokenReference(token));
-      if (isPresent(queries)) {
+      if (queries) {
         result.push(...queries.filter((query) => query.descendants || distance <= 1));
       }
       if (currentEl._directiveAsts.length > 0) {
@@ -123,7 +123,7 @@ export class ProviderElementContext {
       currentEl = currentEl._parent;
     }
     queries = this.viewContext.viewQueries.get(tokenReference(token));
-    if (isPresent(queries)) {
+    if (queries) {
       result.push(...queries);
     }
     return result;
@@ -143,7 +143,7 @@ export class ProviderElementContext {
       return null;
     }
     let transformedProviderAst = this._transformedProviders.get(tokenReference(token));
-    if (isPresent(transformedProviderAst)) {
+    if (transformedProviderAst) {
       return transformedProviderAst;
     }
     if (isPresent(this._seenProviders.get(tokenReference(token)))) {
@@ -165,11 +165,11 @@ export class ProviderElementContext {
           transformedUseExisting = null;
           transformedUseValue = existingDiDep.value;
         }
-      } else if (isPresent(provider.useFactory)) {
+      } else if (provider.useFactory) {
         const deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
-      } else if (isPresent(provider.useClass)) {
+      } else if (provider.useClass) {
         const deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(resolvedProvider.providerType, dep, eager));
@@ -235,7 +235,7 @@ export class ProviderElementContext {
       }
     } else {
       // check parent elements
-      while (!result && isPresent(currElement._parent)) {
+      while (!result && currElement._parent) {
         const prevElement = currElement;
         currElement = currElement._parent;
         if (prevElement._isViewRoot) {
@@ -301,7 +301,7 @@ export class NgModuleProviderAnalyzer {
       return null;
     }
     let transformedProviderAst = this._transformedProviders.get(tokenReference(token));
-    if (isPresent(transformedProviderAst)) {
+    if (transformedProviderAst) {
       return transformedProviderAst;
     }
     if (isPresent(this._seenProviders.get(tokenReference(token)))) {
@@ -324,11 +324,11 @@ export class NgModuleProviderAnalyzer {
           transformedUseExisting = null;
           transformedUseValue = existingDiDep.value;
         }
-      } else if (isPresent(provider.useFactory)) {
+      } else if (provider.useFactory) {
         const deps = provider.deps || provider.useFactory.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
-      } else if (isPresent(provider.useClass)) {
+      } else if (provider.useClass) {
         const deps = provider.deps || provider.useClass.diDeps;
         transformedDeps =
             deps.map((dep) => this._getDependency(dep, eager, resolvedProvider.sourceSpan));
@@ -454,7 +454,7 @@ function _resolveProviders(
 
 function _getViewQueries(component: CompileDirectiveMetadata): Map<any, CompileQueryMetadata[]> {
   const viewQueries = new Map<any, CompileQueryMetadata[]>();
-  if (isPresent(component.viewQueries)) {
+  if (component.viewQueries) {
     component.viewQueries.forEach((query) => _addQueryToTokenMap(viewQueries, query));
   }
   return viewQueries;
@@ -464,7 +464,7 @@ function _getContentQueries(directives: CompileDirectiveSummary[]):
     Map<any, CompileQueryMetadata[]> {
   const contentQueries = new Map<any, CompileQueryMetadata[]>();
   directives.forEach(directive => {
-    if (isPresent(directive.queries)) {
+    if (directive.queries) {
       directive.queries.forEach((query) => _addQueryToTokenMap(contentQueries, query));
     }
   });

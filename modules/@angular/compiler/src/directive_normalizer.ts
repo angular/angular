@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '@angular/core';
 
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
 import {stringify} from './facade/lang';
 import {CompilerInjectable} from './injectable';

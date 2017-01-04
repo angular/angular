@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileQueryMetadata, CompileTokenMetadata, tokenReference} from '../compile_metadata';
+import {CompileTokenMetadata, tokenReference} from '../compile_metadata';
 import * as o from '../output/output_ast';
 
 import {CompileElement} from './compile_element';
@@ -17,16 +17,18 @@ import {CompileQuery} from './compile_query';
 // as we create embedded views before the <template> elements themselves.
 export function bindQueryValues(ce: CompileElement) {
   const queriesWithReads: _QueryWithRead[] = [];
+
   ce.getProviderTokens().forEach((token) => {
     const queriesForProvider = ce.getQueriesFor(token);
     queriesWithReads.push(...queriesForProvider.map(query => new _QueryWithRead(query, token)));
   });
+
   Object.keys(ce.referenceTokens).forEach(varName => {
-    const token = ce.referenceTokens[varName];
     const varToken = {value: varName};
     queriesWithReads.push(
         ...ce.getQueriesFor(varToken).map(query => new _QueryWithRead(query, varToken)));
   });
+
   queriesWithReads.forEach((queryWithRead) => {
     let value: o.Expression;
     if (queryWithRead.read.identifier) {

@@ -9,7 +9,7 @@
 import {SecurityContext} from '@angular/core';
 
 import {createCheckBindingField} from '../compiler_util/binding_util';
-import {ConvertPropertyBindingResult, convertPropertyBinding} from '../compiler_util/expression_converter';
+import {convertPropertyBinding} from '../compiler_util/expression_converter';
 import {createEnumExpression} from '../compiler_util/identifier_util';
 import {createCheckAnimationBindingStmts, createCheckRenderBindingStmt} from '../compiler_util/render_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
