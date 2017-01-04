@@ -1,6 +1,3 @@
-@import '../core/style/variables';
-
-
 $md-progress-bar-height: 5px !default;
 $md-progress-bar-full-animation-duration: 2000ms !default;
 $md-progress-bar-piece-animation-duration: 250ms !default;
@@ -17,41 +14,39 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
   transition: opacity $md-progress-bar-piece-animation-duration linear;
   width: 100%;
 
+  // Base styles that are re-used across all of the progress bar children.
+  .md-progress-bar-element, .md-progress-bar-fill::after {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+  }
+
   // The progress bar background is used to show the bubble animation scrolling behind a
   // buffering progress bar.
   .md-progress-bar-background {
     background-repeat: repeat-x;
     background-size: 10px 4px;
-    height: 100%;
-    position: absolute;
-    visibility: hidden;
-    width: 100%;
+    display: none;
   }
 
   // The progress bar buffer is the bar indicator showing the buffer value and is only visible
   // beyond the current value of the primary progress bar.
   .md-progress-bar-buffer {
-    height: 100%;
-    position: absolute;
     transform-origin: top left;
     transition: transform $md-progress-bar-piece-animation-duration ease;
-    width: 100%;
   }
 
-   // The secondary progress bar is only used in the indeterminate animation, because of this it
-   // is hidden in other uses.
+  // The secondary progress bar is only used in the indeterminate animation, because of this it
+  // is hidden in other uses.
   .md-progress-bar-secondary {
-    visibility: hidden;
+    display: none;
   }
 
   // The progress bar fill fills the progress bar with the indicator color.
   .md-progress-bar-fill {
     animation: none;
-    height: 100%;
-    position: absolute;
     transform-origin: top left;
     transition: transform $md-progress-bar-piece-animation-duration ease;
-    width: 100%;
   }
 
   // A pseudo element is created for each progress bar bar that fills with the indicator color.
@@ -59,9 +54,6 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
     animation: none;
     content: '';
     display: inline-block;
-    height: 100%;
-    position: absolute;
-    width: 100%;
     left: 0;
   }
 
@@ -84,7 +76,7 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
     .md-progress-bar-secondary {
       animation: md-progress-bar-secondary-indeterminate-translate $md-progress-bar-full-animation-duration infinite linear;
       left: -54.888891%;
-      visibility: visible;
+      display: block;
     }
     .md-progress-bar-secondary.md-progress-bar-fill::after {
       animation: md-progress-bar-secondary-indeterminate-scale $md-progress-bar-full-animation-duration infinite linear;
@@ -94,7 +86,7 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
   &[mode='buffer'] {
     .md-progress-bar-background {
       animation: md-progress-bar-background-scroll $md-progress-bar-piece-animation-duration infinite linear;
-      visibility: visible;
+      display: block;
     }
   }
 }
@@ -114,7 +106,7 @@ $md-progress-bar-piece-animation-duration: 250ms !default;
 // mirrors the primary progress bar in appearance but is only shown to assist with the
 // indeterminate animations.
 
-// KEYFRAME BLOCK	                   DESCRIPTION
+// KEYFRAME BLOCK                      DESCRIPTION
 // primary-indeterminate-translate     Translation of the primary progressbar across the screen
 // primary-indeterminate-scale         Scaling of the primary bar as it's being translated across the screen
 // secondary-indeterminate-translate   Translation of the secondary bar across the screen
