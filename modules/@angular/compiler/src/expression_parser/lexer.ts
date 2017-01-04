@@ -7,7 +7,7 @@
  */
 
 import * as chars from '../chars';
-import {NumberWrapper, isPresent} from '../facade/lang';
+import {NumberWrapper} from '../facade/lang';
 import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
@@ -241,7 +241,7 @@ class _Scanner {
       this.advance();
       str += two;
     }
-    if (isPresent(threeCode) && this.peek == threeCode) {
+    if (threeCode != null && this.peek == threeCode) {
       this.advance();
       str += three;
     }

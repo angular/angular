@@ -7,10 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {isPresent} from '../facade/lang';
 
 import {ElementRef} from './element_ref';
-import {QueryList} from './query_list';
 import {AppView} from './view';
 import {ViewContainerRef_} from './view_container_ref';
 import {ViewType} from './view_type';

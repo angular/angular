@@ -11,7 +11,7 @@ import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/chang
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
-import {DirectRenderer, RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
+import {DirectRenderer, RenderComponentType, Renderer} from '../render/api';
 
 import {AnimationViewContext} from './animation_view_context';
 import {ComponentRef} from './component_factory';
