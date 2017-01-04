@@ -24,7 +24,7 @@ export class MdInputContainerDuplicatedHintError extends MdError {
 /** @docs-private */
 export class MdInputContainerMissingMdInputError extends MdError {
   constructor() {
-    super('md-input-container must contain an md-input directive. Did you forget to add md-input ' +
+    super('md-input-container must contain an mdInput directive. Did you forget to add mdInput ' +
           'to the native input or textarea element?');
   }
 }

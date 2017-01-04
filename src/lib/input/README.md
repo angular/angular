@@ -6,19 +6,19 @@ used instead.**
 Inputs are the basic input component of Material 2. The spec can be found
 [here](https://www.google.com/design/spec/components/text-fields.html). `md-input-container` acts as
 a wrapper for native `input` and `textarea` elements. The native element wrapped by the
-`md-input-container` must be marked with the `md-input` directive.
+`md-input-container` must be marked with the `mdInput` directive.
 
 Simple `input` example:
 ```html
 <md-input-container>
-  <input md-input>
+  <input mdInput>
 </md-input-container>
 ```
 
 Simple `textarea` example:
 ```html
 <md-input-container>
-  <textarea md-input></textarea>
+  <textarea mdInput></textarea>
 </md-input-container>
 ```
 
@@ -73,7 +73,7 @@ To add a prefix, use the `md-prefix` attribute on the element. Similarly, to add
 
 ```html
 <md-input-container align="end">
-  <input md-input placeholder="amount">
+  <input mdInput placeholder="amount">
   <span md-prefix>$&nbsp;</span>
   <span md-suffix>.00</span>
 </md-input-container>
@@ -94,7 +94,7 @@ Specifying a side twice will result in an exception during initialization.
 For example, a simple character counter can be made like the following:
 ```html
 <md-input-container>
-  <input md-input
+  <input mdInput
          placeholder="Character count (100 max)"
          maxlength="100"
          value="Hello world. How are you?"
@@ -113,13 +113,13 @@ theme primary color. Alternatively, you can specify `accent` or `warn`.
 
 ```html
 <md-input-container>
-  <input md-input placeholder="Default color" value="example">
+  <input mdInput placeholder="Default color" value="example">
 </md-input-container>
 <md-input-container dividerColor="accent">
-  <input md-input placeholder="Accent color" value="example">
+  <input mdInput placeholder="Accent color" value="example">
 </md-input-container>
 <md-input-container dividerColor="warn">
-  <input md-input placeholder="Warn color" value="example">
+  <input mdInput placeholder="Warn color" value="example">
 </md-input-container>
 ```
 
@@ -133,36 +133,36 @@ You can make a full form using inputs, and they will support autofill natively.
 ```html
 <form>
   <md-input-container style="width: 100%">
-    <input md-input placeholder="Company (disabled)" disabled value="Google">
+    <input mdInput placeholder="Company (disabled)" disabled value="Google">
   </md-input-container>
 
   <table style="width: 100%" cellspacing="0"><tr>
     <td><md-input-container style="width: 100%">
-      <input md-input placeholder="First name">
+      <input mdInput placeholder="First name">
     </md-input-container></td>
     <td><md-input-container style="width: 100%">
-      <input md-input placeholder="Long Last Name That Will Be Truncated">
+      <input mdInput placeholder="Long Last Name That Will Be Truncated">
     </md-input-container></td>
   </tr></table>
   
   <p>
     <md-input-container width="100%">
-      <textarea md-input placeholder="Address" value="1600 Amphitheatre Pkway"></textarea>
+      <textarea mdInput placeholder="Address" value="1600 Amphitheatre Pkway"></textarea>
     </md-input-container>
     <md-input-container width="100%">
-      <textarea md-input placeholder="Address 2"></textarea>
+      <textarea mdInput placeholder="Address 2"></textarea>
     </md-input-container>
   </p>
   
   <table style="width: 100%" cellspacing="0"><tr>
     <td><md-input-container width="100%">
-      <input md-input placeholder="City">
+      <input mdInput placeholder="City">
     </md-input-container></td>
     <td><md-input-container width="100%">
-      <input md-input placeholder="State">
+      <input mdInput placeholder="State">
     </md-input-container></td>
     <td><md-input-container width="100%">
-      <input md-input #postalCode maxlength="5" placeholder="Postal Code" value="94043">
+      <input mdInput #postalCode maxlength="5" placeholder="Postal Code" value="94043">
       <md-hint align="end">{{postalCode.value.length}} / 5</md-hint>
     </md-input-container></td>
   </tr></table>

@@ -68,7 +68,11 @@ export class MdHint {
 
 /** The input directive, used to mark the input that `MdInputContainer` is wrapping. */
 @Directive({
-  selector: 'input[md-input], textarea[md-input], input[mat-input], textarea[mat-input]',
+  // TODO: remove the md-input selector after next version
+  selector: `
+    input[mdInput], textarea[mdInput], input[matInput], textarea[matInput],
+    input[md-input], textarea[md-input], input[mat-input], textarea[mat-input]
+  `,
   host: {
     'class': 'md-input-element',
     '[id]': 'id',

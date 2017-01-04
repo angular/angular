@@ -188,7 +188,7 @@ describe('MdInputContainer', function () {
         angularWrappedErrorMessage(new MdInputContainerPlaceholderConflictError()));
   });
 
-  it('validates that md-input child is present', () => {
+  it('validates that mdInput child is present', () => {
     let fixture = TestBed.createComponent(MdInputContainerMissingMdInputTestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
@@ -298,20 +298,20 @@ describe('MdInputContainer', function () {
 @Component({
   template: `
     <md-input-container>
-      <input md-input id="test-id" placeholder="test">
+      <input mdInput id="test-id" placeholder="test">
     </md-input-container>`
 })
 class MdInputContainerWithId {}
 
 @Component({
-  template: `<md-input-container><input md-input [disabled]="disabled"></md-input-container>`
+  template: `<md-input-container><input mdInput [disabled]="disabled"></md-input-container>`
 })
 class MdInputContainerWithDisabled {
   disabled: boolean;
 }
 
 @Component({
-  template: `<md-input-container><input md-input required placeholder="hello"></md-input-container>`
+  template: `<md-input-container><input mdInput required placeholder="hello"></md-input-container>`
 })
 class MdInputContainerPlaceholderRequiredTestComponent {}
 
@@ -327,7 +327,7 @@ class MdInputContainerPlaceholderElementTestComponent {
 }
 
 @Component({
-  template: `<md-input-container><input md-input [placeholder]="placeholder"></md-input-container>`
+  template: `<md-input-container><input mdInput [placeholder]="placeholder"></md-input-container>`
 })
 class MdInputContainerPlaceholderAttrTestComponent {
   placeholder: string = '';
@@ -348,14 +348,14 @@ class MdInputContainerHintLabelTestController {
 }
 
 @Component({
-  template: `<md-input-container><input md-input type="file"></md-input-container>`
+  template: `<md-input-container><input mdInput type="file"></md-input-container>`
 })
 class MdInputContainerInvalidTypeTestController {}
 
 @Component({
   template: `
     <md-input-container>
-      <input md-input placeholder="Hello">
+      <input mdInput placeholder="Hello">
       <md-placeholder>World</md-placeholder>
     </md-input-container>`
 })
@@ -381,7 +381,7 @@ class MdInputContainerInvalidHint2TestController {}
 class MdInputContainerInvalidHintTestController {}
 
 @Component({
-  template: `<md-input-container><input md-input [(ngModel)]="model"></md-input-container>`
+  template: `<md-input-container><input mdInput [(ngModel)]="model"></md-input-container>`
 })
 class MdInputContainerBaseTestController {
   model: any = '';
@@ -390,7 +390,7 @@ class MdInputContainerBaseTestController {
 @Component({
   template: `
     <md-input-container>
-      <input md-input type="date" placeholder="Placeholder">
+      <input mdInput type="date" placeholder="Placeholder">
     </md-input-container>`
 })
 class MdInputContainerDateTestController {}
@@ -398,7 +398,7 @@ class MdInputContainerDateTestController {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input type="text" placeholder="Placeholder">
+      <input mdInput type="text" placeholder="Placeholder">
     </md-input-container>`
 })
 class MdInputContainerTextTestController {}
@@ -406,7 +406,7 @@ class MdInputContainerTextTestController {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input type="password" placeholder="Placeholder">
+      <input mdInput type="password" placeholder="Placeholder">
     </md-input-container>`
 })
 class MdInputContainerPasswordTestController {}
@@ -414,7 +414,7 @@ class MdInputContainerPasswordTestController {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input type="number" placeholder="Placeholder">
+      <input mdInput type="number" placeholder="Placeholder">
     </md-input-container>`
 })
 class MdInputContainerNumberTestController {}
@@ -422,7 +422,7 @@ class MdInputContainerNumberTestController {}
 @Component({
   template: `
     <md-input-container>
-      <input md-input type="number" placeholder="Placeholder" [(ngModel)]="value">
+      <input mdInput type="number" placeholder="Placeholder" [(ngModel)]="value">
     </md-input-container>`
 })
 class MdInputContainerZeroTestController {
@@ -432,7 +432,7 @@ class MdInputContainerZeroTestController {
 @Component({
   template: `
     <md-input-container>
-      <textarea md-input [rows]="rows" [cols]="cols" [wrap]="wrap" placeholder="Snacks"></textarea>
+      <textarea mdInput [rows]="rows" [cols]="cols" [wrap]="wrap" placeholder="Snacks"></textarea>
     </md-input-container>`
 })
 class MdTextareaWithBindings {
