@@ -7,7 +7,6 @@
  */
 
 import {CssSelector, SelectorMatcher} from '@angular/compiler/src/selector';
-import {createElementCssSelector} from '@angular/compiler/src/template_parser/template_parser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el} from '@angular/platform-browser/testing/browser_util';
 

@@ -11,7 +11,6 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {ViewEncapsulation} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as path from 'path';
@@ -19,7 +18,6 @@ import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
-import {Console} from './private_import_core';
 
 const GENERATED_META_FILES = /\.json$/;
 

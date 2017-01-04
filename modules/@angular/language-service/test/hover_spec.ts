@@ -11,17 +11,16 @@ import 'reflect-metadata';
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Hover, HoverTextSection} from '../src/types';
+import {Hover} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
-import {MockTypescriptHost, includeDiagnostic, noDiagnostics} from './test_utils';
+import {MockTypescriptHost} from './test_utils';
 
 describe('hover', () => {
   let documentRegistry = ts.createDocumentRegistry();
   let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
   let service = ts.createLanguageService(mockHost, documentRegistry);
-  let program = service.getProgram();
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
   ngHost.setSite(ngService);
