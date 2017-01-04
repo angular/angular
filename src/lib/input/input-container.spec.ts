@@ -41,6 +41,8 @@ describe('MdInputContainer', function () {
         MdInputContainerZeroTestController,
         MdTextareaWithBindings,
         MdInputContainerWithDisabled,
+        MdInputContainerWithRequired,
+        MdInputContainerWithType,
         MdInputContainerMissingMdInputTestController
       ],
     });
@@ -236,16 +238,20 @@ describe('MdInputContainer', function () {
     let fixture = TestBed.createComponent(MdInputContainerPlaceholderAttrTestComponent);
     fixture.detectChanges();
 
-    let el = fixture.debugElement.query(By.css('label'));
-    expect(el).toBeNull();
+    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(fixture.debugElement.query(By.css('label'))).toBeNull();
+    expect(inputEl.placeholder).toBe('');
 
     fixture.componentInstance.placeholder = 'Other placeholder';
     fixture.detectChanges();
 
-    el = fixture.debugElement.query(By.css('label'));
-    expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch('Other placeholder');
-    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
+    let labelEl = fixture.debugElement.query(By.css('label'));
+
+    expect(inputEl.placeholder).toBe('Other placeholder');
+    expect(labelEl).not.toBeNull();
+    expect(labelEl.nativeElement.textContent).toMatch('Other placeholder');
+    expect(labelEl.nativeElement.textContent).not.toMatch(/\*/g);
   }));
 
   it('supports placeholder element', async(() => {
@@ -274,16 +280,49 @@ describe('MdInputContainer', function () {
     expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
   });
 
-  it('supports the disabled attribute', async(() => {
+  it('supports the disabled attribute as binding', async(() => {
     let fixture = TestBed.createComponent(MdInputContainerWithDisabled);
     fixture.detectChanges();
 
     let underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
     expect(underlineEl.classList.contains('md-disabled')).toBe(false, 'should not be disabled');
+    expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
+
+    expect(inputEl.disabled).toBe(true);
     expect(underlineEl.classList.contains('md-disabled')).toBe(true, 'should be disabled');
+  }));
+
+  it('supports the required attribute as binding', async(() => {
+    let fixture = TestBed.createComponent(MdInputContainerWithRequired);
+    fixture.detectChanges();
+
+    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(inputEl.required).toBe(false);
+
+    fixture.componentInstance.required = true;
+    fixture.detectChanges();
+
+    expect(inputEl.required).toBe(true);
+  }));
+
+  it('supports the type attribute as binding', async(() => {
+    let fixture = TestBed.createComponent(MdInputContainerWithType);
+    fixture.detectChanges();
+
+    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(inputEl.type).toBe('text');
+
+    fixture.componentInstance.type = 'password';
+    fixture.detectChanges();
+
+    expect(inputEl.type).toBe('password');
   }));
 
   it('supports textarea', () => {
@@ -308,6 +347,20 @@ class MdInputContainerWithId {}
 })
 class MdInputContainerWithDisabled {
   disabled: boolean;
+}
+
+@Component({
+  template: `<md-input-container><input mdInput [required]="required"></md-input-container>`
+})
+class MdInputContainerWithRequired {
+  required: boolean;
+}
+
+@Component({
+  template: `<md-input-container><input mdInput [type]="type"></md-input-container>`
+})
+class MdInputContainerWithType {
+  type: string;
 }
 
 @Component({

@@ -75,41 +75,56 @@ export class MdHint {
   `,
   host: {
     'class': 'md-input-element',
+    // Native input properties that are overwritten by Angular inputs need to be synced with
+    // the native input element. Otherwise property bindings for those don't work.
     '[id]': 'id',
+    '[placeholder]': 'placeholder',
+    '[disabled]': 'disabled',
+    '[required]': 'required',
     '(blur)': '_onBlur()',
     '(focus)': '_onFocus()',
     '(input)': '_onInput()',
   }
 })
 export class MdInputDirective implements AfterContentInit {
+
+  /** Variables used as cache for getters and setters. */
+  private _type = 'text';
+  private _placeholder: string = '';
+  private _disabled = false;
+  private _required = false;
+  private _id: string;
+  private _cachedUid: string;
+
+  /** The element's value. */
+  value: any;
+
+  /** Whether the element is focused or not. */
+  focused = false;
+
   /** Whether the element is disabled. */
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
-  private _disabled = false;
 
   /** Unique id of the element. */
   @Input()
   get id() { return this._id; };
-  set id(value: string) { this._id = value || this._uid; }
-  private _id: string;
+  set id(value: string) {this._id = value || this._uid; }
 
   /** Placeholder attribute of the element. */
   @Input()
   get placeholder() { return this._placeholder; }
   set placeholder(value: string) {
-    if (this._placeholder != value) {
+    if (this._placeholder !== value) {
       this._placeholder = value;
       this._placeholderChange.emit(this._placeholder);
     }
   }
-  private _placeholder = '';
-
   /** Whether the element is required. */
   @Input()
   get required() { return this._required; }
   set required(value: any) { this._required = coerceBooleanProperty(value); }
-  private _required = false;
 
   /** Input type of the element. */
   @Input()
@@ -117,11 +132,14 @@ export class MdInputDirective implements AfterContentInit {
   set type(value: string) {
     this._type = value || 'text';
     this._validateType();
-  }
-  private _type = 'text';
 
-  /** The element's value. */
-  value: any;
+    // When using Angular inputs, developers are no longer able to set the properties on the native
+    // input element. To ensure that bindings for `type` work, we need to sync the setter
+    // with the native property. Textarea elements don't support the type property or attribute.
+    if (!this._isTextarea() && getSupportedInputTypes().has(this._type)) {
+      this._renderer.setElementProperty(this._elementRef.nativeElement, 'type', this._type);
+    }
+  }
 
   /**
    * Emits an event when the placeholder changes so that the `md-input-container` can re-validate.
@@ -130,10 +148,7 @@ export class MdInputDirective implements AfterContentInit {
 
   get empty() { return (this.value == null || this.value === '') && !this._isNeverEmpty(); }
 
-  focused = false;
-
   private get _uid() { return this._cachedUid = this._cachedUid || `md-input-${nextUniqueId++}`; }
-  private _cachedUid: string;
 
   private _neverEmptyInputTypes = [
     'date',
@@ -172,12 +187,18 @@ export class MdInputDirective implements AfterContentInit {
 
   /** Make sure the input is a supported type. */
   private _validateType() {
-    if (MD_INPUT_INVALID_TYPES.indexOf(this._type) != -1) {
+    if (MD_INPUT_INVALID_TYPES.indexOf(this._type) !== -1) {
       throw new MdInputContainerUnsupportedTypeError(this._type);
     }
   }
 
-  private _isNeverEmpty() { return this._neverEmptyInputTypes.indexOf(this._type) != -1; }
+  private _isNeverEmpty() { return this._neverEmptyInputTypes.indexOf(this._type) !== -1; }
+
+  /** Determines if the component host is a textarea. If not recognizable it returns false. */
+  private _isTextarea() {
+    let nativeElement = this._elementRef.nativeElement;
+    return nativeElement ? nativeElement.nodeName.toLowerCase() === 'textarea' : false;
+  }
 }
 
 
