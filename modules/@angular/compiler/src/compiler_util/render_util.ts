@@ -7,7 +7,6 @@
  */
 import {SecurityContext} from '@angular/core';
 
-import {isPresent} from '../facade/lang';
 import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE} from '../private_import_core';

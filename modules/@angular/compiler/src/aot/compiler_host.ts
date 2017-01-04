@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolverHost} from './static_symbol_resolver';
 import {AotSummaryResolverHost} from './summary_resolver';
 

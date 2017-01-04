@@ -336,8 +336,6 @@ export class StaticSymbolResolver {
   }
 }
 
-const UNDERSCORE_CHAR_CODE = 95;
-
 // Remove extra underscore from escaped identifier.
 // See https://github.com/Microsoft/TypeScript/blob/master/src/compiler/utilities.ts
 export function unescapeIdentifier(identifier: string): string {

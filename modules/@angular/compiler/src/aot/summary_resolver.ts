@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileSummaryKind, CompileTypeSummary} from '../compile_metadata';
+
 import {Summary, SummaryResolver} from '../summary_resolver';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {ResolvedStaticSymbol} from './static_symbol_resolver';
 import {deserializeSummaries} from './summary_serializer';
 import {ngfactoryFilePath, stripNgFactory, summaryFileName} from './util';
 
