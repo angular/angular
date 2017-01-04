@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 
 import {Options} from '../common_options';
 import {Metric} from '../metric';
@@ -18,7 +18,7 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
  */
 @Injectable()
 export class PerflogMetric extends Metric {
-  static SET_TIMEOUT = new OpaqueToken('PerflogMetric.setTimeout');
+  static SET_TIMEOUT = new InjectionToken('PerflogMetric.setTimeout');
   static PROVIDERS = [
     PerflogMetric, {
       provide: PerflogMetric.SET_TIMEOUT,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 
 /**
  * A DI Token representing the main rendering context. In a browser this is the DOM Document.
@@ -16,4 +16,4 @@ import {OpaqueToken} from '@angular/core';
  *
  * @stable
  */
-export const DOCUMENT: OpaqueToken = new OpaqueToken('DocumentToken');
+export const DOCUMENT = new InjectionToken<Document>('DocumentToken');

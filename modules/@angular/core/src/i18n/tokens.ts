@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '../di/opaque_token';
+import {InjectionToken} from '../di/injection_token';
 
 /**
  * @experimental i18n support is experimental.
  */
-export const LOCALE_ID = new OpaqueToken('LocaleId');
+export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
 /**
  * @experimental i18n support is experimental.
  */
-export const TRANSLATIONS = new OpaqueToken('Translations');
+export const TRANSLATIONS = new InjectionToken<string>('Translations');
 
 /**
  * @experimental i18n support is experimental.
  */
-export const TRANSLATIONS_FORMAT = new OpaqueToken('TranslationsFormat');
+export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
