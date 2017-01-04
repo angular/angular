@@ -3,12 +3,12 @@ import {
   ModuleWithProviders,
   Component,
   HostBinding,
-  ChangeDetectorRef,
   ChangeDetectionStrategy,
   OnDestroy,
   Input,
   ElementRef,
-  NgZone
+  NgZone,
+  Renderer
 } from '@angular/core';
 import {DefaultStyleCompatibilityModeModule} from '../core';
 
@@ -43,10 +43,7 @@ type EasingFn = (currentTime: number, startValue: number,
   host: {
     'role': 'progressbar',
     '[attr.aria-valuemin]': '_ariaValueMin',
-    '[attr.aria-valuemax]': '_ariaValueMax',
-    '[class.md-primary]': 'color == "primary"',
-    '[class.md-accent]': 'color == "accent"',
-    '[class.md-warn]': 'color == "warn"',
+    '[attr.aria-valuemax]': '_ariaValueMax'
   },
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
@@ -61,6 +58,10 @@ export class MdProgressSpinner implements OnDestroy {
 
   /** The SVG <path> node that is used to draw the circle. */
   private _path: SVGPathElement;
+
+  private _mode: ProgressSpinnerMode = 'determinate';
+  private _value: number;
+  private _color: string = 'primary';
 
   /**
    * Values for aria max and min are only defined as numbers when in a determinate mode.  We do this
@@ -92,8 +93,14 @@ export class MdProgressSpinner implements OnDestroy {
     this._cleanupIndeterminateAnimation();
   }
 
+  /** The color of the progress-spinner. Can be primary, accent, or warn. */
+  @Input()
+  get color(): string { return this._color; }
+  set color(value: string) {
+    this._updateColor(value);
+  }
+
   /** Value of the progress circle. It is bound to the host as the attribute aria-valuenow. */
-  private _value: number;
   @Input()
   @HostBinding('attr.aria-valuenow')
   get value() {
@@ -128,14 +135,11 @@ export class MdProgressSpinner implements OnDestroy {
     }
     this._mode = m;
   }
-  private _mode: ProgressSpinnerMode = 'determinate';
-
-  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
   constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
     private _ngZone: NgZone,
-    private _elementRef: ElementRef
+    private _elementRef: ElementRef,
+    private _renderer: Renderer
   ) {}
 
 
@@ -229,6 +233,23 @@ export class MdProgressSpinner implements OnDestroy {
       path.setAttribute('d', getSvgArc(currentValue, rotation));
     }
   }
+
+  /**
+   * Updates the color of the progress-spinner by adding the new palette class to the element
+   * and removing the old one.
+   */
+  private _updateColor(newColor: string) {
+    this._setElementColor(this._color, false);
+    this._setElementColor(newColor, true);
+    this._color = newColor;
+  }
+
+  /** Sets the given palette class on the component element. */
+  private _setElementColor(color: string, isAdd: boolean) {
+    if (color != null && color != '') {
+      this._renderer.setElementClass(this._elementRef.nativeElement, `md-${color}`, isAdd);
+    }
+  }
 }
 
 
@@ -245,12 +266,15 @@ export class MdProgressSpinner implements OnDestroy {
     'role': 'progressbar',
     'mode': 'indeterminate',
   },
+  // Due to the class extending we need to explicitly say that the input exists.
+  inputs: ['color'],
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
 })
 export class MdSpinner extends MdProgressSpinner implements OnDestroy {
-  constructor(changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef, ngZone: NgZone) {
-    super(changeDetectorRef, ngZone, elementRef);
+
+  constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer) {
+    super(ngZone, elementRef, renderer);
     this.mode = 'indeterminate';
   }
 

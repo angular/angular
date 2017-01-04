@@ -13,8 +13,10 @@ describe('MdProgressSpinner', () => {
         BasicProgressSpinner,
         IndeterminateProgressSpinner,
         ProgressSpinnerWithValueAndBoundMode,
+        ProgressSpinnerWithColor,
         IndeterminateProgressSpinnerWithNgIf,
         SpinnerWithNgIf,
+        SpinnerWithColor
       ],
     });
 
@@ -105,6 +107,37 @@ describe('MdProgressSpinner', () => {
 
     expect(progressElement.componentInstance.interdeterminateInterval).toBeFalsy();
   });
+
+  it('should set the color class on the md-spinner', () => {
+    let fixture = TestBed.createComponent(SpinnerWithColor);
+    fixture.detectChanges();
+
+    let progressElement = fixture.debugElement.query(By.css('md-spinner'));
+
+    expect(progressElement.nativeElement.classList).toContain('md-primary');
+
+    fixture.debugElement.componentInstance.color = 'accent';
+    fixture.detectChanges();
+
+    expect(progressElement.nativeElement.classList).toContain('md-accent');
+    expect(progressElement.nativeElement.classList).not.toContain('md-primary');
+  });
+
+  it('should set the color class on the md-progress-spinner', () => {
+    let fixture = TestBed.createComponent(ProgressSpinnerWithColor);
+    fixture.detectChanges();
+
+    let progressElement = fixture.debugElement.query(By.css('md-progress-spinner'));
+
+    expect(progressElement.nativeElement.classList).toContain('md-primary');
+
+    fixture.debugElement.componentInstance.color = 'accent';
+    fixture.detectChanges();
+
+    expect(progressElement.nativeElement.classList).toContain('md-accent');
+    expect(progressElement.nativeElement.classList).not.toContain('md-primary');
+  });
+
 });
 
 
@@ -123,3 +156,9 @@ class IndeterminateProgressSpinnerWithNgIf { }
 
 @Component({template: `<md-spinner *ngIf="!isHidden"></md-spinner>`})
 class SpinnerWithNgIf { }
+
+@Component({template: `<md-spinner [color]="color"></md-spinner>`})
+class SpinnerWithColor { color: string = 'primary'; }
+
+@Component({template: `<md-progress-spinner value="50" [color]="color"></md-progress-spinner>`})
+class ProgressSpinnerWithColor { color: string = 'primary'; }
