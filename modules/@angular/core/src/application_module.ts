@@ -11,6 +11,7 @@ import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
+import {Language} from './facade';
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
 import {ViewUtils} from './linker/view_utils';
@@ -41,7 +42,7 @@ export function _keyValueDiffersFactory() {
     AnimationQueue,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
-    {provide: LOCALE_ID, useValue: 'en-US'},
+    {provide: LOCALE_ID, useValue: Language},
   ]
 })
 export class ApplicationModule {
