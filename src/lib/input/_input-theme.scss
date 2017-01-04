@@ -37,6 +37,10 @@
     }
   }
 
+  .md-input-element:disabled {
+    color: md-color($foreground, disabled-text);
+  }
+
   // See md-input-placeholder-floating mixin in input.scss
   input.md-input-element:-webkit-autofill + .md-input-placeholder,
   .md-input-placeholder.md-float.md-focused {
