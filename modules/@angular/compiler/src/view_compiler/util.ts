@@ -7,10 +7,8 @@
  */
 
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileTokenMetadata, identifierName} from '../compile_metadata';
+import {CompileTokenMetadata} from '../compile_metadata';
 import {createDiTokenExpression} from '../compiler_util/identifier_util';
-import {isPresent} from '../facade/lang';
-import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
@@ -23,7 +21,7 @@ export function getPropertyInView(
   } else {
     let viewProp: o.Expression = o.THIS_EXPR;
     let currView: CompileView = callingView;
-    while (currView !== definedView && isPresent(currView.declarationElement.view)) {
+    while (currView !== definedView && currView.declarationElement.view) {
       currView = currView.declarationElement.view;
       viewProp = viewProp.prop('parentView');
     }

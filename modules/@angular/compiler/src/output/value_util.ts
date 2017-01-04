@@ -7,7 +7,6 @@
  */
 
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
 import {ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';

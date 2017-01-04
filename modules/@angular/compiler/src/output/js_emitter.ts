@@ -9,7 +9,7 @@
 
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {isBlank, isPresent} from '../facade/lang';
+import {isBlank} from '../facade/lang';
 
 import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';

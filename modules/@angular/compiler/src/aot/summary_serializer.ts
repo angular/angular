@@ -5,15 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleSummary, CompilePipeSummary, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, identifierModuleUrl, identifierName} from '../compile_metadata';
+import {CompileNgModuleSummary, CompileSummaryKind, CompileTypeSummary} from '../compile_metadata';
 import {Summary, SummaryResolver} from '../summary_resolver';
 import {ValueTransformer, visitValue} from '../util';
 
-import {GeneratedFile} from './generated_file';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
 
-const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export function serializeSummaries(
     summaryResolver: SummaryResolver<StaticSymbol>, symbolResolver: StaticSymbolResolver,

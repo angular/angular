@@ -288,7 +288,7 @@ class TemplateParseVisitor implements html.Visitor {
         }
         hasInlineTemplates = true;
         this._bindingParser.parseInlineTemplateBinding(
-            attr.name, prefixToken, templateBindingsSource, attr.sourceSpan, templateMatchableAttrs,
+            prefixToken, templateBindingsSource, attr.sourceSpan, templateMatchableAttrs,
             templateElementOrDirectiveProps, templateElementVars);
       }
 
@@ -309,9 +309,11 @@ class TemplateParseVisitor implements html.Visitor {
     const elementProps: BoundElementPropertyAst[] =
         this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directiveAsts);
     const isViewRoot = parent.isTemplateElement || hasInlineTemplates;
+
     const providerContext = new ProviderElementContext(
         this.providerViewContext, parent.providerContext, isViewRoot, directiveAsts, attrs,
         references, element.sourceSpan);
+
     const children = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(
