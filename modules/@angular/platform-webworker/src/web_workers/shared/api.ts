@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 
-export const ON_WEB_WORKER = new OpaqueToken('WebWorker.onWebWorker');
+export const ON_WEB_WORKER = new InjectionToken('WebWorker.onWebWorker');

@@ -8,6 +8,9 @@
 
 import {unimplemented} from '../facade/errors';
 import {stringify} from '../facade/lang';
+import {Type} from '../type';
+
+import {InjectionToken} from './injection_token';
 
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -52,5 +55,10 @@ export abstract class Injector {
    * Injector.THROW_IF_NOT_FOUND is given
    * - Returns the `notFoundValue` otherwise
    */
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  /**
+   * @deprecated from v4.0.0 use Type<T> or InjectToken<T>
+   */
+  get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any): any { return unimplemented(); }
 }

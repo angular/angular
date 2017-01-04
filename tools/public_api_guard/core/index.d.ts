@@ -19,7 +19,7 @@ export declare abstract class AfterViewInit {
 }
 
 /** @experimental */
-export declare const ANALYZE_FOR_ENTRY_COMPONENTS: OpaqueToken;
+export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
 /** @experimental */
 export declare function animate(timing: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata;
@@ -131,13 +131,13 @@ export declare abstract class AnimationWithStepsMetadata extends AnimationMetada
 }
 
 /** @experimental */
-export declare const APP_BOOTSTRAP_LISTENER: OpaqueToken;
+export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
 
 /** @experimental */
-export declare const APP_ID: any;
+export declare const APP_ID: InjectionToken<string>;
 
 /** @experimental */
-export declare const APP_INITIALIZER: any;
+export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare class ApplicationInitStatus {
@@ -221,7 +221,12 @@ export declare class Compiler {
 }
 
 /** @experimental */
-export declare const COMPILER_OPTIONS: OpaqueToken;
+export declare const COMPILER_OPTIONS: InjectionToken<{
+    useDebug?: boolean;
+    useJit?: boolean;
+    defaultEncapsulation?: ViewEncapsulation;
+    providers?: any[];
+}[]>;
 
 /** @experimental */
 export declare abstract class CompilerFactory {
@@ -492,8 +497,15 @@ export interface InjectDecorator {
 }
 
 /** @stable */
+export declare class InjectionToken<T> extends OpaqueToken {
+    constructor(desc: string);
+    toString(): string;
+}
+
+/** @stable */
 export declare abstract class Injector {
-    get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T;
+    /** @deprecated */ get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
 }
@@ -586,7 +598,7 @@ export declare class KeyValueDiffers {
 }
 
 /** @experimental */
-export declare const LOCALE_ID: OpaqueToken;
+export declare const LOCALE_ID: InjectionToken<string>;
 
 /** @experimental */
 export declare class ModuleWithComponentFactories<T> {
@@ -672,8 +684,9 @@ export declare abstract class OnInit {
     abstract ngOnInit(): void;
 }
 
-/** @stable */
+/** @deprecated */
 export declare class OpaqueToken {
+    protected _desc: string;
     constructor(_desc: string);
     toString(): string;
 }
@@ -691,7 +704,7 @@ export interface OptionalDecorator {
 export declare const Output: OutputDecorator;
 
 /** @experimental */
-export declare const PACKAGE_ROOT_URL: any;
+export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 /** @stable */
 export declare const Pipe: PipeDecorator;
@@ -702,7 +715,7 @@ export interface PipeTransform {
 }
 
 /** @experimental */
-export declare const PLATFORM_INITIALIZER: any;
+export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
 export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
@@ -946,10 +959,10 @@ export interface TrackByFn {
 export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationStateTransitionMetadata;
 
 /** @experimental */
-export declare const TRANSLATIONS: OpaqueToken;
+export declare const TRANSLATIONS: InjectionToken<string>;
 
 /** @experimental */
-export declare const TRANSLATIONS_FORMAT: OpaqueToken;
+export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 /** @experimental */
 export declare function trigger(name: string, animation: AnimationMetadata[]): AnimationEntryMetadata;

@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Component, ComponentRef, Inject, Injector, NO_ERRORS_SCHEMA, NgModule, OpaqueToken, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
@@ -146,7 +146,7 @@ export function main() {
   });
 }
 
-const TEST_TOKEN = new OpaqueToken('TestToken');
+const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({selector: 'injected-component', template: 'foo'})
 class InjectedComponent {
   constructor(@Optional() @Inject(TEST_TOKEN) public testToken: any) {}

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type} from '@angular/core';
+import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -30,12 +30,13 @@ let _nextRootElementId = 0;
 /**
  * @experimental
  */
-export const ComponentFixtureAutoDetect = new OpaqueToken('ComponentFixtureAutoDetect');
+export const ComponentFixtureAutoDetect =
+    new InjectionToken<boolean[]>('ComponentFixtureAutoDetect');
 
 /**
  * @experimental
  */
-export const ComponentFixtureNoNgZone = new OpaqueToken('ComponentFixtureNoNgZone');
+export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('ComponentFixtureNoNgZone');
 
 /**
  * @experimental

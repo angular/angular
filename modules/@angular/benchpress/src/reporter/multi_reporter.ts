@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, OpaqueToken} from '@angular/core';
+import {InjectionToken, Injector} from '@angular/core';
 
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
@@ -39,4 +39,4 @@ export class MultiReporter extends Reporter {
   }
 }
 
-const _CHILDREN = new OpaqueToken('MultiReporter.children');
+const _CHILDREN = new InjectionToken('MultiReporter.children');

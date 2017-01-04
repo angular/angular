@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -30,6 +30,7 @@ class Dashboard {
 
 class TurboEngine extends Engine {}
 
+const CARS = new InjectionToken<Car[]>('Cars');
 @Injectable()
 class Car {
   engine: Engine;
@@ -692,11 +693,11 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should support multiProviders', () => {
         const injector = createInjector([
-          Engine, {provide: Car, useClass: SportsCar, multi: true},
-          {provide: Car, useClass: CarWithOptionalEngine, multi: true}
+          Engine, {provide: CARS, useClass: SportsCar, multi: true},
+          {provide: CARS, useClass: CarWithOptionalEngine, multi: true}
         ]);
 
-        const cars = injector.get(Car);
+        const cars = injector.get(CARS);
         expect(cars.length).toEqual(2);
         expect(cars[0]).toBeAnInstanceOf(SportsCar);
         expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
@@ -704,9 +705,9 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should support multiProviders that are created using useExisting', () => {
         const injector = createInjector(
-            [Engine, SportsCar, {provide: Car, useExisting: SportsCar, multi: true}]);
+            [Engine, SportsCar, {provide: CARS, useExisting: SportsCar, multi: true}]);
 
-        const cars = injector.get(Car);
+        const cars = injector.get(CARS);
         expect(cars.length).toEqual(1);
         expect(cars[0]).toBe(injector.get(SportsCar));
       });

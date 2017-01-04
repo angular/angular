@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OpaqueToken} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 import {LocationChangeListener} from './platform_location';
 
 /**
@@ -61,4 +61,4 @@ export abstract class LocationStrategy {
  *
  * @stable
  */
-export const APP_BASE_HREF: OpaqueToken = new OpaqueToken('appBaseHref');
+export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
