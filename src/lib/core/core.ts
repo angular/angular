@@ -55,7 +55,9 @@ export {ScrollDispatcher} from './overlay/scroll/scroll-dispatcher';
 
 // Gestures
 export {GestureConfig} from './gestures/gesture-config';
-export * from './gestures/gesture-annotations';
+// Explicitly specify the interfaces which should be re-exported, because if everything
+// is re-exported, module bundlers may run into issues with treeshaking.
+export {HammerInput, HammerManager} from './gestures/gesture-annotations';
 
 // Ripple
 export {MdRipple, MdRippleModule} from './ripple/ripple';
@@ -105,7 +107,7 @@ export * from './compatibility/default-mode';
 // Animation
 export * from './animation/animation';
 
-// Coersion
+// Coercion
 export {coerceBooleanProperty} from './coercion/boolean-property';
 export {coerceNumberProperty} from './coercion/number-property';
 
