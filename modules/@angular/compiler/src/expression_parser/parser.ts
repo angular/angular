@@ -609,8 +609,12 @@ export class _ParseAST {
       do {
         const key = this.expectIdentifierOrKeywordOrString();
         keys.push(key);
-        this.expectCharacter(chars.$COLON);
-        values.push(this.parsePipe());
+        if (this.optionalCharacter(chars.$COLON)) {
+          values.push(this.parsePipe());
+        } else {
+          const span = this.span(start);
+          values.push(new PropertyRead(span, new ImplicitReceiver(span), key));
+        }
       } while (this.optionalCharacter(chars.$COMMA));
       this.rbracesExpected--;
       this.expectCharacter(chars.$RBRACE);

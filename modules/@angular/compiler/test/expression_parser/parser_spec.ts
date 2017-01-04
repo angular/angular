@@ -285,6 +285,13 @@ export function main() {
         });
       });
 
+      describe('object literals', () => {
+        it('should parse shorthand property name', () => checkBinding('{a}', '{a: a}'));
+
+        it('should parse multiple shorthand property names',
+           () => checkBinding('{a, b, c: d}', '{a: a, b: b, c: d}'));
+      });
+
       it('should store the source in the result',
          () => { expect(parseBinding('someExpr').source).toBe('someExpr'); });
 
@@ -437,7 +444,7 @@ export function main() {
       });
 
       describe('spans', () => {
-        it('should should support let', () => {
+        it('should support let', () => {
           const source = 'let i';
           expect(keySpans(source, parseTemplateBindings(source))).toEqual(['let i']);
         });
@@ -457,6 +464,13 @@ export function main() {
             'ngFor', 'let person=$implicit', 'ngForOf=people in null'
           ]);
           expect(keySpans(source, bindings)).toEqual(['', 'let person ', 'of people']);
+        });
+
+        it('should support shorthand prop names', () => {
+          const source = 'a: a, b, c, d: d';
+          expect(keySpans(source, parseTemplateBindings(source))).toEqual([
+            'a: a', 'b', 'c', 'd: d'
+          ]);
         });
       });
     });

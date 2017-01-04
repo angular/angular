@@ -38,11 +38,37 @@ export function main() {
          }));
     });
 
+    it('should support shorthand property names in literal bindings', async(() => {
+         @Component({
+           selector: 'cmp',
+           template: '<div>{{value.prop1}}-{{value.prop2}}-{{value.prop3}}-{{value.prop4}}</div>'
+         })
+         class SomeComponent {
+           @Input() value: any;
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [
+             SomeComponent,
+             TestComponent,
+           ],
+         });
+
+         const template = `<cmp [value]="{prop1: 'value1', prop2, prop3, prop4: prop4}"></cmp>`;
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         const div = fixture.debugElement.query(By.css('div')).nativeElement;
+         expect(div).toHaveText('value1-value2-value3-value4');
+       }));
+
   });
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
+  prop2 = 'value2';
+  prop3 = 'value3';
+  prop4 = 'value4';
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
