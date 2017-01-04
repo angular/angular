@@ -20,7 +20,7 @@ export declare class By {
 export declare function disableDebugTools(): void;
 
 /** @stable */
-export declare const DOCUMENT: OpaqueToken;
+export declare const DOCUMENT: InjectionToken<Document>;
 
 /** @stable */
 export declare abstract class DomSanitizer implements Sanitizer {
@@ -36,7 +36,7 @@ export declare abstract class DomSanitizer implements Sanitizer {
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
 /** @stable */
-export declare const EVENT_MANAGER_PLUGINS: OpaqueToken;
+export declare const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
 /** @stable */
 export declare class EventManager {
@@ -47,7 +47,7 @@ export declare class EventManager {
 }
 
 /** @experimental */
-export declare const HAMMER_GESTURE_CONFIG: OpaqueToken;
+export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
 /** @experimental */
 export declare class HammerGestureConfig {

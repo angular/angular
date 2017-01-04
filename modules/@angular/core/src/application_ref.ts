@@ -16,7 +16,7 @@ import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
-import {Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector} from './di';
+import {Injectable, InjectionToken, Injector, Optional, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -83,7 +83,7 @@ export function createPlatform(injector: Injector): PlatformRef {
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
   _platform = injector.get(PlatformRef);
-  const inits: Function[] = <Function[]>injector.get(PLATFORM_INITIALIZER, null);
+  const inits = injector.get(PLATFORM_INITIALIZER, null);
   if (inits) inits.forEach(init => init());
   return _platform;
 }
@@ -96,7 +96,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 export function createPlatformFactory(
     parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string,
     providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
-  const marker = new OpaqueToken(`Platform: ${name}`);
+  const marker = new InjectionToken(`Platform: ${name}`);
   return (extraProviders: Provider[] = []) => {
     if (!getPlatform()) {
       if (parentPlatformFactory) {
@@ -413,7 +413,7 @@ export class ApplicationRef_ extends ApplicationRef {
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
 
-  private _bootstrapListeners: Function[] = [];
+  private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _rootComponents: ComponentRef<any>[] = [];
   private _rootComponentTypes: Type<any>[] = [];
   private _views: AppView<any>[] = [];
@@ -480,8 +480,7 @@ export class ApplicationRef_ extends ApplicationRef {
     this._rootComponents.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
     const listeners =
-        <((compRef: ComponentRef<any>) => void)[]>this._injector.get(APP_BOOTSTRAP_LISTENER, [])
-            .concat(this._bootstrapListeners);
+        this._injector.get(APP_BOOTSTRAP_LISTENER, []).concat(this._bootstrapListeners);
     listeners.forEach((listener) => listener(componentRef));
   }
 

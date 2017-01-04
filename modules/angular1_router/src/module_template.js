@@ -45,7 +45,7 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
 
   var exports = {
     Injectable: function () {},
-    OpaqueToken: function () {},
+    InjectionToken: function () {},
     Inject: function () {}
   };
   var routerRequire = function () {return exports;};

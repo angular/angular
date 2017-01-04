@@ -1,5 +1,5 @@
 /** @stable */
-export declare const APP_BASE_HREF: OpaqueToken;
+export declare const APP_BASE_HREF: InjectionToken<string>;
 
 /** @stable */
 export declare class AsyncPipe implements OnDestroy {

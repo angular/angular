@@ -223,10 +223,10 @@ export declare class Router {
 }
 
 /** @stable */
-export declare const ROUTER_CONFIGURATION: OpaqueToken;
+export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 
 /** @experimental */
-export declare const ROUTER_INITIALIZER: OpaqueToken;
+export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 /** @experimental */
 export declare abstract class RouteReuseStrategy {

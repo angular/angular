@@ -17,7 +17,8 @@ const ANGULAR_IMPORT_LOCATIONS = {
   coreDecorators: '@angular/core/src/metadata',
   diDecorators: '@angular/core/src/di/metadata',
   diMetadata: '@angular/core/src/di/metadata',
-  diOpaqueToken: '@angular/core/src/di/opaque_token',
+  diInjectionToken: '@angular/core/src/di/injection_token',
+  diOpaqueToken: '@angular/core/src/di/injection_token',
   animationMetadata: '@angular/core/src/animation/metadata',
   provider: '@angular/core/src/di/provider'
 };
@@ -34,6 +35,7 @@ export class StaticReflector implements ReflectorReader {
   private parameterCache = new Map<StaticSymbol, any[]>();
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
+  private injectionToken: StaticSymbol;
   private opaqueToken: StaticSymbol;
 
   constructor(
@@ -229,9 +231,10 @@ export class StaticReflector implements ReflectorReader {
   }
 
   private initializeConversionMap(): void {
-    const {coreDecorators, diDecorators, diMetadata, diOpaqueToken, animationMetadata, provider} =
-        ANGULAR_IMPORT_LOCATIONS;
-    this.opaqueToken = this.findDeclaration(diOpaqueToken, 'OpaqueToken');
+    const {coreDecorators, diDecorators,      diMetadata, diInjectionToken,
+           diOpaqueToken,  animationMetadata, provider} = ANGULAR_IMPORT_LOCATIONS;
+    this.injectionToken = this.findDeclaration(diInjectionToken, 'InjectionToken');
+    this.opaqueToken = this.findDeclaration(diInjectionToken, 'OpaqueToken');
 
     this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
     this._registerDecoratorOrConstructor(
@@ -382,7 +385,8 @@ export class StaticReflector implements ReflectorReader {
         }
         if (expression instanceof StaticSymbol) {
           // Stop simplification at builtin symbols
-          if (expression === self.opaqueToken || self.conversionMap.has(expression)) {
+          if (expression === self.injectionToken || expression === self.opaqueToken ||
+              self.conversionMap.has(expression)) {
             return expression;
           } else {
             const staticSymbol = expression;
@@ -506,9 +510,9 @@ export class StaticReflector implements ReflectorReader {
                 // Determine if the function is a built-in conversion
                 staticSymbol = simplifyInContext(context, expression['expression'], depth + 1);
                 if (staticSymbol instanceof StaticSymbol) {
-                  if (staticSymbol === self.opaqueToken) {
-                    // if somebody calls new OpaqueToken, don't create an OpaqueToken,
-                    // but rather return the symbol to which the OpaqueToken is assigned to.
+                  if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
+                    // if somebody calls new InjectionToken, don't create an InjectionToken,
+                    // but rather return the symbol to which the InjectionToken is assigned to.
                     return context;
                   }
                   const argExpressions: any[] = expression['arguments'] || [];

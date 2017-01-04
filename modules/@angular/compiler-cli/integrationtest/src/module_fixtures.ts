@@ -7,7 +7,7 @@
  */
 
 import {LowerCasePipe, NgIf} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, Input, ModuleWithProviders, NgModule, OpaqueToken, Pipe} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Directive, Inject, Injectable, InjectionToken, Input, ModuleWithProviders, NgModule, Pipe} from '@angular/core';
 
 @Injectable()
 export class SomeService {
@@ -48,7 +48,7 @@ export class CompUsingRootModuleDirectiveAndPipe {
 export class CompUsingLibModuleDirectiveAndPipe {
 }
 
-export const SOME_TOKEN = new OpaqueToken('someToken');
+export const SOME_TOKEN = new InjectionToken('someToken');
 
 export function provideValueWithEntryComponents(value: any) {
   return [

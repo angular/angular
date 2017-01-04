@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, OpaqueToken} from '../di';
+import {Injectable, InjectionToken} from '../di';
 import {BaseError} from '../facade/errors';
 import {stringify} from '../facade/lang';
 import {ViewEncapsulation} from '../metadata';
@@ -119,7 +119,7 @@ export type CompilerOptions = {
  *
  * @experimental
  */
-export const COMPILER_OPTIONS = new OpaqueToken('compilerOptions');
+export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerOptions');
 
 /**
  * A factory for creating a Compiler

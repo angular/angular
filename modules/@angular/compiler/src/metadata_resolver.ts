@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, ModuleWithProviders, OpaqueToken, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
+import {AnimationAnimateMetadata, AnimationEntryMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationStateDeclarationMetadata, AnimationStateMetadata, AnimationStateTransitionMetadata, AnimationStyleMetadata, AnimationWithStepsMetadata, Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -27,7 +27,7 @@ import {getUrlScheme} from './url_resolver';
 import {MODULE_SUFFIX, SyntaxError, ValueTransformer, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
-export const ERROR_COLLECTOR_TOKEN = new OpaqueToken('ErrorCollector');
+export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');
 
 // Design notes:
 // - don't lazily create metadata:

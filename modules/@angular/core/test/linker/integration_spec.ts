@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ComponentFactory, Host, Inject, Injectable, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, OpaqueToken, ReflectiveInjector, SkipSelf} from '@angular/core';
+import {ComponentFactory, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
@@ -25,7 +25,7 @@ import {expect} from '@angular/platform-browser/testing/matchers';
 import {EventEmitter} from '../../src/facade/async';
 import {isBlank, isPresent, stringify} from '../../src/facade/lang';
 
-const ANCHOR_ELEMENT = new OpaqueToken('AnchorElement');
+const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
 export function main() {
   describe('jit', () => { declareTests({useJit: true}); });

@@ -7,21 +7,21 @@
  */
 
 import * as common from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, NgModule, OpaqueToken, Output} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, InjectionToken, NgModule, Output} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
 import {wrapInArray} from './funcs';
 
-export const SOME_OPAQUE_TOKEN = new OpaqueToken('opaqueToken');
+export const SOME_INJECTON_TOKEN = new InjectionToken('injectionToken');
 
 @Component({
   selector: 'comp-providers',
   template: '',
   providers: [
     {provide: 'strToken', useValue: 'strValue'},
-    {provide: SOME_OPAQUE_TOKEN, useValue: 10},
+    {provide: SOME_INJECTON_TOKEN, useValue: 10},
     {provide: 'reference', useValue: common.NgIf},
-    {provide: 'complexToken', useValue: {a: 1, b: ['test', SOME_OPAQUE_TOKEN]}},
+    {provide: 'complexToken', useValue: {a: 1, b: ['test', SOME_INJECTON_TOKEN]}},
   ]
 })
 export class CompWithProviders {

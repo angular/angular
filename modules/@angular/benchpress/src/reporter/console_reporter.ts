@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {print} from '../facade/lang';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
@@ -20,8 +20,8 @@ import {formatNum, formatStats, sortedProps} from './util';
  */
 @Injectable()
 export class ConsoleReporter extends Reporter {
-  static PRINT = new OpaqueToken('ConsoleReporter.print');
-  static COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
+  static PRINT = new InjectionToken('ConsoleReporter.print');
+  static COLUMN_WIDTH = new InjectionToken('ConsoleReporter.columnWidth');
   static PROVIDERS = [
     ConsoleReporter, {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18},
     {provide: ConsoleReporter.PRINT, useValue: print}

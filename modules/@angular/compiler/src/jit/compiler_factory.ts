@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, OpaqueToken, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, Optional, PLATFORM_INITIALIZER, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore} from '@angular/core';
 
 import {AnimationParser} from '../animation/animation_parser';
 import {CompilerConfig} from '../config';
@@ -40,7 +40,7 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
           `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
 };
 
-const baseHtmlParser = new OpaqueToken('HtmlParser');
+const baseHtmlParser = new InjectionToken('HtmlParser');
 
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for

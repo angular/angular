@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 
 import {MeasureValues} from '../measure_values';
 import {Validator} from '../validator';
@@ -16,7 +16,7 @@ import {Validator} from '../validator';
  */
 @Injectable()
 export class SizeValidator extends Validator {
-  static SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
+  static SAMPLE_SIZE = new InjectionToken('SizeValidator.sampleSize');
   static PROVIDERS = [SizeValidator, {provide: SizeValidator.SAMPLE_SIZE, useValue: 10}];
 
   constructor(@Inject(SizeValidator.SAMPLE_SIZE) private _sampleSize: number) { super(); }

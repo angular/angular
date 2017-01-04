@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Inject, OpaqueToken} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Inject, InjectionToken} from '@angular/core';
 
 import {BasicComp} from './basic';
 
@@ -15,7 +15,7 @@ export class CompWithEntryComponents {
   constructor(public cfr: ComponentFactoryResolver) {}
 }
 
-export const SOME_TOKEN = new OpaqueToken('someToken');
+export const SOME_TOKEN = new InjectionToken('someToken');
 
 export function provideValueWithEntryComponents(value: any) {
   return [
