@@ -16,7 +16,7 @@
     "inlineSources": true,
     "stripInternal": false,
     "typeRoots": [
-      "../../node_modules/@types"
+      "../../node_modules/@types/!(node)"
     ]
   },
   "exclude": [

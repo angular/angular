@@ -54,7 +54,7 @@ export function tsBuildTask(tsConfigPath: string, tsConfigName = 'tsconfig.json'
 
     let pipe = tsProject.src()
       .pipe(gulpSourcemaps.init())
-      .pipe(gulpTs(tsProject));
+      .pipe(tsProject());
     let dts = pipe.dts.pipe(gulp.dest(dest));
 
     return gulpMerge([

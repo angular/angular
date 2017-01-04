@@ -76,7 +76,7 @@
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-transform": "^1.1.0",
-    "gulp-typescript": "^2.13.6",
+    "gulp-typescript": "^3.1.3",
     "hammerjs": "^2.0.8",
     "highlight.js": "^9.9.0",
     "jasmine-core": "^2.4.1",
