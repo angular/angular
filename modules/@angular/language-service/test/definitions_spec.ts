@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completions, Diagnostic, Diagnostics, Span} from '../src/types';
+import {Span} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
@@ -20,7 +20,6 @@ describe('definitions', () => {
   let documentRegistry = ts.createDocumentRegistry();
   let mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
   let service = ts.createLanguageService(mockHost, documentRegistry);
-  let program = service.getProgram();
   let ngHost = new TypeScriptServiceHost(mockHost, service);
   let ngService = createLanguageService(ngHost);
   ngHost.setSite(ngService);
