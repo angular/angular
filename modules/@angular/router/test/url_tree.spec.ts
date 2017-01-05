@@ -102,8 +102,8 @@ describe('UrlTree', () => {
       });
 
       it('should return true when container contains containees queryParams', () => {
-        const t1 = serializer.parse('/one/two?test=1&page=5');
-        const t2 = serializer.parse('/one/two?test=1');
+        const t1 = serializer.parse('/one/two?test=1&u=5');
+        const t2 = serializer.parse('/one/two?u=5');
         expect(containsTree(t1, t2, false)).toBe(true);
       });
 
