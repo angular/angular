@@ -21,9 +21,10 @@ import {Dir, LayoutDirection} from '../core/rtl/dir';
 
 describe('MdMenu', () => {
   let overlayContainerElement: HTMLElement;
-  let dir: LayoutDirection = 'ltr';
+  let dir: LayoutDirection;
 
   beforeEach(async(() => {
+    dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [MdMenuModule.forRoot()],
       declarations: [SimpleMenu, PositionedMenu, CustomMenuPanel, CustomMenu],
