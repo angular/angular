@@ -48,6 +48,12 @@ export function main() {
 
       it('should accept zero as valid',
          () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
+
+      it('should error on an empty array',
+         () => expect(Validators.required(new FormControl([]))).toEqual({'required': true}));
+
+      it('should not error on a non-empty array',
+         () => expect(Validators.required(new FormControl([1, 2]))).toBeNull());
     });
 
     describe('requiredTrue', () => {
