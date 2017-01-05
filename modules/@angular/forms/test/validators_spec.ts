@@ -76,6 +76,23 @@ export function main() {
         // cast it to any so we don't get TS errors
         expect(() => validator(<any>new FormArray([]))).toThrow();
       });
+
+      it('should throw if passed a single field', () => {
+        let validator = Validators.comparison('f1');
+        expect(() => validator(new FormControl('a'))).toThrow();
+      });
+
+      it('should throw if not passed any fields', () => {
+        let validator = Validators.comparison();
+        expect(() => validator(new FormControl('a'))).toThrow();
+      });
+
+      it('should throw if field passed does not exist in the group', () => {
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
+        let validator = Validators.comparison('f3', 'f4');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(new FormControl('a'))).toThrow();
+      });
     });
 
     describe('requiredTrue', () => {

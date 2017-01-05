@@ -58,11 +58,11 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken = new OpaqueToken('NgAsyncValidato
  */
 export class Validators {
   /**
-   * Validator that compares the value of the giveb FormControl's
+   * Validator that compares the value of the given FormControls
    */
   static comparison(...fieldNames: string[]): ValidatorFn {
     return function(group: FormGroup): {[key: string]: any} {
-      if (group.controls === undefined) {
+      if (!(group instanceof FormGroup)) {
         throw new Error('Comparison validator must be used on a Form Group');
       }
       if (!fieldNames) {
