@@ -527,6 +527,7 @@ export interface ValidatorFn {
 
 /** @stable */
 export declare class Validators {
+    static comparison(...fieldNames: string[]): ValidatorFn;
     static compose(validators: ValidatorFn[]): ValidatorFn;
     static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;
@@ -541,7 +542,6 @@ export declare class Validators {
     static requiredTrue(control: AbstractControl): {
         [key: string]: boolean;
     };
-    static comparison(...fieldNames: string[]): ValidatorFn
 }
 
 /** @stable */
