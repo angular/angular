@@ -14,8 +14,9 @@ import {isPresent} from './facade/lang';
 import {AbstractControl} from './model';
 import {isPromise} from './private_import_core';
 
-function isEmptyInputValue(value: any) {
-  return value == null || typeof value === 'string' && value.length === 0;
+function isEmptyInputValue(value: any): boolean {
+  // we don't check for string here so it also works with arrays
+  return value == null || value.length === 0;
 }
 
 /**
