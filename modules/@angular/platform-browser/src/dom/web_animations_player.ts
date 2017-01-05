@@ -96,7 +96,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   /** @internal */
   _triggerWebAnimation(element: any, keyframes: any[], options: any): DomAnimatePlayer {
-    return <DomAnimatePlayer>element.animate(keyframes, options);
+    // jscompiler doesn't seem to know animate is a native property because it's not fully
+    // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
+    return <DomAnimatePlayer>element['animate'](keyframes, options);
   }
 
   get domPlayer() { return this._player; }
