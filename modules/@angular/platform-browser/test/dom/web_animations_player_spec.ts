@@ -208,6 +208,32 @@ export function main() {
            ]);
          });
 
+      it('should allow previous styles to be merged into the starting keyframe of the animation that were not apart of the animation to begin with',
+         () => {
+           if (!getDOM().supportsWebAnimation()) return;
+
+           const elm = el('<div></div>');
+           document.body.appendChild(elm);
+           elm.style.color = 'rgb(0,0,0)';
+
+           const previousStyles = {color: 'red'};
+           const previousPlayer =
+               new ExtendedWebAnimationsPlayer(elm, [previousStyles, previousStyles], {}, []);
+           previousPlayer.play();
+           previousPlayer.finish();
+
+           const player = new ExtendedWebAnimationsPlayer(
+               elm, [{opacity: '0'}, {opacity: '1'}], {duration: 1000}, [previousPlayer]);
+
+           player.init();
+
+           const data = player.domPlayer.captures['trigger'][0];
+           expect(data['keyframes']).toEqual([
+             {opacity: '0', color: 'red'},
+             {opacity: '1', color: 'rgb(0, 0, 0)'},
+           ]);
+         });
+
       it('should properly calculate the previous styles for the player even when its currently playing',
          () => {
            if (!getDOM().supportsWebAnimation()) return;
