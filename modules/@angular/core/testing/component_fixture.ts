@@ -42,6 +42,7 @@ export class ComponentFixture<T> {
   changeDetectorRef: ChangeDetectorRef;
 
   private _isStable: boolean = true;
+  private _hasPendingMicrotasks = false;
   private _isDestroyed: boolean = false;
   private _resolve: (result: any) => void;
   private _promise: Promise<any> = null;
@@ -61,10 +62,15 @@ export class ComponentFixture<T> {
     this.ngZone = ngZone;
 
     if (ngZone != null) {
-      this._onUnstableSubscription =
-          ngZone.onUnstable.subscribe({next: () => { this._isStable = false; }});
+      this._onUnstableSubscription = ngZone.onUnstable.subscribe({
+        next: () => {
+          this._isStable = false;
+          this._hasPendingMicrotasks = true;
+        }
+      });
       this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
         next: () => {
+          this._hasPendingMicrotasks = false;
           if (this._autoDetect) {
             // Do a change detection run with checkNoChanges set to true to check
             // there are no changes on the second run.
@@ -75,6 +81,7 @@ export class ComponentFixture<T> {
       this._onStableSubscription = ngZone.onStable.subscribe({
         next: () => {
           this._isStable = true;
+          this._hasPendingMicrotasks = false;
           // Check whether there is a pending whenStable() completer to resolve.
           if (this._promise !== null) {
             // If so check whether there are no pending macrotasks before resolving.
@@ -110,6 +117,12 @@ export class ComponentFixture<T> {
    */
   detectChanges(checkNoChanges: boolean = true): void {
     if (this.ngZone != null) {
+      if (this._hasPendingMicrotasks) {
+        throw new Error(
+            'detectChanges cannot be called when there are pending microtasks. ' +
+            `Ensure fixture is stable using 'whenStable' in an async test or 'tick' in ` +
+            'a fakeAsync test.');
+      }
       // Run the change detection inside the NgZone so that any async tasks as part of the change
       // detection are captured by the zone and can be waited for in isStable.
       this.ngZone.run(() => { this._tick(checkNoChanges); });

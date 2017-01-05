@@ -158,26 +158,24 @@ export function main() {
          }));
 
       it('should set status classes with ngModel and async validators', fakeAsync(() => {
-
            const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
-           fixture.whenStable().then(() => {
-             fixture.detectChanges();
+           fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
-             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
-             dispatchEvent(input, 'blur');
-             fixture.detectChanges();
+           dispatchEvent(input, 'blur');
+           tick();
+           fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
-             input.value = 'updatedValue';
-             dispatchEvent(input, 'input');
-             tick();
-             fixture.detectChanges();
+           input.value = 'updatedValue';
+           dispatchEvent(input, 'input');
+           tick(10);
+           fixture.detectChanges();
 
-             expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-           });
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
          }));
 
       it('should set status classes with ngModelGroup and ngForm', async(() => {
@@ -699,6 +697,7 @@ export function main() {
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
            comp.selectedCity = comp.cities[0];
            fixture.detectChanges();
+           tick();
 
            comp.selectedCity = comp.cities[2];
            fixture.detectChanges();
@@ -716,6 +715,7 @@ export function main() {
            comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
            comp.selectedCity = null;
            fixture.detectChanges();
+           tick();
 
            const select = fixture.debugElement.query(By.css('select'));
 
@@ -1342,7 +1342,9 @@ class NgModelCheckboxRequiredValidator {
   ]
 })
 class NgAsyncValidator implements Validator {
-  validate(c: AbstractControl) { return Promise.resolve(null); }
+  validate(c: AbstractControl) {
+    return new Promise((resolve, reject) => { setTimeout(() => { resolve(null); }, 10); });
+  }
 }
 
 @Component({

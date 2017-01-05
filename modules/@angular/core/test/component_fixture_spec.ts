@@ -283,6 +283,31 @@ export function main() {
          });
        }));
 
+    it('should throw an exception if detectChanges is called when there are pending mictotasks',
+       async(() => {
+         const componentFixture = TestBed.createComponent(AsyncComp);
+         componentFixture.detectChanges();
+
+         const element = componentFixture.debugElement.children[0];
+         dispatchEvent(element.nativeElement, 'click');
+         expect(() => {componentFixture.detectChanges()})
+             .toThrowError(/detectChanges cannot be called when there are pending microtasks./);
+       }));
+
+    it('should not throw an exception if detectChanges is called when there are pending macrotasks',
+       async(() => {
+         const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('1');
+
+         const element = componentFixture.debugElement.children[0];
+         dispatchEvent(element.nativeElement, 'click');
+
+         // setTimeout macroTask is pending at this point and text shouldn't change.
+         componentFixture.detectChanges();
+         expect(componentFixture.nativeElement).toHaveText('1');
+       }));
+
     describe('No NgZone', () => {
       beforeEach(() => {
         TestBed.configureTestingModule(
