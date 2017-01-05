@@ -12,6 +12,16 @@ import {Evaluator, errorSymbol, isPrimitive} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
+// In TypeScript 2.1 these flags moved
+// These helpers work for both 2.0 and 2.1.
+const isExport = (ts as any).ModifierFlags ?
+    ((node: ts.Node) =>
+         !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Export)) :
+    ((node: ts.Node) => !!((node.flags & (ts as any).NodeFlags.Export)));
+const isStatic = (ts as any).ModifierFlags ?
+    ((node: ts.Node) =>
+         !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Static)) :
+    ((node: ts.Node) => !!((node.flags & (ts as any).NodeFlags.Static)));
 
 /**
  * A set of collector options to use when collecting metadata.
@@ -146,7 +156,7 @@ export class MetadataCollector {
           case ts.SyntaxKind.MethodDeclaration:
             isConstructor = member.kind === ts.SyntaxKind.Constructor;
             const method = <ts.MethodDeclaration|ts.ConstructorDeclaration>member;
-            if (method.flags & ts.NodeFlags.Static) {
+            if (isStatic(method)) {
               const maybeFunc = maybeGetSimpleFunction(<ts.MethodDeclaration>method);
               if (maybeFunc) {
                 recordStaticMember(maybeFunc.name, maybeFunc.func);
@@ -193,7 +203,7 @@ export class MetadataCollector {
           case ts.SyntaxKind.GetAccessor:
           case ts.SyntaxKind.SetAccessor:
             const property = <ts.PropertyDeclaration>member;
-            if (property.flags & ts.NodeFlags.Static) {
+            if (isStatic(property)) {
               const name = evaluator.nameOf(property.name);
               if (!isMetadataError(name)) {
                 if (property.initializer) {
@@ -244,7 +254,7 @@ export class MetadataCollector {
 
     const isExportedIdentifier = (identifier: ts.Identifier) => exportMap.has(identifier.text);
     const isExported = (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.EnumDeclaration) =>
-        (node.flags & ts.NodeFlags.Export) || isExportedIdentifier(node.name);
+        isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier: ts.Identifier) =>
         exportMap.get(identifier.text) || identifier.text;
     const exportedName =
@@ -404,8 +414,7 @@ export class MetadataCollector {
                 varValue = recordEntry(errorSym('Variable not initialized', nameNode), nameNode);
               }
               let exported = false;
-              if (variableStatement.flags & ts.NodeFlags.Export ||
-                  variableDeclaration.flags & ts.NodeFlags.Export ||
+              if (isExport(variableStatement) || isExport(variableDeclaration) ||
                   isExportedIdentifier(nameNode)) {
                 if (!metadata) metadata = {};
                 metadata[exportedIdentifierName(nameNode)] = recordEntry(varValue, node);
@@ -430,13 +439,13 @@ export class MetadataCollector {
               //   or
               // var [<identifier>[, <identifier}+] = <expression>;
               // are not supported.
-              const report = (nameNode: ts.Node) => {
+              const report: (nameNode: ts.Node) => void = (nameNode: ts.Node) => {
                 switch (nameNode.kind) {
                   case ts.SyntaxKind.Identifier:
                     const name = <ts.Identifier>nameNode;
-                    const varValue = errorSym('Destructuring not supported', nameNode);
+                    const varValue = errorSym('Destructuring not supported', name);
                     locals.define(name.text, varValue);
-                    if (node.flags & ts.NodeFlags.Export) {
+                    if (isExport(node)) {
                       if (!metadata) metadata = {};
                       metadata[name.text] = varValue;
                     }
@@ -448,7 +457,7 @@ export class MetadataCollector {
                   case ts.SyntaxKind.ObjectBindingPattern:
                   case ts.SyntaxKind.ArrayBindingPattern:
                     const bindings = <ts.BindingPattern>nameNode;
-                    bindings.elements.forEach(report);
+                    (bindings as any).elements.forEach(report);
                     break;
                 }
               };
@@ -630,7 +639,10 @@ function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
     } else {
       const bindingPattern = <ts.BindingPattern>name;
       for (const element of bindingPattern.elements) {
-        addNamesOf(element.name);
+        const name = (element as any).name;
+        if (name) {
+          addNamesOf(name);
+        }
       }
     }
   }
