@@ -2,9 +2,11 @@
 @import '../core/a11y/a11y';
 
 
-$md-tooltip-height: 22px;
+$md-tooltip-target-height: 22px;
+$md-tooltip-font-size: 10px;
 $md-tooltip-margin: 14px;
-$md-tooltip-padding: 8px;
+$md-tooltip-horizontal-padding: 8px;
+$md-tooltip-vertical-padding: ($md-tooltip-target-height - $md-tooltip-font-size) / 2;
 
 :host {
   pointer-events: none;
@@ -12,13 +14,11 @@ $md-tooltip-padding: 8px;
 
 .md-tooltip {
   color: white;
-  padding: 0 $md-tooltip-padding;
+  padding: $md-tooltip-vertical-padding $md-tooltip-horizontal-padding;
   border-radius: 2px;
   font-family: $md-font-family;
-  font-size: 10px;
+  font-size: $md-tooltip-font-size;
   margin: $md-tooltip-margin;
-  height: $md-tooltip-height;
-  line-height: $md-tooltip-height;
 
   @include cdk-high-contrast {
     outline: solid 1px;
