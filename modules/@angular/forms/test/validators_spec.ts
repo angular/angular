@@ -8,7 +8,7 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-import {AbstractControl, FormArray, FormControl, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, Validators, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
@@ -48,6 +48,38 @@ export function main() {
 
       it('should accept zero as valid',
          () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
+    });
+
+    describe('comparison', () => {
+      it('should not error when equal', () => {
+        let group = new FormGroup({
+          f1: new FormControl('a'),
+          f2: new FormControl('a')
+        })
+        let validator = Validators.comparison('f1', 'f2');
+        expect(validator(group)).toBeNull();
+      });
+
+      it('should error when not equal', () => {
+        let group = new FormGroup({
+          f1: new FormControl('a'),
+          f2: new FormControl('b')
+        })
+        let validator = Validators.comparison('f1', 'f2');
+        expect(validator(group)).toEqual({ invalidComparison: { invalidField: 'f2', comparedField: 'f1' } });
+      });
+
+      it('should throw if passed a form control', () => {
+        let validator = Validators.comparison('f1', 'f2');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(<any>new FormControl(''))).toThrow();
+      });
+
+      it('should throw if passed a form control', () => {
+        let validator = Validators.comparison('f1', 'f2');
+        // cast it to any so we don't get TS errors
+        expect(() => validator(<any>new FormArray([]))).toThrow();
+      });
     });
 
     describe('requiredTrue', () => {

@@ -541,6 +541,7 @@ export declare class Validators {
     static requiredTrue(control: AbstractControl): {
         [key: string]: boolean;
     };
+    static comparison(...fieldNames: string[]): ValidatorFn
 }
 
 /** @stable */
