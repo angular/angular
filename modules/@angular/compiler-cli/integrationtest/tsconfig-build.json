@@ -14,7 +14,9 @@
     "rootDir": "",
     "declaration": true,
     "lib": ["es6", "dom"],
-    "baseUrl": "."
+    "baseUrl": ".",
+    // Prevent scanning up the directory tree for types
+    "typeRoots": ["node_modules/@types"]
   },
 
   "files": [
