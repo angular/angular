@@ -61,7 +61,7 @@ export function main() {
         let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
         let validator = Validators.comparison('f1', 'f2');
         expect(validator(group)).toEqual({
-          invalidComparison: {invalidField: 'f2', comparedField: 'f1' }
+          invalidComparison: {invalidField: 'f2', comparedField: 'f1'}
         });
       });
 
