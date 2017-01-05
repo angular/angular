@@ -57,7 +57,6 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken = new OpaqueToken('NgAsyncValidato
  * @stable
  */
 export class Validators {
-
   /**
    * Validator that compares the value of the giveb FormControl's
    */
