@@ -21,5 +21,3 @@ export type RenderDebugInfo = typeof r._RenderDebugInfo;
 export const RenderDebugInfo: typeof r.RenderDebugInfo = r.RenderDebugInfo;
 export type DebugDomRootRenderer = typeof r._DebugDomRootRenderer;
 export const DebugDomRootRenderer: typeof r.DebugDomRootRenderer = r.DebugDomRootRenderer;
-export type NoOpAnimationPlayer = typeof r._NoOpAnimationPlayer;
-export const NoOpAnimationPlayer: typeof r.NoOpAnimationPlayer = r.NoOpAnimationPlayer;

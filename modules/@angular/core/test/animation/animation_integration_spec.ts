@@ -25,6 +25,7 @@ import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animatio
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
+import {Input} from '../../src/core';
 import {isPresent} from '../../src/facade/lang';
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 import {MockAnimationPlayer} from '../../testing/mock_animation_player';
@@ -2243,38 +2244,52 @@ function declareTests({useJit}: {useJit: boolean}) {
   });
 
   describe('error handling', () => {
-    it('should recover if an animation driver or player throws an error during an animation',
+    if (!getDOM().supportsWebAnimation()) return;
+
+    it('should not throw an error when an animation exists within projected content that is not bound to the DOM',
        fakeAsync(() => {
          TestBed.configureTestingModule({
-           declarations: [DummyIfCmp],
-           providers: [{provide: AnimationDriver, useClass: ErroneousAnimationDriver}],
+           declarations: [DummyIfCmp, DummyLoadingCmp],
+           providers: [{provide: AnimationDriver, useClass: WebAnimationsDriver}],
            imports: [CommonModule]
          });
          TestBed.overrideComponent(DummyIfCmp, {
            set: {
              template: `
-            <div [@myAnimation]="exp" (@myAnimation.start)="callback1($event)" (@myAnimation.done)="callback2($event)"></div>
+               <dummy-loading-cmp [exp2]="exp">
+                 <div [@myAnimation]="exp ? 'true' : 'false'" (@myAnimation.done)="callback()">world</div>
+               </dummy-loading-cmp>
           `,
              animations: [trigger('myAnimation', [transition(
                                                      '* => *',
                                                      [
-                                                       animate(1000, style({transform: 'noooooo'})),
+                                                       style({opacity: 0}),
+                                                       animate(1000, style({opacity: 1})),
                                                      ])])]
            }
          });
+         TestBed.overrideComponent(
+             DummyLoadingCmp, {set: {template: `hello <ng-content *ngIf="exp2"></ng-content>`}});
 
          const fixture = TestBed.createComponent(DummyIfCmp);
          const cmp = fixture.componentInstance;
-         let started = false;
-         let done = false;
-         cmp.callback1 = (event: AnimationTransitionEvent) => started = true;
-         cmp.callback2 = (event: AnimationTransitionEvent) => done = true;
+         const container = fixture.nativeElement;
+         let animationCalls = 0;
+         cmp.callback = () => animationCalls++;
+
+         cmp.exp = false;
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         expect(animationCalls).toBe(1);
+         expect(getDOM().getText(container).trim()).toEqual('hello');
+
          cmp.exp = true;
          fixture.detectChanges();
          flushMicrotasks();
 
-         expect(started).toBe(true);
-         expect(done).toBe(true);
+         expect(animationCalls).toBe(2);
+         expect(getDOM().getText(container).trim()).toMatch(/hello[\s\r\n]+world/m);
        }));
   });
 
@@ -2460,6 +2475,9 @@ class DummyIfCmp {
 class DummyLoadingCmp {
   exp: any = false;
   callback = () => {};
+
+  @Input('exp2')
+  exp2: any = false;
 }
 
 @Component({
@@ -2569,13 +2587,5 @@ class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
     const player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
     this.players.push(player);
     return player;
-  }
-}
-
-class ErroneousAnimationDriver extends MockAnimationDriver {
-  animate(
-      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
-      duration: number, delay: number, easing: string): WebAnimationsPlayer {
-    throw new Error();
   }
 }
