@@ -43,7 +43,7 @@ import * as api from './render/api';
 import * as decorators from './util/decorators';
 import {isPromise} from './util/lang';
 
-export var __core_private__: {
+export const __core_private__: {
   isDefaultChangeDetectionStrategy: typeof constants.isDefaultChangeDetectionStrategy,
   ChangeDetectorStatus: typeof constants.ChangeDetectorStatus,
   _ChangeDetectorStatus?: constants.ChangeDetectorStatus,
@@ -72,7 +72,6 @@ export var __core_private__: {
   StaticNodeDebugInfo: typeof debug_context.StaticNodeDebugInfo,
   _StaticNodeDebugInfo?: debug_context.StaticNodeDebugInfo,
   devModeEqual: typeof change_detection_util.devModeEqual,
-  UNINITIALIZED: typeof change_detection_util.UNINITIALIZED,
   ValueUnwrapper: typeof change_detection_util.ValueUnwrapper,
   _ValueUnwrapper?: change_detection_util.ValueUnwrapper,
   RenderDebugInfo: typeof api.RenderDebugInfo,
@@ -130,7 +129,6 @@ export var __core_private__: {
   DebugContext: debug_context.DebugContext,
   StaticNodeDebugInfo: debug_context.StaticNodeDebugInfo,
   devModeEqual: change_detection_util.devModeEqual,
-  UNINITIALIZED: change_detection_util.UNINITIALIZED,
   ValueUnwrapper: change_detection_util.ValueUnwrapper,
   RenderDebugInfo: api.RenderDebugInfo,
   TemplateRef_: template_ref.TemplateRef_,

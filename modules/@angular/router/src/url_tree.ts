@@ -17,10 +17,10 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
   if (exact) {
     return equalQueryParams(container.queryParams, containee.queryParams) &&
         equalSegmentGroups(container.root, containee.root);
-  } else {
-    return containsQueryParams(container.queryParams, containee.queryParams) &&
-        containsSegmentGroup(container.root, containee.root);
   }
+
+  return containsQueryParams(container.queryParams, containee.queryParams) &&
+      containsSegmentGroup(container.root, containee.root);
 }
 
 function equalQueryParams(
@@ -83,7 +83,7 @@ function containsSegmentGroupHelper(
  * class MyComponent {
  *   constructor(router: Router) {
  *     const tree: UrlTree =
- * router.parseUrl('/team/33/(user/victor//support:help)?debug=true#fragment');
+ *       router.parseUrl('/team/33/(user/victor//support:help)?debug=true#fragment');
  *     const f = tree.fragment; // return 'fragment'
  *     const q = tree.queryParams; // returns {debug: 'true'}
  *     const g: UrlSegmentGroup = tree.root.children[PRIMARY_OUTLET];
@@ -103,79 +103,49 @@ function containsSegmentGroupHelper(
  * @stable
  */
 export class UrlTree {
-  /**
-   * @internal
-   */
+  /** @internal */
   constructor(
-      /**
-      * The root segment group of the URL tree.
-       */
+      /** The root segment group of the URL tree */
       public root: UrlSegmentGroup,
-      /**
-       * The query params of the URL.
-       */
+      /** The query params of the URL */
       public queryParams: {[key: string]: string},
-      /**
-       * The fragment of the URL.
-       */
+      /** The fragment of the URL */
       public fragment: string) {}
 
-  /**
-   * @docsNotRequired
-   */
+  /** @docsNotRequired */
   toString(): string { return new DefaultUrlSerializer().serialize(this); }
 }
 
 /**
- * @whatItDoes Represents the parsed URL segment.
+ * @whatItDoes Represents the parsed URL segment group.
  *
  * See {@link UrlTree} for more information.
  *
  * @stable
  */
 export class UrlSegmentGroup {
-  /**
-   * @internal
-   */
+  /** @internal */
   _sourceSegment: UrlSegmentGroup;
-
-  /**
-   * @internal
-   */
+  /** @internal */
   _segmentIndexShift: number;
-
-  /**
-   * The parent node in the url tree.
-   */
-  public parent: UrlSegmentGroup = null;
+  /** The parent node in the url tree */
+  parent: UrlSegmentGroup = null;
 
   constructor(
-      /**
-       * The URL segments of this group. See {@link UrlSegment} for more information.
-       */
+      /** The URL segments of this group. See {@link UrlSegment} for more information */
       public segments: UrlSegment[],
-      /**
-       * The list of children of this group.
-       */
-      public children: {[key: string]: UrlSegmentGroup}
-
-      ) {
+      /** The list of children of this group */
+      public children: {[key: string]: UrlSegmentGroup}) {
     forEach(children, (v: any, k: any) => v.parent = this);
   }
 
-  /**
-   * Return true if the segment has child segments
-   */
+  /** Wether the segment has child segments */
   hasChildren(): boolean { return this.numberOfChildren > 0; }
 
-  /**
-   * Returns the number of child sements.
-   */
+  /** Number of child segments */
   get numberOfChildren(): number { return Object.keys(this.children).length; }
 
-  /**
-   * @docsNotRequired
-   */
+  /** @docsNotRequired */
   toString(): string { return serializePaths(this); }
 }
 
@@ -200,26 +170,20 @@ export class UrlSegmentGroup {
  *
  * @description
  *
- * A UrlSegment is a part of a URL between the two slashes. It contains a path and
- * the matrix parameters associated with the segment.
+ * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
+ * parameters associated with the segment.
  *
  * @stable
  */
 export class UrlSegment {
   constructor(
-      /**
-       * The path part of a URL segment.
-       */
+      /** The path part of a URL segment */
       public path: string,
 
-      /**
-       * The matrix parameters associated with a segment.
-       */
-      public parameters: {[key: string]: string}) {}
+      /** The matrix parameters associated with a segment */
+      public parameters: {[name: string]: string}) {}
 
-  /**
-   * @docsNotRequired
-   */
+  /** @docsNotRequired */
   toString(): string { return serializePath(this); }
 }
 
@@ -268,14 +232,10 @@ export function mapChildrenIntoArray<T>(
  * @stable
  */
 export abstract class UrlSerializer {
-  /**
-   * Parse a url into a {@link UrlTree}.
-   */
+  /** Parse a url into a {@link UrlTree} */
   abstract parse(url: string): UrlTree;
 
-  /**
-   * Converts a {@link UrlTree} into a url.
-   */
+  /** Converts a {@link UrlTree} into a url */
   abstract serialize(tree: UrlTree): string;
 }
 
@@ -298,17 +258,13 @@ export abstract class UrlSerializer {
  * @stable
  */
 export class DefaultUrlSerializer implements UrlSerializer {
-  /**
-   * Parse a url into a {@link UrlTree}.
-   */
+  /** Parses a url into a {@link UrlTree} */
   parse(url: string): UrlTree {
     const p = new UrlParser(url);
     return new UrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
   }
 
-  /**
-   * Converts a {@link UrlTree} into a url.
-   */
+  /** Converts a {@link UrlTree} into a url */
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
@@ -370,14 +326,20 @@ function serializeParams(params: {[key: string]: string}): string {
   return pairs(params).map(p => `;${encode(p.first)}=${encode(p.second)}`).join('');
 }
 
-function serializeQueryParams(params: {[key: string]: string}): string {
-  const strs = pairs(params).map(p => `${encode(p.first)}=${encode(p.second)}`);
-  return strs.length > 0 ? `?${strs.join("&")}` : '';
+function serializeQueryParams(params: {[key: string]: any}): string {
+  const strParams: string[] = Object.keys(params).map((name) => {
+    const value = params[name];
+    return Array.isArray(value) ? value.map(v => `${encode(name)}=${encode(v)}`).join('&') :
+                                  `${encode(name)}=${encode(value)}`;
+  });
+
+  return strParams.length ? `?${strParams.join("&")}` : '';
 }
 
 class Pair<A, B> {
   constructor(public first: A, public second: B) {}
 }
+
 function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
   const res: Pair<string, T>[] = [];
   for (const prop in obj) {
@@ -388,21 +350,23 @@ function pairs<T>(obj: {[key: string]: T}): Pair<string, T>[] {
   return res;
 }
 
-const SEGMENT_RE = /^[^\/\(\)\?;=&#]+/;
+const SEGMENT_RE = /^[^\/()?;=&#]+/;
 function matchSegments(str: string): string {
   SEGMENT_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_RE = /^[^=\?&#]+/;
+const QUERY_PARAM_RE = /^[^=?&#]+/;
+// Return the name of the query param at the start of the string or an empty string
 function matchQueryParams(str: string): string {
   QUERY_PARAM_RE.lastIndex = 0;
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
 }
 
-const QUERY_PARAM_VALUE_RE = /^[^\?&#]+/;
+const QUERY_PARAM_VALUE_RE = /^[^?&#]+/;
+// Return the value of the query param at the start of the string or an empty string
 function matchUrlQueryParamValue(str: string): string {
   QUERY_PARAM_VALUE_RE.lastIndex = 0;
   const match = str.match(QUERY_PARAM_VALUE_RE);
@@ -429,9 +393,9 @@ class UrlParser {
 
     if (this.remaining === '' || this.remaining.startsWith('?') || this.remaining.startsWith('#')) {
       return new UrlSegmentGroup([], {});
-    } else {
-      return new UrlSegmentGroup([], this.parseChildren());
     }
+
+    return new UrlSegmentGroup([], this.parseChildren());
   }
 
   parseChildren(): {[key: string]: UrlSegmentGroup} {
@@ -501,9 +465,9 @@ class UrlParser {
   parseFragment(): string {
     if (this.peekStartsWith('#')) {
       return decodeURI(this.remaining.substring(1));
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   parseMatrixParams(): {[key: string]: any} {
@@ -534,6 +498,7 @@ class UrlParser {
     params[decode(key)] = decode(value);
   }
 
+  // Parse a single query parameter `name[=value]`
   parseQueryParam(params: {[key: string]: any}): void {
     const key = matchQueryParams(this.remaining);
     if (!key) {
@@ -549,7 +514,22 @@ class UrlParser {
         this.capture(value);
       }
     }
-    params[decode(key)] = decode(value);
+
+    const decodedKey = decode(key);
+    const decodedVal = decode(value);
+
+    if (params.hasOwnProperty(decodedKey)) {
+      // Append to existing values
+      let currentVal = params[decodedKey];
+      if (!Array.isArray(currentVal)) {
+        currentVal = [currentVal];
+        params[decodedKey] = currentVal;
+      }
+      currentVal.push(decodedVal);
+    } else {
+      // Create a new value
+      params[decodedKey] = decodedVal;
+    }
   }
 
   parseParens(allowPrimary: boolean): {[key: string]: UrlSegmentGroup} {

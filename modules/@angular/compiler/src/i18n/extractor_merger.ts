@@ -18,6 +18,8 @@ import {TranslationBundle} from './translation_bundle';
 const _I18N_ATTR = 'i18n';
 const _I18N_ATTR_PREFIX = 'i18n-';
 const _I18N_COMMENT_PREFIX_REGEXP = /^i18n:?/;
+const MEANING_SEPARATOR = '|';
+const ID_SEPARATOR = '@@';
 
 /**
  * Extract translatable messages from an html AST
@@ -77,7 +79,7 @@ class _Visitor implements html.Visitor {
   // _VisitorMode.Merge only
   private _translations: TranslationBundle;
   private _createI18nMessage:
-      (msg: html.Node[], meaning: string, description: string) => i18n.Message;
+      (msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
@@ -330,15 +332,15 @@ class _Visitor implements html.Visitor {
   }
 
   // add a translatable message
-  private _addMessage(ast: html.Node[], meaningAndDesc?: string): i18n.Message {
+  private _addMessage(ast: html.Node[], msgMeta?: string): i18n.Message {
     if (ast.length == 0 ||
         ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
       // Do not create empty messages
       return;
     }
 
-    const [meaning, description] = _splitMeaningAndDesc(meaningAndDesc);
-    const message = this._createI18nMessage(ast, meaning, description);
+    const {meaning, description, id} = _parseMessageMeta(msgMeta);
+    const message = this._createI18nMessage(ast, meaning, description, id);
     this._messages.push(message);
     return message;
   }
@@ -368,7 +370,7 @@ class _Visitor implements html.Visitor {
     attributes.forEach(attr => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
         i18nAttributeMeanings[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-            _splitMeaningAndDesc(attr.value)[0];
+            _parseMessageMeta(attr.value).meaning;
       }
     });
 
@@ -382,7 +384,7 @@ class _Visitor implements html.Visitor {
 
       if (attr.value && attr.value != '' && i18nAttributeMeanings.hasOwnProperty(attr.name)) {
         const meaning = i18nAttributeMeanings[attr.name];
-        const message: i18n.Message = this._createI18nMessage([attr], meaning, '');
+        const message: i18n.Message = this._createI18nMessage([attr], meaning, '', '');
         const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes[0] instanceof html.Text) {
@@ -420,7 +422,7 @@ class _Visitor implements html.Visitor {
   }
 
   /**
-   * Marks the start of a section, see `_endSection`
+   * Marks the start of a section, see `_closeTranslatableSection`
    */
   private _openTranslatableSection(node: html.Node): void {
     if (this._isInTranslatableSection) {
@@ -496,8 +498,16 @@ function _getI18nAttr(p: html.Element): html.Attribute {
   return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
 }
 
-function _splitMeaningAndDesc(i18n: string): [string, string] {
-  if (!i18n) return ['', ''];
-  const pipeIndex = i18n.indexOf('|');
-  return pipeIndex == -1 ? ['', i18n] : [i18n.slice(0, pipeIndex), i18n.slice(pipeIndex + 1)];
+function _parseMessageMeta(i18n: string): {meaning: string, description: string, id: string} {
+  if (!i18n) return {meaning: '', description: '', id: ''};
+
+  const idIndex = i18n.indexOf(ID_SEPARATOR);
+  const descIndex = i18n.indexOf(MEANING_SEPARATOR);
+  const [meaningAndDesc, id] =
+      (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+  const [meaning, description] = (descIndex > -1) ?
+      [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
+      ['', meaningAndDesc];
+
+  return {meaning, description, id};
 }

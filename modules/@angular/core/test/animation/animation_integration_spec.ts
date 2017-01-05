@@ -17,13 +17,11 @@ import {WebAnimationsDriver} from '@angular/platform-browser/src/dom/web_animati
 import {WebAnimationsPlayer} from '@angular/platform-browser/src/dom/web_animations_player';
 import {expect} from '@angular/platform-browser/testing/matchers';
 import {MockAnimationDriver} from '@angular/platform-browser/testing/mock_animation_driver';
-
-import {DomAnimatePlayer} from '../../../platform-browser/src/dom/dom_animate_player';
 import {ApplicationRef, Component, HostBinding, HostListener, NgModule, NgZone, destroyPlatform} from '../../index';
 import {DEFAULT_STATE} from '../../src/animation/animation_constants';
 import {AnimationGroupPlayer} from '../../src/animation/animation_group_player';
 import {AnimationKeyframe} from '../../src/animation/animation_keyframe';
-import {AnimationPlayer} from '../../src/animation/animation_player';
+import {AnimationPlayer, NoOpAnimationPlayer} from '../../src/animation/animation_player';
 import {AnimationStyles} from '../../src/animation/animation_styles';
 import {AnimationTransitionEvent} from '../../src/animation/animation_transition_event';
 import {AUTO_STYLE, animate, group, keyframes, sequence, state, style, transition, trigger} from '../../src/animation/metadata';
@@ -155,6 +153,60 @@ function declareTests({useJit}: {useJit: boolean}) {
                expect(kf[0]).toEqual([0, {'backgroundColor': 'red'}]);
                expect(kf[1]).toEqual([1, {'backgroundColor': 'blue'}]);
              }));
+
+      it('should throw an error when a provided offset for an animation step if an offset value is greater than 1',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@tooBig]="exp"></div>
+                `,
+               animations: [trigger(
+                   'tooBig',
+                   [transition(
+                       '* => *', [animate('444ms', style({'opacity': '1', offset: 1.1}))])])]
+             }
+           });
+
+           let message = '';
+           try {
+             const fixture = TestBed.createComponent(DummyIfCmp);
+           } catch (e) {
+             message = e.message;
+           }
+
+           const lines = message.split(/\n+/);
+           expect(lines[1]).toMatch(
+               /Unable to parse the animation sequence for "tooBig" on the DummyIfCmp component due to the following errors:/);
+           expect(lines[2]).toMatch(/Offset values for animations must be between 0 and 1/);
+         }));
+
+      it('should throw an error when a provided offset for an animation step if an offset value is less than 0',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@tooSmall]="exp"></div>
+                `,
+               animations: [trigger(
+                   'tooSmall',
+                   [transition(
+                       '* => *', [animate('444ms', style({'opacity': '0', offset: -1}))])])]
+             }
+           });
+
+           let message = '';
+           try {
+             const fixture = TestBed.createComponent(DummyIfCmp);
+           } catch (e) {
+             message = e.message;
+           }
+
+           const lines = message.split(/\n+/);
+           expect(lines[1]).toMatch(
+               /Unable to parse the animation sequence for "tooSmall" on the DummyIfCmp component due to the following errors:/);
+           expect(lines[2]).toMatch(/Offset values for animations must be between 0 and 1/);
+         }));
 
       describe('animation aliases', () => {
         it('should animate the ":enter" animation alias as "void => *"', fakeAsync(() => {
@@ -1496,6 +1548,36 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should throw an error if an animation output is referenced that is not bound to as a property on the same element',
          () => {
+           TestBed.overrideComponent(DummyLoadingCmp, {
+             set: {
+               template: `
+                  <if-cmp (@trigger.done)="callback($event)"></if-cmp>
+               `
+             }
+           });
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                <div [@trigger]="exp"></div>
+            `,
+               animations: [trigger('trigger', [transition('one => two', [animate(1000)])])]
+             }
+           });
+
+           let message = '';
+           try {
+             const fixture = TestBed.createComponent(DummyIfCmp);
+             fixture.detectChanges();
+           } catch (e) {
+             message = e.message;
+           }
+
+           expect(message).toMatch(
+               /Unable to listen on \(@trigger.done\) because the animation trigger \[@trigger\] isn't being used on the same element/);
+         });
+
+      it('should throw an error if an animation output is referenced that is not bound to as a property on the same element',
+         () => {
            TestBed.overrideComponent(DummyIfCmp, {
              set: {
                template: `
@@ -2122,6 +2204,79 @@ function declareTests({useJit}: {useJit: boolean}) {
            expect(kf[1]).toEqual([1, {'height': '333px', 'opacity': AUTO_STYLE, 'width': '200px'}]);
          });
     });
+
+    it('should not use the previous animation\'s styling if the previous animation has already finished',
+       fakeAsync(() => {
+         TestBed.overrideComponent(DummyIfCmp, {
+           set: {
+             template: `
+            <div [@myAnimation]="exp"></div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [
+                   state('a', style({color: 'red'})), state('b', style({color: 'red'})),
+                   transition('* => *', animate(1000))
+                 ])]
+           }
+         });
+
+         const driver = TestBed.get(AnimationDriver) as MockAnimationDriver;
+         const fixture = TestBed.createComponent(DummyIfCmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = 'a';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         const animation1 = driver.log.shift();
+         expect(animation1['previousStyles']).toEqual({});
+
+         animation1['player'].finish();
+
+         cmp.exp = 'b';
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         const animation2 = driver.log.shift();
+         expect(animation2['previousStyles']).toEqual({});
+       }));
+  });
+
+  describe('error handling', () => {
+    it('should recover if an animation driver or player throws an error during an animation',
+       fakeAsync(() => {
+         TestBed.configureTestingModule({
+           declarations: [DummyIfCmp],
+           providers: [{provide: AnimationDriver, useClass: ErroneousAnimationDriver}],
+           imports: [CommonModule]
+         });
+         TestBed.overrideComponent(DummyIfCmp, {
+           set: {
+             template: `
+            <div [@myAnimation]="exp" (@myAnimation.start)="callback1($event)" (@myAnimation.done)="callback2($event)"></div>
+          `,
+             animations: [trigger('myAnimation', [transition(
+                                                     '* => *',
+                                                     [
+                                                       animate(1000, style({transform: 'noooooo'})),
+                                                     ])])]
+           }
+         });
+
+         const fixture = TestBed.createComponent(DummyIfCmp);
+         const cmp = fixture.componentInstance;
+         let started = false;
+         let done = false;
+         cmp.callback1 = (event: AnimationTransitionEvent) => started = true;
+         cmp.callback2 = (event: AnimationTransitionEvent) => done = true;
+         cmp.exp = true;
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         expect(started).toBe(true);
+         expect(done).toBe(true);
+       }));
   });
 
   describe('full animation integration tests', () => {
@@ -2141,6 +2296,23 @@ function declareTests({useJit}: {useJit: boolean}) {
       ];
     });
 
+    function assertStatus(value: string) {
+      const text = getDOM().getText(el);
+      const regexp = new RegExp(`Animation Status: ${value}`);
+      expect(text).toMatch(regexp);
+    }
+
+    function assertTime(value: number) {
+      const text = getDOM().getText(el);
+      const regexp = new RegExp(`Animation Time: ${value}`);
+      expect(text).toMatch(regexp);
+    }
+
+    function finishAnimation(player: WebAnimationsPlayer, cb: () => any) {
+      getDOM().dispatchEvent(player.domPlayer, getDOM().createEvent('finish'));
+      Promise.resolve(null).then(cb);
+    }
+
     afterEach(() => { destroyPlatform(); });
 
     it('should automatically run change detection when the animation done callback code updates any bindings',
@@ -2151,24 +2323,82 @@ function declareTests({useJit}: {useJit: boolean}) {
                appRef.components.find(cmp => cmp.componentType === AnimationAppCmp).instance;
            const driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
            const zone: NgZone = ref.injector.get(NgZone);
-           let text = '';
            zone.run(() => {
-             text = getDOM().getText(el);
-             expect(text).toMatch(/Animation Status: pending/);
-             expect(text).toMatch(/Animation Time: 0/);
+             assertStatus('pending');
+             assertTime(0);
              appCmp.animationStatus = 'on';
-             setTimeout(() => {
-               text = getDOM().getText(el);
-               expect(text).toMatch(/Animation Status: started/);
-               expect(text).toMatch(/Animation Time: 555/);
-               const player = driver.players.pop().domPlayer;
-               getDOM().dispatchEvent(player, getDOM().createEvent('finish'));
+             zone.runOutsideAngular(() => {
                setTimeout(() => {
-                 text = getDOM().getText(el);
-                 expect(text).toMatch(/Animation Status: done/);
-                 expect(text).toMatch(/Animation Time: 555/);
-                 asyncDone();
+                 assertStatus('started');
+                 assertTime(555);
+                 const player = driver.players.pop();
+                 finishAnimation(player, () => {
+                   assertStatus('done');
+                   assertTime(555);
+                   asyncDone();
+                 });
                }, 0);
+             });
+           });
+         });
+       });
+
+    it('should not run change detection for an animation that contains multiple steps until a callback is fired',
+       (asyncDone: Function) => {
+         bootstrap(AnimationAppCmp, testProviders).then(ref => {
+           const appRef = <ApplicationRef>ref.injector.get(ApplicationRef);
+           const appCmpDetails: any =
+               appRef.components.find(cmp => cmp.componentType === AnimationAppCmp);
+           const appCD = appCmpDetails.changeDetectorRef;
+           const appCmp: AnimationAppCmp = appCmpDetails.instance;
+           const driver: ExtendedWebAnimationsDriver = ref.injector.get(AnimationDriver);
+           const zone: NgZone = ref.injector.get(NgZone);
+
+           let player: WebAnimationsPlayer;
+           let onDoneCalls: string[] = [];
+           function onDoneFn(value: string) {
+             return () => {
+               NgZone.assertNotInAngularZone();
+               onDoneCalls.push(value);
+               appCmp.status = value;
+             };
+           };
+
+           zone.run(() => {
+             assertStatus('pending');
+             appCmp.animationWithSteps = 'on';
+
+             setTimeout(() => {
+               expect(driver.players.length).toEqual(3);
+               assertStatus('started');
+
+               zone.runOutsideAngular(() => {
+                 setTimeout(() => {
+                   assertStatus('started');
+                   player = driver.players.shift();
+                   player.onDone(onDoneFn('1'));
+
+                   // step 1 => 2
+                   finishAnimation(player, () => {
+                     assertStatus('started');
+                     player = driver.players.shift();
+                     player.onDone(onDoneFn('2'));
+
+                     // step 2 => 3
+                     finishAnimation(player, () => {
+                       assertStatus('started');
+                       player = driver.players.shift();
+                       player.onDone(onDoneFn('3'));
+
+                       // step 3 => done
+                       finishAnimation(player, () => {
+                         assertStatus('done');
+                         asyncDone();
+                       });
+                     });
+                   });
+                 }, 0);
+               });
              }, 0);
            });
          });
@@ -2259,7 +2489,17 @@ class _NaiveElementSchema extends DomElementSchemaRegistry {
 
 @Component({
   selector: 'animation-app',
-  animations: [trigger('animationStatus', [transition('off => on', animate(555))])],
+  animations: [
+    trigger('animationStatus', [transition('off => on', animate(555))]),
+    trigger(
+        'animationWithSteps',
+        [transition(
+            '* => on',
+            [
+              style({height: '0px'}), animate(100, style({height: '100px'})),
+              animate(100, style({height: '200px'})), animate(100, style({height: '300px'}))
+            ])])
+  ],
   template: `
     Animation Time: {{ time }}
     Animation Status: {{ status }}
@@ -2273,7 +2513,7 @@ class AnimationAppCmp {
   animationStatus = 'off';
 
   @HostListener('@animationStatus.start', ['$event'])
-  onStart(event: AnimationTransitionEvent) {
+  onAnimationStartDone(event: AnimationTransitionEvent) {
     if (event.toState == 'on') {
       this.time = event.totalTime;
       this.status = 'started';
@@ -2281,7 +2521,26 @@ class AnimationAppCmp {
   }
 
   @HostListener('@animationStatus.done', ['$event'])
-  onDone(event: AnimationTransitionEvent) {
+  onAnimationStatusDone(event: AnimationTransitionEvent) {
+    if (event.toState == 'on') {
+      this.time = event.totalTime;
+      this.status = 'done';
+    }
+  }
+
+  @HostBinding('@animationWithSteps')
+  animationWithSteps = 'off';
+
+  @HostListener('@animationWithSteps.start', ['$event'])
+  onAnimationWithStepsStart(event: AnimationTransitionEvent) {
+    if (event.toState == 'on') {
+      this.time = event.totalTime;
+      this.status = 'started';
+    }
+  }
+
+  @HostListener('@animationWithSteps.done', ['$event'])
+  onAnimationWithStepsDone(event: AnimationTransitionEvent) {
     if (event.toState == 'on') {
       this.time = event.totalTime;
       this.status = 'done';
@@ -2311,5 +2570,13 @@ class ExtendedWebAnimationsDriver extends WebAnimationsDriver {
     const player = super.animate(element, startingStyles, keyframes, duration, delay, easing);
     this.players.push(player);
     return player;
+  }
+}
+
+class ErroneousAnimationDriver extends MockAnimationDriver {
+  animate(
+      element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
+      duration: number, delay: number, easing: string): WebAnimationsPlayer {
+    throw new Error();
   }
 }

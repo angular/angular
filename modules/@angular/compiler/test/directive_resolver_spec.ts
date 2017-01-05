@@ -8,13 +8,10 @@
 
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
+import {reflector} from '@angular/core/src/reflection/reflection';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
-}
-
-@Directive({selector: 'someChildDirective'})
-class SomeChildDirective extends SomeDirective {
 }
 
 @Directive({selector: 'someDirective', inputs: ['c']})
@@ -29,28 +26,6 @@ class SomeDirectiveWithOutputs {
   @Output() a: any;
   @Output('renamed') b: any;
   c: any;
-}
-
-@Directive({selector: 'someDirective', outputs: ['a']})
-class SomeDirectiveWithDuplicateOutputs {
-  @Output() a: any;
-}
-
-@Directive({selector: 'someDirective', outputs: ['localA: a']})
-class SomeDirectiveWithDuplicateRenamedOutputs {
-  @Output() a: any;
-  localA: any;
-}
-
-@Directive({selector: 'someDirective', inputs: ['a']})
-class SomeDirectiveWithDuplicateInputs {
-  @Input() a: any;
-}
-
-@Directive({selector: 'someDirective', inputs: ['localA: a']})
-class SomeDirectiveWithDuplicateRenamedInputs {
-  @Input() a: any;
-  localA: any;
 }
 
 @Directive({selector: 'someDirective'})
@@ -150,11 +125,22 @@ export function main() {
       }).toThrowError('No Directive annotation found on SomeDirectiveWithoutMetadata');
     });
 
-    it('should not read parent class Directive metadata', function() {
-      const directiveMetadata = resolver.resolve(SomeChildDirective);
-      expect(directiveMetadata)
-          .toEqual(new Directive(
-              {selector: 'someChildDirective', inputs: [], outputs: [], host: {}, queries: {}}));
+    it('should support inheriting the Directive metadata', function() {
+      @Directive({selector: 'p'})
+      class Parent {
+      }
+
+      class ChildNoDecorator extends Parent {}
+
+      @Directive({selector: 'c'})
+      class ChildWithDecorator extends Parent {
+      }
+
+      expect(resolver.resolve(ChildNoDecorator))
+          .toEqual(new Directive({selector: 'p', inputs: [], outputs: [], host: {}, queries: {}}));
+
+      expect(resolver.resolve(ChildWithDecorator))
+          .toEqual(new Directive({selector: 'c', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
     describe('inputs', () => {
@@ -168,16 +154,52 @@ export function main() {
         expect(directiveMetadata.inputs).toEqual(['a: renamed']);
       });
 
-      it('should throw if duplicate inputs', () => {
-        expect(() => {
-          resolver.resolve(SomeDirectiveWithDuplicateInputs);
-        }).toThrowError(`Input 'a' defined multiple times in 'SomeDirectiveWithDuplicateInputs'`);
+      it('should remove duplicate inputs', () => {
+        @Directive({selector: 'someDirective', inputs: ['a', 'a']})
+        class SomeDirectiveWithDuplicateInputs {
+        }
+
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
+        expect(directiveMetadata.inputs).toEqual(['a']);
       });
 
-      it('should throw if duplicate inputs (with rename)', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedInputs); })
-            .toThrowError(
-                `Input 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedInputs'`);
+      it('should use the last input if duplicate inputs (with rename)', () => {
+        @Directive({selector: 'someDirective', inputs: ['a', 'localA: a']})
+        class SomeDirectiveWithDuplicateInputs {
+        }
+
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
+        expect(directiveMetadata.inputs).toEqual(['localA: a']);
+      });
+
+      it('should prefer @Input over @Directive.inputs', () => {
+        @Directive({selector: 'someDirective', inputs: ['a']})
+        class SomeDirectiveWithDuplicateInputs {
+          @Input('a')
+          propA: any;
+        }
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
+        expect(directiveMetadata.inputs).toEqual(['propA: a']);
+      });
+
+      it('should support inheriting inputs', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @Input()
+          p1: any;
+          @Input('p21')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @Input('p22')
+          p2: any;
+          @Input()
+          p3: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.inputs).toEqual(['p1', 'p2: p22', 'p3']);
       });
     });
 
@@ -192,16 +214,52 @@ export function main() {
         expect(directiveMetadata.outputs).toEqual(['a: renamed']);
       });
 
-      it('should throw if duplicate outputs', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateOutputs); })
-            .toThrowError(
-                `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateOutputs'`);
+      it('should remove duplicate outputs', () => {
+        @Directive({selector: 'someDirective', outputs: ['a', 'a']})
+        class SomeDirectiveWithDuplicateOutputs {
+        }
+
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
+        expect(directiveMetadata.outputs).toEqual(['a']);
       });
 
-      it('should throw if duplicate outputs (with rename)', () => {
-        expect(() => { resolver.resolve(SomeDirectiveWithDuplicateRenamedOutputs); })
-            .toThrowError(
-                `Output event 'a' defined multiple times in 'SomeDirectiveWithDuplicateRenamedOutputs'`);
+      it('should use the last output if duplicate outputs (with rename)', () => {
+        @Directive({selector: 'someDirective', outputs: ['a', 'localA: a']})
+        class SomeDirectiveWithDuplicateOutputs {
+        }
+
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
+        expect(directiveMetadata.outputs).toEqual(['localA: a']);
+      });
+
+      it('should prefer @Output over @Directive.outputs', () => {
+        @Directive({selector: 'someDirective', outputs: ['a']})
+        class SomeDirectiveWithDuplicateOutputs {
+          @Output('a')
+          propA: any;
+        }
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
+        expect(directiveMetadata.outputs).toEqual(['propA: a']);
+      });
+
+      it('should support inheriting outputs', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @Output()
+          p1: any;
+          @Output('p21')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @Output('p22')
+          p2: any;
+          @Output()
+          p3: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.outputs).toEqual(['p1', 'p2: p22', 'p3']);
       });
     });
 
@@ -233,6 +291,77 @@ export function main() {
             .toThrowError(
                 `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);
       });
+
+      it('should support inheriting host bindings', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @HostBinding()
+          p1: any;
+          @HostBinding('p21')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @HostBinding('p22')
+          p2: any;
+          @HostBinding()
+          p3: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.host)
+            .toEqual({'[p1]': 'p1', '[p21]': 'p2', '[p22]': 'p2', '[p3]': 'p3'});
+      });
+
+      it('should support inheriting host listeners', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @HostListener('p1')
+          p1() {}
+          @HostListener('p21')
+          p2() {}
+        }
+
+        class Child extends Parent {
+          @HostListener('p22')
+          p2() {}
+          @HostListener('p3')
+          p3() {}
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.host)
+            .toEqual({'(p1)': 'p1()', '(p21)': 'p2()', '(p22)': 'p2()', '(p3)': 'p3()'});
+      });
+
+      it('should combine host bindings and listeners during inheritance', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @HostListener('p11') @HostListener('p12')
+          p1() {}
+
+          @HostBinding('p21') @HostBinding('p22')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @HostListener('c1')
+          p1() {}
+
+          @HostBinding('c2')
+          p2: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.host).toEqual({
+          '(p11)': 'p1()',
+          '(p12)': 'p1()',
+          '(c1)': 'p1()',
+          '[p21]': 'p2',
+          '[p22]': 'p2',
+          '[c2]': 'p2'
+        });
+      });
     });
 
     describe('queries', () => {
@@ -258,6 +387,30 @@ export function main() {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
         expect(directiveMetadata.queries)
             .toEqual({'c': new ViewChild('c'), 'a': new ViewChild('a')});
+      });
+
+      it('should support inheriting queries', () => {
+        @Directive({selector: 'p'})
+        class Parent {
+          @ContentChild('p1')
+          p1: any;
+          @ContentChild('p21')
+          p2: any;
+        }
+
+        class Child extends Parent {
+          @ContentChild('p22')
+          p2: any;
+          @ContentChild('p3')
+          p3: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Child);
+        expect(directiveMetadata.queries).toEqual({
+          'p1': new ContentChild('p1'),
+          'p2': new ContentChild('p22'),
+          'p3': new ContentChild('p3')
+        });
       });
     });
 

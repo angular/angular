@@ -9,10 +9,10 @@
 import {__core_private__ as r} from '@angular/core';
 
 export type ReflectorReader = typeof r._ReflectorReader;
-export var ReflectorReader: typeof r.ReflectorReader = r.ReflectorReader;
+export const ReflectorReader: typeof r.ReflectorReader = r.ReflectorReader;
 
 export type ReflectionCapabilities = typeof r._ReflectionCapabilities;
-export var ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
+export const ReflectionCapabilities: typeof r.ReflectionCapabilities = r.ReflectionCapabilities;
 
 export type Console = typeof r._Console;
-export var Console: typeof r.Console = r.Console;
+export const Console: typeof r.Console = r.Console;

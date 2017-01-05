@@ -23,10 +23,11 @@ export interface IModule {
   controller(name: string, type: IInjectable): IModule;
   factory(key: Ng1Token, factoryFn: IInjectable): IModule;
   value(key: Ng1Token, value: any): IModule;
+  constant(token: Ng1Token, value: any): IModule;
   run(a: IInjectable): IModule;
 }
 export interface ICompileService {
-  (element: Element|NodeList|string, transclude?: Function): ILinkFn;
+  (element: Element|NodeList|Node[]|string, transclude?: Function): ILinkFn;
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;
@@ -42,6 +43,7 @@ export interface IRootScopeService {
   $parent: IScope;
   $root: IScope;
   $watch(expr: any, fn?: (a1?: any, a2?: any) => void): Function;
+  $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
   $destroy(): any;
   $apply(): any;
   $apply(exp: string): any;
@@ -55,7 +57,7 @@ export interface IRootScopeService {
   [key: string]: any;
 }
 export interface IScope extends IRootScopeService {}
-;
+
 export interface IAngularBootstrapConfig { strictDi?: boolean; }
 export interface IDirective {
   compile?: IDirectiveCompileFn;
@@ -118,6 +120,7 @@ export type IAugmentedJQuery = Node[] & {
   append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
+  injector?: () => IInjectorService;
 };
 export interface IProvider { $get: IInjectable; }
 export interface IProvideService {
@@ -187,9 +190,9 @@ try {
   // ignore in CJS mode.
 }
 
-export var bootstrap = angular.bootstrap;
-export var module = angular.module;
-export var element = angular.element;
-export var version = angular.version;
-export var resumeBootstrap = angular.resumeBootstrap;
-export var getTestability = angular.getTestability;
+export const bootstrap = angular.bootstrap;
+export const module = angular.module;
+export const element = angular.element;
+export const version = angular.version;
+export const resumeBootstrap = angular.resumeBootstrap;
+export const getTestability = angular.getTestability;

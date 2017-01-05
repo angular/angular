@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BaseError} from './facade/errors';
 import {isPrimitive, isStrictStringMap} from './facade/lang';
-
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -33,10 +33,6 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
   const characterIndex = input.indexOf(character);
   if (characterIndex == -1) return defaultValues;
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
-}
-
-export function sanitizeIdentifier(name: string): string {
-  return name.replace(/\W/g, '_');
 }
 
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
@@ -82,3 +78,5 @@ export class SyncAsyncResult<T> {
     }
   }
 }
+
+export class SyntaxError extends BaseError {}

@@ -16,6 +16,7 @@ import {AppModule, TreeComponent} from './tree';
 export function init(moduleRef: NgModuleRef<AppModule>) {
   let tree: TreeComponent;
   let appRef: ApplicationRef;
+  let detectChangesRuns = 0;
 
   function destroyDom() {
     tree.data = emptyTree;
@@ -27,14 +28,26 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
     appRef.tick();
   }
 
+  function detectChanges() {
+    for (let i = 0; i < 10; i++) {
+      appRef.tick();
+    }
+    detectChangesRuns += 10;
+    numberOfChecksEl.textContent = `${detectChangesRuns}`;
+  }
+
   function noop() {}
 
   const injector = moduleRef.injector;
   appRef = injector.get(ApplicationRef);
+  const numberOfChecksEl = document.getElementById('numberOfChecks');
 
   tree = appRef.components[0].instance;
+
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
+  bindAction('#detectChanges', detectChanges);
+  bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
   bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
   bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
 }

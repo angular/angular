@@ -10,6 +10,7 @@ import {PlatformRef, Provider} from '@angular/core';
 
 import {WORKER_SCRIPT, platformWorkerUi} from './worker_render';
 
+export {VERSION} from './version';
 export {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from './web_workers/shared/client_message_broker';
 export {MessageBus, MessageBusSink, MessageBusSource} from './web_workers/shared/message_bus';
 export {PRIMITIVE} from './web_workers/shared/serializer';

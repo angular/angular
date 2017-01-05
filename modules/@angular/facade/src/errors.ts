@@ -18,9 +18,12 @@ export class BaseError extends Error {
   _nativeError: Error;
 
   constructor(message: string) {
+    super(message);
     // Errors don't use current this, instead they create a new instance.
     // We have to do forward all of our api to the nativeInstance.
-    const nativeError = super(message) as any as Error;
+    // TODO(bradfordcsmith): Remove this hack when
+    //     google/closure-compiler/issues/2102 is fixed.
+    const nativeError = new Error(message) as any as Error;
     this._nativeError = nativeError;
   }
 

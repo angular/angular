@@ -153,6 +153,78 @@ export function main() {
          expect(getDOM().hasClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo'))
              .toBe(true);
        }));
+
+    describe('else', () => {
+      it('should support else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else elseBlock">TRUE</span>' +
+               '<template #elseBlock>FALSE</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TRUE');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE');
+         }));
+
+      it('should support then and else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; then thenBlock; else elseBlock">IGNORE</span>' +
+               '<template #thenBlock>THEN</template>' +
+               '<template #elseBlock>ELSE</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('THEN');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('ELSE');
+         }));
+
+      it('should support dynamic else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else nestedBooleanCondition ? b1 : b2">TRUE</span>' +
+               '<template #b1>FALSE1</template>' +
+               '<template #b2>FALSE2</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TRUE');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE1');
+
+           getComponent().nestedBooleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE2');
+         }));
+
+      it('should support binding to variable', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else elseBlock; let v">{{v}}</span>' +
+               '<template #elseBlock let-v>{{v}}</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('true');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('false');
+         }));
+    });
   });
 }
 

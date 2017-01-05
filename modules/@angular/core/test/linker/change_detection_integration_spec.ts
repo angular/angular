@@ -82,6 +82,7 @@ export function main() {
           AnotherComponent,
           TestLocals,
           CompWithRef,
+          WrapCompWithRef,
           EmitterDirective,
           PushComp,
           OnDestroyDirective,
@@ -301,6 +302,12 @@ export function main() {
 
         it('should support chained short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support short-circuting array index operations', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
@@ -1127,6 +1134,23 @@ export function main() {
            expect(renderLog.log).toEqual([]);
          }));
 
+      it('Detached view can be checked locally', fakeAsync(() => {
+           const ctx = createCompFixture('<wrap-comp-with-ref></wrap-comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
+           expect(renderLog.log).toEqual([]);
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual([]);
+
+           cmp.changeDetectorRef.detectChanges();
+
+           expect(renderLog.log).toEqual(['{{hello}}']);
+         }));
+
+
       it('Reattaches', fakeAsync(() => {
            const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
            const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
@@ -1340,6 +1364,11 @@ class CompWithRef {
   noop() {}
 }
 
+@Component({selector: 'wrap-comp-with-ref', template: '<comp-with-ref></comp-with-ref>'})
+class WrapCompWithRef {
+  constructor(public changeDetectorRef: ChangeDetectorRef) {}
+}
+
 @Component({
   selector: 'push-cmp',
   template: '<div (event)="noop()" emitterDirective></div>{{value}}{{renderIncrement}}',
@@ -1515,6 +1544,7 @@ class Person {
   age: number;
   name: string;
   address: Address = null;
+  phones: number[];
 
   init(name: string, address: Address = null) {
     this.name = name;

@@ -30,9 +30,9 @@ const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
  *
  * ```
  * <ng-container [ngPlural]="messages.length">
- *   <template ngPluralCase="=0">zero</ng-container>
- *   <template ngPluralCase="=1">one</ng-container>
- *   <template ngPluralCase="other">more than one</ng-container>
+ *   <template ngPluralCase="=0">zero</template>
+ *   <template ngPluralCase="=1">one</template>
+ *   <template ngPluralCase="other">more than one</template>
  * </ng-container>
  * ```
  */

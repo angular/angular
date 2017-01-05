@@ -24,9 +24,28 @@ export interface CompilerInterface {
   emit(program: ts.Program): number;
 }
 
+export class UserError extends Error {
+  private _nativeError: Error;
+
+  constructor(message: string) {
+    // Errors don't use current this, instead they create a new instance.
+    // We have to do forward all of our api to the nativeInstance.
+    const nativeError = super(message) as any as Error;
+    this._nativeError = nativeError;
+  }
+
+  get message() { return this._nativeError.message; }
+  set message(message) { this._nativeError.message = message; }
+  get name() { return 'UserError'; }
+  get stack() { return (this._nativeError as any).stack; }
+  set stack(value) { (this._nativeError as any).stack = value; }
+  toString() { return this._nativeError.toString(); }
+}
+
 const DEBUG = false;
 
 function debug(msg: string, ...o: any[]) {
+  // tslint:disable-next-line:no-console
   if (DEBUG) console.log(msg, ...o);
 }
 
@@ -47,7 +66,7 @@ export function formatDiagnostics(diags: ts.Diagnostic[]): string {
 
 export function check(diags: ts.Diagnostic[]) {
   if (diags && diags.length && diags[0]) {
-    throw new Error(formatDiagnostics(diags));
+    throw new UserError(formatDiagnostics(diags));
   }
 }
 
@@ -141,4 +160,4 @@ export class Tsc implements CompilerInterface {
     return emitResult.emitSkipped ? 1 : 0;
   }
 }
-export var tsc: CompilerInterface = new Tsc();
+export const tsc: CompilerInterface = new Tsc();

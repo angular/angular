@@ -88,5 +88,14 @@ export function main() {
 
       expect(req.text()).toEqual('');
     });
+
+    it('should return empty string if body is undefined', () => {
+      const reqOptions = new RequestOptions(
+          {url: 'test', method: 'GET', headers: new Headers({'content-type': 'application/json'})});
+      delete reqOptions.body;
+      const req = new Request(reqOptions);
+
+      expect(req.text()).toEqual('');
+    });
   });
 }

@@ -15,40 +15,57 @@ import * as ts from 'typescript';
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|css(\.shim)?)$/;
+const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
+const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
+const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$/;
 
-export interface CompilerHostContext {
-  fileExists(fileName: string): boolean;
-  directoryExists(directoryName: string): boolean;
-  readFile(fileName: string): string;
+export interface CompilerHostContext extends ts.ModuleResolutionHost {
   readResource(fileName: string): Promise<string>;
   assumeFileExists(fileName: string): void;
 }
 
 export class CompilerHost implements AotCompilerHost {
   protected metadataCollector = new MetadataCollector();
-  protected context: CompilerHostContext;
   private isGenDirChildOfRootDir: boolean;
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
+  protected resolveModuleNameHost: CompilerHostContext;
 
   constructor(
-      protected program: ts.Program, protected compilerHost: ts.CompilerHost,
-      protected options: AngularCompilerOptions, context?: CompilerHostContext) {
+      protected program: ts.Program, protected options: AngularCompilerOptions,
+      protected context: CompilerHostContext) {
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
 
-    this.context = context || new NodeCompilerHostContext(compilerHost);
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
+    this.resolveModuleNameHost = Object.create(this.context);
+
+    // When calling ts.resolveModuleName,
+    // additional allow checks for .d.ts files to be done based on
+    // checks for .ngsummary.json files,
+    // so that our codegen depends on fewer inputs and requires to be called
+    // less often.
+    // This is needed as we use ts.resolveModuleName in reflector_host
+    // and it should be able to resolve summary file names.
+    this.resolveModuleNameHost.fileExists = (fileName: string): boolean => {
+      if (this.context.fileExists(fileName)) {
+        return true;
+      }
+      if (DTS.test(fileName)) {
+        const base = fileName.substring(0, fileName.length - 5);
+        return this.context.fileExists(base + '.ngsummary.json');
+      }
+      return false;
+    };
   }
 
   // We use absolute paths on disk as canonical.
   getCanonicalFileName(fileName: string): string { return fileName; }
 
-  moduleNameToFileName(m: string, containingFile: string) {
+  moduleNameToFileName(m: string, containingFile: string): string|null {
     if (!containingFile || !containingFile.length) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -58,7 +75,8 @@ export class CompilerHost implements AotCompilerHost {
     }
     m = m.replace(EXT, '');
     const resolved =
-        ts.resolveModuleName(m, containingFile.replace(/\\/g, '/'), this.options, this.context)
+        ts.resolveModuleName(
+              m, containingFile.replace(/\\/g, '/'), this.options, this.resolveModuleNameHost)
             .resolvedModule;
     return resolved ? this.getCanonicalFileName(resolved.resolvedFileName) : null;
   };
@@ -81,7 +99,7 @@ export class CompilerHost implements AotCompilerHost {
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
-    if (!this.compilerHost.fileExists(importedFile)) {
+    if (!this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
     }
 
@@ -163,6 +181,12 @@ export class CompilerHost implements AotCompilerHost {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
         return this.readMetadata(metadataPath, filePath);
+      } else {
+        // If there is a .d.ts file but no metadata file we need to produce a
+        // v3 metadata from the .d.ts file as v3 includes the exports we need
+        // to resolve symbols.
+        return [this.upgradeVersion1Metadata(
+            {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
     } else {
       const sf = this.getSourceFile(filePath);
@@ -178,32 +202,13 @@ export class CompilerHost implements AotCompilerHost {
     }
     try {
       const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
-      const metadatas = metadataOrMetadatas ?
+      const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find(m => m['version'] === 1);
-      let v2Metadata = metadatas.find(m => m['version'] === 2);
-      if (!v2Metadata && v1Metadata) {
-        // patch up v1 to v2 by merging the metadata with metadata collected from the d.ts file
-        // as the only difference between the versions is whether all exports are contained in
-        // the metadata
-        v2Metadata = {'__symbolic': 'module', 'version': 2, 'metadata': {}};
-        if (v1Metadata.exports) {
-          v2Metadata.exports = v1Metadata.exports;
-        }
-        for (let prop in v1Metadata.metadata) {
-          v2Metadata.metadata[prop] = v1Metadata.metadata[prop];
-        }
-        const sourceText = this.context.readFile(dtsFilePath);
-        const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
-        if (exports) {
-          for (let prop in exports.metadata) {
-            if (!v2Metadata.metadata[prop]) {
-              v2Metadata.metadata[prop] = exports.metadata[prop];
-            }
-          }
-        }
-        metadatas.push(v2Metadata);
+      const v1Metadata = metadatas.find(m => m.version === 1);
+      let v3Metadata = metadatas.find(m => m.version === 3);
+      if (!v3Metadata && v1Metadata) {
+        metadatas.push(this.upgradeVersion1Metadata(v1Metadata, dtsFilePath));
       }
       this.resolverCache.set(filePath, metadatas);
       return metadatas;
@@ -213,16 +218,87 @@ export class CompilerHost implements AotCompilerHost {
     }
   }
 
+  private upgradeVersion1Metadata(v1Metadata: ModuleMetadata, dtsFilePath: string): ModuleMetadata {
+    // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
+    // as the only difference between the versions is whether all exports are contained in
+    // the metadata and the `extends` clause.
+    let v3Metadata: ModuleMetadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
+    if (v1Metadata.exports) {
+      v3Metadata.exports = v1Metadata.exports;
+    }
+    for (let prop in v1Metadata.metadata) {
+      v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
+    }
+
+    const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
+    if (exports) {
+      for (let prop in exports.metadata) {
+        if (!v3Metadata.metadata[prop]) {
+          v3Metadata.metadata[prop] = exports.metadata[prop];
+        }
+      }
+      if (exports.exports) {
+        v3Metadata.exports = exports.exports;
+      }
+    }
+    return v3Metadata;
+  }
+
   loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
+
+  loadSummary(filePath: string): string|null {
+    if (this.context.fileExists(filePath)) {
+      return this.context.readFile(filePath);
+    }
+  }
+
+  getOutputFileName(sourceFilePath: string): string {
+    return sourceFilePath.replace(EXT, '') + '.d.ts';
+  }
+
+  isSourceFile(filePath: string): boolean {
+    const excludeRegex =
+        this.options.generateCodeForLibraries === false ? GENERATED_OR_DTS_FILES : GENERATED_FILES;
+    return !excludeRegex.test(filePath);
+  }
 }
 
-export class NodeCompilerHostContext implements CompilerHostContext {
-  constructor(private host: ts.CompilerHost) {}
+export class CompilerHostContextAdapter {
+  protected assumedExists: {[fileName: string]: boolean} = {};
 
-  private assumedExists: {[fileName: string]: boolean} = {};
+  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
+}
+
+export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter implements
+    CompilerHostContext {
+  public directoryExists: ((directoryName: string) => boolean)|undefined;
+
+  constructor(private host: ts.ModuleResolutionHost) {
+    super();
+    if (host.directoryExists) {
+      this.directoryExists = (directoryName: string) => host.directoryExists(directoryName);
+    }
+  }
 
   fileExists(fileName: string): boolean {
     return this.assumedExists[fileName] || this.host.fileExists(fileName);
+  }
+
+  readFile(fileName: string): string { return this.host.readFile(fileName); }
+
+  readResource(s: string) {
+    if (!this.host.fileExists(s)) {
+      // TODO: We should really have a test for error cases like this!
+      throw new Error(`Compilation failed. Resource file not found: ${s}`);
+    }
+    return Promise.resolve(this.host.readFile(s));
+  }
+}
+
+export class NodeCompilerHostContext extends CompilerHostContextAdapter implements
+    CompilerHostContext {
+  fileExists(fileName: string): boolean {
+    return this.assumedExists[fileName] || fs.existsSync(fileName);
   }
 
   directoryExists(directoryName: string): boolean {
@@ -236,12 +312,10 @@ export class NodeCompilerHostContext implements CompilerHostContext {
   readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
 
   readResource(s: string) {
-    if (!this.host.fileExists(s)) {
+    if (!this.fileExists(s)) {
       // TODO: We should really have a test for error cases like this!
       throw new Error(`Compilation failed. Resource file not found: ${s}`);
     }
-    return Promise.resolve(this.host.readFile(s));
+    return Promise.resolve(this.readFile(s));
   }
-
-  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
 }

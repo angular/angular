@@ -12,7 +12,8 @@ import {LocationStrategy} from './location_strategy';
 
 
 /**
- * `Location` is a service that applications can use to interact with a browser's URL.
+ * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
+ * @description
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
@@ -28,19 +29,7 @@ import {LocationStrategy} from './location_strategy';
  * - `/my/app/user/123/` **is not** normalized
  *
  * ### Example
- *
- * ```
- * import {Component} from '@angular/core';
- * import {Location} from '@angular/common';
- *
- * @Component({selector: 'app-component'})
- * class AppCmp {
- *   constructor(location: Location) {
- *     location.go('/foo');
- *   }
- * }
- * ```
- *
+ * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  * @stable
  */
 @Injectable()
@@ -96,7 +85,7 @@ export class Location {
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    */
   prepareExternalUrl(url: string): string {
-    if (url.length > 0 && !url.startsWith('/')) {
+    if (url && url[0] !== '/') {
       url = '/' + url;
     }
     return this._platformStrategy.prepareExternalUrl(url);
@@ -143,7 +132,7 @@ export class Location {
    * is.
    */
   public static normalizeQueryParams(params: string): string {
-    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+    return params && params[0] !== '?' ? '?' + params : params;
   }
 
   /**
@@ -175,25 +164,13 @@ export class Location {
   /**
    * If url has a trailing slash, remove it, otherwise return url as is.
    */
-  public static stripTrailingSlash(url: string): string {
-    if (/\/$/g.test(url)) {
-      url = url.substring(0, url.length - 1);
-    }
-    return url;
-  }
+  public static stripTrailingSlash(url: string): string { return url.replace(/\/$/, ''); }
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
-  if (baseHref.length > 0 && url.startsWith(baseHref)) {
-    return url.substring(baseHref.length);
-  }
-  return url;
+  return baseHref && url.startsWith(baseHref) ? url.substring(baseHref.length) : url;
 }
 
 function _stripIndexHtml(url: string): string {
-  if (/\/index.html$/g.test(url)) {
-    // '/index.html'.length == 11
-    return url.substring(0, url.length - 11);
-  }
-  return url;
+  return url.replace(/\/index.html$/, '');
 }

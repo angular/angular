@@ -219,6 +219,7 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
+    getNgContentSelectors(component: Type<any>): string[];
 }
 
 /** @experimental */
@@ -277,7 +278,7 @@ export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
 export interface ContentChildDecorator {
-    (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {
@@ -304,7 +305,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlaformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: (extraProviders?: Provider[]) => PlatformRef, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -399,7 +400,6 @@ export declare class ElementRef {
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     context: C;
     rootNodes: any[];
-    abstract destroy(): void;
 }
 
 /** @stable */
@@ -842,8 +842,9 @@ export declare function setTestabilityGetter(getter: GetTestability): void;
 /** @stable */
 export declare class SimpleChange {
     currentValue: any;
+    firstChange: boolean;
     previousValue: any;
-    constructor(previousValue: any, currentValue: any);
+    constructor(previousValue: any, currentValue: any, firstChange: boolean);
     isFirstChange(): boolean;
 }
 
@@ -951,6 +952,18 @@ export interface ValueProvider {
 }
 
 /** @stable */
+export declare class Version {
+    full: string;
+    major: string;
+    minor: string;
+    patch: string;
+    constructor(full: string);
+}
+
+/** @stable */
+export declare const VERSION: Version;
+
+/** @stable */
 export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
@@ -967,7 +980,8 @@ export interface ViewChildDecorator {
 export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
-export interface ViewChildrenDecorator { (selector: Type<any> | Function | string, {read}?: {
+export interface ViewChildrenDecorator {
+    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
         read?: any;
     }): any;
     new (selector: Type<any> | Function | string, {read}?: {
@@ -1002,6 +1016,7 @@ export declare enum ViewEncapsulation {
 /** @stable */
 export declare abstract class ViewRef extends ChangeDetectorRef {
     destroyed: boolean;
+    abstract destroy(): void;
     abstract onDestroy(callback: Function): any;
 }
 
@@ -1013,13 +1028,13 @@ export declare class WrappedValue {
 }
 
 /** @experimental */
-export declare var wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
+export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
 
 /** @experimental */
-export declare var wtfEndTimeRange: (range: any) => void;
+export declare const wtfEndTimeRange: (range: any) => void;
 
 /** @experimental */
-export declare var wtfLeave: <T>(scope: any, returnValue?: T) => T;
+export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
 
 /** @experimental */
 export interface WtfScopeFn {
@@ -1027,4 +1042,4 @@ export interface WtfScopeFn {
 }
 
 /** @experimental */
-export declare var wtfStartTimeRange: (rangeType: string, action: string) => any;
+export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;

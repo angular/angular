@@ -7,12 +7,11 @@
  */
 
 import {AnimationEntryCompileResult} from '../animation/animation_compiler';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompilePipeSummary, tokenName, viewClassName} from '../compile_metadata';
 import {EventHandlerVars, NameResolver} from '../compiler_util/expression_converter';
-import {createPureProxy} from '../compiler_util/identifier_util';
 import {CompilerConfig} from '../config';
 import {isPresent} from '../facade/lang';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ViewType} from '../private_import_core';
 
@@ -20,7 +19,8 @@ import {CompileElement, CompileNode} from './compile_element';
 import {CompileMethod} from './compile_method';
 import {CompilePipe} from './compile_pipe';
 import {CompileQuery, addQueryToTokenMap, createQueryList} from './compile_query';
-import {getPropertyInView, getViewClassName} from './util';
+import {ComponentFactoryDependency, ComponentViewDependency, DirectiveWrapperDependency} from './deps';
+import {getPropertyInView} from './util';
 
 export enum CompileViewRootNodeType {
   Node,
@@ -84,7 +84,9 @@ export class CompileView implements NameResolver {
       public component: CompileDirectiveMetadata, public genConfig: CompilerConfig,
       public pipeMetas: CompilePipeSummary[], public styles: o.Expression,
       public animations: AnimationEntryCompileResult[], public viewIndex: number,
-      public declarationElement: CompileElement, public templateVariableBindings: string[][]) {
+      public declarationElement: CompileElement, public templateVariableBindings: string[][],
+      public targetDependencies:
+          Array<ComponentViewDependency|ComponentFactoryDependency|DirectiveWrapperDependency>) {
     this.createMethod = new CompileMethod(this);
     this.animationBindingsMethod = new CompileMethod(this);
     this.injectorGetMethod = new CompileMethod(this);
@@ -100,8 +102,8 @@ export class CompileView implements NameResolver {
     this.detachMethod = new CompileMethod(this);
 
     this.viewType = getViewType(component, viewIndex);
-    this.className = getViewClassName(component, viewIndex);
-    this.classType = o.importType(new CompileIdentifierMetadata({name: this.className}));
+    this.className = viewClassName(component.type.reference, viewIndex);
+    this.classType = o.expressionType(o.variable(this.className));
     this.classExpr = o.variable(this.className);
     if (this.viewType === ViewType.COMPONENT || this.viewType === ViewType.HOST) {
       this.componentView = this;
@@ -115,7 +117,7 @@ export class CompileView implements NameResolver {
     if (this.viewType === ViewType.COMPONENT) {
       const directiveInstance = o.THIS_EXPR.prop('context');
       this.component.viewQueries.forEach((queryMeta, queryIndex) => {
-        const propName = `_viewQuery_${queryMeta.selectors[0].name}_${queryIndex}`;
+        const propName = `_viewQuery_${tokenName(queryMeta.selectors[0])}_${queryIndex}`;
         const queryList = createQueryList(queryMeta, directiveInstance, propName, this);
         const query = new CompileQuery(queryMeta, queryList, directiveInstance, this);
         addQueryToTokenMap(viewQueries, query);
@@ -151,11 +153,11 @@ export class CompileView implements NameResolver {
     }
   }
 
-  afterNodes() {
+  finish() {
     Array.from(this.viewQueries.values())
         .forEach(
             queries => queries.forEach(
-                q => q.afterChildren(this.createMethod, this.updateViewQueriesMethod)));
+                q => q.generateStatements(this.createMethod, this.updateViewQueriesMethod)));
   }
 }
 
@@ -164,7 +166,7 @@ function getViewType(component: CompileDirectiveMetadata, embeddedTemplateIndex:
     return ViewType.EMBEDDED;
   }
 
-  if (component.type.isHost) {
+  if (component.isHost) {
     return ViewType.HOST;
   }
 

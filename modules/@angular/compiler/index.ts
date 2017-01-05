@@ -21,6 +21,7 @@
  *   </p>
  * </div>
  */
+export {VERSION} from './src/version';
 export * from './src/template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './src/template_parser/template_parser';
 export {CompilerConfig, RenderTypes} from './src/config';
@@ -31,6 +32,9 @@ export * from './src/aot/compiler_host';
 export * from './src/aot/static_reflector';
 export * from './src/aot/static_reflection_capabilities';
 export * from './src/aot/static_symbol';
+export * from './src/aot/static_symbol_resolver';
+export * from './src/aot/summary_resolver';
+export * from './src/summary_resolver';
 export {JitCompiler} from './src/jit/compiler';
 export * from './src/jit/compiler_factory';
 export * from './src/url_resolver';
@@ -58,5 +62,5 @@ export * from './src/style_compiler';
 export * from './src/template_parser/template_parser';
 export {ViewCompiler} from './src/view_compiler/view_compiler';
 export {AnimationParser} from './src/animation/animation_parser';
-
+export {SyntaxError} from './src/util';
 // This file only reexports content of the `src` folder. Keep it that way.

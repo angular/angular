@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 
 import NgOptions from './options';
 import {MetadataCollector} from './collector';
+import {ModuleMetadata} from './schema';
 
 export function formatDiagnostics(d: ts.Diagnostic[]): string {
   const host: ts.FormatDiagnosticsHost = {
@@ -79,7 +80,7 @@ interface DecoratorInvocation {
           }
         }
         return ts.createSourceFile(fileName, newContent, languageVersion, true);
-      };
+      }
 }
 
 export class TsickleCompilerHost extends DelegatingHost {
@@ -103,13 +104,14 @@ export class TsickleCompilerHost extends DelegatingHost {
             tsickle.annotate(this.oldProgram, sourceFile, {untyped: true});
         this.diagnostics = diagnostics;
         return ts.createSourceFile(fileName, output, languageVersion, true);
-      };
+      }
 }
 
-const IGNORED_FILES = /\.ngfactory\.js$|\.css\.js$|\.css\.shim\.js$/;
+const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
 
 export class MetadataWriterHost extends DelegatingHost {
-  private metadataCollector = new MetadataCollector();
+  private metadataCollector = new MetadataCollector({quotedNames: true});
+  private metadataCollector1 = new MetadataCollector({version: 1});
   constructor(delegate: ts.CompilerHost, private ngOptions: NgOptions) { super(delegate); }
 
   private writeMetadata(emitFilePath: string, sourceFile: ts.SourceFile) {
@@ -119,8 +121,10 @@ export class MetadataWriterHost extends DelegatingHost {
       const path = emitFilePath.replace(/*DTS*/ /\.js$/, '.metadata.json');
       const metadata =
           this.metadataCollector.getMetadata(sourceFile, !!this.ngOptions.strictMetadataEmit);
-      if (metadata && metadata.metadata) {
-        const metadataText = JSON.stringify(metadata);
+      const metadata1 = this.metadataCollector1.getMetadata(sourceFile, false);
+      const metadatas: ModuleMetadata[] = [metadata, metadata1].filter(e => !!e);
+      if (metadatas.length) {
+        const metadataText = JSON.stringify(metadatas);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
       }
     }
@@ -152,5 +156,5 @@ export class MetadataWriterHost extends DelegatingHost {
           throw new Error('Bundled emit with --out is not supported');
         }
         this.writeMetadata(fileName, sourceFiles[0]);
-      };
+      }
 }

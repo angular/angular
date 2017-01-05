@@ -67,11 +67,27 @@ export class RouterOutlet implements OnDestroy {
     return this._activatedRoute;
   }
 
+  detach(): ComponentRef<any> {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    this.location.detach();
+    const r = this.activated;
+    this.activated = null;
+    this._activatedRoute = null;
+    return r;
+  }
+
+  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
+    this.activated = ref;
+    this._activatedRoute = activatedRoute;
+    this.location.insert(ref.hostView);
+  }
+
   deactivate(): void {
     if (this.activated) {
       const c = this.component;
       this.activated.destroy();
       this.activated = null;
+      this._activatedRoute = null;
       this.deactivateEvents.emit(c);
     }
   }

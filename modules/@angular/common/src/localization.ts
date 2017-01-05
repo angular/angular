@@ -23,9 +23,23 @@ export abstract class NgLocalization { abstract getPluralCategory(value: any): s
  */
 export function getPluralCategory(
     value: number, cases: string[], ngLocalization: NgLocalization): string {
-  const nbCase = `=${value}`;
+  let key = `=${value}`;
 
-  return cases.indexOf(nbCase) > -1 ? nbCase : ngLocalization.getPluralCategory(value);
+  if (cases.indexOf(key) > -1) {
+    return key;
+  }
+
+  key = ngLocalization.getPluralCategory(value);
+
+  if (cases.indexOf(key) > -1) {
+    return key;
+  }
+
+  if (cases.indexOf('other') > -1) {
+    return 'other';
+  }
+
+  throw new Error(`No plural message found for value "${value}"`);
 }
 
 /**
@@ -35,10 +49,10 @@ export function getPluralCategory(
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
-  constructor(@Inject(LOCALE_ID) private _locale: string) { super(); }
+  constructor(@Inject(LOCALE_ID) protected locale: string) { super(); }
 
   getPluralCategory(value: any): string {
-    const plural = getPluralCase(this._locale, value);
+    const plural = getPluralCase(this.locale, value);
 
     switch (plural) {
       case Plural.Zero:

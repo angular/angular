@@ -7,7 +7,7 @@
  */
 
 export {DecoratorDownlevelCompilerHost, MetadataWriterHost} from './src/compiler_host';
-export {CodegenExtension, main} from './src/main';
+export {CodegenExtension, UserError, main} from './src/main';
 
 export {default as AngularCompilerOptions} from './src/options';
 export * from './src/cli_options';

@@ -15,27 +15,74 @@ import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
 import * as tsc from '@angular/tsc-wrapped';
+import * as path from 'path';
 import * as ts from 'typescript';
 
-import {excludeFilePattern} from './codegen';
-import {CompilerHost} from './compiler_host';
+import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
+import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 
 export class Extractor {
   constructor(
-      private ngExtractor: compiler.Extractor, private ngCompilerHost: CompilerHost,
+      private options: tsc.AngularCompilerOptions, private ngExtractor: compiler.Extractor,
+      public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(): Promise<compiler.MessageBundle> {
-    return this.ngExtractor.extract(this.program.getSourceFiles().map(
-        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)));
+  extract(formatName: string): Promise<void> {
+    // Checks the format and returns the extension
+    const ext = this.getExtension(formatName);
+
+    const promiseBundle = this.extractBundle();
+
+    return promiseBundle.then(bundle => {
+      const content = this.serialize(bundle, ext);
+      const dstPath = path.join(this.options.genDir, `messages.${ext}`);
+      this.host.writeFile(dstPath, content, false);
+    });
+  }
+
+  extractBundle(): Promise<compiler.MessageBundle> {
+    const files = this.program.getSourceFiles().map(
+        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName));
+
+    return this.ngExtractor.extract(files);
+  }
+
+  serialize(bundle: compiler.MessageBundle, ext: string): string {
+    let serializer: compiler.Serializer;
+
+    switch (ext) {
+      case 'xmb':
+        serializer = new compiler.Xmb();
+        break;
+      case 'xlf':
+      default:
+        serializer = new compiler.Xliff();
+    }
+
+    return bundle.write(serializer);
+  }
+
+  getExtension(formatName: string): string {
+    const format = (formatName || 'xlf').toLowerCase();
+
+    if (format === 'xmb') return 'xmb';
+    if (format === 'xlf' || format === 'xlif') return 'xlf';
+
+    throw new Error('Unsupported format "${formatName}"');
   }
 
   static create(
-      options: tsc.AngularCompilerOptions, translationsFormat: string, program: ts.Program,
-      tsCompilerHost: ts.CompilerHost, ngCompilerHost?: CompilerHost): Extractor {
-    if (!ngCompilerHost) ngCompilerHost = new CompilerHost(program, tsCompilerHost, options);
-    const {extractor: ngExtractor} = compiler.Extractor.create(
-        ngCompilerHost, {excludeFilePattern: excludeFilePattern(options)});
-    return new Extractor(ngExtractor, ngCompilerHost, program);
+      options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
+      compilerHostContext?: CompilerHostContext, ngCompilerHost?: CompilerHost): Extractor {
+    if (!ngCompilerHost) {
+      const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
+      const context = compilerHostContext || new ModuleResolutionHostAdapter(tsCompilerHost);
+      ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
+                                        new CompilerHost(program, options, context);
+    }
+
+    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost);
+
+    return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program);
   }
 }

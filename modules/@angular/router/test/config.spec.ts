@@ -12,13 +12,32 @@ import {PRIMARY_OUTLET} from '../src/shared';
 describe('config', () => {
   describe('validateConfig', () => {
     it('should not throw when no errors', () => {
-      validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]);
+      expect(
+          () => validateConfig([{path: 'a', redirectTo: 'b'}, {path: 'b', component: ComponentA}]))
+          .not.toThrow();
+    });
+
+    it('should not throw when a matcher is provided', () => {
+      expect(() => validateConfig([{matcher: <any>'someFunc', component: ComponentA}]))
+          .not.toThrow();
     });
 
     it('should throw for undefined route', () => {
       expect(() => {
         validateConfig([{path: 'a', component: ComponentA}, , {path: 'b', component: ComponentB}]);
-      }).toThrowError();
+      }).toThrowError(/Invalid configuration of route ''/);
+    });
+
+    it('should throw for undefined route in children', () => {
+      expect(() => {
+        validateConfig([{
+          path: 'a',
+          children: [
+            {path: 'b', component: ComponentB},
+            ,
+          ]
+        }]);
+      }).toThrowError(/Invalid configuration of route 'a'/);
     });
 
     it('should throw when Array is passed', () => {
@@ -27,7 +46,7 @@ describe('config', () => {
           {path: 'a', component: ComponentA},
           [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}]
         ]);
-      }).toThrowError(`Invalid route configuration: Array cannot be specified`);
+      }).toThrowError(`Invalid configuration of route '': Array cannot be specified`);
     });
 
     it('should throw when redirectTo and children are used together', () => {
@@ -37,6 +56,21 @@ describe('config', () => {
       })
           .toThrowError(
               `Invalid configuration of route 'a': redirectTo and children cannot be used together`);
+    });
+
+    it('should validate children and report full path', () => {
+      expect(() => validateConfig([{path: 'a', children: [{path: 'b'}]}]))
+          .toThrowError(
+              `Invalid configuration of route 'a/b'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+    });
+
+    it('should properly report deeply nested path', () => {
+      expect(() => validateConfig([{
+               path: 'a',
+               children: [{path: 'b', children: [{path: 'c', children: [{path: 'd'}]}]}]
+             }]))
+          .toThrowError(
+              `Invalid configuration of route 'a/b/c/d'. One of the following must be provided: component, redirectTo, children or loadChildren`);
     });
 
     it('should throw when redirectTo and loadChildren are used together', () => {
@@ -57,36 +91,35 @@ describe('config', () => {
               `Invalid configuration of route 'a': redirectTo and component cannot be used together`);
     });
 
-
-    it('should throw when path and mathcer are used together', () => {
+    it('should throw when path and matcher are used together', () => {
       expect(() => { validateConfig([{path: 'a', matcher: <any>'someFunc', children: []}]); })
           .toThrowError(
               `Invalid configuration of route 'a': path and matcher cannot be used together`);
     });
 
     it('should throw when path and matcher are missing', () => {
-      expect(() => {
-        validateConfig([{component: null, redirectTo: 'b'}]);
-      }).toThrowError(`Invalid route configuration: routes must have path specified`);
+      expect(() => { validateConfig([{component: null, redirectTo: 'b'}]); })
+          .toThrowError(
+              `Invalid configuration of route '': routes must have either a path or a matcher specified`);
     });
 
     it('should throw when none of component and children or direct are missing', () => {
       expect(() => { validateConfig([{path: 'a'}]); })
           .toThrowError(
-              `Invalid configuration of route 'a': one of the following must be provided (component or redirectTo or children or loadChildren)`);
+              `Invalid configuration of route 'a'. One of the following must be provided: component, redirectTo, children or loadChildren`);
     });
 
     it('should throw when path starts with a slash', () => {
       expect(() => {
         validateConfig([<any>{path: '/a', redirectTo: 'b'}]);
-      }).toThrowError(`Invalid route configuration of route '/a': path cannot start with a slash`);
+      }).toThrowError(`Invalid configuration of route '/a': path cannot start with a slash`);
     });
 
     it('should throw when emptyPath is used with redirectTo without explicitly providing matching',
        () => {
          expect(() => {
            validateConfig([<any>{path: '', redirectTo: 'b'}]);
-         }).toThrowError(/Invalid route configuration of route '{path: "", redirectTo: "b"}'/);
+         }).toThrowError(/Invalid configuration of route '{path: "", redirectTo: "b"}'/);
        });
 
     it('should throw when pathPatch is invalid', () => {
@@ -98,7 +131,7 @@ describe('config', () => {
     it('should throw when pathPatch is invalid', () => {
       expect(() => { validateConfig([{path: 'a', outlet: 'aux', children: []}]); })
           .toThrowError(
-              /Invalid route configuration of route 'a': a componentless route cannot have a named outlet set/);
+              /Invalid configuration of route 'a': a componentless route cannot have a named outlet set/);
 
       expect(() => validateConfig([{path: 'a', outlet: '', children: []}])).not.toThrow();
       expect(() => validateConfig([{path: 'a', outlet: PRIMARY_OUTLET, children: []}]))

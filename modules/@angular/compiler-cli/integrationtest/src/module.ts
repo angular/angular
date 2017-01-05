@@ -11,7 +11,9 @@ import {FormsModule} from '@angular/forms';
 import {ServerModule} from '@angular/platform-server';
 import {MdButtonModule} from '@angular2-material/button';
 
-import {ThirdpartyModule} from '../third_party_src/module';
+// Note: don't refer to third_party_src as we want to test that
+// we can compile components from node_modules!
+import {ThirdpartyModule} from 'third_party/module';
 
 import {MultipleComponentsMyComp, NextComp} from './a/multiple_components';
 import {AnimateCmp} from './animate';
@@ -19,7 +21,7 @@ import {BasicComp} from './basic';
 import {ComponentUsingThirdParty} from './comp_using_3rdp';
 import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from './entry_components';
 import {CompConsumingEvents, CompUsingPipes, CompWithProviders, CompWithReferences, DirPublishingEvents, ModuleUsingCustomElements} from './features';
-import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomePipeInRootModule, SomeService, someLibModuleWithProviders} from './module_fixtures';
+import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibModule, SomePipeInRootModule, SomeService} from './module_fixtures';
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
@@ -52,7 +54,7 @@ import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, Directive
     FormsModule,
     MdButtonModule,
     ModuleUsingCustomElements,
-    someLibModuleWithProviders(),
+    SomeLibModule.withProviders(),
     ThirdpartyModule,
   ],
   providers: [SomeService],

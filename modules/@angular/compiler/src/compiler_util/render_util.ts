@@ -8,74 +8,69 @@
 import {SecurityContext} from '@angular/core';
 
 import {isPresent} from '../facade/lang';
-import {Identifiers, resolveIdentifier} from '../identifiers';
+import {Identifiers, createIdentifier} from '../identifiers';
 import * as o from '../output/output_ast';
 import {EMPTY_STATE as EMPTY_ANIMATION_STATE} from '../private_import_core';
 import {BoundElementPropertyAst, BoundEventAst, PropertyBindingType} from '../template_parser/template_ast';
 
+import {isFirstViewCheck} from './binding_util';
+import {ConvertPropertyBindingResult} from './expression_converter';
 import {createEnumExpression} from './identifier_util';
 
-export function writeToRenderer(
-    view: o.Expression, boundProp: BoundElementPropertyAst, renderElement: o.Expression,
-    renderValue: o.Expression, logBindingUpdate: boolean,
+export function createCheckRenderBindingStmt(
+    view: o.Expression, renderElement: o.Expression, boundProp: BoundElementPropertyAst,
+    oldValue: o.ReadPropExpr, evalResult: ConvertPropertyBindingResult,
     securityContextExpression?: o.Expression): o.Statement[] {
-  const updateStmts: o.Statement[] = [];
-  const renderer = view.prop('renderer');
-  renderValue = sanitizedValue(view, boundProp, renderValue, securityContextExpression);
+  const checkStmts: o.Statement[] = [...evalResult.stmts];
+  const securityContext = calcSecurityContext(boundProp, securityContextExpression);
   switch (boundProp.type) {
     case PropertyBindingType.Property:
-      if (logBindingUpdate) {
-        updateStmts.push(
-            o.importExpr(resolveIdentifier(Identifiers.setBindingDebugInfo))
-                .callFn([renderer, renderElement, o.literal(boundProp.name), renderValue])
-                .toStmt());
-      }
-      updateStmts.push(
-          renderer
-              .callMethod(
-                  'setElementProperty', [renderElement, o.literal(boundProp.name), renderValue])
-              .toStmt());
+      checkStmts.push(o.importExpr(createIdentifier(Identifiers.checkRenderProperty))
+                          .callFn([
+                            view, renderElement, o.literal(boundProp.name), oldValue,
+                            oldValue.set(evalResult.currValExpr),
+                            evalResult.forceUpdate || o.literal(false), securityContext
+                          ])
+                          .toStmt());
       break;
     case PropertyBindingType.Attribute:
-      renderValue =
-          renderValue.isBlank().conditional(o.NULL_EXPR, renderValue.callMethod('toString', []));
-      updateStmts.push(
-          renderer
-              .callMethod(
-                  'setElementAttribute', [renderElement, o.literal(boundProp.name), renderValue])
-              .toStmt());
+      checkStmts.push(o.importExpr(createIdentifier(Identifiers.checkRenderAttribute))
+                          .callFn([
+                            view, renderElement, o.literal(boundProp.name), oldValue,
+                            oldValue.set(evalResult.currValExpr),
+                            evalResult.forceUpdate || o.literal(false), securityContext
+                          ])
+                          .toStmt());
       break;
     case PropertyBindingType.Class:
-      updateStmts.push(
-          renderer
-              .callMethod(
-                  'setElementClass', [renderElement, o.literal(boundProp.name), renderValue])
+      checkStmts.push(
+          o.importExpr(createIdentifier(Identifiers.checkRenderClass))
+              .callFn([
+                view, renderElement, o.literal(boundProp.name), oldValue,
+                oldValue.set(evalResult.currValExpr), evalResult.forceUpdate || o.literal(false)
+              ])
               .toStmt());
       break;
     case PropertyBindingType.Style:
-      let strValue: o.Expression = renderValue.callMethod('toString', []);
-      if (isPresent(boundProp.unit)) {
-        strValue = strValue.plus(o.literal(boundProp.unit));
-      }
-
-      renderValue = renderValue.isBlank().conditional(o.NULL_EXPR, strValue);
-      updateStmts.push(
-          renderer
-              .callMethod(
-                  'setElementStyle', [renderElement, o.literal(boundProp.name), renderValue])
+      checkStmts.push(
+          o.importExpr(createIdentifier(Identifiers.checkRenderStyle))
+              .callFn([
+                view, renderElement, o.literal(boundProp.name), o.literal(boundProp.unit), oldValue,
+                oldValue.set(evalResult.currValExpr), evalResult.forceUpdate || o.literal(false),
+                securityContext
+              ])
               .toStmt());
       break;
     case PropertyBindingType.Animation:
       throw new Error('Illegal state: Should not come here!');
   }
-  return updateStmts;
+  return checkStmts;
 }
 
-function sanitizedValue(
-    view: o.Expression, boundProp: BoundElementPropertyAst, renderValue: o.Expression,
-    securityContextExpression?: o.Expression): o.Expression {
+function calcSecurityContext(
+    boundProp: BoundElementPropertyAst, securityContextExpression?: o.Expression): o.Expression {
   if (boundProp.securityContext === SecurityContext.NONE) {
-    return renderValue;  // No sanitization needed.
+    return o.NULL_EXPR;  // No sanitization needed.
   }
   if (!boundProp.needsRuntimeSecurityContext) {
     securityContextExpression =
@@ -84,15 +79,13 @@ function sanitizedValue(
   if (!securityContextExpression) {
     throw new Error(`internal error, no SecurityContext given ${boundProp.name}`);
   }
-  const ctx = view.prop('viewUtils').prop('sanitizer');
-  const args = [securityContextExpression, renderValue];
-  return ctx.callMethod('sanitize', args);
+  return securityContextExpression;
 }
 
-export function triggerAnimation(
+export function createCheckAnimationBindingStmts(
     view: o.Expression, componentView: o.Expression, boundProp: BoundElementPropertyAst,
-    eventListener: o.Expression, renderElement: o.Expression, renderValue: o.Expression,
-    lastRenderValue: o.Expression) {
+    boundOutputs: BoundEventAst[], eventListener: o.Expression, renderElement: o.Expression,
+    oldValue: o.ReadPropExpr, evalResult: ConvertPropertyBindingResult) {
   const detachStmts: o.Statement[] = [];
   const updateStmts: o.Statement[] = [];
 
@@ -104,43 +97,60 @@ export function triggerAnimation(
   // it's important to normalize the void value as `void` explicitly
   // so that the styles data can be obtained from the stringmap
   const emptyStateValue = o.literal(EMPTY_ANIMATION_STATE);
-  const unitializedValue = o.importExpr(resolveIdentifier(Identifiers.UNINITIALIZED));
   const animationTransitionVar = o.variable('animationTransition_' + animationName);
 
   updateStmts.push(
       animationTransitionVar
           .set(animationFnExpr.callFn([
-            view, renderElement,
-            lastRenderValue.equals(unitializedValue).conditional(emptyStateValue, lastRenderValue),
-            renderValue.equals(unitializedValue).conditional(emptyStateValue, renderValue)
+            view, renderElement, isFirstViewCheck(view).conditional(emptyStateValue, oldValue),
+            evalResult.currValExpr
           ]))
           .toDeclStmt());
+  updateStmts.push(oldValue.set(evalResult.currValExpr).toStmt());
 
-  detachStmts.push(
-      animationTransitionVar
-          .set(animationFnExpr.callFn([view, renderElement, lastRenderValue, emptyStateValue]))
-          .toDeclStmt());
+  detachStmts.push(animationTransitionVar
+                       .set(animationFnExpr.callFn(
+                           [view, renderElement, evalResult.currValExpr, emptyStateValue]))
+                       .toDeclStmt());
 
-  const registerStmts = [
-    animationTransitionVar
-        .callMethod(
-            'onStart',
-            [eventListener.callMethod(
-                o.BuiltinMethod.Bind,
-                [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'start'))])])
-        .toStmt(),
-    animationTransitionVar
-        .callMethod(
-            'onDone',
-            [eventListener.callMethod(
-                o.BuiltinMethod.Bind,
-                [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'done'))])])
-        .toStmt(),
+  const registerStmts: o.Statement[] = [];
+  const animationStartMethodExists = boundOutputs.find(
+      event => event.isAnimation && event.name == animationName && event.phase == 'start');
+  if (animationStartMethodExists) {
+    registerStmts.push(
+        animationTransitionVar
+            .callMethod(
+                'onStart',
+                [eventListener.callMethod(
+                    o.BuiltinMethod.Bind,
+                    [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'start'))])])
+            .toStmt());
+  }
 
-  ];
+  const animationDoneMethodExists = boundOutputs.find(
+      event => event.isAnimation && event.name == animationName && event.phase == 'done');
+  if (animationDoneMethodExists) {
+    registerStmts.push(
+        animationTransitionVar
+            .callMethod(
+                'onDone',
+                [eventListener.callMethod(
+                    o.BuiltinMethod.Bind,
+                    [view, o.literal(BoundEventAst.calcFullName(animationName, null, 'done'))])])
+            .toStmt());
+  }
 
   updateStmts.push(...registerStmts);
   detachStmts.push(...registerStmts);
 
-  return {updateStmts, detachStmts};
+  const checkUpdateStmts: o.Statement[] = [
+    ...evalResult.stmts,
+    new o.IfStmt(
+        o.importExpr(createIdentifier(Identifiers.checkBinding)).callFn([
+          view, oldValue, evalResult.currValExpr, evalResult.forceUpdate || o.literal(false)
+        ]),
+        updateStmts)
+  ];
+  const checkDetachStmts: o.Statement[] = [...evalResult.stmts, ...detachStmts];
+  return {checkUpdateStmts, checkDetachStmts};
 }

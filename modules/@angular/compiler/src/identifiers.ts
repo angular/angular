@@ -8,9 +8,9 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, AnimationTransitionEvent, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, QueryList, RenderComponentType, Renderer, SecurityContext, SimpleChange, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 
-import {StaticSymbol, isStaticSymbol} from './aot/static_symbol';
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
-import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, UNINITIALIZED, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
+import {StaticSymbol} from './aot/static_symbol';
+import {CompileIdentifierMetadata, CompileTokenMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
+import {AnimationGroupPlayer, AnimationKeyframe, AnimationSequencePlayer, AnimationStyles, AnimationTransition, AppView, ChangeDetectorStatus, CodegenComponentFactoryResolver, ComponentRef_, DebugAppView, DebugContext, NgModuleInjector, NoOpAnimationPlayer, StaticNodeDebugInfo, TemplateRef_, ValueUnwrapper, ViewContainer, ViewType, balanceAnimationKeyframes, clearStyles, collectAndResolveStyles, devModeEqual, prepareFinalAnimationStyles, reflector, registerModuleFactory, renderStyles, view_utils} from './private_import_core';
 
 const APP_VIEW_MODULE_URL = assetUrl('core', 'linker/view');
 const VIEW_UTILS_MODULE_URL = assetUrl('core', 'linker/view_utils');
@@ -161,8 +161,6 @@ export class Identifiers {
   };
   static SimpleChange:
       IdentifierSpec = {name: 'SimpleChange', moduleUrl: CD_MODULE_URL, runtime: SimpleChange};
-  static UNINITIALIZED:
-      IdentifierSpec = {name: 'UNINITIALIZED', moduleUrl: CD_MODULE_URL, runtime: UNINITIALIZED};
   static ChangeDetectorStatus: IdentifierSpec = {
     name: 'ChangeDetectorStatus',
     moduleUrl: CD_MODULE_URL,
@@ -172,6 +170,36 @@ export class Identifiers {
     name: 'checkBinding',
     moduleUrl: VIEW_UTILS_MODULE_URL,
     runtime: view_utils.checkBinding
+  };
+  static checkBindingChange: IdentifierSpec = {
+    name: 'checkBindingChange',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkBindingChange
+  };
+  static checkRenderText: IdentifierSpec = {
+    name: 'checkRenderText',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkRenderText
+  };
+  static checkRenderProperty: IdentifierSpec = {
+    name: 'checkRenderProperty',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkRenderProperty
+  };
+  static checkRenderAttribute: IdentifierSpec = {
+    name: 'checkRenderAttribute',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkRenderAttribute
+  };
+  static checkRenderClass: IdentifierSpec = {
+    name: 'checkRenderClass',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkRenderClass
+  };
+  static checkRenderStyle: IdentifierSpec = {
+    name: 'checkRenderStyle',
+    moduleUrl: VIEW_UTILS_MODULE_URL,
+    runtime: view_utils.checkRenderStyle
   };
   static devModeEqual:
       IdentifierSpec = {name: 'devModeEqual', moduleUrl: CD_MODULE_URL, runtime: devModeEqual};
@@ -347,27 +375,25 @@ export function assetUrl(pkg: string, path: string = null, type: string = 'src')
 }
 
 export function resolveIdentifier(identifier: IdentifierSpec) {
-  let moduleUrl = identifier.moduleUrl;
+  return reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
+}
+
+export function createIdentifier(identifier: IdentifierSpec): CompileIdentifierMetadata {
   const reference =
       reflector.resolveIdentifier(identifier.name, identifier.moduleUrl, identifier.runtime);
-  if (isStaticSymbol(reference)) {
-    moduleUrl = reference.filePath;
-  }
-  return new CompileIdentifierMetadata(
-      {name: identifier.name, moduleUrl: moduleUrl, reference: reference});
+  return {reference: reference};
 }
 
 export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {
-  return new CompileTokenMetadata({identifier: identifier});
+  return {identifier: identifier};
 }
 
-export function resolveIdentifierToken(identifier: IdentifierSpec): CompileTokenMetadata {
-  return identifierToken(resolveIdentifier(identifier));
+export function createIdentifierToken(identifier: IdentifierSpec): CompileTokenMetadata {
+  return identifierToken(createIdentifier(identifier));
 }
 
-export function resolveEnumIdentifier(
-    enumType: CompileIdentifierMetadata, name: string): CompileIdentifierMetadata {
-  const resolvedEnum = reflector.resolveEnum(enumType.reference, name);
-  return new CompileIdentifierMetadata(
-      {name: `${enumType.name}.${name}`, moduleUrl: enumType.moduleUrl, reference: resolvedEnum});
+export function createEnumIdentifier(
+    enumType: IdentifierSpec, name: string): CompileIdentifierMetadata {
+  const resolvedEnum = reflector.resolveEnum(resolveIdentifier(enumType), name);
+  return {reference: resolvedEnum};
 }

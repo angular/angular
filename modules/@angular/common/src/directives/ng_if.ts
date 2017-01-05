@@ -6,46 +6,152 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+
 
 /**
- * Removes or recreates a portion of the DOM tree based on an {expression}.
+ * Conditionally includes a template based on the value of an `expression`.
  *
- * If the expression assigned to `ngIf` evaluates to a falsy value then the element
- * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
+ * `ngIf` evaluates the `expression` and then renders the `then` or `else` template in its place
+ * when expression is truthy or falsy respectively. Typically the:
+ *  - `then` template is the inline template of `ngIf` unless bound to a different value.
+ *  - `else` template is blank unless it is bound.
  *
- * ### Example ([live demo](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)):
+ * # Most common usage
+ *
+ * The most common usage of the `ngIf` directive is to conditionally show the inline template as
+ * seen in this example:
+ * {@example common/ngIf/ts/module.ts region='NgIfSimple'}
+ *
+ * # Showing an alternative template using `else`
+ *
+ * If it is necessary to display a template when the `expression` is falsy use the `else` template
+ * binding as shown. Note that the `else` binding points to a `<template>` labeled `#elseBlock`.
+ * The template can be defined anywhere in the component view but is typically placed right after
+ * `ngIf` for readability.
+ *
+ * {@example common/ngIf/ts/module.ts region='NgIfElse'}
+ *
+ * # Using non-inlined `then` template
+ *
+ * Usually the `then` template is the inlined template of the `ngIf`, but it can be changed using
+ * a binding (just like `else`). Because `then` and `else` are bindings, the template references can
+ * change at runtime as shown in this example.
+ *
+ * {@example common/ngIf/ts/module.ts region='NgIfThenElse'}
+ *
+ * # Storing conditional result in a variable
+ *
+ * A common pattern is that we need to show a set of properties from the same object. If the
+ * object is undefined, then we have to use the safe-traversal-operator `?.` to guard against
+ * dereferencing a `null` value. This is especially the case when waiting on async data such as
+ * when using the `async` pipe as shown in folowing example:
  *
  * ```
- * <div *ngIf="errorCount > 0" class="error">
- *   <!-- Error message displayed when the errorCount property in the current context is greater
- * than 0. -->
- *   {{errorCount}} errors detected
- * </div>
+ * Hello {{ (userStream|async)?.last }}, {{ (userStream|async)?.first }}!
  * ```
+ *
+ * There are several inefficiencies in the above example:
+ *  - We create multiple subscriptions on `userStream`. One for each `async` pipe, or two in the
+ *    example above.
+ *  - We cannot display an alternative screen while waiting for the data to arrive asynchronously.
+ *  - We have to use the safe-traversal-operator `?.` to access properties, which is cumbersome.
+ *  - We have to place the `async` pipe in parenthesis.
+ *
+ * A better way to do this is to use `ngIf` and store the result of the condition in a local
+ * variable as shown in the the example below:
+ *
+ * {@example common/ngIf/ts/module.ts region='NgIfLet'}
+ *
+ * Notice that:
+ *  - We use only one `async` pipe and hence only one subscription gets created.
+ *  - `ngIf` stores the result of the `userStream|async` in the local variable `user`.
+ *  - The local `user` can then be bound repeatedly in a more efficient way.
+ *  - No need to use the safe-traversal-operator `?.` to access properties as `ngIf` will only
+ *    display the data if `userStream` returns a value.
+ *  - We can display an alternative template while waiting for the data.
  *
  * ### Syntax
  *
+ * Simple form:
  * - `<div *ngIf="condition">...</div>`
  * - `<div template="ngIf condition">...</div>`
  * - `<template [ngIf]="condition"><div>...</div></template>`
+ *
+ * Form with an else block:
+ * ```
+ * <div *ngIf="condition; else elseBlock">...</div>
+ * <template #elseBlock>...</template>
+ * ```
+ *
+ * Form with a `then` and `else` block:
+ * ```
+ * <div *ngIf="condition; then thenBlock else elseBlock"></div>
+ * <template #thenBlock>...</template>
+ * <template #elseBlock>...</template>
+ * ```
+ *
+ * Form with storing the value locally:
+ * ```
+ * <div *ngIf="condition; else elseBlock; let value">{{value}}</div>
+ * <template #elseBlock>...</template>
+ * ```
  *
  * @stable
  */
 @Directive({selector: '[ngIf]'})
 export class NgIf {
-  private _hasView = false;
+  private _context: NgIfContext = new NgIfContext();
+  private _thenTemplateRef: TemplateRef<NgIfContext> = null;
+  private _elseTemplateRef: TemplateRef<NgIfContext> = null;
+  private _thenViewRef: EmbeddedViewRef<NgIfContext> = null;
+  private _elseViewRef: EmbeddedViewRef<NgIfContext> = null;
 
-  constructor(private _viewContainer: ViewContainerRef, private _template: TemplateRef<Object>) {}
+  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>) {
+    this._thenTemplateRef = templateRef;
+  }
 
   @Input()
   set ngIf(condition: any) {
-    if (condition && !this._hasView) {
-      this._hasView = true;
-      this._viewContainer.createEmbeddedView(this._template);
-    } else if (!condition && this._hasView) {
-      this._hasView = false;
-      this._viewContainer.clear();
+    this._context.$implicit = condition;
+    this._updateView();
+  }
+
+  @Input()
+  set ngIfThen(templateRef: TemplateRef<NgIfContext>) {
+    this._thenTemplateRef = templateRef;
+    this._thenViewRef = null;  // clear previous view if any.
+    this._updateView();
+  }
+
+  @Input()
+  set ngIfElse(templateRef: TemplateRef<NgIfContext>) {
+    this._elseTemplateRef = templateRef;
+    this._elseViewRef = null;  // clear previous view if any.
+    this._updateView();
+  }
+
+  private _updateView() {
+    if (this._context.$implicit) {
+      if (!this._thenViewRef) {
+        this._viewContainer.clear();
+        this._elseViewRef = null;
+        if (this._thenTemplateRef) {
+          this._thenViewRef =
+              this._viewContainer.createEmbeddedView(this._thenTemplateRef, this._context);
+        }
+      }
+    } else {
+      if (!this._elseViewRef) {
+        this._viewContainer.clear();
+        this._thenViewRef = null;
+        if (this._elseTemplateRef) {
+          this._elseViewRef =
+              this._viewContainer.createEmbeddedView(this._elseTemplateRef, this._context);
+        }
+      }
     }
   }
 }
+
+export class NgIfContext { public $implicit: any = null; }

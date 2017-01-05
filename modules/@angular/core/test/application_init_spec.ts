@@ -32,7 +32,7 @@ export function main() {
             {providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => promise}]});
       });
 
-      it('should updat the status once all async initializers are done',
+      it('should update the status once all async initializers are done',
          async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            let completerResolver = false;
            setTimeout(() => {

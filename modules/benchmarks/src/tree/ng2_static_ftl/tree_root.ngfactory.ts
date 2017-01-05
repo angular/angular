@@ -18,6 +18,7 @@ import * as import0 from '@angular/core/src/render/api';
 
 import {maxDepth} from '../util';
 
+import {checkBinding} from './ftl_util';
 import * as import3 from './tree';
 import * as import12 from './tree';
 import * as import13 from './tree_branch.ngfactory';
@@ -48,8 +49,8 @@ class _View_TreeRootComponent_Host0 extends import1.AppView<any> {
     this.init([].concat([this._el_0]), [this._el_0], []);
     return new import9.ComponentRef_(0, this, this._el_0, this._TreeRootComponent_0_4);
   }
-  detectChangesInternal(throwOnChange: boolean): void {
-    this._TreeRootComponent_0_4_View.detectChangesInternal(throwOnChange);
+  detectChangesInternal(): void {
+    this._TreeRootComponent_0_4_View.detectChangesInternal(this.throwOnChange);
   }
   destroyInternal(): void { this._TreeRootComponent_0_4_View.destroyInternal(); }
   injectorGetInternal(token: any, requestNodeIndex: number, notFoundResult: any): any {
@@ -86,7 +87,6 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
     this._appEl_0 = new import2.ViewContainer(0, (null as any), this, this._anchor_0);
     this._TemplateRef_0_5 = new import11.TemplateRef_(this, 0, this._anchor_0);
     this._NgIf_0_6 = new import10.NgIf(this._appEl_0.vcRef, this._TemplateRef_0_5);
-    this._expr_0 = import7.UNINITIALIZED;
     this.init([], [this._anchor_0], []);
     return (null as any);
   }
@@ -106,13 +106,13 @@ class _View_TreeRootComponent0 extends import1.AppView<import3.TreeRootComponent
     }
     return notFoundResult;
   }
-  detectChangesInternal(throwOnChange: boolean): void {
+  detectChangesInternal(): void {
     const currVal_0: any = (this.context.data.left != (null as any));
-    if (import4.checkBinding(throwOnChange, this._expr_0, currVal_0)) {
+    if (checkBinding(this.throwOnChange, this._expr_0, currVal_0)) {
       this._NgIf_0_6.ngIf = currVal_0;
       this._expr_0 = currVal_0;
     }
-    this._appEl_0.detectChangesInNestedViews(throwOnChange);
+    this._appEl_0.detectChangesInNestedViews(this.throwOnChange);
   }
 }
 class _View_TreeRootComponent1 extends import1.AppView<any> {
@@ -133,9 +133,9 @@ class _View_TreeRootComponent1 extends import1.AppView<any> {
     return (null as any);
   }
   destroyInternal() { this._TreeComponent0_0_4View.destroyInternal(); }
-  detectChangesInternal(throwOnChange: boolean): void {
+  detectChangesInternal(): void {
     this._TreeComponent0_0_4View.updateData(this.parentView.context.data);
-    this._TreeComponent0_0_4View.detectChangesInternal(throwOnChange);
+    this._TreeComponent0_0_4View.detectChangesInternal(this.throwOnChange);
   }
   visitRootNodesInternal(cb: any, context: any) { cb(this._el_0, context); }
 }

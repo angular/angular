@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
 import * as chars from '../chars';
 import {NumberWrapper, isPresent} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
   Character,
@@ -22,7 +22,7 @@ export enum TokenType {
 
 const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
-@Injectable()
+@CompilerInjectable()
 export class Lexer {
   tokenize(text: string): Token[] {
     const scanner = new _Scanner(text);
@@ -120,7 +120,7 @@ function newErrorToken(index: number, message: string): Token {
   return new Token(index, TokenType.Error, 0, message);
 }
 
-export var EOF: Token = new Token(-1, TokenType.Character, 0, '');
+export const EOF: Token = new Token(-1, TokenType.Character, 0, '');
 
 class _Scanner {
   length: number;

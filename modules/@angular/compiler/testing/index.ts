@@ -70,6 +70,10 @@ export class TestingCompilerImpl implements TestingCompiler {
     return this._compiler.compileModuleAndAllComponentsAsync(moduleType);
   }
 
+  getNgContentSelectors(component: Type<any>): string[] {
+    return this._compiler.getNgContentSelectors(component);
+  }
+
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
     const oldMetadata = this._moduleResolver.resolve(ngModule, false);
     this._moduleResolver.setNgModule(
@@ -104,9 +108,12 @@ export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef
         provide: COMPILER_OPTIONS,
         useValue: {
           providers: [
-            MockPipeResolver, {provide: PipeResolver, useExisting: MockPipeResolver},
-            MockDirectiveResolver, {provide: DirectiveResolver, useExisting: MockDirectiveResolver},
-            MockNgModuleResolver, {provide: NgModuleResolver, useExisting: MockNgModuleResolver}
+            MockPipeResolver,
+            {provide: PipeResolver, useExisting: MockPipeResolver},
+            MockDirectiveResolver,
+            {provide: DirectiveResolver, useExisting: MockDirectiveResolver},
+            MockNgModuleResolver,
+            {provide: NgModuleResolver, useExisting: MockNgModuleResolver},
           ]
         },
         multi: true

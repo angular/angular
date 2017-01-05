@@ -22,10 +22,12 @@ export class WorkerDomAdapter extends DomAdapter {
     if (console.error) {
       console.error(error);
     } else {
+      // tslint:disable-next-line:no-console
       console.log(error);
     }
   }
 
+  // tslint:disable-next-line:no-console
   log(error: any /** TODO #9100 */) { console.log(error); }
 
   logGroup(error: any /** TODO #9100 */) {
@@ -33,6 +35,7 @@ export class WorkerDomAdapter extends DomAdapter {
       console.group(error);
       this.logError(error);
     } else {
+      // tslint:disable-next-line:no-console
       console.log(error);
     }
   }

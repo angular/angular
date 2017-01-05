@@ -7,10 +7,12 @@
  */
 
 import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {ReflectorReader} from '../private_import_core';
-import {StaticSymbol} from './static_symbol';
 
-const SUPPORTED_SCHEMA_VERSION = 2;
+import {ReflectorReader} from '../private_import_core';
+
+import {StaticSymbol, StaticSymbolCache} from './static_symbol';
+import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+
 const ANGULAR_IMPORT_LOCATIONS = {
   coreDecorators: '@angular/core/src/metadata',
   diDecorators: '@angular/core/src/di/metadata',
@@ -20,75 +22,54 @@ const ANGULAR_IMPORT_LOCATIONS = {
   provider: '@angular/core/src/di/provider'
 };
 
-/**
- * The host of the StaticReflector disconnects the implementation from TypeScript / other language
- * services and from underlying file systems.
- */
-export interface StaticReflectorHost {
-  /**
-   * Return a ModuleMetadata for the given module.
-   * Angular 2 CLI will produce this metadata for a module whenever a .d.ts files is
-   * produced and the module has exported variables or classes with decorators. Module metadata can
-   * also be produced directly from TypeScript sources by using MetadataCollector in tools/metadata.
-   *
-   * @param modulePath is a string identifier for a module as an absolute path.
-   * @returns the metadata for the given module.
-   */
-  getMetadataFor(modulePath: string): {[key: string]: any}[];
-
-  /**
-   * Converts a module name that is used in an `import` to a file path.
-   * I.e.
-   * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
-   */
-  moduleNameToFileName(moduleName: string, containingFile: string): string;
-}
-
-/**
- * A cache of static symbol used by the StaticReflector to return the same symbol for the
- * same symbol values.
- */
-export class StaticSymbolCache {
-  private cache = new Map<string, StaticSymbol>();
-
-  get(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    const memberSuffix = members ? `.${ members.join('.')}` : '';
-    const key = `"${declarationFile}".${name}${memberSuffix}`;
-    let result = this.cache.get(key);
-    if (!result) {
-      result = new StaticSymbol(declarationFile, name, members);
-      this.cache.set(key, result);
-    }
-    return result;
-  }
-}
+const HIDDEN_KEY = /^\$.*\$$/;
 
 /**
  * A static reflector implements enough of the Reflector API that is necessary to compile
  * templates statically.
  */
 export class StaticReflector implements ReflectorReader {
-  private declarationCache = new Map<string, StaticSymbol>();
   private annotationCache = new Map<StaticSymbol, any[]>();
-  private propertyCache = new Map<StaticSymbol, {[key: string]: any}>();
+  private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
-  private metadataCache = new Map<string, {[key: string]: any}>();
+  private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private opaqueToken: StaticSymbol;
 
   constructor(
-      private host: StaticReflectorHost,
-      private staticSymbolCache: StaticSymbolCache = new StaticSymbolCache()) {
+      private symbolResolver: StaticSymbolResolver,
+      knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
+      knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = [],
+      private errorRecorder?: (error: any, fileName: string) => void) {
     this.initializeConversionMap();
+    knownMetadataClasses.forEach(
+        (kc) => this._registerDecoratorOrConstructor(
+            this.getStaticSymbol(kc.filePath, kc.name), kc.ctor));
+    knownMetadataFunctions.forEach(
+        (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
   }
 
   importUri(typeOrFunc: StaticSymbol): string {
-    const staticSymbol = this.findDeclaration(typeOrFunc.filePath, typeOrFunc.name, '');
+    const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
     return staticSymbol ? staticSymbol.filePath : null;
   }
 
-  resolveIdentifier(name: string, moduleUrl: string, runtime: any): any {
-    return this.findDeclaration(moduleUrl, name, '');
+  resolveIdentifier(name: string, moduleUrl: string): StaticSymbol {
+    return this.findDeclaration(moduleUrl, name);
+  }
+
+  findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
+    return this.findSymbolDeclaration(
+        this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile));
+  }
+
+  findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
+    const resolvedSymbol = this.symbolResolver.resolveSymbol(symbol);
+    if (resolvedSymbol && resolvedSymbol.metadata instanceof StaticSymbol) {
+      return this.findSymbolDeclaration(resolvedSymbol.metadata);
+    } else {
+      return symbol;
+    }
   }
 
   resolveEnum(enumIdentifier: any, name: string): any {
@@ -99,29 +80,51 @@ export class StaticReflector implements ReflectorReader {
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
     if (!annotations) {
+      annotations = [];
       const classMetadata = this.getTypeMetadata(type);
+      if (classMetadata['extends']) {
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentAnnotations = this.annotations(parentType);
+          annotations.push(...parentAnnotations);
+        }
+      }
       if (classMetadata['decorators']) {
-        annotations = this.simplify(type, classMetadata['decorators']);
-      } else {
-        annotations = [];
+        const ownAnnotations: any[] = this.simplify(type, classMetadata['decorators']);
+        annotations.push(...ownAnnotations);
       }
       this.annotationCache.set(type, annotations.filter(ann => !!ann));
     }
     return annotations;
   }
 
-  public propMetadata(type: StaticSymbol): {[key: string]: any} {
+  public propMetadata(type: StaticSymbol): {[key: string]: any[]} {
     let propMetadata = this.propertyCache.get(type);
     if (!propMetadata) {
       const classMetadata = this.getTypeMetadata(type);
-      const members = classMetadata ? classMetadata['members'] : {};
-      propMetadata = mapStringMap(members, (propData, propName) => {
+      propMetadata = {};
+      if (classMetadata['extends']) {
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentPropMetadata = this.propMetadata(parentType);
+          Object.keys(parentPropMetadata).forEach((parentProp) => {
+            propMetadata[parentProp] = parentPropMetadata[parentProp];
+          });
+        }
+      }
+
+      const members = classMetadata['members'] || {};
+      Object.keys(members).forEach((propName) => {
+        const propData = members[propName];
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+        const decorators: any[] = [];
+        if (propMetadata[propName]) {
+          decorators.push(...propMetadata[propName]);
+        }
+        propMetadata[propName] = decorators;
         if (prop && prop['decorators']) {
-          return this.simplify(type, prop['decorators']);
-        } else {
-          return [];
+          decorators.push(...this.simplify(type, prop['decorators']));
         }
       });
       this.propertyCache.set(type, propMetadata);
@@ -131,7 +134,10 @@ export class StaticReflector implements ReflectorReader {
 
   public parameters(type: StaticSymbol): any[] {
     if (!(type instanceof StaticSymbol)) {
-      throw new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`);
+      this.reportError(
+          new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`),
+          type);
+      return [];
     }
     try {
       let parameters = this.parameterCache.get(type);
@@ -155,6 +161,11 @@ export class StaticReflector implements ReflectorReader {
             }
             parameters.push(nestedResult);
           });
+        } else if (classMetadata['extends']) {
+          const parentType = this.simplify(type, classMetadata['extends']);
+          if (parentType instanceof StaticSymbol) {
+            parameters = this.parameters(parentType);
+          }
         }
         if (!parameters) {
           parameters = [];
@@ -163,28 +174,57 @@ export class StaticReflector implements ReflectorReader {
       }
       return parameters;
     } catch (e) {
-      console.log(`Failed on type ${JSON.stringify(type)} with error ${e}`);
+      console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
   }
 
-  hasLifecycleHook(type: any, lcProperty: string): boolean {
-    if (!(type instanceof StaticSymbol)) {
-      throw new Error(
-          `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`);
+  private _methodNames(type: any): {[key: string]: boolean} {
+    let methodNames = this.methodCache.get(type);
+    if (!methodNames) {
+      const classMetadata = this.getTypeMetadata(type);
+      methodNames = {};
+      if (classMetadata['extends']) {
+        const parentType = this.simplify(type, classMetadata['extends']);
+        if (parentType instanceof StaticSymbol) {
+          const parentMethodNames = this._methodNames(parentType);
+          Object.keys(parentMethodNames).forEach((parentProp) => {
+            methodNames[parentProp] = parentMethodNames[parentProp];
+          });
+        }
+      }
+
+      const members = classMetadata['members'] || {};
+      Object.keys(members).forEach((propName) => {
+        const propData = members[propName];
+        const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
+        methodNames[propName] = methodNames[propName] || isMethod;
+      });
+      this.methodCache.set(type, methodNames);
     }
-    const classMetadata = this.getTypeMetadata(type);
-    const members = classMetadata ? classMetadata['members'] : null;
-    const member: any[] =
-        members && members.hasOwnProperty(lcProperty) ? members[lcProperty] : null;
-    return member ? member.some(a => a['__symbolic'] == 'method') : false;
+    return methodNames;
   }
 
-  private registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
+  hasLifecycleHook(type: any, lcProperty: string): boolean {
+    if (!(type instanceof StaticSymbol)) {
+      this.reportError(
+          new Error(
+              `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`),
+          type);
+    }
+    try {
+      return !!this._methodNames(type)[lcProperty];
+    } catch (e) {
+      console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
+      throw e;
+    }
+  }
+
+  private _registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => new ctor(...args));
   }
 
-  private registerFunction(type: StaticSymbol, fn: any): void {
+  private _registerFunction(type: StaticSymbol, fn: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => fn.apply(undefined, args));
   }
 
@@ -193,50 +233,51 @@ export class StaticReflector implements ReflectorReader {
         ANGULAR_IMPORT_LOCATIONS;
     this.opaqueToken = this.findDeclaration(diOpaqueToken, 'OpaqueToken');
 
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Host'), Host);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(diDecorators, 'Injectable'), Injectable);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Self'), Self);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Inject'), Inject);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Optional'), Optional);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Self'), Self);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'SkipSelf'), SkipSelf);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Inject'), Inject);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diDecorators, 'Optional'), Optional);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Attribute'), Attribute);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ContentChild'), ContentChild);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ContentChildren'), ContentChildren);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ViewChild'), ViewChild);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'ViewChildren'), ViewChildren);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Input'), Input);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Output'), Output);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Pipe'), Pipe);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Input'), Input);
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Output'), Output);
+    this._registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'Pipe'), Pipe);
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'HostBinding'), HostBinding);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'HostListener'), HostListener);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Directive'), Directive);
-    this.registerDecoratorOrConstructor(
+    this._registerDecoratorOrConstructor(
         this.findDeclaration(coreDecorators, 'Component'), Component);
-    this.registerDecoratorOrConstructor(this.findDeclaration(coreDecorators, 'NgModule'), NgModule);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(coreDecorators, 'NgModule'), NgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Host'), Host);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Self'), Self);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
-    this.registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Optional'), Optional);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Host'), Host);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Self'), Self);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'SkipSelf'), SkipSelf);
+    this._registerDecoratorOrConstructor(this.findDeclaration(diMetadata, 'Optional'), Optional);
 
-    this.registerFunction(this.findDeclaration(animationMetadata, 'trigger'), trigger);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'state'), state);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'transition'), transition);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'style'), style);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'animate'), animate);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'keyframes'), keyframes);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'sequence'), sequence);
-    this.registerFunction(this.findDeclaration(animationMetadata, 'group'), group);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'trigger'), trigger);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'state'), state);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'transition'), transition);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'style'), style);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'animate'), animate);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'keyframes'), keyframes);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'sequence'), sequence);
+    this._registerFunction(this.findDeclaration(animationMetadata, 'group'), group);
   }
 
   /**
@@ -247,184 +288,59 @@ export class StaticReflector implements ReflectorReader {
    * @param name the name of the type.
    */
   getStaticSymbol(declarationFile: string, name: string, members?: string[]): StaticSymbol {
-    return this.staticSymbolCache.get(declarationFile, name, members);
+    return this.symbolResolver.getStaticSymbol(declarationFile, name, members);
   }
 
-  private resolveExportedSymbol(filePath: string, symbolName: string): StaticSymbol {
-    const resolveModule = (moduleName: string): string => {
-      const resolvedModulePath = this.host.moduleNameToFileName(moduleName, filePath);
-      if (!resolvedModulePath) {
-        throw new Error(`Could not resolve module '${moduleName}' relative to file ${filePath}`);
-      }
-      return resolvedModulePath;
-    };
-    const cacheKey = `${filePath}|${symbolName}`;
-    let staticSymbol = this.declarationCache.get(cacheKey);
-    if (staticSymbol) {
-      return staticSymbol;
-    }
-    const metadata = this.getModuleMetadata(filePath);
-    if (metadata) {
-      // If we have metadata for the symbol, this is the original exporting location.
-      if (metadata['metadata'][symbolName]) {
-        staticSymbol = this.getStaticSymbol(filePath, symbolName);
-      }
-
-      // If no, try to find the symbol in one of the re-export location
-      if (!staticSymbol && metadata['exports']) {
-        // Try and find the symbol in the list of explicitly re-exported symbols.
-        for (const moduleExport of metadata['exports']) {
-          if (moduleExport.export) {
-            const exportSymbol = moduleExport.export.find((symbol: any) => {
-              if (typeof symbol === 'string') {
-                return symbol == symbolName;
-              } else {
-                return symbol.as == symbolName;
-              }
-            });
-            if (exportSymbol) {
-              let symName = symbolName;
-              if (typeof exportSymbol !== 'string') {
-                symName = exportSymbol.name;
-              }
-              staticSymbol = this.resolveExportedSymbol(resolveModule(moduleExport.from), symName);
-            }
-          }
-        }
-
-        if (!staticSymbol) {
-          // Try to find the symbol via export * directives.
-          for (const moduleExport of metadata['exports']) {
-            if (!moduleExport.export) {
-              const resolvedModule = resolveModule(moduleExport.from);
-              const candidateSymbol = this.resolveExportedSymbol(resolvedModule, symbolName);
-              if (candidateSymbol) {
-                staticSymbol = candidateSymbol;
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-    this.declarationCache.set(cacheKey, staticSymbol);
-    return staticSymbol;
-  }
-
-  findDeclaration(module: string, symbolName: string, containingFile?: string): StaticSymbol {
-    try {
-      const filePath = this.host.moduleNameToFileName(module, containingFile);
-      let symbol: StaticSymbol;
-      if (!filePath) {
-        // If the file cannot be found the module is probably referencing a declared module
-        // for which there is no disambiguating file and we also don't need to track
-        // re-exports. Just use the module name.
-        symbol = this.getStaticSymbol(module, symbolName);
-      } else {
-        symbol = this.resolveExportedSymbol(filePath, symbolName) ||
-            this.getStaticSymbol(filePath, symbolName);
-      }
-      return symbol;
-    } catch (e) {
-      console.error(`can't resolve module ${module} from ${containingFile}`);
-      throw e;
+  private reportError(error: Error, context: StaticSymbol, path?: string) {
+    if (this.errorRecorder) {
+      this.errorRecorder(error, (context && context.filePath) || path);
+    } else {
+      throw error;
     }
   }
 
   /** @internal */
   public simplify(context: StaticSymbol, value: any): any {
-    const _this = this;
+    const self = this;
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
 
     function simplifyInContext(context: StaticSymbol, value: any, depth: number): any {
-      function resolveReference(context: StaticSymbol, expression: any): StaticSymbol {
-        let staticSymbol: StaticSymbol;
-        if (expression['module']) {
-          staticSymbol =
-              _this.findDeclaration(expression['module'], expression['name'], context.filePath);
-        } else {
-          staticSymbol = _this.getStaticSymbol(context.filePath, expression['name']);
-        }
-        return staticSymbol;
-      }
-
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
-        const moduleMetadata = _this.getModuleMetadata(staticSymbol.filePath);
-        const declarationValue =
-            moduleMetadata ? moduleMetadata['metadata'][staticSymbol.name] : null;
-        return declarationValue;
+        const resolvedSymbol = self.symbolResolver.resolveSymbol(staticSymbol);
+        return resolvedSymbol ? resolvedSymbol.metadata : null;
       }
 
-      function isOpaqueToken(context: StaticSymbol, value: any): boolean {
-        if (value && value.__symbolic === 'new' && value.expression) {
-          const target = value.expression;
-          if (target.__symbolic == 'reference') {
-            return sameSymbol(resolveReference(context, target), _this.opaqueToken);
+      function simplifyCall(functionSymbol: StaticSymbol, targetFunction: any, args: any[]) {
+        if (targetFunction && targetFunction['__symbolic'] == 'function') {
+          if (calling.get(functionSymbol)) {
+            throw new Error('Recursion not supported');
           }
-        }
-        return false;
-      }
-
-      function simplifyCall(expression: any) {
-        let callContext: {[name: string]: string}|undefined = undefined;
-        if (expression['__symbolic'] == 'call') {
-          const target = expression['expression'];
-          let functionSymbol: StaticSymbol;
-          let targetFunction: any;
-          if (target) {
-            switch (target.__symbolic) {
-              case 'reference':
-                // Find the function to call.
-                callContext = {name: target.name};
-                functionSymbol = resolveReference(context, target);
-                targetFunction = resolveReferenceValue(functionSymbol);
-                break;
-              case 'select':
-                // Find the static method to call
-                if (target.expression.__symbolic == 'reference') {
-                  functionSymbol = resolveReference(context, target.expression);
-                  const classData = resolveReferenceValue(functionSymbol);
-                  if (classData && classData.statics) {
-                    targetFunction = classData.statics[target.member];
-                  }
-                }
-                break;
-            }
-          }
-          if (targetFunction && targetFunction['__symbolic'] == 'function') {
-            if (calling.get(functionSymbol)) {
-              throw new Error('Recursion not supported');
-            }
-            calling.set(functionSymbol, true);
-            try {
-              const value = targetFunction['value'];
-              if (value && (depth != 0 || value.__symbolic != 'error')) {
-                // Determine the arguments
-                const args: any[] =
-                    (expression['arguments'] || []).map((arg: any) => simplify(arg));
-                const parameters: string[] = targetFunction['parameters'];
-                const defaults: any[] = targetFunction.defaults;
-                if (defaults && defaults.length > args.length) {
-                  args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
-                }
-                const functionScope = BindingScope.build();
-                for (let i = 0; i < parameters.length; i++) {
-                  functionScope.define(parameters[i], args[i]);
-                }
-                const oldScope = scope;
-                let result: any;
-                try {
-                  scope = functionScope.done();
-                  result = simplifyInContext(functionSymbol, value, depth + 1);
-                } finally {
-                  scope = oldScope;
-                }
-                return result;
+          calling.set(functionSymbol, true);
+          try {
+            const value = targetFunction['value'];
+            if (value && (depth != 0 || value.__symbolic != 'error')) {
+              const parameters: string[] = targetFunction['parameters'];
+              const defaults: any[] = targetFunction.defaults;
+              if (defaults && defaults.length > args.length) {
+                args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
-            } finally {
-              calling.delete(functionSymbol);
+              const functionScope = BindingScope.build();
+              for (let i = 0; i < parameters.length; i++) {
+                functionScope.define(parameters[i], args[i]);
+              }
+              const oldScope = scope;
+              let result: any;
+              try {
+                scope = functionScope.done();
+                result = simplifyInContext(functionSymbol, value, depth + 1);
+              } finally {
+                scope = oldScope;
+              }
+              return result;
             }
+          } finally {
+            calling.delete(functionSymbol);
           }
         }
 
@@ -435,7 +351,7 @@ export class StaticReflector implements ReflectorReader {
           return {__symbolic: 'ignore'};
         }
         return simplify(
-            {__symbolic: 'error', message: 'Function call not supported', context: callContext});
+            {__symbolic: 'error', message: 'Function call not supported', context: functionSymbol});
       }
 
       function simplify(expression: any): any {
@@ -464,7 +380,18 @@ export class StaticReflector implements ReflectorReader {
           return result;
         }
         if (expression instanceof StaticSymbol) {
-          return expression;
+          // Stop simplification at builtin symbols
+          if (expression === self.opaqueToken || self.conversionMap.has(expression)) {
+            return expression;
+          } else {
+            const staticSymbol = expression;
+            const declarationValue = resolveReferenceValue(staticSymbol);
+            if (declarationValue) {
+              return simplifyInContext(staticSymbol, declarationValue, depth + 1);
+            } else {
+              return staticSymbol;
+            }
+          }
         }
         if (expression) {
           if (expression['__symbolic']) {
@@ -542,43 +469,33 @@ export class StaticReflector implements ReflectorReader {
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
+                const member = expression['member'];
+                let selectContext = context;
                 let selectTarget = simplify(expression['expression']);
                 if (selectTarget instanceof StaticSymbol) {
-                  // Access to a static instance variable
-                  const declarationValue = resolveReferenceValue(selectTarget);
-                  if (declarationValue && declarationValue.statics) {
-                    selectTarget = declarationValue.statics;
+                  const members = selectTarget.members.concat(member);
+                  selectContext =
+                      self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
+                  const declarationValue = resolveReferenceValue(selectContext);
+                  if (declarationValue) {
+                    return simplifyInContext(selectContext, declarationValue, depth + 1);
                   } else {
-                    const member: string = expression['member'];
-                    const members = selectTarget.members ?
-                        (selectTarget.members as string[]).concat(member) :
-                        [member];
-                    return _this.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
+                    return selectContext;
                   }
                 }
-                const member = simplify(expression['member']);
-                if (selectTarget && isPrimitive(member)) return simplify(selectTarget[member]);
+                if (selectTarget && isPrimitive(member))
+                  return simplifyInContext(selectContext, selectTarget[member], depth + 1);
                 return null;
               case 'reference':
-                if (!expression.module) {
-                  const name: string = expression['name'];
-                  const localValue = scope.resolve(name);
-                  if (localValue != BindingScope.missing) {
-                    return localValue;
-                  }
+                // Note: This only has to deal with variable references,
+                // as symbol references have been converted into StaticSymbols already
+                // in the StaticSymbolResolver!
+                const name: string = expression['name'];
+                const localValue = scope.resolve(name);
+                if (localValue != BindingScope.missing) {
+                  return localValue;
                 }
-                staticSymbol = resolveReference(context, expression);
-                let result: any = staticSymbol;
-                let declarationValue = resolveReferenceValue(result);
-                if (declarationValue) {
-                  if (isOpaqueToken(staticSymbol, declarationValue)) {
-                    // If the referenced symbol is initalized by a new OpaqueToken we can keep the
-                    // reference to the symbol.
-                    return staticSymbol;
-                  }
-                  result = simplifyInContext(staticSymbol, declarationValue, depth + 1);
-                }
-                return result;
+                break;
               case 'class':
                 return context;
               case 'function':
@@ -586,26 +503,26 @@ export class StaticReflector implements ReflectorReader {
               case 'new':
               case 'call':
                 // Determine if the function is a built-in conversion
-                let target = expression['expression'];
-                if (target['module']) {
-                  staticSymbol =
-                      _this.findDeclaration(target['module'], target['name'], context.filePath);
-                } else {
-                  staticSymbol = _this.getStaticSymbol(context.filePath, target['name']);
-                }
-                let converter = _this.conversionMap.get(staticSymbol);
-                if (converter) {
-                  let args: any[] = expression['arguments'];
-                  if (!args) {
-                    args = [];
+                staticSymbol = simplifyInContext(context, expression['expression'], depth + 1);
+                if (staticSymbol instanceof StaticSymbol) {
+                  if (staticSymbol === self.opaqueToken) {
+                    // if somebody calls new OpaqueToken, don't create an OpaqueToken,
+                    // but rather return the symbol to which the OpaqueToken is assigned to.
+                    return context;
                   }
-                  return converter(
-                      context, args.map(arg => simplifyInContext(context, arg, depth + 1)));
+                  const argExpressions: any[] = expression['arguments'] || [];
+                  const args =
+                      argExpressions.map(arg => simplifyInContext(context, arg, depth + 1));
+                  let converter = self.conversionMap.get(staticSymbol);
+                  if (converter) {
+                    return converter(context, args);
+                  } else {
+                    // Determine if the function is one we can simplify.
+                    const targetFunction = resolveReferenceValue(staticSymbol);
+                    return simplifyCall(staticSymbol, targetFunction, args);
+                  }
                 }
-
-                // Determine if the function is one we can simplify.
-                return simplifyCall(expression);
-
+                break;
               case 'error':
                 let message = produceErrorMessage(expression);
                 if (expression['line']) {
@@ -626,7 +543,9 @@ export class StaticReflector implements ReflectorReader {
       try {
         return simplify(value);
       } catch (e) {
-        const message = `${e.message}, resolving symbol ${context.name} in ${context.filePath}`;
+        const members = context.members.length ? `.${context.members.join('.')}` : '';
+        const message =
+            `${e.message}, resolving symbol ${context.name}${members} in ${context.filePath}`;
         if (e.fileName) {
           throw positionalError(message, e.fileName, e.line, e.column);
         }
@@ -634,45 +553,26 @@ export class StaticReflector implements ReflectorReader {
       }
     }
 
-    const result = simplifyInContext(context, value, 0);
+    const recordedSimplifyInContext = (context: StaticSymbol, value: any, depth: number) => {
+      try {
+        return simplifyInContext(context, value, depth);
+      } catch (e) {
+        this.reportError(e, context);
+      }
+    };
+
+    const result = this.errorRecorder ? recordedSimplifyInContext(context, value, 0) :
+                                        simplifyInContext(context, value, 0);
     if (shouldIgnore(result)) {
       return undefined;
     }
     return result;
   }
 
-  /**
-   * @param module an absolute path to a module file.
-   */
-  public getModuleMetadata(module: string): {[key: string]: any} {
-    let moduleMetadata = this.metadataCache.get(module);
-    if (!moduleMetadata) {
-      const moduleMetadatas = this.host.getMetadataFor(module);
-      if (moduleMetadatas) {
-        let maxVersion = -1;
-        moduleMetadatas.forEach((md) => {
-          if (md['version'] > maxVersion) {
-            maxVersion = md['version'];
-            moduleMetadata = md;
-          }
-        });
-      }
-      if (!moduleMetadata) {
-        moduleMetadata =
-            {__symbolic: 'module', version: SUPPORTED_SCHEMA_VERSION, module: module, metadata: {}};
-      }
-      if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
-        throw new Error(
-            `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`);
-      }
-      this.metadataCache.set(module, moduleMetadata);
-    }
-    return moduleMetadata;
-  }
-
   private getTypeMetadata(type: StaticSymbol): {[key: string]: any} {
-    const moduleMetadata = this.getModuleMetadata(type.filePath);
-    return moduleMetadata['metadata'][type.name] || {__symbolic: 'class'};
+    const resolvedSymbol = this.symbolResolver.resolveSymbol(type);
+    return resolvedSymbol && resolvedSymbol.metadata ? resolvedSymbol.metadata :
+                                                       {__symbolic: 'class'};
   }
 }
 
@@ -717,7 +617,11 @@ function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: 
   Object.keys(input).forEach((key) => {
     const value = transform(input[key], key);
     if (!shouldIgnore(value)) {
-      result[key] = value;
+      if (HIDDEN_KEY.test(key)) {
+        Object.defineProperty(result, key, {enumerable: false, configurable: true, value: value});
+      } else {
+        result[key] = value;
+      }
     }
   });
   return result;
@@ -760,7 +664,7 @@ class PopulatedScope extends BindingScope {
 }
 
 function sameSymbol(a: StaticSymbol, b: StaticSymbol): boolean {
-  return a === b || (a.name == b.name && a.filePath == b.filePath);
+  return a === b;
 }
 
 function shouldIgnore(value: any): boolean {

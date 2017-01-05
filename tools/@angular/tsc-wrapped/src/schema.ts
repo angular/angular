@@ -15,7 +15,7 @@
 // semantics of the file in an array. For example, when generating a version 2 file, if version 1
 // can accurately represent the metadata, generate both version 1 and version 2 in an array.
 
-export const VERSION = 2;
+export const VERSION = 3;
 
 export type MetadataEntry = ClassMetadata | FunctionMetadata | MetadataValue;
 
@@ -36,6 +36,7 @@ export interface ModuleExportMetadata {
 
 export interface ClassMetadata {
   __symbolic: 'class';
+  extends?: MetadataSymbolicExpression|MetadataError;
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
   members?: MetadataMap;
   statics?: {[name: string]: MetadataValue | FunctionMetadata};

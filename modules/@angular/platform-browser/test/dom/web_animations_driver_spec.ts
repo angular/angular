@@ -85,6 +85,22 @@ export function main() {
           elm, startingStyles, styles, 1000, 1000, null, <AnimationPlayer[]>previousPlayers);
       expect(player.previousStyles).toEqual({});
     });
+
+    it('should round down offset values that are bigger than 1', () => {
+      const startingStyles = _makeStyles({});
+      const styles = [_makeKeyframe(0, {}), _makeKeyframe(2, {})];
+      const player = driver.animate(elm, startingStyles, styles, 1000, 1000, null);
+      expect(player.keyframes.pop()['offset']).toEqual(1);
+    });
+
+    it('should round down offset values that are bigger less than 0', () => {
+      const startingStyles = _makeStyles({});
+      const styles = [_makeKeyframe(-99, {}), _makeKeyframe(-0.1, {}), _makeKeyframe(1, {})];
+      const player = driver.animate(elm, startingStyles, styles, 1000, 1000, null);
+      player.keyframes.pop();  // remove the final keyframe that is `1`
+      const allZero = player.keyframes.every(kf => kf['offset'] == 0);
+      expect(allZero).toBe(true);
+    });
   });
 }
 

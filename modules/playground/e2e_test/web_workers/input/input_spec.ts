@@ -67,7 +67,7 @@ describe('WebWorkers Input', function() {
             },
             () => {
               // jasmine will timeout if this gets called too many times
-              console.log('>> unexpected timeout -> browser.refresh()');
+              console.error('>> unexpected timeout -> browser.refresh()');
               browser.refresh();
               waitForBootstrap();
             });

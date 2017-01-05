@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
 import * as chars from '../chars';
 import {escapeRegExp, isBlank, isPresent} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
 import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
@@ -31,7 +30,7 @@ function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
   return new RegExp(pattern, 'g');
 }
 
-@Injectable()
+@CompilerInjectable()
 export class Parser {
   private errors: ParserError[] = [];
 
@@ -344,7 +343,7 @@ export class _ParseAST {
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
         }
-        result = new BindingPipe(this.span(result.span.start - this.offset), result, name, args);
+        result = new BindingPipe(this.span(result.span.start), result, name, args);
       } while (this.optionalOperator('|'));
     }
 

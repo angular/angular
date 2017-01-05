@@ -6,18 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {triggerQueuedAnimations} from '../animation/animation_queue';
+import {AnimationQueue} from '../animation/animation_queue';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectorStatus} from '../change_detection/constants';
 import {unimplemented} from '../facade/errors';
-
 import {AppView} from './view';
-
 
 /**
  * @stable
  */
 export abstract class ViewRef extends ChangeDetectorRef {
+  /**
+   * Destroys the view and all of the data structures associated with it.
+   */
+  abstract destroy(): void;
+
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
   abstract onDestroy(callback: Function): any /** TODO #9100 */;
@@ -81,18 +84,13 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   get context(): C { return unimplemented(); }
 
   get rootNodes(): any[] { return <any[]>unimplemented(); };
-
-  /**
-   * Destroys the view and all of the data structures associated with it.
-   */
-  abstract destroy(): void;
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   /** @internal */
   _originalMode: ChangeDetectorStatus;
 
-  constructor(private _view: AppView<C>) {
+  constructor(private _view: AppView<C>, public animationQueue: AnimationQueue) {
     this._view = _view;
     this._originalMode = this._view.cdMode;
   }
@@ -109,7 +107,7 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
   detectChanges(): void {
     this._view.detectChanges(false);
-    triggerQueuedAnimations();
+    this.animationQueue.flush();
   }
   checkNoChanges(): void { this._view.detectChanges(true); }
   reattach(): void {

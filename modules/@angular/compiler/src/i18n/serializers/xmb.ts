@@ -39,6 +39,7 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 
 export class Xmb implements Serializer {
   write(messages: i18n.Message[]): string {
+    const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
     const visited: {[id: string]: boolean} = {};
     let rootNode = new xml.Tag(_MESSAGES_TAG);
@@ -71,7 +72,7 @@ export class Xmb implements Serializer {
       new xml.CR(),
       new xml.Doctype(_MESSAGES_TAG, _DOCTYPE),
       new xml.CR(),
-      rootNode,
+      exampleVisitor.addDefaultExamples(rootNode),
       new xml.CR(),
     ]);
   }
@@ -133,4 +134,27 @@ class _Visitor implements i18n.Visitor {
 
 export function digest(message: i18n.Message): string {
   return decimalDigest(message);
+}
+
+// TC requires at least one non-empty example on placeholders
+class ExampleVisitor implements xml.IVisitor {
+  addDefaultExamples(node: xml.Node): xml.Node {
+    node.visit(this);
+    return node;
+  }
+
+  visitTag(tag: xml.Tag): void {
+    if (tag.name === _PLACEHOLDER_TAG) {
+      if (!tag.children || tag.children.length == 0) {
+        const exText = new xml.Text(tag.attrs['name'] || '...');
+        tag.children = [new xml.Tag(_EXEMPLE_TAG, {}, [exText])];
+      }
+    } else if (tag.children) {
+      tag.children.forEach(node => node.visit(this));
+    }
+  }
+
+  visitText(text: xml.Text): void {}
+  visitDeclaration(decl: xml.Declaration): void {}
+  visitDoctype(doctype: xml.Doctype): void {}
 }

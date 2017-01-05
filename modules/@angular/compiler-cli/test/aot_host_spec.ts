@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ModuleMetadata} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../src/compiler_host';
@@ -14,14 +15,13 @@ import {Directory, Entry, MockAotContext, MockCompilerHost} from './mocks';
 
 describe('CompilerHost', () => {
   let context: MockAotContext;
-  let host: ts.CompilerHost;
   let program: ts.Program;
   let hostNestedGenDir: CompilerHost;
   let hostSiblingGenDir: CompilerHost;
 
   beforeEach(() => {
     context = new MockAotContext('/tmp/src', clone(FILES));
-    host = new MockCompilerHost(context);
+    const host = new MockCompilerHost(context);
     program = ts.createProgram(
         ['main.ts'], {
           module: ts.ModuleKind.CommonJS,
@@ -33,7 +33,7 @@ describe('CompilerHost', () => {
       throw new Error('Expected no errors');
     }
     hostNestedGenDir = new CompilerHost(
-        program, host, {
+        program, {
           genDir: '/tmp/project/src/gen/',
           basePath: '/tmp/project/src',
           skipMetadataEmit: false,
@@ -43,7 +43,7 @@ describe('CompilerHost', () => {
         },
         context);
     hostSiblingGenDir = new CompilerHost(
-        program, host, {
+        program, {
           genDir: '/tmp/project/gen',
           basePath: '/tmp/project/src/',
           skipMetadataEmit: false,
@@ -67,11 +67,14 @@ describe('CompilerHost', () => {
                  '/tmp/project/src/my.other.ngfactory.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('./my.other.ngfactory');
       expect(hostNestedGenDir.fileNameToModuleName(
-                 '/tmp/project/src/my.other.css.ts', '/tmp/project/src/a/my.ngfactory.ts'))
-          .toEqual('../my.other.css');
+                 '/tmp/project/src/my.other.css.ngstyle.ts', '/tmp/project/src/a/my.ngfactory.ts'))
+          .toEqual('../my.other.css.ngstyle');
       expect(hostNestedGenDir.fileNameToModuleName(
-                 '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
-          .toEqual('./a/my.other.css.shim');
+                 '/tmp/project/src/a/my.other.shim.ngstyle.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('./a/my.other.shim.ngstyle');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/my.other.sass.ngstyle.ts', '/tmp/project/src/a/my.ngfactory.ts'))
+          .toEqual('../my.other.sass.ngstyle');
     });
 
     it('should import application from factory', () => {
@@ -84,6 +87,12 @@ describe('CompilerHost', () => {
       expect(hostNestedGenDir.fileNameToModuleName(
                  '/tmp/project/src/a/my.other.ts', '/tmp/project/src/my.ngfactory.ts'))
           .toEqual('../a/my.other');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/a/my.other.css.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('../a/my.other.css');
+      expect(hostNestedGenDir.fileNameToModuleName(
+                 '/tmp/project/src/a/my.other.css.shim.ts', '/tmp/project/src/my.ngfactory.ts'))
+          .toEqual('../a/my.other.css.shim');
     });
   });
 
@@ -142,12 +151,14 @@ describe('CompilerHost', () => {
 
   it('should be able to read a metadata file', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts')).toEqual([
-      {__symbolic: 'module', version: 2, metadata: {foo: {__symbolic: 'class'}}}
+      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}}
     ]);
   });
 
   it('should be able to read metadata from an otherwise unused .d.ts file ', () => {
-    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/unused.d.ts')).toBeUndefined();
+    expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/unused.d.ts')).toEqual([
+      dummyMetadata
+    ]);
   });
 
   it('should be able to read empty metadata ', () => {
@@ -158,19 +169,36 @@ describe('CompilerHost', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
   });
 
-  it('should add missing v2 metadata from v1 metadata and .d.ts files', () => {
+  it('should add missing v3 metadata from v1 metadata and .d.ts files', () => {
     expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1.d.ts')).toEqual([
       {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}}, {
         __symbolic: 'module',
-        version: 2,
-        metadata: {foo: {__symbolic: 'class'}, bar: {__symbolic: 'class'}}
+        version: 3,
+        metadata: {
+          foo: {__symbolic: 'class'},
+          Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
+          BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
+          ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
+        },
+        exports: [{from: './lib/utils2', export: ['Export']}],
       }
+    ]);
+  });
+
+  it('should upgrade a missing metadata file into v3', () => {
+    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1_empty.d.ts')).toEqual([
+      {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
     ]);
   });
 });
 
 const dummyModule = 'export let foo: any[];';
-
+const dummyMetadata: ModuleMetadata = {
+  __symbolic: 'module',
+  version: 3,
+  metadata:
+      {foo: {__symbolic: 'error', message: 'Variable not initialized', line: 0, character: 11}}
+};
 const FILES: Entry = {
   'tmp': {
     'src': {
@@ -190,7 +218,7 @@ const FILES: Entry = {
         '@angular': {
           'core.d.ts': dummyModule,
           'core.metadata.json':
-              `{"__symbolic":"module", "version": 2, "metadata": {"foo": {"__symbolic": "class"}}}`,
+              `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
@@ -198,9 +226,22 @@ const FILES: Entry = {
         }
       },
       'metadata_versions': {
-        'v1.d.ts': 'export declare class bar {}',
+        'v1.d.ts': `
+          import {ReExport} from './lib/utils2';
+          export {ReExport};
+
+          export {Export} from './lib/utils2';
+
+          export declare class Bar {
+            ngOnInit() {}
+          }
+          export declare class BarChild extends Bar {}
+        `,
         'v1.metadata.json':
             `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
+        'v1_empty.d.ts': `
+          export * from './lib/utils';
+        `
       }
     }
   }

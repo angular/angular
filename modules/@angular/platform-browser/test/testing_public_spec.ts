@@ -8,7 +8,7 @@
 
 import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, Injectable, Input, NgModule, Pipe} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick, withModule} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 import {stringify} from '../src/facade/lang';
@@ -356,6 +356,21 @@ export function main() {
             expect(compFixture.nativeElement).toHaveText('transformed hello');
           });
         });
+
+        describe('template', () => {
+          let testBedSpy: any;
+          beforeEach(() => {
+            testBedSpy = spyOn(getTestBed(), 'overrideComponent').and.callThrough();
+            TestBed.overrideTemplate(SomeComponent, 'newText');
+          });
+          it(`should override component's template`, () => {
+            const fixture = TestBed.createComponent(SomeComponent);
+            expect(fixture.nativeElement).toHaveText('newText');
+            expect(testBedSpy).toHaveBeenCalledWith(SomeComponent, {
+              set: {template: 'newText', templateUrl: null}
+            });
+          });
+        });
       });
 
       describe('setting up the compiler', () => {
@@ -488,7 +503,7 @@ export function main() {
                                            {declarations: [CompWithUrlTemplate]},
                                            () => TestBed.createComponent(CompWithUrlTemplate))))
                  .toThrowError(
-                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl", but they were never compiled. ` +
+                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
                      `Please call "TestBed.compileComponents" before your test.`);
 
              restoreJasmineIt();

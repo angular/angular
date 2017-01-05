@@ -39,15 +39,20 @@ describe('Collector', () => {
       'local-symbol-ref-func-dynamic.ts',
       'private-enum.ts',
       're-exports.ts',
+      're-exports-2.ts',
+      'export-as.d.ts',
       'static-field-reference.ts',
       'static-method.ts',
       'static-method-call.ts',
       'static-method-with-if.ts',
       'static-method-with-default.ts',
+      'class-inheritance.ts',
+      'class-inheritance-parent.ts',
+      'class-inheritance-declarations.d.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
-    collector = new MetadataCollector();
+    collector = new MetadataCollector({quotedNames: true});
   });
 
   it('should not have errors in test data', () => { expectValidSources(service, program); });
@@ -63,7 +68,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
@@ -104,7 +109,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         AppComponent: {
           __symbolic: 'class',
@@ -158,14 +163,19 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         HEROES: [
-          {'id': 11, 'name': 'Mr. Nice'}, {'id': 12, 'name': 'Narco'},
-          {'id': 13, 'name': 'Bombasto'}, {'id': 14, 'name': 'Celeritas'},
-          {'id': 15, 'name': 'Magneta'}, {'id': 16, 'name': 'RubberMan'},
-          {'id': 17, 'name': 'Dynama'}, {'id': 18, 'name': 'Dr IQ'}, {'id': 19, 'name': 'Magma'},
-          {'id': 20, 'name': 'Tornado'}
+          {'id': 11, 'name': 'Mr. Nice', '$quoted$': ['id', 'name']},
+          {'id': 12, 'name': 'Narco', '$quoted$': ['id', 'name']},
+          {'id': 13, 'name': 'Bombasto', '$quoted$': ['id', 'name']},
+          {'id': 14, 'name': 'Celeritas', '$quoted$': ['id', 'name']},
+          {'id': 15, 'name': 'Magneta', '$quoted$': ['id', 'name']},
+          {'id': 16, 'name': 'RubberMan', '$quoted$': ['id', 'name']},
+          {'id': 17, 'name': 'Dynama', '$quoted$': ['id', 'name']},
+          {'id': 18, 'name': 'Dr IQ', '$quoted$': ['id', 'name']},
+          {'id': 19, 'name': 'Magma', '$quoted$': ['id', 'name']},
+          {'id': 20, 'name': 'Tornado', '$quoted$': ['id', 'name']}
         ]
       }
     });
@@ -232,7 +242,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(unsupported1);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         a: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 16},
         b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
@@ -274,7 +284,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         SimpleClass: {__symbolic: 'class'},
         AbstractClass: {__symbolic: 'class'},
@@ -288,7 +298,7 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(exportedFunctions);
     expect(metadata).toEqual({
       __symbolic: 'module',
-      version: 2,
+      version: 3,
       metadata: {
         one: {
           __symbolic: 'function',
@@ -519,6 +529,22 @@ describe('Collector', () => {
     ]);
   });
 
+  it('should be able to collect a export as symbol', () => {
+    const source = program.getSourceFile('export-as.d.ts');
+    const metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({SomeFunction: {__symbolic: 'function'}});
+  });
+
+  it('should be able to collect exports with no module specifier', () => {
+    const source = program.getSourceFile('/re-exports-2.ts');
+    const metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({
+      MyClass: Object({__symbolic: 'class'}),
+      OtherModule: {__symbolic: 'reference', module: './static-field-reference', name: 'Foo'},
+      MyOtherModule: {__symbolic: 'reference', module: './static-field', name: 'MyModule'}
+    });
+  });
+
   it('should collect an error symbol if collecting a reference to a non-exported symbol', () => {
     const source = program.getSourceFile('/local-symbol-ref.ts');
     const metadata = collector.getMetadata(source);
@@ -613,6 +639,32 @@ describe('Collector', () => {
       override(fileName, 'export function');
       const invalidFunction = program.getSourceFile(fileName);
       expect(() => collector.getMetadata(invalidFunction)).not.toThrow();
+    });
+  });
+
+  describe('inheritance', () => {
+    it('should record `extends` clauses for declared classes', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['DeclaredChildClass'])
+          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
+    });
+
+    it('should record `extends` clauses for classes in the same file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['ChildClassSameFile'])
+          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
+    });
+
+    it('should record `extends` clauses for classes in a different file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      expect(metadata.metadata['ChildClassOtherFile']).toEqual({
+        __symbolic: 'class',
+        extends: {
+          __symbolic: 'reference',
+          module: './class-inheritance-parent',
+          name: 'ParentClassFromOtherFile'
+        }
+      });
     });
   });
 
@@ -844,6 +896,20 @@ const FILES: Directory = {
     export abstract class AbstractClass {}
     export declare class DeclaredClass {}
   `,
+  'class-inheritance-parent.ts': `
+    export class ParentClassFromOtherFile {}
+  `,
+  'class-inheritance.ts': `
+    import {ParentClassFromOtherFile} from './class-inheritance-parent';
+
+    export class ParentClass {}
+
+    export declare class DeclaredChildClass extends ParentClass {}
+
+    export class ChildClassSameFile extends ParentClass {}
+
+    export class ChildClassOtherFile extends ParentClassFromOtherFile {}
+  `,
   'exported-functions.ts': `
     export function one(a: string, b: string, c: string) {
       return {a: a, b: b, c: c};
@@ -877,9 +943,6 @@ const FILES: Directory = {
     export const constValue = 100;
   `,
   'static-method.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(comp: any): any[] {
         return [
@@ -890,9 +953,6 @@ const FILES: Directory = {
     }
   `,
   'static-method-with-default.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(comp: any, foo: boolean = true, bar: boolean = false): any[] {
         return [
@@ -913,9 +973,6 @@ const FILES: Directory = {
     export class Foo { }
   `,
   'static-field.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static VALUE = 'Some string';
     }
@@ -930,9 +987,6 @@ const FILES: Directory = {
     export class Foo { }
   `,
   'static-method-with-if.ts': `
-    import {Injectable} from 'angular2/core';
-
-    @Injectable()
     export class MyModule {
       static with(cond: boolean): any[] {
         return [
@@ -947,6 +1001,16 @@ const FILES: Directory = {
     export {Foo as OtherModule} from './static-field-reference';
     export * from 'angular2/core';
   `,
+  're-exports-2.ts': `
+    import {MyModule} from './static-field';
+    import {Foo as OtherModule} from './static-field-reference';
+    class MyClass {}
+    export {OtherModule, MyModule as MyOtherModule, MyClass};
+  `,
+  'export-as.d.ts': `
+     declare function someFunction(): void;
+     export { someFunction as SomeFunction };
+ `,
   'local-symbol-ref.ts': `
     import {Component, Validators} from 'angular2/core';
 

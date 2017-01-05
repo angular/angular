@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
@@ -19,33 +19,36 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *
  * - `path` is a string that uses the route matcher DSL.
  * - `pathMatch` is a string that specifies the matching strategy.
+ * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
+ *   See {@link UrlMatcher} for more info.
  * - `component` is a component type.
  * - `redirectTo` is the url fragment which will replace the current matched segment.
  * - `outlet` is the name of the outlet the component should be placed into.
- * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See {@link
- * CanActivate} for more info.
+ * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See
+ *   {@link CanActivate} for more info.
  * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See
- * {@link
- * CanActivateChild} for more info.
- * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See {@link
- * CanDeactivate} for more info.
+ *   {@link CanActivateChild} for more info.
+ * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See
+ *   {@link CanDeactivate} for more info.
+ * - `canLoad` is an array of DI tokens used to look up CanDeactivate handlers. See
+ *   {@link CanLoad} for more info.
  * - `data` is additional data provided to the component via `ActivatedRoute`.
  * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
- * info.
+ *   info.
  * - `children` is an array of child route definitions.
+ * - `loadChildren` is a reference to lazy loaded child routes. See {@link LoadChildren} for more
+ *   info.
  *
  * ### Simple Configuration
  *
  * ```
  * [{
  *   path: 'team/:id',
- *   component: Team,
- *   children: [
- *     {
- *       path: 'user/:name',
- *       component: User
- *     }
- *   ]
+  *  component: Team,
+ *   children: [{
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
  * }]
  * ```
  *
@@ -58,8 +61,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * [{
  *   path: 'team/:id',
  *   component: Team
- * },
- * {
+ * }, {
  *   path: 'chat/:user',
  *   component: Chat
  *   outlet: 'aux'
@@ -86,16 +88,13 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * [{
  *   path: 'team/:id',
  *   component: Team,
- *   children: [
- *     {
- *       path: 'legacy/user/:name',
- *       redirectTo: 'user/:name'
- *     },
- *     {
- *       path: 'user/:name',
- *       component: User
- *     }
- *   ]
+ *   children: [{
+ *     path: 'legacy/user/:name',
+ *     redirectTo: 'user/:name'
+ *   }, {
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
  * }]
  * ```
  *
@@ -115,16 +114,13 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * [{
  *   path: 'team/:id',
  *   component: Team,
- *   children: [
- *     {
- *       path: '',
- *       component: AllUsers
- *     },
- *     {
- *       path: 'user/:name',
- *       component: User
- *     }
- *   ]
+ *   children: [{
+ *     path: '',
+ *     component: AllUsers
+ *   }, {
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
  * }]
  * ```
  *
@@ -136,18 +132,14 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * [{
  *   path: 'team/:id',
  *   component: Team,
- *   children: [
- *     {
- *       path: '',
- *       component: WrapperCmp,
- *       children: [
- *         {
- *           path: 'user/:name',
- *           component: User
- *         }
- *       ]
- *     }
- *   ]
+ *   children: [{
+ *     path: '',
+ *     component: WrapperCmp,
+ *     children: [{
+ *       path: 'user/:name',
+ *       component: User
+ *     }]
+ *   }]
  * }]
  * ```
  *
@@ -172,8 +164,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *   path: '',
  *   pathMatch: 'prefix', //default
  *   redirectTo: 'main'
- * },
- * {
+ * }, {
  *   path: 'main',
  *   component: Main
  * }]
@@ -190,8 +181,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *   path: '',
  *   pathMatch: 'full',
  *   redirectTo: 'main'
- * },
- * {
+ * }, {
  *   path: 'main',
  *   component: Main
  * }]
@@ -244,8 +234,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *
  * Lazy loading speeds up our application load time by splitting it into multiple bundles, and
  * loading them on demand. The router is designed to make lazy loading simple and easy. Instead of
- * providing the children property, you can provide
- * the loadChildren property, as follows:
+ * providing the children property, you can provide the `loadChildren` property, as follows:
  *
  * ```
  * [{
@@ -256,9 +245,8 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * ```
  *
  * The router will use registered NgModuleFactoryLoader to fetch an NgModule associated with 'team'.
- * Then it will
- * extract the set of routes defined in that NgModule, and will transparently add those routes to
- * the main configuration.
+ * Then it will extract the set of routes defined in that NgModule, and will transparently add
+ * those routes to the main configuration.
  *
  * @stable use Routes
  */
@@ -326,7 +314,6 @@ export type LoadChildrenCallback = () => Type<any>| Promise<Type<any>>| Observab
 
 /**
  * @whatItDoes The type of `loadChildren`.
- *
  * See {@link Routes} for more details.
  * @stable
  */
@@ -349,21 +336,23 @@ export interface Route {
   canLoad?: any[];
   data?: Data;
   resolve?: ResolveData;
-  children?: Route[];
+  children?: Routes;
   loadChildren?: LoadChildren;
 }
 
-export function validateConfig(config: Routes): void {
+export function validateConfig(config: Routes, parentPath: string = ''): void {
   // forEach doesn't iterate undefined values
   for (let i = 0; i < config.length; i++) {
-    validateNode(config[i]);
+    const route: Route = config[i];
+    const fullPath: string = getFullPath(parentPath, route);
+    validateNode(route, fullPath);
   }
 }
 
-function validateNode(route: Route): void {
+function validateNode(route: Route, fullPath: string): void {
   if (!route) {
     throw new Error(`
-      Invalid route configuration: Encountered undefined route.
+      Invalid configuration of route '${fullPath}': Encountered undefined route.
       The reason might be an extra comma.
        
       Example: 
@@ -375,52 +364,69 @@ function validateNode(route: Route): void {
     `);
   }
   if (Array.isArray(route)) {
-    throw new Error(`Invalid route configuration: Array cannot be specified`);
+    throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
-  if (route.component === undefined && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+  if (!route.component && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
     throw new Error(
-        `Invalid route configuration of route '${route.path}': a componentless route cannot have a named outlet set`);
+        `Invalid configuration of route '${fullPath}': a componentless route cannot have a named outlet set`);
   }
-  if (!!route.redirectTo && !!route.children) {
+  if (route.redirectTo && route.children) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and children cannot be used together`);
+        `Invalid configuration of route '${fullPath}': redirectTo and children cannot be used together`);
   }
-  if (!!route.redirectTo && !!route.loadChildren) {
+  if (route.redirectTo && route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and loadChildren cannot be used together`);
+        `Invalid configuration of route '${fullPath}': redirectTo and loadChildren cannot be used together`);
   }
-  if (!!route.children && !!route.loadChildren) {
+  if (route.children && route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': children and loadChildren cannot be used together`);
+        `Invalid configuration of route '${fullPath}': children and loadChildren cannot be used together`);
   }
-  if (!!route.redirectTo && !!route.component) {
+  if (route.redirectTo && route.component) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': redirectTo and component cannot be used together`);
+        `Invalid configuration of route '${fullPath}': redirectTo and component cannot be used together`);
   }
-  if (!!route.path && !!route.matcher) {
+  if (route.path && route.matcher) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': path and matcher cannot be used together`);
+        `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
   }
-  if (route.redirectTo === undefined && !route.component && !route.children &&
-      !route.loadChildren) {
+  if (route.redirectTo === void 0 && !route.component && !route.children && !route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${route.path}': one of the following must be provided (component or redirectTo or children or loadChildren)`);
+        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
   }
-  if (route.path === undefined) {
-    throw new Error(`Invalid route configuration: routes must have path specified`);
-  }
-  if (route.path.startsWith('/')) {
+  if (route.path === void 0 && route.matcher === void 0) {
     throw new Error(
-        `Invalid route configuration of route '${route.path}': path cannot start with a slash`);
+        `Invalid configuration of route '${fullPath}': routes must have either a path or a matcher specified`);
   }
-  if (route.path === '' && route.redirectTo !== undefined && route.pathMatch === undefined) {
+  if (typeof route.path === 'string' && route.path.charAt(0) === '/') {
+    throw new Error(`Invalid configuration of route '${fullPath}': path cannot start with a slash`);
+  }
+  if (route.path === '' && route.redirectTo !== void 0 && route.pathMatch === void 0) {
     const exp =
         `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
     throw new Error(
-        `Invalid route configuration of route '{path: "${route.path}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
+        `Invalid configuration of route '{path: "${fullPath}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
   }
-  if (route.pathMatch !== undefined && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
+  if (route.pathMatch !== void 0 && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
     throw new Error(
-        `Invalid configuration of route '${route.path}': pathMatch can only be set to 'prefix' or 'full'`);
+        `Invalid configuration of route '${fullPath}': pathMatch can only be set to 'prefix' or 'full'`);
+  }
+  if (route.children) {
+    validateConfig(route.children, fullPath);
+  }
+}
+
+function getFullPath(parentPath: string, currentRoute: Route): string {
+  if (!currentRoute) {
+    return parentPath;
+  }
+  if (!parentPath && !currentRoute.path) {
+    return '';
+  } else if (parentPath && !currentRoute.path) {
+    return `${parentPath}/`;
+  } else if (!parentPath && currentRoute.path) {
+    return currentRoute.path;
+  } else {
+    return `${parentPath}/${currentRoute.path}`;
   }
 }

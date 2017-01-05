@@ -14,41 +14,15 @@
 // Must be imported first, because angular2 decorators throws on load.
 import 'reflect-metadata';
 
-import * as compiler from '@angular/compiler';
 import * as tsc from '@angular/tsc-wrapped';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {Extractor} from './extractor';
 
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
-    program: ts.Program, host: ts.CompilerHost) {
-  const extractor = Extractor.create(ngOptions, cliOptions.i18nFormat, program, host);
-
-  const bundlePromise: Promise<compiler.MessageBundle> = extractor.extract();
-
-  return (bundlePromise).then(messageBundle => {
-    let ext: string;
-    let serializer: compiler.Serializer;
-    const format = (cliOptions.i18nFormat || 'xlf').toLowerCase();
-
-    switch (format) {
-      case 'xmb':
-        ext = 'xmb';
-        serializer = new compiler.Xmb();
-        break;
-      case 'xliff':
-      case 'xlf':
-      default:
-        ext = 'xlf';
-        serializer = new compiler.Xliff();
-        break;
-    }
-
-    const dstPath = path.join(ngOptions.genDir, `messages.${ext}`);
-    host.writeFile(dstPath, messageBundle.write(serializer), false);
-  });
+    program: ts.Program, host: ts.CompilerHost): Promise<void> {
+  return Extractor.create(ngOptions, program, host).extract(cliOptions.i18nFormat);
 }
 
 // Entry point

@@ -6,21 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
-import {SimpleJsImportGenerator} from './output_emitter_util';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
 
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});
+const sameModuleIdentifier: CompileIdentifierMetadata = {
+  reference: new StaticSymbol(someModuleUrl, 'someLocalId', [])
+};
+const externalModuleIdentifier: CompileIdentifierMetadata = {
+  reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', [])
+};
 
-const externalModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
+class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
+  }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
+}
 
 export function main() {
   // Note supported features of our OutputAstin JavaScript / ES5:
@@ -28,11 +35,13 @@ export function main() {
   // - declaring fields
 
   describe('JavaScriptEmitter', () => {
+    let importResolver: ImportResolver;
     let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      emitter = new JavaScriptEmitter(new SimpleJsImportGenerator());
+      importResolver = new SimpleJsImportGenerator();
+      emitter = new JavaScriptEmitter(importResolver);
       someVar = o.variable('someVar');
     });
 
@@ -116,6 +125,16 @@ export function main() {
         `var import0 = re` +
             `quire('somePackage/someOtherPath');`,
         `import0.someExternalId;`
+      ].join('\n'));
+    });
+
+    it('should support `importAs` for external identifiers', () => {
+      spyOn(importResolver, 'getImportAs')
+          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
+      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
+        `var import0 = re` +
+            `quire('somePackage/importAsModule');`,
+        `import0.importAsName;`
       ].join('\n'));
     });
 

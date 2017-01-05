@@ -10,7 +10,7 @@ import {AnimationMetadata, animate, sequence, style, transition, trigger} from '
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {AnimationCompiler, AnimationEntryCompileResult} from '../../src/animation/animation_compiler';
 import {AnimationParser} from '../../src/animation/animation_parser';
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata} from '../../src/compile_metadata';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata, identifierName} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
 import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
 
@@ -30,7 +30,7 @@ export function main() {
     const compileAnimations =
         (component: CompileDirectiveMetadata): AnimationEntryCompileResult[] => {
           const parsedAnimations = parser.parseComponent(component);
-          return compiler.compile(component.type.name, parsedAnimations);
+          return compiler.compile(identifierName(component.type), parsedAnimations);
         };
 
     const compileTriggers = (input: any[]) => {
@@ -40,7 +40,7 @@ export function main() {
       });
 
       const component = CompileDirectiveMetadata.create({
-        type: new CompileTypeMetadata({name: 'myCmp'}),
+        type: {reference: {name: 'myCmp', filePath: ''}, diDeps: [], lifecycleHooks: []},
         template: new CompileTemplateMetadata({animations: entries})
       });
 

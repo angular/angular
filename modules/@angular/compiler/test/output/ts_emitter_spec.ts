@@ -6,41 +6,52 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
-
-import {SimpleJsImportGenerator} from './output_emitter_util';
 
 const someModuleUrl = 'somePackage/somePath';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someLocalId', moduleUrl: someModuleUrl});
+const sameModuleIdentifier: CompileIdentifierMetadata = {
+  reference: new StaticSymbol(someModuleUrl, 'someLocalId', [])
+};
 
-const externalModuleIdentifier =
-    new CompileIdentifierMetadata({name: 'someExternalId', moduleUrl: anotherModuleUrl});
+const externalModuleIdentifier: CompileIdentifierMetadata = {
+  reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', [])
+};
+
+class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
+  }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
+}
 
 export function main() {
-  // Note supported features of our OutputAsti n TS:
+  // Not supported features of our OutputAst in TS:
   // - real `const` like in Dart
   // - final fields
 
   describe('TypeScriptEmitter', () => {
+    let importResolver: ImportResolver;
     let emitter: TypeScriptEmitter;
     let someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      emitter = new TypeScriptEmitter(new SimpleJsImportGenerator());
+      importResolver = new SimpleJsImportGenerator();
+      emitter = new TypeScriptEmitter(importResolver);
       someVar = o.variable('someVar');
     });
 
-    function emitStmt(stmt: o.Statement, exportedVars: string[] = null): string {
+    function emitStmt(stmt: o.Statement | o.Statement[], exportedVars: string[] = null): string {
       if (!exportedVars) {
         exportedVars = [];
       }
-      return emitter.emitStatements(someModuleUrl, [stmt], exportedVars);
+      const stmts = Array.isArray(stmt) ? stmt : [stmt];
+      return emitter.emitStatements(someModuleUrl, stmts, exportedVars);
     }
 
     it('should declare variables', () => {
@@ -51,6 +62,79 @@ export function main() {
           .toEqual(`export var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(o.INT_TYPE)))
           .toEqual(`var someVar:number = 1;`);
+    });
+
+    describe('declare variables with ExternExpressions as values', () => {
+      it('should create no reexport if the identifier is in the same module', () => {
+        // identifier is in the same module -> no reexport
+        expect(emitStmt(someVar.set(o.importExpr(sameModuleIdentifier)).toDeclStmt(), ['someVar']))
+            .toEqual('export var someVar:any = someLocalId;');
+      });
+
+      it('should create no reexport if the variable is not exported', () => {
+        expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt())).toEqual([
+          `import * as import0 from 'somePackage/someOtherPath';`,
+          `var someVar:any = import0.someExternalId;`
+        ].join('\n'));
+      });
+
+      it('should create no reexport if the variable is typed', () => {
+        expect(emitStmt(
+                   someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(o.DYNAMIC_TYPE),
+                   ['someVar']))
+            .toEqual([
+              `import * as import0 from 'somePackage/someOtherPath';`,
+              `export var someVar:any = import0.someExternalId;`
+            ].join('\n'));
+      });
+
+      it('should create no reexport if the identifier has members', () => {
+        const externalModuleIdentifierWithMembers: CompileIdentifierMetadata = {
+          reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', ['a'])
+        };
+        expect(emitStmt(
+                   someVar.set(o.importExpr(externalModuleIdentifierWithMembers)).toDeclStmt(),
+                   ['someVar']))
+            .toEqual([
+              `import * as import0 from 'somePackage/someOtherPath';`,
+              `export var someVar:any = import0.someExternalId.a;`
+            ].join('\n'));
+      });
+
+      it('should create a reexport', () => {
+        expect(
+            emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(), ['someVar']))
+            .toEqual([
+              `export {someExternalId as someVar} from 'somePackage/someOtherPath';`, ``
+            ].join('\n'));
+      });
+
+      it('should create multiple reexports from the same file', () => {
+        const someVar2 = o.variable('someVar2');
+        const externalModuleIdentifier2: CompileIdentifierMetadata = {
+          reference: new StaticSymbol(anotherModuleUrl, 'someExternalId2', [])
+        };
+        expect(emitStmt(
+                   [
+                     someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(),
+                     someVar2.set(o.importExpr(externalModuleIdentifier2)).toDeclStmt()
+                   ],
+                   ['someVar', 'someVar2']))
+            .toEqual([
+              `export {someExternalId as someVar,someExternalId2 as someVar2} from 'somePackage/someOtherPath';`,
+              ``
+            ].join('\n'));
+      });
+
+      it('should use `importAs` for reexports', () => {
+        spyOn(importResolver, 'getImportAs')
+            .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
+        expect(
+            emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(), ['someVar']))
+            .toEqual([
+              `export {importAsName as someVar} from 'somePackage/importAsModule';`, ``
+            ].join('\n'));
+      });
     });
 
     it('should read and write variables', () => {
@@ -107,6 +191,14 @@ export function main() {
       expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
     });
 
+    it('should apply quotes to each entry within a map produced with literalMap when true', () => {
+      expect(
+          emitStmt(
+              o.literalMap([['a', o.literal('a')], ['*', o.literal('star')]], null, true).toStmt())
+              .replace(/\s+/gm, ''))
+          .toEqual(`{'a':'a','*':'star'};`);
+    });
+
     it('should support blank literals', () => {
       expect(emitStmt(o.literal(null).toStmt())).toEqual('(null as any);');
       expect(emitStmt(o.literal(undefined).toStmt())).toEqual('(undefined as any);');
@@ -117,6 +209,14 @@ export function main() {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
         `import * as import0 from 'somePackage/someOtherPath';`, `import0.someExternalId;`
+      ].join('\n'));
+    });
+
+    it('should support `importAs` for external identifiers', () => {
+      spyOn(importResolver, 'getImportAs')
+          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
+      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
+        `import * as import0 from 'somePackage/importAsModule';`, `import0.importAsName;`
       ].join('\n'));
     });
 
@@ -316,6 +416,24 @@ export function main() {
         `import * as import0 from 'somePackage/someOtherPath';`,
         `var a:import0.someExternalId = (null as any);`
       ].join('\n'));
+    });
+
+    it('should support `importAs` for external types', () => {
+      spyOn(importResolver, 'getImportAs')
+          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
+      const writeVarExpr = o.variable('a').set(o.NULL_EXPR);
+      expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
+        `import * as import0 from 'somePackage/importAsModule';`,
+        `var a:import0.importAsName = (null as any);`
+      ].join('\n'));
+    });
+
+    it('should support expression types', () => {
+      expect(emitStmt(o.variable('a')
+                          .set(o.NULL_EXPR)
+                          .toDeclStmt(o.expressionType(
+                              o.variable('b'), [o.expressionType(o.variable('c'))]))))
+          .toEqual('var a:b<c> = (null as any);');
     });
 
     it('should support combined types', () => {

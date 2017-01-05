@@ -8,7 +8,7 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-import {AbstractControl, FormControl, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
@@ -50,6 +50,14 @@ export function main() {
          () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
     });
 
+    describe('requiredTrue', () => {
+      it('should error on false',
+         () => expect(Validators.requiredTrue(new FormControl(false))).toEqual({'required': true}));
+
+      it('should not error on true',
+         () => expect(Validators.requiredTrue(new FormControl(true))).toBeNull());
+    });
+
     describe('minLength', () => {
       it('should not error on an empty string',
          () => { expect(Validators.minLength(2)(new FormControl(''))).toBeNull(); });
@@ -68,6 +76,18 @@ export function main() {
           'minlength': {'requiredLength': 2, 'actualLength': 1}
         });
       });
+
+      it('should not error when FormArray has valid length', () => {
+        const fa = new FormArray([new FormControl(''), new FormControl('')]);
+        expect(Validators.minLength(2)(fa)).toBeNull();
+      });
+
+      it('should error when FormArray has invalid length', () => {
+        const fa = new FormArray([new FormControl('')]);
+        expect(Validators.minLength(2)(fa)).toEqual({
+          'minlength': {'requiredLength': 2, 'actualLength': 1}
+        });
+      });
     });
 
     describe('maxLength', () => {
@@ -83,6 +103,18 @@ export function main() {
       it('should error on long strings', () => {
         expect(Validators.maxLength(2)(new FormControl('aaa'))).toEqual({
           'maxlength': {'requiredLength': 2, 'actualLength': 3}
+        });
+      });
+
+      it('should not error when FormArray has valid length', () => {
+        const fa = new FormArray([new FormControl(''), new FormControl('')]);
+        expect(Validators.maxLength(2)(fa)).toBeNull();
+      });
+
+      it('should error when FormArray has invalid length', () => {
+        const fa = new FormArray([new FormControl(''), new FormControl('')]);
+        expect(Validators.maxLength(1)(fa)).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 2}
         });
       });
     });

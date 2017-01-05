@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata} from './compile_metadata';
 import {CompilerConfig} from './config';
-import {isBlank, isPresent, stringify} from './facade/lang';
+import {stringify} from './facade/lang';
+import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
 import {InterpolationConfig} from './ml_parser/interpolation_config';
@@ -18,7 +19,7 @@ import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {SyncAsyncResult} from './util';
+import {SyncAsyncResult, SyntaxError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   componentType: any;
@@ -32,7 +33,7 @@ export interface PrenormalizedTemplateMetadata {
   animations?: CompileAnimationEntryMetadata[];
 }
 
-@Injectable()
+@CompilerInjectable()
 export class DirectiveNormalizer {
   private _resourceLoaderCache = new Map<string, Promise<string>>();
 
@@ -40,9 +41,9 @@ export class DirectiveNormalizer {
       private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
       private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
-  clearCache() { this._resourceLoaderCache.clear(); }
+  clearCache(): void { this._resourceLoaderCache.clear(); }
 
-  clearCacheFor(normalizedDirective: CompileDirectiveMetadata) {
+  clearCacheFor(normalizedDirective: CompileDirectiveMetadata): void {
     if (!normalizedDirective.isComponent) {
       return;
     }
@@ -64,13 +65,21 @@ export class DirectiveNormalizer {
       SyncAsyncResult<CompileTemplateMetadata> {
     let normalizedTemplateSync: CompileTemplateMetadata = null;
     let normalizedTemplateAsync: Promise<CompileTemplateMetadata>;
-    if (isPresent(prenormData.template)) {
+    if (prenormData.template != null) {
+      if (typeof prenormData.template !== 'string') {
+        throw new SyntaxError(
+            `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
+      }
       normalizedTemplateSync = this.normalizeTemplateSync(prenormData);
       normalizedTemplateAsync = Promise.resolve(normalizedTemplateSync);
     } else if (prenormData.templateUrl) {
+      if (typeof prenormData.templateUrl !== 'string') {
+        throw new SyntaxError(
+            `The templateUrl specified for component ${stringify(prenormData.componentType)} is not a string`);
+      }
       normalizedTemplateAsync = this.normalizeTemplateAsync(prenormData);
     } else {
-      throw new Error(
+      throw new SyntaxError(
           `No template specified for component ${stringify(prenormData.componentType)}`);
     }
 
@@ -101,11 +110,12 @@ export class DirectiveNormalizer {
       templateAbsUrl: string): CompileTemplateMetadata {
     const interpolationConfig = InterpolationConfig.fromArray(prenomData.interpolation);
     const rootNodesAndErrors = this._htmlParser.parse(
-        template, stringify(prenomData.componentType), false, interpolationConfig);
+        template, stringify(prenomData.componentType), true, interpolationConfig);
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
-      throw new Error(`Template parse errors:\n${errorString}`);
+      throw new SyntaxError(`Template parse errors:\n${errorString}`);
     }
+
     const templateMetadataStyles = this.normalizeStylesheet(new CompileStylesheetMetadata({
       styles: prenomData.styles,
       styleUrls: prenomData.styleUrls,
@@ -118,7 +128,7 @@ export class DirectiveNormalizer {
         {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
 
     let encapsulation = prenomData.encapsulation;
-    if (isBlank(encapsulation)) {
+    if (encapsulation == null) {
       encapsulation = this._config.defaultEncapsulation;
     }
 
@@ -227,9 +237,13 @@ class TemplatePreparseVisitor implements html.Visitor {
     return null;
   }
 
+  visitExpansion(ast: html.Expansion, context: any): any { html.visitAll(this, ast.cases); }
+
+  visitExpansionCase(ast: html.ExpansionCase, context: any): any {
+    html.visitAll(this, ast.expression);
+  }
+
   visitComment(ast: html.Comment, context: any): any { return null; }
   visitAttribute(ast: html.Attribute, context: any): any { return null; }
   visitText(ast: html.Text, context: any): any { return null; }
-  visitExpansion(ast: html.Expansion, context: any): any { return null; }
-  visitExpansionCase(ast: html.ExpansionCase, context: any): any { return null; }
 }

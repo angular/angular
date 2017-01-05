@@ -59,7 +59,7 @@ export class XHRConnection implements Connection {
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response/responseType properties were introduced in ResourceLoader Level2 spec
           // (supported by IE10)
-          body = _xhr.response == null ? _xhr.responseText : _xhr.response;
+          body = (typeof _xhr.response === 'undefined') ? _xhr.responseText : _xhr.response;
 
           // Implicitly strip a potential XSSI prefix.
           if (typeof body === 'string') {
@@ -109,9 +109,13 @@ export class XHRConnection implements Connection {
 
       this.setDetectedContentType(req, _xhr);
 
-      if (req.headers != null) {
-        req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
+      if (req.headers == null) {
+        req.headers = new Headers();
       }
+      if (!req.headers.has('Accept')) {
+        req.headers.append('Accept', 'application/json, text/plain, */*');
+      }
+      req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
 
       // Select the correct buffer type to store the response
       if (req.responseType != null && _xhr.responseType != null) {

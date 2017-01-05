@@ -3,14 +3,14 @@ set -ex -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic}
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router}
   $(pwd)/dist/tools/@angular/tsc-wrapped
 )
 PKGS=(
   reflect-metadata@0.1.8
   typescript@2.0.2
   zone.js@0.6.25
-  rxjs@5.0.0-beta.12
+  rxjs@5.0.1
   @types/{node@6.0.38,jasmine@2.2.33}
   jasmine@2.4.1
   webpack@2.1.0-beta.21
@@ -49,6 +49,9 @@ cp -v package.json $TMP
 
   ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xlf
   ./node_modules/.bin/ng-xi18n -p tsconfig-build.json --i18nFormat=xmb
+
+  node test/test_summaries.js
+  node test/test_ngtools_api.js
 
   ./node_modules/.bin/jasmine init
   # Run compiler-cli integration tests in node

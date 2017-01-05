@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
-import {assetUrl} from '@angular/compiler/src/identifiers';
+import {assetUrl, createIdentifier} from '@angular/compiler/src/identifiers';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {EventEmitter} from '@angular/core';
@@ -20,25 +21,31 @@ export class ExternalClass {
   someMethod(a: any /** TODO #9100 */) { return {'param': a, 'data': this.data}; }
 }
 
-const testDataIdentifier = new CompileIdentifierMetadata({
+const testDataIdentifier = {
   name: 'ExternalClass',
   moduleUrl: `@angular/compiler/test/output/output_emitter_util`,
-  reference: ExternalClass
-});
+  runtime: ExternalClass
+};
 
-const eventEmitterIdentifier = new CompileIdentifierMetadata(
-    {name: 'EventEmitter', moduleUrl: assetUrl('core'), reference: EventEmitter});
+const eventEmitterIdentifier = {
+  name: 'EventEmitter',
+  moduleUrl: assetUrl('core'),
+  runtime: EventEmitter
+};
 
-const enumIdentifier = new CompileIdentifierMetadata({
+const enumIdentifier = {
   name: 'ViewType.HOST',
   moduleUrl: assetUrl('core', 'linker/view_type'),
-  reference: ViewType.HOST
-});
+  runtime: ViewType.HOST
+};
 
-const baseErrorIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseError', moduleUrl: assetUrl('core', 'facade/errors'), reference: BaseError});
+const baseErrorIdentifier = {
+  name: 'BaseError',
+  moduleUrl: assetUrl('core', 'facade/errors'),
+  runtime: BaseError
+};
 
-export var codegenExportsVars = [
+export const codegenExportsVars = [
   'getExpressions',
 ];
 
@@ -58,7 +65,7 @@ const _getExpressionsStmts: o.Statement[] = [
   o.variable('map').key(o.literal('changeable')).set(o.literal('changedValue')).toStmt(),
 
   o.variable('externalInstance')
-      .set(o.importExpr(testDataIdentifier).instantiate([o.literal('someValue')]))
+      .set(o.importExpr(createIdentifier(testDataIdentifier)).instantiate([o.literal('someValue')]))
       .toDeclStmt(),
   o.variable('externalInstance').prop('changeable').set(o.literal('changedValue')).toStmt(),
 
@@ -69,8 +76,8 @@ const _getExpressionsStmts: o.Statement[] = [
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([], [new o.ThrowStmt(
-                        o.importExpr(baseErrorIdentifier).instantiate([o.literal('someError')]))]))
+      .set(o.fn([], [new o.ThrowStmt(o.importExpr(createIdentifier(baseErrorIdentifier))
+                                         .instantiate([o.literal('someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')
@@ -152,9 +159,9 @@ const _getExpressionsStmts: o.Statement[] = [
 
     ['not', o.not(o.literal(false))],
 
-    ['externalTestIdentifier', o.importExpr(testDataIdentifier)],
-    ['externalSrcIdentifier', o.importExpr(eventEmitterIdentifier)],
-    ['externalEnumIdentifier', o.importExpr(enumIdentifier)],
+    ['externalTestIdentifier', o.importExpr(createIdentifier(testDataIdentifier))],
+    ['externalSrcIdentifier', o.importExpr(createIdentifier(eventEmitterIdentifier))],
+    ['externalEnumIdentifier', o.importExpr(createIdentifier(enumIdentifier))],
 
     ['externalInstance', o.variable('externalInstance')],
     ['dynamicInstance', o.variable('dynamicInstance')],
@@ -184,11 +191,11 @@ const _getExpressionsStmts: o.Statement[] = [
   ]))
 ];
 
-export var codegenStmts: o.Statement[] = [
+export const codegenStmts: o.Statement[] = [
   new o.CommentStmt('This is a comment'),
 
   new o.ClassStmt(
-      'DynamicClass', o.importExpr(testDataIdentifier),
+      'DynamicClass', o.importExpr(createIdentifier(testDataIdentifier)),
       [
         new o.ClassField('dynamicProp', o.DYNAMIC_TYPE),
         new o.ClassField('dynamicChangeable', o.DYNAMIC_TYPE),
@@ -256,4 +263,5 @@ export class SimpleJsImportGenerator implements ImportResolver {
   fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
     return importedUrlStr;
   }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
 }

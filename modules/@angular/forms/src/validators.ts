@@ -65,6 +65,13 @@ export class Validators {
   }
 
   /**
+   * Validator that requires control value to be true.
+   */
+  static requiredTrue(control: AbstractControl): {[key: string]: boolean} {
+    return control.value === true ? null : {'required': true};
+  }
+
+  /**
    * Validator that requires controls to have a value of a minimum length.
    */
   static minLength(minLength: number): ValidatorFn {
@@ -72,7 +79,7 @@ export class Validators {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
-      const length = typeof control.value === 'string' ? control.value.length : 0;
+      const length: number = control.value ? control.value.length : 0;
       return length < minLength ?
           {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
           null;
@@ -84,7 +91,7 @@ export class Validators {
    */
   static maxLength(maxLength: number): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      const length = typeof control.value === 'string' ? control.value.length : 0;
+      const length: number = control.value ? control.value.length : 0;
       return length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
           null;

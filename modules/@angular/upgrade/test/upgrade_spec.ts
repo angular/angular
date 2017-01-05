@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
-import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeAdapter} from '@angular/upgrade';
 import * as angular from '@angular/upgrade/src/angular_js';
+import {UpgradeAdapter, UpgradeAdapterRef, sortProjectableNodes} from '@angular/upgrade/src/upgrade_adapter';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -41,7 +41,7 @@ export function main() {
 
       it('should throw an uncaught error', fakeAsync(() => {
            const resolveSpy = jasmine.createSpy('resolveSpy');
-           spyOn(console, 'log');
+           spyOn(console, 'error');
 
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
@@ -50,14 +50,16 @@ export function main() {
            expect(resolveSpy).not.toHaveBeenCalled();
          }));
 
-      it('should properly log to the console and re-throw', fakeAsync(() => {
-           spyOn(console, 'log');
+      it('should output an error message to the console and re-throw', fakeAsync(() => {
+           let consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
            expect(() => {
              adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
              flushMicrotasks();
            }).toThrowError();
-           expect(console.log).toHaveBeenCalled();
-           expect(console.log).toHaveBeenCalledWith(jasmine.any(Error), jasmine.any(String));
+           let args: any[] = consoleErrorSpy.calls.mostRecent().args;
+           expect(consoleErrorSpy).toHaveBeenCalled();
+           expect(args.length).toBeGreaterThan(0);
+           expect(args[0]).toEqual(jasmine.any(Error));
          }));
     });
 
@@ -96,7 +98,6 @@ export function main() {
          const Ng2Module = NgModule({
                              declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                              imports: [BrowserModule],
-                             schemas: [NO_ERRORS_SCHEMA],
                            }).Class({constructor: function Ng2Module() {}});
 
          ng1Module.directive('ng1', () => {
@@ -170,7 +171,6 @@ export function main() {
                    adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2
                  ],
                  imports: [BrowserModule],
-                 schemas: [NO_ERRORS_SCHEMA],
                }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -180,7 +180,7 @@ export function main() {
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
              // https://github.com/angular/angular.js/issues/12983
-             expect(log).toEqual(['1A', '1B', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+             expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
              ref.dispose();
            });
          }));
@@ -276,7 +276,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            const element = html(`<div>
@@ -320,7 +319,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -354,13 +352,39 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              expect(multiTrim(document.body.textContent)).toEqual('test');
+             ref.dispose();
+           });
+         }));
+
+      it('should support multi-slot projection', async(() => {
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2 = Component({
+                         selector: 'ng2',
+                         template: '2a(<ng-content select=".ng1a"></ng-content>)' +
+                             '2b(<ng-content select=".ng1b"></ng-content>)'
+                       }).Class({constructor: function() {}});
+
+           const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+             constructor: function() {}
+           });
+
+           // The ng-if on one of the projected children is here to make sure
+           // the correct slot is targeted even with structural directives in play.
+           const element = html(
+               '<ng2><div ng-if="true" class="ng1a">1a</div><div' +
+               ' class="ng1b">1b</div></ng2>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
              ref.dispose();
            });
          }));
@@ -409,7 +433,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -453,7 +476,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -501,7 +523,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -547,7 +568,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -580,7 +600,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -608,7 +627,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -633,7 +651,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -658,7 +675,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -684,7 +700,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -728,7 +743,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -761,7 +775,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -794,7 +807,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -834,7 +846,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -879,7 +890,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -890,158 +900,560 @@ export function main() {
            });
          }));
 
-      it('should call $onInit of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const ng1Module = angular.module('ng1', []);
-           const valueToFind = '$onInit';
+      describe('with lifecycle hooks', () => {
+        it('should call `$onInit()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onInitSpyA = jasmine.createSpy('$onInitA');
+             const $onInitSpyB = jasmine.createSpy('$onInitB');
 
-           const ng1 = {
-             bindings: {},
-             template: '{{$ctrl.value}}',
-             controller: Class(
-                 {constructor: function() {}, $onInit: function() { this.value = valueToFind; }})
-           };
-           ng1Module.component('ng1', ng1);
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$onInit() { $onInitSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$onInit = $onInitSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
-                             }).Class({constructor: function() {}});
-
-           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
-             ref.dispose();
-           });
-         }));
-
-      it('should call $doCheck of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const ng1Module = angular.module('ng1', []);
-           const valueToFind = '$doCheck';
-
-           let spy = jasmine.createSpy('doCheck');
-
-           const ng1 = {
-             bindings: {},
-             template: '{{$ctrl.value}}',
-             controller: Class({
-               constructor: function() {},
-               $doCheck: function() {
-                 this.value = valueToFind;
-                 spy();
-               }
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
              })
-           };
-           ng1Module.component('ng1', ng1);
+             class Ng2Module {
+             }
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($onInitSpyA).toHaveBeenCalled();
+               expect($onInitSpyB).toHaveBeenCalled();
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
-                             }).Class({constructor: function() {}});
-
-           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
-             expect(spy).toHaveBeenCalled();
-             let count = spy.calls.count();
-             setTimeout(() => {
-               expect(spy.calls.count()).toBeGreaterThan(count);
                ref.dispose();
-             }, 100);
-           });
-         }));
+             });
+           }));
 
-      it('should call $onChanges of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const ng1Module = angular.module('ng1', []);
-           const valueToFind = '$onChanges init';
-           const valueToChange = '$onChanges changed';
+        it('should not call `$onInit()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onInitSpy = jasmine.createSpy('$onInit');
 
-           const ng1 = {
-             bindings: {val: '<'},
-             template: '{{$ctrl.value}}',
-             controller: Class({
-               constructor: function() {},
-               $onChanges: function(changes: any) { this.value = changes.val.currentValue; }
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$onInit = $onInitSpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$onInit'] = $onInitSpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
              })
-           };
-           ng1Module.component('ng1', ng1);
+             class Ng2Module {
+             }
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1 [val]="val"></ng1>'}).Class({
-             constructor: function() { this.val = valueToFind; },
-             ngOnInit: function() { setTimeout(() => { this.val = valueToChange; }, 100); }
-           });
-
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
-                             }).Class({constructor: function() {}});
-
-           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-
-           const element = html(`<div><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(multiTrim(document.body.textContent)).toEqual(valueToFind);
-             setTimeout(() => {
-               expect(multiTrim(document.body.textContent)).toEqual(valueToChange);
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($onInitSpy).not.toHaveBeenCalled();
                ref.dispose();
-             }, 200);
-           });
-         }));
+             });
+           }));
 
-      it('should call $onDestroy of components', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const ng1Module = angular.module('ng1', []);
+        it('should call `$doCheck()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $doCheckSpyA = jasmine.createSpy('$doCheckA');
+             const $doCheckSpyB = jasmine.createSpy('$doCheckB');
+             let changeDetector: ChangeDetectorRef;
 
-           let spy = jasmine.createSpy('$onDestroy');
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+               constructor(cd: ChangeDetectorRef) { changeDetector = cd; }
+             }
 
-           const ng1 = {
-             bindings: {},
-             template: '<div>ng1</div>',
-             controller: function($rootScope: any) { this.$onDestroy = function() { spy(); }; }
-           };
-           ng1Module.component('ng1', ng1);
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$doCheck() { $doCheckSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$doCheck = $doCheckSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
-                             }).Class({constructor: function() {}});
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($doCheckSpyA).toHaveBeenCalled();
+               expect($doCheckSpyB).toHaveBeenCalled();
 
-           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+               $doCheckSpyA.calls.reset();
+               $doCheckSpyB.calls.reset();
+               changeDetector.detectChanges();
 
-           const element = html(`<div ng-if="!destroy"><ng2></ng2></div>`);
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             (<any>ref.ng1RootScope).destroy = false;
-             setTimeout(() => {
-               (<any>ref.ng1RootScope).destroy = true;
-               setTimeout(() => {
-                 expect(spy).toHaveBeenCalled();
-                 ref.dispose();
-               }, 100);
-             }, 100);
-           });
-         }));
+               expect($doCheckSpyA).toHaveBeenCalled();
+               expect($doCheckSpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$doCheck()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $doCheckSpyA = jasmine.createSpy('$doCheckA');
+             const $doCheckSpyB = jasmine.createSpy('$doCheckB');
+             let changeDetector: ChangeDetectorRef;
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+               constructor(cd: ChangeDetectorRef) { changeDetector = cd; }
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$doCheck = $doCheckSpyA;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$doCheck'] = $doCheckSpyB;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               $doCheckSpyA.calls.reset();
+               $doCheckSpyB.calls.reset();
+               changeDetector.detectChanges();
+
+               expect($doCheckSpyA).not.toHaveBeenCalled();
+               expect($doCheckSpyB).not.toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$postLink()` on controller', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $postLinkSpyA = jasmine.createSpy('$postLinkA');
+             const $postLinkSpyB = jasmine.createSpy('$postLinkB');
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$postLink() { $postLinkSpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$postLink = $postLinkSpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($postLinkSpyA).toHaveBeenCalled();
+               expect($postLinkSpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$postLink()` on scope', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $postLinkSpy = jasmine.createSpy('$postLink');
+
+             @Component({selector: 'ng2', template: '<ng1-a></ng1-a> | <ng1-b></ng1-b>'})
+             class Ng2Component {
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$postLink = $postLinkSpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$postLink'] = $postLinkSpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               expect($postLinkSpy).not.toHaveBeenCalled();
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$onChanges()` on binding destination', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onChangesControllerSpyA = jasmine.createSpy('$onChangesControllerA');
+             const $onChangesControllerSpyB = jasmine.createSpy('$onChangesControllerB');
+             const $onChangesScopeSpy = jasmine.createSpy('$onChangesScope');
+             let ng2Instance: any;
+
+             @Component({
+               selector: 'ng2',
+               template: '<ng1-a [valA]="val"></ng1-a> | <ng1-b [valB]="val"></ng1-b>'
+             })
+             class Ng2Component {
+               constructor() { ng2Instance = this; }
+             }
+
+             angular.module('ng1', [])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {valA: '<'},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        this.$onChanges = $onChangesControllerSpyA;
+                                      }
+                                    }))
+                 .directive(
+                     'ng1B',
+                     () => ({
+                       template: '',
+                       scope: {valB: '<'},
+                       bindToController: false,
+                       controllerAs: '$ctrl',
+                       controller: class {
+                         $onChanges(changes: SimpleChanges) { $onChangesControllerSpyB(changes); }
+                       }
+                     }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   Object.getPrototypeOf($rootScope).$onChanges = $onChangesScopeSpy;
+                 });
+
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               // Initial `$onChanges()` call
+               tick();
+
+               expect($onChangesControllerSpyA.calls.count()).toBe(1);
+               expect($onChangesControllerSpyA.calls.argsFor(0)[0]).toEqual({
+                 valA: jasmine.any(SimpleChange)
+               });
+
+               expect($onChangesControllerSpyB).not.toHaveBeenCalled();
+
+               expect($onChangesScopeSpy.calls.count()).toBe(1);
+               expect($onChangesScopeSpy.calls.argsFor(0)[0]).toEqual({
+                 valB: jasmine.any(SimpleChange)
+               });
+
+               $onChangesControllerSpyA.calls.reset();
+               $onChangesControllerSpyB.calls.reset();
+               $onChangesScopeSpy.calls.reset();
+
+               // `$onChanges()` call after a change
+               ng2Instance.val = 'new value';
+               tick();
+               ref.ng1RootScope.$digest();
+
+               expect($onChangesControllerSpyA.calls.count()).toBe(1);
+               expect($onChangesControllerSpyA.calls.argsFor(0)[0]).toEqual({
+                 valA: jasmine.objectContaining({currentValue: 'new value'})
+               });
+
+               expect($onChangesControllerSpyB).not.toHaveBeenCalled();
+
+               expect($onChangesScopeSpy.calls.count()).toBe(1);
+               expect($onChangesScopeSpy.calls.argsFor(0)[0]).toEqual({
+                 valB: jasmine.objectContaining({currentValue: 'new value'})
+               });
+
+               ref.dispose();
+             });
+           }));
+
+        it('should call `$onDestroy()` on controller', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onDestroySpyA = jasmine.createSpy('$onDestroyA');
+             const $onDestroySpyB = jasmine.createSpy('$onDestroyB');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({
+               selector: 'ng2',
+               template: `
+                <div *ngIf="!ng2Destroy">
+                  <ng1-a></ng1-a> | <ng1-b></ng1-b>
+                </div>
+              `
+             })
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: class {$onDestroy() { $onDestroySpyA(); }}
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function() { this.$onDestroy = $onDestroySpyB; }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div ng-if="!ng1Destroy"><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).not.toHaveBeenCalled();
+               expect($onDestroySpyB).not.toHaveBeenCalled();
+
+               $rootScope.ng1Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).toHaveBeenCalled();
+               expect($onDestroySpyB).toHaveBeenCalled();
+
+               $onDestroySpyA.calls.reset();
+               $onDestroySpyB.calls.reset();
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).not.toHaveBeenCalled();
+               expect($onDestroySpyB).not.toHaveBeenCalled();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpyA).toHaveBeenCalled();
+               expect($onDestroySpyB).toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+
+        it('should not call `$onDestroy()` on scope', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const $onDestroySpy = jasmine.createSpy('$onDestroy');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({
+               selector: 'ng2',
+               template: `
+                <div *ngIf="!ng2Destroy">
+                  <ng1-a></ng1-a> | <ng1-b></ng1-b>
+                </div>
+              `
+             })
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .directive('ng1A', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: true,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        Object.getPrototypeOf($scope).$onDestroy = $onDestroySpy;
+                                      }
+                                    }))
+                 .directive('ng1B', () => ({
+                                      template: '',
+                                      scope: {},
+                                      bindToController: false,
+                                      controllerAs: '$ctrl',
+                                      controller: function($scope: angular.IScope) {
+                                        $scope['$onDestroy'] = $onDestroySpy;
+                                      }
+                                    }))
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [
+                 adapter.upgradeNg1Component('ng1A'), adapter.upgradeNg1Component('ng1B'),
+                 Ng2Component
+               ],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html(`<div ng-if="!ng1Destroy"><ng2></ng2></div>`);
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               $rootScope.ng1Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               $rootScope.ng1Destroy = false;
+               tick();
+               $rootScope.$digest();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect($onDestroySpy).not.toHaveBeenCalled();
+
+               ref.dispose();
+             });
+           }));
+      });
 
       it('should bind input properties (<) of components', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
@@ -1062,7 +1474,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -1095,7 +1506,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2a, Ng2b],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            const element = html(`<div><ng2a></ng2a></div>`);
@@ -1112,7 +1522,6 @@ export function main() {
            const MyNg2Module = NgModule({
                                  providers: [{provide: SomeToken, useValue: 'correct_value'}],
                                  imports: [BrowserModule],
-                                 schemas: [NO_ERRORS_SCHEMA],
                                }).Class({constructor: function() {}});
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
@@ -1138,6 +1547,33 @@ export function main() {
              expect(ref.ng2Injector.get('testValue')).toBe('secreteToken');
              expect(ref.ng2Injector.get(String)).toBe('secreteToken');
              expect(ref.ng2Injector.get('testToken')).toBe('secreteToken');
+             ref.dispose();
+           });
+         }));
+
+      it('should respect hierarchical dependency injection for ng2', async(() => {
+           const ng1Module = angular.module('ng1', []);
+
+           const Ng2Parent = Component({
+                               selector: 'ng2-parent',
+                               template: `ng2-parent(<ng-content></ng-content>)`
+                             }).Class({constructor: function() {}});
+           const Ng2Child = Component({selector: 'ng2-child', template: `ng2-child`}).Class({
+             constructor: [Ng2Parent, function(parent: any) {}]
+           });
+
+           const Ng2Module =
+               NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]}).Class({
+                 constructor: function() {}
+               });
+
+           const element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2Parent', adapter.downgradeNg2Component(Ng2Parent))
+               .directive('ng2Child', adapter.downgradeNg2Component(Ng2Child));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
              ref.dispose();
            });
          }));
@@ -1240,7 +1676,6 @@ export function main() {
            const Ng2Module = NgModule({
                                declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
                                imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
                              }).Class({constructor: function() {}});
 
            module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -1253,6 +1688,108 @@ export function main() {
              ref.dispose();
            });
          }));
+    });
+
+    describe('registerForNg1Tests', () => {
+      let upgradeAdapterRef: UpgradeAdapterRef;
+      let $compile: angular.ICompileService;
+      let $rootScope: angular.IRootScopeService;
+
+      beforeEach(() => {
+        const ng1Module = angular.module('ng1', []);
+
+        const Ng2 = Component({
+                      selector: 'ng2',
+                      template: 'Hello World',
+                    }).Class({constructor: function() {}});
+
+        const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
+          constructor: function() {}
+        });
+
+        const upgradeAdapter = new UpgradeAdapter(Ng2Module);
+        ng1Module.directive('ng2', upgradeAdapter.downgradeNg2Component(Ng2));
+
+        upgradeAdapterRef = upgradeAdapter.registerForNg1Tests(['ng1']);
+      });
+
+      beforeEach(
+          inject((_$compile_: angular.ICompileService, _$rootScope_: angular.IRootScopeService) => {
+            $compile = _$compile_;
+            $rootScope = _$rootScope_;
+          }));
+
+      it('should be able to test ng1 components that use ng2 components', async(() => {
+           upgradeAdapterRef.ready(() => {
+             const element = $compile('<ng2></ng2>')($rootScope);
+             $rootScope.$digest();
+             expect(element[0].textContent).toContain('Hello World');
+           });
+         }));
+    });
+  });
+
+  describe('sortProjectableNodes', () => {
+    it('should return an array of node collections for each selector', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const selectors = ['input[type=date]', 'span', '.x'];
+      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
+
+      expect(projectableNodes[0]).toEqual(nodes('<input type="date" name="myDate">'));
+      expect(projectableNodes[1]).toEqual(nodes('<span>span content</span>'));
+      expect(projectableNodes[2])
+          .toEqual(nodes(
+              '<div class="x"><span>div-1 content</span></div>' +
+              '<div class="x"><span>div-2 content</span></div>'));
+    });
+
+    it('should collect up unmatched nodes for the wildcard selector', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const selectors = ['.x', '*', 'input[type=date]'];
+      const projectableNodes = sortProjectableNodes(selectors, contentNodes);
+
+      expect(projectableNodes[0])
+          .toEqual(nodes(
+              '<div class="x"><span>div-1 content</span></div>' +
+              '<div class="x"><span>div-2 content</span></div>'));
+      expect(projectableNodes[1])
+          .toEqual(nodes(
+              '<input type="number" name="myNum">' +
+              '<span>span content</span>'));
+      expect(projectableNodes[2]).toEqual(nodes('<input type="date" name="myDate">'));
+    });
+
+    it('should return an array of empty arrays if there are no nodes passed in', () => {
+      const selectors = ['.x', '*', 'input[type=date]'];
+      const projectableNodes = sortProjectableNodes(selectors, []);
+      expect(projectableNodes).toEqual([[], [], []]);
+    });
+
+    it('should return an empty array for each selector that does not match', () => {
+      const contentNodes = nodes(
+          '<div class="x"><span>div-1 content</span></div>' +
+          '<input type="number" name="myNum">' +
+          '<input type="date" name="myDate">' +
+          '<span>span content</span>' +
+          '<div class="x"><span>div-2 content</span></div>');
+
+      const noSelectorNodes = sortProjectableNodes([], contentNodes);
+      expect(noSelectorNodes).toEqual([]);
+
+      const noMatchSelectorNodes = sortProjectableNodes(['.not-there'], contentNodes);
+      expect(noMatchSelectorNodes).toEqual([[]]);
     });
   });
 }
@@ -1270,4 +1807,10 @@ function html(html: string): Element {
   }
 
   return body;
+}
+
+function nodes(html: string) {
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  return Array.prototype.slice.call(element.childNodes);
 }

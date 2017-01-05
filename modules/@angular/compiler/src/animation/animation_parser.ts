@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-
-import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata} from '../compile_metadata';
+import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
@@ -35,13 +34,13 @@ export class AnimationEntryParseResult {
   constructor(public ast: AnimationEntryAst, public errors: AnimationParseError[]) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class AnimationParser {
   constructor(private _schema: ElementSchemaRegistry) {}
 
   parseComponent(component: CompileDirectiveMetadata): AnimationEntryAst[] {
     const errors: string[] = [];
-    const componentName = component.type.name;
+    const componentName = identifierName(component.type);
     const animationTriggerNames = new Set<string>();
     const asts = component.template.animations.map(entry => {
       const result = this.parseEntry(entry);
@@ -174,6 +173,11 @@ function _normalizeStyleMetadata(
     entry: CompileAnimationStyleMetadata, stateStyles: {[key: string]: AnimationStylesAst},
     schema: ElementSchemaRegistry, errors: AnimationParseError[],
     permitStateReferences: boolean): {[key: string]: string | number}[] {
+  const offset = entry.offset;
+  if (offset > 1 || offset < 0) {
+    errors.push(new AnimationParseError(`Offset values for animations must be between 0 and 1`));
+  }
+
   const normalizedStyles: {[key: string]: string | number}[] = [];
   entry.styles.forEach(styleEntry => {
     if (typeof styleEntry === 'string') {

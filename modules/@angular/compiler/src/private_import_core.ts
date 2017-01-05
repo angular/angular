@@ -32,7 +32,6 @@ export const view_utils: typeof r.view_utils = r.view_utils;
 export const DebugContext: typeof r.DebugContext = r.DebugContext;
 export const StaticNodeDebugInfo: typeof r.StaticNodeDebugInfo = r.StaticNodeDebugInfo;
 export const devModeEqual: typeof r.devModeEqual = r.devModeEqual;
-export const UNINITIALIZED: typeof r.UNINITIALIZED = r.UNINITIALIZED;
 export const ValueUnwrapper: typeof r.ValueUnwrapper = r.ValueUnwrapper;
 export const TemplateRef_: typeof r.TemplateRef_ = r.TemplateRef_;
 export type RenderDebugInfo = typeof r._RenderDebugInfo;

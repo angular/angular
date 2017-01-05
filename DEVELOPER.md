@@ -1,6 +1,6 @@
-# Building and Testing Angular 2 for JS
+# Building and Testing Angular
 
-This document describes how to set up your development environment to build and test Angular 2 JS version. 
+This document describes how to set up your development environment to build and test Angular.
 It also explains the basic mechanics of using `git`, `node`, and `npm`.
 
 * [Prerequisite Software](#prerequisite-software)
@@ -74,6 +74,15 @@ use in these instructions.
 *Option 2*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
 [Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
+## Installing Bower Modules
+
+Now run `bower` to install additional dependencies:
+
+```shell
+# Install other Angular project dependencies (bower.json)
+bower install
+```
+
 ## Windows only
 
 In order to create the right symlinks, run **as administrator**:
@@ -124,9 +133,10 @@ If you happen to modify the public API of Angular, API golden files must be upda
 $ gulp public-api:update
 ```
 
-Note: The command `./test.sh tools` fails when the API doesn't match the golden files.
+Note: The command `gulp public-api:enforce` fails when the API doesn't match the golden files. Make sure to rebuild
+the project before trying to verify after an API change.
 
-## Formatting your source code
+## <a name="clang-format"></a> Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
 is not properly formatted, the CI will fail and the PR can not be merged.
@@ -137,4 +147,32 @@ You can automatically format your code by running:
 $ gulp format
 ```
 
+## Linting/verifying your source code
 
+You can check that your code is properly formatted and adheres to coding style by running:
+
+``` shell
+$ gulp lint
+```
+
+## Publishing your own personal snapshot build
+
+You may find that your un-merged change needs some validation from external participants.
+Rather than requiring them to pull your Pull Request and build Angular locally, you can
+publish the `*-builds` snapshots just like our Travis build does.
+
+First time, you need to create the github repositories:
+
+``` shell
+$ export TOKEN=[get one from https://github.com/settings/tokens]
+$ CREATE_REPOS=1 ./scripts/publish/publish-build-artifacts.sh [github username]
+```
+
+For subsequent snapshots, just run
+
+``` shell
+$ ./scripts/publish/publish-build-artifacts.sh [github username]
+```
+
+The script will publish the build snapshot to a branch with the same name as your current branch,
+and create it if it doesn't exist.

@@ -7,6 +7,7 @@
  */
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
+import {isFirstViewCheck} from '../compiler_util/binding_util';
 import {DirectiveWrapperExpressions} from '../directive_wrapper_compiler';
 import * as o from '../output/output_ast';
 import {LifecycleHooks} from '../private_import_core';
@@ -14,10 +15,6 @@ import {DirectiveAst, ProviderAst, ProviderAstType} from '../template_parser/tem
 
 import {CompileElement} from './compile_element';
 import {CompileView} from './compile_view';
-import {DetectChangesVars} from './constants';
-
-const STATE_IS_NEVER_CHECKED = o.THIS_EXPR.prop('numberOfChecks').identical(new o.LiteralExpr(0));
-const NOT_THROW_ON_CHANGES = o.not(DetectChangesVars.throwOnChange);
 
 export function bindDirectiveAfterContentLifecycleCallbacks(
     directiveMeta: CompileDirectiveSummary, directiveInstance: o.Expression,
@@ -29,7 +26,8 @@ export function bindDirectiveAfterContentLifecycleCallbacks(
       compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentInit) !== -1) {
     afterContentLifecycleCallbacksMethod.addStmt(new o.IfStmt(
-        STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterContentInit', []).toStmt()]));
+        isFirstViewCheck(o.THIS_EXPR),
+        [directiveInstance.callMethod('ngAfterContentInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterContentChecked) !== -1) {
     afterContentLifecycleCallbacksMethod.addStmt(
@@ -47,7 +45,8 @@ export function bindDirectiveAfterViewLifecycleCallbacks(
       compileElement.nodeIndex, compileElement.sourceAst);
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewInit) !== -1) {
     afterViewLifecycleCallbacksMethod.addStmt(new o.IfStmt(
-        STATE_IS_NEVER_CHECKED, [directiveInstance.callMethod('ngAfterViewInit', []).toStmt()]));
+        isFirstViewCheck(o.THIS_EXPR),
+        [directiveInstance.callMethod('ngAfterViewInit', []).toStmt()]));
   }
   if (lifecycleHooks.indexOf(LifecycleHooks.AfterViewChecked) !== -1) {
     afterViewLifecycleCallbacksMethod.addStmt(

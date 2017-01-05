@@ -25,10 +25,8 @@ const DTS = /\.d\.ts$/;
  * loader what to do.
  */
 export class PathMappedCompilerHost extends CompilerHost {
-  constructor(
-      program: ts.Program, compilerHost: ts.CompilerHost, options: AngularCompilerOptions,
-      context?: CompilerHostContext) {
-    super(program, compilerHost, options, context);
+  constructor(program: ts.Program, options: AngularCompilerOptions, context: CompilerHostContext) {
+    super(program, options, context);
   }
 
   getCanonicalFileName(fileName: string): string {
@@ -56,7 +54,7 @@ export class PathMappedCompilerHost extends CompilerHost {
           ts.resolveModuleName(m, rootedContainingFile, this.options, this.context).resolvedModule;
       if (resolved) {
         if (this.options.traceResolution) {
-          console.log('resolve', m, containingFile, '=>', resolved.resolvedFileName);
+          console.error('resolve', m, containingFile, '=>', resolved.resolvedFileName);
         }
         return this.getCanonicalFileName(resolved.resolvedFileName);
       }
@@ -71,7 +69,7 @@ export class PathMappedCompilerHost extends CompilerHost {
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     if (this.options.traceResolution) {
-      console.log(
+      console.error(
           'getImportPath from containingFile', containingFile, 'to importedFile', importedFile);
     }
 
@@ -119,7 +117,7 @@ export class PathMappedCompilerHost extends CompilerHost {
   getMetadataFor(filePath: string): ModuleMetadata[] {
     for (const root of this.options.rootDirs || []) {
       const rootedPath = path.join(root, filePath);
-      if (!this.compilerHost.fileExists(rootedPath)) {
+      if (!this.context.fileExists(rootedPath)) {
         // If the file doesn't exists then we cannot return metadata for the file.
         // This will occur if the user refernced a declared module for which no file
         // exists for the module (i.e. jQuery or angularjs).

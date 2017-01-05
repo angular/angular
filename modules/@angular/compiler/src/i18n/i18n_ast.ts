@@ -15,11 +15,12 @@ export class Message {
    * @param placeholderToMessage maps placeholder names to messages (used for nested ICU messages)
    * @param meaning
    * @param description
+   * @param id
    */
   constructor(
       public nodes: Node[], public placeholders: {[phName: string]: string},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
-      public description: string) {}
+      public description: string, public id: string) {}
 }
 
 export interface Node {

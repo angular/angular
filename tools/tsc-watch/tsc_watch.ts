@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 import {spawn} from 'child_process';
 import {platform} from 'os';
 import {normalize} from 'path';

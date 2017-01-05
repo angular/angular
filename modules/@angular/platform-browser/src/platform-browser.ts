@@ -7,6 +7,7 @@
  */
 
 export {BrowserModule, platformBrowser} from './browser';
+export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {AnimationDriver} from './dom/animation_driver';
@@ -16,5 +17,5 @@ export {DOCUMENT} from './dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl} from './security/dom_sanitization_service';
-
 export * from './private_export';
+export {VERSION} from './version';

@@ -6,31 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OpaqueToken, Optional, SchemaMetadata, SecurityContext} from '@angular/core';
-
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateMetadata, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, removeIdentifierDuplicates} from '../compile_metadata';
-import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {Inject, OpaqueToken, Optional, SchemaMetadata} from '@angular/core';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTemplateSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
-import {Identifiers, identifierToken, resolveIdentifierToken} from '../identifiers';
+import {Identifiers, createIdentifierToken, identifierToken} from '../identifiers';
+import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {mergeNsAndName, splitNsName} from '../ml_parser/tags';
+import {splitNsName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
-import {Console, view_utils} from '../private_import_core';
+import {Console} from '../private_import_core';
 import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-
+import {SyntaxError} from '../util';
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
-
-
 
 // Group 1 = "bind-"
 // Group 2 = "let-"
@@ -82,7 +79,7 @@ export class TemplateParseResult {
   constructor(public templateAst?: TemplateAst[], public errors?: ParseError[]) {}
 }
 
-@Injectable()
+@CompilerInjectable()
 export class TemplateParser {
   constructor(
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
@@ -102,7 +99,7 @@ export class TemplateParser {
 
     if (errors.length > 0) {
       const errorString = errors.join('\n');
-      throw new Error(`Template parse errors:\n${errorString}`);
+      throw new SyntaxError(`Template parse errors:\n${errorString}`);
     }
 
     return result.templateAst;
@@ -152,7 +149,7 @@ export class TemplateParser {
       return new TemplateParseResult(result, errors);
     }
 
-    if (isPresent(this.transforms)) {
+    if (this.transforms) {
       this.transforms.forEach(
           (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
@@ -221,7 +218,7 @@ class TemplateParseVisitor implements html.Visitor {
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan);
-    if (isPresent(expr)) {
+    if (expr) {
       return new BoundTextAst(expr, ngContentIndex, text.sourceSpan);
     } else {
       return new TextAst(text.value, ngContentIndex, text.sourceSpan);
@@ -251,14 +248,14 @@ class TemplateParseVisitor implements html.Visitor {
       return null;
     }
 
-    const matchableAttrs: string[][] = [];
+    const matchableAttrs: [string, string][] = [];
     const elementOrDirectiveProps: BoundProperty[] = [];
     const elementOrDirectiveRefs: ElementOrDirectiveRef[] = [];
     const elementVars: VariableAst[] = [];
     const events: BoundEventAst[] = [];
 
     const templateElementOrDirectiveProps: BoundProperty[] = [];
-    const templateMatchableAttrs: string[][] = [];
+    const templateMatchableAttrs: [string, string][] = [];
     const templateElementVars: VariableAst[] = [];
 
     let hasInlineTemplates = false;
@@ -271,14 +268,17 @@ class TemplateParseVisitor implements html.Visitor {
           isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, events,
           elementOrDirectiveRefs, elementVars);
 
-      let templateBindingsSource: string|undefined = undefined;
-      let prefixToken: string|undefined = undefined;
-      if (this._normalizeAttributeName(attr.name) == TEMPLATE_ATTR) {
+      let templateBindingsSource: string|undefined;
+      let prefixToken: string|undefined;
+      let normalizedName = this._normalizeAttributeName(attr.name);
+
+      if (normalizedName == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
-        prefixToken = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
+        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
       }
+
       const hasTemplateBinding = isPresent(templateBindingsSource);
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
@@ -544,9 +544,12 @@ class TemplateParseVisitor implements html.Visitor {
       elementSourceSpan: ParseSourceSpan, targetReferences: ReferenceAst[]): DirectiveAst[] {
     const matchedReferences = new Set<string>();
     let component: CompileDirectiveSummary = null;
+
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
-          elementSourceSpan.start, elementSourceSpan.end, `Directive ${directive.type.name}`);
+          elementSourceSpan.start, elementSourceSpan.end,
+          `Directive ${identifierName(directive.type)}`);
+
       if (directive.isComponent) {
         component = directive;
       }
@@ -569,6 +572,7 @@ class TemplateParseVisitor implements html.Visitor {
       return new DirectiveAst(
           directive, directiveProperties, hostProperties, hostEvents, sourceSpan);
     });
+
     elementOrDirectiveRefs.forEach((elOrDirRef) => {
       if (elOrDirRef.value.length > 0) {
         if (!matchedReferences.has(elOrDirRef.name)) {
@@ -579,11 +583,11 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (!component) {
         let refToken: CompileTokenMetadata = null;
         if (isTemplateElement) {
-          refToken = resolveIdentifierToken(Identifiers.TemplateRef);
+          refToken = createIdentifierToken(Identifiers.TemplateRef);
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }
-    });  // fix syntax highlighting issue: `
+    });
     return directiveAsts;
   }
 
@@ -640,7 +644,7 @@ class TemplateParseVisitor implements html.Visitor {
 
   private _findComponentDirectiveNames(directives: DirectiveAst[]): string[] {
     return this._findComponentDirectives(directives)
-        .map(directive => directive.directive.type.name);
+        .map(directive => identifierName(directive.directive.type));
   }
 
   private _assertOnlyOneComponent(directives: DirectiveAst[], sourceSpan: ParseSourceSpan) {
@@ -684,7 +688,7 @@ class TemplateParseVisitor implements html.Visitor {
     }
     elementProps.forEach(prop => {
       this._reportError(
-          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "directives" section.`,
+          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
           sourceSpan);
     });
   }
@@ -703,7 +707,7 @@ class TemplateParseVisitor implements html.Visitor {
     events.forEach(event => {
       if (isPresent(event.target) || !allDirectiveEvents.has(event.name)) {
         this._reportError(
-            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "directives" section.`,
+            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
             event.sourceSpan);
       }
     });
@@ -744,7 +748,7 @@ class NonBindableVisitor implements html.Visitor {
       return null;
     }
 
-    const attrNameAndValues = ast.attrs.map(attrAst => [attrAst.name, attrAst.value]);
+    const attrNameAndValues = ast.attrs.map((attr): [string, string] => [attr.name, attr.value]);
     const selector = createElementCssSelector(ast.name, attrNameAndValues);
     const ngContentIndex = parent.findNgContentIndex(selector);
     const children = html.visitAll(this, ast.children, EMPTY_ELEMENT_CONTEXT);
@@ -812,16 +816,17 @@ class ElementContext {
   }
 }
 
-function createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
+export function createElementCssSelector(
+    elementName: string, attributes: [string, string][]): CssSelector {
   const cssSelector = new CssSelector();
   const elNameNoNs = splitNsName(elementName)[1];
 
   cssSelector.setElement(elNameNoNs);
 
-  for (let i = 0; i < matchableAttrs.length; i++) {
-    const attrName = matchableAttrs[i][0];
+  for (let i = 0; i < attributes.length; i++) {
+    const attrName = attributes[i][0];
     const attrNameNoNs = splitNsName(attrName)[1];
-    const attrValue = matchableAttrs[i][1];
+    const attrValue = attributes[i][1];
 
     cssSelector.addAttribute(attrNameNoNs, attrValue);
     if (attrName.toLowerCase() == CLASS_ATTR) {

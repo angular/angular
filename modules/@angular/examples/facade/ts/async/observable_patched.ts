@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/* tslint:disable:no-console  */
 // #docregion Observable
 import 'rxjs/add/operator/map';
 

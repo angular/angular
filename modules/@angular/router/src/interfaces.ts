@@ -185,8 +185,9 @@ export interface CanActivateChild {
  *
  *   canDeactivate(
  *     component: TeamComponent,
- *     route: ActivatedRouteSnapshot,
- *     state: RouterStateSnapshot
+ *     currentRoute: ActivatedRouteSnapshot,
+ *     currentState: RouterStateSnapshot,
+ *     nextState: RouterStateSnapshot
  *   ): Observable<boolean>|Promise<boolean>|boolean {
  *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
@@ -223,7 +224,8 @@ export interface CanActivateChild {
  *   providers: [
  *     {
  *       provide: 'canDeactivateTeam',
- *       useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => true
+ *       useValue: (component: TeamComponent, currentRoute: ActivatedRouteSnapshot, currentState:
+ * RouterStateSnapshot, nextState: RouterStateSnapshot) => true
  *     }
  *   ]
  * })
@@ -233,8 +235,9 @@ export interface CanActivateChild {
  * @stable
  */
 export interface CanDeactivate<T> {
-  canDeactivate(component: T, route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|Promise<boolean>|boolean;
+  canDeactivate(
+      component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
+      nextState?: RouterStateSnapshot): Observable<boolean>|Promise<boolean>|boolean;
 }
 
 /**
@@ -305,8 +308,7 @@ export interface CanDeactivate<T> {
  * @stable
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<any>|Promise<any>|any;
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T>|Promise<T>|T;
 }
 
 

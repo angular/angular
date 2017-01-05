@@ -8,6 +8,6 @@
 
 import {__platform_browser_dynamic_private__ as _} from '@angular/platform-browser-dynamic';
 
-export var INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS:
+export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS:
     typeof _.INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS =
     _.INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS;

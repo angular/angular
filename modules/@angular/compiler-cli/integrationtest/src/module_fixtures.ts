@@ -63,17 +63,13 @@ export function provideValueWithEntryComponents(value: any) {
   entryComponents: [CompUsingLibModuleDirectiveAndPipe],
 })
 export class SomeLibModule {
-}
-
-// TODO(tbosch): Make this a static method in `SomeLibModule` once
-// our static reflector supports it.
-// See https://github.com/angular/angular/issues/10266.
-export function someLibModuleWithProviders(): ModuleWithProviders {
-  return {
-    ngModule: SomeLibModule,
-    providers: [
-      ServiceUsingLibModule,
-      provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
-    ]
-  };
+  static withProviders() {
+    return {
+      ngModule: SomeLibModule,
+      providers: [
+        ServiceUsingLibModule, provideValueWithEntryComponents(
+                                   [{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+      ]
+    };
+  }
 }

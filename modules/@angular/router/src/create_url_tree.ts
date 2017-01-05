@@ -9,7 +9,7 @@
 import {ActivatedRoute} from './router_state';
 import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {forEach, shallowEqual} from './utils/collection';
+import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
@@ -18,36 +18,23 @@ export function createUrlTree(
     return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
   }
 
-  const normalizedCommands = normalizeCommands(commands);
-  validateCommands(normalizedCommands);
+  const nav = computeNavigation(commands);
 
-  if (navigateToRoot(normalizedCommands)) {
+  if (nav.toRoot()) {
     return tree(urlTree.root, new UrlSegmentGroup([], {}), urlTree, queryParams, fragment);
   }
 
-  const startingPosition = findStartingPosition(normalizedCommands, urlTree, route);
+  const startingPosition = findStartingPosition(nav, urlTree, route);
+
   const segmentGroup = startingPosition.processChildren ?
       updateSegmentGroupChildren(
-          startingPosition.segmentGroup, startingPosition.index, normalizedCommands.commands) :
-      updateSegmentGroup(
-          startingPosition.segmentGroup, startingPosition.index, normalizedCommands.commands);
+          startingPosition.segmentGroup, startingPosition.index, nav.commands) :
+      updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
   return tree(startingPosition.segmentGroup, segmentGroup, urlTree, queryParams, fragment);
 }
 
-function validateCommands(n: NormalizedNavigationCommands): void {
-  if (n.isAbsolute && n.commands.length > 0 && isMatrixParams(n.commands[0])) {
-    throw new Error('Root segment cannot have matrix parameters');
-  }
-
-  const c = n.commands.filter(c => typeof c === 'object' && c.outlets !== undefined);
-  if (c.length > 0 && c[0] !== n.commands[n.commands.length - 1]) {
-    throw new Error('{outlets:{}} has to be the last command');
-  }
-}
-
 function isMatrixParams(command: any): boolean {
-  return typeof command === 'object' && command.outlets === undefined &&
-      command.segmentPath === undefined;
+  return typeof command === 'object' && command != null && !command.outlets && !command.segmentPath;
 }
 
 function tree(
@@ -55,11 +42,11 @@ function tree(
     queryParams: Params, fragment: string): UrlTree {
   if (urlTree.root === oldSegmentGroup) {
     return new UrlTree(newSegmentGroup, stringify(queryParams), fragment);
-  } else {
-    return new UrlTree(
-        replaceSegment(urlTree.root, oldSegmentGroup, newSegmentGroup), stringify(queryParams),
-        fragment);
   }
+
+  return new UrlTree(
+      replaceSegment(urlTree.root, oldSegmentGroup, newSegmentGroup), stringify(queryParams),
+      fragment);
 }
 
 function replaceSegment(
@@ -76,72 +63,72 @@ function replaceSegment(
   return new UrlSegmentGroup(current.segments, children);
 }
 
-function navigateToRoot(normalizedChange: NormalizedNavigationCommands): boolean {
-  return normalizedChange.isAbsolute && normalizedChange.commands.length === 1 &&
-      normalizedChange.commands[0] == '/';
-}
-
-class NormalizedNavigationCommands {
+class Navigation {
   constructor(
-      public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {}
+      public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {
+    if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
+      throw new Error('Root segment cannot have matrix parameters');
+    }
+
+    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c != null && c.outlets);
+    if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
+      throw new Error('{outlets:{}} has to be the last command');
+    }
+  }
+
+  public toRoot(): boolean {
+    return this.isAbsolute && this.commands.length === 1 && this.commands[0] == '/';
+  }
 }
 
-function normalizeCommands(commands: any[]): NormalizedNavigationCommands {
-  if ((typeof commands[0] === 'string') && commands.length === 1 && commands[0] == '/') {
-    return new NormalizedNavigationCommands(true, 0, commands);
+/** Transforms commands to a normalized `Navigation` */
+function computeNavigation(commands: any[]): Navigation {
+  if ((typeof commands[0] === 'string') && commands.length === 1 && commands[0] === '/') {
+    return new Navigation(true, 0, commands);
   }
 
   let numberOfDoubleDots = 0;
   let isAbsolute = false;
-  const res: any[] = [];
 
-  for (let i = 0; i < commands.length; ++i) {
-    const c = commands[i];
+  const res: any[] = commands.reduce((res, cmd, cmdIdx) => {
+    if (typeof cmd === 'object' && cmd != null) {
+      if (cmd.outlets) {
+        const outlets: {[k: string]: any} = {};
+        forEach(cmd.outlets, (commands: any, name: string) => {
+          outlets[name] = typeof commands === 'string' ? commands.split('/') : commands;
+        });
+        return [...res, {outlets}];
+      }
 
-    if (typeof c === 'object' && c.outlets !== undefined) {
-      const r: {[k: string]: any} = {};
-      forEach(c.outlets, (commands: any, name: string) => {
-        if (typeof commands === 'string') {
-          r[name] = commands.split('/');
-        } else {
-          r[name] = commands;
+      if (cmd.segmentPath) {
+        return [...res, cmd.segmentPath];
+      }
+    }
+
+    if (!(typeof cmd === 'string')) {
+      return [...res, cmd];
+    }
+
+    if (cmdIdx === 0) {
+      cmd.split('/').forEach((urlPart, partIndex) => {
+        if (partIndex == 0 && urlPart === '.') {
+          // skip './a'
+        } else if (partIndex == 0 && urlPart === '') {  //  '/a'
+          isAbsolute = true;
+        } else if (urlPart === '..') {  //  '../a'
+          numberOfDoubleDots++;
+        } else if (urlPart != '') {
+          res.push(urlPart);
         }
       });
-      res.push({outlets: r});
-      continue;
+
+      return res;
     }
 
-    if (typeof c === 'object' && c.segmentPath !== undefined) {
-      res.push(c.segmentPath);
-      continue;
-    }
+    return [...res, cmd];
+  }, []);
 
-    if (!(typeof c === 'string')) {
-      res.push(c);
-      continue;
-    }
-
-    if (i === 0) {
-      const parts = c.split('/');
-      for (let j = 0; j < parts.length; ++j) {
-        const cc = parts[j];
-
-        if (j == 0 && cc == '.') {  //  './a'
-          // skip it
-        } else if (j == 0 && cc == '') {  //  '/a'
-          isAbsolute = true;
-        } else if (cc == '..') {  //  '../a'
-          numberOfDoubleDots++;
-        } else if (cc != '') {
-          res.push(cc);
-        }
-      }
-    } else {
-      res.push(c);
-    }
-  }
-
-  return new NormalizedNavigationCommands(isAbsolute, numberOfDoubleDots, res);
+  return new Navigation(isAbsolute, numberOfDoubleDots, res);
 }
 
 class Position {
@@ -150,19 +137,19 @@ class Position {
   }
 }
 
-function findStartingPosition(
-    normalizedChange: NormalizedNavigationCommands, urlTree: UrlTree,
-    route: ActivatedRoute): Position {
-  if (normalizedChange.isAbsolute) {
-    return new Position(urlTree.root, true, 0);
-  } else if (route.snapshot._lastPathIndex === -1) {
-    return new Position(route.snapshot._urlSegment, true, 0);
-  } else {
-    const modifier = isMatrixParams(normalizedChange.commands[0]) ? 0 : 1;
-    const index = route.snapshot._lastPathIndex + modifier;
-    return createPositionApplyingDoubleDots(
-        route.snapshot._urlSegment, index, normalizedChange.numberOfDoubleDots);
+function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRoute): Position {
+  if (nav.isAbsolute) {
+    return new Position(tree.root, true, 0);
   }
+
+  if (route.snapshot._lastPathIndex === -1) {
+    return new Position(route.snapshot._urlSegment, true, 0);
+  }
+
+  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
+  const index = route.snapshot._lastPathIndex + modifier;
+  return createPositionApplyingDoubleDots(
+      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(
@@ -182,7 +169,9 @@ function createPositionApplyingDoubleDots(
 }
 
 function getPath(command: any): any {
-  if (typeof command === 'object' && command.outlets) return command.outlets[PRIMARY_OUTLET];
+  if (typeof command === 'object' && command != null && command.outlets) {
+    return command.outlets[PRIMARY_OUTLET];
+  }
   return `${command}`;
 }
 
@@ -276,7 +265,7 @@ function createNewSegmentGroup(
   let i = 0;
   while (i < commands.length) {
     if (typeof commands[i] === 'object' && commands[i].outlets !== undefined) {
-      const children = createNewSegmentChldren(commands[i].outlets);
+      const children = createNewSegmentChildren(commands[i].outlets);
       return new UrlSegmentGroup(paths, children);
     }
 
@@ -301,7 +290,7 @@ function createNewSegmentGroup(
   return new UrlSegmentGroup(paths, {});
 }
 
-function createNewSegmentChldren(outlets: {[name: string]: any}): any {
+function createNewSegmentChildren(outlets: {[name: string]: any}): any {
   const children: {[key: string]: UrlSegmentGroup} = {};
   forEach(outlets, (commands: any, outlet: string) => {
     if (commands !== null) {

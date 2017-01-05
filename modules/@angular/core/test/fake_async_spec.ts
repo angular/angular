@@ -95,7 +95,7 @@ export function main() {
             resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError('Uncaught (in promise): Error: async');
+        }).toThrowError(/Uncaught \(in promise\): Error: async/);
       });
 
       it('should complain if a test throws an exception', () => {

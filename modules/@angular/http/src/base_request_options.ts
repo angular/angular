@@ -62,7 +62,15 @@ export class RequestOptions {
   /**
    * Search parameters to be included in a {@link Request}.
    */
-  search: URLSearchParams;
+  params: URLSearchParams;
+  /**
+   * @deprecated from 4.0.0. Use params instead.
+   */
+  get search(): URLSearchParams { return this.params; }
+  /**
+   * @deprecated from 4.0.0. Use params instead.
+   */
+  set search(params: URLSearchParams) { this.params = params; }
   /**
    * Enable use credentials for a {@link Request}.
    */
@@ -72,15 +80,15 @@ export class RequestOptions {
    */
   responseType: ResponseContentType;
 
+  // TODO(Dzmitry): remove search when this.search is removed
   constructor(
-      {method, headers, body, url, search, withCredentials,
+      {method, headers, body, url, search, params, withCredentials,
        responseType}: RequestOptionsArgs = {}) {
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
     this.url = url != null ? url : null;
-    this.search =
-        search != null ? (typeof search === 'string' ? new URLSearchParams(search) : search) : null;
+    this.params = this._mergeSearchParams(params || search);
     this.withCredentials = withCredentials != null ? withCredentials : null;
     this.responseType = responseType != null ? responseType : null;
   }
@@ -113,21 +121,52 @@ export class RequestOptions {
   merge(options?: RequestOptionsArgs): RequestOptions {
     return new RequestOptions({
       method: options && options.method != null ? options.method : this.method,
-      headers: options && options.headers != null ? options.headers : this.headers,
+      headers: options && options.headers != null ? options.headers : new Headers(this.headers),
       body: options && options.body != null ? options.body : this.body,
       url: options && options.url != null ? options.url : this.url,
-      search: options && options.search != null ?
-          (typeof options.search === 'string' ? new URLSearchParams(options.search) :
-                                                options.search.clone()) :
-          this.search,
+      params: options && this._mergeSearchParams(options.params || options.search),
       withCredentials: options && options.withCredentials != null ? options.withCredentials :
                                                                     this.withCredentials,
       responseType: options && options.responseType != null ? options.responseType :
                                                               this.responseType
     });
   }
-}
 
+  private _mergeSearchParams(params: string|URLSearchParams|
+                             {[key: string]: any | any[]}): URLSearchParams {
+    if (!params) return this.params;
+
+    if (params instanceof URLSearchParams) {
+      return params.clone();
+    }
+
+    if (typeof params === 'string') {
+      return new URLSearchParams(params);
+    }
+
+    return this._parseParams(params);
+  }
+
+  private _parseParams(objParams: {[key: string]: any | any[]} = {}): URLSearchParams {
+    const params = new URLSearchParams();
+    Object.keys(objParams).forEach((key: string) => {
+      const value: any|any[] = objParams[key];
+      if (Array.isArray(value)) {
+        value.forEach((item: any) => this._appendParam(key, item, params));
+      } else {
+        this._appendParam(key, value, params);
+      }
+    });
+    return params;
+  }
+
+  private _appendParam(key: string, value: any, params: URLSearchParams): void {
+    if (typeof value !== 'string') {
+      value = JSON.stringify(value);
+    }
+    params.append(key, value);
+  }
+}
 
 /**
  * Subclass of {@link RequestOptions}, with default values.

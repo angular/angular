@@ -11,9 +11,9 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
-import {Data, ResolveData, Route, Routes, UrlMatchResult} from './config';
+import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
-import {PRIMARY_OUTLET, Params, defaultUrlMatcher} from './shared';
+import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last, merge} from './utils/collection';
 import {TreeNode} from './utils/tree';
@@ -67,7 +67,7 @@ class Recognizer {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(config, segmentGroup);
     } else {
-      return this.processSegment(config, segmentGroup, 0, segmentGroup.segments, outlet);
+      return this.processSegment(config, segmentGroup, segmentGroup.segments, outlet);
     }
   }
 
@@ -81,11 +81,11 @@ class Recognizer {
   }
 
   processSegment(
-      config: Route[], segmentGroup: UrlSegmentGroup, pathIndex: number, segments: UrlSegment[],
+      config: Route[], segmentGroup: UrlSegmentGroup, segments: UrlSegment[],
       outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
     for (const r of config) {
       try {
-        return this.processSegmentAgainstRoute(r, segmentGroup, pathIndex, segments, outlet);
+        return this.processSegmentAgainstRoute(r, segmentGroup, segments, outlet);
       } catch (e) {
         if (!(e instanceof NoMatch)) throw e;
       }
@@ -103,7 +103,7 @@ class Recognizer {
   }
 
   processSegmentAgainstRoute(
-      route: Route, rawSegment: UrlSegmentGroup, pathIndex: number, segments: UrlSegment[],
+      route: Route, rawSegment: UrlSegmentGroup, segments: UrlSegment[],
       outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
     if (route.redirectTo) throw new NoMatch();
 
@@ -140,8 +140,8 @@ class Recognizer {
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
 
     } else {
-      const children = this.processSegment(
-          childConfig, segmentGroup, pathIndex + lastChild, slicedSegments, PRIMARY_OUTLET);
+      const children =
+          this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
       return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
     }
   }

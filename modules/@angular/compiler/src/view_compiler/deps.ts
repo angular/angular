@@ -8,17 +8,26 @@
 
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
-export class ViewClassDependency {
-  constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+/**
+ * This is currently not read, but will probably be used in the future.
+ * We keep it as we already pass it through all the rigth places...
+ */
+export class ComponentViewDependency {
+  constructor(public compType: any) {}
 }
 
+/**
+ * This is currently not read, but will probably be used in the future.
+ * We keep it as we already pass it through all the rigth places...
+ */
 export class ComponentFactoryDependency {
-  constructor(
-      public comp: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+  constructor(public compType: any) {}
 }
 
+/**
+ * This is currently not read, but will probably be used in the future.
+ * We keep it as we already pass it through all the rigth places...
+ */
 export class DirectiveWrapperDependency {
-  constructor(
-      public dir: CompileIdentifierMetadata, public placeholder: CompileIdentifierMetadata) {}
+  constructor(public dirType: any) {}
 }

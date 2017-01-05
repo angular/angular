@@ -28,7 +28,7 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
       const data = _populateStyles(keyframe.styles, startingStyleLookup);
-      data['offset'] = keyframe.offset;
+      data['offset'] = Math.max(0, Math.min(1, keyframe.offset));
       formattedSteps.push(data);
     });
 

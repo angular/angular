@@ -130,7 +130,16 @@ export declare class NgFor implements DoCheck, OnChanges {
 /** @stable */
 export declare class NgIf {
     ngIf: any;
-    constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<Object>);
+    ngIfElse: TemplateRef<NgIfContext>;
+    ngIfThen: TemplateRef<NgIfContext>;
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
+}
+
+/** @experimental */
+export declare class NgLocaleLocalization extends NgLocalization {
+    protected locale: string;
+    constructor(locale: string);
+    getPluralCategory(value: any): string;
 }
 
 /** @experimental */
@@ -224,6 +233,14 @@ export declare class SlicePipe implements PipeTransform {
 }
 
 /** @stable */
+export declare class TitleCasePipe implements PipeTransform {
+    transform(value: string): string;
+}
+
+/** @stable */
 export declare class UpperCasePipe implements PipeTransform {
     transform(value: string): string;
 }
+
+/** @stable */
+export declare const VERSION: Version;

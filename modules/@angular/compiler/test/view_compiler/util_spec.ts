@@ -57,7 +57,7 @@ function createCompileView(config: {className: string, parent?: CompileView, fie
     config.fields.forEach((fieldName) => { fields.push(new o.ClassField(fieldName)); });
   }
   return <any>{
-    classType: o.importType(new CompileIdentifierMetadata({name: config.className})),
+    classType: o.importType({reference: null}),
     fields: fields,
     getters: [],
     declarationElement: declarationElement

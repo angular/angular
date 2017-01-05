@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationQueue} from './animation/animation_queue';
 import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
@@ -37,6 +38,7 @@ export function _keyValueDiffersFactory() {
     Compiler,
     APP_ID_RANDOM_PROVIDER,
     ViewUtils,
+    AnimationQueue,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
     {provide: LOCALE_ID, useValue: 'en-US'},

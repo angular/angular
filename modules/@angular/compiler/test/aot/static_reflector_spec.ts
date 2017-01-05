@@ -6,25 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticReflectorHost, StaticSymbol} from '@angular/compiler';
+import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {MetadataCollector} from '@angular/tsc-wrapped';
-import * as ts from 'typescript';
 
-
-
-// This matches .ts files but not .d.ts files.
-const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
+import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 
 describe('StaticReflector', () => {
-  const noContext = new StaticSymbol('', '');
-  let host: StaticReflectorHost;
+  let noContext: StaticSymbol;
+  let host: StaticSymbolResolverHost;
+  let symbolResolver: StaticSymbolResolver;
   let reflector: StaticReflector;
 
-  beforeEach(() => {
-    host = new MockStaticReflectorHost();
-    reflector = new StaticReflector(host);
-  });
+  function init(
+      testData: {[key: string]: any} = DEFAULT_TEST_DATA,
+      decorators: {name: string, filePath: string, ctor: any}[] = []) {
+    const symbolCache = new StaticSymbolCache();
+    host = new MockStaticSymbolResolverHost(testData);
+    symbolResolver = new StaticSymbolResolver(host, symbolCache, new MockSummaryResolver([]));
+    reflector = new StaticReflector(symbolResolver, decorators);
+    noContext = reflector.getStaticSymbol('', '');
+  }
+
+  beforeEach(() => init());
 
   function simplify(context: StaticSymbol, value: any) {
     return reflector.simplify(context, value);
@@ -73,15 +76,19 @@ describe('StaticReflector', () => {
     ])]);
   });
 
-  it('should throw an exception for unsupported metadata versions', () => {
-    expect(() => reflector.findDeclaration('src/version-error', 'e'))
-        .toThrow(new Error(
-            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 2'));
-  });
-
   it('should get and empty annotation list for an unknown class', () => {
     const UnknownClass = reflector.findDeclaration('src/app/app.component', 'UnknownClass');
     const annotations = reflector.annotations(UnknownClass);
+    expect(annotations).toEqual([]);
+  });
+
+  it('should get and empty annotation list for a symbol with null value', () => {
+    init({
+      '/tmp/test.ts': `
+        export var x = null;
+      `
+    });
+    const annotations = reflector.annotations(reflector.getStaticSymbol('/tmp/test.ts', 'x'));
     expect(annotations).toEqual([]);
   });
 
@@ -119,7 +126,7 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify a static symbol into itself', () => {
-    const staticSymbol = new StaticSymbol('', '');
+    const staticSymbol = reflector.getStaticSymbol('', '');
     expect(simplify(noContext, staticSymbol)).toBe(staticSymbol);
   });
 
@@ -296,43 +303,43 @@ describe('StaticReflector', () => {
     expect(simplify(noContext, expr)).toBe(2);
   });
 
-  it('should simplify a module reference', () => {
+  it('should simplify a file reference', () => {
     expect(simplify(
-               new StaticSymbol('/src/cases', ''),
-               ({__symbolic: 'reference', module: './extern', name: 's'})))
+               reflector.getStaticSymbol('/src/cases', ''),
+               reflector.getStaticSymbol('/src/extern.d.ts', 's')))
         .toEqual('s');
   });
 
   it('should simplify a non existing reference as a static symbol', () => {
     expect(simplify(
-               new StaticSymbol('/src/cases', ''),
-               ({__symbolic: 'reference', module: './extern', name: 'nonExisting'})))
+               reflector.getStaticSymbol('/src/cases', ''),
+               reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting')))
         .toEqual(reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
 
   it('should simplify a function reference as a static symbol', () => {
     expect(simplify(
-               new StaticSymbol('/src/cases', 'myFunction'),
+               reflector.getStaticSymbol('/src/cases', 'myFunction'),
                ({__symbolic: 'function', parameters: ['a'], value: []})))
         .toEqual(reflector.getStaticSymbol('/src/cases', 'myFunction'));
   });
 
   it('should simplify values initialized with a function call', () => {
-    expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
-      __symbolic: 'reference',
-      name: 'one'
-    })).toEqual(['some-value']);
-    expect(simplify(new StaticSymbol('/tmp/src/function-reference.ts', ''), {
-      __symbolic: 'reference',
-      name: 'three'
-    })).toEqual(3);
+    expect(simplify(
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'one')))
+        .toEqual(['some-value']);
+    expect(simplify(
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'three')))
+        .toEqual(3);
   });
 
   it('should error on direct recursive calls', () => {
     expect(
         () => simplify(
-            new StaticSymbol('/tmp/src/function-reference.ts', ''),
-            {__symbolic: 'reference', name: 'recursion'}))
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'recursion')))
         .toThrow(new Error(
             'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
@@ -346,7 +353,8 @@ describe('StaticReflector', () => {
       expect(moduleMetadata).toBeDefined();
       const classData: any = moduleMetadata['InvalidMetadata'];
       expect(classData).toBeDefined();
-      simplify(new StaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
+      simplify(
+          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
     } catch (e) {
       expect(e.fileName).toBe('/tmp/src/invalid-metadata.ts');
       threw = true;
@@ -357,48 +365,17 @@ describe('StaticReflector', () => {
   it('should error on indirect recursive calls', () => {
     expect(
         () => simplify(
-            new StaticSymbol('/tmp/src/function-reference.ts', ''),
-            {__symbolic: 'reference', name: 'indirectRecursion'}))
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'indirectRecursion')))
         .toThrow(new Error(
             'Recursion not supported, resolving symbol indirectRecursion2 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion1 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
   });
 
   it('should simplify a spread expression', () => {
-    expect(simplify(new StaticSymbol('/tmp/src/spread.ts', ''), {
-      __symbolic: 'reference',
-      name: 'spread'
-    })).toEqual([0, 1, 2, 3, 4, 5]);
-  });
-
-  it('should be able to get metadata from a ts file', () => {
-    const metadata = reflector.getModuleMetadata('/tmp/src/custom-decorator-reference.ts');
-    expect(metadata).toEqual({
-      __symbolic: 'module',
-      version: 2,
-      metadata: {
-        Foo: {
-          __symbolic: 'class',
-          decorators: [{
-            __symbolic: 'call',
-            expression:
-                {__symbolic: 'reference', module: './custom-decorator', name: 'CustomDecorator'}
-          }],
-          members: {
-            foo: [{
-              __symbolic: 'property',
-              decorators: [{
-                __symbolic: 'call',
-                expression: {
-                  __symbolic: 'reference',
-                  module: './custom-decorator',
-                  name: 'CustomDecorator'
-                }
-              }]
-            }]
-          }
-        }
-      }
-    });
+    expect(simplify(
+               reflector.getStaticSymbol('/tmp/src/spread.ts', ''),
+               reflector.getStaticSymbol('/tmp/src/spread.ts', 'spread')))
+        .toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should be able to get metadata for a class containing a custom decorator', () => {
@@ -446,6 +423,17 @@ describe('StaticReflector', () => {
        ]);
      });
 
+  it('should be able to get metadata for a class with nested method calls', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyFactoryComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual({
+      provide: 'c',
+      useFactory:
+          reflector.getStaticSymbol('/tmp/src/static-method.ts', 'AnotherModule', ['someFactory'])
+    });
+  });
+
   it('should be able to get the metadata for a class calling a method with default parameters',
      () => {
        const annotations = reflector.annotations(
@@ -461,117 +449,196 @@ describe('StaticReflector', () => {
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 
-  it('should be able to produce a symbol for an exported symbol', () => {
-    expect(reflector.findDeclaration('@angular/router', 'foo', 'main.ts')).toBeDefined();
-  });
+  describe('inheritance', () => {
+    class ClassDecorator {
+      constructor(public value: any) {}
+    }
 
-  it('should be able to produce a symbol for values space only reference', () => {
-    expect(reflector.findDeclaration('@angular/router/src/providers', 'foo', 'main.ts'))
-        .toBeDefined();
-  });
+    class ParamDecorator {
+      constructor(public value: any) {}
+    }
 
-  it('should be produce the same symbol if asked twice', () => {
-    const foo1 = reflector.getStaticSymbol('main.ts', 'foo');
-    const foo2 = reflector.getStaticSymbol('main.ts', 'foo');
-    expect(foo1).toBe(foo2);
-  });
+    class PropDecorator {
+      constructor(public value: any) {}
+    }
 
-  it('should be able to produce a symbol for a module with no file',
-     () => { expect(reflector.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined(); });
+    function initWithDecorator(testData: {[key: string]: any}) {
+      testData['/tmp/src/decorator.ts'] = `
+            export function ClassDecorator(): any {}
+            export function ParamDecorator(): any {}
+            export function PropDecorator(): any {}
+      `;
+      init(testData, [
+        {filePath: '/tmp/src/decorator.ts', name: 'ClassDecorator', ctor: ClassDecorator},
+        {filePath: '/tmp/src/decorator.ts', name: 'ParamDecorator', ctor: ParamDecorator},
+        {filePath: '/tmp/src/decorator.ts', name: 'PropDecorator', ctor: PropDecorator}
+      ]);
+    }
 
-  it('should be able to trace a named export', () => {
-    const symbol = reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
-    expect(symbol.name).toEqual('One');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
-  });
+    it('should inherit annotations', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            import {ClassDecorator} from './decorator';
 
-  it('should be able to trace a renamed export', () => {
-    const symbol = reflector.findDeclaration('./reexport/reexport', 'Four', '/tmp/src/main.ts');
-    expect(symbol.name).toEqual('Three');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
-  });
+            @ClassDecorator('parent')
+            export class Parent {}
 
-  it('should be able to trace an export * export', () => {
-    const symbol = reflector.findDeclaration('./reexport/reexport', 'Five', '/tmp/src/main.ts');
-    expect(symbol.name).toEqual('Five');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin5.d.ts');
-  });
+            @ClassDecorator('child')
+            export class Child extends Parent {}
 
-  it('should be able to trace a multi-level re-export', () => {
-    const symbol = reflector.findDeclaration('./reexport/reexport', 'Thirty', '/tmp/src/main.ts');
-    expect(symbol.name).toEqual('Thirty');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
-  });
+            export class ChildNoDecorators extends Parent {}
 
-  it('should cache tracing a named export', () => {
-    const moduleNameToFileNameSpy = spyOn(host, 'moduleNameToFileName').and.callThrough();
-    const getMetadataForSpy = spyOn(host, 'getMetadataFor').and.callThrough();
-    reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
-    moduleNameToFileNameSpy.calls.reset();
-    getMetadataForSpy.calls.reset();
+            export class ChildInvalidParent extends a.InvalidParent {}
+          `
+      });
 
-    const symbol = reflector.findDeclaration('./reexport/reexport', 'One', '/tmp/src/main.ts');
-    expect(moduleNameToFileNameSpy.calls.count()).toBe(1);
-    expect(getMetadataForSpy.calls.count()).toBe(0);
-    expect(symbol.name).toEqual('One');
-    expect(symbol.filePath).toEqual('/tmp/src/reexport/src/origin1.d.ts');
+      // Check that metadata for Parent was not changed!
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
+          .toEqual([new ClassDecorator('parent')]);
+
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual([new ClassDecorator('parent'), new ClassDecorator('child')]);
+
+      expect(
+          reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildNoDecorators')))
+          .toEqual([new ClassDecorator('parent')]);
+
+      expect(reflector.annotations(
+                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual([]);
+    });
+
+    it('should inherit parameters', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            import {ParamDecorator} from './decorator';
+
+            export class A {}
+            export class B {}
+            export class C {}
+
+            export class Parent {
+              constructor(@ParamDecorator('a') a: A, @ParamDecorator('b') b: B) {}
+            }
+
+            export class Child extends Parent {}
+
+            export class ChildWithCtor extends Parent {
+              constructor(@ParamDecorator('c') c: C) {}
+            }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
+          `
+      });
+
+      // Check that metadata for Parent was not changed!
+      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
+          .toEqual([
+            [reflector.getStaticSymbol('/tmp/src/main.ts', 'A'), new ParamDecorator('a')],
+            [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')]
+          ]);
+
+      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))).toEqual([
+        [reflector.getStaticSymbol('/tmp/src/main.ts', 'A'), new ParamDecorator('a')],
+        [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')]
+      ]);
+
+      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildWithCtor')))
+          .toEqual([[reflector.getStaticSymbol('/tmp/src/main.ts', 'C'), new ParamDecorator('c')]]);
+
+      expect(
+          reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual([]);
+    });
+
+    it('should inherit property metadata', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            import {PropDecorator} from './decorator';
+
+            export class A {}
+            export class B {}
+            export class C {}
+
+            export class Parent {
+              @PropDecorator('a')
+              a: A;
+              @PropDecorator('b1')
+              b: B;
+            }
+
+            export class Child extends Parent {
+              @PropDecorator('b2')
+              b: B;
+              @PropDecorator('c')
+              c: C;
+            }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
+          `
+      });
+
+      // Check that metadata for Parent was not changed!
+      expect(reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
+          .toEqual({
+            'a': [new PropDecorator('a')],
+            'b': [new PropDecorator('b1')],
+          });
+
+      expect(reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
+          .toEqual({
+            'a': [new PropDecorator('a')],
+            'b': [new PropDecorator('b1'), new PropDecorator('b2')],
+            'c': [new PropDecorator('c')]
+          });
+
+      expect(reflector.propMetadata(
+                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
+          .toEqual({});
+    });
+
+    it('should inherit lifecycle hooks', () => {
+      initWithDecorator({
+        '/tmp/src/main.ts': `
+            export class Parent {
+              hook1() {}
+              hook2() {}
+            }
+
+            export class Child extends Parent {
+              hook2() {}
+              hook3() {}
+            }
+
+            export class ChildInvalidParent extends a.InvalidParent {}
+          `
+      });
+
+      function hooks(symbol: StaticSymbol, names: string[]): boolean[] {
+        return names.map(name => reflector.hasLifecycleHook(symbol, name));
+      }
+
+      // Check that metadata for Parent was not changed!
+      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'), [
+        'hook1', 'hook2', 'hook3'
+      ])).toEqual([true, true, false]);
+
+      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'), [
+        'hook1', 'hook2', 'hook3'
+      ])).toEqual([true, true, true]);
+
+      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
+        'hook1', 'hook2', 'hook3'
+      ])).toEqual([false, false, false]);
+    });
   });
 
 });
 
-class MockStaticReflectorHost implements StaticReflectorHost {
-  private collector = new MetadataCollector();
-
-  // In tests, assume that symbols are not re-exported
-  moduleNameToFileName(modulePath: string, containingFile?: string): string {
-    function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
-
-    function resolvePath(pathParts: string[]): string {
-      const result: string[] = [];
-      pathParts.forEach((part, index) => {
-        switch (part) {
-          case '':
-          case '.':
-            if (index > 0) return;
-            break;
-          case '..':
-            if (index > 0 && result.length != 0) result.pop();
-            return;
-        }
-        result.push(part);
-      });
-      return result.join('/');
-    }
-
-    function pathTo(from: string, to: string): string {
-      let result = to;
-      if (to.startsWith('.')) {
-        const fromParts = splitPath(from);
-        fromParts.pop();  // remove the file name.
-        const toParts = splitPath(to);
-        result = resolvePath(fromParts.concat(toParts));
-      }
-      return result;
-    }
-
-    if (modulePath.indexOf('.') === 0) {
-      const baseName = pathTo(containingFile, modulePath);
-      const tsName = baseName + '.ts';
-      if (this._getMetadataFor(tsName)) {
-        return tsName;
-      }
-      return baseName + '.d.ts';
-    }
-    return '/tmp/' + modulePath + '.d.ts';
-  }
-
-  getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
-
-  private _getMetadataFor(moduleId: string): any {
-    const data: {[key: string]: any} = {
+const DEFAULT_TEST_DATA: {[key: string]: any} = {
       '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'FORM_DIRECTIVES': [
             {
@@ -584,7 +651,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       }],
       '/tmp/@angular/common/src/directives/ng_for.d.ts': {
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'NgFor': {
             '__symbolic': 'class',
@@ -637,16 +704,16 @@ class MockStaticReflectorHost implements StaticReflectorHost {
         }
       },
       '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-          {version: 2, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/linker/template_ref.d.ts':
-          {version: 2, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
+          {version: 3, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-          {version: 2, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
       '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-          {version: 2, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+          {version: 3, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
       '/tmp/src/app/hero-detail.component.d.ts': {
         '__symbolic': 'module',
-        'version': 2,
+        'version': 3,
         'metadata': {
           'HeroDetailComponent': {
             '__symbolic': 'class',
@@ -797,11 +864,10 @@ class MockStaticReflectorHost implements StaticReflectorHost {
           }
         }
       },
-      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 2, metadata: {s: 's'}},
-      '/tmp/src/version-error.d.ts': {'__symbolic': 'module', 'version': 100, metadata: {e: 's'}},
+      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 3, metadata: {s: 's'}},
       '/tmp/src/error-reporting.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           SomeClass: {
             __symbolic: 'class',
@@ -831,7 +897,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       },
       '/tmp/src/error-references.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           Link1: {
             __symbolic: 'reference',
@@ -853,7 +919,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       },
       '/tmp/src/function-declaration.d.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           one: {
             __symbolic: 'function',
@@ -882,7 +948,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       },
       '/tmp/src/function-reference.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           one: {
             __symbolic: 'call',
@@ -924,7 +990,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       },
       '/tmp/src/function-recursive.d.ts': {
         __symbolic: 'modules',
-        version: 2,
+        version: 3,
         metadata: {
           recursive: {
             __symbolic: 'function',
@@ -984,7 +1050,7 @@ class MockStaticReflectorHost implements StaticReflectorHost {
       },
       '/tmp/src/spread.ts': {
         __symbolic: 'module',
-        version: 2,
+        version: 3,
         metadata: {
           spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
         }
@@ -1044,6 +1110,15 @@ class MockStaticReflectorHost implements StaticReflectorHost {
           static defaultsMethod(a, b = true, c = false) {
             return [a, b, c];
           }
+          static withFactory() {
+            return { provide: 'c', useFactory: AnotherModule.someFactory };
+          }
+        }
+
+        export class AnotherModule {
+          static someFactory() {
+            return 'e';
+          }
         }
       `,
       '/tmp/src/static-method-call.ts': `
@@ -1064,6 +1139,11 @@ class MockStaticReflectorHost implements StaticReflectorHost {
           providers: [MyModule.defaultsMethod('a')]
         })
         export class MyDefaultsComponent { }
+
+        @Component({
+          providers: MyModule.withFactory()
+        })
+        export class MyFactoryComponent { }
       `,
       '/tmp/src/static-field.ts': `
         import {Injectable} from '@angular/core';
@@ -1118,69 +1198,4 @@ class MockStaticReflectorHost implements StaticReflectorHost {
           @Input f: Forward;
         }
       `,
-      '/tmp/src/reexport/reexport.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {},
-        exports: [
-          {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
-          {from: './src/origin5'}, {from: './src/reexport2'}
-        ]
-      },
-      '/tmp/src/reexport/src/origin1.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {
-          One: {__symbolic: 'class'},
-          Two: {__symbolic: 'class'},
-          Three: {__symbolic: 'class'},
-        },
-      },
-      '/tmp/src/reexport/src/origin5.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {
-          Five: {__symbolic: 'class'},
-        },
-      },
-      '/tmp/src/reexport/src/origin30.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {
-          Thirty: {__symbolic: 'class'},
-        },
-      },
-      '/tmp/src/reexport/src/originNone.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {},
-      },
-      '/tmp/src/reexport/src/reexport2.d.ts': {
-        __symbolic: 'module',
-        version: 2,
-        metadata: {},
-        exports: [{from: './originNone'}, {from: './origin30'}]
-      }
     };
-
-
-    if (data[moduleId] && moduleId.match(TS_EXT)) {
-      const text = data[moduleId];
-      if (typeof text === 'string') {
-        const sf = ts.createSourceFile(
-            moduleId, data[moduleId], ts.ScriptTarget.ES5, /* setParentNodes */ true);
-        const diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
-        if (diagnostics && diagnostics.length) {
-          throw Error(`Error encountered during parse of file ${moduleId}`);
-        }
-        return [this.collector.getMetadata(sf)];
-      }
-    }
-    const result = data[moduleId];
-    if (result) {
-      return Array.isArray(result) ? result : [result];
-    } else {
-      return null;
-    }
-  }
-}

@@ -9,7 +9,6 @@
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef, ChangeDetectorStatus} from '../change_detection/change_detection';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
-import {ListWrapper} from '../facade/collection';
 import {isPresent} from '../facade/lang';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 import {DirectRenderer, RenderComponentType, RenderDebugInfo, Renderer} from '../render/api';
@@ -48,6 +47,7 @@ export abstract class AppView<T> {
   appRef: ApplicationRef;
 
   numberOfChecks: number = 0;
+  throwOnChange: boolean = false;
 
   renderer: Renderer;
 
@@ -64,7 +64,7 @@ export abstract class AppView<T> {
       public viewUtils: ViewUtils, public parentView: AppView<any>, public parentIndex: number,
       public parentElement: any, public cdMode: ChangeDetectorStatus,
       public declaredViewContainer: ViewContainer = null) {
-    this.ref = new ViewRef_(this);
+    this.ref = new ViewRef_(this, viewUtils.animationQueue);
     if (type === ViewType.COMPONENT || type === ViewType.HOST) {
       this.renderer = viewUtils.renderComponent(componentType);
     } else {
@@ -75,7 +75,7 @@ export abstract class AppView<T> {
 
   get animationContext(): AnimationViewContext {
     if (!this._animationContext) {
-      this._animationContext = new AnimationViewContext();
+      this._animationContext = new AnimationViewContext(this.viewUtils.animationQueue);
     }
     return this._animationContext;
   }
@@ -192,7 +192,8 @@ export abstract class AppView<T> {
     } else {
       this._renderDetach();
     }
-    if (this.declaredViewContainer && this.declaredViewContainer !== this.viewContainer) {
+    if (this.declaredViewContainer && this.declaredViewContainer !== this.viewContainer &&
+        this.declaredViewContainer.projectedViews) {
       const projectedViews = this.declaredViewContainer.projectedViews;
       const index = projectedViews.indexOf(this);
       // perf: pop is faster than splice!
@@ -312,16 +313,22 @@ export abstract class AppView<T> {
    */
   dirtyParentQueriesInternal(): void {}
 
+  internalDetectChanges(throwOnChange: boolean): void {
+    if (this.cdMode !== ChangeDetectorStatus.Detached) {
+      this.detectChanges(throwOnChange);
+    }
+  }
+
   detectChanges(throwOnChange: boolean): void {
     const s = _scope_check(this.clazz);
     if (this.cdMode === ChangeDetectorStatus.Checked ||
-        this.cdMode === ChangeDetectorStatus.Errored ||
-        this.cdMode === ChangeDetectorStatus.Detached)
+        this.cdMode === ChangeDetectorStatus.Errored)
       return;
     if (this.cdMode === ChangeDetectorStatus.Destroyed) {
       this.throwDestroyedError('detectChanges');
     }
-    this.detectChangesInternal(throwOnChange);
+    this.throwOnChange = throwOnChange;
+    this.detectChangesInternal();
     if (this.cdMode === ChangeDetectorStatus.CheckOnce) this.cdMode = ChangeDetectorStatus.Checked;
 
     this.numberOfChecks++;
@@ -331,7 +338,7 @@ export abstract class AppView<T> {
   /**
    * Overwritten by implementations
    */
-  detectChangesInternal(throwOnChange: boolean): void {}
+  detectChangesInternal(): void {}
 
   markAsCheckOnce(): void { this.cdMode = ChangeDetectorStatus.CheckOnce; }
 

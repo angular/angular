@@ -41,8 +41,8 @@ class _View_TreeComponent_Host0 extends import1.AppView<any> {
     this.init([].concat([this._el_0]), [this._el_0], []);
     return new import9.ComponentRef_(0, this, this._el_0, this._TreeComponent_0_4.context);
   }
-  detectChangesInternal(throwOnChange: boolean): void {
-    this._TreeComponent_0_4.detectChangesInternal(throwOnChange);
+  detectChangesInternal(): void {
+    this._TreeComponent_0_4.detectChangesInternal(this.throwOnChange);
   }
   destroyInternal(): void { this._TreeComponent_0_4.destroyInternal(); }
   injectorGetInternal(token: any, requestNodeIndex: number, notFoundResult: any): any {

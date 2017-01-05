@@ -9,13 +9,12 @@
 import {SecurityContext} from '@angular/core';
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
-import {AST, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, LiteralPrimitive, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, BindingPipe, EmptyExpr, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {isPresent} from '../facade/lang';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
+import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
-import {view_utils} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
@@ -246,18 +245,12 @@ export class BindingParser {
 
     let unit: string = null;
     let bindingType: PropertyBindingType;
-    let boundPropertyName: string;
+    let boundPropertyName: string = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContexts: SecurityContext[];
 
-    if (parts.length === 1) {
-      const partValue = parts[0];
-      boundPropertyName = this._schemaRegistry.getMappedPropName(partValue);
-      securityContexts = calcPossibleSecurityContexts(
-          this._schemaRegistry, elementSelector, boundPropertyName, false);
-      bindingType = PropertyBindingType.Property;
-      this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
-    } else {
+    // Check check for special cases (prefix style, attr, class)
+    if (parts.length > 1) {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
         this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
@@ -281,12 +274,18 @@ export class BindingParser {
         boundPropertyName = parts[1];
         bindingType = PropertyBindingType.Style;
         securityContexts = [SecurityContext.STYLE];
-      } else {
-        this._reportError(`Invalid property name '${boundProp.name}'`, boundProp.sourceSpan);
-        bindingType = null;
-        securityContexts = [];
       }
     }
+
+    // If not a special case, use the full property name
+    if (boundPropertyName === null) {
+      boundPropertyName = this._schemaRegistry.getMappedPropName(boundProp.name);
+      securityContexts = calcPossibleSecurityContexts(
+          this._schemaRegistry, elementSelector, boundPropertyName, false);
+      bindingType = PropertyBindingType.Property;
+      this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
+    }
+
     return new BoundElementPropertyAst(
         boundPropertyName, bindingType, securityContexts.length === 1 ? securityContexts[0] : null,
         securityContexts.length > 1, boundProp.expression, unit, boundProp.sourceSpan);
@@ -378,9 +377,12 @@ export class BindingParser {
     if (isPresent(ast)) {
       const collector = new PipeCollector();
       ast.visit(collector);
-      collector.pipes.forEach((pipeName) => {
+      collector.pipes.forEach((ast, pipeName) => {
         if (!this.pipesByName.has(pipeName)) {
-          this._reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
+          this._reportError(
+              `The pipe '${pipeName}' could not be found`,
+              new ParseSourceSpan(
+                  sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
         }
       });
     }
@@ -403,9 +405,9 @@ export class BindingParser {
 }
 
 export class PipeCollector extends RecursiveAstVisitor {
-  pipes = new Set<string>();
+  pipes = new Map<string, BindingPipe>();
   visitPipe(ast: BindingPipe, context: any): any {
-    this.pipes.add(ast.name);
+    this.pipes.set(ast.name, ast);
     ast.exp.visit(this);
     this.visitAll(ast.args, context);
     return null;

@@ -262,7 +262,7 @@ export function makeDecorator(
   const metaCtor = makeMetadataCtor([props]);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
-    if (!(Reflect && Reflect.getMetadata)) {
+    if (!(Reflect && Reflect.getOwnMetadata)) {
       throw 'reflect-metadata shim is required when using class decorators';
     }
 
@@ -327,7 +327,7 @@ export function makeParamDecorator(
     return ParamDecorator;
 
     function ParamDecorator(cls: any, unusedKey: any, index: number): any {
-      const parameters: any[][] = Reflect.getMetadata('parameters', cls) || [];
+      const parameters: any[][] = Reflect.getOwnMetadata('parameters', cls) || [];
 
       // there might be gaps if some in between parameters do not have annotations.
       // we pad with nulls.

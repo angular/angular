@@ -66,11 +66,15 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   writeValue(value: any): void {
     this.value = value;
-    if (value == null) return;
-    const values: Array<any> = <Array<any>>value;
-    // convert values to ids
-    const ids = values.map((v) => this._getOptionId(v));
-    this._optionMap.forEach((opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); });
+    let optionSelectedStateSetter: (opt: NgSelectMultipleOption, o: any) => void;
+    if (Array.isArray(value)) {
+      // convert values to ids
+      const ids = value.map((v) => this._getOptionId(v));
+      optionSelectedStateSetter = (opt, o) => { opt._setSelected(ids.indexOf(o.toString()) > -1); };
+    } else {
+      optionSelectedStateSetter = (opt, o) => { opt._setSelected(false); };
+    }
+    this._optionMap.forEach(optionSelectedStateSetter);
   }
 
   registerOnChange(fn: (value: any) => any): void {
@@ -95,6 +99,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
           }
         }
       }
+      this.value = selected;
       fn(selected);
     };
   }

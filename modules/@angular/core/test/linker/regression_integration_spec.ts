@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, it} from '@angular/core/testing/testing_internal';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
@@ -120,7 +119,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      it('should support providers with an anonymous function', () => {
+      it('should support providers with an anonymous function as token', () => {
         const token = () => true;
         const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
@@ -139,6 +138,31 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(injector.get(token1)).toEqual(tokenValue1);
         expect(injector.get(token2)).toEqual(tokenValue2);
       });
+
+      it('should support providers that have a `name` property with a number value', () => {
+        class TestClass {
+          constructor(public name: number) {}
+        }
+        const data = [new TestClass(1), new TestClass(2)];
+        const injector = createInjector([{provide: 'someToken', useValue: data}]);
+        expect(injector.get('someToken')).toEqual(data);
+      });
+
+      describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
+
+        it('should support class instances', () => {
+          class SomeObject {
+            someMethod() {}
+          }
+
+          expect(
+              () => createInjector([
+                {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}
+              ]))
+              .not.toThrow();
+        });
+      });
+
     });
 
     it('should allow logging a previous elements class binding via interpolation', () => {
