@@ -128,7 +128,7 @@ export class MdRipple implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // If no trigger element was explicity set, use the host element
+    // If no trigger element was explicitly set, use the host element
     if (!this.trigger) {
       this._rippleRenderer.setTriggerElementToHost();
     }
