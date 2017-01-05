@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
+import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_INITIALIZER, Pipe, Provider, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -109,7 +109,8 @@ class DummyConsole implements Console {
 
 
 class TestModule {}
-function bootstrap(cmpType: any, providers: Provider[] = []): Promise<any> {
+function bootstrap(
+    cmpType: any, providers: Provider[] = [], platformProviders: Provider[] = []): Promise<any> {
   @NgModule({
     imports: [BrowserModule],
     declarations: [cmpType],
@@ -119,7 +120,7 @@ function bootstrap(cmpType: any, providers: Provider[] = []): Promise<any> {
   })
   class TestModule {
   }
-  return platformBrowserDynamic().bootstrapModule(TestModule);
+  return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule);
 }
 
 export function main() {
@@ -277,6 +278,17 @@ export function main() {
 
          refPromise.then((ref) => {
            expect(ref.injector.get('appBinding')).toEqual('BoundValue');
+           async.done();
+         });
+       }));
+
+    it('should not override locale provided during bootstrap',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const refPromise =
+             bootstrap(HelloRootCmp, [testProviders], [{provide: LOCALE_ID, useValue: 'fr-FR'}]);
+
+         refPromise.then(ref => {
+           expect(ref.injector.get(LOCALE_ID)).toEqual('fr-FR');
            async.done();
          });
        }));
