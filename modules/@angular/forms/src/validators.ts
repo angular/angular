@@ -11,7 +11,7 @@ import {toPromise} from 'rxjs/operator/toPromise';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {StringMapWrapper} from './facade/collection';
 import {isPresent} from './facade/lang';
-import {AbstractControl, FormGroup} from './model';
+import {AbstractControl, FormControl, FormGroup} from './model';
 import {isPromise} from './private_import_core';
 
 function isEmptyInputValue(value: any) {
@@ -60,28 +60,24 @@ export class Validators {
   /**
    * Validator that compares the value of the given FormControls
    */
-  static comparison(...fieldNames: string[]): ValidatorFn {
-    return function(group: FormGroup): {[key: string]: any} {
-      if (!(group instanceof FormGroup)) {
-        throw new Error('Comparison validator must be used on a Form Group');
+  static equalsTo(...fieldNames: string[]): ValidatorFn {
+    return function(control: FormControl): {[key: string]: any} {
+      if (!(control instanceof FormControl)) {
+        throw new Error('You must pass this validator on a FormControl');
       }
-      if (!fieldNames) {
-        throw new Error('You must pass the names of at least 2 fields');
-      }
-      if (fieldNames.length < 2) {
-        throw new Error('You must pass the names of at least 2 fields');
+      if (fieldNames.length < 1) {
+        throw new Error('You must compare to at least 1 other field');
       }
 
       for (let fieldName of fieldNames) {
-        let field = group.controls[fieldName];
+        let field = (<FormGroup>control.parent).controls[fieldName];
         if (!field) {
           throw new Error(
-              `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in`);
+              `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in the group`);
         }
 
-        // since we checked that we're given 2 fields we can compare it all agasint the first field
-        if (field.value !== group.controls[fieldNames[0]].value) {
-          return {invalidComparison: {invalidField: fieldName, comparedField: fieldNames[0]}};
+        if (field.value !== control.value) {
+          return {'equalsTo': {'unequalField': fieldName}};
         }
       }
       return null;

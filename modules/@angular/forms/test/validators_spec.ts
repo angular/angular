@@ -50,46 +50,39 @@ export function main() {
          () => { expect(Validators.required(new FormControl(0))).toBeNull(); });
     });
 
-    describe('comparison', () => {
+    describe('equalsTo', () => {
       it('should not error when equal', () => {
         let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')});
-        let validator = Validators.comparison('f1', 'f2');
-        expect(validator(group)).toBeNull();
+        let validator = Validators.equalsTo('f2');
+        expect(validator(group.controls['f1'])).toBeNull();
       });
 
       it('should error when not equal', () => {
         let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
-        let validator = Validators.comparison('f1', 'f2');
-        expect(validator(group)).toEqual({
-          invalidComparison: {invalidField: 'f2', comparedField: 'f1'}
-        });
+        let validator = Validators.equalsTo('f2');
+        expect(validator(group.controls['f1'])).toEqual({equalsTo: {unequalField: 'f2'}});
       });
 
       it('should throw if passed a form control', () => {
-        let validator = Validators.comparison('f1', 'f2');
+        let validator = Validators.equalsTo('f1', 'f2');
         // cast it to any so we don't get TS errors
-        expect(() => validator(<any>new FormControl(''))).toThrow();
+        expect(() => validator(<any>new FormGroup({f1: new FormControl('')}))).toThrow();
       });
 
       it('should throw if passed a form array', () => {
-        let validator = Validators.comparison('f1', 'f2');
+        let validator = Validators.equalsTo('f1', 'f2');
         // cast it to any so we don't get TS errors
         expect(() => validator(<any>new FormArray([]))).toThrow();
       });
 
-      it('should throw if passed a single field', () => {
-        let validator = Validators.comparison('f1');
-        expect(() => validator(new FormControl('a'))).toThrow();
-      });
-
-      it('should throw if not passed any fields', () => {
-        let validator = Validators.comparison();
+      it('should throw if not passed any field to compare', () => {
+        let validator = Validators.equalsTo();
         expect(() => validator(new FormControl('a'))).toThrow();
       });
 
       it('should throw if field passed does not exist in the group', () => {
         let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
-        let validator = Validators.comparison('f3', 'f4');
+        let validator = Validators.equalsTo('f3', 'f4');
         // cast it to any so we don't get TS errors
         expect(() => validator(new FormControl('a'))).toThrow();
       });
