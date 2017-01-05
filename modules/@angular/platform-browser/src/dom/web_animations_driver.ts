@@ -20,10 +20,8 @@ export class WebAnimationsDriver implements AnimationDriver {
       previousPlayers: AnimationPlayer[] = []): WebAnimationsPlayer {
     let formattedSteps: {[key: string]: string | number}[] = [];
     let startingStyleLookup: {[key: string]: string | number} = {};
-    if (isPresent(startingStyles) && startingStyles.styles.length > 0) {
+    if (isPresent(startingStyles)) {
       startingStyleLookup = _populateStyles(startingStyles, {});
-      startingStyleLookup['offset'] = 0;
-      formattedSteps.push(startingStyleLookup);
     }
 
     keyframes.forEach((keyframe: AnimationKeyframe) => {
@@ -32,14 +30,18 @@ export class WebAnimationsDriver implements AnimationDriver {
       formattedSteps.push(data);
     });
 
-    // this is a special case when only styles are applied as an
-    // animation. When this occurs we want to animate from start to
-    // end with the same values. Removing the offset and having only
-    // start/end values is suitable enough for the web-animations API
-    if (formattedSteps.length == 1) {
-      const start = formattedSteps[0];
-      start['offset'] = null;
-      formattedSteps = [start, start];
+    // Styling passed into element.animate() must always be balanced.
+    // The special cases below can occur if only style() calls exist
+    // within an animation or when a style() calls are used prior
+    // to a group() animation being issued or if the renderer is
+    // invoked by the user directly.
+    if (formattedSteps.length == 0) {
+      formattedSteps = [startingStyleLookup, startingStyleLookup];
+    } else if (formattedSteps.length == 1) {
+      const start = startingStyleLookup;
+      const end = formattedSteps[0];
+      end['offset'] = null;
+      formattedSteps = [start, end];
     }
 
     const playerOptions: {[key: string]: string | number} = {
