@@ -73,7 +73,7 @@ should no longer throw an error if it is missing.
 * **scroll:** provide directive and service to listen to scrolling ([#2188](https://github.com/angular/material2/issues/2188)) ([9b68e68](https://github.com/angular/material2/commit/9b68e68))
 * **sidenav:** close via escape key and restore focus to trigger element ([#1990](https://github.com/angular/material2/issues/1990)) ([a1331ec](https://github.com/angular/material2/commit/a1331ec))
 * **tooltip:** add input for delaying show and hide ([#2101](https://github.com/angular/material2/issues/2101)) ([e85d108](https://github.com/angular/material2/commit/e85d108))
-
+* **toolbar** add responsive heights as per spec ([#2157](https://github.com/angular/material2/issues/2157)) ([78d54fc](https://github.com/angular/material2/commit/78d54fc08491ce35f9ad06dc50488cc4d4c3a5e8))
 
 ### Performance Improvements
 
