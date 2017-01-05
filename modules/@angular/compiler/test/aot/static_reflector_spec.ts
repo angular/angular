@@ -449,6 +449,40 @@ describe('StaticReflector', () => {
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 
+  // #13605
+  it('should not throw on unknown decorators', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/app.component.ts';
+    data[file] = `
+      import { Component } from '@angular/core';
+
+      export const enum TypeEnum {
+        type
+      }
+
+      export function MyValidationDecorator(p1: any, p2: any): any {
+        return null;
+      }
+
+      export function ValidationFunction(a1: any): any {
+        return null;
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: "<h1>Hello {{name}}</h1>",
+      })
+      export class AppComponent  {
+        name = 'Angular';
+
+        @MyValidationDecorator( TypeEnum.type, ValidationFunction({option: 'value'}))
+        myClassProp: number;
+    }`;
+    init(data);
+    const appComponent = reflector.getStaticSymbol(file, 'AppComponent');
+    expect(() => reflector.propMetadata(appComponent)).not.toThrow();
+  });
+
   describe('inheritance', () => {
     class ClassDecorator {
       constructor(public value: any) {}
