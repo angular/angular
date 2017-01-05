@@ -75,7 +75,7 @@ export function main() {
         expect(() => validator(<any>new FormControl(''))).toThrow();
       });
 
-      it('should throw if passed a form control', () => {
+      it('should throw if passed a form array', () => {
         let validator = Validators.comparison('f1', 'f2');
         // cast it to any so we don't get TS errors
         expect(() => validator(<any>new FormArray([]))).toThrow();
