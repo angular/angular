@@ -262,12 +262,11 @@ export class DomRenderer implements Renderer {
       element: any, startingStyles: AnimationStyles, keyframes: AnimationKeyframe[],
       duration: number, delay: number, easing: string,
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    try {
+    if (this._rootRenderer.document.body.contains(element)) {
       return this._animationDriver.animate(
           element, startingStyles, keyframes, duration, delay, easing, previousPlayers);
-    } catch (e) {
-      return new NoOpAnimationPlayer();
     }
+    return new NoOpAnimationPlayer();
   }
 }
 

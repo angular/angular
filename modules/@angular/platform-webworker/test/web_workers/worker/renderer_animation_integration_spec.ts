@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AUTO_STYLE, AnimationTransitionEvent, Component, Injector, animate, state, style, transition, trigger} from '@angular/core';
+import {AUTO_STYLE, AnimationTransitionEvent, Component, Injector, ViewChild, animate, state, style, transition, trigger} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
@@ -84,7 +84,7 @@ export function main() {
       workerRenderStore = new RenderStore();
 
       TestBed.configureTestingModule({
-        declarations: [AnimationCmp, MultiAnimationCmp],
+        declarations: [AnimationCmp, MultiAnimationCmp, ContainerAnimationCmp],
         providers: [
           Serializer, {provide: RenderStore, useValue: workerRenderStore}, {
             provide: RootRenderer,
@@ -231,10 +231,9 @@ export function main() {
            return (event: AnimationTransitionEvent) => { log[phaseName] = event; };
          }
 
-         const f1 = TestBed.createComponent(AnimationCmp);
-         const f2 = TestBed.createComponent(AnimationCmp);
-         const cmp1 = f1.componentInstance;
-         const cmp2 = f2.componentInstance;
+         const fixture = TestBed.createComponent(ContainerAnimationCmp);
+         const cmp1 = fixture.componentInstance.compOne;
+         const cmp2 = fixture.componentInstance.compTwo;
 
          const cmp1Log: {[phaseName: string]: AnimationTransitionEvent} = {};
          const cmp2Log: {[phaseName: string]: AnimationTransitionEvent} = {};
@@ -246,8 +245,7 @@ export function main() {
 
          cmp1.state = 'off';
          cmp2.state = 'on';
-         f1.detectChanges();
-         f2.detectChanges();
+         fixture.detectChanges();
          flushMicrotasks();
 
          uiDriver.log.shift()['player'].finish();
@@ -316,6 +314,18 @@ export function main() {
   });
 }
 
+@Component({
+  selector: 'container-comp',
+  template: `
+    <my-comp #one></my-comp>
+    <my-comp #two></my-comp>
+  `
+})
+class ContainerAnimationCmp {
+  @ViewChild('one') public compOne: AnimationCmp;
+
+  @ViewChild('two') public compTwo: AnimationCmp;
+}
 
 @Component({
   selector: 'my-comp',
