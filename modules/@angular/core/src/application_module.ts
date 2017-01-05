@@ -11,6 +11,7 @@ import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
+import {Inject, Optional, SkipSelf} from './di/metadata';
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
 import {ViewUtils} from './linker/view_utils';
@@ -22,6 +23,10 @@ export function _iterableDiffersFactory() {
 
 export function _keyValueDiffersFactory() {
   return defaultKeyValueDiffers;
+}
+
+export function _localeFactory(locale?: string): string {
+  return locale || 'en-US';
 }
 
 /**
@@ -41,7 +46,11 @@ export function _keyValueDiffersFactory() {
     AnimationQueue,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
-    {provide: LOCALE_ID, useValue: 'en-US'},
+    {
+      provide: LOCALE_ID,
+      useFactory: _localeFactory,
+      deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
+    },
   ]
 })
 export class ApplicationModule {
