@@ -214,13 +214,13 @@ export class MdInputDirective {
   host: {
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
-    '[class.ng-untouched]': '_isUntouched()',
-    '[class.ng-touched]': '_isTouched()',
-    '[class.ng-pristine]': '_isPristine()',
-    '[class.ng-dirty]': '_isDirty()',
-    '[class.ng-valid]': '_isValid()',
-    '[class.ng-invalid]': '_isInvalid()',
-    '[class.ng-pending]': '_isPending()',
+    '[class.ng-untouched]': '_shouldForward("untouched")',
+    '[class.ng-touched]': '_shouldForward("touched")',
+    '[class.ng-pristine]': '_shouldForward("pristine")',
+    '[class.ng-dirty]': '_shouldForward("dirty")',
+    '[class.ng-valid]': '_shouldForward("valid")',
+    '[class.ng-invalid]': '_shouldForward("invalid")',
+    '[class.ng-pending]': '_shouldForward("pending")',
     '(click)': '_focusInput()',
   },
   encapsulation: ViewEncapsulation.None,
@@ -262,34 +262,20 @@ export class MdInputContainer implements AfterContentInit {
     this._validatePlaceholders();
 
     // Re-validate when things change.
-    this._hintChildren.changes.subscribe(() => {
-      this._validateHints();
-    });
-    this._mdInputChild._placeholderChange.subscribe(() => {
-      this._validatePlaceholders();
-    });
+    this._hintChildren.changes.subscribe(() => this._validateHints());
+    this._mdInputChild._placeholderChange.subscribe(() => this._validatePlaceholders());
   }
 
-  _isUntouched() { return this._hasNgControl() && this._mdInputChild._ngControl.untouched; }
-
-  _isTouched() { return this._hasNgControl() && this._mdInputChild._ngControl.touched; }
-
-  _isPristine() { return this._hasNgControl() && this._mdInputChild._ngControl.pristine; }
-
-  _isDirty() { return this._hasNgControl() && this._mdInputChild._ngControl.dirty; }
-
-  _isValid() { return this._hasNgControl() && this._mdInputChild._ngControl.valid; }
-
-  _isInvalid() { return this._hasNgControl() && this._mdInputChild._ngControl.invalid; }
-
-  _isPending() { return this._hasNgControl() && this._mdInputChild._ngControl.pending; }
+  /** Determines whether a class from the NgControl should be forwarded to the host element. */
+  _shouldForward(prop: string): boolean {
+    let control = this._mdInputChild ? this._mdInputChild._ngControl : null;
+    return control && (control as any)[prop];
+  }
 
   /** Whether the input has a placeholder. */
   _hasPlaceholder() { return !!(this._mdInputChild.placeholder || this._placeholderChild); }
 
   _focusInput() { this._mdInputChild.focus(); }
-
-  private _hasNgControl() { return !!(this._mdInputChild && this._mdInputChild._ngControl); }
 
   /**
    * Ensure that there is only one placeholder (either `input` attribute or child element with the
