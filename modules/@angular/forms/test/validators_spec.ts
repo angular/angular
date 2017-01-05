@@ -52,15 +52,17 @@ export function main() {
 
     describe('comparison', () => {
       it('should not error when equal', () => {
-        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')})
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('a')});
         let validator = Validators.comparison('f1', 'f2');
         expect(validator(group)).toBeNull();
       });
 
       it('should error when not equal', () => {
-        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')})
+        let group = new FormGroup({f1: new FormControl('a'), f2: new FormControl('b')});
         let validator = Validators.comparison('f1', 'f2');
-        expect(validator(group)).toEqual({ invalidComparison: { invalidField: 'f2', comparedField: 'f1' } });
+        expect(validator(group)).toEqual({
+          invalidComparison: { invalidField: 'f2', comparedField: 'f1' }
+        });
       });
 
       it('should throw if passed a form control', () => {

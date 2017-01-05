@@ -62,22 +62,22 @@ export class Validators {
    * Validator that compares the value of the giveb FormControl's
    */
   static comparison(...fieldNames: string[]): ValidatorFn {
-    return function (group: FormGroup): { [key: string]: any } {
+    return function(group: FormGroup): {[key: string]: any } {
       if (group.controls === undefined) {
         throw new Error('Comparison validator must be used on a Form Group');
       }
       if (!fieldNames) {
-         throw new Error('You must pass the names of at least 2 fields');
+        throw new Error('You must pass the names of at least 2 fields');
       }
       if (fieldNames.length < 2) {
-         throw new Error('You must pass the names of at least 2 fields');
+        throw new Error('You must pass the names of at least 2 fields');
       }
 
       for (let fieldName of fieldNames) {
         let field = group.controls[fieldName];
         if (!field) {
-           throw new Error(
-             `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in`);
+          throw new Error(
+            `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in`);
         }
 
         // since we checked that we're given 2 fields we can compare it all agasint the first field
