@@ -62,15 +62,12 @@ export class Validators {
    */
   static equalsTo(...fieldNames: string[]): ValidatorFn {
     return function(control: FormControl): {[key: string]: any} {
-      if (!(control instanceof FormControl)) {
-        throw new Error('You must pass this validator on a FormControl');
-      }
       if (fieldNames.length < 1) {
         throw new Error('You must compare to at least 1 other field');
       }
 
       for (let fieldName of fieldNames) {
-        let field = (<FormGroup>control.parent).controls[fieldName];
+        let field = (<FormGroup>control.parent).get(fieldName);
         if (!field) {
           throw new Error(
               `Field: ${fieldName} undefined, are you sure that ${fieldName} exists in the group`);
