@@ -105,10 +105,10 @@ export function config(config) {
 
     if (platform === 'saucelabs') {
       config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_ID;
     } else if (platform === 'browserstack') {
       config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_ID;
     } else {
       throw new Error(`Platform "${platform}" unknown, but Travis specified. Exiting.`);
     }

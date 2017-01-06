@@ -41,8 +41,8 @@ if (process.env['TRAVIS']) {
   config.sauceKey = key;
   config.capabilities = {
     'browserName': 'chrome',
-    'tunnel-identifier': process.env['TRAVIS_JOB_NUMBER'],
-    'build': process.env['TRAVIS_JOB_NUMBER'],
+    'tunnel-identifier': process.env['TRAVIS_JOB_ID'],
+    'build': process.env['TRAVIS_JOB_ID'],
     'name': 'Material 2 E2E Tests',
 
     // Enables concurrent testing in the Webdriver. Currently runs five e2e files in parallel.

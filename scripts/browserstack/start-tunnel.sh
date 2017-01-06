@@ -33,8 +33,8 @@ rm $TUNNEL_FILE
 ARGS=""
 
 # Set tunnel-id only on Travis, to make local testing easier.
-if [ ! -z "$TRAVIS_JOB_NUMBER" ]; then
-  ARGS="$ARGS --local-identifier $TRAVIS_JOB_NUMBER"
+if [ ! -z "$TRAVIS_JOB_ID" ]; then
+  ARGS="$ARGS --local-identifier $TRAVIS_JOB_ID"
 fi
 
 echo "Starting Browserstack Local in the background, logging into:"
