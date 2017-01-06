@@ -55,20 +55,22 @@ enum _VisitorMode {
  * @internal
  */
 class _Visitor implements html.Visitor {
+  private _depth: number;
+
   // <el i18n>...</el>
   private _inI18nNode: boolean;
-  private _depth: number;
   private _inImplicitNode: boolean;
 
   // <!--i18n-->...<!--/i18n-->
+  private _inI18nBlock: boolean;
   private _blockMeaningAndDesc: string;
   private _blockChildren: html.Node[];
   private _blockStartDepth: number;
-  private _inI18nBlock: boolean;
 
   // {<icu message>}
   private _inIcu: boolean;
 
+  // set to void 0 when not in a section
   private _msgCountAtSectionStart: number;
   private _errors: I18nError[];
   private _mode: _VisitorMode;
@@ -210,50 +212,31 @@ class _Visitor implements html.Visitor {
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
     const wasInImplicitNode = this._inImplicitNode;
-    let childNodes: html.Node[];
+    let childNodes: html.Node[] = [];
+    let translatedChildNodes: html.Node[];
 
-    // Extract only top level nodes with the (implicit) "i18n" attribute if not in a block or an ICU
-    // message
+    // Extract:
+    // - top level nodes with the (implicit) "i18n" attribute if not already in a section
+    // - ICU messages
     const i18nAttr = _getI18nAttr(el);
+    const i18nMeta = i18nAttr ? i18nAttr.value : '';
     const isImplicit = this._implicitTags.some(tag => el.name === tag) && !this._inIcu &&
         !this._isInTranslatableSection;
     const isTopLevelImplicit = !wasInImplicitNode && isImplicit;
-    this._inImplicitNode = this._inImplicitNode || isImplicit;
+    this._inImplicitNode = wasInImplicitNode || isImplicit;
 
     if (!this._isInTranslatableSection && !this._inIcu) {
-      if (i18nAttr) {
-        // explicit translation
+      if (i18nAttr || isTopLevelImplicit) {
         this._inI18nNode = true;
-        const message = this._addMessage(el.children, i18nAttr.value);
-        childNodes = this._translateMessage(el, message);
-      } else if (isTopLevelImplicit) {
-        // implicit translation
-        this._inI18nNode = true;
-        const message = this._addMessage(el.children);
-        childNodes = this._translateMessage(el, message);
+        const message = this._addMessage(el.children, i18nMeta);
+        translatedChildNodes = this._translateMessage(el, message);
       }
 
       if (this._mode == _VisitorMode.Extract) {
         const isTranslatable = i18nAttr || isTopLevelImplicit;
-        if (isTranslatable) {
-          this._openTranslatableSection(el);
-        }
+        if (isTranslatable) this._openTranslatableSection(el);
         html.visitAll(this, el.children);
-        if (isTranslatable) {
-          this._closeTranslatableSection(el, el.children);
-        }
-      }
-
-      if (this._mode === _VisitorMode.Merge && !i18nAttr && !isTopLevelImplicit) {
-        childNodes = [];
-        el.children.forEach(child => {
-          const visited = child.visit(this, context);
-          if (visited && !this._isInTranslatableSection) {
-            // Do not add the children from translatable sections (= i18n blocks here)
-            // They will be added when the section is close (i.e. on `<!-- /i18n -->`)
-            childNodes = childNodes.concat(visited);
-          }
-        });
+        if (isTranslatable) this._closeTranslatableSection(el, el.children);
       }
     } else {
       if (i18nAttr || isTopLevelImplicit) {
@@ -265,19 +248,18 @@ class _Visitor implements html.Visitor {
         // Descend into child nodes for extraction
         html.visitAll(this, el.children);
       }
+    }
 
-      if (this._mode == _VisitorMode.Merge) {
-        // Translate attributes in ICU messages
-        childNodes = [];
-        el.children.forEach(child => {
-          const visited = child.visit(this, context);
-          if (visited && !this._isInTranslatableSection) {
-            // Do not add the children from translatable sections (= i18n blocks here)
-            // They will be added when the section is close (i.e. on `<!-- /i18n -->`)
-            childNodes = childNodes.concat(visited);
-          }
-        });
-      }
+    if (this._mode === _VisitorMode.Merge) {
+      const visitNodes = translatedChildNodes || el.children;
+      visitNodes.forEach(child => {
+        const visited = child.visit(this, context);
+        if (visited && !this._isInTranslatableSection) {
+          // Do not add the children from translatable sections (= i18n blocks here)
+          // They will be added later in this loop when the block closes (i.e. on `<!-- /i18n -->`)
+          childNodes = childNodes.concat(visited);
+        }
+      });
     }
 
     this._visitAttributesOf(el);
@@ -287,7 +269,6 @@ class _Visitor implements html.Visitor {
     this._inImplicitNode = wasInImplicitNode;
 
     if (this._mode === _VisitorMode.Merge) {
-      // There are no childNodes in translatable sections - those nodes will be replace anyway
       const translatedAttrs = this._translateAttributes(el);
       return new html.Element(
           el.name, translatedAttrs, childNodes, el.sourceSpan, el.startSourceSpan,
@@ -434,7 +415,7 @@ class _Visitor implements html.Visitor {
 
   /**
    * A translatable section could be:
-   * - a translatable element,
+   * - the content of translatable element,
    * - nodes between `<!-- i18n -->` and `<!-- /i18n -->` comments
    */
   private get _isInTranslatableSection(): boolean {
