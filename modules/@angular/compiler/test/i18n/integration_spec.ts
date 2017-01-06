@@ -106,6 +106,8 @@ export function main() {
           .toBe('<div id="i18n-13" title="dans une section traductible"></div>');
       expectHtml(el, '#i18n-15').toMatch(/ca <b>devrait<\/b> marcher/);
       expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
+      expectHtml(el, '#i18n-18')
+          .toEqual('<div id="i18n-18">FOO<a title="dans une section traductible">BAR</a></div>');
     });
   });
 }
@@ -161,7 +163,8 @@ const XTB = `
   <translation id="i18n16">avec un ID explicite</translation>
   <translation id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph 
   name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
-  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>  
+  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
+  <translation id="4035252431381981115">FOO<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>BAR<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></translation>
 </translationbundle>`;
 
 const XMB = ` <msg id="615790887472569365">i18n attribute on tags</msg>
@@ -187,7 +190,8 @@ const XMB = ` <msg id="615790887472569365">i18n attribute on tags</msg>
   <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
   <msg id="i18n16">with an explicit ID</msg>
   <msg id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="4085484936881858615" desc="desc">{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>`;
+  <msg id="4085484936881858615" desc="desc">{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
+  <msg id="4035252431381981115">foo<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></msg>`;
 
 const HTML = `
 <div>
@@ -240,4 +244,6 @@ const HTML = `
     =1 {Found one result}
     other {Found {{response.getItemsList().length}} results}
 }</div>
+
+<div i18n id="i18n-18">foo<a i18n-title title="in a translatable section">bar</a></div>
 `;
