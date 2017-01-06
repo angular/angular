@@ -24,6 +24,7 @@ import {ConnectedPositionStrategy} from './position/connected-position-strategy'
 import {Subscription} from 'rxjs/Subscription';
 import {Dir, LayoutDirection} from '../rtl/dir';
 import {Scrollable} from './scroll/scrollable';
+import {coerceBooleanProperty} from '../coercion/boolean-property';
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
 let defaultPositionList = [
@@ -121,9 +122,8 @@ export class ConnectedOverlayDirective implements OnDestroy {
     return this._hasBackdrop;
   }
 
-  // TODO: move the boolean coercion logic to a shared function in core
   set hasBackdrop(value: any) {
-    this._hasBackdrop = value != null && `${value}` !== 'false';
+    this._hasBackdrop = coerceBooleanProperty(value);
   }
 
   @Input()
