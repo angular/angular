@@ -29,22 +29,19 @@ export function main() {
     it('should add styles specified in an object literal', async(() => {
          const template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
          fixture = createTestComponent(template);
-
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
        }));
 
     it('should add and change styles specified in an object expression', async(() => {
          const template = `<div [ngStyle]="expr"></div>`;
-
          fixture = createTestComponent(template);
-         let expr: {[k: string]: string};
 
          getComponent().expr = {'max-width': '40px'};
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
-         expr = getComponent().expr;
+         let expr = getComponent().expr;
          expr['max-width'] = '30%';
          fixture.detectChanges();
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
