@@ -1,7 +1,17 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {isDevMode} from '@angular/core';
+
 import {getDOM} from '../dom/dom_adapter';
-import {assertionsEnabled} from '../../src/facade/lang';
 
 import {sanitizeUrl} from './url_sanitizer';
+
 
 /**
  * Regular expression for safe style values.
@@ -56,7 +66,7 @@ function hasBalancedQuotes(value: string) {
   let outsideSingle = true;
   let outsideDouble = true;
   for (let i = 0; i < value.length; i++) {
-    let c = value.charAt(i);
+    const c = value.charAt(i);
     if (c === '\'' && outsideDouble) {
       outsideSingle = !outsideSingle;
     } else if (c === '"' && outsideSingle) {
@@ -72,16 +82,20 @@ function hasBalancedQuotes(value: string) {
  */
 export function sanitizeStyle(value: string): string {
   value = String(value).trim();  // Make sure it's actually a string.
+  if (!value) return '';
 
   // Single url(...) values are supported, but only for URLs that sanitize cleanly. See above for
   // reasoning behind this.
-  let urlMatch = URL_RE.exec(value);
+  const urlMatch = value.match(URL_RE);
   if ((urlMatch && sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
       value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
     return value;  // Safe style values.
   }
 
-  if (assertionsEnabled()) getDOM().log('WARNING: sanitizing unsafe style value ' + value);
+  if (isDevMode()) {
+    getDOM().log(
+        `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`);
+  }
 
   return 'unsafe';
 }

@@ -8,15 +8,19 @@
     "moduleResolution": "node",
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
     },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
     "lib": ["es6", "dom"],
-    "target": "es5"
+    "target": "es5",
+    "skipLibCheck": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "typings-test",
+    "public_api_guard"
   ]
 }

@@ -1,135 +1,152 @@
-import {
-  beforeEachProviders,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {Component, Injectable, provide} from '@angular/core';
-import {NgPlural, NgPluralCase, NgLocalization} from '@angular/common';
+import {CommonModule, NgLocalization} from '@angular/common';
+import {Component, Injectable} from '@angular/core';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('switch', () => {
-    beforeEachProviders(() => [provide(NgLocalization, {useClass: TestLocalizationMap})]);
+    let fixture: ComponentFixture<any>;
 
-    it('should display the template according to the exact value',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div>' +
-                        '<ul [ngPlural]="switchValue">' +
-                        '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
-                        '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
-                        '</ul></div>';
+    function getComponent(): TestComponent { return fixture.componentInstance; }
 
-         tcb.overrideTemplate(TestComponent, template)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.switchValue = 0;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have no messages.');
+    function detectChangesAndExpectText<T>(text: string): void {
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText(text);
+    }
 
-               fixture.debugElement.componentInstance.switchValue = 1;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have one message.');
+    afterEach(() => { fixture = null; });
 
-               async.done();
-             });
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComponent],
+        providers: [{provide: NgLocalization, useClass: TestLocalization}],
+        imports: [CommonModule]
+      });
+    });
+
+    it('should display the template according to the exact value', async(() => {
+         const template = '<div>' +
+             '<ul [ngPlural]="switchValue">' +
+             '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
+             '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
+             '</ul></div>';
+
+         fixture = createTestComponent(template);
+
+         getComponent().switchValue = 0;
+         detectChangesAndExpectText('you have no messages.');
+
+         getComponent().switchValue = 1;
+         detectChangesAndExpectText('you have one message.');
        }));
 
-    it('should display the template according to the category',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+    // https://github.com/angular/angular/issues/9868
+    // https://github.com/angular/angular/issues/9882
+    it('should not throw when ngPluralCase contains expressions', async(() => {
+         const template = '<div>' +
+             '<ul [ngPlural]="switchValue">' +
+             '<template ngPluralCase="=0"><li>{{ switchValue }}</li></template>' +
+             '</ul></div>';
+
+         fixture = createTestComponent(template);
+
+         getComponent().switchValue = 0;
+         expect(() => fixture.detectChanges()).not.toThrow();
+       }));
+
+
+    it('should be applicable to <ng-container> elements', async(() => {
+         const template = '<div>' +
+             '<ng-container [ngPlural]="switchValue">' +
+             '<template ngPluralCase="=0">you have no messages.</template>' +
+             '<template ngPluralCase="=1">you have one message.</template>' +
+             '</ng-container></div>';
+
+         fixture = createTestComponent(template);
+
+         getComponent().switchValue = 0;
+         detectChangesAndExpectText('you have no messages.');
+
+         getComponent().switchValue = 1;
+         detectChangesAndExpectText('you have one message.');
+       }));
+
+    it('should display the template according to the category', async(() => {
+         const template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="many"><li>you have many messages.</li></template>' +
              '</ul></div>';
 
-         tcb.overrideTemplate(TestComponent, template)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.switchValue = 2;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have a few messages.');
+         fixture = createTestComponent(template);
 
-               fixture.debugElement.componentInstance.switchValue = 8;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have many messages.');
+         getComponent().switchValue = 2;
+         detectChangesAndExpectText('you have a few messages.');
 
-               async.done();
-             });
+         getComponent().switchValue = 8;
+         detectChangesAndExpectText('you have many messages.');
        }));
 
-    it('should default to other when no matches are found',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+    it('should default to other when no matches are found', async(() => {
+         const template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="other"><li>default message.</li></template>' +
              '</ul></div>';
 
-         tcb.overrideTemplate(TestComponent, template)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.switchValue = 100;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('default message.');
+         fixture = createTestComponent(template);
 
-               async.done();
-             });
+         getComponent().switchValue = 100;
+         detectChangesAndExpectText('default message.');
        }));
 
-    it('should prioritize value matches over category matches',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template =
-             '<div>' +
+    it('should prioritize value matches over category matches', async(() => {
+         const template = '<div>' +
              '<ul [ngPlural]="switchValue">' +
              '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
              '<template ngPluralCase="=2">you have two messages.</template>' +
              '</ul></div>';
 
-         tcb.overrideTemplate(TestComponent, template)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.switchValue = 2;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have two messages.');
+         fixture = createTestComponent(template);
 
-               fixture.debugElement.componentInstance.switchValue = 3;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('you have a few messages.');
+         getComponent().switchValue = 2;
+         detectChangesAndExpectText('you have two messages.');
 
-               async.done();
-             });
+         getComponent().switchValue = 3;
+         detectChangesAndExpectText('you have a few messages.');
        }));
   });
 }
 
-
 @Injectable()
-export class TestLocalizationMap extends NgLocalization {
+class TestLocalization extends NgLocalization {
   getPluralCategory(value: number): string {
     if (value > 1 && value < 4) {
       return 'few';
-    } else if (value >= 4 && value < 10) {
-      return 'many';
-    } else {
-      return 'other';
     }
+
+    if (value >= 4 && value < 10) {
+      return 'many';
+    }
+
+    return 'other';
   }
 }
 
-
-@Component({selector: 'test-cmp', directives: [NgPlural, NgPluralCase], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
-  switchValue: number;
+  switchValue: number = null;
+}
 
-  constructor() { this.switchValue = null; }
+function createTestComponent(template: string): ComponentFixture<TestComponent> {
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+      .createComponent(TestComponent);
 }

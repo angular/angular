@@ -1,246 +1,288 @@
-import {stringify} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {makeDecorator, makeParamDecorator} from '../util/decorators';
+
 
 /**
- * A parameter metadata that specifies a dependency.
+ * Type of the Inject decorator / constructor function.
  *
- * ### Example ([live demo](http://plnkr.co/edit/6uHYJK?p=preview))
- *
- * ```typescript
- * class Engine {}
- *
- * @Injectable()
- * class Car {
- *   engine;
- *   constructor(@Inject("MyEngine") engine:Engine) {
- *     this.engine = engine;
- *   }
- * }
- *
- * var injector = Injector.resolveAndCreate([
- *  provide("MyEngine", {useClass: Engine}),
- *  Car
- * ]);
- *
- * expect(injector.get(Car).engine instanceof Engine).toBe(true);
- * ```
- *
- * When `@Inject()` is not present, {@link Injector} will use the type annotation of the parameter.
- *
- * ### Example
- *
- * ```typescript
- * class Engine {}
- *
- * @Injectable()
- * class Car {
- *   constructor(public engine: Engine) {} //same as constructor(@Inject(Engine) engine:Engine)
- * }
- *
- * var injector = Injector.resolveAndCreate([Engine, Car]);
- * expect(injector.get(Car).engine instanceof Engine).toBe(true);
- * ```
- * @ts2dart_const
  * @stable
  */
-export class InjectMetadata {
-  constructor(public token) {}
-  toString(): string { return `@Inject(${stringify(this.token)})`; }
+export interface InjectDecorator {
+  /**
+   * @whatItDoes A parameter decorator that specifies a dependency.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {
+   *   constructor(@Inject("MyEngine") public engine:Engine) {}
+   * }
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='Inject'}
+   *
+   * When `@Inject()` is not present, {@link Injector} will use the type annotation of the
+   * parameter.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
+   *
+   * @stable
+   */
+  (token: any): any;
+  new (token: any): Inject;
 }
 
 /**
- * A parameter metadata that marks a dependency as optional. {@link Injector} provides `null` if
- * the dependency is not found.
+ * Type of the Inject metadata.
  *
- * ### Example ([live demo](http://plnkr.co/edit/AsryOm?p=preview))
- *
- * ```typescript
- * class Engine {}
- *
- * @Injectable()
- * class Car {
- *   engine;
- *   constructor(@Optional() engine:Engine) {
- *     this.engine = engine;
- *   }
- * }
- *
- * var injector = Injector.resolveAndCreate([Car]);
- * expect(injector.get(Car).engine).toBeNull();
- * ```
- * @ts2dart_const
  * @stable
  */
-export class OptionalMetadata {
-  toString(): string { return `@Optional()`; }
+export interface Inject { token: any; }
+
+/**
+ * Inject decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const Inject: InjectDecorator = makeParamDecorator('Inject', [['token', undefined]]);
+
+
+/**
+ * Type of the Optional decorator / constructor function.
+ *
+ * @stable
+ */
+export interface OptionalDecorator {
+  /**
+   * @whatItDoes A parameter metadata that marks a dependency as optional.
+   * {@link Injector} provides `null` if the dependency is not found.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {
+   *   constructor(@Optional() public engine:Engine) {}
+   * }
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='Optional'}
+   *
+   * @stable
+   */
+  (): any;
+  new (): Optional;
 }
 
 /**
- * `DependencyMetadata` is used by the framework to extend DI.
- * This is internal to Angular and should not be used directly.
- * @ts2dart_const
+ * Type of the Optional metadata.
+ *
  * @stable
  */
-export class DependencyMetadata {
-  get token() { return null; }
+export interface Optional {}
+
+/**
+ * Optional decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const Optional: OptionalDecorator = makeParamDecorator('Optional', []);
+
+/**
+ * Type of the Injectable decorator / constructor function.
+ *
+ * @stable
+ */
+export interface InjectableDecorator {
+  /**
+   * @whatItDoes A marker metadata that marks a class as available to {@link Injector} for creation.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {}
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
+   *
+   * {@link Injector} will throw {@link NoAnnotationError} when trying to instantiate a class that
+   * does not have `@Injectable` marker, as shown in the example below.
+   *
+   * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
+   *
+   * @stable
+   */
+  (): any;
+  new (): Injectable;
 }
 
 /**
- * A marker metadata that marks a class as available to {@link Injector} for creation.
+ * Type of the Injectable metadata.
  *
- * ### Example ([live demo](http://plnkr.co/edit/Wk4DMQ?p=preview))
- *
- * ```typescript
- * @Injectable()
- * class UsefulService {}
- *
- * @Injectable()
- * class NeedsService {
- *   constructor(public service:UsefulService) {}
- * }
- *
- * var injector = Injector.resolveAndCreate([NeedsService, UsefulService]);
- * expect(injector.get(NeedsService).service instanceof UsefulService).toBe(true);
- * ```
- * {@link Injector} will throw {@link NoAnnotationError} when trying to instantiate a class that
- * does not have `@Injectable` marker, as shown in the example below.
- *
- * ```typescript
- * class UsefulService {}
- *
- * class NeedsService {
- *   constructor(public service:UsefulService) {}
- * }
- *
- * var injector = Injector.resolveAndCreate([NeedsService, UsefulService]);
- * expect(() => injector.get(NeedsService)).toThrowError();
- * ```
- * @ts2dart_const
  * @stable
  */
-export class InjectableMetadata {
-  constructor() {}
+export interface Injectable {}
+
+/**
+ * Injectable decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const Injectable: InjectableDecorator = <InjectableDecorator>makeDecorator('Injectable', []);
+
+/**
+ * Type of the Self decorator / constructor function.
+ *
+ * @stable
+ */
+export interface SelfDecorator {
+  /**
+   * @whatItDoes Specifies that an {@link Injector} should retrieve a dependency only from itself.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {
+   *   constructor(@Self() public engine:Engine) {}
+   * }
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='Self'}
+   *
+   * @stable
+   */
+  (): any;
+  new (): Self;
 }
 
 /**
- * Specifies that an {@link Injector} should retrieve a dependency only from itself.
+ * Type of the Self metadata.
  *
- * ### Example ([live demo](http://plnkr.co/edit/NeagAg?p=preview))
- *
- * ```typescript
- * class Dependency {
- * }
- *
- * @Injectable()
- * class NeedsDependency {
- *   dependency;
- *   constructor(@Self() dependency:Dependency) {
- *     this.dependency = dependency;
- *   }
- * }
- *
- * var inj = Injector.resolveAndCreate([Dependency, NeedsDependency]);
- * var nd = inj.get(NeedsDependency);
- *
- * expect(nd.dependency instanceof Dependency).toBe(true);
- *
- * var inj = Injector.resolveAndCreate([Dependency]);
- * var child = inj.resolveAndCreateChild([NeedsDependency]);
- * expect(() => child.get(NeedsDependency)).toThrowError();
- * ```
- * @ts2dart_const
  * @stable
  */
-export class SelfMetadata {
-  toString(): string { return `@Self()`; }
+export interface Self {}
+
+/**
+ * Self decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const Self: SelfDecorator = makeParamDecorator('Self', []);
+
+
+/**
+ * Type of the SkipSelf decorator / constructor function.
+ *
+ * @stable
+ */
+export interface SkipSelfDecorator {
+  /**
+   * @whatItDoes Specifies that the dependency resolution should start from the parent injector.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {
+   *   constructor(@SkipSelf() public engine:Engine) {}
+   * }
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
+   *
+   * @stable
+   */
+  (): any;
+  new (): SkipSelf;
 }
 
 /**
- * Specifies that the dependency resolution should start from the parent injector.
+ * Type of the SkipSelf metadata.
  *
- * ### Example ([live demo](http://plnkr.co/edit/Wchdzb?p=preview))
- *
- * ```typescript
- * class Dependency {
- * }
- *
- * @Injectable()
- * class NeedsDependency {
- *   dependency;
- *   constructor(@SkipSelf() dependency:Dependency) {
- *     this.dependency = dependency;
- *   }
- * }
- *
- * var parent = Injector.resolveAndCreate([Dependency]);
- * var child = parent.resolveAndCreateChild([NeedsDependency]);
- * expect(child.get(NeedsDependency).dependency instanceof Depedency).toBe(true);
- *
- * var inj = Injector.resolveAndCreate([Dependency, NeedsDependency]);
- * expect(() => inj.get(NeedsDependency)).toThrowError();
- * ```
- * @ts2dart_const
  * @stable
  */
-export class SkipSelfMetadata {
-  toString(): string { return `@SkipSelf()`; }
+export interface SkipSelf {}
+
+/**
+ * SkipSelf decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf', []);
+
+/**
+ * Type of the Host decorator / constructor function.
+ *
+ * @stable
+ */
+export interface HostDecorator {
+  /**
+   * @whatItDoes Specifies that an injector should retrieve a dependency from any injector until
+   * reaching the host element of the current component.
+   * @howToUse
+   * ```
+   * @Injectable()
+   * class Car {
+   *   constructor(@Host() public engine:Engine) {}
+   * }
+   * ```
+   *
+   * @description
+   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/metadata_spec.ts region='Host'}
+   *
+   * @stable
+   */
+  (): any;
+  new (): Host;
 }
 
 /**
- * Specifies that an injector should retrieve a dependency from any injector until reaching the
- * closest host.
+ * Type of the Host metadata.
  *
- * In Angular, a component element is automatically declared as a host for all the injectors in
- * its view.
- *
- * ### Example ([live demo](http://plnkr.co/edit/GX79pV?p=preview))
- *
- * In the following example `App` contains `ParentCmp`, which contains `ChildDirective`.
- * So `ParentCmp` is the host of `ChildDirective`.
- *
- * `ChildDirective` depends on two services: `HostService` and `OtherService`.
- * `HostService` is defined at `ParentCmp`, and `OtherService` is defined at `App`.
- *
- *```typescript
- * class OtherService {}
- * class HostService {}
- *
- * @Directive({
- *   selector: 'child-directive'
- * })
- * class ChildDirective {
- *   constructor(@Optional() @Host() os:OtherService, @Optional() @Host() hs:HostService){
- *     console.log("os is null", os);
- *     console.log("hs is NOT null", hs);
- *   }
- * }
- *
- * @Component({
- *   selector: 'parent-cmp',
- *   providers: [HostService],
- *   template: `
- *     Dir: <child-directive></child-directive>
- *   `,
- *   directives: [ChildDirective]
- * })
- * class ParentCmp {
- * }
- *
- * @Component({
- *   selector: 'app',
- *   providers: [OtherService],
- *   template: `
- *     Parent: <parent-cmp></parent-cmp>
- *   `,
- *   directives: [ParentCmp]
- * })
- * class App {
- * }
- *
- * bootstrap(App);
- *```
- * @ts2dart_const
  * @stable
  */
-export class HostMetadata {
-  toString(): string { return `@Host()`; }
-}
+export interface Host {}
+
+/**
+ * Host decorator and metadata.
+ *
+ * @stable
+ * @Annotation
+ */
+export const Host: HostDecorator = makeParamDecorator('Host', []);

@@ -1,9 +1,18 @@
-import {ContentType, RequestMethod} from './enums';
-import {RequestArgs} from './interfaces';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Body} from './body';
+import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
-import {URLSearchParams} from './url_search_params';
 import {normalizeMethodName} from './http_utils';
-import {isPresent, StringWrapper} from '../src/facade/lang';
+import {RequestArgs} from './interfaces';
+import {URLSearchParams} from './url_search_params';
+
 
 // TODO(jeffbcross): properly implement body accessors
 /**
@@ -42,8 +51,10 @@ import {isPresent, StringWrapper} from '../src/facade/lang';
  *   console.log('people', res.json());
  * });
  * ```
+ *
+ * @experimental
  */
-export class Request {
+export class Request extends Body {
   /**
    * Http method with which to perform the request.
    */
@@ -54,77 +65,63 @@ export class Request {
   headers: Headers;
   /** Url of the remote resource */
   url: string;
-  /** Body of the request **/
-  private _body: any;
   /** Type of the request body **/
   private contentType: ContentType;
   /** Enable use credentials */
   withCredentials: boolean;
+  /** Buffer to store the response */
+  responseType: ResponseContentType;
   constructor(requestOptions: RequestArgs) {
+    super();
     // TODO: assert that url is present
-    let url = requestOptions.url;
+    const url = requestOptions.url;
     this.url = requestOptions.url;
-    if (isPresent(requestOptions.search)) {
-      let search = requestOptions.search.toString();
-      if (search.length > 0) {
+    if (requestOptions.params) {
+      const params = requestOptions.params.toString();
+      if (params.length > 0) {
         let prefix = '?';
-        if (StringWrapper.contains(this.url, '?')) {
+        if (this.url.indexOf('?') != -1) {
           prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
         }
         // TODO: just delete search-query-looking string in url?
-        this.url = url + prefix + search;
+        this.url = url + prefix + params;
       }
     }
     this._body = requestOptions.body;
-    this.contentType = this.detectContentType();
     this.method = normalizeMethodName(requestOptions.method);
     // TODO(jeffbcross): implement behavior
     // Defaults to 'omit', consistent with browser
-    // TODO(jeffbcross): implement behavior
     this.headers = new Headers(requestOptions.headers);
+    this.contentType = this.detectContentType();
     this.withCredentials = requestOptions.withCredentials;
-  }
-
-
-  /**
-   * Returns the request's body as string, assuming that body exists. If body is undefined, return
-   * empty
-   * string.
-   */
-  text(): string { return isPresent(this._body) ? this._body.toString() : ''; }
-
-  /**
-   * Returns the request's body as JSON string, assuming that body exists. If body is undefined,
-   * return
-   * empty
-   * string.
-   */
-  json(): string { return isPresent(this._body) ? JSON.stringify(this._body) : ''; }
-
-  /**
-   * Returns the request's body as array buffer, assuming that body exists. If body is undefined,
-   * return
-   * null.
-   */
-  arrayBuffer(): ArrayBuffer {
-    if (this._body instanceof ArrayBuffer) return <ArrayBuffer>this._body;
-    throw "The request body isn't an array buffer";
+    this.responseType = requestOptions.responseType;
   }
 
   /**
-   * Returns the request's body as blob, assuming that body exists. If body is undefined, return
-   * null.
+   * Returns the content type enum based on header options.
    */
-  blob(): Blob {
-    if (this._body instanceof Blob) return <Blob>this._body;
-    if (this._body instanceof ArrayBuffer) return new Blob([this._body]);
-    throw "The request body isn't either a blob or an array buffer";
+  detectContentType(): ContentType {
+    switch (this.headers.get('content-type')) {
+      case 'application/json':
+        return ContentType.JSON;
+      case 'application/x-www-form-urlencoded':
+        return ContentType.FORM;
+      case 'multipart/form-data':
+        return ContentType.FORM_DATA;
+      case 'text/plain':
+      case 'text/html':
+        return ContentType.TEXT;
+      case 'application/octet-stream':
+        return ContentType.BLOB;
+      default:
+        return this.detectContentTypeFromBody();
+    }
   }
 
   /**
    * Returns the content type of request's body based on its type.
    */
-  detectContentType() {
+  detectContentTypeFromBody(): ContentType {
     if (this._body == null) {
       return ContentType.NONE;
     } else if (this._body instanceof URLSearchParams) {
@@ -149,7 +146,7 @@ export class Request {
   getBody(): any {
     switch (this.contentType) {
       case ContentType.JSON:
-        return this.json();
+        return this.text();
       case ContentType.FORM:
         return this.text();
       case ContentType.FORM_DATA:
@@ -166,8 +163,8 @@ export class Request {
   }
 }
 
-const noop = function () {};
+const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
-const FormData = w['FormData'] || noop;
-const Blob = w['Blob'] || noop;
-const ArrayBuffer = w['ArrayBuffer'] || noop;
+const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
+const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
+const ArrayBuffer = (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;

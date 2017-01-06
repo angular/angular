@@ -1,16 +1,30 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/* tslint:disable:no-var-keyword */
+
 'use strict';
 
 var glob = require('glob');
+require('zone.js/dist/zone-node.js');
 var JasmineRunner = require('jasmine');
 var path = require('path');
-// require('es6-shim/es6-shim.js');
-require('zone.js/dist/zone-node.js');
+require('source-map-support').install();
 require('zone.js/dist/long-stack-trace-zone.js');
+require('zone.js/dist/proxy.js');
+require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');
 require('zone.js/dist/fake-async-test.js');
 require('reflect-metadata/Reflect');
-
 var jrunner = new JasmineRunner();
+(global as any)['jasmine'] = jrunner.jasmine;
+require('zone.js/dist/jasmine-patch.js');
+
 var distAll: string = process.cwd() + '/dist/all';
 function distAllRequire(moduleId: string) {
   return require(path.join(distAll, moduleId));
@@ -38,15 +52,17 @@ var specFiles: any =
                      cwd: distAll,
                      ignore: [
                        // the following code and tests are not compatible with CJS/node environment
+                       '@angular/examples/**',
                        '@angular/platform-browser/**',
+                       '@angular/platform-browser-dynamic/**',
                        '@angular/core/test/zone/**',
                        '@angular/core/test/fake_async_spec.*',
-                       '@angular/common/test/forms/**',
+                       '@angular/forms/test/**',
                        '@angular/router/test/route_config/route_config_spec.*',
                        '@angular/router/test/integration/bootstrap_spec.*',
                        '@angular/integration_test/symbol_inspector/**',
                        '@angular/upgrade/**',
-                       '@angular/examples/**',
+                       '@angular/**/e2e_test/**',
                        'angular1_router/**',
                        'payload_tests/**',
                      ]
@@ -64,10 +80,11 @@ jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('./test-cjs-main.js');
-require('zone.js/dist/jasmine-patch.js');
 distAllRequire('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
 specFiles.forEach((file: string) => {
-  var r = distAllRequire(file);
-  if (r.main) r.main();
+  const r = distAllRequire(file);
+  if (r.main) {
+    r.main();
+  }
 });
 jrunner.execute();

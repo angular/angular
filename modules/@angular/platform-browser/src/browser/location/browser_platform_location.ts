@@ -1,8 +1,18 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Injectable} from '@angular/core';
-import {History, Location} from '../../../src/facade/browser';
-import {UrlChangeListener, PlatformLocation} from '@angular/common';
+
 import {getDOM} from '../../dom/dom_adapter';
+
 import {supportsState} from './history';
+
 
 
 /**
@@ -27,16 +37,15 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history = getDOM().getHistory();
   }
 
-  /** @internal */
   get location(): Location { return this._location; }
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(); }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('popstate', fn, false);
   }
 
-  onHashChange(fn: UrlChangeListener): void {
+  onHashChange(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 
@@ -46,7 +55,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   set pathname(newPath: string) { this._location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
-    if(supportsState()) {
+    if (supportsState()) {
       this._history.pushState(state, title, url);
     } else {
       this._location.hash = url;
@@ -54,7 +63,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   replaceState(state: any, title: string, url: string): void {
-    if(supportsState()) {
+    if (supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
       this._location.hash = url;

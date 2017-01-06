@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * To create a Pipe, you must implement this interface.
  *
  * Angular invokes the `transform` method with the value of a binding
@@ -25,5 +33,6 @@
  *
  * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
  *
+ * @stable
  */
 export interface PipeTransform { transform(value: any, ...args: any[]): any; }

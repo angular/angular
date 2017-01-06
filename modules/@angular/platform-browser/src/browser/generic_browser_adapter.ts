@@ -1,10 +1,21 @@
-import {StringMapWrapper} from '../../src/facade/collection';
-import {isPresent, isFunction, Type} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {DomAdapter} from '../dom/dom_adapter';
+import {isPresent} from '../facade/lang';
+
 
 
 /**
  * Provides DOM operations in any browser environment.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
  */
 export abstract class GenericBrowserDomAdapter extends DomAdapter {
   private _animationPrefix: string = null;
@@ -12,27 +23,30 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   constructor() {
     super();
     try {
-      var element = this.createElement('div', this.defaultDoc());
+      const element = this.createElement('div', this.defaultDoc());
       if (isPresent(this.getStyle(element, 'animationName'))) {
         this._animationPrefix = '';
       } else {
-        var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
-        for (var i = 0; i < domPrefixes.length; i++) {
+        const domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
+
+        for (let i = 0; i < domPrefixes.length; i++) {
           if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
             this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
             break;
           }
         }
       }
-      var transEndEventNames: {[key: string]: string} = {
+
+      const transEndEventNames: {[key: string]: string} = {
         WebkitTransition: 'webkitTransitionEnd',
         MozTransition: 'transitionend',
         OTransition: 'oTransitionEnd otransitionend',
         transition: 'transitionend'
       };
-      StringMapWrapper.forEach(transEndEventNames, (value: string, key: string) => {
+
+      Object.keys(transEndEventNames).forEach((key: string) => {
         if (isPresent(this.getStyle(element, key))) {
-          this._transitionEnd = value;
+          this._transitionEnd = transEndEventNames[key];
         }
       });
     } catch (e) {
@@ -47,12 +61,10 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   }
   supportsDOMEvents(): boolean { return true; }
   supportsNativeShadowDOM(): boolean {
-    return isFunction((<any>this.defaultDoc().body).createShadowRoot);
+    return typeof(<any>this.defaultDoc().body).createShadowRoot === 'function';
   }
-  getAnimationPrefix(): string {
-    return isPresent(this._animationPrefix) ? this._animationPrefix : "";
-  }
-  getTransitionEnd(): string { return isPresent(this._transitionEnd) ? this._transitionEnd : ""; }
+  getAnimationPrefix(): string { return this._animationPrefix ? this._animationPrefix : ''; }
+  getTransitionEnd(): string { return this._transitionEnd ? this._transitionEnd : ''; }
   supportsAnimation(): boolean {
     return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
   }

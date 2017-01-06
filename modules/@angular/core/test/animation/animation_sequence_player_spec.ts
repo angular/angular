@@ -1,28 +1,19 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '../../testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {
-  fakeAsync,
-  flushMicrotasks
-} from '../../testing';
-
-import {isPresent} from '../../src/facade/lang';
 import {AnimationSequencePlayer} from '../../src/animation/animation_sequence_player';
-import {MockAnimationPlayer} from '../../testing/animation/mock_animation_player';
+import {fakeAsync, flushMicrotasks} from '../../testing';
+import {MockAnimationPlayer} from '../../testing/mock_animation_player';
+import {beforeEach, describe, expect, it} from '../../testing/testing_internal';
 
 export function main() {
   describe('AnimationSequencePlayer', function() {
-    var players;
+    let players: any /** TODO #9100 */;
     beforeEach(() => {
       players = [
         new MockAnimationPlayer(),
@@ -31,23 +22,23 @@ export function main() {
       ];
     });
 
-    var assertLastStatus =
+    const assertLastStatus =
         (player: MockAnimationPlayer, status: string, match: boolean, iOffset: number = 0) => {
-          var index = player.log.length - 1 + iOffset;
-          var actual = player.log.length > 0 ? player.log[index] : null;
+          const index = player.log.length - 1 + iOffset;
+          const actual = player.log.length > 0 ? player.log[index] : null;
           if (match) {
             expect(actual).toEqual(status);
           } else {
             expect(actual).not.toEqual(status);
           }
-        }
+        };
 
-    var assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
+    const assertPlaying = (player: MockAnimationPlayer, isPlaying: boolean) => {
       assertLastStatus(player, 'play', isPlaying);
     };
 
     it('should pause/play the active player', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
       assertPlaying(players[0], false);
       assertPlaying(players[1], false);
@@ -87,9 +78,9 @@ export function main() {
     });
 
     it('should finish when all players have finished', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
-      var completed = false;
+      let completed = false;
       sequence.onDone(() => completed = true);
       sequence.play();
 
@@ -109,7 +100,7 @@ export function main() {
     });
 
     it('should restart all the players', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
       sequence.play();
 
@@ -131,9 +122,9 @@ export function main() {
     });
 
     it('should finish all the players', () => {
-      var sequence = new AnimationSequencePlayer(players);
+      const sequence = new AnimationSequencePlayer(players);
 
-      var completed = false;
+      let completed = false;
       sequence.onDone(() => completed = true);
 
       sequence.play();
@@ -144,58 +135,39 @@ export function main() {
 
       sequence.finish();
 
-      assertLastStatus(players[0], 'finish', true, -1);
-      assertLastStatus(players[1], 'finish', true, -1);
-      assertLastStatus(players[2], 'finish', true, -1);
-
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
+      assertLastStatus(players[0], 'finish', true);
+      assertLastStatus(players[1], 'finish', true);
+      assertLastStatus(players[2], 'finish', true);
 
       expect(completed).toBeTruthy();
     });
 
-    it('should call destroy automatically when finished if no parent player is present', () => {
-      var sequence = new AnimationSequencePlayer(players);
+    it('should not call destroy automatically when finished even if a parent player is present',
+       () => {
+         const sequence = new AnimationSequencePlayer(players);
+         const parent = new AnimationSequencePlayer([sequence, new MockAnimationPlayer()]);
 
-      sequence.play();
+         sequence.play();
 
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
 
-      sequence.finish();
+         sequence.finish();
 
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
-    });
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
 
-    it('should not call destroy automatically when finished if a parent player is present', () => {
-      var sequence = new AnimationSequencePlayer(players);
-      var parent = new AnimationSequencePlayer([sequence, new MockAnimationPlayer()]);
+         parent.finish();
 
-      sequence.play();
-
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
-
-      sequence.finish();
-
-      assertLastStatus(players[0], 'destroy', false);
-      assertLastStatus(players[1], 'destroy', false);
-      assertLastStatus(players[2], 'destroy', false);
-
-      parent.finish();
-
-      assertLastStatus(players[0], 'destroy', true);
-      assertLastStatus(players[1], 'destroy', true);
-      assertLastStatus(players[2], 'destroy', true);
-    });
+         assertLastStatus(players[0], 'destroy', false);
+         assertLastStatus(players[1], 'destroy', false);
+         assertLastStatus(players[2], 'destroy', false);
+       });
 
     it('should function without any players', () => {
-      var sequence = new AnimationSequencePlayer([]);
+      const sequence = new AnimationSequencePlayer([]);
       sequence.onDone(() => {});
       sequence.pause();
       sequence.play();
@@ -204,13 +176,51 @@ export function main() {
       sequence.destroy();
     });
 
+    it('should run the onStart method when started but only once', () => {
+      const player = new AnimationSequencePlayer([]);
+      let calls = 0;
+      player.onStart(() => calls++);
+      expect(calls).toEqual(0);
+      player.play();
+      expect(calls).toEqual(1);
+      player.pause();
+      player.play();
+      expect(calls).toEqual(1);
+    });
+
     it('should call onDone after the next microtask if no players are provided', fakeAsync(() => {
-         var sequence = new AnimationSequencePlayer([]);
-         var completed = false;
+         const sequence = new AnimationSequencePlayer([]);
+         let completed = false;
          sequence.onDone(() => completed = true);
          expect(completed).toEqual(false);
          flushMicrotasks();
          expect(completed).toEqual(true);
+       }));
+
+    it('should not allow the player to be destroyed if it already has been destroyed unless reset',
+       fakeAsync(() => {
+         const p1 = new MockAnimationPlayer();
+         const p2 = new MockAnimationPlayer();
+         const innerPlayers = [p1, p2];
+
+         const sequencePlayer = new AnimationSequencePlayer(innerPlayers);
+         expect(p1.log[p1.log.length - 1]).not.toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).not.toContain('destroy');
+
+         sequencePlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).toContain('destroy');
+
+         p1.log = p2.log = [];
+
+         sequencePlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).not.toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).not.toContain('destroy');
+
+         sequencePlayer.reset();
+         sequencePlayer.destroy();
+         expect(p1.log[p1.log.length - 1]).toContain('destroy');
+         expect(p2.log[p2.log.length - 1]).toContain('destroy');
        }));
   });
 }

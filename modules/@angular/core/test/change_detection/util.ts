@@ -1,26 +1,37 @@
-import {isBlank} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
 
 export function iterableChangesAsString(
-    {collection = /*@ts2dart_const*/[], previous = /*@ts2dart_const*/[],
-     additions = /*@ts2dart_const*/[], moves = /*@ts2dart_const*/[],
-     removals = /*@ts2dart_const*/[], identityChanges = /*@ts2dart_const*/[]}) {
-  return "collection: " + collection.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
-         "additions: " + additions.join(', ') + "\n" + "moves: " + moves.join(', ') + "\n" +
-         "removals: " + removals.join(', ') + "\n" + "identityChanges: " +
-         identityChanges.join(', ') + "\n";
+    {collection = [] as any, previous = [] as any, additions = [] as any, moves = [] as any,
+     removals = [] as any, identityChanges = [] as any}): string {
+  return 'collection: ' + collection.join(', ') + '\n' +
+      'previous: ' + previous.join(', ') + '\n' +
+      'additions: ' + additions.join(', ') + '\n' +
+      'moves: ' + moves.join(', ') + '\n' +
+      'removals: ' + removals.join(', ') + '\n' +
+      'identityChanges: ' + identityChanges.join(', ') + '\n';
 }
 
 export function kvChangesAsString(
     {map, previous, additions, changes, removals}:
         {map?: any[], previous?: any[], additions?: any[], changes?: any[], removals?: any[]}):
     string {
-  if (isBlank(map)) map = [];
-  if (isBlank(previous)) previous = [];
-  if (isBlank(additions)) additions = [];
-  if (isBlank(changes)) changes = [];
-  if (isBlank(removals)) removals = [];
+  if (!map) map = [];
+  if (!previous) previous = [];
+  if (!additions) additions = [];
+  if (!changes) changes = [];
+  if (!removals) removals = [];
 
-  return "map: " + map.join(', ') + "\n" + "previous: " + previous.join(', ') + "\n" +
-         "additions: " + additions.join(', ') + "\n" + "changes: " + changes.join(', ') + "\n" +
-         "removals: " + removals.join(', ') + "\n";
+  return 'map: ' + map.join(', ') + '\n' +
+      'previous: ' + previous.join(', ') + '\n' +
+      'additions: ' + additions.join(', ') + '\n' +
+      'changes: ' + changes.join(', ') + '\n' +
+      'removals: ' + removals.join(', ') + '\n';
 }

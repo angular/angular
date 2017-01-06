@@ -1,47 +1,90 @@
-import {verifyNoBrowserErrors} from '@angular/testing/src/e2e_util';
-import {runClickBenchmark} from '@angular/testing/src/perf_util';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-describe('ng2 largetable benchmark', function() {
+import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
+import {$} from 'protractor';
 
-  var URL = 'benchmarks/src/largetable/largetable_benchmark.html';
+interface Worker {
+  id: string;
+  prepare?(): void;
+  work(): void;
+}
+
+const CreateOnlyWorker: Worker = {
+  id: 'createOnly',
+  prepare: () => $('#destroyDom').click(),
+  work: () => $('#createDom').click()
+};
+
+const CreateAndDestroyWorker: Worker = {
+  id: 'createDestroy',
+  work: () => {
+    $('#createDom').click();
+    $('#destroyDom').click();
+  }
+};
+
+const UpdateWorker: Worker = {
+  id: 'update',
+  work: () => $('#createDom').click()
+};
+
+describe('largetable benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  // Not yet implemented:
-  // 'ngBind',
-  // 'ngBindOnce',
-  // 'ngBindFn',
-  // 'ngBindFilter',
-  // 'interpolationFilter'
+  [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
+    describe(worker.id, () => {
+      it('should run for ng2', (done) => {
+        runTableBenchmark({
+          id: `largeTable.ng2.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/ng2/index.html',
+          worker: worker
+        }).then(done, done.fail);
+      });
 
-  ['interpolation', 'interpolationAttr', 'interpolationFn'].forEach(function(benchmarkType) {
-    it('should log the ng stats with: ' + benchmarkType, function(done) {
-      console.log('executing for type', benchmarkType);
-      runClickBenchmark({
-        url: URL,
-        buttons: ['#ng2DestroyDom', '#ng2CreateDom'],
-        id: 'ng2.largetable.' + benchmarkType,
-        params: [
-          {name: 'rows', value: 20, scale: 'sqrt'},
-          {name: 'columns', value: 20, scale: 'sqrt'},
-          {name: 'benchmarkType', value: benchmarkType}
-        ]
-      }).then(done, done.fail);
+      it('should run for ng2 with ngSwitch', (done) => {
+        runTableBenchmark({
+          id: `largeTable.ng2_switch.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/ng2_switch/index.html',
+          worker: worker
+        }).then(done, done.fail);
+      });
+
+      it('should run for the baseline', (done) => {
+        runTableBenchmark({
+          id: `largeTable.baseline.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/baseline/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
+      });
+
+      it('should run for incremental-dom', (done) => {
+        runTableBenchmark({
+          id: `largeTable.incremental_dom.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/incremental_dom/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
+      });
     });
   });
 
-  it('should log the baseline stats', function(done) {
-    runClickBenchmark({
-      url: URL,
-      buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      id: 'baseline.largetable',
-      params: [
-        {name: 'rows', value: 100, scale: 'sqrt'},
-        {name: 'columns', value: 20, scale: 'sqrt'},
-        {name: 'benchmarkType', value: 'baseline'}
-      ]
-    }).then(done, done.fail);
-    ;
-  });
-
+  function runTableBenchmark(
+      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+    return runBenchmark({
+      id: config.id,
+      url: config.url,
+      ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
+      params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
+      prepare: config.worker.prepare,
+      work: config.worker.work
+    });
+  }
 });

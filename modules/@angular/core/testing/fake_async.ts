@@ -1,7 +1,33 @@
-import {BaseException} from '../index';
-import {getTestInjector} from './test_injector';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];
+
+const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+type ProxyZoneSpec = {
+  setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
+};
+const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
+    (Zone as any)['ProxyZoneSpec'];
+
+let _fakeAsyncTestZoneSpec: any = null;
+
+/**
+ * Clears out the shared fake async zone for a test.
+ * To be called in a global `beforeEach`.
+ *
+ * @experimental
+ */
+export function resetFakeAsyncZone() {
+  _fakeAsyncTestZoneSpec = null;
+  ProxyZoneSpec.assertPresent().resetDelegate();
+}
+
+let _inFakeAsyncCall = false;
 
 /**
  * Wraps a function to be executed in the fakeAsync zone:
@@ -18,51 +44,58 @@ let _FakeAsyncTestZoneSpecType = Zone['FakeAsyncTestZoneSpec'];
  *
  * @param fn
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
+ *
+ * @experimental
  */
-export function fakeAsync(fn: Function): Function {
-  if (Zone.current.get('FakeAsyncTestZoneSpec') != null) {
-    throw new BaseException('fakeAsync() calls can not be nested');
-  }
+export function fakeAsync(fn: Function): (...args: any[]) => any {
+  return function(...args: any[]) {
+    const proxyZoneSpec = ProxyZoneSpec.assertPresent();
+    if (_inFakeAsyncCall) {
+      throw new Error('fakeAsync() calls can not be nested');
+    }
+    _inFakeAsyncCall = true;
+    try {
+      if (!_fakeAsyncTestZoneSpec) {
+        if (proxyZoneSpec.getDelegate() instanceof FakeAsyncTestZoneSpec) {
+          throw new Error('fakeAsync() calls can not be nested');
+        }
 
-  let fakeAsyncTestZoneSpec = new _FakeAsyncTestZoneSpecType();
-  let fakeAsyncZone = Zone.current.fork(fakeAsyncTestZoneSpec);
+        _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec();
+      }
 
-  return function(...args) {
-    let res = fakeAsyncZone.run(() => {
-      let res = fn(...args);
-      flushMicrotasks();
+      let res: any;
+      const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
+      proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
+      try {
+        res = fn(...args);
+        flushMicrotasks();
+      } finally {
+        proxyZoneSpec.setDelegate(lastProxyZoneSpec);
+      }
+
+      if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
+        throw new Error(
+            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+            `periodic timer(s) still in the queue.`);
+      }
+
+      if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
+        throw new Error(
+            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
+      }
       return res;
-    });
-
-    if (fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-      throw new BaseException(`${fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-                              `periodic timer(s) still in the queue.`);
+    } finally {
+      _inFakeAsyncCall = false;
+      resetFakeAsyncZone();
     }
-
-    if (fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
-      throw new BaseException(
-          `${fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
-    }
-    return res;
   };
 }
 
 function _getFakeAsyncZoneSpec(): any {
-  let zoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
-  if (zoneSpec == null) {
+  if (_fakeAsyncTestZoneSpec == null) {
     throw new Error('The code should be running in the fakeAsync zone to call this function');
   }
-  return zoneSpec;
-}
-
-/**
- * Clear the queue of pending timers and microtasks.
- * Tests no longer need to call this explicitly.
- *
- * @deprecated
- */
-export function clearPendingTimers(): void {
-  // Do nothing.
+  return _fakeAsyncTestZoneSpec;
 }
 
 /**
@@ -75,6 +108,7 @@ export function clearPendingTimers(): void {
  *
  * {@example testing/ts/fake_async.ts region='basic'}
  *
+ * @experimental
  */
 export function tick(millis: number = 0): void {
   _getFakeAsyncZoneSpec().tick(millis);
@@ -82,15 +116,19 @@ export function tick(millis: number = 0): void {
 
 /**
  * Discard all remaining periodic tasks.
+ *
+ * @experimental
  */
 export function discardPeriodicTasks(): void {
-  let zoneSpec = _getFakeAsyncZoneSpec();
-  let pendingTimers = zoneSpec.pendingPeriodicTimers;
+  const zoneSpec = _getFakeAsyncZoneSpec();
+  const pendingTimers = zoneSpec.pendingPeriodicTimers;
   zoneSpec.pendingPeriodicTimers.length = 0;
 }
 
 /**
  * Flush any pending microtasks.
+ *
+ * @experimental
  */
 export function flushMicrotasks(): void {
   _getFakeAsyncZoneSpec().flushMicrotasks();

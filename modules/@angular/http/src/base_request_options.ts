@@ -1,10 +1,19 @@
-import {isPresent, isString} from '../src/facade/lang';
-import {Headers} from './headers';
-import {RequestMethod} from './enums';
-import {RequestOptionsArgs} from './interfaces';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injectable} from '@angular/core';
-import {URLSearchParams} from './url_search_params';
+
+import {RequestMethod, ResponseContentType} from './enums';
+import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
+import {RequestOptionsArgs} from './interfaces';
+import {URLSearchParams} from './url_search_params';
+
 
 /**
  * Creates a request options object to be optionally provided when instantiating a
@@ -29,13 +38,15 @@ import {normalizeMethodName} from './http_utils';
  * console.log('req.method:', RequestMethod[req.method]); // Post
  * console.log('options.url:', options.url); // https://google.com
  * ```
+ *
+ * @experimental
  */
 export class RequestOptions {
   /**
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod | string;
+  method: RequestMethod|string;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
@@ -51,20 +62,35 @@ export class RequestOptions {
   /**
    * Search parameters to be included in a {@link Request}.
    */
-  search: URLSearchParams;
+  params: URLSearchParams;
+  /**
+   * @deprecated from 4.0.0. Use params instead.
+   */
+  get search(): URLSearchParams { return this.params; }
+  /**
+   * @deprecated from 4.0.0. Use params instead.
+   */
+  set search(params: URLSearchParams) { this.params = params; }
   /**
    * Enable use credentials for a {@link Request}.
    */
   withCredentials: boolean;
-  constructor({method, headers, body, url, search, withCredentials}: RequestOptionsArgs = {}) {
-    this.method = isPresent(method) ? normalizeMethodName(method) : null;
-    this.headers = isPresent(headers) ? headers : null;
-    this.body = isPresent(body) ? body : null;
-    this.url = isPresent(url) ? url : null;
-    this.search = isPresent(search) ? (isString(search) ? new URLSearchParams(<string>(search)) :
-                                                          <URLSearchParams>(search)) :
-                                      null;
-    this.withCredentials = isPresent(withCredentials) ? withCredentials : null;
+  /*
+   * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
+   */
+  responseType: ResponseContentType;
+
+  // TODO(Dzmitry): remove search when this.search is removed
+  constructor(
+      {method, headers, body, url, search, params, withCredentials,
+       responseType}: RequestOptionsArgs = {}) {
+    this.method = method != null ? normalizeMethodName(method) : null;
+    this.headers = headers != null ? headers : null;
+    this.body = body != null ? body : null;
+    this.url = url != null ? url : null;
+    this.params = this._mergeSearchParams(params || search);
+    this.withCredentials = withCredentials != null ? withCredentials : null;
+    this.responseType = responseType != null ? responseType : null;
   }
 
   /**
@@ -94,21 +120,53 @@ export class RequestOptions {
    */
   merge(options?: RequestOptionsArgs): RequestOptions {
     return new RequestOptions({
-      method: isPresent(options) && isPresent(options.method) ? options.method : this.method,
-      headers: isPresent(options) && isPresent(options.headers) ? options.headers : this.headers,
-      body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
-      url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
-      search: isPresent(options) && isPresent(options.search) ?
-                  (isString(options.search) ? new URLSearchParams(<string>(options.search)) :
-                                              (<URLSearchParams>(options.search)).clone()) :
-                  this.search,
-      withCredentials: isPresent(options) && isPresent(options.withCredentials) ?
-                           options.withCredentials :
-                           this.withCredentials
+      method: options && options.method != null ? options.method : this.method,
+      headers: options && options.headers != null ? options.headers : new Headers(this.headers),
+      body: options && options.body != null ? options.body : this.body,
+      url: options && options.url != null ? options.url : this.url,
+      params: options && this._mergeSearchParams(options.params || options.search),
+      withCredentials: options && options.withCredentials != null ? options.withCredentials :
+                                                                    this.withCredentials,
+      responseType: options && options.responseType != null ? options.responseType :
+                                                              this.responseType
     });
   }
-}
 
+  private _mergeSearchParams(params: string|URLSearchParams|
+                             {[key: string]: any | any[]}): URLSearchParams {
+    if (!params) return this.params;
+
+    if (params instanceof URLSearchParams) {
+      return params.clone();
+    }
+
+    if (typeof params === 'string') {
+      return new URLSearchParams(params);
+    }
+
+    return this._parseParams(params);
+  }
+
+  private _parseParams(objParams: {[key: string]: any | any[]} = {}): URLSearchParams {
+    const params = new URLSearchParams();
+    Object.keys(objParams).forEach((key: string) => {
+      const value: any|any[] = objParams[key];
+      if (Array.isArray(value)) {
+        value.forEach((item: any) => this._appendParam(key, item, params));
+      } else {
+        this._appendParam(key, value, params);
+      }
+    });
+    return params;
+  }
+
+  private _appendParam(key: string, value: any, params: URLSearchParams): void {
+    if (typeof value !== 'string') {
+      value = JSON.stringify(value);
+    }
+    params.append(key, value);
+  }
+}
 
 /**
  * Subclass of {@link RequestOptions}, with default values.
@@ -133,7 +191,7 @@ export class RequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})]);
+ * bootstrap(App, [HTTP_PROVIDERS, {provide: RequestOptions, useClass: MyOptions}]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Request}
@@ -153,6 +211,8 @@ export class RequestOptions {
  * console.log('options.url:', options.url); // null
  * console.log('req.url:', req.url); // https://google.com
  * ```
+ *
+ * @experimental
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {

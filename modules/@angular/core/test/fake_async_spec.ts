@@ -1,52 +1,50 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-  discardPeriodicTasks,
-} from '@angular/core/testing';
-import {TimerWrapper, PromiseWrapper} from '../../router/src/facade/async';
-import {BaseException} from '../../router/src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/testing_internal';
+import {expect} from '@angular/platform-browser/testing/matchers';
+
 import {Parser} from '../../compiler/src/expression_parser/parser';
+
+const resolvedPromise = Promise.resolve(null);
+const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'];
 
 export function main() {
   describe('fake async', () => {
     it('should run synchronous code', () => {
-      var ran = false;
+      let ran = false;
       fakeAsync(() => { ran = true; })();
 
       expect(ran).toEqual(true);
     });
 
     it('should pass arguments to the wrapped function', () => {
-      fakeAsync((foo, bar) => {
+      fakeAsync((foo: any /** TODO #9100 */, bar: any /** TODO #9100 */) => {
         expect(foo).toEqual('foo');
         expect(bar).toEqual('bar');
       })('foo', 'bar');
     });
 
-    it('should work with inject()',
-       fakeAsync(inject([Parser], (parser) => { expect(parser).toBeAnInstanceOf(Parser); })));
+    it('should work with inject()', fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => {
+         expect(parser).toBeAnInstanceOf(Parser);
+       })));
 
     it('should throw on nested calls', () => {
-      expect(() => { fakeAsync(() => { fakeAsync(() => null)(); })(); })
-          .toThrowError('fakeAsync() calls can not be nested');
+      expect(() => {
+        fakeAsync(() => { fakeAsync((): any /** TODO #9100 */ => null)(); })();
+      }).toThrowError('fakeAsync() calls can not be nested');
     });
 
     it('should flush microtasks before returning', () => {
-      var thenRan = false;
+      let thenRan = false;
 
-      fakeAsync(() => { PromiseWrapper.resolve(null).then(_ => { thenRan = true; }); })();
+      fakeAsync(() => { resolvedPromise.then(_ => { thenRan = true; }); })();
 
       expect(thenRan).toEqual(true);
     });
@@ -57,8 +55,8 @@ export function main() {
 
     describe('Promise', () => {
       it('should run asynchronous code', fakeAsync(() => {
-           var thenRan = false;
-           PromiseWrapper.resolve(null).then((_) => { thenRan = true; });
+           let thenRan = false;
+           resolvedPromise.then((_) => { thenRan = true; });
 
            expect(thenRan).toEqual(false);
 
@@ -67,9 +65,9 @@ export function main() {
          }));
 
       it('should run chained thens', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add(1)).then((_) => log.add(2));
+           resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
            expect(log.result()).toEqual('');
 
@@ -78,11 +76,11 @@ export function main() {
          }));
 
       it('should run Promise created in Promise', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => {
+           resolvedPromise.then((_) => {
              log.add(1);
-             PromiseWrapper.resolve(null).then((_) => log.add(2));
+             resolvedPromise.then((_) => log.add(2));
            });
 
            expect(log.result()).toEqual('');
@@ -91,27 +89,25 @@ export function main() {
            expect(log.result()).toEqual('1; 2');
          }));
 
-      // TODO(vicb): check why this doesn't work in JS - linked to open issues on GH ?
-      xit('should complain if the test throws an exception during async calls', () => {
+      it('should complain if the test throws an exception during async calls', () => {
         expect(() => {
           fakeAsync(() => {
-            PromiseWrapper.resolve(null).then((_) => { throw new BaseException('async'); });
+            resolvedPromise.then((_) => { throw new Error('async'); });
             flushMicrotasks();
           })();
-        }).toThrowError('async');
+        }).toThrowError(/Uncaught \(in promise\): Error: async/);
       });
 
       it('should complain if a test throws an exception', () => {
-        expect(() => { fakeAsync(() => { throw new BaseException('sync'); })(); })
-            .toThrowError('sync');
+        expect(() => { fakeAsync(() => { throw new Error('sync'); })(); }).toThrowError('sync');
       });
 
     });
 
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
-           var ran = false;
-           TimerWrapper.setTimeout(() => {ran = true}, 0);
+           let ran = false;
+           setTimeout(() => { ran = true; }, 0);
 
            expect(ran).toEqual(false);
 
@@ -121,8 +117,8 @@ export function main() {
 
 
       it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
-           var ran = false;
-           TimerWrapper.setTimeout(() => { ran = true; }, 10);
+           let ran = false;
+           setTimeout(() => { ran = true; }, 10);
 
            tick(6);
            expect(ran).toEqual(false);
@@ -132,8 +128,8 @@ export function main() {
          }));
 
       it('should run queued timer only once', fakeAsync(() => {
-           var cycles = 0;
-           TimerWrapper.setTimeout(() => { cycles++; }, 10);
+           let cycles = 0;
+           setTimeout(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -146,27 +142,29 @@ export function main() {
          }));
 
       it('should not run cancelled timer', fakeAsync(() => {
-           var ran = false;
-           var id = TimerWrapper.setTimeout(() => { ran = true; }, 10);
-           TimerWrapper.clearTimeout(id);
+           let ran = false;
+           const id = setTimeout(() => { ran = true; }, 10);
+           clearTimeout(id);
 
            tick(10);
            expect(ran).toEqual(false);
          }));
 
       it('should throw an error on dangling timers', () => {
-        expect(() => { fakeAsync(() => { TimerWrapper.setTimeout(() => {}, 10); })(); })
-            .toThrowError('1 timer(s) still in the queue.');
+        expect(() => {
+          fakeAsync(() => { setTimeout(() => {}, 10); })();
+        }).toThrowError('1 timer(s) still in the queue.');
       });
 
       it('should throw an error on dangling periodic timers', () => {
-        expect(() => { fakeAsync(() => { TimerWrapper.setInterval(() => {}, 10); })(); })
-            .toThrowError('1 periodic timer(s) still in the queue.');
+        expect(() => {
+          fakeAsync(() => { setInterval(() => {}, 10); })();
+        }).toThrowError('1 periodic timer(s) still in the queue.');
       });
 
       it('should run periodic timers', fakeAsync(() => {
-           var cycles = 0;
-           var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
+           let cycles = 0;
+           const id = setInterval(() => { cycles++; }, 10);
 
            tick(10);
            expect(cycles).toEqual(1);
@@ -176,26 +174,25 @@ export function main() {
 
            tick(10);
            expect(cycles).toEqual(3);
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
 
       it('should not run cancelled periodic timer', fakeAsync(() => {
-           var ran = false;
-           var id = TimerWrapper.setInterval(() => { ran = true; }, 10);
-           TimerWrapper.clearInterval(id);
+           let ran = false;
+           const id = setInterval(() => { ran = true; }, 10);
+           clearInterval(id);
 
            tick(10);
            expect(ran).toEqual(false);
          }));
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-           var cycles = 0;
-           var id;
+           let cycles = 0;
+           let id: any /** TODO #9100 */;
 
-           id = TimerWrapper.setInterval(() => {
+           id = setInterval(() => {
              cycles++;
-             TimerWrapper.clearInterval(id);
+             clearInterval(id);
            }, 10);
 
            tick(10);
@@ -206,53 +203,52 @@ export function main() {
          }));
 
       it('should clear periodic timers', fakeAsync(() => {
-        var cycles = 0;
-        var id = TimerWrapper.setInterval(() => { cycles++; }, 10);
+           let cycles = 0;
+           const id = setInterval(() => { cycles++; }, 10);
 
-        tick(10);
-        expect(cycles).toEqual(1);
+           tick(10);
+           expect(cycles).toEqual(1);
 
-        discardPeriodicTasks();
+           discardPeriodicTasks();
 
-        // Tick once to clear out the timer which already started.
-        tick(10);
-        expect(cycles).toEqual(2);
+           // Tick once to clear out the timer which already started.
+           tick(10);
+           expect(cycles).toEqual(2);
 
-        tick(10);
-        // Nothing should change
-        expect(cycles).toEqual(2);
-      }));
+           tick(10);
+           // Nothing should change
+           expect(cycles).toEqual(2);
+         }));
 
       it('should process microtasks before timers', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
+           resolvedPromise.then((_) => log.add('microtask'));
 
-           TimerWrapper.setTimeout(() => log.add('timer'), 9);
+           setTimeout(() => log.add('timer'), 9);
 
-           var id = TimerWrapper.setInterval(() => log.add('periodic timer'), 10);
+           const id = setInterval(() => log.add('periodic timer'), 10);
 
            expect(log.result()).toEqual('');
 
            tick(10);
            expect(log.result()).toEqual('microtask; timer; periodic timer');
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
 
       it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
-           var log = new Log();
+           const log = new Log();
 
-           PromiseWrapper.resolve(null).then((_) => log.add('microtask'));
+           resolvedPromise.then((_) => log.add('microtask'));
 
-           TimerWrapper.setTimeout(() => {
+           setTimeout(() => {
              log.add('timer');
-             PromiseWrapper.resolve(null).then((_) => log.add('t microtask'));
+             resolvedPromise.then((_) => log.add('t microtask'));
            }, 9);
 
-           var id = TimerWrapper.setInterval(() => {
+           const id = setInterval(() => {
              log.add('periodic timer');
-             PromiseWrapper.resolve(null).then((_) => log.add('pt microtask'));
+             resolvedPromise.then((_) => log.add('pt microtask'));
            }, 10);
 
            tick(10);
@@ -263,26 +259,60 @@ export function main() {
            expect(log.result())
                .toEqual(
                    'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
-
-           TimerWrapper.clearInterval(id);
+           clearInterval(id);
          }));
     });
 
     describe('outside of the fakeAsync zone', () => {
       it('calling flushMicrotasks should throw', () => {
-        expect(() => { flushMicrotasks(); })
-            .toThrowError('The code should be running in the fakeAsync zone to call this function');
+        expect(() => {
+          flushMicrotasks();
+        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
 
       it('calling tick should throw', () => {
-        expect(() => { tick(); })
-            .toThrowError('The code should be running in the fakeAsync zone to call this function');
+        expect(() => {
+          tick();
+        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
 
       it('calling discardPeriodicTasks should throw', () => {
-        expect(() => { discardPeriodicTasks() ; })
-            .toThrowError('The code should be running in the fakeAsync zone to call this function');
+        expect(() => {
+          discardPeriodicTasks();
+        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
+    });
+
+    describe('only one `fakeAsync` zone per test', () => {
+      let zoneInBeforeEach: Zone;
+      let zoneInTest1: Zone;
+      beforeEach(fakeAsync(() => { zoneInBeforeEach = Zone.current; }));
+
+      it('should use the same zone as in beforeEach', fakeAsync(() => {
+           zoneInTest1 = Zone.current;
+           expect(zoneInTest1).toBe(zoneInBeforeEach);
+         }));
+    });
+  });
+
+  describe('ProxyZone', () => {
+    beforeEach(() => { ProxyZoneSpec.assertPresent(); });
+
+    afterEach(() => { ProxyZoneSpec.assertPresent(); });
+
+    it('should allow fakeAsync zone to retroactively set a zoneSpec outside of fakeAsync', () => {
+      ProxyZoneSpec.assertPresent();
+      let state: string = 'not run';
+      const testZone = Zone.current.fork({name: 'test-zone'});
+      (fakeAsync(() => {
+        testZone.run(() => {
+          Promise.resolve('works').then((v) => state = v);
+          expect(state).toEqual('not run');
+          flushMicrotasks();
+          expect(state).toEqual('works');
+        });
+      }))();
+      expect(state).toEqual('works');
     });
   });
 }

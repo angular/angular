@@ -1,10 +1,26 @@
-import {Map, MapWrapper} from '../../src/facade/collection';
-import {scheduleMicroTask} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {NgZone} from '../zone/ng_zone';
-import {ObservableWrapper} from '../../src/facade/async';
-import {Injectable} from '../di/decorators';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
+import {Injectable} from '../di';
+import {scheduleMicroTask} from '../facade/lang';
+import {NgZone} from '../zone/ng_zone';
+
+/**
+ * Testability API.
+ * `declare` keyword causes tsickle to generate externs, so these methods are
+ * not renamed by Closure Compiler.
+ * @experimental
+ */
+export declare interface PublicTestability {
+  isStable(): boolean;
+  whenStable(callback: Function): void;
+  findProviders(using: any, provider: string, exactMatch: boolean): any[];
+}
 
 /**
  * The Testability service provides testing hooks that can be accessed from
@@ -13,7 +29,7 @@ import {Injectable} from '../di/decorators';
  * @experimental
  */
 @Injectable()
-export class Testability {
+export class Testability implements PublicTestability {
   /** @internal */
   _pendingCount: number = 0;
   /** @internal */
@@ -31,18 +47,22 @@ export class Testability {
 
   /** @internal */
   _watchAngularEvents(): void {
-    ObservableWrapper.subscribe(this._ngZone.onUnstable, (_) => {
-      this._didWork = true;
-      this._isZoneStable = false;
+    this._ngZone.onUnstable.subscribe({
+      next: () => {
+        this._didWork = true;
+        this._isZoneStable = false;
+      }
     });
 
     this._ngZone.runOutsideAngular(() => {
-      ObservableWrapper.subscribe(this._ngZone.onStable, (_) => {
-        NgZone.assertNotInAngularZone();
-        scheduleMicroTask(() => {
-          this._isZoneStable = true;
-          this._runCallbacksIfReady();
-        });
+      this._ngZone.onStable.subscribe({
+        next: () => {
+          NgZone.assertNotInAngularZone();
+          scheduleMicroTask(() => {
+            this._isZoneStable = true;
+            this._runCallbacksIfReady();
+          });
+        }
       });
     });
   }
@@ -56,7 +76,7 @@ export class Testability {
   decreasePendingRequestCount(): number {
     this._pendingCount -= 1;
     if (this._pendingCount < 0) {
-      throw new BaseException('pending async requests below zero');
+      throw new Error('pending async requests below zero');
     }
     this._runCallbacksIfReady();
     return this._pendingCount;
@@ -89,6 +109,7 @@ export class Testability {
 
   getPendingRequestCount(): number { return this._pendingCount; }
 
+  /** @deprecated use findProviders */
   findBindings(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];
@@ -117,9 +138,9 @@ export class TestabilityRegistry {
 
   getTestability(elem: any): Testability { return this._applications.get(elem); }
 
-  getAllTestabilities(): Testability[] { return MapWrapper.values(this._applications); }
+  getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
 
-  getAllRootElements(): any[] { return MapWrapper.keys(this._applications); }
+  getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
 
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
@@ -129,18 +150,20 @@ export class TestabilityRegistry {
 /**
  * Adapter interface for retrieving the `Testability` service associated for a
  * particular context.
+ *
+ * @experimental Testability apis are primarily intended to be used by e2e test tool vendors like
+ * the Protractor team.
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
-                        findInAncestors: boolean): Testability;
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability;
 }
 
-/* @ts2dart_const */
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
-                        findInAncestors: boolean): Testability {
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
+      Testability {
     return null;
   }
 }
@@ -153,4 +176,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-var _testabilityGetter: GetTestability = /*@ts2dart_const*/ new _NoopGetTestability();
+let _testabilityGetter: GetTestability = new _NoopGetTestability();

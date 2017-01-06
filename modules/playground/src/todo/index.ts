@@ -1,29 +1,33 @@
-import {bootstrap} from '@angular/platform-browser';
-import {Component} from '@angular/core';
-import {NgFor} from '@angular/common';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
-@Component({
-  selector: 'todo-app',
-  viewProviders: [Store, TodoFactory],
-  templateUrl: 'todo.html',
-  directives: [NgFor]
-})
+@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
 class TodoApp {
   todoEdit: Todo = null;
 
   constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
 
-  enterTodo(inputElement): void {
+  enterTodo(inputElement: HTMLInputElement): void {
     this.addTodo(inputElement.value);
     inputElement.value = '';
   }
 
   editTodo(todo: Todo): void { this.todoEdit = todo; }
 
-  doneEditing($event, todo: Todo): void {
-    var which = $event.which;
-    var target = $event.target;
+  doneEditing($event: KeyboardEvent, todo: Todo): void {
+    const which = $event.which;
+    const target = $event.target as HTMLInputElement;
     if (which === 13) {
       todo.title = target.value;
       this.todoEdit = null;
@@ -39,14 +43,18 @@ class TodoApp {
 
   deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
 
-  toggleAll($event): void {
-    var isComplete = $event.target.checked;
+  toggleAll($event: MouseEvent): void {
+    const isComplete = ($event.target as HTMLInputElement).checked;
     this.todoStore.list.forEach((todo: Todo) => { todo.completed = isComplete; });
   }
 
   clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
 }
 
+@NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
+class ExampleModule {
+}
+
 export function main() {
-  bootstrap(TodoApp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

@@ -1,12 +1,24 @@
-import {Injectable, Inject, Optional} from '@angular/core';
-import {isPresent} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {LocationStrategy, APP_BASE_HREF} from './location_strategy';
+import {Inject, Injectable, Optional} from '@angular/core';
+
+import {isPresent} from '../facade/lang';
+
 import {Location} from './location';
-import {UrlChangeListener, PlatformLocation} from './platform_location';
+import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
+import {LocationChangeListener, PlatformLocation} from './platform_location';
+
 
 
 /**
+ * @whatItDoes Use URL hash for storing application location data.
+ * @description
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
  * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
@@ -17,72 +29,45 @@ import {UrlChangeListener, PlatformLocation} from './platform_location';
  *
  * ### Example
  *
- * ```
- * import {Component, provide} from '@angular/core';
- * import {
- *   Location,
- *   LocationStrategy,
- *   HashLocationStrategy
- * } from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
+ * {@example common/location/ts/hash_location_component.ts region='LocationComponent'}
  *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   constructor(location: Location) {
- *     location.go('/foo');
- *   }
- * }
- *
- * bootstrap(AppCmp, [
- *   ROUTER_PROVIDERS,
- *   provide(LocationStrategy, {useClass: HashLocationStrategy})
- * ]);
- * ```
+ * @stable
  */
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {
   private _baseHref: string = '';
-  constructor(private _platformLocation: PlatformLocation,
-              @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
+  constructor(
+      private _platformLocation: PlatformLocation,
+      @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
     super();
     if (isPresent(_baseHref)) {
       this._baseHref = _baseHref;
     }
   }
 
-  onPopState(fn: UrlChangeListener): void {
+  onPopState(fn: LocationChangeListener): void {
     this._platformLocation.onPopState(fn);
     this._platformLocation.onHashChange(fn);
   }
 
   getBaseHref(): string { return this._baseHref; }
 
-  path(): string {
+  path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
-    var path = this._platformLocation.hash;
+    let path = this._platformLocation.hash;
     if (!isPresent(path)) path = '#';
 
-    // Dart will complain if a call to substring is
-    // executed with a position value that extends the
-    // length of string.
-    return (path.length > 0 ? path.substring(1) : path);
+    return path.length > 0 ? path.substring(1) : path;
   }
 
   prepareExternalUrl(internal: string): string {
-    var url = Location.joinWithSlash(this._baseHref, internal);
+    const url = Location.joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;
   }
 
   pushState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
@@ -90,7 +75,7 @@ export class HashLocationStrategy extends LocationStrategy {
   }
 
   replaceState(state: any, title: string, path: string, queryParams: string) {
-    var url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
+    let url = this.prepareExternalUrl(path + Location.normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }

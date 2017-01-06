@@ -1,11 +1,21 @@
-import {ddescribe, describe, it, iit, xit, expect, afterEach} from '@angular/core/testing';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Injectable} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {BrowserModule, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {Title} from '@angular/platform-browser';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('title service', () => {
-    var initialTitle = getDOM().getTitle();
-    var titleService = new Title();
+    const initialTitle = getDOM().getTitle();
+    const titleService = new Title();
 
     afterEach(() => { getDOM().setTitle(initialTitle); });
 
@@ -22,6 +32,23 @@ export function main() {
       titleService.setTitle(null);
       expect(getDOM().getTitle()).toEqual('');
     });
+  });
 
+  describe('integration test', () => {
+
+    @Injectable()
+    class DependsOnTitle {
+      constructor(public title: Title) {}
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserModule],
+        providers: [DependsOnTitle],
+      });
+    });
+
+    it('should inject Title service when using BrowserModule',
+       () => { expect(TestBed.get(DependsOnTitle).title).toBeAnInstanceOf(Title); });
   });
 }

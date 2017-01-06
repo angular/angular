@@ -1,4 +1,12 @@
-import {SecurityContext} from '../../core_private';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {SecurityContext} from '@angular/core';
 
 // =================================================================================================
 // =================================================================================================
@@ -15,7 +23,7 @@ import {SecurityContext} from '../../core_private';
 export const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
 
 function registerContext(ctx: SecurityContext, specs: string[]) {
-  for (let spec of specs) SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
+  for (const spec of specs) SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
 }
 
 // Case is insignificant below, all element and attribute names are lower-cased for lookup.
@@ -28,25 +36,10 @@ registerContext(SecurityContext.HTML, [
 registerContext(SecurityContext.STYLE, ['*|style']);
 // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
 registerContext(SecurityContext.URL, [
-  '*|formAction',
-  'area|href',
-  'area|ping',
-  'audio|src',
-  'a|href',
-  'a|ping',
-  'blockquote|cite',
-  'body|background',
-  'del|cite',
-  'form|action',
-  'img|src',
-  'img|srcset',
-  'input|src',
-  'ins|cite',
-  'q|cite',
-  'source|src',
-  'source|srcset',
-  'video|poster',
-  'video|src',
+  '*|formAction', 'area|href',       'area|ping',       'audio|src',    'a|href',
+  'a|ping',       'blockquote|cite', 'body|background', 'del|cite',     'form|action',
+  'img|src',      'img|srcset',      'input|src',       'ins|cite',     'q|cite',
+  'source|src',   'source|srcset',   'track|src',       'video|poster', 'video|src',
 ]);
 registerContext(SecurityContext.RESOURCE_URL, [
   'applet|code',
@@ -62,5 +55,4 @@ registerContext(SecurityContext.RESOURCE_URL, [
   'object|codebase',
   'object|data',
   'script|src',
-  'track|src',
 ]);

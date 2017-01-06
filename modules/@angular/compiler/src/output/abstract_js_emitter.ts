@@ -1,12 +1,15 @@
-import {isPresent} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {isPresent} from '../facade/lang';
+
+import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext} from './abstract_emitter';
 import * as o from './output_ast';
-import {
-  EmitterVisitorContext,
-  AbstractEmitterVisitor,
-  CATCH_ERROR_VAR,
-  CATCH_STACK_VAR
-} from './abstract_emitter';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() { super(false); }
@@ -71,7 +74,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print('self');
     } else if (ast.builtin === o.BuiltinVar.Super) {
-      throw new BaseException(
+      throw new Error(
           `'super' needs to be handled at a parent ast node, not at the variable level!`);
     } else {
       super.visitReadVarExpr(ast, ctx);
@@ -89,7 +92,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string {
-    var fnExpr = expr.fn;
+    const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.currentClass.parent.visitExpression(this, ctx);
       ctx.print(`.call(this`);
@@ -130,10 +133,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts = [
-      <o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack'))
-          .toDeclStmt(null, [o.StmtModifier.Final])
-    ].concat(stmt.catchStmts);
+    const catchStmts =
+        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
+          o.StmtModifier.Final
+        ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(`}`);
@@ -141,11 +144,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param) => ctx.print(param.name), params, ctx, ',');
+    this.visitAllObjects(param => ctx.print(param.name), params, ctx, ',');
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name;
+    let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';
@@ -153,11 +156,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
       case o.BuiltinMethod.SubscribeObservable:
         name = 'subscribe';
         break;
-      case o.BuiltinMethod.bind:
+      case o.BuiltinMethod.Bind:
         name = 'bind';
         break;
       default:
-        throw new BaseException(`Unknown builtin method: ${method}`);
+        throw new Error(`Unknown builtin method: ${method}`);
     }
     return name;
   }

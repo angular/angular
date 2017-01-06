@@ -1,10 +1,19 @@
-import {Injectable, EventEmitter} from '@angular/core';
-import {ObservableWrapper} from '../../src/facade/async';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {EventEmitter, Injectable} from '@angular/core';
 
 import {LocationStrategy} from './location_strategy';
 
+
 /**
- * `Location` is a service that applications can use to interact with a browser's URL.
+ * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
+ * @description
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
@@ -20,28 +29,8 @@ import {LocationStrategy} from './location_strategy';
  * - `/my/app/user/123/` **is not** normalized
  *
  * ### Example
- *
- * ```
- * import {Component} from '@angular/core';
- * import {Location} from '@angular/common';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from '@angular/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   constructor(location: Location) {
- *     location.go('/foo');
- *   }
- * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
- * ```
+ * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
+ * @stable
  */
 @Injectable()
 export class Location {
@@ -49,19 +38,30 @@ export class Location {
   _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
   _baseHref: string;
+  /** @internal */
+  _platformStrategy: LocationStrategy;
 
-  constructor(public platformStrategy: LocationStrategy) {
-    var browserBaseHref = this.platformStrategy.getBaseHref();
+  constructor(platformStrategy: LocationStrategy) {
+    this._platformStrategy = platformStrategy;
+    const browserBaseHref = this._platformStrategy.getBaseHref();
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
-    this.platformStrategy.onPopState((ev) => {
-      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true, 'type': ev.type});
+    this._platformStrategy.onPopState((ev) => {
+      this._subject.emit({
+        'url': this.path(true),
+        'pop': true,
+        'type': ev.type,
+      });
     });
   }
 
   /**
    * Returns the normalized URL path.
    */
-  path(): string { return this.normalize(this.platformStrategy.path()); }
+  // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
+  // removed.
+  path(includeHash: boolean = false): string {
+    return this.normalize(this._platformStrategy.path(includeHash));
+  }
 
   /**
    * Normalizes the given path and compares to the current normalized path.
@@ -72,7 +72,7 @@ export class Location {
 
   /**
    * Given a string representing a URL, returns the normalized URL path without leading or
-   * trailing slashes
+   * trailing slashes.
    */
   normalize(url: string): string {
     return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
@@ -85,10 +85,10 @@ export class Location {
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    */
   prepareExternalUrl(url: string): string {
-    if (url.length > 0 && !url.startsWith('/')) {
+    if (url && url[0] !== '/') {
       url = '/' + url;
     }
-    return this.platformStrategy.prepareExternalUrl(url);
+    return this._platformStrategy.prepareExternalUrl(url);
   }
 
   // TODO: rename this method to pushState
@@ -97,7 +97,7 @@ export class Location {
    * new item onto the platform's history.
    */
   go(path: string, query: string = ''): void {
-    this.platformStrategy.pushState(null, '', path, query);
+    this._platformStrategy.pushState(null, '', path, query);
   }
 
   /**
@@ -105,25 +105,26 @@ export class Location {
    * the top item on the platform's history stack.
    */
   replaceState(path: string, query: string = ''): void {
-    this.platformStrategy.replaceState(null, '', path, query);
+    this._platformStrategy.replaceState(null, '', path, query);
   }
 
   /**
    * Navigates forward in the platform's history.
    */
-  forward(): void { this.platformStrategy.forward(); }
+  forward(): void { this._platformStrategy.forward(); }
 
   /**
    * Navigates back in the platform's history.
    */
-  back(): void { this.platformStrategy.back(); }
+  back(): void { this._platformStrategy.back(); }
 
   /**
    * Subscribe to the platform's `popState` events.
    */
-  subscribe(onNext: (value: any) => void, onThrow: (exception: any) => void = null,
-            onReturn: () => void = null): Object {
-    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+  subscribe(
+      onNext: (value: any) => void, onThrow: (exception: any) => void = null,
+      onReturn: () => void = null): Object {
+    return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
   /**
@@ -131,7 +132,7 @@ export class Location {
    * is.
    */
   public static normalizeQueryParams(params: string): string {
-    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+    return params && params[0] !== '?' ? '?' + params : params;
   }
 
   /**
@@ -144,7 +145,7 @@ export class Location {
     if (end.length == 0) {
       return start;
     }
-    var slashes = 0;
+    let slashes = 0;
     if (start.endsWith('/')) {
       slashes++;
     }
@@ -163,25 +164,13 @@ export class Location {
   /**
    * If url has a trailing slash, remove it, otherwise return url as is.
    */
-  public static stripTrailingSlash(url: string): string {
-    if (/\/$/g.test(url)) {
-      url = url.substring(0, url.length - 1);
-    }
-    return url;
-  }
+  public static stripTrailingSlash(url: string): string { return url.replace(/\/$/, ''); }
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
-  if (baseHref.length > 0 && url.startsWith(baseHref)) {
-    return url.substring(baseHref.length);
-  }
-  return url;
+  return baseHref && url.startsWith(baseHref) ? url.substring(baseHref.length) : url;
 }
 
 function _stripIndexHtml(url: string): string {
-  if (/\/index.html$/g.test(url)) {
-    // '/index.html'.length == 11
-    return url.substring(0, url.length - 11);
-  }
-  return url;
+  return url.replace(/\/index.html$/, '');
 }

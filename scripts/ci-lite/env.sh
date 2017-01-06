@@ -5,7 +5,7 @@ set -e -o pipefail
 
 NODE_VERSION=5.4.1
 NPM_VERSION=3.5.3
-CHROMIUM_VERSION=386251 # Chrome 50 linux stable, see https://www.chromium.org/developers/calendar
+CHROMIUM_VERSION=403382 # Chrome 53 linux stable, see https://www.chromium.org/developers/calendar
 SAUCE_CONNECT_VERSION=4.3.11
 
 
@@ -59,8 +59,16 @@ if [[ ${TRAVIS} ]]; then
   export CXX=g++-4.8
 
   # Used by karma and karma-chrome-launcher
-  export SAUCE_USERNAME=angular-ci
-  export SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+  # In order to have a meaningful SauceLabs badge on the repo page,
+  # the angular2-ci account is used only when pushing commits to master;
+  # in all other cases, the regular angular-ci account is used.
+  if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+    export SAUCE_USERNAME=angular2-ci
+    export SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
+  else
+    export SAUCE_USERNAME=angular-ci
+    export SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+  fi
   export BROWSER_STACK_USERNAME=angularteam1
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   export CHROME_BIN=${HOME}/.chrome/chromium/chrome-linux/chrome

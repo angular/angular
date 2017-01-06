@@ -1,37 +1,28 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
-import {SpyChangeDetectorRef} from '../spies';
-import {isBlank} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {AsyncPipe} from '@angular/common';
 import {WrappedValue} from '@angular/core';
-import {
-  EventEmitter,
-  ObservableWrapper,
-  PromiseWrapper,
-  TimerWrapper
-} from '../../src/facade/async';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {PromiseCompleter} from '../../src/facade/promise';
-import {browserDetection} from '@angular/platform-browser/testing';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
+
+import {EventEmitter} from '../../src/facade/async';
+import {SpyChangeDetectorRef} from '../spies';
 
 export function main() {
-  describe("AsyncPipe", () => {
+  describe('AsyncPipe', () => {
 
     describe('Observable', () => {
-      var emitter;
-      var pipe;
-      var ref;
-      var message = new Object();
+      let emitter: EventEmitter<any>;
+      let pipe: AsyncPipe;
+      let ref: any;
+      const message = {};
 
       beforeEach(() => {
         emitter = new EventEmitter();
@@ -39,166 +30,171 @@ export function main() {
         pipe = new AsyncPipe(ref);
       });
 
-      describe("transform", () => {
-        it("should return null when subscribing to an observable",
+      describe('transform', () => {
+        it('should return null when subscribing to an observable',
            () => { expect(pipe.transform(emitter)).toBe(null); });
 
-        it("should return the latest available value wrapped",
-           inject([AsyncTestCompleter], (async) => {
+        it('should return the latest available value wrapped',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
+             emitter.emit(message);
 
-             ObservableWrapper.callEmit(emitter, message);
-
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
                async.done();
-             }, 0)
+             }, 0);
            }));
 
 
-        it("should return same value when nothing has changed since the last call",
-           inject([AsyncTestCompleter], (async) => {
+        it('should return same value when nothing has changed since the last call',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
-             ObservableWrapper.callEmit(emitter, message);
+             emitter.emit(message);
 
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                pipe.transform(emitter);
                expect(pipe.transform(emitter)).toBe(message);
                async.done();
-             }, 0)
+             }, 0);
            }));
 
-        it("should dispose of the existing subscription when subscribing to a new observable",
-           inject([AsyncTestCompleter], (async) => {
+        it('should dispose of the existing subscription when subscribing to a new observable',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
 
-             var newEmitter = new EventEmitter();
+             const newEmitter = new EventEmitter();
              expect(pipe.transform(newEmitter)).toBe(null);
+             emitter.emit(message);
 
              // this should not affect the pipe
-             ObservableWrapper.callEmit(emitter, message);
-
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                expect(pipe.transform(newEmitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
 
-        it("should request a change detection check upon receiving a new value",
-           inject([AsyncTestCompleter], (async) => {
+        it('should request a change detection check upon receiving a new value',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
-             ObservableWrapper.callEmit(emitter, message);
+             emitter.emit(message);
 
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                expect(ref.spy('markForCheck')).toHaveBeenCalled();
                async.done();
-             }, 10)
+             }, 10);
            }));
       });
 
-      describe("ngOnDestroy", () => {
-        it("should do nothing when no subscription",
+      describe('ngOnDestroy', () => {
+        it('should do nothing when no subscription',
            () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
 
-        it("should dispose of the existing subscription", inject([AsyncTestCompleter], (async) => {
+        it('should dispose of the existing subscription',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
              pipe.ngOnDestroy();
+             emitter.emit(message);
 
-             ObservableWrapper.callEmit(emitter, message);
-
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                expect(pipe.transform(emitter)).toBe(null);
                async.done();
-             }, 0)
+             }, 0);
            }));
       });
     });
 
-    describe("Promise", () => {
-      var message = new Object();
-      var pipe: AsyncPipe;
-      var completer: PromiseCompleter<any>;
-      var ref: SpyChangeDetectorRef;
+    describe('Promise', () => {
+      const message = new Object();
+      let pipe: AsyncPipe;
+      let resolve: (result: any) => void;
+      let reject: (error: any) => void;
+      let promise: Promise<any>;
+      let ref: SpyChangeDetectorRef;
       // adds longer timers for passing tests in IE
-      var timer = (!isBlank(getDOM()) && browserDetection.isIE) ? 50 : 10;
+      const timer = (getDOM() && browserDetection.isIE) ? 50 : 10;
 
       beforeEach(() => {
-        completer = PromiseWrapper.completer();
+        promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
         ref = new SpyChangeDetectorRef();
         pipe = new AsyncPipe(<any>ref);
       });
 
-      describe("transform", () => {
-        it("should return null when subscribing to a promise",
-           () => { expect(pipe.transform(completer.promise)).toBe(null); });
+      describe('transform', () => {
+        it('should return null when subscribing to a promise',
+           () => { expect(pipe.transform(promise)).toBe(null); });
 
-        it("should return the latest available value", inject([AsyncTestCompleter], (async) => {
-             pipe.transform(completer.promise);
+        it('should return the latest available value',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             pipe.transform(promise);
 
-             completer.resolve(message);
+             resolve(message);
 
-             TimerWrapper.setTimeout(() => {
-               expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
+             setTimeout(() => {
+               expect(pipe.transform(promise)).toEqual(new WrappedValue(message));
                async.done();
-             }, timer)
+             }, timer);
            }));
 
-        it("should return unwrapped value when nothing has changed since the last call",
-           inject([AsyncTestCompleter], (async) => {
-             pipe.transform(completer.promise);
-             completer.resolve(message);
+        it('should return unwrapped value when nothing has changed since the last call',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             pipe.transform(promise);
+             resolve(message);
 
-             TimerWrapper.setTimeout(() => {
-               pipe.transform(completer.promise);
-               expect(pipe.transform(completer.promise)).toBe(message);
+             setTimeout(() => {
+               pipe.transform(promise);
+               expect(pipe.transform(promise)).toBe(message);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
-        it("should dispose of the existing subscription when subscribing to a new promise",
-           inject([AsyncTestCompleter], (async) => {
-             pipe.transform(completer.promise);
+        it('should dispose of the existing subscription when subscribing to a new promise',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             pipe.transform(promise);
 
-             var newCompleter = PromiseWrapper.completer();
-             expect(pipe.transform(newCompleter.promise)).toBe(null);
+             promise = new Promise<any>(() => {});
+             expect(pipe.transform(promise)).toBe(null);
 
              // this should not affect the pipe, so it should return WrappedValue
-             completer.resolve(message);
+             resolve(message);
 
-             TimerWrapper.setTimeout(() => {
-               expect(pipe.transform(newCompleter.promise)).toBe(null);
+             setTimeout(() => {
+               expect(pipe.transform(promise)).toBe(null);
                async.done();
-             }, timer)
+             }, timer);
            }));
 
-        it("should request a change detection check upon receiving a new value",
-           inject([AsyncTestCompleter], (async) => {
-             var markForCheck = ref.spy('markForCheck');
-             pipe.transform(completer.promise);
-             completer.resolve(message);
+        it('should request a change detection check upon receiving a new value',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const markForCheck = ref.spy('markForCheck');
+             pipe.transform(promise);
+             resolve(message);
 
-             TimerWrapper.setTimeout(() => {
+             setTimeout(() => {
                expect(markForCheck).toHaveBeenCalled();
                async.done();
-             }, timer)
+             }, timer);
            }));
 
-        describe("ngOnDestroy", () => {
-          it("should do nothing when no source",
+        describe('ngOnDestroy', () => {
+          it('should do nothing when no source',
              () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
 
-          it("should dispose of the existing source", inject([AsyncTestCompleter], (async) => {
-               pipe.transform(completer.promise);
-               expect(pipe.transform(completer.promise)).toBe(null);
-               completer.resolve(message)
+          it('should dispose of the existing source',
+             inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+               pipe.transform(promise);
+               expect(pipe.transform(promise)).toBe(null);
+               resolve(message);
 
 
-                   TimerWrapper.setTimeout(() => {
-                     expect(pipe.transform(completer.promise)).toEqual(new WrappedValue(message));
-                     pipe.ngOnDestroy();
-                     expect(pipe.transform(completer.promise)).toBe(null);
-                     async.done();
-                   }, timer);
+               setTimeout(() => {
+                 expect(pipe.transform(promise)).toEqual(new WrappedValue(message));
+                 pipe.ngOnDestroy();
+                 expect(pipe.transform(promise)).toBe(null);
+                 async.done();
+               }, timer);
              }));
         });
       });
@@ -206,15 +202,15 @@ export function main() {
 
     describe('null', () => {
       it('should return null when given null', () => {
-        var pipe = new AsyncPipe(null);
+        const pipe = new AsyncPipe(null);
         expect(pipe.transform(null)).toEqual(null);
       });
     });
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
-        var pipe = new AsyncPipe(null);
-        expect(() => pipe.transform(<any>"some bogus object")).toThrowError();
+        const pipe = new AsyncPipe(null);
+        expect(() => pipe.transform(<any>'some bogus object')).toThrowError();
       });
     });
   });

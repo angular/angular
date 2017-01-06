@@ -1,9 +1,9 @@
 {
   "name": "@angular/compiler",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
-  "main": "index.js",
-  "jsnext:main": "esm/index.js",
+  "description": "Angular - the compiler library",
+  "main": "bundles/compiler.umd.js",
+  "module": "index.js",
   "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",

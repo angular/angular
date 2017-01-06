@@ -1,15 +1,19 @@
-import {StringWrapper} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var CAMEL_CASE_REGEXP = /([A-Z])/g;
-var DASH_CASE_REGEXP = /-([a-z])/g;
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+const DASH_CASE_REGEXP = /-([a-z])/g;
 
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
-                                        (m) => { return '-' + m[1].toLowerCase(); });
+  return input.replace(CAMEL_CASE_REGEXP, (...m: string[]) => '-' + m[1].toLowerCase());
 }
 
 export function dashCaseToCamelCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
-                                        (m) => { return m[1].toUpperCase(); });
+  return input.replace(DASH_CASE_REGEXP, (...m: string[]) => m[1].toUpperCase());
 }

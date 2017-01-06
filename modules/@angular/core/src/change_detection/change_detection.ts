@@ -1,60 +1,39 @@
-import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
-import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
-import {
-  DefaultKeyValueDifferFactory,
-  KeyValueChangeRecord
-} from './differs/default_keyvalue_differ';
+import {DefaultKeyValueDifferFactory, KeyValueChangeRecord} from './differs/default_keyvalue_differ';
+import {IterableDifferFactory, IterableDiffers} from './differs/iterable_differs';
+import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 
-export {
-  DefaultKeyValueDifferFactory,
-  KeyValueChangeRecord
-} from './differs/default_keyvalue_differ';
-export {
-  DefaultIterableDifferFactory,
-  CollectionChangeRecord
-} from './differs/default_iterable_differ';
-
-export {
-  ChangeDetectionStrategy,
-  CHANGE_DETECTION_STRATEGY_VALUES,
-  ChangeDetectorState,
-  CHANGE_DETECTOR_STATE_VALUES,
-  isDefaultChangeDetectionStrategy
-} from './constants';
+export {SimpleChanges} from '../metadata/lifecycle_hooks';
+export {SimpleChange, ValueUnwrapper, WrappedValue, devModeEqual, looseIdentical} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
-export {
-  IterableDiffers,
-  IterableDiffer,
-  IterableDifferFactory,
-  TrackByFn
-} from './differs/iterable_differs';
-export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
+export {ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
+export {CollectionChangeRecord, DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 export {DefaultIterableDiffer} from './differs/default_iterable_differ';
+export {DefaultKeyValueDifferFactory, KeyValueChangeRecord} from './differs/default_keyvalue_differ';
+export {IterableDiffer, IterableDifferFactory, IterableDiffers, TrackByFn} from './differs/iterable_differs';
+export {KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
 
-export {
-  WrappedValue,
-  ValueUnwrapper,
-  SimpleChange,
-  devModeEqual,
-  looseIdentical,
-  uninitialized
-} from './change_detection_util';
-export {SimpleChanges} from '../metadata/lifecycle_hooks';
+
 
 /**
  * Structural diffing for `Object`s and `Map`s.
  */
-export const keyValDiff: KeyValueDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultKeyValueDifferFactory()];
+export const keyValDiff: KeyValueDifferFactory[] = [new DefaultKeyValueDifferFactory()];
 
 /**
  * Structural diffing for `Iterable` types such as `Array`s.
  */
-export const iterableDiff: IterableDifferFactory[] =
-    /*@ts2dart_const*/[new DefaultIterableDifferFactory()];
+export const iterableDiff: IterableDifferFactory[] = [new DefaultIterableDifferFactory()];
 
-export const defaultIterableDiffers = /*@ts2dart_const*/ new IterableDiffers(iterableDiff);
+export const defaultIterableDiffers = new IterableDiffers(iterableDiff);
 
-export const defaultKeyValueDiffers = /*@ts2dart_const*/ new KeyValueDiffers(keyValDiff);
+export const defaultKeyValueDiffers = new KeyValueDiffers(keyValDiff);

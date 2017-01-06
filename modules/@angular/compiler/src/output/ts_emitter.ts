@@ -1,28 +1,31 @@
-import * as o from './output_ast';
-import {isPresent, isBlank, isArray} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-import {
-  OutputEmitter,
-  EmitterVisitorContext,
-  AbstractEmitterVisitor,
-  CATCH_ERROR_VAR,
-  CATCH_STACK_VAR
-} from './abstract_emitter';
-import {ImportGenerator} from './path_util';
+import {isBlank, isPresent} from '../facade/lang';
 
-var _debugModuleUrl = 'asset://debug/lib';
+import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
+import * as o from './output_ast';
+import {ImportResolver} from './path_util';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type |
-                                           any[]): string {
-  var converter = new _TsEmitterVisitor(_debugModuleUrl);
-  var ctx = EmitterVisitorContext.createRoot([]);
-  var asts: any[];
-  if (isArray(ast)) {
-    asts = <any[]>ast;
-  } else {
-    asts = [ast];
-  }
+const _debugFilePath = '/debug/lib';
+
+export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
+    string {
+  const converter = new _TsEmitterVisitor(_debugFilePath, {
+    fileNameToModuleName(filePath: string, containingFilePath: string) { return filePath; },
+    getImportAs(symbol: StaticSymbol) { return null; }
+  });
+  const ctx = EmitterVisitorContext.createRoot([]);
+  const asts: any[] = Array.isArray(ast) ? ast : [ast];
+
   asts.forEach((ast) => {
     if (ast instanceof o.Statement) {
       ast.visitStatement(converter, ctx);
@@ -31,24 +34,30 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
     } else if (ast instanceof o.Type) {
       ast.visitType(converter, ctx);
     } else {
-      throw new BaseException(`Don't know how to print debug info for ${ast}`);
+      throw new Error(`Don't know how to print debug info for ${ast}`);
     }
   });
   return ctx.toSource();
 }
 
 export class TypeScriptEmitter implements OutputEmitter {
-  constructor(private _importGenerator: ImportGenerator) {}
-  emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
-    var converter = new _TsEmitterVisitor(moduleUrl);
-    var ctx = EmitterVisitorContext.createRoot(exportedVars);
+  constructor(private _importResolver: ImportResolver) {}
+  emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
+    const converter = new _TsEmitterVisitor(genFilePath, this._importResolver);
+    const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts = [];
-    converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
+    const srcParts: string[] = [];
+    converter.reexports.forEach((reexports, exportedFilePath) => {
+      const reexportsCode =
+          reexports.map(reexport => `${reexport.name} as ${reexport.as}`).join(',');
+      srcParts.push(
+          `export {${reexportsCode}} from '${this._importResolver.fileNameToModuleName(exportedFilePath, genFilePath)}';`);
+    });
+    converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `imp` +
-          `ort * as ${prefix} from '${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}';`);
+          `ort * as ${prefix} from '${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}';`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
@@ -56,9 +65,12 @@ export class TypeScriptEmitter implements OutputEmitter {
 }
 
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
-  constructor(private _moduleUrl: string) { super(false); }
+  constructor(private _genFilePath: string, private _importResolver: ImportResolver) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
+  reexports = new Map<string, {name: string, as: string}[]>();
 
   visitType(t: o.Type, ctx: EmitterVisitorContext, defaultType: string = 'any') {
     if (isPresent(t)) {
@@ -67,11 +79,51 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print(defaultType);
     }
   }
+
+  visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+    const value = ast.value;
+    if (isBlank(value) && ast.type != o.NULL_TYPE) {
+      ctx.print(`(${value} as any)`);
+      return null;
+    }
+    return super.visitLiteralExpr(ast, ctx);
+  }
+
+
+  // Temporary workaround to support strictNullCheck enabled consumers of ngc emit.
+  // In SNC mode, [] have the type never[], so we cast here to any[].
+  // TODO: narrow the cast to a more explicit type, or use a pattern that does not
+  // start with [].concat. see https://github.com/angular/angular/pull/11846
+  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
+    if (ast.entries.length === 0) {
+      ctx.print('(');
+    }
+    const result = super.visitLiteralArrayExpr(ast, ctx);
+    if (ast.entries.length === 0) {
+      ctx.print(' as any[])');
+    }
+    return result;
+  }
+
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
     this._visitIdentifier(ast.value, ast.typeParams, ctx);
     return null;
   }
+
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+    if (ctx.isExportedVar(stmt.name) && stmt.value instanceof o.ExternalExpr && !stmt.type) {
+      // check for a reexport
+      const {name, filePath, members} = this._resolveStaticSymbol(stmt.value.value);
+      if (members.length === 0 && filePath !== this._genFilePath) {
+        let reexports = this.reexports.get(filePath);
+        if (!reexports) {
+          reexports = [];
+          this.reexports.set(filePath, reexports);
+        }
+        reexports.push({name, as: stmt.name});
+        return null;
+      }
+    }
     if (ctx.isExportedVar(stmt.name)) {
       ctx.print(`export `);
     }
@@ -87,6 +139,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(`;`);
     return null;
   }
+
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(`(<`);
     ast.type.visitType(this, ctx);
@@ -95,6 +148,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(`)`);
     return null;
   }
+
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     if (ctx.isExportedVar(stmt.name)) {
@@ -118,15 +172,18 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.popClass();
     return null;
   }
+
   private _visitClassField(field: o.ClassField, ctx: EmitterVisitorContext) {
     if (field.hasModifier(o.StmtModifier.Private)) {
-      ctx.print(`private `);
+      // comment out as a workaround for #10967
+      ctx.print(`/*private*/ `);
     }
     ctx.print(field.name);
     ctx.print(':');
     this.visitType(field.type, ctx);
     ctx.println(`;`);
   }
+
   private _visitClassGetter(getter: o.ClassGetter, ctx: EmitterVisitorContext) {
     if (getter.hasModifier(o.StmtModifier.Private)) {
       ctx.print(`private `);
@@ -140,6 +197,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   private _visitClassConstructor(stmt: o.ClassStmt, ctx: EmitterVisitorContext) {
     ctx.print(`constructor(`);
     this._visitParams(stmt.constructorMethod.params, ctx);
@@ -149,6 +207,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   private _visitClassMethod(method: o.ClassMethod, ctx: EmitterVisitorContext) {
     if (method.hasModifier(o.StmtModifier.Private)) {
       ctx.print(`private `);
@@ -163,6 +222,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`}`);
   }
+
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
     ctx.print(`(`);
     this._visitParams(ast.params, ctx);
@@ -175,6 +235,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.print(`}`);
     return null;
   }
+
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     if (ctx.isExportedVar(stmt.name)) {
       ctx.print(`export `);
@@ -190,6 +251,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.println(`}`);
     return null;
   }
+
   visitTryCatchStmt(stmt: o.TryCatchStmt, ctx: EmitterVisitorContext): any {
     ctx.println(`try {`);
     ctx.incIndent();
@@ -197,10 +259,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(`} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    var catchStmts = [
-      <o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack'))
-          .toDeclStmt(null, [o.StmtModifier.Final])
-    ].concat(stmt.catchStmts);
+    const catchStmts =
+        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
+          o.StmtModifier.Final
+        ])].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(`}`);
@@ -208,7 +270,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
-    var typeStr;
+    let typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
         typeStr = 'boolean';
@@ -229,20 +291,28 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
         typeStr = 'string';
         break;
       default:
-        throw new BaseException(`Unsupported builtin type ${type.name}`);
+        throw new Error(`Unsupported builtin type ${type.name}`);
     }
     ctx.print(typeStr);
     return null;
   }
-  visitExternalType(ast: o.ExternalType, ctx: EmitterVisitorContext): any {
-    this._visitIdentifier(ast.value, ast.typeParams, ctx);
+
+  visitExpressionType(ast: o.ExpressionType, ctx: EmitterVisitorContext): any {
+    ast.value.visitExpression(this, ctx);
+    if (isPresent(ast.typeParams) && ast.typeParams.length > 0) {
+      ctx.print(`<`);
+      this.visitAllObjects(type => type.visitType(this, ctx), ast.typeParams, ctx, ',');
+      ctx.print(`>`);
+    }
     return null;
   }
+
   visitArrayType(type: o.ArrayType, ctx: EmitterVisitorContext): any {
     this.visitType(type.of, ctx);
     ctx.print(`[]`);
     return null;
   }
+
   visitMapType(type: o.MapType, ctx: EmitterVisitorContext): any {
     ctx.print(`{[key: string]:`);
     this.visitType(type.valueType, ctx);
@@ -251,7 +321,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {
-    var name;
+    let name: string;
     switch (method) {
       case o.BuiltinMethod.ConcatArray:
         name = 'concat';
@@ -259,41 +329,52 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       case o.BuiltinMethod.SubscribeObservable:
         name = 'subscribe';
         break;
-      case o.BuiltinMethod.bind:
+      case o.BuiltinMethod.Bind:
         name = 'bind';
         break;
       default:
-        throw new BaseException(`Unknown builtin method: ${method}`);
+        throw new Error(`Unknown builtin method: ${method}`);
     }
     return name;
   }
 
-
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects((param) => {
+    this.visitAllObjects(param => {
       ctx.print(param.name);
       ctx.print(':');
       this.visitType(param.type, ctx);
     }, params, ctx, ',');
   }
 
-  private _visitIdentifier(value: CompileIdentifierMetadata, typeParams: o.Type[],
-                           ctx: EmitterVisitorContext): void {
-    if (isBlank(value.name)) {
-      throw new BaseException(`Internal error: unknown identifier ${value}`);
+  private _resolveStaticSymbol(value: CompileIdentifierMetadata): StaticSymbol {
+    const reference = value.reference;
+    if (!(reference instanceof StaticSymbol)) {
+      throw new Error(`Internal error: unknown identifier ${JSON.stringify(value)}`);
     }
-    if (isPresent(value.moduleUrl) && value.moduleUrl != this._moduleUrl) {
-      var prefix = this.importsWithPrefixes.get(value.moduleUrl);
+    return this._importResolver.getImportAs(reference) || reference;
+  }
+
+  private _visitIdentifier(
+      value: CompileIdentifierMetadata, typeParams: o.Type[], ctx: EmitterVisitorContext): void {
+    const {name, filePath, members} = this._resolveStaticSymbol(value);
+    if (filePath != this._genFilePath) {
+      let prefix = this.importsWithPrefixes.get(filePath);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
-        this.importsWithPrefixes.set(value.moduleUrl, prefix);
+        this.importsWithPrefixes.set(filePath, prefix);
       }
       ctx.print(`${prefix}.`);
     }
-    ctx.print(value.name);
+    if (members.length) {
+      ctx.print(name);
+      ctx.print('.');
+      ctx.print(members.join('.'));
+    } else {
+      ctx.print(name);
+    }
     if (isPresent(typeParams) && typeParams.length > 0) {
       ctx.print(`<`);
-      this.visitAllObjects((type) => type.visitType(this, ctx), typeParams, ctx, ',');
+      this.visitAllObjects(type => type.visitType(this, ctx), typeParams, ctx, ',');
       ctx.print(`>`);
     }
   }

@@ -1,19 +1,31 @@
-import {isBlank, isPresent} from '../../../src/facade/lang';
-import {BaseException} from '../../../src/facade/exceptions';
-import {ListWrapper} from '../../../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Optional, Provider, SkipSelf} from '../../di';
+import {ListWrapper} from '../../facade/collection';
+import {isPresent} from '../../facade/lang';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {Provider, SkipSelfMetadata, OptionalMetadata} from '../../di';
+
 
 /**
  * A differ that tracks changes made to an object over time.
+ *
+ * @stable
  */
 export interface KeyValueDiffer {
-  diff(object: any);
-  onDestroy();
+  diff(object: any): any /** TODO #9100 */;
+  onDestroy(): any /** TODO #9100 */;
 }
 
 /**
  * Provides a factory for {@link KeyValueDiffer}.
+ *
+ * @stable
  */
 export interface KeyValueDifferFactory {
   supports(objects: any): boolean;
@@ -22,16 +34,14 @@ export interface KeyValueDifferFactory {
 
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
- * @ts2dart_const
  * @stable
  */
 export class KeyValueDiffers {
-  /*@ts2dart_const*/
   constructor(public factories: KeyValueDifferFactory[]) {}
 
   static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (isPresent(parent)) {
-      var copied = ListWrapper.clone(parent.factories);
+      const copied = parent.factories.slice();
       factories = factories.concat(copied);
       return new KeyValueDiffers(factories);
     } else {
@@ -59,27 +69,28 @@ export class KeyValueDiffers {
    * ```
    */
   static extend(factories: KeyValueDifferFactory[]): Provider {
-    return new Provider(KeyValueDiffers, {
+    return {
+      provide: KeyValueDiffers,
       useFactory: (parent: KeyValueDiffers) => {
-        if (isBlank(parent)) {
+        if (!parent) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
           // to
           // bootstrap(), which would override default pipes instead of extending them.
-          throw new BaseException('Cannot extend KeyValueDiffers without a parent injector');
+          throw new Error('Cannot extend KeyValueDiffers without a parent injector');
         }
         return KeyValueDiffers.create(factories, parent);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[KeyValueDiffers, new SkipSelfMetadata(), new OptionalMetadata()]]
-    });
+      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]]
+    };
   }
 
   find(kv: Object): KeyValueDifferFactory {
-    var factory = this.factories.find(f => f.supports(kv));
+    const factory = this.factories.find(f => f.supports(kv));
     if (isPresent(factory)) {
       return factory;
     } else {
-      throw new BaseException(`Cannot find a differ supporting object '${kv}'`);
+      throw new Error(`Cannot find a differ supporting object '${kv}'`);
     }
   }
 }

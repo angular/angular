@@ -1,16 +1,14 @@
-import {
-  afterEach,
-  beforeEach,
-  ddescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit
-} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {enableDebugTools, disableDebugTools} from '@angular/platform-browser';
+import {afterEach, beforeEach, describe, it} from '@angular/core/testing/testing_internal';
+import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
+
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
 export function main() {

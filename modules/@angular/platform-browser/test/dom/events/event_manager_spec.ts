@@ -1,25 +1,20 @@
-import {
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  xdescribe,
-  expect,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
-import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {ListWrapper, Map} from '../../../src/facade/collection';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {
-  EventManager,
-  EventManagerPlugin
-} from '@angular/platform-browser/src/dom/events/event_manager';
+import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
+import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {el} from '../../../testing/browser_util';
 
 export function main() {
-  var domEventPlugin;
+  let domEventPlugin: DomEventsPlugin;
 
   describe('EventManager', () => {
 
@@ -27,47 +22,45 @@ export function main() {
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
        () => {
-         var element = el('<div></div>');
-         var handler = (e) => e;
-         var plugin = new FakeEventManagerPlugin(['click']);
-         var manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
+         const element = el('<div></div>');
+         const handler = (e: any /** TODO #9100 */) => e;
+         const plugin = new FakeEventManagerPlugin(['click']);
+         const manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
          manager.addEventListener(element, 'click', handler);
-         expect(plugin._eventHandler.get('click')).toBe(handler);
+         expect(plugin.eventHandler['click']).toBe(handler);
        });
 
     it('should delegate event bindings to the first plugin supporting the event', () => {
-      var element = el('<div></div>');
-      var clickHandler = (e) => e;
-      var dblClickHandler = (e) => e;
-      var plugin1 = new FakeEventManagerPlugin(['dblclick']);
-      var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
-      var manager = new EventManager([plugin2, plugin1], new FakeNgZone());
+      const element = el('<div></div>');
+      const clickHandler = (e: any /** TODO #9100 */) => e;
+      const dblClickHandler = (e: any /** TODO #9100 */) => e;
+      const plugin1 = new FakeEventManagerPlugin(['dblclick']);
+      const plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
+      const manager = new EventManager([plugin2, plugin1], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
-      expect(plugin1._eventHandler.has('click')).toBe(false);
-      expect(plugin2._eventHandler.get('click')).toBe(clickHandler);
-      expect(plugin2._eventHandler.has('dblclick')).toBe(false);
-      expect(plugin1._eventHandler.get('dblclick')).toBe(dblClickHandler);
+      expect(plugin2.eventHandler['click']).toBe(clickHandler);
+      expect(plugin1.eventHandler['dblclick']).toBe(dblClickHandler);
     });
 
     it('should throw when no plugin can handle the event', () => {
-      var element = el('<div></div>');
-      var plugin = new FakeEventManagerPlugin(['dblclick']);
-      var manager = new EventManager([plugin], new FakeNgZone());
+      const element = el('<div></div>');
+      const plugin = new FakeEventManagerPlugin(['dblclick']);
+      const manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null))
           .toThrowError('No event manager plugin found for event click');
     });
 
     it('events are caught when fired from a child', () => {
-      var element = el('<div><div></div></div>');
+      const element = el('<div><div></div></div>');
       // Workaround for https://bugs.webkit.org/show_bug.cgi?id=122755
       getDOM().appendChild(getDOM().defaultDoc().body, element);
 
-      var child = getDOM().firstChild(element);
-      var dispatchedEvent = getDOM().createMouseEvent('click');
-      var receivedEvent = null;
-      var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeNgZone());
+      const child = getDOM().firstChild(element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvent: any /** TODO #9100 */ = null;
+      const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
       getDOM().dispatchEvent(child, dispatchedEvent);
 
@@ -75,14 +68,14 @@ export function main() {
     });
 
     it('should add and remove global event listeners', () => {
-      var element = el('<div><div></div></div>');
+      const element = el('<div><div></div></div>');
       getDOM().appendChild(getDOM().defaultDoc().body, element);
-      var dispatchedEvent = getDOM().createMouseEvent('click');
-      var receivedEvent = null;
-      var handler = (e) => { receivedEvent = e; };
-      var manager = new EventManager([domEventPlugin], new FakeNgZone());
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvent: any /** TODO #9100 */ = null;
+      const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      var remover = manager.addGlobalEventListener("document", 'click', handler);
+      const remover = manager.addGlobalEventListener('document', 'click', handler);
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 
@@ -94,21 +87,23 @@ export function main() {
   });
 }
 
+/** @internal */
 class FakeEventManagerPlugin extends EventManagerPlugin {
-  _eventHandler = new Map<string, Function>();
-  constructor(public _supports: string[]) { super(); }
+  eventHandler: {[event: string]: Function} = {};
 
-  supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
+  constructor(public supportedEvents: string[]) { super(); }
 
-  addEventListener(element, eventName: string, handler: Function) {
-    this._eventHandler.set(eventName, handler);
-    return () => { this._eventHandler.delete(eventName); };
+  supports(eventName: string): boolean { return this.supportedEvents.indexOf(eventName) > -1; }
+
+  addEventListener(element: any, eventName: string, handler: Function) {
+    this.eventHandler[eventName] = handler;
+    return () => { delete (this.eventHandler[eventName]); };
   }
 }
 
 class FakeNgZone extends NgZone {
   constructor() { super({enableLongStackTrace: false}); }
-  run(fn) { fn(); }
+  run(fn: Function) { fn(); }
 
-  runOutsideAngular(fn) { return fn(); }
+  runOutsideAngular(fn: Function) { return fn(); }
 }

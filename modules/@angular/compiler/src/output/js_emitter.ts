@@ -1,29 +1,33 @@
-import * as o from './output_ast';
-import {
-  isPresent,
-  isBlank,
-  isString,
-  evalExpression,
-  RegExpWrapper,
-  StringWrapper
-} from '../facade/lang';
-import {BaseException} from '@angular/core';
-import {OutputEmitter, EmitterVisitorContext} from './abstract_emitter';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+import {StaticSymbol} from '../aot/static_symbol';
+import {CompileIdentifierMetadata} from '../compile_metadata';
+import {isBlank, isPresent} from '../facade/lang';
+
+import {EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
-import {ImportGenerator} from './path_util';
+import * as o from './output_ast';
+import {ImportResolver} from './path_util';
 
 export class JavaScriptEmitter implements OutputEmitter {
-  constructor(private _importGenerator: ImportGenerator) {}
-  emitStatements(moduleUrl: string, stmts: o.Statement[], exportedVars: string[]): string {
-    var converter = new JsEmitterVisitor(moduleUrl);
-    var ctx = EmitterVisitorContext.createRoot(exportedVars);
+  constructor(private _importResolver: ImportResolver) {}
+  emitStatements(genFilePath: string, stmts: o.Statement[], exportedVars: string[]): string {
+    const converter = new JsEmitterVisitor(genFilePath, this._importResolver);
+    const ctx = EmitterVisitorContext.createRoot(exportedVars);
     converter.visitAllStatements(stmts, ctx);
-    var srcParts = [];
-    converter.importsWithPrefixes.forEach((prefix, importedModuleUrl) => {
+    const srcParts: string[] = [];
+    converter.importsWithPrefixes.forEach((prefix, importedFilePath) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
       srcParts.push(
           `var ${prefix} = req` +
-          `uire('${this._importGenerator.getImportPath(moduleUrl, importedModuleUrl)}');`);
+          `uire('${this._importResolver.fileNameToModuleName(importedFilePath, genFilePath)}');`);
     });
     srcParts.push(ctx.toSource());
     return srcParts.join('\n');
@@ -33,21 +37,27 @@ export class JavaScriptEmitter implements OutputEmitter {
 class JsEmitterVisitor extends AbstractJsEmitterVisitor {
   importsWithPrefixes = new Map<string, string>();
 
-  constructor(private _moduleUrl: string) { super(); }
+  constructor(private _genFilePath: string, private _importResolver: ImportResolver) { super(); }
+
+  private _resolveStaticSymbol(value: CompileIdentifierMetadata): StaticSymbol {
+    const reference = value.reference;
+    if (!(reference instanceof StaticSymbol)) {
+      throw new Error(`Internal error: unknown identifier ${JSON.stringify(value)}`);
+    }
+    return this._importResolver.getImportAs(reference) || reference;
+  }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    if (isBlank(ast.value.name)) {
-      throw new BaseException(`Internal error: unknown identifier ${ast.value}`);
-    }
-    if (isPresent(ast.value.moduleUrl) && ast.value.moduleUrl != this._moduleUrl) {
-      var prefix = this.importsWithPrefixes.get(ast.value.moduleUrl);
+    const {name, filePath} = this._resolveStaticSymbol(ast.value);
+    if (filePath != this._genFilePath) {
+      let prefix = this.importsWithPrefixes.get(filePath);
       if (isBlank(prefix)) {
         prefix = `import${this.importsWithPrefixes.size}`;
-        this.importsWithPrefixes.set(ast.value.moduleUrl, prefix);
+        this.importsWithPrefixes.set(filePath, prefix);
       }
       ctx.print(`${prefix}.`);
     }
-    ctx.print(ast.value.name);
+    ctx.print(name);
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {

@@ -1,9 +1,16 @@
-import {describe, iit, it, expect, beforeEach} from '@angular/core/testing';
-import {ReflectiveKey, KeyRegistry} from '@angular/core/src/di/reflective_key';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {KeyRegistry} from '@angular/core/src/di/reflective_key';
 
 export function main() {
-  describe("key", function() {
-    var registry: KeyRegistry;
+  describe('key', function() {
+    let registry: KeyRegistry;
 
     beforeEach(function() { registry = new KeyRegistry(); });
 

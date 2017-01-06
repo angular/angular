@@ -1,19 +1,17 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  ddescribe,
-  iit,
-  xit,
-  inject
-} from '@angular/core/testing/testing_internal';
-import {IS_DART} from '../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
 
 export function main() {
   describe('UrlResolver', () => {
-    var resolver = new UrlResolver();
+    let resolver = new UrlResolver();
 
     describe('absolute base url', () => {
       it('should add a relative path to the base url', () => {
@@ -82,9 +80,9 @@ export function main() {
 
       it('should not resolve urls against the baseUrl when the url contains a scheme', () => {
         resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve("base/", 'package:file')).toEqual('my_packages_dir/file');
-        expect(resolver.resolve("base/", 'http:super_file')).toEqual('http:super_file');
-        expect(resolver.resolve("base/", './mega_file')).toEqual('base/mega_file');
+        expect(resolver.resolve('base/', 'package:file')).toEqual('my_packages_dir/file');
+        expect(resolver.resolve('base/', 'http:super_file')).toEqual('http:super_file');
+        expect(resolver.resolve('base/', './mega_file')).toEqual('base/mega_file');
       });
     });
 
@@ -96,18 +94,9 @@ export function main() {
         expect(resolver.resolve(null, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
       });
 
-      it('should contain a default value of "/packages" when nothing is provided for DART',
+      it('should contain a default value of "/" when nothing is provided',
          inject([UrlResolver], (resolver: UrlResolver) => {
-           if (IS_DART) {
-             expect(resolver.resolve(null, 'package:file')).toEqual('/packages/file');
-           }
-         }));
-
-      it('should contain a default value of "/" when nothing is provided for TS/ESM',
-         inject([UrlResolver], (resolver: UrlResolver) => {
-           if (!IS_DART) {
-             expect(resolver.resolve(null, 'package:file')).toEqual('/file');
-           }
+           expect(resolver.resolve(null, 'package:file')).toEqual('/file');
          }));
 
       it('should resolve a package value when present within the baseurl', () => {
@@ -117,22 +106,12 @@ export function main() {
       });
     });
 
-    describe('asset urls', () => {
-      var resolver: UrlResolver;
-      beforeEach(() => { resolver = createOfflineCompileUrlResolver(); });
-
-      it('should resolve package: urls into asset: urls', () => {
-        expect(resolver.resolve(null, 'package:somePkg/somePath'))
-            .toEqual('asset:somePkg/lib/somePath');
-      });
-    });
-
     describe('corner and error cases', () => {
-      it('should encode URLs before resolving', () => {
-        expect(resolver.resolve('foo/baz', `<p #p>Hello
-        </p>`))
-            .toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
-      });
+      it('should encode URLs before resolving',
+         () => {
+           expect(resolver.resolve('foo/baz', `<p #p>Hello
+        </p>`)).toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
+         });
     });
   });
 }

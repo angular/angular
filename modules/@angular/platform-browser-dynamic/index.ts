@@ -1,12 +1,16 @@
-export {bootstrap, CACHED_TEMPLATE_PROVIDER} from '@angular/platform-browser';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS} from '@angular/platform-browser';
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the platform-browser-dynamic package.
+ */
+export * from './src/platform-browser-dynamic';
 
-/* @deprecated the platform-browser-dynamic module is deprecated. */
-export const BROWSER_APP_DYNAMIC_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
-  BROWSER_APP_PROVIDERS,
-  BROWSER_APP_COMPILER_PROVIDERS
-];
-
-console.log(`platform-browser-dynamic is deprecated, use platform-browser instead`);
-
+// This file only reexports content of the `src` folder. Keep it that way.

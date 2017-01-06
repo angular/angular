@@ -1,25 +1,24 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injectable} from '@angular/core/src/di';
-import {
-  inject,
-  describe,
-  ddescribe,
-  it,
-  iit,
-  xit,
-  xdescribe,
-  expect,
-  beforeEach,
-} from '@angular/core/testing/testing_internal';
-import {AsyncTestCompleter, SpyObject} from '@angular/core/testing/testing_internal';
 import {Testability} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {normalizeBlank, scheduleMicroTask} from '../../src/facade/lang';
-import {PromiseWrapper, EventEmitter, ObservableWrapper} from '../../src/facade/async';
+import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+
+import {EventEmitter} from '../../src/facade/async';
+import {scheduleMicroTask} from '../../src/facade/lang';
+
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {
   scheduleMicroTask(() => {
-    // We do double dispatch so that we  can wait for scheduleMicrotas in the Testability when
+    // We do double dispatch so that we  can wait for scheduleMicrotask in the Testability when
     // NgZone becomes stable.
     scheduleMicroTask(fn);
   });
@@ -27,9 +26,11 @@ function microTask(fn: Function): void {
 
 @Injectable()
 class MockNgZone extends NgZone {
+  /** @internal */
   _onUnstableStream: EventEmitter<any>;
   get onUnstable() { return this._onUnstableStream; }
 
+  /** @internal */
   _onStableStream: EventEmitter<any>;
   get onStable() { return this._onStableStream; }
 
@@ -39,17 +40,17 @@ class MockNgZone extends NgZone {
     this._onStableStream = new EventEmitter(false);
   }
 
-  unstable(): void { ObservableWrapper.callEmit(this._onUnstableStream, null); }
+  unstable(): void { this._onUnstableStream.emit(null); }
 
-  stable(): void { ObservableWrapper.callEmit(this._onStableStream, null); }
+  stable(): void { this._onStableStream.emit(null); }
 }
 
 export function main() {
   describe('Testability', () => {
-    var testability: Testability;
-    var execute: any;
-    var execute2: any;
-    var ngZone: MockNgZone;
+    let testability: Testability;
+    let execute: any;
+    let execute2: any;
+    let ngZone: MockNgZone;
 
     beforeEach(() => {
       ngZone = new MockNgZone();
@@ -63,7 +64,7 @@ export function main() {
          () => { expect(testability.getPendingRequestCount()).toEqual(0); });
 
       it('should fire whenstable callbacks if pending count is 0',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.whenStable(execute);
            microTask(() => {
              expect(execute).toHaveBeenCalled();
@@ -77,7 +78,7 @@ export function main() {
       });
 
       it('should not call whenstable callbacks when there are pending counts',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.increasePendingRequestCount();
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
@@ -94,7 +95,7 @@ export function main() {
          }));
 
       it('should fire whenstable callbacks when pending drops to 0',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
@@ -118,7 +119,7 @@ export function main() {
       });
 
       it('should fire whenstable callbacks with didWork if pending count is 0',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.whenStable(execute);
            microTask(() => {
              expect(execute).toHaveBeenCalledWith(false);
@@ -127,7 +128,7 @@ export function main() {
          }));
 
       it('should fire whenstable callbacks with didWork when pending drops to 0',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
@@ -149,7 +150,7 @@ export function main() {
 
     describe('NgZone callback logic', () => {
       it('should fire whenstable callback if event is already finished',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            ngZone.stable();
            testability.whenStable(execute);
@@ -169,7 +170,7 @@ export function main() {
       });
 
       it('should fire whenstable callback when event finishes',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            testability.whenStable(execute);
 
@@ -193,7 +194,7 @@ export function main() {
       });
 
       it('should not fire whenstable callback when event did not finish',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
@@ -215,7 +216,7 @@ export function main() {
          }));
 
       it('should not fire whenstable callback when there are pending counts',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            testability.increasePendingRequestCount();
            testability.increasePendingRequestCount();
@@ -243,7 +244,7 @@ export function main() {
          }));
 
       it('should fire whenstable callback with didWork if event is already finished',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            ngZone.stable();
            testability.whenStable(execute);
@@ -260,7 +261,7 @@ export function main() {
          }));
 
       it('should fire whenstable callback with didwork when event finishes',
-         inject([AsyncTestCompleter], (async) => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            ngZone.unstable();
            testability.whenStable(execute);
 

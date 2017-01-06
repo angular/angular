@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as t from '@angular/core/testing/testing_internal';
 
 import {getDOM} from '../../src/dom/dom_adapter';
@@ -18,6 +26,7 @@ export function main() {
     function expectSanitize(v: string) { return t.expect(sanitizeStyle(v)); }
 
     t.it('sanitizes values', () => {
+      expectSanitize('').toEqual('');
       expectSanitize('abc').toEqual('abc');
       expectSanitize('50px').toEqual('50px');
       expectSanitize('rgb(255, 0, 0)').toEqual('rgb(255, 0, 0)');

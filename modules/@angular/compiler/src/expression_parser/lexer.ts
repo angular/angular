@@ -1,7 +1,14 @@
-import {Injectable} from '@angular/core';
-import {SetWrapper} from '../../src/facade/collection';
-import {NumberWrapper, StringJoiner, StringWrapper, isPresent} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import * as chars from '../chars';
+import {NumberWrapper, isPresent} from '../facade/lang';
+import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
   Character,
@@ -9,15 +16,18 @@ export enum TokenType {
   Keyword,
   String,
   Operator,
-  Number
+  Number,
+  Error
 }
 
-@Injectable()
+const KEYWORDS = ['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
+
+@CompilerInjectable()
 export class Lexer {
-  tokenize(text: string): any[] {
-    var scanner = new _Scanner(text);
-    var tokens = [];
-    var token = scanner.scanToken();
+  tokenize(text: string): Token[] {
+    const scanner = new _Scanner(text);
+    const tokens: Token[] = [];
+    let token = scanner.scanToken();
     while (token != null) {
       tokens.push(token);
       token = scanner.scanToken();
@@ -27,45 +37,43 @@ export class Lexer {
 }
 
 export class Token {
-  constructor(public index: number, public type: TokenType, public numValue: number,
-              public strValue: string) {}
+  constructor(
+      public index: number, public type: TokenType, public numValue: number,
+      public strValue: string) {}
 
   isCharacter(code: number): boolean {
-    return (this.type == TokenType.Character && this.numValue == code);
+    return this.type == TokenType.Character && this.numValue == code;
   }
 
-  isNumber(): boolean { return (this.type == TokenType.Number); }
+  isNumber(): boolean { return this.type == TokenType.Number; }
 
-  isString(): boolean { return (this.type == TokenType.String); }
+  isString(): boolean { return this.type == TokenType.String; }
 
   isOperator(operater: string): boolean {
-    return (this.type == TokenType.Operator && this.strValue == operater);
+    return this.type == TokenType.Operator && this.strValue == operater;
   }
 
-  isIdentifier(): boolean { return (this.type == TokenType.Identifier); }
+  isIdentifier(): boolean { return this.type == TokenType.Identifier; }
 
-  isKeyword(): boolean { return (this.type == TokenType.Keyword); }
+  isKeyword(): boolean { return this.type == TokenType.Keyword; }
 
-  isKeywordDeprecatedVar(): boolean {
-    return (this.type == TokenType.Keyword && this.strValue == "var");
-  }
+  isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
 
-  isKeywordLet(): boolean { return (this.type == TokenType.Keyword && this.strValue == "let"); }
-
-  isKeywordNull(): boolean { return (this.type == TokenType.Keyword && this.strValue == "null"); }
+  isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }
 
   isKeywordUndefined(): boolean {
-    return (this.type == TokenType.Keyword && this.strValue == "undefined");
+    return this.type == TokenType.Keyword && this.strValue == 'undefined';
   }
 
-  isKeywordTrue(): boolean { return (this.type == TokenType.Keyword && this.strValue == "true"); }
+  isKeywordTrue(): boolean { return this.type == TokenType.Keyword && this.strValue == 'true'; }
 
-  isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "false"); }
+  isKeywordFalse(): boolean { return this.type == TokenType.Keyword && this.strValue == 'false'; }
 
-  toNumber(): number {
-    // -1 instead of NULL ok?
-    return (this.type == TokenType.Number) ? this.numValue : -1;
-  }
+  isKeywordThis(): boolean { return this.type == TokenType.Keyword && this.strValue == 'this'; }
+
+  isError(): boolean { return this.type == TokenType.Error; }
+
+  toNumber(): number { return this.type == TokenType.Number ? this.numValue : -1; }
 
   toString(): string {
     switch (this.type) {
@@ -74,6 +82,7 @@ export class Token {
       case TokenType.Keyword:
       case TokenType.Operator:
       case TokenType.String:
+      case TokenType.Error:
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();
@@ -84,7 +93,7 @@ export class Token {
 }
 
 function newCharacterToken(index: number, code: number): Token {
-  return new Token(index, TokenType.Character, code, StringWrapper.fromCharCode(code));
+  return new Token(index, TokenType.Character, code, String.fromCharCode(code));
 }
 
 function newIdentifierToken(index: number, text: string): Token {
@@ -104,66 +113,14 @@ function newStringToken(index: number, text: string): Token {
 }
 
 function newNumberToken(index: number, n: number): Token {
-  return new Token(index, TokenType.Number, n, "");
+  return new Token(index, TokenType.Number, n, '');
 }
 
-
-export var EOF: Token = new Token(-1, TokenType.Character, 0, "");
-
-export const $EOF = /*@ts2dart_const*/ 0;
-export const $TAB = /*@ts2dart_const*/ 9;
-export const $LF = /*@ts2dart_const*/ 10;
-export const $VTAB = /*@ts2dart_const*/ 11;
-export const $FF = /*@ts2dart_const*/ 12;
-export const $CR = /*@ts2dart_const*/ 13;
-export const $SPACE = /*@ts2dart_const*/ 32;
-export const $BANG = /*@ts2dart_const*/ 33;
-export const $DQ = /*@ts2dart_const*/ 34;
-export const $HASH = /*@ts2dart_const*/ 35;
-export const $$ = /*@ts2dart_const*/ 36;
-export const $PERCENT = /*@ts2dart_const*/ 37;
-export const $AMPERSAND = /*@ts2dart_const*/ 38;
-export const $SQ = /*@ts2dart_const*/ 39;
-export const $LPAREN = /*@ts2dart_const*/ 40;
-export const $RPAREN = /*@ts2dart_const*/ 41;
-export const $STAR = /*@ts2dart_const*/ 42;
-export const $PLUS = /*@ts2dart_const*/ 43;
-export const $COMMA = /*@ts2dart_const*/ 44;
-export const $MINUS = /*@ts2dart_const*/ 45;
-export const $PERIOD = /*@ts2dart_const*/ 46;
-export const $SLASH = /*@ts2dart_const*/ 47;
-export const $COLON = /*@ts2dart_const*/ 58;
-export const $SEMICOLON = /*@ts2dart_const*/ 59;
-export const $LT = /*@ts2dart_const*/ 60;
-export const $EQ = /*@ts2dart_const*/ 61;
-export const $GT = /*@ts2dart_const*/ 62;
-export const $QUESTION = /*@ts2dart_const*/ 63;
-
-const $0 = /*@ts2dart_const*/ 48;
-const $9 = /*@ts2dart_const*/ 57;
-
-const $A = /*@ts2dart_const*/ 65, $E = /*@ts2dart_const*/ 69, $Z = /*@ts2dart_const*/ 90;
-
-export const $LBRACKET = /*@ts2dart_const*/ 91;
-export const $BACKSLASH = /*@ts2dart_const*/ 92;
-export const $RBRACKET = /*@ts2dart_const*/ 93;
-const $CARET = /*@ts2dart_const*/ 94;
-const $_ = /*@ts2dart_const*/ 95;
-export const $BT = /*@ts2dart_const*/ 96;
-const $a = /*@ts2dart_const*/ 97, $e = /*@ts2dart_const*/ 101, $f = /*@ts2dart_const*/ 102;
-const $n = /*@ts2dart_const*/ 110, $r = /*@ts2dart_const*/ 114, $t = /*@ts2dart_const*/ 116,
-      $u = /*@ts2dart_const*/ 117, $v = /*@ts2dart_const*/ 118, $z = /*@ts2dart_const*/ 122;
-
-export const $LBRACE = /*@ts2dart_const*/ 123;
-export const $BAR = /*@ts2dart_const*/ 124;
-export const $RBRACE = /*@ts2dart_const*/ 125;
-const $NBSP = /*@ts2dart_const*/ 160;
-
-export class ScannerError extends BaseException {
-  constructor(public message) { super(); }
-
-  toString(): string { return this.message; }
+function newErrorToken(index: number, message: string): Token {
+  return new Token(index, TokenType.Error, 0, message);
 }
+
+export const EOF: Token = new Token(-1, TokenType.Character, 0, '');
 
 class _Scanner {
   length: number;
@@ -176,20 +133,20 @@ class _Scanner {
   }
 
   advance() {
-    this.peek =
-        ++this.index >= this.length ? $EOF : StringWrapper.charCodeAt(this.input, this.index);
+    this.peek = ++this.index >= this.length ? chars.$EOF : this.input.charCodeAt(this.index);
   }
 
   scanToken(): Token {
-    var input = this.input, length = this.length, peek = this.peek, index = this.index;
+    const input = this.input, length = this.length;
+    let peek = this.peek, index = this.index;
 
     // Skip whitespace.
-    while (peek <= $SPACE) {
+    while (peek <= chars.$SPACE) {
       if (++index >= length) {
-        peek = $EOF;
+        peek = chars.$EOF;
         break;
       } else {
-        peek = StringWrapper.charCodeAt(input, index);
+        peek = input.charCodeAt(index);
       }
     }
 
@@ -202,54 +159,55 @@ class _Scanner {
 
     // Handle identifiers and numbers.
     if (isIdentifierStart(peek)) return this.scanIdentifier();
-    if (isDigit(peek)) return this.scanNumber(index);
+    if (chars.isDigit(peek)) return this.scanNumber(index);
 
-    var start: number = index;
+    const start: number = index;
     switch (peek) {
-      case $PERIOD:
+      case chars.$PERIOD:
         this.advance();
-        return isDigit(this.peek) ? this.scanNumber(start) : newCharacterToken(start, $PERIOD);
-      case $LPAREN:
-      case $RPAREN:
-      case $LBRACE:
-      case $RBRACE:
-      case $LBRACKET:
-      case $RBRACKET:
-      case $COMMA:
-      case $COLON:
-      case $SEMICOLON:
+        return chars.isDigit(this.peek) ? this.scanNumber(start) :
+                                          newCharacterToken(start, chars.$PERIOD);
+      case chars.$LPAREN:
+      case chars.$RPAREN:
+      case chars.$LBRACE:
+      case chars.$RBRACE:
+      case chars.$LBRACKET:
+      case chars.$RBRACKET:
+      case chars.$COMMA:
+      case chars.$COLON:
+      case chars.$SEMICOLON:
         return this.scanCharacter(start, peek);
-      case $SQ:
-      case $DQ:
+      case chars.$SQ:
+      case chars.$DQ:
         return this.scanString();
-      case $HASH:
-      case $PLUS:
-      case $MINUS:
-      case $STAR:
-      case $SLASH:
-      case $PERCENT:
-      case $CARET:
-        return this.scanOperator(start, StringWrapper.fromCharCode(peek));
-      case $QUESTION:
-        return this.scanComplexOperator(start, '?', $PERIOD, '.');
-      case $LT:
-      case $GT:
-        return this.scanComplexOperator(start, StringWrapper.fromCharCode(peek), $EQ, '=');
-      case $BANG:
-      case $EQ:
-        return this.scanComplexOperator(start, StringWrapper.fromCharCode(peek), $EQ, '=', $EQ,
-                                        '=');
-      case $AMPERSAND:
-        return this.scanComplexOperator(start, '&', $AMPERSAND, '&');
-      case $BAR:
-        return this.scanComplexOperator(start, '|', $BAR, '|');
-      case $NBSP:
-        while (isWhitespace(this.peek)) this.advance();
+      case chars.$HASH:
+      case chars.$PLUS:
+      case chars.$MINUS:
+      case chars.$STAR:
+      case chars.$SLASH:
+      case chars.$PERCENT:
+      case chars.$CARET:
+        return this.scanOperator(start, String.fromCharCode(peek));
+      case chars.$QUESTION:
+        return this.scanComplexOperator(start, '?', chars.$PERIOD, '.');
+      case chars.$LT:
+      case chars.$GT:
+        return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
+      case chars.$BANG:
+      case chars.$EQ:
+        return this.scanComplexOperator(
+            start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '=');
+      case chars.$AMPERSAND:
+        return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&');
+      case chars.$BAR:
+        return this.scanComplexOperator(start, '|', chars.$BAR, '|');
+      case chars.$NBSP:
+        while (chars.isWhitespace(this.peek)) this.advance();
         return this.scanToken();
     }
 
-    this.error(`Unexpected character [${StringWrapper.fromCharCode(peek)}]`, 0);
-    return null;
+    this.advance();
+    return this.error(`Unexpected character [${String.fromCharCode(peek)}]`, 0);
   }
 
   scanCharacter(start: number, code: number): Token {
@@ -274,10 +232,11 @@ class _Scanner {
    * @param three third symbol (part of the operator when provided and matches source expression)
    * @returns {Token}
    */
-  scanComplexOperator(start: number, one: string, twoCode: number, two: string, threeCode?: number,
-                      three?: string): Token {
+  scanComplexOperator(
+      start: number, one: string, twoCode: number, two: string, threeCode?: number,
+      three?: string): Token {
     this.advance();
-    var str: string = one;
+    let str: string = one;
     if (this.peek == twoCode) {
       this.advance();
       str += two;
@@ -290,114 +249,99 @@ class _Scanner {
   }
 
   scanIdentifier(): Token {
-    var start: number = this.index;
+    const start: number = this.index;
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
-    var str: string = this.input.substring(start, this.index);
-    if (SetWrapper.has(KEYWORDS, str)) {
-      return newKeywordToken(start, str);
-    } else {
-      return newIdentifierToken(start, str);
-    }
+    const str: string = this.input.substring(start, this.index);
+    return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, str) :
+                                        newIdentifierToken(start, str);
   }
 
   scanNumber(start: number): Token {
-    var simple: boolean = (this.index === start);
+    let simple: boolean = (this.index === start);
     this.advance();  // Skip initial digit.
     while (true) {
-      if (isDigit(this.peek)) {
+      if (chars.isDigit(this.peek)) {
         // Do nothing.
-      } else if (this.peek == $PERIOD) {
+      } else if (this.peek == chars.$PERIOD) {
         simple = false;
       } else if (isExponentStart(this.peek)) {
         this.advance();
         if (isExponentSign(this.peek)) this.advance();
-        if (!isDigit(this.peek)) this.error('Invalid exponent', -1);
+        if (!chars.isDigit(this.peek)) return this.error('Invalid exponent', -1);
         simple = false;
       } else {
         break;
       }
       this.advance();
     }
-    var str: string = this.input.substring(start, this.index);
-    // TODO
-    var value: number =
-        simple ? NumberWrapper.parseIntAutoRadix(str) : NumberWrapper.parseFloat(str);
+    const str: string = this.input.substring(start, this.index);
+    const value: number = simple ? NumberWrapper.parseIntAutoRadix(str) : parseFloat(str);
     return newNumberToken(start, value);
   }
 
   scanString(): Token {
-    var start: number = this.index;
-    var quote: number = this.peek;
+    const start: number = this.index;
+    const quote: number = this.peek;
     this.advance();  // Skip initial quote.
 
-    var buffer: StringJoiner;
-    var marker: number = this.index;
-    var input: string = this.input;
+    let buffer: string = '';
+    let marker: number = this.index;
+    const input: string = this.input;
 
     while (this.peek != quote) {
-      if (this.peek == $BACKSLASH) {
-        if (buffer == null) buffer = new StringJoiner();
-        buffer.add(input.substring(marker, this.index));
+      if (this.peek == chars.$BACKSLASH) {
+        buffer += input.substring(marker, this.index);
         this.advance();
-        var unescapedCode: number;
-        if (this.peek == $u) {
+        let unescapedCode: number;
+        if (this.peek == chars.$u) {
           // 4 character hex code for unicode character.
-          var hex: string = input.substring(this.index + 1, this.index + 5);
-          try {
-            unescapedCode = NumberWrapper.parseInt(hex, 16);
-          } catch (e) {
-            this.error(`Invalid unicode escape [\\u${hex}]`, 0);
+          const hex: string = input.substring(this.index + 1, this.index + 5);
+          if (/^[0-9a-f]+$/i.test(hex)) {
+            unescapedCode = parseInt(hex, 16);
+          } else {
+            return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
           }
-          for (var i: number = 0; i < 5; i++) {
+          for (let i: number = 0; i < 5; i++) {
             this.advance();
           }
         } else {
           unescapedCode = unescape(this.peek);
           this.advance();
         }
-        buffer.add(StringWrapper.fromCharCode(unescapedCode));
+        buffer += String.fromCharCode(unescapedCode);
         marker = this.index;
-      } else if (this.peek == $EOF) {
-        this.error('Unterminated quote', 0);
+      } else if (this.peek == chars.$EOF) {
+        return this.error('Unterminated quote', 0);
       } else {
         this.advance();
       }
     }
 
-    var last: string = input.substring(marker, this.index);
+    const last: string = input.substring(marker, this.index);
     this.advance();  // Skip terminating quote.
 
-    // Compute the unescaped string value.
-    var unescaped: string = last;
-    if (buffer != null) {
-      buffer.add(last);
-      unescaped = buffer.toString();
-    }
-    return newStringToken(start, unescaped);
+    return newStringToken(start, buffer + last);
   }
 
-  error(message: string, offset: number) {
-    var position: number = this.index + offset;
-    throw new ScannerError(
-        `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
+  error(message: string, offset: number): Token {
+    const position: number = this.index + offset;
+    return newErrorToken(
+        position, `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
   }
-}
-
-function isWhitespace(code: number): boolean {
-  return (code >= $TAB && code <= $SPACE) || (code == $NBSP);
 }
 
 function isIdentifierStart(code: number): boolean {
-  return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || (code == $_) || (code == $$);
+  return (chars.$a <= code && code <= chars.$z) || (chars.$A <= code && code <= chars.$Z) ||
+      (code == chars.$_) || (code == chars.$$);
 }
 
 export function isIdentifier(input: string): boolean {
   if (input.length == 0) return false;
-  var scanner = new _Scanner(input);
+  const scanner = new _Scanner(input);
   if (!isIdentifierStart(scanner.peek)) return false;
   scanner.advance();
-  while (scanner.peek !== $EOF) {
+  while (scanner.peek !== chars.$EOF) {
     if (!isIdentifierPart(scanner.peek)) return false;
     scanner.advance();
   }
@@ -405,69 +349,35 @@ export function isIdentifier(input: string): boolean {
 }
 
 function isIdentifierPart(code: number): boolean {
-  return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || ($0 <= code && code <= $9) ||
-         (code == $_) || (code == $$);
-}
-
-function isDigit(code: number): boolean {
-  return $0 <= code && code <= $9;
+  return chars.isAsciiLetter(code) || chars.isDigit(code) || (code == chars.$_) ||
+      (code == chars.$$);
 }
 
 function isExponentStart(code: number): boolean {
-  return code == $e || code == $E;
+  return code == chars.$e || code == chars.$E;
 }
 
 function isExponentSign(code: number): boolean {
-  return code == $MINUS || code == $PLUS;
+  return code == chars.$MINUS || code == chars.$PLUS;
 }
 
 export function isQuote(code: number): boolean {
-  return code === $SQ || code === $DQ || code === $BT;
+  return code === chars.$SQ || code === chars.$DQ || code === chars.$BT;
 }
 
 function unescape(code: number): number {
   switch (code) {
-    case $n:
-      return $LF;
-    case $f:
-      return $FF;
-    case $r:
-      return $CR;
-    case $t:
-      return $TAB;
-    case $v:
-      return $VTAB;
+    case chars.$n:
+      return chars.$LF;
+    case chars.$f:
+      return chars.$FF;
+    case chars.$r:
+      return chars.$CR;
+    case chars.$t:
+      return chars.$TAB;
+    case chars.$v:
+      return chars.$VTAB;
     default:
       return code;
   }
 }
-
-var OPERATORS = SetWrapper.createFromList([
-  '+',
-  '-',
-  '*',
-  '/',
-  '%',
-  '^',
-  '=',
-  '==',
-  '!=',
-  '===',
-  '!==',
-  '<',
-  '>',
-  '<=',
-  '>=',
-  '&&',
-  '||',
-  '&',
-  '|',
-  '!',
-  '?',
-  '#',
-  '?.'
-]);
-
-
-var KEYWORDS =
-    SetWrapper.createFromList(['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else']);

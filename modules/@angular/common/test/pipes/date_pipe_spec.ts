@@ -1,93 +1,195 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from '@angular/core/testing/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {DatePipe} from '@angular/common';
-import {DateWrapper} from '../../src/facade/lang';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {browserDetection} from '@angular/platform-browser/testing/browser_util';
 
 export function main() {
-  describe("DatePipe", () => {
-    var date;
-    var pipe;
+  describe('DatePipe', () => {
+    let date: Date;
+    const isoStringWithoutTime = '2015-01-01';
+    let pipe: DatePipe;
+
+    // Check the transformation of a date into a pattern
+    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
+      expect(pipe.transform(date, pattern)).toEqual(output);
+    }
+
+    // TODO: reactivate the disabled expectations once emulators are fixed in SauceLabs
+    // In some old versions of Chrome in Android emulators, time formatting returns dates in the
+    // timezone of the VM host,
+    // instead of the device timezone. Same symptoms as
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=406382
+    // This happens locally and in SauceLabs, so some checks are disabled to avoid failures.
+    // Tracking issue: https://github.com/angular/angular/issues/11187
 
     beforeEach(() => {
-      date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
-      pipe = new DatePipe();
+      date = new Date(2015, 5, 15, 9, 3, 1);
+      pipe = new DatePipe('en-US');
     });
 
     it('should be marked as pure',
        () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
-    describe("supports", () => {
-      it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
-      it("should support int", () => { expect(pipe.supports(123456789)).toBe(true); });
-      it("should support ISO string",
-         () => { expect(pipe.supports("2015-06-15T21:43:11Z")).toBe(true); });
+    describe('supports', () => {
+      it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
 
-      it("should not support other objects", () => {
-        expect(pipe.supports(new Object())).toBe(false);
-        expect(pipe.supports(null)).toBe(false);
-        expect(pipe.supports("")).toBe(false);
-      });
+      it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+
+      it('should support numeric strings',
+         () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
+
+      it('should support decimal strings',
+         () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
+
+      it('should support ISO string',
+         () => expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow());
+
+      it('should return null for empty string', () => expect(pipe.transform('')).toEqual(null));
+
+      it('should support ISO string without time',
+         () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
+
+      it('should not support other objects',
+         () => { expect(() => pipe.transform({})).toThrowError(); });
     });
 
-    // TODO(mlaval): enable tests when Intl API is no longer used, see
-    // https://github.com/angular/angular/issues/3333
-    if (browserDetection.supportsIntlApi) {
-      describe("transform", () => {
-        it('should format each component correctly', () => {
-          expect(pipe.transform(date, 'y')).toEqual('2015');
-          expect(pipe.transform(date, 'yy')).toEqual('15');
-          expect(pipe.transform(date, 'M')).toEqual('6');
-          expect(pipe.transform(date, 'MM')).toEqual('06');
-          expect(pipe.transform(date, 'MMM')).toEqual('Jun');
-          expect(pipe.transform(date, 'MMMM')).toEqual('June');
-          expect(pipe.transform(date, 'd')).toEqual('15');
-          expect(pipe.transform(date, 'E')).toEqual('Mon');
-          expect(pipe.transform(date, 'EEEE')).toEqual('Monday');
-          expect(pipe.transform(date, 'H')).toEqual('21');
-          expect(pipe.transform(date, 'j')).toEqual('9 PM');
-          expect(pipe.transform(date, 'm')).toEqual('43');
-          expect(pipe.transform(date, 's')).toEqual('11');
+    describe('transform', () => {
+      it('should format each component correctly', () => {
+        const dateFixtures: any = {
+          'y': '2015',
+          'yy': '15',
+          'M': '6',
+          'MM': '06',
+          'MMM': 'Jun',
+          'MMMM': 'June',
+          'd': '15',
+          'dd': '15',
+          'EEE': 'Mon',
+          'EEEE': 'Monday'
+        };
+
+        const isoStringWithoutTimeFixtures: any = {
+          'y': '2015',
+          'yy': '15',
+          'M': '1',
+          'MM': '01',
+          'MMM': 'Jan',
+          'MMMM': 'January',
+          'd': '1',
+          'dd': '01',
+          'EEE': 'Thu',
+          'EEEE': 'Thursday'
+        };
+
+        if (!browserDetection.isOldChrome) {
+          dateFixtures['h'] = '9';
+          dateFixtures['hh'] = '09';
+          dateFixtures['j'] = '9 AM';
+          isoStringWithoutTimeFixtures['h'] = '12';
+          isoStringWithoutTimeFixtures['hh'] = '12';
+          isoStringWithoutTimeFixtures['j'] = '12 AM';
+        }
+
+        // IE and Edge can't format a date to minutes and seconds without hours
+        if (!browserDetection.isEdge && !browserDetection.isIE ||
+            !browserDetection.supportsNativeIntlApi) {
+          if (!browserDetection.isOldChrome) {
+            dateFixtures['HH'] = '09';
+            isoStringWithoutTimeFixtures['HH'] = '00';
+          }
+          dateFixtures['E'] = 'M';
+          dateFixtures['L'] = 'J';
+          dateFixtures['m'] = '3';
+          dateFixtures['s'] = '1';
+          dateFixtures['mm'] = '03';
+          dateFixtures['ss'] = '01';
+          isoStringWithoutTimeFixtures['m'] = '0';
+          isoStringWithoutTimeFixtures['s'] = '0';
+          isoStringWithoutTimeFixtures['mm'] = '00';
+          isoStringWithoutTimeFixtures['ss'] = '00';
+        }
+
+        Object.keys(dateFixtures).forEach((pattern: string) => {
+          expectDateFormatAs(date, pattern, dateFixtures[pattern]);
         });
 
-        it('should format common multi component patterns', () => {
-          expect(pipe.transform(date, 'E, M/d/y')).toEqual('Mon, 6/15/2015');
-          expect(pipe.transform(date, 'E, M/d')).toEqual('Mon, 6/15');
-          expect(pipe.transform(date, 'MMM d')).toEqual('Jun 15');
-          expect(pipe.transform(date, 'dd/MM/yyyy')).toEqual('15/06/2015');
-          expect(pipe.transform(date, 'MM/dd/yyyy')).toEqual('06/15/2015');
-          expect(pipe.transform(date, 'yMEd')).toEqual('Mon, 6/15/2015');
-          expect(pipe.transform(date, 'MEd')).toEqual('Mon, 6/15');
-          expect(pipe.transform(date, 'MMMd')).toEqual('Jun 15');
-          expect(pipe.transform(date, 'yMMMMEEEEd')).toEqual('Monday, June 15, 2015');
-          expect(pipe.transform(date, 'jms')).toEqual('9:43:11 PM');
-          expect(pipe.transform(date, 'ms')).toEqual('43:11');
-          expect(pipe.transform(date, 'jm')).toEqual('9:43');
+        Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+          expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
         });
 
-        it('should format with pattern aliases', () => {
-          expect(pipe.transform(date, 'medium')).toEqual('Jun 15, 2015, 9:43:11 PM');
-          expect(pipe.transform(date, 'short')).toEqual('6/15/2015, 9:43 PM');
-          expect(pipe.transform(date, 'dd/MM/yyyy')).toEqual('15/06/2015');
-          expect(pipe.transform(date, 'MM/dd/yyyy')).toEqual('06/15/2015');
-          expect(pipe.transform(date, 'fullDate')).toEqual('Monday, June 15, 2015');
-          expect(pipe.transform(date, 'longDate')).toEqual('June 15, 2015');
-          expect(pipe.transform(date, 'mediumDate')).toEqual('Jun 15, 2015');
-          expect(pipe.transform(date, 'shortDate')).toEqual('6/15/2015');
-          expect(pipe.transform(date, 'mediumTime')).toEqual('9:43:11 PM');
-          expect(pipe.transform(date, 'shortTime')).toEqual('9:43 PM');
-        });
+        expect(pipe.transform(date, 'Z')).toBeDefined();
       });
-    }
+
+      it('should format common multi component patterns', () => {
+        const dateFixtures: any = {
+          'EEE, M/d/y': 'Mon, 6/15/2015',
+          'EEE, M/d': 'Mon, 6/15',
+          'MMM d': 'Jun 15',
+          'dd/MM/yyyy': '15/06/2015',
+          'MM/dd/yyyy': '06/15/2015',
+          'yMEEEd': '20156Mon15',
+          'MEEEd': '6Mon15',
+          'MMMd': 'Jun15',
+          'yMMMMEEEEd': 'Monday, June 15, 2015'
+        };
+
+        // IE and Edge can't format a date to minutes and seconds without hours
+        if (!browserDetection.isEdge && !browserDetection.isIE ||
+            !browserDetection.supportsNativeIntlApi) {
+          dateFixtures['ms'] = '31';
+        }
+
+        if (!browserDetection.isOldChrome) {
+          dateFixtures['jm'] = '9:03 AM';
+        }
+
+        Object.keys(dateFixtures).forEach((pattern: string) => {
+          expectDateFormatAs(date, pattern, dateFixtures[pattern]);
+        });
+
+      });
+
+      it('should format with pattern aliases', () => {
+        const dateFixtures: any = {
+          'MM/dd/yyyy': '06/15/2015',
+          'fullDate': 'Monday, June 15, 2015',
+          'longDate': 'June 15, 2015',
+          'mediumDate': 'Jun 15, 2015',
+          'shortDate': '6/15/2015'
+        };
+
+        if (!browserDetection.isOldChrome) {
+          // IE and Edge do not add a coma after the year in these 2 cases
+          if ((browserDetection.isEdge || browserDetection.isIE) &&
+              browserDetection.supportsNativeIntlApi) {
+            dateFixtures['medium'] = 'Jun 15, 2015 9:03:01 AM';
+            dateFixtures['short'] = '6/15/2015 9:03 AM';
+          } else {
+            dateFixtures['medium'] = 'Jun 15, 2015, 9:03:01 AM';
+            dateFixtures['short'] = '6/15/2015, 9:03 AM';
+          }
+        }
+
+        if (!browserDetection.isOldChrome) {
+          dateFixtures['mediumTime'] = '9:03:01 AM';
+          dateFixtures['shortTime'] = '9:03 AM';
+        }
+
+        Object.keys(dateFixtures).forEach((pattern: string) => {
+          expectDateFormatAs(date, pattern, dateFixtures[pattern]);
+        });
+
+      });
+
+      it('should remove bidi control characters',
+         () => { expect(pipe.transform(date, 'MM/dd/yyyy').length).toEqual(10); });
+    });
   });
 }

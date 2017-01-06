@@ -1,14 +1,19 @@
-import {Component, createPlatform, coreLoadAndBootstrap, ReflectiveInjector} from '@angular/core';
-import {BROWSER_PLATFORM_PROVIDERS, BROWSER_APP_PROVIDERS} from '@angular/platform-browser';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var appProviders: any[] = [];
+import {Component, createPlatformFactory} from '@angular/core';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 // #docregion longform
 @Component({selector: 'my-app', template: 'Hello World'})
 class MyApp {
 }
 
-var platform = createPlatform(ReflectiveInjector.resolveAndCreate(BROWSER_PLATFORM_PROVIDERS));
-var appInjector = ReflectiveInjector.resolveAndCreate([BROWSER_APP_PROVIDERS, appProviders], platform.injector);
-coreLoadAndBootstrap(MyApp, appInjector);
+const myPlatformFactory = createPlatformFactory(platformBrowserDynamic, 'myPlatform');
+myPlatformFactory().bootstrapModule(MyApp);
 // #enddocregion

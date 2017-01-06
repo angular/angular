@@ -1,15 +1,23 @@
-import {ListWrapper} from '../../src/facade/collection';
-import {unimplemented} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injector} from '../di/injector';
-import {isPresent} from '../../src/facade/lang';
-import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
+import {unimplemented} from '../facade/errors';
+import {isPresent} from '../facade/lang';
+import {WtfScopeFn, wtfCreateScope, wtfLeave} from '../profile/profile';
 
-import {AppElement} from './element';
-
+import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
+import {ViewContainer} from './view_container';
 import {EmbeddedViewRef, ViewRef, ViewRef_} from './view_ref';
-import {ComponentFactory, ComponentRef} from './component_factory';
+
+
 
 /**
  * Represents a container where one or more Views can be attached.
@@ -63,15 +71,15 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ViewRef} for the newly created View.
    */
-  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C,
-                                 index?: number): EmbeddedViewRef<C>;
+  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
+      EmbeddedViewRef<C>;
 
   /**
    * Instantiates a single {@link Component} and inserts its Host View into this container at the
    * specified `index`.
    *
    * The component is instantiated using its {@link ComponentFactory} which can be
-   * obtained via {@link ComponentResolver#resolveComponent}.
+   * obtained via {@link ComponentFactoryResolver#resolveComponentFactory}.
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
@@ -79,8 +87,9 @@ export abstract class ViewContainerRef {
    *
    * Returns the {@link ComponentRef} of the Host View created for the newly instantiated Component.
    */
-  abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number,
-                              injector?: Injector, projectableNodes?: any[][]): ComponentRef<C>;
+  abstract createComponent<C>(
+      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
+      projectableNodes?: any[][]): ComponentRef<C>;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
@@ -90,6 +99,13 @@ export abstract class ViewContainerRef {
    * Returns the inserted {@link ViewRef}.
    */
   abstract insert(viewRef: ViewRef, index?: number): ViewRef;
+
+  /**
+   * Moves a View identified by a {@link ViewRef} into the container at the specified `index`.
+   *
+   * Returns the inserted {@link ViewRef}.
+   */
+  abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;
 
   /**
    * Returns the index of the View, specified via {@link ViewRef}, within the current container or
@@ -113,11 +129,11 @@ export abstract class ViewContainerRef {
 }
 
 export class ViewContainerRef_ implements ViewContainerRef {
-  constructor(private _element: AppElement) {}
+  constructor(private _element: ViewContainer) {}
 
   get(index: number): ViewRef { return this._element.nestedViews[index].ref; }
   get length(): number {
-    var views = this._element.nestedViews;
+    const views = this._element.nestedViews;
     return isPresent(views) ? views.length : 0;
   }
 
@@ -129,9 +145,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
-  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null,
-                        index: number = -1): EmbeddedViewRef<C> {
-    var viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
+  createEmbeddedView<C>(templateRef: TemplateRef<C>, context: C = null, index: number = -1):
+      EmbeddedViewRef<C> {
+    const viewRef: EmbeddedViewRef<any> = templateRef.createEmbeddedView(context);
     this.insert(viewRef, index);
     return viewRef;
   }
@@ -140,11 +156,12 @@ export class ViewContainerRef_ implements ViewContainerRef {
   _createComponentInContainerScope: WtfScopeFn =
       wtfCreateScope('ViewContainerRef#createComponent()');
 
-  createComponent<C>(componentFactory: ComponentFactory<C>, index: number = -1,
-                     injector: Injector = null, projectableNodes: any[][] = null): ComponentRef<C> {
-    var s = this._createComponentInContainerScope();
-    var contextInjector = isPresent(injector) ? injector : this._element.parentInjector;
-    var componentRef = componentFactory.create(contextInjector, projectableNodes);
+  createComponent<C>(
+      componentFactory: ComponentFactory<C>, index: number = -1, injector: Injector = null,
+      projectableNodes: any[][] = null): ComponentRef<C> {
+    const s = this._createComponentInContainerScope();
+    const contextInjector = injector || this._element.parentInjector;
+    const componentRef = componentFactory.create(contextInjector, projectableNodes);
     this.insert(componentRef.hostView, index);
     return wtfLeave(s, componentRef);
   }
@@ -154,15 +171,23 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   insert(viewRef: ViewRef, index: number = -1): ViewRef {
-    var s = this._insertScope();
+    const s = this._insertScope();
     if (index == -1) index = this.length;
-    var viewRef_ = <ViewRef_<any>>viewRef;
+    const viewRef_ = <ViewRef_<any>>viewRef;
     this._element.attachView(viewRef_.internalView, index);
     return wtfLeave(s, viewRef_);
   }
 
+  move(viewRef: ViewRef, currentIndex: number): ViewRef {
+    const s = this._insertScope();
+    if (currentIndex == -1) return;
+    const viewRef_ = <ViewRef_<any>>viewRef;
+    this._element.moveView(viewRef_.internalView, currentIndex);
+    return wtfLeave(s, viewRef_);
+  }
+
   indexOf(viewRef: ViewRef): number {
-    return ListWrapper.indexOf(this._element.nestedViews, (<ViewRef_<any>>viewRef).internalView);
+    return this._element.nestedViews.indexOf((<ViewRef_<any>>viewRef).internalView);
   }
 
   /** @internal */
@@ -170,9 +195,9 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): rename to destroy
   remove(index: number = -1): void {
-    var s = this._removeScope();
+    const s = this._removeScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     view.destroy();
     // view is intentionally not returned to the client.
     wtfLeave(s);
@@ -183,14 +208,14 @@ export class ViewContainerRef_ implements ViewContainerRef {
 
   // TODO(i): refactor insert+remove into move
   detach(index: number = -1): ViewRef {
-    var s = this._detachScope();
+    const s = this._detachScope();
     if (index == -1) index = this.length - 1;
-    var view = this._element.detachView(index);
+    const view = this._element.detachView(index);
     return wtfLeave(s, view.ref);
   }
 
   clear() {
-    for (var i = this.length - 1; i >= 0; i--) {
+    for (let i = this.length - 1; i >= 0; i--) {
       this.remove(i);
     }
   }

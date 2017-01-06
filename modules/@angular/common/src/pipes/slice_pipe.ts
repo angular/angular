@@ -1,54 +1,47 @@
-import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {isBlank, isString, isArray, StringWrapper} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {ListWrapper} from '../../src/facade/collection';
-
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {Pipe, PipeTransform} from '@angular/core';
+import {isBlank} from '../facade/lang';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
- * Creates a new List or String containing only a subset (slice) of the
- * elements.
+ * @ngModule CommonModule
+ * @whatItDoes Creates a new List or String containing a subset (slice) of the elements.
+ * @howToUse `array_or_string_expression | slice:start[:end]`
+ * @description
  *
- * The starting index of the subset to return is specified by the `start` parameter.
+ * Where the input expression is a `List` or `String`, and:
+ * - `start`: The starting index of the subset to return.
+ *   - **a positive integer**: return the item at `start` index and all items after
+ *     in the list or string expression.
+ *   - **a negative integer**: return the item at `start` index from the end and all items after
+ *     in the list or string expression.
+ *   - **if positive and greater than the size of the expression**: return an empty list or string.
+ *   - **if negative and greater than the size of the expression**: return entire list or string.
+ * - `end`: The ending index of the subset to return.
+ *   - **omitted**: return all items until the end.
+ *   - **if positive**: return all items before `end` index of the list or string.
+ *   - **if negative**: return all items before `end` index from the end of the list or string.
  *
- * The ending index of the subset to return is specified by the optional `end` parameter.
- *
- * ### Usage
- *
- *     expression | slice:start[:end]
- *
- * All behavior is based on the expected behavior of the JavaScript API
- * Array.prototype.slice() and String.prototype.slice()
- *
- * Where the input expression is a [List] or [String], and `start` is:
- *
- * - **a positive integer**: return the item at _start_ index and all items after
- * in the list or string expression.
- * - **a negative integer**: return the item at _start_ index from the end and all items after
- * in the list or string expression.
- * - **`|start|` greater than the size of the expression**: return an empty list or string.
- * - **`|start|` negative greater than the size of the expression**: return entire list or
- * string expression.
- *
- * and where `end` is:
- *
- * - **omitted**: return all items until the end of the input
- * - **a positive integer**: return all items before _end_ index of the list or string
- * expression.
- * - **a negative integer**: return all items before _end_ index from the end of the list
- * or string expression.
+ * All behavior is based on the expected behavior of the JavaScript API `Array.prototype.slice()`
+ * and `String.prototype.slice()`.
  *
  * When operating on a [List], the returned list is always a copy even when all
  * the elements are being returned.
  *
- * When operating on a blank value, returns it.
+ * When operating on a blank value, the pipe returns the blank value.
  *
  * ## List Example
  *
  * This `ngFor` example:
  *
- * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_list'}
+ * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_list'}
  *
  * produces the following:
  *
@@ -57,22 +50,22 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * ## String Examples
  *
- * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_string'}
+ * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
+ *
+ * @stable
  */
 
 @Pipe({name: 'slice', pure: false})
-@Injectable()
 export class SlicePipe implements PipeTransform {
-  transform(value: any, start: number, end: number = null): any {
+  transform(value: any, start: number, end?: number): any {
     if (isBlank(value)) return value;
+
     if (!this.supports(value)) {
-      throw new InvalidPipeArgumentException(SlicePipe, value);
+      throw new InvalidPipeArgumentError(SlicePipe, value);
     }
-    if (isString(value)) {
-      return StringWrapper.slice(value, start, end);
-    }
-    return ListWrapper.slice(value, start, end);
+
+    return value.slice(start, end);
   }
 
-  private supports(obj: any): boolean { return isString(obj) || isArray(obj); }
+  private supports(obj: any): boolean { return typeof obj === 'string' || Array.isArray(obj); }
 }

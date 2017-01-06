@@ -1,19 +1,27 @@
-import {ListWrapper} from '../../src/facade/collection';
-import {isBlank, isPresent, isFunction, global, setValueOnPath, DateWrapper} from '../../src/facade/lang';
-import {GenericBrowserDomAdapter} from './generic_browser_adapter';
-import {setRootDomAdapter} from '../dom/dom_adapter';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var _attrToPropMap = {
+import {setRootDomAdapter} from '../dom/dom_adapter';
+import {global, isBlank, isPresent, setValueOnPath} from '../facade/lang';
+
+import {GenericBrowserDomAdapter} from './generic_browser_adapter';
+
+const _attrToPropMap = {
   'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
-  'tabindex': 'tabIndex'
+  'tabindex': 'tabIndex',
 };
 
 const DOM_KEY_LOCATION_NUMPAD = 3;
 
 // Map to convert some key or keyIdentifier values to what will be returned by getEventKey
-var _keyMap = {
+const _keyMap: {[k: string]: string} = {
   // The following values are here for cross-browser compatibility and to match the W3C standard
   // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
   '\b': 'Backspace',
@@ -34,7 +42,7 @@ var _keyMap = {
 // There is a bug in Chrome for numeric keypad keys:
 // https://code.google.com/p/chromium/issues/detail?id=155654
 // 1, 2, 3 ... are reported as A, B, C ...
-var _chromeNumKeyPadMap = {
+const _chromeNumKeyPadMap = {
   'A': '1',
   'B': '2',
   'C': '3',
@@ -55,64 +63,70 @@ var _chromeNumKeyPadMap = {
 
 /**
  * A `DomAdapter` powered by full browser DOM APIs.
+ *
+ * @security Tread carefully! Interacting with the DOM directly is dangerous and
+ * can introduce XSS risks.
  */
-/* tslint:disable:requireParameterType */
+/* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  parse(templateHtml: string) { throw new Error("parse not implemented"); }
+  parse(templateHtml: string) { throw new Error('parse not implemented'); }
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  hasProperty(element, name: string): boolean { return name in element; }
-  setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
-  getProperty(el: /*element*/ any, name: string): any { return el[name]; }
-  invoke(el: /*element*/ any, methodName: string, args: any[]): any {
-    el[methodName].apply(el, args);
-  }
+  hasProperty(element: Node, name: string): boolean { return name in element; }
+  setProperty(el: Node, name: string, value: any) { (<any>el)[name] = value; }
+  getProperty(el: Node, name: string): any { return (<any>el)[name]; }
+  invoke(el: Node, methodName: string, args: any[]): any { (<any>el)[methodName](...args); }
 
   // TODO(tbosch): move this into a separate environment class once we have it
-  logError(error) {
-    if (window.console.error) {
-      window.console.error(error);
-    } else {
-      window.console.log(error);
+  logError(error: string): void {
+    if (window.console) {
+      if (console.error) {
+        console.error(error);
+      } else {
+        console.log(error);
+      }
     }
   }
 
-  log(error) { window.console.log(error); }
-
-  logGroup(error) {
-    if (window.console.group) {
-      window.console.group(error);
-      this.logError(error);
-    } else {
-      window.console.log(error);
+  log(error: string): void {
+    if (window.console) {
+      window.console.log && window.console.log(error);
     }
   }
 
-  logGroupEnd() {
-    if (window.console.groupEnd) {
-      window.console.groupEnd();
+  logGroup(error: string): void {
+    if (window.console) {
+      window.console.group && window.console.group(error);
+    }
+  }
+
+  logGroupEnd(): void {
+    if (window.console) {
+      window.console.groupEnd && window.console.groupEnd();
     }
   }
 
   get attrToPropMap(): any { return _attrToPropMap; }
 
   query(selector: string): any { return document.querySelector(selector); }
-  querySelector(el, selector: string): HTMLElement { return el.querySelector(selector); }
-  querySelectorAll(el, selector: string): any[] { return el.querySelectorAll(selector); }
-  on(el, evt, listener) { el.addEventListener(evt, listener, false); }
-  onAndCancel(el, evt, listener): Function {
+  querySelector(el: Element, selector: string): HTMLElement {
+    return el.querySelector(selector) as HTMLElement;
+  }
+  querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
+  on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
+  onAndCancel(el: Node, evt: any, listener: any): Function {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
     // https://code.google.com/p/dart/issues/detail?id=17406
     return () => { el.removeEventListener(evt, listener, false); };
   }
-  dispatchEvent(el, evt) { el.dispatchEvent(evt); }
+  dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
   createMouseEvent(eventType: string): MouseEvent {
-    var evt: MouseEvent = document.createEvent('MouseEvent');
+    const evt: MouseEvent = document.createEvent('MouseEvent');
     evt.initEvent(eventType, true, true);
     return evt;
   }
-  createEvent(eventType): Event {
-    var evt: Event = document.createEvent('Event');
+  createEvent(eventType: any): Event {
+    const evt: Event = document.createEvent('Event');
     evt.initEvent(eventType, true, true);
     return evt;
   }
@@ -123,74 +137,77 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   isPrevented(evt: Event): boolean {
     return evt.defaultPrevented || isPresent(evt.returnValue) && !evt.returnValue;
   }
-  getInnerHTML(el): string { return el.innerHTML; }
-  getTemplateContent(el): Node {
+  getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
+  getTemplateContent(el: Node): Node {
     return 'content' in el && el instanceof HTMLTemplateElement ? el.content : null;
   }
-  getOuterHTML(el): string { return el.outerHTML; }
+  getOuterHTML(el: HTMLElement): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
   nodeValue(node: Node): string { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
   content(node: Node): Node {
-    if (this.hasProperty(node, "content")) {
+    if (this.hasProperty(node, 'content')) {
       return (<any>node).content;
     } else {
       return node;
     }
   }
-  firstChild(el): Node { return el.firstChild; }
-  nextSibling(el): Node { return el.nextSibling; }
-  parentElement(el): Node { return el.parentNode; }
-  childNodes(el): Node[] { return el.childNodes; }
-  childNodesAsList(el): any[] {
-    var childNodes = el.childNodes;
-    var res = ListWrapper.createFixedSize(childNodes.length);
-    for (var i = 0; i < childNodes.length; i++) {
+  firstChild(el: Node): Node { return el.firstChild; }
+  nextSibling(el: Node): Node { return el.nextSibling; }
+  parentElement(el: Node): Node { return el.parentNode; }
+  childNodes(el: any): Node[] { return el.childNodes; }
+  childNodesAsList(el: Node): any[] {
+    const childNodes = el.childNodes;
+    const res = new Array(childNodes.length);
+    for (let i = 0; i < childNodes.length; i++) {
       res[i] = childNodes[i];
     }
     return res;
   }
-  clearNodes(el) {
+  clearNodes(el: Node) {
     while (el.firstChild) {
       el.removeChild(el.firstChild);
     }
   }
-  appendChild(el, node) { el.appendChild(node); }
-  removeChild(el, node) { el.removeChild(node); }
-  replaceChild(el: Node, newChild, oldChild) { el.replaceChild(newChild, oldChild); }
-  remove(node): Node {
+  appendChild(el: Node, node: Node) { el.appendChild(node); }
+  removeChild(el: Node, node: Node) { el.removeChild(node); }
+  replaceChild(el: Node, newChild: Node, oldChild: Node) { el.replaceChild(newChild, oldChild); }
+  remove(node: Node): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
     return node;
   }
-  insertBefore(el, node) { el.parentNode.insertBefore(node, el); }
-  insertAllBefore(el, nodes) { nodes.forEach(n => el.parentNode.insertBefore(n, el)); }
-  insertAfter(el, node) { el.parentNode.insertBefore(node, el.nextSibling); }
-  setInnerHTML(el, value) { el.innerHTML = value; }
-  getText(el): string { return el.textContent; }
-  // TODO(vicb): removed Element type because it does not support StyleElement
-  setText(el, value: string) { el.textContent = value; }
-  getValue(el): string { return el.value; }
-  setValue(el, value: string) { el.value = value; }
-  getChecked(el): boolean { return el.checked; }
-  setChecked(el, value: boolean) { el.checked = value; }
+  insertBefore(el: Node, node: Node) { el.parentNode.insertBefore(node, el); }
+  insertAllBefore(el: Node, nodes: Node[]) {
+    nodes.forEach((n: any) => el.parentNode.insertBefore(n, el));
+  }
+  insertAfter(el: Node, node: any) { el.parentNode.insertBefore(node, el.nextSibling); }
+  setInnerHTML(el: Element, value: string) { el.innerHTML = value; }
+  getText(el: Node): string { return el.textContent; }
+  setText(el: Node, value: string) { el.textContent = value; }
+  getValue(el: any): string { return el.value; }
+  setValue(el: any, value: string) { el.value = value; }
+  getChecked(el: any): boolean { return el.checked; }
+  setChecked(el: any, value: boolean) { el.checked = value; }
   createComment(text: string): Comment { return document.createComment(text); }
-  createTemplate(html): HTMLElement {
-    var t = document.createElement('template');
+  createTemplate(html: any): HTMLElement {
+    const t = document.createElement('template');
     t.innerHTML = html;
     return t;
   }
-  createElement(tagName, doc = document): HTMLElement { return doc.createElement(tagName); }
-  createElementNS(ns, tagName, doc = document): Element { return doc.createElementNS(ns, tagName); }
+  createElement(tagName: string, doc = document): HTMLElement { return doc.createElement(tagName); }
+  createElementNS(ns: string, tagName: string, doc = document): Element {
+    return doc.createElementNS(ns, tagName);
+  }
   createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
-    var el = <HTMLScriptElement>doc.createElement('SCRIPT');
+    const el = <HTMLScriptElement>doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
     return el;
   }
   createStyleElement(css: string, doc = document): HTMLStyleElement {
-    var style = <HTMLStyleElement>doc.createElement('style');
+    const style = <HTMLStyleElement>doc.createElement('style');
     this.appendChild(style, this.createTextNode(css));
     return style;
   }
@@ -198,55 +215,67 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }
   clone(node: Node): Node { return node.cloneNode(true); }
-  getElementsByClassName(element, name: string): HTMLElement[] {
+  getElementsByClassName(element: any, name: string): HTMLElement[] {
     return element.getElementsByClassName(name);
   }
-  getElementsByTagName(element, name: string): HTMLElement[] {
+  getElementsByTagName(element: any, name: string): HTMLElement[] {
     return element.getElementsByTagName(name);
   }
-  classList(element): any[] { return <any[]>Array.prototype.slice.call(element.classList, 0); }
-  addClass(element, className: string) { element.classList.add(className); }
-  removeClass(element, className: string) { element.classList.remove(className); }
-  hasClass(element, className: string): boolean { return element.classList.contains(className); }
-  setStyle(element, styleName: string, styleValue: string) {
+  classList(element: any): any[] { return Array.prototype.slice.call(element.classList, 0); }
+  addClass(element: any, className: string) { element.classList.add(className); }
+  removeClass(element: any, className: string) { element.classList.remove(className); }
+  hasClass(element: any, className: string): boolean {
+    return element.classList.contains(className);
+  }
+  setStyle(element: any, styleName: string, styleValue: string) {
     element.style[styleName] = styleValue;
   }
-  removeStyle(element, stylename: string) { element.style[stylename] = null; }
-  getStyle(element, stylename: string): string { return element.style[stylename]; }
-  hasStyle(element, styleName: string, styleValue: string = null): boolean {
-    var value = this.getStyle(element, styleName) || '';
+  removeStyle(element: any, stylename: string) {
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    element.style[stylename] = '';
+  }
+  getStyle(element: any, stylename: string): string { return element.style[stylename]; }
+  hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
+    const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
   }
-  tagName(element): string { return element.tagName; }
-  attributeMap(element): Map<string, string> {
-    var res = new Map<string, string>();
-    var elAttrs = element.attributes;
-    for (var i = 0; i < elAttrs.length; i++) {
-      var attrib = elAttrs[i];
+  tagName(element: any): string { return element.tagName; }
+  attributeMap(element: any): Map<string, string> {
+    const res = new Map<string, string>();
+    const elAttrs = element.attributes;
+    for (let i = 0; i < elAttrs.length; i++) {
+      const attrib = elAttrs[i];
       res.set(attrib.name, attrib.value);
     }
     return res;
   }
-  hasAttribute(element, attribute: string): boolean { return element.hasAttribute(attribute); }
-  hasAttributeNS(element, ns: string, attribute: string): boolean {
+  hasAttribute(element: Element, attribute: string): boolean {
+    return element.hasAttribute(attribute);
+  }
+  hasAttributeNS(element: Element, ns: string, attribute: string): boolean {
     return element.hasAttributeNS(ns, attribute);
   }
-  getAttribute(element, attribute: string): string { return element.getAttribute(attribute); }
-  getAttributeNS(element, ns: string, name: string): string {
+  getAttribute(element: Element, attribute: string): string {
+    return element.getAttribute(attribute);
+  }
+  getAttributeNS(element: Element, ns: string, name: string): string {
     return element.getAttributeNS(ns, name);
   }
-  setAttribute(element, name: string, value: string) { element.setAttribute(name, value); }
-  setAttributeNS(element, ns: string, name: string, value: string) {
+  setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
+  setAttributeNS(element: Element, ns: string, name: string, value: string) {
     element.setAttributeNS(ns, name, value);
   }
-  removeAttribute(element, attribute: string) { element.removeAttribute(attribute); }
-  removeAttributeNS(element, ns: string, name: string) { element.removeAttributeNS(ns, name); }
-  templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
+  removeAttribute(element: Element, attribute: string) { element.removeAttribute(attribute); }
+  removeAttributeNS(element: Element, ns: string, name: string) {
+    element.removeAttributeNS(ns, name);
+  }
+  templateAwareRoot(el: Node): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
   defaultDoc(): HTMLDocument { return document; }
-  getBoundingClientRect(el): any {
+  getBoundingClientRect(el: Element): any {
     try {
       return el.getBoundingClientRect();
     } catch (e) {
@@ -255,43 +284,35 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getTitle(): string { return document.title; }
   setTitle(newTitle: string) { document.title = newTitle || ''; }
-  elementMatches(n, selector: string): boolean {
-    var matches = false;
+  elementMatches(n: any, selector: string): boolean {
     if (n instanceof HTMLElement) {
-      if (n.matches) {
-        matches = n.matches(selector);
-      } else if (n.msMatchesSelector) {
-        matches = n.msMatchesSelector(selector);
-      } else if (n.webkitMatchesSelector) {
-        matches = n.webkitMatchesSelector(selector);
-      }
+      return n.matches && n.matches(selector) ||
+          n.msMatchesSelector && n.msMatchesSelector(selector) ||
+          n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
     }
-    return matches;
+
+    return false;
   }
-  isTemplateElement(el: any): boolean {
-    return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
+  isTemplateElement(el: Node): boolean {
+    return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
   isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
-  hasShadowRoot(node): boolean { return node instanceof HTMLElement && isPresent(node.shadowRoot); }
-  isShadowRoot(node): boolean { return node instanceof DocumentFragment; }
-  importIntoDoc(node: Node): any {
-    var toImport = node;
-    if (this.isTemplateElement(node)) {
-      toImport = this.content(node);
-    }
-    return document.importNode(toImport, true);
+  hasShadowRoot(node: any): boolean {
+    return isPresent(node.shadowRoot) && node instanceof HTMLElement;
   }
+  isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
+  importIntoDoc(node: Node): any { return document.importNode(this.templateAwareRoot(node), true); }
   adoptNode(node: Node): any { return document.adoptNode(node); }
   getHref(el: Element): string { return (<any>el).href; }
-  getEventKey(event): string {
-    var key = event.key;
+
+  getEventKey(event: any): string {
+    let key = event.key;
     if (isBlank(key)) {
       key = event.keyIdentifier;
       // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-      // Safari
-      // cf
+      // Safari cf
       // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
       if (isBlank(key)) {
         return 'Unidentified';
@@ -302,62 +323,67 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
           // There is a bug in Chrome for numeric keypad keys:
           // https://code.google.com/p/chromium/issues/detail?id=155654
           // 1, 2, 3 ... are reported as A, B, C ...
-          key = _chromeNumKeyPadMap[key];
+          key = (_chromeNumKeyPadMap as any)[key];
         }
       }
     }
-    if (_keyMap.hasOwnProperty(key)) {
-      key = _keyMap[key];
-    }
-    return key;
+
+    return _keyMap[key] || key;
   }
   getGlobalEventTarget(target: string): EventTarget {
-    if (target == "window") {
+    if (target === 'window') {
       return window;
-    } else if (target == "document") {
+    }
+    if (target === 'document') {
       return document;
-    } else if (target == "body") {
+    }
+    if (target === 'body') {
       return document.body;
     }
   }
   getHistory(): History { return window.history; }
   getLocation(): Location { return window.location; }
   getBaseHref(): string {
-    var href = getBaseElementHref();
-    if (isBlank(href)) {
-      return null;
-    }
-    return relativePath(href);
+    const href = getBaseElementHref();
+    return isBlank(href) ? null : relativePath(href);
   }
   resetBaseElement(): void { baseElement = null; }
   getUserAgent(): string { return window.navigator.userAgent; }
-  setData(element, name: string, value: string) {
+  setData(element: Element, name: string, value: string) {
     this.setAttribute(element, 'data-' + name, value);
   }
-  getData(element, name: string): string { return this.getAttribute(element, 'data-' + name); }
-  getComputedStyle(element): any { return getComputedStyle(element); }
+  getData(element: Element, name: string): string {
+    return this.getAttribute(element, 'data-' + name);
+  }
+  getComputedStyle(element: any): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
   setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
-  requestAnimationFrame(callback): number { return window.requestAnimationFrame(callback); }
-  cancelAnimationFrame(id: number) { window.cancelAnimationFrame(id); }
-  supportsWebAnimation(): boolean { return isFunction(document.body['animate']); }
+  supportsWebAnimation(): boolean {
+    return typeof(<any>Element).prototype['animate'] === 'function';
+  }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
-    if (isPresent(window.performance) && isPresent(window.performance.now)) {
-      return window.performance.now();
-    } else {
-      return DateWrapper.toMillis(DateWrapper.now());
-    }
+    return window.performance && window.performance.now ? window.performance.now() :
+                                                          new Date().getTime();
+  }
+
+  supportsCookies(): boolean { return true; }
+
+  getCookie(name: string): string { return parseCookieValue(document.cookie, name); }
+
+  setCookie(name: string, value: string) {
+    // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
+    // not clear other cookies.
+    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
   }
 }
 
-
-var baseElement = null;
+let baseElement: HTMLElement = null;
 function getBaseElementHref(): string {
-  if (isBlank(baseElement)) {
+  if (!baseElement) {
     baseElement = document.querySelector('base');
-    if (isBlank(baseElement)) {
+    if (!baseElement) {
       return null;
     }
   }
@@ -365,12 +391,25 @@ function getBaseElementHref(): string {
 }
 
 // based on urlUtils.js in AngularJS 1
-var urlParsingNode = null;
-function relativePath(url): string {
-  if (isBlank(urlParsingNode)) {
-    urlParsingNode = document.createElement("a");
+let urlParsingNode: any;
+function relativePath(url: any): string {
+  if (!urlParsingNode) {
+    urlParsingNode = document.createElement('a');
   }
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
                                                        '/' + urlParsingNode.pathname;
+}
+
+export function parseCookieValue(cookieStr: string, name: string): string {
+  name = encodeURIComponent(name);
+  for (const cookie of cookieStr.split(';')) {
+    const eqIndex = cookie.indexOf('=');
+    const [cookieName, cookieValue]: string[] =
+        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
+    if (cookieName.trim() === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
 }

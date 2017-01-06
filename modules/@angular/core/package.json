@@ -1,15 +1,15 @@
 {
   "name": "@angular/core",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
-  "main": "index.js",
-  "jsnext:main": "esm/index.js",
+  "description": "Angular - the core framework",
+  "main": "bundles/core.umd.js",
+  "module": "index.js",
   "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "rxjs": "5.0.0-beta.6",
-    "zone.js": "^0.6.6"
+    "rxjs": "^5.0.1",
+    "zone.js": "^0.7.2"
   },
   "repository": {
     "type": "git",

@@ -1,15 +1,68 @@
-import {Injectable, Inject, OpaqueToken} from '@angular/core';
-import {isPresent} from '../../../src/facade/lang';
-import {BaseException} from '../../../src/facade/exceptions';
-import {HammerGesturesPluginCommon} from './hammer_common';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken("HammerGestureConfig");
+import {Inject, Injectable, OpaqueToken} from '@angular/core';
+import {EventManagerPlugin} from './event_manager';
+
+const EVENT_NAMES = {
+  // pan
+  'pan': true,
+  'panstart': true,
+  'panmove': true,
+  'panend': true,
+  'pancancel': true,
+  'panleft': true,
+  'panright': true,
+  'panup': true,
+  'pandown': true,
+  // pinch
+  'pinch': true,
+  'pinchstart': true,
+  'pinchmove': true,
+  'pinchend': true,
+  'pinchcancel': true,
+  'pinchin': true,
+  'pinchout': true,
+  // press
+  'press': true,
+  'pressup': true,
+  // rotate
+  'rotate': true,
+  'rotatestart': true,
+  'rotatemove': true,
+  'rotateend': true,
+  'rotatecancel': true,
+  // swipe
+  'swipe': true,
+  'swipeleft': true,
+  'swiperight': true,
+  'swipeup': true,
+  'swipedown': true,
+  // tap
+  'tap': true,
+};
+
+/**
+ * A DI token that you can use to provide{@link HammerGestureConfig} to Angular. Use it to configure
+ * Hammer gestures.
+ *
+ * @experimental
+ */
+export const HAMMER_GESTURE_CONFIG: OpaqueToken = new OpaqueToken('HammerGestureConfig');
 
 export interface HammerInstance {
   on(eventName: string, callback: Function): void;
   off(eventName: string, callback: Function): void;
 }
 
+/**
+ * @experimental
+ */
 @Injectable()
 export class HammerGestureConfig {
   events: string[] = [];
@@ -17,12 +70,12 @@ export class HammerGestureConfig {
   overrides: {[key: string]: Object} = {};
 
   buildHammer(element: HTMLElement): HammerInstance {
-    var mc = new Hammer(element);
+    const mc = new Hammer(element);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
 
-    for (let eventName in this.overrides) {
+    for (const eventName in this.overrides) {
       mc.get(eventName).set(this.overrides[eventName]);
     }
 
@@ -31,29 +84,33 @@ export class HammerGestureConfig {
 }
 
 @Injectable()
-export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
+export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(@Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) { super(); }
 
   supports(eventName: string): boolean {
-    if (!super.supports(eventName) && !this.isCustomEvent(eventName)) return false;
+    if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
+      return false;
+    }
 
-    if (!isPresent(window['Hammer'])) {
-      throw new BaseException(`Hammer.js is not loaded, can not bind ${eventName} event`);
+    if (!(window as any).Hammer) {
+      throw new Error(`Hammer.js is not loaded, can not bind ${eventName} event`);
     }
 
     return true;
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var zone = this.manager.getZone();
+    const zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
-      var mc = this._config.buildHammer(element);
-      var callback = function(eventObj) { zone.runGuarded(function() { handler(eventObj); }); };
+      const mc = this._config.buildHammer(element);
+      const callback = function(eventObj: HammerInput) {
+        zone.runGuarded(function() { handler(eventObj); });
+      };
       mc.on(eventName, callback);
-      return () => { mc.off(eventName, callback); };
+      return () => mc.off(eventName, callback);
     });
   }
 

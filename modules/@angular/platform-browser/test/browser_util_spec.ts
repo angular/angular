@@ -1,11 +1,18 @@
-import {describe, it, iit, ddescribe, expect} from '@angular/core/testing';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
 import {BrowserDetection} from '../testing/browser_util';
-import {StringMapWrapper} from '../src/facade/collection';
 
 export function main() {
   describe('BrowserDetection', () => {
 
-    var browsers = [
+    const browsers = [
       {
         name: 'Chrome',
         ua: 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36',
@@ -16,8 +23,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true,
-        isChromeDesktop: true
+        isChromeDesktop: true,
+        isOldChrome: false
       },
       {
         name: 'Chrome mobile',
@@ -29,8 +36,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: true,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Firefox',
@@ -42,8 +49,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE9',
@@ -55,8 +62,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE10',
@@ -68,8 +75,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'IE11',
@@ -81,8 +88,21 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
+      },
+      {
+        name: 'IEMobile',
+        ua: 'Mozilla/5.0 (Mobile; Windows Phone 8.1; Android 4.0; ARM; Trident/7.0; Touch; rv:11.0; IEMobile/11.0; NOKIA; Lumia 520) like iPhone OS 7_0_3 Mac OS X AppleWebKit/537 (KHTML, like Gecko) Mobile Safari/537',
+        isFirefox: false,
+        isAndroid: false,
+        isEdge: false,
+        isIE: true,
+        isWebkit: false,
+        isIOS7: false,
+        isSlow: true,
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Edge',
@@ -94,8 +114,8 @@ export function main() {
         isWebkit: false,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.1',
@@ -107,8 +127,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.2',
@@ -120,8 +140,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.3',
@@ -133,8 +153,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Android4.4',
@@ -146,8 +166,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: true
       },
       {
         name: 'Safari7',
@@ -159,8 +179,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'Safari8',
@@ -172,8 +192,8 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS7',
@@ -185,8 +205,8 @@ export function main() {
         isWebkit: true,
         isIOS7: true,
         isSlow: true,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       },
       {
         name: 'iOS8',
@@ -198,23 +218,23 @@ export function main() {
         isWebkit: true,
         isIOS7: false,
         isSlow: false,
-        supportsIntlApi: false,
-        isChromeDesktop: false
+        isChromeDesktop: false,
+        isOldChrome: false
       }
     ];
 
     browsers.forEach((browser: {[key: string]: any}) => {
-      it(`should detect ${StringMapWrapper.get(browser, 'name')}`, () => {
-        var bd = new BrowserDetection(<string>StringMapWrapper.get(browser, 'ua'));
-        expect(bd.isFirefox).toBe(StringMapWrapper.get(browser, 'isFirefox'));
-        expect(bd.isAndroid).toBe(StringMapWrapper.get(browser, 'isAndroid'));
-        expect(bd.isEdge).toBe(StringMapWrapper.get(browser, 'isEdge'));
-        expect(bd.isIE).toBe(StringMapWrapper.get(browser, 'isIE'));
-        expect(bd.isWebkit).toBe(StringMapWrapper.get(browser, 'isWebkit'));
-        expect(bd.isIOS7).toBe(StringMapWrapper.get(browser, 'isIOS7'));
-        expect(bd.isSlow).toBe(StringMapWrapper.get(browser, 'isSlow'));
-        expect(bd.supportsIntlApi).toBe(StringMapWrapper.get(browser, 'supportsIntlApi'));
-        expect(bd.isChromeDesktop).toBe(StringMapWrapper.get(browser, 'isChromeDesktop'));
+      it(`should detect ${browser[ 'name']}`, () => {
+        const bd = new BrowserDetection(<string>browser['ua']);
+        expect(bd.isFirefox).toBe(browser['isFirefox']);
+        expect(bd.isAndroid).toBe(browser['isAndroid']);
+        expect(bd.isEdge).toBe(browser['isEdge']);
+        expect(bd.isIE).toBe(browser['isIE']);
+        expect(bd.isWebkit).toBe(browser['isWebkit']);
+        expect(bd.isIOS7).toBe(browser['isIOS7']);
+        expect(bd.isSlow).toBe(browser['isSlow']);
+        expect(bd.isChromeDesktop).toBe(browser['isChromeDesktop']);
+        expect(bd.isOldChrome).toBe(browser['isOldChrome']);
       });
     });
   });

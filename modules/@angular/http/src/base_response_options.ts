@@ -1,8 +1,17 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injectable} from '@angular/core';
-import {isPresent, isJsObject} from '../src/facade/lang';
-import {Headers} from './headers';
+
 import {ResponseType} from './enums';
+import {Headers} from './headers';
 import {ResponseOptionsArgs} from './interfaces';
+
 
 /**
  * Creates a response options object to be optionally provided when instantiating a
@@ -29,13 +38,15 @@ import {ResponseOptionsArgs} from './interfaces';
  *
  * console.log('res.json():', res.json()); // Object {name: "Jeff"}
  * ```
+ *
+ * @experimental
  */
 export class ResponseOptions {
-  // TODO: ArrayBuffer | FormData | Blob
+  // TODO: FormData | Blob
   /**
-   * String or Object representing the body of the {@link Response}.
+   * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body: string | Object;
+  body: string|Object|ArrayBuffer|Blob;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
@@ -55,12 +66,12 @@ export class ResponseOptions {
   type: ResponseType;
   url: string;
   constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
-    this.body = isPresent(body) ? body : null;
-    this.status = isPresent(status) ? status : null;
-    this.headers = isPresent(headers) ? headers : null;
-    this.statusText = isPresent(statusText) ? statusText : null;
-    this.type = isPresent(type) ? type : null;
-    this.url = isPresent(url) ? url : null;
+    this.body = body != null ? body : null;
+    this.status = status != null ? status : null;
+    this.headers = headers != null ? headers : null;
+    this.statusText = statusText != null ? statusText : null;
+    this.type = type != null ? type : null;
+    this.url = url != null ? url : null;
   }
 
   /**
@@ -90,13 +101,12 @@ export class ResponseOptions {
    */
   merge(options?: ResponseOptionsArgs): ResponseOptions {
     return new ResponseOptions({
-      body: isPresent(options) && isPresent(options.body) ? options.body : this.body,
-      status: isPresent(options) && isPresent(options.status) ? options.status : this.status,
-      headers: isPresent(options) && isPresent(options.headers) ? options.headers : this.headers,
-      statusText: isPresent(options) && isPresent(options.statusText) ? options.statusText :
-                                                                        this.statusText,
-      type: isPresent(options) && isPresent(options.type) ? options.type : this.type,
-      url: isPresent(options) && isPresent(options.url) ? options.url : this.url,
+      body: options && options.body != null ? options.body : this.body,
+      status: options && options.status != null ? options.status : this.status,
+      headers: options && options.headers != null ? options.headers : this.headers,
+      statusText: options && options.statusText != null ? options.statusText : this.statusText,
+      type: options && options.type != null ? options.type : this.type,
+      url: options && options.url != null ? options.url : this.url,
     });
   }
 }
@@ -125,7 +135,7 @@ export class ResponseOptions {
  *   headers:Headers = new Headers({network: 'github'});
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(ResponseOptions, {useClass: MyOptions})]);
+ * bootstrap(App, [HTTP_PROVIDERS, {provide: ResponseOptions, useClass: MyOptions}]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Response}
@@ -144,6 +154,8 @@ export class ResponseOptions {
  * console.log('res.headers.get("framework"):', res.headers.get('framework')); // angular
  * console.log('res.text():', res.text()); // Angular;
  * ```
+ *
+ * @experimental
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {

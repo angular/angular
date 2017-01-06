@@ -1,15 +1,16 @@
 {
   "name": "@angular/http",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "",
-  "main": "index.js",
-  "jsnext:main": "esm/index.js",
+  "description": "Angular - the http service",
+  "main": "bundles/http.umd.js",
+  "module": "index.js",
   "typings": "index.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
-    "rxjs": "5.0.0-beta.6",
-    "@angular/core": "0.0.0-PLACEHOLDER"
+    "rxjs": "^5.0.1",
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

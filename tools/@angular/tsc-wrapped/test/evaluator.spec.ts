@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
@@ -7,6 +15,7 @@ import {Symbols} from '../src/symbols';
 import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
 
 describe('Evaluator', () => {
+  const documentRegistry = ts.createDocumentRegistry();
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
   let program: ts.Program;
@@ -15,26 +24,30 @@ describe('Evaluator', () => {
   let evaluator: Evaluator;
 
   beforeEach(() => {
-    host = new Host(
-        FILES,
-        ['expressions.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts', 'newExpression.ts']);
-    service = ts.createLanguageService(host);
+    host = new Host(FILES, [
+      'expressions.ts', 'consts.ts', 'const_expr.ts', 'forwardRef.ts', 'classes.ts',
+      'newExpression.ts', 'errors.ts', 'declared.ts'
+    ]);
+    service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
-    symbols = new Symbols();
-    evaluator = new Evaluator(typeChecker, symbols, []);
+    symbols = new Symbols(null);
+    evaluator = new Evaluator(symbols, new Map());
   });
 
   it('should not have typescript errors in test data', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
     for (const sourceFile of program.getSourceFiles()) {
       expectNoDiagnostics(service.getSyntacticDiagnostics(sourceFile.fileName));
-      expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
+      if (sourceFile.fileName != 'errors.ts') {
+        // Skip errors.ts because we it has intentional semantic errors that we are testing for.
+        expectNoDiagnostics(service.getSemanticDiagnostics(sourceFile.fileName));
+      }
     }
   });
 
   it('should be able to fold literal expressions', () => {
-    var consts = program.getSourceFile('consts.ts');
+    const consts = program.getSourceFile('consts.ts');
     expect(evaluator.isFoldable(findVar(consts, 'someName').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(consts, 'someBool').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(consts, 'one').initializer)).toBeTruthy();
@@ -42,15 +55,21 @@ describe('Evaluator', () => {
   });
 
   it('should be able to fold expressions with foldable references', () => {
-    var expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts');
+    symbols.define('someName', 'some-name');
+    symbols.define('someBool', true);
+    symbols.define('one', 1);
+    symbols.define('two', 2);
     expect(evaluator.isFoldable(findVar(expressions, 'three').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(expressions, 'four').initializer)).toBeTruthy();
+    symbols.define('three', 3);
+    symbols.define('four', 4);
     expect(evaluator.isFoldable(findVar(expressions, 'obj').initializer)).toBeTruthy();
     expect(evaluator.isFoldable(findVar(expressions, 'arr').initializer)).toBeTruthy();
   });
 
   it('should be able to evaluate literal expressions', () => {
-    var consts = program.getSourceFile('consts.ts');
+    const consts = program.getSourceFile('consts.ts');
     expect(evaluator.evaluateNode(findVar(consts, 'someName').initializer)).toBe('some-name');
     expect(evaluator.evaluateNode(findVar(consts, 'someBool').initializer)).toBe(true);
     expect(evaluator.evaluateNode(findVar(consts, 'one').initializer)).toBe(1);
@@ -58,9 +77,15 @@ describe('Evaluator', () => {
   });
 
   it('should be able to evaluate expressions', () => {
-    var expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts');
+    symbols.define('someName', 'some-name');
+    symbols.define('someBool', true);
+    symbols.define('one', 1);
+    symbols.define('two', 2);
     expect(evaluator.evaluateNode(findVar(expressions, 'three').initializer)).toBe(3);
+    symbols.define('three', 3);
     expect(evaluator.evaluateNode(findVar(expressions, 'four').initializer)).toBe(4);
+    symbols.define('four', 4);
     expect(evaluator.evaluateNode(findVar(expressions, 'obj').initializer))
         .toEqual({one: 1, two: 2, three: 3, four: 4});
     expect(evaluator.evaluateNode(findVar(expressions, 'arr').initializer)).toEqual([1, 2, 3, 4]);
@@ -100,29 +125,29 @@ describe('Evaluator', () => {
   });
 
   it('should report recursive references as symbolic', () => {
-    var expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts');
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveA').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveB', module: undefined});
+        .toEqual({__symbolic: 'reference', name: 'recursiveB'});
     expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
-        .toEqual({__symbolic: 'reference', name: 'recursiveA', module: undefined});
+        .toEqual({__symbolic: 'reference', name: 'recursiveA'});
   });
 
   it('should correctly handle special cases for CONST_EXPR', () => {
-    var const_expr = program.getSourceFile('const_expr.ts');
+    const const_expr = program.getSourceFile('const_expr.ts');
     expect(evaluator.evaluateNode(findVar(const_expr, 'bTrue').initializer)).toEqual(true);
     expect(evaluator.evaluateNode(findVar(const_expr, 'bFalse').initializer)).toEqual(false);
   });
 
   it('should resolve a forwardRef', () => {
-    var forwardRef = program.getSourceFile('forwardRef.ts');
+    const forwardRef = program.getSourceFile('forwardRef.ts');
     expect(evaluator.evaluateNode(findVar(forwardRef, 'bTrue').initializer)).toEqual(true);
     expect(evaluator.evaluateNode(findVar(forwardRef, 'bFalse').initializer)).toEqual(false);
   });
 
   it('should return new expressions', () => {
-    evaluator =
-        new Evaluator(typeChecker, symbols, [{from: './classes', namedImports: [{name: 'Value'}]}]);
-    var newExpression = program.getSourceFile('newExpression.ts');
+    symbols.define('Value', {__symbolic: 'reference', module: './classes', name: 'Value'});
+    evaluator = new Evaluator(symbols, new Map());
+    const newExpression = program.getSourceFile('newExpression.ts');
     expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer)).toEqual({
       __symbolic: 'new',
       expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
@@ -133,6 +158,62 @@ describe('Evaluator', () => {
       expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
       arguments: ['name', 12]
     });
+  });
+
+  it('should support referene to a declared module type', () => {
+    const declared = program.getSourceFile('declared.ts');
+    const aDecl = findVar(declared, 'a');
+    expect(evaluator.evaluateNode(aDecl.type)).toEqual({
+      __symbolic: 'select',
+      expression: {__symbolic: 'reference', name: 'Foo'},
+      member: 'A'
+    });
+  });
+
+  it('should return errors for unsupported expressions', () => {
+    const errors = program.getSourceFile('errors.ts');
+    const fDecl = findVar(errors, 'f');
+    expect(evaluator.evaluateNode(fDecl.initializer))
+        .toEqual(
+            {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 12});
+    const eDecl = findVar(errors, 'e');
+    expect(evaluator.evaluateNode(eDecl.type)).toEqual({
+      __symbolic: 'error',
+      message: 'Could not resolve type',
+      line: 2,
+      character: 11,
+      context: {typeName: 'NotFound'}
+    });
+    const sDecl = findVar(errors, 's');
+    expect(evaluator.evaluateNode(sDecl.initializer)).toEqual({
+      __symbolic: 'error',
+      message: 'Name expected',
+      line: 3,
+      character: 14,
+      context: {received: '1'}
+    });
+    const tDecl = findVar(errors, 't');
+    expect(evaluator.evaluateNode(tDecl.initializer)).toEqual({
+      __symbolic: 'error',
+      message: 'Expression form not supported',
+      line: 4,
+      character: 12
+    });
+  });
+
+  it('should be able to fold an array spread', () => {
+    const expressions = program.getSourceFile('expressions.ts');
+    symbols.define('arr', [1, 2, 3, 4]);
+    const arrSpread = findVar(expressions, 'arrSpread');
+    expect(evaluator.evaluateNode(arrSpread.initializer)).toEqual([0, 1, 2, 3, 4, 5]);
+  });
+
+  it('should be able to produce a spread expression', () => {
+    const expressions = program.getSourceFile('expressions.ts');
+    const arrSpreadRef = findVar(expressions, 'arrSpreadRef');
+    expect(evaluator.evaluateNode(arrSpreadRef.initializer)).toEqual([
+      0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5
+    ]);
   });
 });
 
@@ -152,9 +233,15 @@ const FILES: Directory = {
     export var someBool = true;
     export var one = 1;
     export var two = 2;
+    export var arrImport = [1, 2, 3, 4];
   `,
   'expressions.ts': `
-    import {someName, someBool, one, two} from './consts';
+    import {arrImport} from './consts';
+
+    export var someName = 'some-name';
+    export var someBool = true;
+    export var one = 1;
+    export var two = 2;
 
     export var three = one + two;
     export var four = two * two;
@@ -183,7 +270,11 @@ const FILES: Directory = {
     export var bShiftLeft = 1 << 2;              // 0x04
     export var bShiftRight = -1 >> 2;            // -1
     export var bShiftRightU = -1 >>> 2;          // 0x3fffffff
-    
+
+    export var arrSpread = [0, ...arr, 5];
+
+    export var arrSpreadRef = [0, ...arrImport, 5];
+
     export var recursiveA = recursiveB;
     export var recursiveB = recursiveA;
   `,
@@ -214,5 +305,18 @@ const FILES: Directory = {
     function forwardRef(value: any) { return value; }
     export const someValue = new Value("name", 12);
     export const complex = CONST_EXPR(new Value("name", forwardRef(() => 12)));
+  `,
+  'errors.ts': `
+    let f = () => 1;
+    let e: NotFound;
+    let s = { 1: 1, 2: 2 };
+    let t = typeof 12;
+  `,
+  'declared.ts': `
+    declare namespace Foo {
+      type A = string;
+    }
+
+    let a: Foo.A = 'some value';
   `
 };

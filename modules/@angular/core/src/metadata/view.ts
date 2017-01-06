@@ -1,8 +1,15 @@
-import {Type} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {AnimationEntryMetadata} from '../animation/metadata';
 
 /**
- * Defines template and style encapsulation options available for Component's {@link View}.
+ * Defines template and style encapsulation options available for Component's {@link Component}.
  *
  * See {@link ViewMetadata#encapsulation}.
  * @stable
@@ -30,21 +37,10 @@ export enum ViewEncapsulation {
   None
 }
 
-export var VIEW_ENCAPSULATION_VALUES =
-    [ViewEncapsulation.Emulated, ViewEncapsulation.Native, ViewEncapsulation.None];
-
-
 /**
  * Metadata properties available for configuring Views.
  *
- * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
- * within the template.
- *
- * When a component is instantiated, the template is loaded into the component's shadow root, and
- * the expressions and statements in the template are evaluated against the component.
- *
- * For details on the `@Component` annotation, see {@link ComponentMetadata}.
+ * For details on the `@Component` annotation, see {@link Component}.
  *
  * ### Example
  *
@@ -52,7 +48,6 @@ export var VIEW_ENCAPSULATION_VALUES =
  * @Component({
  *   selector: 'greet',
  *   template: 'Hello {{name}}!',
- *   directives: [GreetUser, Bold]
  * })
  * class Greet {
  *   name: string;
@@ -62,89 +57,43 @@ export var VIEW_ENCAPSULATION_VALUES =
  *   }
  * }
  * ```
- * @ts2dart_const
+ *
+ * @deprecated Use Component instead.
+ *
+ * {@link Component}
  */
 export class ViewMetadata {
-  /**
-   * Specifies a template URL for an Angular component.
-   *
-   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
-   *
-   * <!-- TODO: what's the url relative to? -->
-   */
+  /** {@link Component.templateUrl} */
   templateUrl: string;
-
-  /**
-   * Specifies an inline template for an Angular component.
-   *
-   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
-   */
+  /** {@link Component.template} */
   template: string;
-
-  /**
-   * Specifies stylesheet URLs for an Angular component.
-   *
-   * <!-- TODO: what's the url relative to? -->
-   */
+  /** {@link Component.stylesUrl} */
   styleUrls: string[];
-
-  /**
-   * Specifies an inline stylesheet for an Angular component.
-   */
+  /** {@link Component.styles} */
   styles: string[];
-
-  /**
-   * Specifies a list of directives that can be used within a template.
-   *
-   * Directives must be listed explicitly to provide proper component encapsulation.
-   *
-   * ### Example
-   *
-   * ```javascript
-   * @Component({
-   *   selector: 'my-component',
-   *   directives: [NgFor]
-   *   template: '
-   *   <ul>
-   *     <li *ngFor="let item of items">{{item}}</li>
-   *   </ul>'
-   * })
-   * class MyComponent {
-   * }
-   * ```
-   */
-  directives: Array<Type | any[]>;
-
-  pipes: Array<Type | any[]>;
-
-  /**
-   * Specify how the template and the styles should be encapsulated.
-   * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
-   * has styles,
-   * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
-   */
+  /** {@link Component.encapsulation} */
   encapsulation: ViewEncapsulation;
-
+  /** {@link Component.animation} */
   animations: AnimationEntryMetadata[];
+  /** {@link Component.interpolation} */
+  interpolation: [string, string];
 
-  constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls,
-               animations}: {
-    templateUrl?: string,
-    template?: string,
-    directives?: Array<Type | any[]>,
-    pipes?: Array<Type | any[]>,
-    encapsulation?: ViewEncapsulation,
-    styles?: string[],
-    styleUrls?: string[],
-    animations?: AnimationEntryMetadata[]
-  } = {}) {
+  constructor(
+      {templateUrl, template, encapsulation, styles, styleUrls, animations, interpolation}: {
+        templateUrl?: string,
+        template?: string,
+        encapsulation?: ViewEncapsulation,
+        styles?: string[],
+        styleUrls?: string[],
+        animations?: AnimationEntryMetadata[],
+        interpolation?: [string, string]
+      } = {}) {
     this.templateUrl = templateUrl;
     this.template = template;
     this.styleUrls = styleUrls;
     this.styles = styles;
-    this.directives = directives;
-    this.pipes = pipes;
     this.encapsulation = encapsulation;
     this.animations = animations;
+    this.interpolation = interpolation;
   }
 }

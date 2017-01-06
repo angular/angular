@@ -1,8 +1,17 @@
-import {provide} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
-import {UrlResolver} from '@angular/compiler';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var MyApp: any;
+import {UrlResolver} from '@angular/compiler';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+
+let MyApp: any;
 
 // #docregion url_resolver
 class MyUrlResolver extends UrlResolver {
@@ -15,5 +24,15 @@ class MyUrlResolver extends UrlResolver {
   }
 }
 
-bootstrap(MyApp, [provide(UrlResolver, {useClass: MyUrlResolver})]);
+@NgModule({
+  imports: [BrowserModule],
+  providers: [{provide: UrlResolver, useClass: MyUrlResolver}],
+  bootstrap: [MyApp]
+})
+class AppModule {
+}
+
+export function main() {
+  platformBrowserDynamic().bootstrapModule(AppModule);
+}
 // #enddocregion

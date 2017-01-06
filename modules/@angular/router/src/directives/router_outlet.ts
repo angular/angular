@@ -1,64 +1,115 @@
-import {
-  ResolvedReflectiveProvider,
-  Directive,
-  ViewContainerRef,
-  Attribute,
-  ComponentRef,
-  ComponentFactory,
-  ReflectiveInjector
-} from '@angular/core';
-import {RouterOutletMap} from '../router';
-import {DEFAULT_OUTLET_NAME} from '../constants';
-import {isPresent, isBlank} from '../facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Attribute, ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
+
+import {RouterOutletMap} from '../router_outlet_map';
+import {ActivatedRoute} from '../router_state';
+import {PRIMARY_OUTLET} from '../shared';
 
 /**
- * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+ * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
+ * state.
  *
- * ## Use
+ * @howToUse
  *
  * ```
  * <router-outlet></router-outlet>
+ * <router-outlet name='left'></router-outlet>
+ * <router-outlet name='right'></router-outlet>
  * ```
  *
- * Outlets can be named.
+ * A router outlet will emit an activate event any time a new component is being instantiated,
+ * and a deactivate event when it is being destroyed.
  *
  * ```
- * <router-outlet name="right"></router-outlet>
+ * <router-outlet
+ *   (activate)='onActivate($event)'
+ *   (deactivate)='onDeactivate($event)'></router-outlet>
  * ```
+ * @selector 'a[routerLink]'
+ * @ngModule RouterModule
+ *
+ * @stable
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet {
-  private _activated: ComponentRef<any>;
+export class RouterOutlet implements OnDestroy {
+  private activated: ComponentRef<any>;
+  private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
-  constructor(parentOutletMap: RouterOutletMap, private _location: ViewContainerRef,
-              @Attribute('name') name: string) {
-    parentOutletMap.registerOutlet(isBlank(name) ? DEFAULT_OUTLET_NAME : name, this);
+  @Output('activate') activateEvents = new EventEmitter<any>();
+  @Output('deactivate') deactivateEvents = new EventEmitter<any>();
+
+  constructor(
+      private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
+      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
+    parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
+  }
+
+  ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
+
+  get locationInjector(): Injector { return this.location.injector; }
+  get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
+
+  get isActivated(): boolean { return !!this.activated; }
+  get component(): Object {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    return this.activated.instance;
+  }
+  get activatedRoute(): ActivatedRoute {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    return this._activatedRoute;
+  }
+
+  detach(): ComponentRef<any> {
+    if (!this.activated) throw new Error('Outlet is not activated');
+    this.location.detach();
+    const r = this.activated;
+    this.activated = null;
+    this._activatedRoute = null;
+    return r;
+  }
+
+  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
+    this.activated = ref;
+    this._activatedRoute = activatedRoute;
+    this.location.insert(ref.hostView);
   }
 
   deactivate(): void {
-    this._activated.destroy();
-    this._activated = null;
+    if (this.activated) {
+      const c = this.component;
+      this.activated.destroy();
+      this.activated = null;
+      this._activatedRoute = null;
+      this.deactivateEvents.emit(c);
+    }
   }
 
-  /**
-   * Returns the loaded component.
-   */
-  get component(): Object { return isPresent(this._activated) ? this._activated.instance : null; }
+  activate(
+      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
+      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
+    if (this.isActivated) {
+      throw new Error('Cannot activate an already activated outlet');
+    }
 
-  /**
-   * Returns true is the outlet is not empty.
-   */
-  get isActivated(): boolean { return isPresent(this._activated); }
-
-  /**
-   * Called by the Router to instantiate a new component.
-   */
-  activate(factory: ComponentFactory<any>, providers: ResolvedReflectiveProvider[],
-           outletMap: RouterOutletMap): ComponentRef<any> {
     this.outletMap = outletMap;
-    let inj = ReflectiveInjector.fromResolvedProviders(providers, this._location.parentInjector);
-    this._activated = this._location.createComponent(factory, this._location.length, inj, []);
-    return this._activated;
+    this._activatedRoute = activatedRoute;
+
+    const snapshot = activatedRoute._futureSnapshot;
+    const component: any = <any>snapshot._routeConfig.component;
+    const factory = resolver.resolveComponentFactory(component);
+
+    const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
+    this.activated = this.location.createComponent(factory, this.location.length, inj, []);
+    this.activated.changeDetectorRef.detectChanges();
+
+    this.activateEvents.emit(this.activated.instance);
   }
 }

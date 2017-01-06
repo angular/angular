@@ -1,9 +1,17 @@
-import {Component, Attribute, Directive, Pipe} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var CustomDirective: Function;
+import {Attribute, Component, Directive, Pipe} from '@angular/core';
+
+class CustomDirective {};
 
 // #docregion component
-@Component({selector: 'greet', template: 'Hello {{name}}!', directives: [CustomDirective]})
+@Component({selector: 'greet', template: 'Hello {{name}}!'})
 class Greet {
   name: string = 'World';
 }

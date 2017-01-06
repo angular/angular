@@ -1,11 +1,22 @@
-import {Type, stringify, isFunction} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {stringify} from '../facade/lang';
+import {Type} from '../type';
+
 
 /**
  * An interface that a function passed into {@link forwardRef} has to implement.
  *
  * ### Example
  *
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref_fn'}
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
+ * @experimental
  */
 export interface ForwardRefFn { (): any; }
 
@@ -18,13 +29,13 @@ export interface ForwardRefFn { (): any; }
  * yet defined.
  *
  * ### Example
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
  * @experimental
  */
-export function forwardRef(forwardRefFn: ForwardRefFn): Type {
+export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
   (<any>forwardRefFn).toString = function() { return stringify(this()); };
-  return (<Type><any>forwardRefFn);
+  return (<Type<any>><any>forwardRefFn);
 }
 
 /**
@@ -34,17 +45,13 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type {
  *
  * ### Example ([live demo](http://plnkr.co/edit/GU72mJrk1fiodChcmiDR?p=preview))
  *
- * ```typescript
- * var ref = forwardRef(() => "refValue");
- * expect(resolveForwardRef(ref)).toEqual("refValue");
- * expect(resolveForwardRef("regularValue")).toEqual("regularValue");
- * ```
+ * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
  *
  * See: {@link forwardRef}
  * @experimental
  */
 export function resolveForwardRef(type: any): any {
-  if (isFunction(type) && type.hasOwnProperty('__forward_ref__') &&
+  if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__') &&
       type.__forward_ref__ === forwardRef) {
     return (<ForwardRefFn>type)();
   } else {

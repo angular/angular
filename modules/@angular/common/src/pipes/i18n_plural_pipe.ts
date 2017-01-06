@@ -1,54 +1,48 @@
-import {Injectable, PipeTransform, Pipe} from '@angular/core';
-import {isStringMap, StringWrapper, isPresent, RegExpWrapper} from '../../src/facade/lang';
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var interpolationExp: RegExp = RegExpWrapper.create('#');
+import {Pipe, PipeTransform} from '@angular/core';
+import {isBlank} from '../facade/lang';
+import {NgLocalization, getPluralCategory} from '../localization';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+
+const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
 /**
+ * @ngModule CommonModule
+ * @whatItDoes Maps a value to a string that pluralizes the value according to locale rules.
+ * @howToUse `expression | i18nPlural:mapping`
+ * @description
  *
- *  Maps a value to a string that pluralizes the value properly.
- *
- *  ## Usage
- *
- *  expression | i18nPlural:mapping
- *
- *  where `expression` is a number and `mapping` is an object that indicates the proper text for
- *  when the `expression` evaluates to 0, 1, or some other number.  You can interpolate the actual
- *  value into the text using the `#` sign.
+ *  Where:
+ *  - `expression` is a number.
+ *  - `mapping` is an object that mimics the ICU format, see
+ *    http://userguide.icu-project.org/formatparse/messages
  *
  *  ## Example
  *
- *  ```
- *  <div>
- *    {{ messages.length | i18nPlural: messageMapping }}
- *  </div>
+ * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
  *
- *  class MyApp {
- *    messages: any[];
- *    messageMapping: any = {
- *      '=0': 'No messages.',
- *      '=1': 'One message.',
- *      'other': '# messages.'
- *    }
- *    ...
- *  }
- *  ```
- *
+ * @experimental
  */
 @Pipe({name: 'i18nPlural', pure: true})
-@Injectable()
 export class I18nPluralPipe implements PipeTransform {
-  transform(value: number, pluralMap: {[count: string]: string}): string {
-    var key: string;
-    var valueStr: string;
+  constructor(private _localization: NgLocalization) {}
 
-    if (!isStringMap(pluralMap)) {
-      throw new InvalidPipeArgumentException(I18nPluralPipe, pluralMap);
+  transform(value: number, pluralMap: {[count: string]: string}): string {
+    if (isBlank(value)) return '';
+
+    if (typeof pluralMap !== 'object' || pluralMap === null) {
+      throw new InvalidPipeArgumentError(I18nPluralPipe, pluralMap);
     }
 
-    key = value === 0 || value === 1 ? `=${value}` : 'other';
-    valueStr = isPresent(value) ? value.toString() : '';
+    const key = getPluralCategory(value, Object.keys(pluralMap), this._localization);
 
-    return StringWrapper.replaceAll(pluralMap[key], interpolationExp, valueStr);
+    return pluralMap[key].replace(_INTERPOLATION_REGEXP, value.toString());
   }
 }

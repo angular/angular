@@ -17,6 +17,6 @@ cd ../..
 
 ./scripts/sauce/sauce_connect_block.sh
 SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
-$(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+$(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS} --reporters internal-angular,saucelabs
 
 echo 'travis_fold:end:test_saucelabs'

@@ -1,15 +1,22 @@
-import {looseIdentical, isPrimitive} from '../../src/facade/lang';
-import {isListLikeIterable, areIterablesEqual} from '../../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-export {looseIdentical} from '../../src/facade/lang';
-export var uninitialized: Object = /*@ts2dart_const*/ new Object();
+import {areIterablesEqual, isListLikeIterable} from '../facade/collection';
+import {isPrimitive, looseIdentical} from '../facade/lang';
+
+export {looseIdentical} from '../facade/lang';
 
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {
     return areIterablesEqual(a, b, devModeEqual);
 
-  } else if (!isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) &&
-             !isPrimitive(b)) {
+  } else if (
+      !isListLikeIterable(a) && !isPrimitive(a) && !isListLikeIterable(b) && !isPrimitive(b)) {
     return true;
 
   } else {
@@ -18,7 +25,7 @@ export function devModeEqual(a: any, b: any): boolean {
 }
 
 /**
- * Indicates that the result of a {@link PipeMetadata} transformation has changed even though the
+ * Indicates that the result of a {@link Pipe} transformation has changed even though the
  * reference
  * has not changed.
  *
@@ -64,10 +71,10 @@ export class ValueUnwrapper {
  * @stable
  */
 export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any) {}
+  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return this.previousValue === uninitialized; }
+  isFirstChange(): boolean { return this.firstChange; }
 }

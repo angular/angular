@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 'use strict';
 
 var browserProvidersConf = require('../../browser-providers.conf.js');
@@ -9,7 +17,7 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
 
     files: [
-      '../../node_modules/es6-shim/es6-shim.js',
+      '../../node_modules/core-js/client/core.js',
       '../../node_modules/angular/angular.js',
       '../../node_modules/angular-animate/angular-animate.js',
       '../../node_modules/angular-mocks/angular-mocks.js',

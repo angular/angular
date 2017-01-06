@@ -1,29 +1,48 @@
-import {isBlank} from '../src/facade/lang';
-import {unimplemented} from '../src/facade/exceptions';
-import {Identifiers} from './identifiers';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {ViewEncapsulation, isDevMode} from '@angular/core';
+
 import {CompileIdentifierMetadata} from './compile_metadata';
-import {ViewEncapsulation} from '@angular/core';
+import {Identifiers, createIdentifier} from './identifiers';
+
+function unimplemented(): any {
+  throw new Error('unimplemented');
+}
 
 export class CompilerConfig {
   public renderTypes: RenderTypes;
-  public interpolateRegexp: RegExp;
   public defaultEncapsulation: ViewEncapsulation;
+  private _genDebugInfo: boolean;
+  private _logBindingUpdate: boolean;
+  public useJit: boolean;
 
-  constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
-              public useJit: boolean, renderTypes: RenderTypes = null, 
-              interpolateRegexp: RegExp = null, defaultEncapsulation: ViewEncapsulation = null) {
-    if (isBlank(renderTypes)) {
-      renderTypes = new DefaultRenderTypes();
-    }
+  constructor(
+      {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
+       genDebugInfo, logBindingUpdate, useJit = true}: {
+        renderTypes?: RenderTypes,
+        defaultEncapsulation?: ViewEncapsulation,
+        genDebugInfo?: boolean,
+        logBindingUpdate?: boolean,
+        useJit?: boolean
+      } = {}) {
     this.renderTypes = renderTypes;
-    if (isBlank(interpolateRegexp)) {
-      interpolateRegexp = DEFAULT_INTERPOLATE_REGEXP;
-    }
-    this.interpolateRegexp = interpolateRegexp;
-    if (isBlank(defaultEncapsulation)) {
-      defaultEncapsulation = ViewEncapsulation.Emulated;
-    }
     this.defaultEncapsulation = defaultEncapsulation;
+    this._genDebugInfo = genDebugInfo;
+    this._logBindingUpdate = logBindingUpdate;
+    this.useJit = useJit;
+  }
+
+  get genDebugInfo(): boolean {
+    return this._genDebugInfo === void 0 ? isDevMode() : this._genDebugInfo;
+  }
+  get logBindingUpdate(): boolean {
+    return this._logBindingUpdate === void 0 ? isDevMode() : this._logBindingUpdate;
   }
 }
 
@@ -42,15 +61,10 @@ export abstract class RenderTypes {
 }
 
 export class DefaultRenderTypes implements RenderTypes {
-  renderer = Identifiers.Renderer;
-  renderText = null;
-  renderElement = null;
-  renderComment = null;
-  renderNode = null;
-  renderEvent = null;
+  get renderer() { return createIdentifier(Identifiers.Renderer); };
+  renderText: any = null;
+  renderElement: any = null;
+  renderComment: any = null;
+  renderNode: any = null;
+  renderEvent: any = null;
 }
-
-/**
- * A regexp pattern used to interpolate in default.
- */
-export var DEFAULT_INTERPOLATE_REGEXP = /\{\{([\s\S]*?)\}\}/g;

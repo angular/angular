@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es6", "dom"],
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+          "@angular/core": ["../../../dist/packages-dist/core"]
+        },
+        "experimentalDecorators": true,
+        "rootDir": ".",
+        "sourceRoot": ".",
+        "outDir": "../../../dist/packages-dist/benchpress",
+        "declaration": true,
+        "skipLibCheck": true
+    },
+    "exclude": ["integrationtest"],
+    "files": [
+        "index.ts",
+        "../../../node_modules/@types/node/index.d.ts",
+        "../../../node_modules/@types/jasmine/index.d.ts",
+        "../../../node_modules/zone.js/dist/zone.js.d.ts"
+    ]
+}

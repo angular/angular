@@ -1,12 +1,21 @@
-import {verifyNoBrowserErrors} from '@angular/platform-browser/testing_e2e';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;
   });
-  var selector = "hello-app .greeting";
-  var URL = 'all/playground/src/web_workers/kitchen_sink/index.html';
+  const selector = 'hello-app .greeting';
+  const URL = 'all/playground/src/web_workers/kitchen_sink/index.html';
 
   it('should greet', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
@@ -14,9 +23,9 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.get(URL);
 
     browser.wait(protractor.until.elementLocated(by.css(selector)), 15000);
-    var elem = element(by.css(selector));
-    browser.wait(protractor.until.elementTextIs(elem, 'hello world!'), 5000);
-    expect(elem.getText()).toEqual("hello world!");
+    const elem = element(by.css(selector));
+    browser.wait(ExpectedConditions.textToBePresentInElement(elem, 'hello world!'), 5000);
+    expect(elem.getText()).toEqual('hello world!');
 
   });
 
@@ -24,26 +33,26 @@ describe('WebWorkers Kitchen Sink', function() {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
-    let changeButtonSelector = 'hello-app .changeButton';
+    const changeButtonSelector = 'hello-app .changeButton';
 
     browser.wait(protractor.until.elementLocated(by.css(changeButtonSelector)), 15000);
     element(by.css(changeButtonSelector)).click();
-    var elem = element(by.css(selector));
-    browser.wait(protractor.until.elementTextIs(elem, "howdy world!"), 5000);
-    expect(elem.getText()).toEqual("howdy world!");
+    const elem = element(by.css(selector));
+    browser.wait(ExpectedConditions.textToBePresentInElement(elem, 'howdy world!'), 5000);
+    expect(elem.getText()).toEqual('howdy world!');
   });
 
-  it("should display correct key names", () => {
+  it('should display correct key names', () => {
     // This test can't wait for Angular 2 as Testability is not available when using WebWorker
     browser.ignoreSynchronization = true;
     browser.get(URL);
-    browser.wait(protractor.until.elementLocated(by.css(".sample-area")), 15000);
+    browser.wait(protractor.until.elementLocated(by.css('.sample-area')), 15000);
 
-    var area = element.all(by.css(".sample-area")).first();
+    const area = element.all(by.css('.sample-area')).first();
     expect(area.getText()).toEqual('(none)');
 
     area.sendKeys('u');
-    browser.wait(protractor.until.elementTextIs(area, "U"), 5000);
-    expect(area.getText()).toEqual("U");
+    browser.wait(ExpectedConditions.textToBePresentInElement(area, 'U'), 5000);
+    expect(area.getText()).toEqual('U');
   });
 });

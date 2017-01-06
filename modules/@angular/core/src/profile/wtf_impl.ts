@@ -1,7 +1,17 @@
-import {global} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {global} from '../facade/lang';
 
 /**
  * A scope function for the Web Tracing Framework (WTF).
+ *
+ * @experimental
  */
 export interface WtfScopeFn { (arg0?: any, arg1?: any): any; }
 
@@ -11,9 +21,9 @@ interface WTF {
 
 interface Trace {
   events: Events;
-  leaveScope(scope: Scope, returnValue: any);
+  leaveScope(scope: Scope, returnValue: any): any /** TODO #9100 */;
   beginTimeRange(rangeType: string, action: string): Range;
-  endTimeRange(range: Range);
+  endTimeRange(range: Range): any /** TODO #9100 */;
 }
 
 export interface Range {}
@@ -22,13 +32,13 @@ interface Events {
   createScope(signature: string, flags: any): Scope;
 }
 
-export interface Scope { (...args): any; }
+export interface Scope { (...args: any[] /** TODO #9100 */): any; }
 
-var trace: Trace;
-var events: Events;
+let trace: Trace;
+let events: Events;
 
 export function detectWTF(): boolean {
-  var wtf: WTF = global['wtf'];
+  const wtf: WTF = (global as any /** TODO #9100 */)['wtf'];
   if (wtf) {
     trace = wtf['trace'];
     if (trace) {

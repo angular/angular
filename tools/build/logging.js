@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 var kLogsArgument = /^--logs\s*=\s*(.+?)$/;
 var kTrimLeft = /^\s+/;
 var kTrimRight = /\s+$/;
@@ -15,23 +23,18 @@ function findArgvLogs() {
 }
 
 function logsToObject(logstr) {
-  return logstr.
-    split(',').
-    reduce(function(obj, key) {
-      key = camelize(key);
-      if (key.length > 0) obj[key] = true;
-      return obj;
-    }, Object.create(null));
+  return logstr.split(',').reduce(function(obj, key) {
+    key = camelize(key);
+    if (key.length > 0) obj[key] = true;
+    return obj;
+  }, Object.create(null));
   return logs;
 }
 
 function camelize(str) {
-  return str.
-    replace(kTrimLeft, '').
-    replace(kTrimRight, '').
-    replace(kCamelCase, function(match, c) {
-      return c ? c.toUpperCase() : "";
-    });
+  return str.replace(kTrimLeft, '').replace(kTrimRight, '').replace(kCamelCase, function(match, c) {
+    return c ? c.toUpperCase() : '';
+  });
 }
 
 function shouldLog(str) {

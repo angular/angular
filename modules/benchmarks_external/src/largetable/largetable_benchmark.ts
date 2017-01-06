@@ -1,9 +1,17 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {getIntParameter, getStringParameter, bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
 
-var totalRows = getIntParameter('rows');
-var totalColumns = getIntParameter('columns');
-var benchmarkType = getStringParameter('benchmarkType');
+const totalRows = getIntParameter('rows');
+const totalColumns = getIntParameter('columns');
+const benchmarkType = getStringParameter('benchmarkType');
 
 export function main() {
   angular.bootstrap(document.querySelector('largetable'), ['app']);
@@ -37,14 +45,14 @@ angular.module('app', [])
                     $scope.$apply(function() { $scope.benchmarkType = benchmarkType; });
                   }
 
-                  var data = $scope.data = [];
+                  const data = $scope.data = [];
 
                   function iGetter() { return this.i; }
                   function jGetter() { return this.j; }
 
-                  for (var i = 0; i < totalRows; i++) {
+                  for (let i = 0; i < totalRows; i++) {
                     data[i] = [];
-                    for (var j = 0; j < totalColumns; j++) {
+                    for (let j = 0; j < totalColumns; j++) {
                       data[i][j] = {i: i, j: j, iFn: iGetter, jFn: jGetter};
                     }
                   }
@@ -54,8 +62,8 @@ angular.module('app', [])
                  return {
                    restrict: 'E',
                    link: function($scope, $element) {
-                     var i, j, row, cell, comment;
-                     var template = document.createElement('span');
+                     let i, j, row, cell, comment;
+                     const template = document.createElement('span');
                      template.setAttribute('ng-repeat', 'foo in foos');
                      template.classList.add('ng-scope');
                      template.appendChild(document.createElement('span'));
@@ -86,8 +94,8 @@ angular.module('app', [])
       return {
         restrict: 'E',
         link: function($scope, $element) {
-          var i, j, row, cell, comment;
-          var template = document.createElement('span');
+          let i, j, row, cell, comment;
+          const template = document.createElement('span');
           template.setAttribute('ng-repeat', 'foo in foos');
           template.classList.add('ng-scope');
 
@@ -108,4 +116,4 @@ angular.module('app', [])
           }
         }
       };
-    })
+    });

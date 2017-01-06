@@ -1,22 +1,64 @@
-import {PipeTransform, Pipe, Injectable} from '@angular/core';
-import {
-  isDate,
-  isNumber,
-  isString,
-  DateWrapper,
-  isBlank,
-} from '../../src/facade/lang';
-import {DateFormatter} from '../../src/facade/intl';
-import {StringMapWrapper} from '../../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
+import {NumberWrapper, isDate} from '../facade/lang';
+
+import {DateFormatter} from './intl';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 
-// TODO: move to a global configurable location along with other i18n components.
-var defaultLocale: string = 'en-US';
 
 /**
- * Formats a date value to a string based on the requested format.
+ * @ngModule CommonModule
+ * @whatItDoes Formats a date according to locale rules.
+ * @howToUse `date_expression | date[:format]`
+ * @description
+ *
+ * Where:
+ * - `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
+ * (https://www.w3.org/TR/NOTE-datetime).
+ * - `format` indicates which date/time components to include. The format can be predifined as
+ *   shown below or custom as shown in the table.
+ *   - `'medium'`: equivalent to `'yMMMdjms'` (e.g. `Sep 3, 2010, 12:05:08 PM` for `en-US`)
+ *   - `'short'`: equivalent to `'yMdjm'` (e.g. `9/3/2010, 12:05 PM` for `en-US`)
+ *   - `'fullDate'`: equivalent to `'yMMMMEEEEd'` (e.g. `Friday, September 3, 2010` for `en-US`)
+ *   - `'longDate'`: equivalent to `'yMMMMd'` (e.g. `September 3, 2010` for `en-US`)
+ *   - `'mediumDate'`: equivalent to `'yMMMd'` (e.g. `Sep 3, 2010` for `en-US`)
+ *   - `'shortDate'`: equivalent to `'yMd'` (e.g. `9/3/2010` for `en-US`)
+ *   - `'mediumTime'`: equivalent to `'jms'` (e.g. `12:05:08 PM` for `en-US`)
+ *   - `'shortTime'`: equivalent to `'jm'` (e.g. `12:05 PM` for `en-US`)
+ *
+ *
+ *  | Component | Symbol | Narrow | Short Form   | Long Form         | Numeric   | 2-digit   |
+ *  |-----------|:------:|--------|--------------|-------------------|-----------|-----------|
+ *  | era       |   G    | G (A)  | GGG (AD)     | GGGG (Anno Domini)| -         | -         |
+ *  | year      |   y    | -      | -            | -                 | y (2015)  | yy (15)   |
+ *  | month     |   M    | L (S)  | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
+ *  | day       |   d    | -      | -            | -                 | d (3)     | dd (03)   |
+ *  | weekday   |   E    | E (S)  | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
+ *  | hour      |   j    | -      | -            | -                 | j (13)    | jj (13)   |
+ *  | hour12    |   h    | -      | -            | -                 | h (1 PM)  | hh (01 PM)|
+ *  | hour24    |   H    | -      | -            | -                 | H (13)    | HH (13)   |
+ *  | minute    |   m    | -      | -            | -                 | m (5)     | mm (05)   |
+ *  | second    |   s    | -      | -            | -                 | s (9)     | ss (09)   |
+ *  | timezone  |   z    | -      | -            | z (Pacific Standard Time)| -  | -         |
+ *  | timezone  |   Z    | -      | Z (GMT-8:00) | -                 | -         | -         |
+ *  | timezone  |   a    | -      | a (PM)       | -                 | -         | -         |
+ *
+ * In javascript, only the components specified will be respected (not the ordering,
+ * punctuations, ...) and details of the formatting will be dependent on the locale.
+ *
+ * Timezone of the formatted text will be the local system timezone of the end-user's machine.
+ *
+ * When the expression is a ISO string without time (e.g. 2016-09-19) the time zone offset is not
+ * applied and the formatted text will have the same day, month and year of the expression.
  *
  * WARNINGS:
  * - this pipe is marked as pure hence it will not be re-evaluated when the input is mutated.
@@ -25,48 +67,6 @@ var defaultLocale: string = 'en-US';
  *   which would be an expensive operation).
  * - this pipe uses the Internationalization API. Therefore it is only reliable in Chrome and Opera
  *   browsers.
- *
- * ## Usage
- *
- *     expression | date[:format]
- *
- * where `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
- * (https://www.w3.org/TR/NOTE-datetime) and `format` indicates which date/time components to
- * include:
- *
- *  | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
- *  |-----------|:------:|--------------|-------------------|-----------|-----------|
- *  | era       |   G    | G (AD)       | GGGG (Anno Domini)| -         | -         |
- *  | year      |   y    | -            | -                 | y (2015)  | yy (15)   |
- *  | month     |   M    | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
- *  | day       |   d    | -            | -                 | d (3)     | dd (03)   |
- *  | weekday   |   E    | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
- *  | hour      |   j    | -            | -                 | j (13)    | jj (13)   |
- *  | hour12    |   h    | -            | -                 | h (1 PM)  | hh (01 PM)|
- *  | hour24    |   H    | -            | -                 | H (13)    | HH (13)   |
- *  | minute    |   m    | -            | -                 | m (5)     | mm (05)   |
- *  | second    |   s    | -            | -                 | s (9)     | ss (09)   |
- *  | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
- *  | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
- *
- * In javascript, only the components specified will be respected (not the ordering,
- * punctuations, ...) and details of the formatting will be dependent on the locale.
- * On the other hand in Dart version, you can also include quoted text as well as some extra
- * date/time components such as quarter. For more information see:
- * https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/intl/intl.DateFormat.
- *
- * `format` can also be one of the following predefined formats:
- *
- *  - `'medium'`: equivalent to `'yMMMdjms'` (e.g. Sep 3, 2010, 12:05:08 PM for en-US)
- *  - `'short'`: equivalent to `'yMdjm'` (e.g. 9/3/2010, 12:05 PM for en-US)
- *  - `'fullDate'`: equivalent to `'yMMMMEEEEd'` (e.g. Friday, September 3, 2010 for en-US)
- *  - `'longDate'`: equivalent to `'yMMMMd'` (e.g. September 3, 2010)
- *  - `'mediumDate'`: equivalent to `'yMMMd'` (e.g. Sep 3, 2010 for en-US)
- *  - `'shortDate'`: equivalent to `'yMd'` (e.g. 9/3/2010 for en-US)
- *  - `'mediumTime'`: equivalent to `'jms'` (e.g. 12:05:08 PM for en-US)
- *  - `'shortTime'`: equivalent to `'jm'` (e.g. 12:05 PM for en-US)
- *
- * Timezone of the formatted text will be the local system timezone of the end-users machine.
  *
  * ### Examples
  *
@@ -80,13 +80,14 @@ var defaultLocale: string = 'en-US';
  *     {{ dateObj | date:'mmss' }}        // output is '43:11'
  * ```
  *
- * {@example core/pipes/ts/date_pipe/date_pipe_example.ts region='DatePipe'}
+ * {@example common/pipes/ts/date_pipe.ts region='DatePipe'}
+ *
+ * @stable
  */
 @Pipe({name: 'date', pure: true})
-@Injectable()
 export class DatePipe implements PipeTransform {
   /** @internal */
-  static _ALIASES: {[key: string]: String} = {
+  static _ALIASES: {[key: string]: string} = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
     'fullDate': 'yMMMMEEEEd',
@@ -97,32 +98,45 @@ export class DatePipe implements PipeTransform {
     'shortTime': 'jm'
   };
 
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: any, pattern: string = 'mediumDate'): string {
+    let date: Date;
+
     if (isBlank(value)) return null;
 
-    if (!this.supports(value)) {
-      throw new InvalidPipeArgumentException(DatePipe, value);
+    if (typeof value === 'string') {
+      value = value.trim();
     }
 
-    if (isNumber(value)) {
-      value = DateWrapper.fromMillis(value);
-    } else if (isString(value)) {
-      value = DateWrapper.fromISOString(value);
+    if (isDate(value)) {
+      date = value;
+    } else if (NumberWrapper.isNumeric(value)) {
+      date = new Date(parseFloat(value));
+    } else if (typeof value === 'string' && /^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
+      /**
+      * For ISO Strings without time the day, month and year must be extracted from the ISO String
+      * before Date creation to avoid time offset and errors in the new Date.
+      * If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
+      * date, some browsers (e.g. IE 9) will throw an invalid Date error
+      * If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
+      * is applied
+      * Note: ISO months are 0 for January, 1 for February, ...
+      */
+      const [y, m, d] = value.split('-').map((val: string) => parseInt(val, 10));
+      date = new Date(y, m - 1, d);
+    } else {
+      date = new Date(value);
     }
-    if (StringMapWrapper.contains(DatePipe._ALIASES, pattern)) {
-      pattern = <string>StringMapWrapper.get(DatePipe._ALIASES, pattern);
-    }
-    return DateFormatter.format(value, defaultLocale, pattern);
-  }
 
-  supports(obj: any): boolean {
-    if (isDate(obj) || isNumber(obj)) {
-      return true;
+    if (!isDate(date)) {
+      throw new InvalidPipeArgumentError(DatePipe, value);
     }
-    if (isString(obj) && isDate(DateWrapper.fromISOString(obj))) {
-      return true;
-    }
-    return false;
+
+    return DateFormatter.format(date, this._locale, DatePipe._ALIASES[pattern] || pattern);
   }
+}
+
+function isBlank(obj: any): boolean {
+  return obj == null || obj === '';
 }

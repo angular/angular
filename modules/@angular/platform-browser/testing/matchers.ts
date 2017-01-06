@@ -1,6 +1,15 @@
-import {getDOM} from '../src/dom/dom_adapter';
-import {global, isString} from '../src/facade/lang';
-import {StringMapWrapper} from '../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+import {global} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
+
 
 /**
  * Jasmine matchers that check Angular specific conditions.
@@ -31,7 +40,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveText'}
    */
-  toHaveText(expected: any): boolean;
+  toHaveText(expected: string): boolean;
 
   /**
    * Expect the element to have the given CSS class.
@@ -40,7 +49,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveCssClass'}
    */
-  toHaveCssClass(expected: any): boolean;
+  toHaveCssClass(expected: string): boolean;
 
   /**
    * Expect the element to have the given CSS styles.
@@ -49,7 +58,7 @@ export interface NgMatchers extends jasmine.Matchers {
    *
    * {@example testing/ts/matchers.ts region='toHaveCssStyle'}
    */
-  toHaveCssStyle(expected: any): boolean;
+  toHaveCssStyle(expected: {[k: string]: string}|string): boolean;
 
   /**
    * Expect a class to implement the interface of the given class.
@@ -70,30 +79,12 @@ export interface NgMatchers extends jasmine.Matchers {
   toContainError(expected: any): boolean;
 
   /**
-   * Expect a function to throw an error with the given error text when executed.
-   *
-   * ## Example
-   *
-   * {@example testing/ts/matchers.ts region='toThrowErrorWith'}
-   */
-  toThrowErrorWith(expectedMessage: any): boolean;
-
-  /**
-   * Expect a string to match the given regular expression.
-   *
-   * ## Example
-   *
-   * {@example testing/ts/matchers.ts region='toMatchPattern'}
-   */
-  toMatchPattern(expectedMessage: any): boolean;
-
-  /**
    * Invert the matchers.
    */
   not: NgMatchers;
 }
 
-var _global = <any>(typeof window === 'undefined' ? global : window);
+const _global = <any>(typeof window === 'undefined' ? global : window);
 
 /**
  * Jasmine matching function with Angular matchers mixed in.
@@ -102,38 +93,38 @@ var _global = <any>(typeof window === 'undefined' ? global : window);
  *
  * {@example testing/ts/matchers.ts region='toHaveText'}
  */
-export var expect: (actual: any) => NgMatchers = <any>_global.expect;
+export const expect: (actual: any) => NgMatchers = <any>_global.expect;
 
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-Map.prototype['jasmineToString'] = function() {
-  var m = this;
+(Map as any).prototype['jasmineToString'] = function() {
+  const m = this;
   if (!m) {
     return '' + m;
   }
-  var res = [];
-  m.forEach((v, k) => { res.push(`${k}:${v}`); });
+  const res: any[] = [];
+  m.forEach((v: any, k: any) => { res.push(`${k}:${v}`); });
   return `{ ${res.join(',')} }`;
 };
 
 _global.beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
-    toEqual: function(util, customEqualityTesters) {
+    toEqual: function(util) {
       return {
-        compare: function(actual, expected) {
+        compare: function(actual: any, expected: any) {
           return {pass: util.equals(actual, expected, [compareMap])};
         }
       };
 
-      function compareMap(actual, expected) {
+      function compareMap(actual: any, expected: any) {
         if (actual instanceof Map) {
-          var pass = actual.size === expected.size;
+          let pass = actual.size === expected.size;
           if (pass) {
-            actual.forEach((v, k) => { pass = pass && util.equals(v, expected.get(k)); });
+            actual.forEach((v: any, k: any) => { pass = pass && util.equals(v, expected.get(k)); });
           }
           return pass;
         } else {
@@ -144,8 +135,8 @@ _global.beforeEach(function() {
 
     toBePromise: function() {
       return {
-        compare: function(actual, expectedClass) {
-          var pass = typeof actual === 'object' && typeof actual.then === 'function';
+        compare: function(actual: any) {
+          const pass = typeof actual === 'object' && typeof actual.then === 'function';
           return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
         }
       };
@@ -153,8 +144,8 @@ _global.beforeEach(function() {
 
     toBeAnInstanceOf: function() {
       return {
-        compare: function(actual, expectedClass) {
-          var pass = typeof actual === 'object' && actual instanceof expectedClass;
+        compare: function(actual: any, expectedClass: any) {
+          const pass = typeof actual === 'object' && actual instanceof expectedClass;
           return {
             pass: pass,
             get message() {
@@ -167,8 +158,8 @@ _global.beforeEach(function() {
 
     toHaveText: function() {
       return {
-        compare: function(actual, expectedText) {
-          var actualText = elementText(actual);
+        compare: function(actual: any, expectedText: string) {
+          const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
             get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
@@ -180,8 +171,8 @@ _global.beforeEach(function() {
     toHaveCssClass: function() {
       return {compare: buildError(false), negativeCompare: buildError(true)};
 
-      function buildError(isNot) {
-        return function(actual, className) {
+      function buildError(isNot: boolean) {
+        return function(actual: any, className: string) {
           return {
             pass: getDOM().hasClass(actual, className) == !isNot,
             get message() {
@@ -194,23 +185,23 @@ _global.beforeEach(function() {
 
     toHaveCssStyle: function() {
       return {
-        compare: function(actual, styles) {
-          var allPassed;
-          if (isString(styles)) {
+        compare: function(actual: any, styles: {[k: string]: string}|string) {
+          let allPassed: boolean;
+          if (typeof styles === 'string') {
             allPassed = getDOM().hasStyle(actual, styles);
           } else {
-            allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(styles, (style, prop) => {
-              allPassed = allPassed && getDOM().hasStyle(actual, prop, style);
+            allPassed = Object.keys(styles).length !== 0;
+            Object.keys(styles).forEach(prop => {
+              allPassed = allPassed && getDOM().hasStyle(actual, prop, styles[prop]);
             });
           }
 
           return {
             pass: allPassed,
             get message() {
-              var expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
+              const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
             }
           };
         }
@@ -219,8 +210,8 @@ _global.beforeEach(function() {
 
     toContainError: function() {
       return {
-        compare: function(actual, expectedText) {
-          var errorMessage = actual.toString();
+        compare: function(actual: any, expectedText: any) {
+          const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
             get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
@@ -229,48 +220,12 @@ _global.beforeEach(function() {
       };
     },
 
-    toThrowErrorWith: function() {
-      return {
-        compare: function(actual, expectedText) {
-          try {
-            actual();
-            return {
-              pass: false,
-              get message() { return "Was expected to throw, but did not throw"; }
-            };
-          } catch (e) {
-            var errorMessage = e.toString();
-            return {
-              pass: errorMessage.indexOf(expectedText) > -1,
-              get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
-            };
-          }
-        }
-      };
-    },
-
-    toMatchPattern() {
-      return {compare: buildError(false), negativeCompare: buildError(true)};
-
-      function buildError(isNot) {
-        return function(actual, regex) {
-          return {
-            pass: regex.test(actual) == !isNot,
-            get message() {
-              return `Expected ${actual} ${isNot ? 'not ' : ''}to match ${regex.toString()}`;
-            }
-          };
-        };
-      }
-    },
-
     toImplement: function() {
       return {
-        compare: function(actualObject, expectedInterface) {
-          var objProps = Object.keys(actualObject.constructor.prototype);
-          var intProps = Object.keys(expectedInterface.prototype);
+        compare: function(actualObject: any, expectedInterface: any) {
+          const intProps = Object.keys(expectedInterface.prototype);
 
-          var missedMethods = [];
+          const missedMethods: any[] = [];
           intProps.forEach((k) => {
             if (!actualObject.constructor.prototype[k]) missedMethods.push(k);
           });
@@ -279,7 +234,7 @@ _global.beforeEach(function() {
             pass: missedMethods.length == 0,
             get message() {
               return 'Expected ' + actualObject + ' to have the following methods: ' +
-                     missedMethods.join(", ");
+                  missedMethods.join(', ');
             }
           };
         }
@@ -288,14 +243,14 @@ _global.beforeEach(function() {
   });
 });
 
-function elementText(n) {
-  var hasNodes = (n) => {
-    var children = getDOM().childNodes(n);
+function elementText(n: any): string {
+  const hasNodes = (n: any) => {
+    const children = getDOM().childNodes(n);
     return children && children.length > 0;
   };
 
   if (n instanceof Array) {
-    return n.map(elementText).join("");
+    return n.map(elementText).join('');
   }
 
   if (getDOM().isCommentNode(n)) {

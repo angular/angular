@@ -1,184 +1,214 @@
-import {
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  beforeEachProviders,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {IS_DART} from '../../src/facade/lang';
-
-import {
-  Component,
-  Pipe,
-  PipeTransform,
-  provide,
-  ViewMetadata,
-  PLATFORM_PIPES,
-  OpaqueToken,
-  Injector
-} from '@angular/core';
-import {NgIf, NgClass} from '@angular/common';
-import {CompilerConfig} from '@angular/compiler';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Injector, OpaqueToken, Pipe, PipeTransform, Provider} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  if (IS_DART) {
-    declareTests(false);
-  } else {
-    describe('jit', () => {
-      beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, true)})]);
-      declareTests(true);
-    });
+  describe('jit', () => { declareTests({useJit: true}); });
 
-    describe('no jit', () => {
-      beforeEachProviders(
-          () => [provide(CompilerConfig, {useValue: new CompilerConfig(true, false, false)})]);
-      declareTests(false);
-    });
-  }
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
-function declareTests(isJit: boolean) {
+function declareTests({useJit}: {useJit: boolean}) {
   // Place to put reproductions for regressions
   describe('regressions', () => {
 
-    describe('platform pipes', () => {
-      beforeEachProviders(() => [provide(PLATFORM_PIPES, {useValue: [PlatformPipe], multi: true})]);
+    beforeEach(() => { TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]}); });
 
-      it('should overwrite them by custom pipes',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(
-                  MyComp1, new ViewMetadata({template: '{{true | somePipe}}', pipes: [CustomPipe]}))
-               .createAsync(MyComp1)
-               .then((fixture) => {
-                 fixture.detectChanges();
-                 expect(fixture.nativeElement).toHaveText('someCustomPipe');
-                 async.done();
-               });
-         }));
+    describe('platform pipes', () => {
+      beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+
+      it('should overwrite them by custom pipes', () => {
+        TestBed.configureTestingModule({declarations: [CustomPipe]});
+        const template = '{{true | somePipe}}';
+        TestBed.overrideComponent(MyComp1, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp1);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('someCustomPipe');
+      });
     });
 
     describe('expressions', () => {
+      it('should evaluate conditional and boolean operators with right precedence - #8244', () => {
+        const template = `{{'red' + (true ? ' border' : '')}}`;
+        TestBed.overrideComponent(MyComp1, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp1);
 
-      it('should evaluate conditional and boolean operators with right precedence - #8244',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MyComp1,
-                            new ViewMetadata({template: `{{'red' + (true ? ' border' : '')}}`}))
-               .createAsync(MyComp1)
-               .then((fixture) => {
-                 fixture.detectChanges();
-                 expect(fixture.nativeElement).toHaveText('red border');
-                 async.done();
-               });
-         }));
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('red border');
+      });
 
-      if (!IS_DART) {
-        it('should evaluate conditional and unary operators with right precedence - #8235',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp1, new ViewMetadata({template: `{{!null?.length}}`}))
-                        .createAsync(MyComp1)
-                        .then((fixture) => {
-                          fixture.detectChanges();
-                          expect(fixture.nativeElement).toHaveText('true');
-                          async.done();
-                        });
-                  }));
-      }
+      it('should evaluate conditional and unary operators with right precedence - #8235', () => {
+        const template = `{{!null?.length}}`;
+        TestBed.overrideComponent(MyComp1, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp1);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('true');
+      });
+
+      it('should only evaluate stateful pipes once - #10639', () => {
+        TestBed.configureTestingModule({declarations: [CountingPipe]});
+        const template = '{{(null|countingPipe)?.value}}';
+        TestBed.overrideComponent(MyComp1, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp1);
+
+        CountingPipe.reset();
+        fixture.detectChanges(/* checkNoChanges */ false);
+        expect(fixture.nativeElement).toHaveText('counting pipe value');
+        expect(CountingPipe.calls).toBe(1);
+      });
+
+      it('should only evaluate methods once - #10639', () => {
+        TestBed.configureTestingModule({declarations: [MyCountingComp]});
+        const template = '{{method()?.value}}';
+        TestBed.overrideComponent(MyCountingComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyCountingComp);
+
+        MyCountingComp.reset();
+        fixture.detectChanges(/* checkNoChanges */ false);
+        expect(fixture.nativeElement).toHaveText('counting method value');
+        expect(MyCountingComp.calls).toBe(1);
+      });
+
+      it('should evalute a conditional in a statement binding', () => {
+        @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
+        class SomeComponent {
+          nullValue: SomeReferencedClass;
+        }
+
+        class SomeReferencedClass {
+          click() {}
+        }
+
+        expect(() => {
+          const fixture = TestBed.configureTestingModule({declarations: [SomeComponent]})
+                              .createComponent(SomeComponent);
+
+          fixture.detectChanges(/* checkNoChanges */ false);
+        }).not.toThrow();
+      });
     });
 
     describe('providers', () => {
-      function createInjector(tcb: TestComponentBuilder, proviers: any[]): Promise<Injector> {
-        return tcb.overrideProviders(MyComp1, [proviers])
-            .createAsync(MyComp1)
-            .then((fixture) => fixture.componentInstance.injector);
+      function createInjector(providers: Provider[]): Injector {
+        TestBed.overrideComponent(MyComp1, {add: {providers}});
+        return TestBed.createComponent(MyComp1).componentInstance.injector;
       }
 
-      it('should support providers with an OpaqueToken that contains a `.` in the name',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var token = new OpaqueToken('a.b');
-           var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
-               .then((injector: Injector) => {
-                 expect(injector.get(token)).toEqual(tokenValue);
-                 async.done();
-               });
-         }));
+      it('should support providers with an OpaqueToken that contains a `.` in the name', () => {
+        const token = new OpaqueToken('a.b');
+        const tokenValue = 1;
+        const injector = createInjector([{provide: token, useValue: tokenValue}]);
+        expect(injector.get(token)).toEqual(tokenValue);
+      });
 
-      it('should support providers with string token with a `.` in it',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var token = 'a.b';
-           var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
-               .then((injector: Injector) => {
-                 expect(injector.get(token)).toEqual(tokenValue);
-                 async.done();
-               });
-         }));
+      it('should support providers with string token with a `.` in it', () => {
+        const token = 'a.b';
+        const tokenValue = 1;
+        const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
-      it('should support providers with an anonymous function',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var token = () => true;
-           var tokenValue = 1;
-           createInjector(tcb, [provide(token, {useValue: tokenValue})])
-               .then((injector: Injector) => {
-                 expect(injector.get(token)).toEqual(tokenValue);
-                 async.done();
-               });
-         }));
+        expect(injector.get(token)).toEqual(tokenValue);
+      });
 
-      it('should support providers with an OpaqueToken that has a StringMap as value',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var token1 = new OpaqueToken('someToken');
-           var token2 = new OpaqueToken('someToken');
-           var tokenValue1 = {'a': 1};
-           var tokenValue2 = {'a': 1};
-           createInjector(
-               tcb,
-               [provide(token1, {useValue: tokenValue1}), provide(token2, {useValue: tokenValue2})])
-               .then((injector: Injector) => {
-                 expect(injector.get(token1)).toEqual(tokenValue1);
-                 expect(injector.get(token2)).toEqual(tokenValue2);
-                 async.done();
-               });
-         }));
+      it('should support providers with an anonymous function as token', () => {
+        const token = () => true;
+        const tokenValue = 1;
+        const injector = createInjector([{provide: token, useValue: tokenValue}]);
+
+        expect(injector.get(token)).toEqual(tokenValue);
+      });
+
+      it('should support providers with an OpaqueToken that has a StringMap as value', () => {
+        const token1 = new OpaqueToken('someToken');
+        const token2 = new OpaqueToken('someToken');
+        const tokenValue1 = {'a': 1};
+        const tokenValue2 = {'a': 1};
+        const injector = createInjector(
+            [{provide: token1, useValue: tokenValue1}, {provide: token2, useValue: tokenValue2}]);
+
+        expect(injector.get(token1)).toEqual(tokenValue1);
+        expect(injector.get(token2)).toEqual(tokenValue2);
+      });
+
+      it('should support providers that have a `name` property with a number value', () => {
+        class TestClass {
+          constructor(public name: number) {}
+        }
+        const data = [new TestClass(1), new TestClass(2)];
+        const injector = createInjector([{provide: 'someToken', useValue: data}]);
+        expect(injector.get('someToken')).toEqual(data);
+      });
+
+      describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
+
+        it('should support class instances', () => {
+          class SomeObject {
+            someMethod() {}
+          }
+
+          expect(
+              () => createInjector([
+                {provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: new SomeObject(), multi: true}
+              ]))
+              .not.toThrow();
+        });
+      });
+
     });
 
-    it('should allow logging a previous elements class binding via interpolation',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideTemplate(MyComp1, `<div [class.a]="true" #el>Class: {{el.className}}</div>`)
-             .createAsync(MyComp1)
-             .then((fixture) => {
-               fixture.detectChanges();
-               expect(fixture.nativeElement).toHaveText('Class: a');
-               async.done();
-             });
-       }));
+    it('should allow logging a previous elements class binding via interpolation', () => {
+      const template = `<div [class.a]="true" #el>Class: {{el.className}}</div>`;
+      TestBed.overrideComponent(MyComp1, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp1);
 
-    it('should support ngClass before a component and content projection inside of an ngIf',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(
-                MyComp1, new ViewMetadata({
-                  template: `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`,
-                  directives: [NgClass, NgIf, CmpWithNgContent]
-                }))
-             .createAsync(MyComp1)
-             .then((fixture) => {
-               fixture.detectChanges();
-               expect(fixture.nativeElement).toHaveText('ABC');
-               async.done();
-             });
-       }));
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('Class: a');
+    });
 
+    it('should support ngClass before a component and content projection inside of an ngIf', () => {
+      TestBed.configureTestingModule({declarations: [CmpWithNgContent]});
+      const template = `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`;
+      TestBed.overrideComponent(MyComp1, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp1);
 
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('ABC');
+    });
+
+    it('should handle mutual recursion entered from multiple sides - #7084', () => {
+      TestBed.configureTestingModule({declarations: [FakeRecursiveComp, LeftComp, RightComp]});
+      const fixture = TestBed.createComponent(FakeRecursiveComp);
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('[]');
+    });
+
+    it('should generate the correct output when constructors have the same name', () => {
+      function ComponentFactory(selector: string, template: string) {
+        @Component({selector, template})
+        class MyComponent {
+        }
+        return MyComponent;
+      }
+      const HeroComponent = ComponentFactory('my-hero', 'my hero');
+      const VillianComponent = ComponentFactory('a-villian', 'a villian');
+      const MainComponent = ComponentFactory(
+          'my-app', 'I was saved by <my-hero></my-hero> from <a-villian></a-villian>.');
+
+      TestBed.configureTestingModule(
+          {declarations: [HeroComponent, VillianComponent, MainComponent]});
+      const fixture = TestBed.createComponent(MainComponent);
+      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villian.');
+    });
   });
 }
 
@@ -199,4 +229,46 @@ class CustomPipe implements PipeTransform {
 
 @Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
 class CmpWithNgContent {
+}
+
+@Component({selector: 'counting-cmp', template: ''})
+class MyCountingComp {
+  method(): {value: string}|undefined {
+    MyCountingComp.calls++;
+    return {value: 'counting method value'};
+  }
+
+  static reset() { MyCountingComp.calls = 0; }
+  static calls = 0;
+}
+
+@Pipe({name: 'countingPipe'})
+class CountingPipe implements PipeTransform {
+  transform(value: any): any {
+    CountingPipe.calls++;
+    return {value: 'counting pipe value'};
+  }
+  static reset() { CountingPipe.calls = 0; }
+  static calls = 0;
+}
+
+@Component({
+  selector: 'left',
+  template: `L<right *ngIf="false"></right>`,
+})
+class LeftComp {
+}
+
+@Component({
+  selector: 'right',
+  template: `R<left *ngIf="false"></left>`,
+})
+class RightComp {
+}
+
+@Component({
+  selector: 'fakeRecursiveComp',
+  template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
+})
+export class FakeRecursiveComp {
 }

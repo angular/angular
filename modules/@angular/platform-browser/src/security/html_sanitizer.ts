@@ -1,7 +1,16 @@
-import {getDOM, DomAdapter} from '../dom/dom_adapter';
-import {assertionsEnabled} from '../../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {sanitizeUrl} from './url_sanitizer';
+import {isDevMode} from '@angular/core';
+
+import {DomAdapter, getDOM} from '../dom/dom_adapter';
+
+import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
 /** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
 let inertElement: HTMLElement = null;
@@ -14,15 +23,15 @@ function getInertElement() {
   DOM = getDOM();
 
   // Prefer using <template> element if supported.
-  let templateEl = DOM.createElement('template');
+  const templateEl = DOM.createElement('template');
   if ('content' in templateEl) return templateEl;
 
-  let doc = DOM.createHtmlDocument();
+  const doc = DOM.createHtmlDocument();
   inertElement = DOM.querySelector(doc, 'body');
   if (inertElement == null) {
     // usually there should be only one body element in the document, but IE doesn't have any, so we
     // need to create one.
-    let html = DOM.createElement('html', doc);
+    const html = DOM.createElement('html', doc);
     inertElement = DOM.createElement('body', doc);
     DOM.appendChild(html, inertElement);
     DOM.appendChild(doc, html);
@@ -31,15 +40,15 @@ function getInertElement() {
 }
 
 function tagSet(tags: string): {[k: string]: boolean} {
-  let res: {[k: string]: boolean} = {};
-  for (let t of tags.split(',')) res[t.toLowerCase()] = true;
+  const res: {[k: string]: boolean} = {};
+  for (const t of tags.split(',')) res[t] = true;
   return res;
 }
 
-function merge(...sets: { [k: string]: boolean }[]): {[k: string]: boolean} {
-  let res: {[k: string]: boolean} = {};
-  for (let s of sets) {
-    for (let v in s) {
+function merge(...sets: {[k: string]: boolean}[]): {[k: string]: boolean} {
+  const res: {[k: string]: boolean} = {};
+  for (const s of sets) {
+    for (const v in s) {
       if (s.hasOwnProperty(v)) res[v] = true;
     }
   }
@@ -66,28 +75,32 @@ const BLOCK_ELEMENTS = merge(
     OPTIONAL_END_TAG_BLOCK_ELEMENTS,
     tagSet(
         'address,article,' +
-        'aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
-        'h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,section,table,ul'));
+        'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
+        'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul'));
 
 // Inline Elements - HTML5
 const INLINE_ELEMENTS = merge(
     OPTIONAL_END_TAG_INLINE_ELEMENTS,
-    tagSet('a,abbr,acronym,b,' +
-           'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,' +
-           'samp,small,span,strike,strong,sub,sup,time,tt,u,var'));
+    tagSet(
+        'a,abbr,acronym,audio,b,' +
+        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
+        'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'));
 
 const VALID_ELEMENTS =
     merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
 
 // Attributes that have href and hence need to be sanitized
-const URI_ATTRS = tagSet('background,cite,href,longdesc,src,xlink:href');
+const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
 
-const HTML_ATTRS =
-    tagSet('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
-           'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
-           'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
-           'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
-           'valign,value,vspace,width');
+// Attributes that have special href set hence need to be sanitized
+const SRCSET_ATTRS = tagSet('srcset');
+
+const HTML_ATTRS = tagSet(
+    'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
+    'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
+    'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
+    'scope,scrolling,shape,size,sizes,span,srclang,start,summary,tabindex,target,title,translate,type,usemap,' +
+    'valign,value,vspace,width');
 
 // NB: This currently conciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
@@ -97,13 +110,16 @@ const HTML_ATTRS =
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-const VALID_ATTRS = merge(URI_ATTRS, HTML_ATTRS);
+const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
 
 /**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
  * attributes.
  */
 class SanitizingHtmlSerializer {
+  // Explicitly track if something was stripped, to avoid accidentally warning of sanitization just
+  // because characters were re-encoded.
+  public sanitizedSomething = false;
   private buf: string[] = [];
 
   sanitizeChildren(el: Element): string {
@@ -113,9 +129,12 @@ class SanitizingHtmlSerializer {
     let current: Node = el.firstChild;
     while (current) {
       if (DOM.isElementNode(current)) {
-        this.startElement(current);
+        this.startElement(current as Element);
       } else if (DOM.isTextNode(current)) {
         this.chars(DOM.nodeValue(current));
+      } else {
+        // Strip non-element, non-text nodes.
+        this.sanitizedSomething = true;
       }
       if (DOM.firstChild(current)) {
         current = DOM.firstChild(current);
@@ -124,7 +143,7 @@ class SanitizingHtmlSerializer {
       while (current) {
         // Leaving the element. Walk up and to the right, closing tags as we go.
         if (DOM.isElementNode(current)) {
-          this.endElement(DOM.nodeName(current).toLowerCase());
+          this.endElement(current as Element);
         }
         if (DOM.nextSibling(current)) {
           current = DOM.nextSibling(current);
@@ -136,29 +155,34 @@ class SanitizingHtmlSerializer {
     return this.buf.join('');
   }
 
-  private startElement(element: any) {
-    let tagName = DOM.nodeName(element).toLowerCase();
-    tagName = tagName.toLowerCase();
-    if (VALID_ELEMENTS.hasOwnProperty(tagName)) {
-      this.buf.push('<');
-      this.buf.push(tagName);
-      DOM.attributeMap(element).forEach((value: string, attrName: string) => {
-        let lower = attrName.toLowerCase();
-        if (!VALID_ATTRS.hasOwnProperty(lower)) return;
-        // TODO(martinprobst): Special case image URIs for data:image/...
-        if (URI_ATTRS[lower]) value = sanitizeUrl(value);
-        this.buf.push(' ');
-        this.buf.push(attrName);
-        this.buf.push('="');
-        this.buf.push(encodeEntities(value));
-        this.buf.push('"');
-      });
-      this.buf.push('>');
+  private startElement(element: Element) {
+    const tagName = DOM.nodeName(element).toLowerCase();
+    if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
+      this.sanitizedSomething = true;
+      return;
     }
+    this.buf.push('<');
+    this.buf.push(tagName);
+    DOM.attributeMap(element).forEach((value: string, attrName: string) => {
+      const lower = attrName.toLowerCase();
+      if (!VALID_ATTRS.hasOwnProperty(lower)) {
+        this.sanitizedSomething = true;
+        return;
+      }
+      // TODO(martinprobst): Special case image URIs for data:image/...
+      if (URI_ATTRS[lower]) value = sanitizeUrl(value);
+      if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
+      this.buf.push(' ');
+      this.buf.push(attrName);
+      this.buf.push('="');
+      this.buf.push(encodeEntities(value));
+      this.buf.push('"');
+    });
+    this.buf.push('>');
   }
 
-  private endElement(tagName: string) {
-    tagName = tagName.toLowerCase();
+  private endElement(current: Element) {
+    const tagName = DOM.nodeName(current).toLowerCase();
     if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
@@ -166,7 +190,7 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: any /** TODO #9100 */) { this.buf.push(encodeEntities(chars)); }
 }
 
 // Regular Expressions for parsing tags and attributes
@@ -181,16 +205,18 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * @param value
  * @returns {string} escaped text
  */
-function encodeEntities(value) {
+function encodeEntities(value: string) {
   return value.replace(/&/g, '&amp;')
-      .replace(SURROGATE_PAIR_REGEXP,
-               function(match) {
-                 let hi = match.charCodeAt(0);
-                 let low = match.charCodeAt(1);
-                 return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
-               })
-      .replace(NON_ALPHANUMERIC_REGEXP,
-               function(match) { return '&#' + match.charCodeAt(0) + ';'; })
+      .replace(
+          SURROGATE_PAIR_REGEXP,
+          function(match: string) {
+            const hi = match.charCodeAt(0);
+            const low = match.charCodeAt(1);
+            return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
+          })
+      .replace(
+          NON_ALPHANUMERIC_REGEXP,
+          function(match: string) { return '&#' + match.charCodeAt(0) + ';'; })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }
@@ -202,14 +228,14 @@ function encodeEntities(value) {
  * This is undesirable since we don't want to allow any of these custom attributes. This method
  * strips them all.
  */
-function stripCustomNsAttrs(el: any) {
+function stripCustomNsAttrs(el: Element) {
   DOM.attributeMap(el).forEach((_, attrName) => {
     if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
       DOM.removeAttribute(el, attrName);
     }
   });
-  for (let n of DOM.childNodesAsList(el)) {
-    if (DOM.isElementNode(n)) stripCustomNsAttrs(n);
+  for (const n of DOM.childNodesAsList(el)) {
+    if (DOM.isElementNode(n)) stripCustomNsAttrs(n as Element);
   }
 }
 
@@ -217,11 +243,11 @@ function stripCustomNsAttrs(el: any) {
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function sanitizeHtml(unsafeHtml: string): string {
+export function sanitizeHtml(unsafeHtmlInput: string): string {
   try {
-    let containerEl = getInertElement();
+    const containerEl = getInertElement();
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
-    unsafeHtml = unsafeHtml ? String(unsafeHtml) : '';
+    let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
 
     // mXSS protection. Repeatedly parse the document to make sure it stabilizes, so that a browser
     // trying to auto-correct incorrect HTML cannot cause formerly inert HTML to become dangerous.
@@ -243,17 +269,17 @@ export function sanitizeHtml(unsafeHtml: string): string {
       parsedHtml = DOM.getInnerHTML(containerEl);
     } while (unsafeHtml !== parsedHtml);
 
-    let sanitizer = new SanitizingHtmlSerializer();
-    let safeHtml = sanitizer.sanitizeChildren(DOM.getTemplateContent(containerEl) || containerEl);
+    const sanitizer = new SanitizingHtmlSerializer();
+    const safeHtml = sanitizer.sanitizeChildren(DOM.getTemplateContent(containerEl) || containerEl);
 
     // Clear out the body element.
-    let parent = DOM.getTemplateContent(containerEl) || containerEl;
-    for (let child of DOM.childNodesAsList(parent)) {
+    const parent = DOM.getTemplateContent(containerEl) || containerEl;
+    for (const child of DOM.childNodesAsList(parent)) {
       DOM.removeChild(parent, child);
     }
 
-    if (assertionsEnabled() && safeHtml !== unsafeHtml) {
-      DOM.log('WARNING: sanitizing HTML stripped some content.');
+    if (isDevMode() && sanitizer.sanitizedSomething) {
+      DOM.log('WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
     }
 
     return safeHtml;

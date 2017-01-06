@@ -9,8 +9,14 @@ cd `dirname $0`
 source ./env.sh
 cd ../..
 
+$(npm bin)/tsc -v
 $(npm bin)/tsc -p tools
 cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
-node dist/tools/@angular/tsc-wrapped/src/main -p modules
+node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main -p modules
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/core/tsconfig-build.json
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/common/tsconfig-build.json
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/platform-browser/tsconfig-build.json
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/router/tsconfig-build.json
+node dist/tools/@angular/tsc-wrapped/src/main -p modules/@angular/forms/tsconfig-build.json
 
 echo 'travis_fold:end:BUILD'

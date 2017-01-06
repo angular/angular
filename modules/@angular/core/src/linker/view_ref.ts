@@ -1,15 +1,29 @@
-import {unimplemented} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {AnimationQueue} from '../animation/animation_queue';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectorStatus} from '../change_detection/constants';
+import {unimplemented} from '../facade/errors';
 import {AppView} from './view';
-import {ChangeDetectionStrategy} from '../change_detection/constants';
 
 /**
  * @stable
  */
-export abstract class ViewRef {
+export abstract class ViewRef extends ChangeDetectorRef {
+  /**
+   * Destroys the view and all of the data structures associated with it.
+   */
+  abstract destroy(): void;
+
   get destroyed(): boolean { return <boolean>unimplemented(); }
 
-  abstract onDestroy(callback: Function);
+  abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
 
 /**
@@ -70,15 +84,16 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
   get context(): C { return unimplemented(); }
 
   get rootNodes(): any[] { return <any[]>unimplemented(); };
-
-  /**
-   * Destroys the view and all of the data structures associated with it.
-   */
-  abstract destroy();
 }
 
 export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
-  constructor(private _view: AppView<C>) { this._view = _view; }
+  /** @internal */
+  _originalMode: ChangeDetectorStatus;
+
+  constructor(private _view: AppView<C>, public animationQueue: AnimationQueue) {
+    this._view = _view;
+    this._originalMode = this._view.cdMode;
+  }
 
   get internalView(): AppView<C> { return this._view; }
 
@@ -89,15 +104,23 @@ export class ViewRef_<C> implements EmbeddedViewRef<C>, ChangeDetectorRef {
   get destroyed(): boolean { return this._view.destroyed; }
 
   markForCheck(): void { this._view.markPathToRootAsCheckOnce(); }
-  detach(): void { this._view.cdMode = ChangeDetectionStrategy.Detached; }
-  detectChanges(): void { this._view.detectChanges(false); }
+  detach(): void { this._view.cdMode = ChangeDetectorStatus.Detached; }
+  detectChanges(): void {
+    this._view.detectChanges(false);
+    this.animationQueue.flush();
+  }
   checkNoChanges(): void { this._view.detectChanges(true); }
   reattach(): void {
-    this._view.cdMode = ChangeDetectionStrategy.CheckAlways;
+    this._view.cdMode = this._originalMode;
     this.markForCheck();
   }
 
-  onDestroy(callback: Function) { this._view.disposables.push(callback); }
+  onDestroy(callback: Function) {
+    if (!this._view.disposables) {
+      this._view.disposables = [];
+    }
+    this._view.disposables.push(callback);
+  }
 
-  destroy() { this._view.destroy(); }
+  destroy() { this._view.detachAndDestroy(); }
 }

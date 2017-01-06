@@ -1,65 +1,43 @@
-import {reflector} from '../../core_private';
-import {isPresent, IS_DART, FunctionWrapper} from '../../src/facade/lang';
-import {ObservableWrapper} from '../../src/facade/async';
-import {BaseException, unimplemented} from '../../src/facade/exceptions';
-import {ListWrapper} from '../../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+import {isPresent} from '../facade/lang';
 
 import * as o from './output_ast';
-import {debugOutputAstAsDart} from './dart_emitter';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
-export function interpretStatements(statements: o.Statement[], resultVar: string,
-                                    instanceFactory: InstanceFactory): any {
-  var stmtsWithReturn = statements.concat([new o.ReturnStatement(o.variable(resultVar))]);
-  var ctx = new _ExecutionContext(null, null, null, null, new Map<string, any>(),
-                                  new Map<string, any>(), new Map<string, Function>(),
-                                  new Map<string, Function>(), instanceFactory);
-  var visitor = new StatementInterpreter();
-  var result = visitor.visitAllStatements(stmtsWithReturn, ctx);
+export function interpretStatements(statements: o.Statement[], resultVar: string): any {
+  const stmtsWithReturn = statements.concat([new o.ReturnStatement(o.variable(resultVar))]);
+  const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
+  const visitor = new StatementInterpreter();
+  const result = visitor.visitAllStatements(stmtsWithReturn, ctx);
   return isPresent(result) ? result.value : null;
 }
 
-export interface InstanceFactory {
-  createInstance(superClass: any, clazz: any, constructorArgs: any[], props: Map<string, any>,
-                 getters: Map<string, Function>, methods: Map<string, Function>): DynamicInstance;
-}
-
-export abstract class DynamicInstance {
-  get props(): Map<string, any> { return unimplemented(); }
-  get getters(): Map<string, Function> { return unimplemented(); }
-  get methods(): Map<string, any> { return unimplemented(); }
-  get clazz(): any { return unimplemented(); }
-}
-
-function isDynamicInstance(instance: any): any {
-  if (IS_DART) {
-    return instance instanceof DynamicInstance;
-  } else {
-    return isPresent(instance) && isPresent(instance.props) && isPresent(instance.getters) &&
-           isPresent(instance.methods);
-  }
-}
-
-function _executeFunctionStatements(varNames: string[], varValues: any[], statements: o.Statement[],
-                                    ctx: _ExecutionContext, visitor: StatementInterpreter): any {
-  var childCtx = ctx.createChildWihtLocalVars();
-  for (var i = 0; i < varNames.length; i++) {
+function _executeFunctionStatements(
+    varNames: string[], varValues: any[], statements: o.Statement[], ctx: _ExecutionContext,
+    visitor: StatementInterpreter): any {
+  const childCtx = ctx.createChildWihtLocalVars();
+  for (let i = 0; i < varNames.length; i++) {
     childCtx.vars.set(varNames[i], varValues[i]);
   }
-  var result = visitor.visitAllStatements(statements, childCtx);
+  const result = visitor.visitAllStatements(statements, childCtx);
   return isPresent(result) ? result.value : null;
 }
 
 class _ExecutionContext {
-  constructor(public parent: _ExecutionContext, public superClass: any, public superInstance: any,
-              public className: string, public vars: Map<string, any>,
-              public props: Map<string, any>, public getters: Map<string, Function>,
-              public methods: Map<string, Function>, public instanceFactory: InstanceFactory) {}
+  constructor(
+      public parent: _ExecutionContext, public instance: any, public className: string,
+      public vars: Map<string, any>) {}
 
   createChildWihtLocalVars(): _ExecutionContext {
-    return new _ExecutionContext(this, this.superClass, this.superInstance, this.className,
-                                 new Map<string, any>(), this.props, this.getters, this.methods,
-                                 this.instanceFactory);
+    return new _ExecutionContext(this, this.instance, this.className, new Map<string, any>());
   }
 }
 
@@ -67,50 +45,56 @@ class ReturnValue {
   constructor(public value: any) {}
 }
 
-class _DynamicClass {
-  constructor(private _classStmt: o.ClassStmt, private _ctx: _ExecutionContext,
-              private _visitor: StatementInterpreter) {}
+function createDynamicClass(
+    _classStmt: o.ClassStmt, _ctx: _ExecutionContext, _visitor: StatementInterpreter): Function {
+  const propertyDescriptors: {[key: string]: any} = {};
 
-  instantiate(args: any[]): DynamicInstance {
-    var props = new Map<string, any>();
-    var getters = new Map<string, Function>();
-    var methods = new Map<string, Function>();
-    var superClass = this._classStmt.parent.visitExpression(this._visitor, this._ctx);
-    var instanceCtx =
-        new _ExecutionContext(this._ctx, superClass, null, this._classStmt.name, this._ctx.vars,
-                              props, getters, methods, this._ctx.instanceFactory);
+  _classStmt.getters.forEach((getter: o.ClassGetter) => {
+    // Note: use `function` instead of arrow function to capture `this`
+    propertyDescriptors[getter.name] = {
+      configurable: false,
+      get: function() {
+        const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
+        return _executeFunctionStatements([], [], getter.body, instanceCtx, _visitor);
+      }
+    };
+  });
+  _classStmt.methods.forEach(function(method: o.ClassMethod) {
+    const paramNames = method.params.map(param => param.name);
+    // Note: use `function` instead of arrow function to capture `this`
+    propertyDescriptors[method.name] = {
+      writable: false,
+      configurable: false,
+      value: function(...args: any[]) {
+        const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
+        return _executeFunctionStatements(paramNames, args, method.body, instanceCtx, _visitor);
+      }
+    };
+  });
 
-    this._classStmt.fields.forEach((field: o.ClassField) => { props.set(field.name, null); });
-    this._classStmt.getters.forEach((getter: o.ClassGetter) => {
-      getters.set(getter.name, () => _executeFunctionStatements([], [], getter.body, instanceCtx,
-                                                                this._visitor));
-    });
-    this._classStmt.methods.forEach((method: o.ClassMethod) => {
-      var paramNames = method.params.map(param => param.name);
-      methods.set(method.name, _declareFn(paramNames, method.body, instanceCtx, this._visitor));
-    });
-
-    var ctorParamNames = this._classStmt.constructorMethod.params.map(param => param.name);
-    _executeFunctionStatements(ctorParamNames, args, this._classStmt.constructorMethod.body,
-                               instanceCtx, this._visitor);
-    return instanceCtx.superInstance;
-  }
-
-  debugAst(): string { return this._visitor.debugAst(this._classStmt); }
+  const ctorParamNames = _classStmt.constructorMethod.params.map(param => param.name);
+  // Note: use `function` instead of arrow function to capture `this`
+  const ctor = function(...args: any[]) {
+    const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
+    _classStmt.fields.forEach((field) => { this[field.name] = undefined; });
+    _executeFunctionStatements(
+        ctorParamNames, args, _classStmt.constructorMethod.body, instanceCtx, _visitor);
+  };
+  const superClass = _classStmt.parent ? _classStmt.parent.visitExpression(_visitor, _ctx) : Object;
+  ctor.prototype = Object.create(superClass.prototype, propertyDescriptors);
+  return ctor;
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
-  debugAst(ast: o.Expression | o.Statement | o.Type): string {
-    return IS_DART ? debugOutputAstAsDart(ast) : debugOutputAstAsTypeScript(ast);
-  }
+  debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
     return null;
   }
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: _ExecutionContext): any {
-    var value = expr.value.visitExpression(this, ctx);
-    var currCtx = ctx;
+    const value = expr.value.visitExpression(this, ctx);
+    let currCtx = ctx;
     while (currCtx != null) {
       if (currCtx.vars.has(expr.name)) {
         currCtx.vars.set(expr.name, value);
@@ -118,15 +102,16 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       }
       currCtx = currCtx.parent;
     }
-    throw new BaseException(`Not declared variable ${expr.name}`);
+    throw new Error(`Not declared variable ${expr.name}`);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: _ExecutionContext): any {
-    var varName = ast.name;
+    let varName = ast.name;
     if (isPresent(ast.builtin)) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
+          return ctx.instance.__proto__;
         case o.BuiltinVar.This:
-          return ctx.superInstance;
+          return ctx.instance;
         case o.BuiltinVar.CatchError:
           varName = CATCH_ERROR_VAR;
           break;
@@ -134,93 +119,71 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
           varName = CATCH_STACK_VAR;
           break;
         default:
-          throw new BaseException(`Unknown builtin variable ${ast.builtin}`);
+          throw new Error(`Unknown builtin variable ${ast.builtin}`);
       }
     }
-    var currCtx = ctx;
+    let currCtx = ctx;
     while (currCtx != null) {
       if (currCtx.vars.has(varName)) {
         return currCtx.vars.get(varName);
       }
       currCtx = currCtx.parent;
     }
-    throw new BaseException(`Not declared variable ${varName}`);
+    throw new Error(`Not declared variable ${varName}`);
   }
   visitWriteKeyExpr(expr: o.WriteKeyExpr, ctx: _ExecutionContext): any {
-    var receiver = expr.receiver.visitExpression(this, ctx);
-    var index = expr.index.visitExpression(this, ctx);
-    var value = expr.value.visitExpression(this, ctx);
+    const receiver = expr.receiver.visitExpression(this, ctx);
+    const index = expr.index.visitExpression(this, ctx);
+    const value = expr.value.visitExpression(this, ctx);
     receiver[index] = value;
     return value;
   }
   visitWritePropExpr(expr: o.WritePropExpr, ctx: _ExecutionContext): any {
-    var receiver = expr.receiver.visitExpression(this, ctx);
-    var value = expr.value.visitExpression(this, ctx);
-    if (isDynamicInstance(receiver)) {
-      var di = <DynamicInstance>receiver;
-      if (di.props.has(expr.name)) {
-        di.props.set(expr.name, value);
-      } else {
-        reflector.setter(expr.name)(receiver, value);
-      }
-    } else {
-      reflector.setter(expr.name)(receiver, value);
-    }
+    const receiver = expr.receiver.visitExpression(this, ctx);
+    const value = expr.value.visitExpression(this, ctx);
+    receiver[expr.name] = value;
     return value;
   }
 
   visitInvokeMethodExpr(expr: o.InvokeMethodExpr, ctx: _ExecutionContext): any {
-    var receiver = expr.receiver.visitExpression(this, ctx);
-    var args = this.visitAllExpressions(expr.args, ctx);
-    var result;
+    const receiver = expr.receiver.visitExpression(this, ctx);
+    const args = this.visitAllExpressions(expr.args, ctx);
+    let result: any;
     if (isPresent(expr.builtin)) {
       switch (expr.builtin) {
         case o.BuiltinMethod.ConcatArray:
-          result = ListWrapper.concat(receiver, args[0]);
+          result = receiver.concat(...args);
           break;
         case o.BuiltinMethod.SubscribeObservable:
-          result = ObservableWrapper.subscribe(receiver, args[0]);
+          result = receiver.subscribe({next: args[0]});
           break;
-        case o.BuiltinMethod.bind:
-          if (IS_DART) {
-            result = receiver;
-          } else {
-            result = receiver.bind(args[0]);
-          }
+        case o.BuiltinMethod.Bind:
+          result = receiver.bind(...args);
           break;
         default:
-          throw new BaseException(`Unknown builtin method ${expr.builtin}`);
-      }
-    } else if (isDynamicInstance(receiver)) {
-      var di = <DynamicInstance>receiver;
-      if (di.methods.has(expr.name)) {
-        result = FunctionWrapper.apply(di.methods.get(expr.name), args);
-      } else {
-        result = reflector.method(expr.name)(receiver, args);
+          throw new Error(`Unknown builtin method ${expr.builtin}`);
       }
     } else {
-      result = reflector.method(expr.name)(receiver, args);
+      result = receiver[expr.name].apply(receiver, args);
     }
     return result;
   }
   visitInvokeFunctionExpr(stmt: o.InvokeFunctionExpr, ctx: _ExecutionContext): any {
-    var args = this.visitAllExpressions(stmt.args, ctx);
-    var fnExpr = stmt.fn;
+    const args = this.visitAllExpressions(stmt.args, ctx);
+    const fnExpr = stmt.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.superInstance = ctx.instanceFactory.createInstance(ctx.superClass, ctx.className, args,
-                                                             ctx.props, ctx.getters, ctx.methods);
-      ctx.parent.superInstance = ctx.superInstance;
+      ctx.instance.constructor.prototype.constructor.apply(ctx.instance, args);
       return null;
     } else {
-      var fn = stmt.fn.visitExpression(this, ctx);
-      return FunctionWrapper.apply(fn, args);
+      const fn = stmt.fn.visitExpression(this, ctx);
+      return fn.apply(null, args);
     }
   }
   visitReturnStmt(stmt: o.ReturnStatement, ctx: _ExecutionContext): any {
     return new ReturnValue(stmt.value.visitExpression(this, ctx));
   }
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: _ExecutionContext): any {
-    var clazz = new _DynamicClass(stmt, ctx, this);
+    const clazz = createDynamicClass(stmt, ctx, this);
     ctx.vars.set(stmt.name, clazz);
     return null;
   }
@@ -228,7 +191,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return stmt.expr.visitExpression(this, ctx);
   }
   visitIfStmt(stmt: o.IfStmt, ctx: _ExecutionContext): any {
-    var condition = stmt.condition.visitExpression(this, ctx);
+    const condition = stmt.condition.visitExpression(this, ctx);
     if (condition) {
       return this.visitAllStatements(stmt.trueCase, ctx);
     } else if (isPresent(stmt.falseCase)) {
@@ -240,7 +203,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     try {
       return this.visitAllStatements(stmt.bodyStmts, ctx);
     } catch (e) {
-      var childCtx = ctx.createChildWihtLocalVars();
+      const childCtx = ctx.createChildWihtLocalVars();
       childCtx.vars.set(CATCH_ERROR_VAR, e);
       childCtx.vars.set(CATCH_STACK_VAR, e.stack);
       return this.visitAllStatements(stmt.catchStmts, childCtx);
@@ -251,16 +214,14 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
   visitCommentStmt(stmt: o.CommentStmt, context?: any): any { return null; }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: _ExecutionContext): any {
-    var args = this.visitAllExpressions(ast.args, ctx);
-    var clazz = ast.classExpr.visitExpression(this, ctx);
-    if (clazz instanceof _DynamicClass) {
-      return clazz.instantiate(args);
-    } else {
-      return FunctionWrapper.apply(reflector.factory(clazz), args);
-    }
+    const args = this.visitAllExpressions(ast.args, ctx);
+    const clazz = ast.classExpr.visitExpression(this, ctx);
+    return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
-  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any { return ast.value.runtime; }
+  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
+    return ast.value.reference;
+  }
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);
@@ -276,17 +237,17 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return ast.value.visitExpression(this, ctx);
   }
   visitFunctionExpr(ast: o.FunctionExpr, ctx: _ExecutionContext): any {
-    var paramNames = ast.params.map((param) => param.name);
+    const paramNames = ast.params.map((param) => param.name);
     return _declareFn(paramNames, ast.statements, ctx, this);
   }
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: _ExecutionContext): any {
-    var paramNames = stmt.params.map((param) => param.name);
+    const paramNames = stmt.params.map((param) => param.name);
     ctx.vars.set(stmt.name, _declareFn(paramNames, stmt.statements, ctx, this));
     return null;
   }
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: _ExecutionContext): any {
-    var lhs = () => ast.lhs.visitExpression(this, ctx);
-    var rhs = () => ast.rhs.visitExpression(this, ctx);
+    const lhs = () => ast.lhs.visitExpression(this, ctx);
+    const rhs = () => ast.rhs.visitExpression(this, ctx);
 
     switch (ast.operator) {
       case o.BinaryOperator.Equals:
@@ -320,40 +281,27 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
       case o.BinaryOperator.BiggerEquals:
         return lhs() >= rhs();
       default:
-        throw new BaseException(`Unknown operator ${ast.operator}`);
+        throw new Error(`Unknown operator ${ast.operator}`);
     }
   }
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: _ExecutionContext): any {
-    var result;
-    var receiver = ast.receiver.visitExpression(this, ctx);
-    if (isDynamicInstance(receiver)) {
-      var di = <DynamicInstance>receiver;
-      if (di.props.has(ast.name)) {
-        result = di.props.get(ast.name);
-      } else if (di.getters.has(ast.name)) {
-        result = di.getters.get(ast.name)();
-      } else if (di.methods.has(ast.name)) {
-        result = di.methods.get(ast.name);
-      } else {
-        result = reflector.getter(ast.name)(receiver);
-      }
-    } else {
-      result = reflector.getter(ast.name)(receiver);
-    }
+    let result: any;
+    const receiver = ast.receiver.visitExpression(this, ctx);
+    result = receiver[ast.name];
     return result;
   }
   visitReadKeyExpr(ast: o.ReadKeyExpr, ctx: _ExecutionContext): any {
-    var receiver = ast.receiver.visitExpression(this, ctx);
-    var prop = ast.index.visitExpression(this, ctx);
+    const receiver = ast.receiver.visitExpression(this, ctx);
+    const prop = ast.index.visitExpression(this, ctx);
     return receiver[prop];
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: _ExecutionContext): any {
     return this.visitAllExpressions(ast.entries, ctx);
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
-    var result = {};
-    ast.entries.forEach((entry) => result[<string>entry[0]] =
-                            (<o.Expression>entry[1]).visitExpression(this, ctx));
+    const result = {};
+    ast.entries.forEach(
+        (entry) => (result as any)[entry.key] = entry.value.visitExpression(this, ctx));
     return result;
   }
 
@@ -362,9 +310,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
 
   visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue {
-    for (var i = 0; i < statements.length; i++) {
-      var stmt = statements[i];
-      var val = stmt.visitStatement(this, ctx);
+    for (let i = 0; i < statements.length; i++) {
+      const stmt = statements[i];
+      const val = stmt.visitStatement(this, ctx);
       if (val instanceof ReturnValue) {
         return val;
       }
@@ -373,44 +321,11 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
 }
 
-function _declareFn(varNames: string[], statements: o.Statement[], ctx: _ExecutionContext,
-                    visitor: StatementInterpreter): Function {
-  switch (varNames.length) {
-    case 0:
-      return () => _executeFunctionStatements(varNames, [], statements, ctx, visitor);
-    case 1:
-      return (d0) => _executeFunctionStatements(varNames, [d0], statements, ctx, visitor);
-    case 2:
-      return (d0, d1) => _executeFunctionStatements(varNames, [d0, d1], statements, ctx, visitor);
-    case 3:
-      return (d0, d1, d2) =>
-                 _executeFunctionStatements(varNames, [d0, d1, d2], statements, ctx, visitor);
-    case 4:
-      return (d0, d1, d2, d3) =>
-                 _executeFunctionStatements(varNames, [d0, d1, d2, d3], statements, ctx, visitor);
-    case 5:
-      return (d0, d1, d2, d3, d4) => _executeFunctionStatements(varNames, [d0, d1, d2, d3, d4],
-                                                                statements, ctx, visitor);
-    case 6:
-      return (d0, d1, d2, d3, d4, d5) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5], statements, ctx, visitor);
-    case 7:
-      return (d0, d1, d2, d3, d4, d5, d6) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6], statements, ctx, visitor);
-    case 8:
-      return (d0, d1, d2, d3, d4, d5, d6, d7) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7], statements, ctx, visitor);
-    case 9:
-      return (d0, d1, d2, d3, d4, d5, d6, d7, d8) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8], statements, ctx, visitor);
-    case 10:
-      return (d0, d1, d2, d3, d4, d5, d6, d7, d8, d9) => _executeFunctionStatements(
-                 varNames, [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9], statements, ctx, visitor);
-    default:
-      throw new BaseException(
-          'Declaring functions with more than 10 arguments is not supported right now');
-  }
+function _declareFn(
+    varNames: string[], statements: o.Statement[], ctx: _ExecutionContext,
+    visitor: StatementInterpreter): Function {
+  return (...args: any[]) => _executeFunctionStatements(varNames, args, statements, ctx, visitor);
 }
 
-var CATCH_ERROR_VAR = 'error';
-var CATCH_STACK_VAR = 'stack';
+const CATCH_ERROR_VAR = 'error';
+const CATCH_STACK_VAR = 'stack';

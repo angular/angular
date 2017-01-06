@@ -1,11 +1,21 @@
-import {Injectable} from '@angular/core';
-import {EventEmitter, ObservableWrapper} from '../src/facade/async';
-import {LocationStrategy} from '../index';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {LocationStrategy} from '@angular/common';
+import {EventEmitter, Injectable} from '@angular/core';
+
 
 
 /**
  * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
  * location events.
+ *
+ * @stable
  */
 @Injectable()
 export class MockLocationStrategy extends LocationStrategy {
@@ -19,10 +29,10 @@ export class MockLocationStrategy extends LocationStrategy {
 
   simulatePopState(url: string): void {
     this.internalPath = url;
-    ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
+    this._subject.emit(new _MockPopStateEvent(this.path()));
   }
 
-  path(): string { return this.internalPath; }
+  path(includeHash: boolean = false): string { return this.internalPath; }
 
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
@@ -34,31 +44,31 @@ export class MockLocationStrategy extends LocationStrategy {
   pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var externalUrl = this.prepareExternalUrl(url);
+    const externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push(externalUrl);
   }
 
   replaceState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
 
-    var externalUrl = this.prepareExternalUrl(url);
+    const externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
-  onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }
+  onPopState(fn: (value: any) => void): void { this._subject.subscribe({next: fn}); }
 
   getBaseHref(): string { return this.internalBaseHref; }
 
   back(): void {
     if (this.urlChanges.length > 0) {
       this.urlChanges.pop();
-      var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
+      const nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
       this.simulatePopState(nextUrl);
     }
   }

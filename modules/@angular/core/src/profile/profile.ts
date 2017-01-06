@@ -1,13 +1,20 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {WtfScopeFn, createScope, detectWTF, endTimeRange, leave, startTimeRange} from './wtf_impl';
+
 export {WtfScopeFn} from './wtf_impl';
 
-import * as impl from './wtf_impl';
-
-// Change exports to const once https://github.com/angular/ts2dart/issues/150
 
 /**
  * True if WTF is enabled.
  */
-export var wtfEnabled = impl.detectWTF();
+export const wtfEnabled = detectWTF();
 
 function noopScope(arg0?: any, arg1?: any): any {
   return null;
@@ -43,8 +50,8 @@ function noopScope(arg0?: any, arg1?: any): any {
  *
  * @experimental
  */
-export var wtfCreateScope: (signature: string, flags?: any) => impl.WtfScopeFn =
-    wtfEnabled ? impl.createScope : (signature: string, flags?: any) => noopScope;
+export const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
+    wtfEnabled ? createScope : (signature: string, flags?: any) => noopScope;
 
 /**
  * Used to mark end of Scope.
@@ -55,8 +62,8 @@ export var wtfCreateScope: (signature: string, flags?: any) => impl.WtfScopeFn =
  * Returns the `returnValue for easy chaining.
  * @experimental
  */
-export var wtfLeave:<T>(scope: any, returnValue?: T) => T =
-    wtfEnabled ? impl.leave : (s: any, r?: any) => r;
+export const wtfLeave: <T>(scope: any, returnValue?: T) => T =
+    wtfEnabled ? leave : (s: any, r?: any) => r;
 
 /**
  * Used to mark Async start. Async are similar to scope but they don't have to be strictly nested.
@@ -71,8 +78,8 @@ export var wtfLeave:<T>(scope: any, returnValue?: T) => T =
  *     }
  * @experimental
  */
-export var wtfStartTimeRange: (rangeType: string, action: string) => any =
-    wtfEnabled ? impl.startTimeRange : (rangeType: string, action: string) => null;
+export const wtfStartTimeRange: (rangeType: string, action: string) => any =
+    wtfEnabled ? startTimeRange : (rangeType: string, action: string) => null;
 
 /**
  * Ends a async time range operation.
@@ -80,5 +87,4 @@ export var wtfStartTimeRange: (rangeType: string, action: string) => any =
  * enabled.
  * @experimental
  */
-export var wtfEndTimeRange: (range: any) => void = wtfEnabled ? impl.endTimeRange : (r: any) =>
-                                                                                        null;
+export const wtfEndTimeRange: (range: any) => void = wtfEnabled ? endTimeRange : (r: any) => null;

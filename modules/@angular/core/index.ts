@@ -1,49 +1,16 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * @module
  * @description
- * Starting point to import all public core APIs.
+ * Entry point for all public APIs of the core package.
  */
-export * from './src/metadata';
-export * from './src/util';
-export * from './src/di';
-export {
-  createPlatform,
-  assertPlatform,
-  disposePlatform,
-  getPlatform,
-  coreBootstrap,
-  coreLoadAndBootstrap,
-  createNgZone,
-  PlatformRef,
-  ApplicationRef
-} from './src/application_ref';
-export {
-  APP_ID,
-  APP_INITIALIZER,
-  PACKAGE_ROOT_URL,
-  PLATFORM_INITIALIZER
-} from './src/application_tokens';
-export * from './src/zone';
-export * from './src/render';
-export * from './src/linker';
-export {DebugElement, DebugNode, asNativeElements, getDebugNode} from './src/debug/debug_node';
-export * from './src/testability/testability';
-export * from './src/change_detection';
-export * from './src/platform_directives_and_pipes';
-export * from './src/platform_common_providers';
-export * from './src/application_common_providers';
-export {
-  wtfCreateScope,
-  wtfLeave,
-  wtfStartTimeRange,
-  wtfEndTimeRange,
-  WtfScopeFn
-} from './src/profile/profile';
+export * from './src/core';
 
-export {Type, enableProdMode} from "./src/facade/lang";
-export {EventEmitter} from "./src/facade/async";
-export {ExceptionHandler, WrappedException, BaseException} from "./src/facade/exceptions";
-export * from './private_export';
-
-export * from './src/animation/metadata';
-export {AnimationPlayer} from './src/animation/animation_player';
+// This file only reexports content of the `src` folder. Keep it that way.

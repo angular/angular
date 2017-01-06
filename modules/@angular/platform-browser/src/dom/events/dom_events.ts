@@ -1,6 +1,12 @@
-import {Injectable} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {getDOM} from '../dom_adapter';
+import {Injectable} from '@angular/core';
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
@@ -10,17 +16,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return true; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.runGuarded(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(
-        () => getDOM().onAndCancel(element, eventName, outsideHandler));
-  }
-
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var element = getDOM().getGlobalEventTarget(target);
-    var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.runGuarded(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(
-        () => getDOM().onAndCancel(element, eventName, outsideHandler));
+    element.addEventListener(eventName, handler as any, false);
+    return () => element.removeEventListener(eventName, handler as any, false);
   }
 }

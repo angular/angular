@@ -1,6 +1,15 @@
-import {stringify, isBlank} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {stringify} from '../facade/lang';
+
 import {resolveForwardRef} from './forward_ref';
+
 
 /**
  * A unique object used for retrieving items from the {@link ReflectiveInjector}.
@@ -23,8 +32,8 @@ export class ReflectiveKey {
    * Private
    */
   constructor(public token: Object, public id: number) {
-    if (isBlank(token)) {
-      throw new BaseException('Token must be defined!');
+    if (!token) {
+      throw new Error('Token must be defined!');
     }
   }
 
@@ -59,7 +68,7 @@ export class KeyRegistry {
       return this._allKeys.get(token);
     }
 
-    var newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
+    const newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
     this._allKeys.set(token, newKey);
     return newKey;
   }
@@ -67,4 +76,4 @@ export class KeyRegistry {
   get numberOfKeys(): number { return this._allKeys.size; }
 }
 
-var _globalKeyRegistry = new KeyRegistry();
+const _globalKeyRegistry = new KeyRegistry();

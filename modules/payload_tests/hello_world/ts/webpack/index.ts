@@ -1,5 +1,14 @@
-import {Component} from '@angular/core';
-import {bootstrap} from '@angular/platform-browser';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, NgModule} from '@angular/core';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule} from '@angular/platform-browser';
 
 @Component({
   selector: 'hello-app',
@@ -12,4 +21,13 @@ export class HelloCmp {
   name = 'World';
 }
 
-bootstrap(HelloCmp);
+@NgModule({
+  bootstrap: [HelloCmp],
+  imports: [BrowserModule]
+})
+class ExampleModule {}
+
+
+export function main() {
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
+}

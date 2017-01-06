@@ -1,119 +1,69 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach,
-  inject,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
-import {
-  fakeAsync,
-  flushMicrotasks,
-  Log,
-  tick,
-} from '@angular/core/testing';
-import {TestComponentBuilder, ComponentFixture} from '@angular/compiler/testing';
-
-import {
-  isPresent,
-  isBlank,
-  isNumber,
-  isJsObject,
-  FunctionWrapper,
-  NumberWrapper,
-  normalizeBool
-} from '../../src/facade/lang';
-import {BaseException, WrappedException} from '../../src/facade/exceptions';
-import {MapWrapper, StringMapWrapper} from '../../src/facade/collection';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {
-  PipeTransform,
-  ChangeDetectionStrategy,
-  WrappedValue,
-} from '@angular/core/src/change_detection/change_detection';
-
-import {OnDestroy} from '@angular/core/src/metadata/lifecycle_hooks';
-
-import {IS_DART, Type} from '../../src/facade/lang';
-import {EventEmitter, ObservableWrapper} from '../../src/facade/async';
-
-
-import {
-  Component,
-  DebugElement,
-  Directive,
-  TemplateRef,
-  ChangeDetectorRef,
-  ViewContainerRef,
-  Input,
-  Output,
-  forwardRef,
-  ViewMetadata,
-  Pipe,
-  RootRenderer,
-  Renderer,
-  RenderComponentType,
-  Injectable,
-  provide,
-  OnInit,
-  DoCheck,
-  OnChanges,
-  AfterContentInit,
-  AfterContentChecked,
-  AfterViewInit,
-  AfterViewChecked
-} from '@angular/core';
-import {NgFor} from '@angular/common';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {AsyncPipe} from '@angular/common';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {MockSchemaRegistry} from '@angular/compiler/testing';
-import {TEST_PROVIDERS} from '@angular/compiler/test/test_bindings';
+import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/test_bindings';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {DebugDomRenderer} from '@angular/core/src/debug/debug_renderer';
+import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRootRenderer} from '@angular/platform-browser/src/dom/dom_renderer';
 
+import {MockSchemaRegistry} from '../../../compiler/testing/index';
+import {EventEmitter} from '../../src/facade/async';
+
 export function main() {
-  var tcb: TestComponentBuilder;
-  var elSchema: MockSchemaRegistry;
-  var renderLog: RenderLog;
-  var directiveLog: DirectiveLog;
+  let elSchema: MockSchemaRegistry;
+  let renderLog: RenderLog;
+  let directiveLog: DirectiveLog;
 
-  function createCompFixture(template: string, compType: Type = TestComponent,
-                             _tcb: TestComponentBuilder = null): ComponentFixture<any> {
-    if (isBlank(_tcb)) {
-      _tcb = tcb;
-    }
-    return _tcb.overrideView(
-                   compType,
-                   new ViewMetadata(
-                       {template: template, directives: ALL_DIRECTIVES, pipes: ALL_PIPES}))
-        .createFakeAsync(compType);
+  function createCompFixture<T>(template: string): ComponentFixture<TestComponent>;
+  function createCompFixture<T>(template: string, compType: Type<T>): ComponentFixture<T>;
+  function createCompFixture<T>(
+      template: string, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
+    TestBed.overrideComponent(compType, {set: new Component({template})});
+
+    initHelpers();
+
+    return TestBed.createComponent(compType);
   }
 
-  function queryDirs(el: DebugElement, dirType: Type): any {
-    var nodes = el.queryAllNodes(By.directive(dirType));
-    return nodes.map(node => node.inject(dirType));
+  function initHelpers(): void {
+    elSchema = TestBed.get(ElementSchemaRegistry);
+    renderLog = TestBed.get(RenderLog);
+    directiveLog = TestBed.get(DirectiveLog);
+    elSchema.existingProperties['someProp'] = true;
   }
 
-  function _bindSimpleProp(bindAttr: string,
-                           compType: Type = TestComponent): ComponentFixture<any> {
-    var template = `<div ${bindAttr}></div>`;
+  function queryDirs(el: DebugElement, dirType: Type<any>): any {
+    const nodes = el.queryAllNodes(By.directive(dirType));
+    return nodes.map(node => node.injector.get(dirType));
+  }
+
+  function _bindSimpleProp<T>(bindAttr: string): ComponentFixture<TestComponent>;
+  function _bindSimpleProp<T>(bindAttr: string, compType: Type<T>): ComponentFixture<T>;
+  function _bindSimpleProp<T>(
+      bindAttr: string, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
+    const template = `<div ${bindAttr}></div>`;
     return createCompFixture(template, compType);
   }
 
-  function _bindSimpleValue(expression: any,
-                            compType: Type = TestComponent): ComponentFixture<any> {
+  function _bindSimpleValue(expression: any): ComponentFixture<TestComponent>;
+  function _bindSimpleValue<T>(expression: any, compType: Type<T>): ComponentFixture<T>;
+  function _bindSimpleValue<T>(
+      expression: any, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
     return _bindSimpleProp(`[someProp]='${expression}'`, compType);
   }
 
-  function _bindAndCheckSimpleValue(expression: any, compType: Type = TestComponent): string[] {
-    var ctx = _bindSimpleValue(expression, compType);
+  function _bindAndCheckSimpleValue(
+      expression: any, compType: Type<any> = TestComponent): string[] {
+    const ctx = _bindSimpleValue(expression, compType);
     ctx.detectChanges(false);
     return renderLog.log;
   }
@@ -122,24 +72,41 @@ export function main() {
     // On CJS fakeAsync is not supported...
     if (!getDOM().supportsDOMEvents()) return;
 
-    beforeEachProviders(() => [
-      RenderLog,
-      DirectiveLog,
-      provide(RootRenderer, {useClass: LoggingRootRenderer}),
-      TEST_PROVIDERS,
-    ]);
-
-    beforeEach(inject([TestComponentBuilder, ElementSchemaRegistry, RenderLog, DirectiveLog],
-                      (_tcb, _elSchema, _renderLog, _directiveLog) => {
-                        tcb = _tcb;
-                        elSchema = _elSchema;
-                        renderLog = _renderLog;
-                        directiveLog = _directiveLog;
-                        elSchema.existingProperties['someProp'] = true;
-                      }));
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+      TestBed.configureTestingModule({
+        declarations: [
+          TestData,
+          TestDirective,
+          TestComponent,
+          AnotherComponent,
+          TestLocals,
+          CompWithRef,
+          WrapCompWithRef,
+          EmitterDirective,
+          PushComp,
+          OnDestroyDirective,
+          OrderCheckDirective2,
+          OrderCheckDirective0,
+          OrderCheckDirective1,
+          Gh9882,
+          Uninitialized,
+          Person,
+          PersonHolder,
+          PersonHolderHolder,
+          CountingPipe,
+          CountingImpurePipe,
+          MultiArgPipe,
+          PipeWithOnDestroy,
+          IdentityPipe,
+          WrappedPipe,
+        ],
+        providers:
+            [RenderLog, DirectiveLog, {provide: RootRenderer, useClass: LoggingRootRenderer}]
+      });
+    });
 
     describe('expressions', () => {
-
       it('should support literals',
          fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['someProp=10']); }));
 
@@ -175,8 +142,7 @@ export function main() {
          }));
 
       it('should support == operations on coerceible', fakeAsync(() => {
-           var expectedValue = IS_DART ? 'false' : 'true';
-           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=${expectedValue}`]);
+           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=true`]);
          }));
 
       it('should support === operations on identical', fakeAsync(() => {
@@ -277,14 +243,14 @@ export function main() {
          }));
 
       it('should report all changes on the first run including null values', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=null']);
          }));
 
       it('should support simple chained property access', fakeAsync(() => {
-           var ctx = _bindSimpleValue('address.city', Person);
+           const ctx = _bindSimpleValue('address.city', Person);
            ctx.componentInstance.name = 'Victor';
            ctx.componentInstance.address = new Address('Grenoble');
            ctx.detectChanges(false);
@@ -293,57 +259,93 @@ export function main() {
 
       describe('safe navigation operator', () => {
         it('should support reading properties of nulls', fakeAsync(() => {
-             var ctx = _bindSimpleValue('address?.city', Person);
+             const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = null;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
-             var ctx = _bindSimpleValue('address?.toString()', Person);
+             const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = null;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
 
         it('should support reading properties on non nulls', fakeAsync(() => {
-             var ctx = _bindSimpleValue('address?.city', Person);
+             const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=MTV']);
            }));
 
         it('should support calling methods on non nulls', fakeAsync(() => {
-             var ctx = _bindSimpleValue('address?.toString()', Person);
+             const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=MTV']);
            }));
+
+        it('should support short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
+             ctx.componentInstance.value = null;
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support nested short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
+             ctx.componentInstance.value = new PersonHolder();
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support chained short-circuting safe navigation', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should support short-circuting array index operations', fakeAsync(() => {
+             const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
+             ctx.detectChanges(false);
+             expect(renderLog.log).toEqual(['someProp=null']);
+           }));
+
+        it('should still throw if right-side would throw', fakeAsync(() => {
+             expect(() => {
+               const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
+               const person = new Person();
+               person.address = null;
+               ctx.componentInstance.value = person;
+               ctx.detectChanges(false);
+             }).toThrow();
+           }));
       });
 
       it('should support method calls', fakeAsync(() => {
-           var ctx = _bindSimpleValue('sayHi("Jim")', Person);
+           const ctx = _bindSimpleValue('sayHi("Jim")', Person);
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=Hi, Jim']);
          }));
 
       it('should support function calls', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a()(99)', TestData);
-           ctx.componentInstance.a = () => (a) => a;
+           const ctx = _bindSimpleValue('a()(99)', TestData);
+           ctx.componentInstance.a = () => (a: any) => a;
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=99']);
          }));
 
       it('should support chained method calls', fakeAsync(() => {
-           var ctx = _bindSimpleValue('address.toString()', Person);
+           const ctx = _bindSimpleValue('address.toString()', Person);
            ctx.componentInstance.address = new Address('MTV');
            ctx.detectChanges(false);
            expect(renderLog.log).toEqual(['someProp=MTV']);
          }));
 
       it('should support NaN', fakeAsync(() => {
-           var ctx = _bindSimpleValue('age', Person);
-           ctx.componentInstance.age = NumberWrapper.NaN;
+           const ctx = _bindSimpleValue('age', Person);
+           ctx.componentInstance.age = NaN;
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual(['someProp=NaN']);
@@ -354,7 +356,7 @@ export function main() {
          }));
 
       it('should do simple watching', fakeAsync(() => {
-           var ctx = _bindSimpleValue('name', Person);
+           const ctx = _bindSimpleValue('name', Person);
            ctx.componentInstance.name = 'misko';
 
            ctx.detectChanges(false);
@@ -371,26 +373,26 @@ export function main() {
          }));
 
       it('should support literal array made of literals', fakeAsync(() => {
-           var ctx = _bindSimpleValue('[1, 2]');
+           const ctx = _bindSimpleValue('[1, 2]');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues).toEqual([[1, 2]]);
          }));
 
       it('should support empty literal array', fakeAsync(() => {
-           var ctx = _bindSimpleValue('[]');
+           const ctx = _bindSimpleValue('[]');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues).toEqual([[]]);
          }));
 
       it('should support literal array made of expressions', fakeAsync(() => {
-           var ctx = _bindSimpleValue('[1, a]', TestData);
+           const ctx = _bindSimpleValue('[1, a]', TestData);
            ctx.componentInstance.a = 2;
            ctx.detectChanges(false);
            expect(renderLog.loggedValues).toEqual([[1, 2]]);
          }));
 
       it('should not recreate literal arrays unless their content changed', fakeAsync(() => {
-           var ctx = _bindSimpleValue('[1, a]', TestData);
+           const ctx = _bindSimpleValue('[1, a]', TestData);
            ctx.componentInstance.a = 2;
            ctx.detectChanges(false);
            ctx.detectChanges(false);
@@ -401,26 +403,26 @@ export function main() {
          }));
 
       it('should support literal maps made of literals', fakeAsync(() => {
-           var ctx = _bindSimpleValue('{z: 1}');
+           const ctx = _bindSimpleValue('{z: 1}');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues[0]['z']).toEqual(1);
          }));
 
       it('should support empty literal map', fakeAsync(() => {
-           var ctx = _bindSimpleValue('{}');
+           const ctx = _bindSimpleValue('{}');
            ctx.detectChanges(false);
            expect(renderLog.loggedValues).toEqual([{}]);
          }));
 
       it('should support literal maps made of expressions', fakeAsync(() => {
-           var ctx = _bindSimpleValue('{z: a}');
+           const ctx = _bindSimpleValue('{z: a}');
            ctx.componentInstance.a = 1;
            ctx.detectChanges(false);
            expect(renderLog.loggedValues[0]['z']).toEqual(1);
          }));
 
       it('should not recreate literal maps unless their content changed', fakeAsync(() => {
-           var ctx = _bindSimpleValue('{z: a}');
+           const ctx = _bindSimpleValue('{z: a}');
            ctx.componentInstance.a = 1;
            ctx.detectChanges(false);
            ctx.detectChanges(false);
@@ -433,8 +435,16 @@ export function main() {
          }));
 
 
+      it('should ignore empty bindings', fakeAsync(() => {
+           const ctx = _bindSimpleProp('[someProp]', TestData);
+           ctx.componentInstance.a = 'value';
+           ctx.detectChanges(false);
+
+           expect(renderLog.log).toEqual([]);
+         }));
+
       it('should support interpolation', fakeAsync(() => {
-           var ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
            ctx.componentInstance.a = 'value';
            ctx.detectChanges(false);
 
@@ -442,7 +452,7 @@ export function main() {
          }));
 
       it('should output empty strings for null values in interpolation', fakeAsync(() => {
-           var ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
 
@@ -453,7 +463,7 @@ export function main() {
          fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']); }));
 
       it('should read locals', fakeAsync(() => {
-           var ctx =
+           const ctx =
                createCompFixture('<template testLocals let-local="someLocal">{{local}}</template>');
            ctx.detectChanges(false);
 
@@ -462,14 +472,14 @@ export function main() {
 
       describe('pipes', () => {
         it('should use the return value of the pipe', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | countingPipe', Person);
+             const ctx = _bindSimpleValue('name | countingPipe', Person);
              ctx.componentInstance.name = 'bob';
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['bob state:0']);
            }));
 
         it('should support arguments in pipes', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | multiArgPipe:"one":address.city', Person);
+             const ctx = _bindSimpleValue('name | multiArgPipe:"one":address.city', Person);
              ctx.componentInstance.name = 'value';
              ctx.componentInstance.address = new Address('two');
              ctx.detectChanges(false);
@@ -477,21 +487,22 @@ export function main() {
            }));
 
         it('should associate pipes right-to-left', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1', Person);
+             const ctx = _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1', Person);
              ctx.componentInstance.name = 'value';
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['value a b default 0 1 default']);
            }));
 
         it('should support calling pure pipes with different number of arguments', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1:2', Person);
+             const ctx =
+                 _bindSimpleValue('name | multiArgPipe:"a":"b" | multiArgPipe:0:1:2', Person);
              ctx.componentInstance.name = 'value';
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['value a b default 0 1 2']);
            }));
 
         it('should do nothing when no change', fakeAsync(() => {
-             var ctx = _bindSimpleValue('"Megatron" | identityPipe', Person);
+             const ctx = _bindSimpleValue('"Megatron" | identityPipe', Person);
 
              ctx.detectChanges(false);
 
@@ -504,7 +515,7 @@ export function main() {
            }));
 
         it('should unwrap the wrapped value', fakeAsync(() => {
-             var ctx = _bindSimpleValue('"Megatron" | wrappedPipe', Person);
+             const ctx = _bindSimpleValue('"Megatron" | wrappedPipe', Person);
 
              ctx.detectChanges(false);
 
@@ -517,7 +528,7 @@ export function main() {
            }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | countingPipe', Person);
+             const ctx = _bindSimpleValue('name | countingPipe', Person);
              // change from undefined -> null
              ctx.componentInstance.name = null;
              ctx.detectChanges(false);
@@ -535,17 +546,19 @@ export function main() {
              // change from some value -> some other value
              ctx.componentInstance.name = 'bart';
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             expect(renderLog.loggedValues).toEqual([
+               'null state:0', 'bob state:1', 'bart state:2'
+             ]);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['null state:0', 'bob state:1', 'bart state:2']);
+             expect(renderLog.loggedValues).toEqual([
+               'null state:0', 'bob state:1', 'bart state:2'
+             ]);
 
            }));
 
         it('should call pure pipes that are used multiple times only when the arguments change',
            fakeAsync(() => {
-             var ctx = createCompFixture(
+             const ctx = createCompFixture(
                  `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
                      '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
                  Person);
@@ -553,19 +566,22 @@ export function main() {
              ctx.componentInstance.age = 10;
              ctx.componentInstance.address = new Address('mtv');
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+             ]);
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+             ]);
              ctx.componentInstance.age = 11;
              ctx.detectChanges(false);
-             expect(renderLog.loggedValues)
-                 .toEqual(['mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4']);
+             expect(renderLog.loggedValues).toEqual([
+               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
+             ]);
            }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
-             var ctx = _bindSimpleValue('name | countingImpurePipe', Person);
+             const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
              ctx.componentInstance.name = 'bob';
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['bob state:0']);
@@ -576,9 +592,9 @@ export function main() {
 
       describe('event expressions', () => {
         it('should support field assignments', fakeAsync(() => {
-             var ctx = _bindSimpleProp('(event)="b=a=$event"');
-             var childEl = ctx.debugElement.children[0];
-             var evt = 'EVENT';
+             const ctx = _bindSimpleProp('(event)="b=a=$event"');
+             const childEl = ctx.debugElement.children[0];
+             const evt = 'EVENT';
              childEl.triggerEventHandler('event', evt);
 
              expect(ctx.componentInstance.a).toEqual(evt);
@@ -586,30 +602,31 @@ export function main() {
            }));
 
         it('should support keyed assignments', fakeAsync(() => {
-             var ctx = _bindSimpleProp('(event)="a[0]=$event"');
-             var childEl = ctx.debugElement.children[0];
+             const ctx = _bindSimpleProp('(event)="a[0]=$event"');
+             const childEl = ctx.debugElement.children[0];
              ctx.componentInstance.a = ['OLD'];
-             var evt = 'EVENT';
+             const evt = 'EVENT';
              childEl.triggerEventHandler('event', evt);
              expect(ctx.componentInstance.a).toEqual([evt]);
            }));
 
         it('should support chains', fakeAsync(() => {
-             var ctx = _bindSimpleProp('(event)="a=a+1; a=a+1;"');
-             var childEl = ctx.debugElement.children[0];
+             const ctx = _bindSimpleProp('(event)="a=a+1; a=a+1;"');
+             const childEl = ctx.debugElement.children[0];
              ctx.componentInstance.a = 0;
              childEl.triggerEventHandler('event', 'EVENT');
              expect(ctx.componentInstance.a).toEqual(2);
            }));
 
         it('should throw when trying to assign to a local', fakeAsync(() => {
-             expect(() => {_bindSimpleProp('(event)="$event=1"')})
-                 .toThrowError(new RegExp("Cannot assign to a reference or variable!"));
+             expect(() => {
+               _bindSimpleProp('(event)="$event=1"');
+             }).toThrowError(new RegExp('Cannot assign to a reference or variable!'));
            }));
 
         it('should support short-circuiting', fakeAsync(() => {
-             var ctx = _bindSimpleProp('(event)="true ? a = a + 1 : a = a + 1"');
-             var childEl = ctx.debugElement.children[0];
+             const ctx = _bindSimpleProp('(event)="true ? a = a + 1 : a = a + 1"');
+             const childEl = ctx.debugElement.children[0];
              ctx.componentInstance.a = 0;
              childEl.triggerEventHandler('event', 'EVENT');
              expect(ctx.componentInstance.a).toEqual(1);
@@ -621,7 +638,7 @@ export function main() {
     describe('change notification', () => {
       describe('updating directives', () => {
         it('should happen without invoking the renderer', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective [a]="42"></div>');
+             const ctx = createCompFixture('<div testDirective [a]="42"></div>');
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual([]);
              expect(queryDirs(ctx.debugElement, TestDirective)[0].a).toEqual(42);
@@ -630,21 +647,20 @@ export function main() {
 
       describe('reading directives', () => {
         it('should read directive properties', fakeAsync(() => {
-             var ctx =
-                 createCompFixture(
-                     '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>')
-                     ctx.detectChanges(false);
+             const ctx = createCompFixture(
+                 '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>');
+             ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
       });
 
       describe('ngOnChanges', () => {
         it('should notify the directive when a group of records changes', fakeAsync(() => {
-             var ctx = createCompFixture(
+             const ctx = createCompFixture(
                  '<div [testDirective]="\'aName\'" [a]="1" [b]="2"></div><div [testDirective]="\'bName\'" [a]="4"></div>');
              ctx.detectChanges(false);
 
-             var dirs = queryDirs(ctx.debugElement, TestDirective);
+             const dirs = queryDirs(ctx.debugElement, TestDirective);
              expect(dirs[0].changes).toEqual({'a': 1, 'b': 2, 'name': 'aName'});
              expect(dirs[1].changes).toEqual({'a': 4, 'name': 'bName'});
            }));
@@ -653,21 +669,28 @@ export function main() {
 
     describe('lifecycle', () => {
       function createCompWithContentAndViewChild(): ComponentFixture<any> {
+        TestBed.overrideComponent(AnotherComponent, {
+          set: new Component({
+            selector: 'other-cmp',
+            template: '<div testDirective="viewChild"></div>',
+          })
+        });
+
         return createCompFixture(
             '<div testDirective="parent"><div *ngIf="true" testDirective="contentChild"></div><other-cmp></other-cmp></div>',
-            TestComponent,
-            tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
+            TestComponent);
       }
 
       describe('ngOnInit', () => {
         it('should be called after ngOnChanges', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
              expect(directiveLog.filter(['ngOnInit', 'ngOnChanges'])).toEqual([]);
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngOnInit', 'ngOnChanges']))
-                 .toEqual(['dir.ngOnChanges', 'dir.ngOnInit']);
+             expect(directiveLog.filter(['ngOnInit', 'ngOnChanges'])).toEqual([
+               'dir.ngOnChanges', 'dir.ngOnInit'
+             ]);
              directiveLog.clear();
 
              ctx.detectChanges(false);
@@ -676,7 +699,7 @@ export function main() {
            }));
 
         it('should only be called only once', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
@@ -697,9 +720,9 @@ export function main() {
            }));
 
         it('should not call ngOnInit again if it throws', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir" throwOn="ngOnInit"></div>');
+             const ctx = createCompFixture('<div testDirective="dir" throwOn="ngOnInit"></div>');
 
-             var errored = false;
+             let errored = false;
              // First pass fails, but ngOnInit should be called.
              try {
                ctx.detectChanges(false);
@@ -715,7 +738,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngOnInit'])).toEqual([]);
            }));
@@ -723,16 +746,17 @@ export function main() {
 
       describe('ngDoCheck', () => {
         it('should be called after ngOnInit', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
-             expect(directiveLog.filter(['ngDoCheck', 'ngOnInit']))
-                 .toEqual(['dir.ngOnInit', 'dir.ngDoCheck']);
+             expect(directiveLog.filter(['ngDoCheck', 'ngOnInit'])).toEqual([
+               'dir.ngOnInit', 'dir.ngDoCheck'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
            fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
@@ -756,28 +780,23 @@ export function main() {
       describe('ngAfterContentInit', () => {
         it('should be called after processing the content children but before the view children',
            fakeAsync(() => {
-             var ctx = createCompWithContentAndViewChild();
-
+             const ctx = createCompWithContentAndViewChild();
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentInit']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterContentInit',
-                   'parent.ngAfterContentInit',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterContentInit'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentInit'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterContentInit',
+               'parent.ngAfterContentInit', 'viewChild.ngDoCheck', 'viewChild.ngAfterContentInit'
+             ]);
            }));
 
         it('should only be called only once', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentInit']))
-                 .toEqual(['dir.ngAfterContentInit']);
+             expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([
+               'dir.ngAfterContentInit'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -794,10 +813,10 @@ export function main() {
            }));
 
         it('should not call ngAfterContentInit again if it throws', fakeAsync(() => {
-             var ctx =
+             const ctx =
                  createCompFixture('<div testDirective="dir" throwOn="ngAfterContentInit"></div>');
 
-             var errored = false;
+             let errored = false;
              // First pass fails, but ngAfterContentInit should be called.
              try {
                ctx.detectChanges(false);
@@ -806,8 +825,9 @@ export function main() {
              }
              expect(errored).toBe(true);
 
-             expect(directiveLog.filter(['ngAfterContentInit']))
-                 .toEqual(['dir.ngAfterContentInit']);
+             expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([
+               'dir.ngAfterContentInit'
+             ]);
              directiveLog.clear();
 
              // Second change detection also fails, but this time ngAfterContentInit should not be
@@ -815,7 +835,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterContentInit'])).toEqual([]);
            }));
@@ -824,29 +844,26 @@ export function main() {
       describe('ngAfterContentChecked', () => {
         it('should be called after the content children but before the view children',
            fakeAsync(() => {
-             var ctx = createCompWithContentAndViewChild();
+             const ctx = createCompWithContentAndViewChild();
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentChecked']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterContentChecked',
-                   'parent.ngAfterContentChecked',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterContentChecked'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterContentChecked'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterContentChecked',
+               'parent.ngAfterContentChecked', 'viewChild.ngDoCheck',
+               'viewChild.ngAfterContentChecked'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
            fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['dir.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'dir.ngAfterContentChecked'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -859,42 +876,39 @@ export function main() {
              // re-verify that changes are still detected
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['dir.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'dir.ngAfterContentChecked'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
-             var ctx = createCompFixture(
+             const ctx = createCompFixture(
                  '<div testDirective="parent"><div testDirective="child"></div></div>');
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterContentChecked']))
-                 .toEqual(['child.ngAfterContentChecked', 'parent.ngAfterContentChecked']);
+             expect(directiveLog.filter(['ngAfterContentChecked'])).toEqual([
+               'child.ngAfterContentChecked', 'parent.ngAfterContentChecked'
+             ]);
            }));
       });
 
 
       describe('ngAfterViewInit', () => {
         it('should be called after processing the view children', fakeAsync(() => {
-             var ctx = createCompWithContentAndViewChild();
+             const ctx = createCompWithContentAndViewChild();
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewInit']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterViewInit',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterViewInit',
-                   'parent.ngAfterViewInit'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewInit'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterViewInit',
+               'viewChild.ngDoCheck', 'viewChild.ngAfterViewInit', 'parent.ngAfterViewInit'
+             ]);
            }));
 
         it('should only be called only once', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
@@ -915,10 +929,10 @@ export function main() {
            }));
 
         it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
-             var ctx =
+             const ctx =
                  createCompFixture('<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
 
-             var errored = false;
+             let errored = false;
              // First pass fails, but ngAfterViewInit should be called.
              try {
                ctx.detectChanges(false);
@@ -935,7 +949,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new BaseException("Second detectChanges() should not have run detection.");
+               throw new Error('Second detectChanges() should not have run detection.');
              }
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
@@ -943,29 +957,25 @@ export function main() {
 
       describe('ngAfterViewChecked', () => {
         it('should be called after processing the view children', fakeAsync(() => {
-             var ctx = createCompWithContentAndViewChild();
+             const ctx = createCompWithContentAndViewChild();
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewChecked']))
-                 .toEqual([
-                   'parent.ngDoCheck',
-                   'contentChild.ngDoCheck',
-                   'contentChild.ngAfterViewChecked',
-                   'viewChild.ngDoCheck',
-                   'viewChild.ngAfterViewChecked',
-                   'parent.ngAfterViewChecked'
-                 ]);
+             expect(directiveLog.filter(['ngDoCheck', 'ngAfterViewChecked'])).toEqual([
+               'parent.ngDoCheck', 'contentChild.ngDoCheck', 'contentChild.ngAfterViewChecked',
+               'viewChild.ngDoCheck', 'viewChild.ngAfterViewChecked', 'parent.ngAfterViewChecked'
+             ]);
            }));
 
         it('should be called on every detectChanges run, except for checkNoChanges',
            fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['dir.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'dir.ngAfterViewChecked'
+             ]);
 
              // reset directives
              directiveLog.clear();
@@ -978,25 +988,27 @@ export function main() {
              // re-verify that changes are still detected
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['dir.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'dir.ngAfterViewChecked'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
-             var ctx = createCompFixture(
+             const ctx = createCompFixture(
                  '<div testDirective="parent"><div testDirective="child"></div></div>');
 
              ctx.detectChanges(false);
 
-             expect(directiveLog.filter(['ngAfterViewChecked']))
-                 .toEqual(['child.ngAfterViewChecked', 'parent.ngAfterViewChecked']);
+             expect(directiveLog.filter(['ngAfterViewChecked'])).toEqual([
+               'child.ngAfterViewChecked', 'parent.ngAfterViewChecked'
+             ]);
            }));
       });
 
       describe('ngOnDestroy', () => {
         it('should be called on view destruction', fakeAsync(() => {
-             var ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
              ctx.detectChanges(false);
 
              ctx.destroy();
@@ -1005,40 +1017,72 @@ export function main() {
            }));
 
         it('should be called after processing the content and view children', fakeAsync(() => {
-            var ctx = createCompFixture(
-                '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                '<other-cmp></other-cmp></div>',
-                TestComponent,
-                tcb.overrideTemplate(AnotherComponent, '<div testDirective="viewChild"></div>'));
+             TestBed.overrideComponent(AnotherComponent, {
+               set: new Component(
+                   {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
+             });
+
+             const ctx = createCompFixture(
+                 '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                     '<other-cmp></other-cmp></div>',
+                 TestComponent);
 
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(
-                     ['contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy', 'parent.ngOnDestroy']);
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
+               'parent.ngOnDestroy'
+             ]);
            }));
 
         it('should be called in reverse order so the child is always notified before the parent',
            fakeAsync(() => {
-             var ctx = createCompFixture(
+             const ctx = createCompFixture(
                  '<div testDirective="parent"><div testDirective="child"></div></div>');
 
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(['child.ngOnDestroy', 'parent.ngOnDestroy']);
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'child.ngOnDestroy', 'parent.ngOnDestroy'
+             ]);
            }));
 
-        it('should call ngOnDestory on pipes', fakeAsync(() => {
-             var ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
+        it('should deliver synchronous events to parent', fakeAsync(() => {
+             const ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
 
              ctx.detectChanges(false);
              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy']))
-                 .toEqual(['pipeWithOnDestroy.ngOnDestroy']);
+             expect(ctx.componentInstance.a).toEqual('destroyed');
+           }));
+
+        it('should call ngOnDestroy on pipes', fakeAsync(() => {
+             const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
+
+             ctx.detectChanges(false);
+             ctx.destroy();
+
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'pipeWithOnDestroy.ngOnDestroy'
+             ]);
+           }));
+
+        it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
+             TestBed.overrideDirective(
+                 TestDirective, {set: {providers: [InjectableWithLifecycle]}});
+
+             const ctx = createCompFixture('<div testDirective="dir"></div>', TestComponent);
+
+             ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
+             ctx.detectChanges(false);
+
+             ctx.destroy();
+
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'dir.ngOnDestroy', 'injectable.ngOnDestroy'
+             ]);
            }));
       });
 
@@ -1046,15 +1090,22 @@ export function main() {
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           var ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
-
+           const ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
            ctx.componentInstance.a = 1;
            expect(() => ctx.checkNoChanges())
                .toThrowError(/:0:5[\s\S]*Expression has changed after it was checked./g);
          }));
 
+      it('should warn when the view has been created in a cd hook', fakeAsync(() => {
+           const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
+           ctx.componentInstance.a = 1;
+           expect(() => ctx.detectChanges())
+               .toThrowError(
+                   /It seems like the view has been created after its parent and its children have been dirty checked/);
+         }));
+
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = ['value'];
            ctx.detectChanges(false);
            ctx.componentInstance.a = ['value'];
@@ -1062,9 +1113,8 @@ export function main() {
          }));
 
       it('should not break the next run', fakeAsync(() => {
-           var ctx = _bindSimpleValue('a', TestData);
+           const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = 'value';
-
            expect(() => ctx.checkNoChanges()).toThrow();
 
            ctx.detectChanges();
@@ -1074,8 +1124,8 @@ export function main() {
 
     describe('mode', () => {
       it('Detached', fakeAsync(() => {
-           var ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
-           var cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+           const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
            cmp.value = 'hello';
            cmp.changeDetectorRef.detach();
 
@@ -1083,11 +1133,65 @@ export function main() {
 
            expect(renderLog.log).toEqual([]);
          }));
+
+      it('Detached view can be checked locally', fakeAsync(() => {
+           const ctx = createCompFixture('<wrap-comp-with-ref></wrap-comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
+           expect(renderLog.log).toEqual([]);
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual([]);
+
+           cmp.changeDetectorRef.detectChanges();
+
+           expect(renderLog.log).toEqual(['{{hello}}']);
+         }));
+
+
+      it('Reattaches', fakeAsync(() => {
+           const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual([]);
+
+           cmp.changeDetectorRef.reattach();
+
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual(['{{hello}}']);
+
+         }));
+
+      it('Reattaches in the original cd mode', fakeAsync(() => {
+           const ctx = createCompFixture('<push-cmp></push-cmp>');
+           const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
+           cmp.changeDetectorRef.detach();
+           cmp.changeDetectorRef.reattach();
+
+           // renderCount should NOT be incremented with each CD as CD mode should be resetted to
+           // on-push
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBeGreaterThan(0);
+           const count = cmp.renderCount;
+
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBe(count);
+
+         }));
+
     });
 
     describe('multi directive order', () => {
       it('should follow the DI order for the same element', fakeAsync(() => {
-           var ctx =
+           const ctx =
                createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
 
            ctx.detectChanges(false);
@@ -1096,32 +1200,45 @@ export function main() {
            expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
          }));
     });
+
+    describe('nested view recursion', () => {
+      it('should recurse into nested components even if there are no bindings in the component view',
+         () => {
+           @Component({selector: 'nested', template: '{{name}}'})
+           class Nested {
+             name = 'Tom';
+           }
+
+           TestBed.configureTestingModule({declarations: [Nested]});
+
+           const ctx = createCompFixture('<nested></nested>');
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['Tom']);
+         });
+
+      it('should recurse into nested view containers even if there are no bindings in the component view',
+         () => {
+           @Component({template: '<template #vc>{{name}}</template>'})
+           class Comp {
+             name = 'Tom';
+             @ViewChild('vc', {read: ViewContainerRef}) vc: ViewContainerRef;
+             @ViewChild(TemplateRef) template: TemplateRef<any>;
+           }
+
+           TestBed.configureTestingModule({declarations: [Comp]});
+           initHelpers();
+
+           const ctx = TestBed.createComponent(Comp);
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual([]);
+
+           ctx.componentInstance.vc.createEmbeddedView(ctx.componentInstance.template);
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['Tom']);
+         });
+    });
   });
 }
-
-const ALL_DIRECTIVES = /*@ts2dart_const*/[
-  forwardRef(() => TestDirective),
-  forwardRef(() => TestComponent),
-  forwardRef(() => AnotherComponent),
-  forwardRef(() => TestLocals),
-  forwardRef(() => CompWithRef),
-  forwardRef(() => EmitterDirective),
-  forwardRef(() => PushComp),
-  forwardRef(() => OrderCheckDirective2),
-  forwardRef(() => OrderCheckDirective0),
-  forwardRef(() => OrderCheckDirective1),
-  NgFor
-];
-
-const ALL_PIPES = /*@ts2dart_const*/[
-  forwardRef(() => CountingPipe),
-  forwardRef(() => CountingImpurePipe),
-  forwardRef(() => MultiArgPipe),
-  forwardRef(() => PipeWithOnDestroy),
-  forwardRef(() => IdentityPipe),
-  forwardRef(() => WrappedPipe),
-  AsyncPipe
-];
 
 @Injectable()
 class RenderLog {
@@ -1188,13 +1305,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state ++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
@@ -1203,41 +1320,41 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 
   ngOnDestroy() { this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy'); }
 
-  transform(value) { return null; }
+  transform(value: any): any { return null; }
 }
 
 @Pipe({name: 'identityPipe'})
 class IdentityPipe implements PipeTransform {
-  transform(value) { return value; }
+  transform(value: any) { return value; }
 }
 
 @Pipe({name: 'wrappedPipe'})
 class WrappedPipe implements PipeTransform {
-  transform(value) { return WrappedValue.wrap(value); }
+  transform(value: any) { return WrappedValue.wrap(value); }
 }
 
 @Pipe({name: 'multiArgPipe'})
 class MultiArgPipe implements PipeTransform {
-  transform(value, arg1, arg2, arg3 = 'default') { return `${value} ${arg1} ${arg2} ${arg3}`; }
+  transform(value: any, arg1: any, arg2: any, arg3 = 'default') {
+    return `${value} ${arg1} ${arg2} ${arg3}`;
+  }
 }
 
-@Component({selector: 'test-cmp', template: '', directives: ALL_DIRECTIVES, pipes: ALL_PIPES})
+@Component({selector: 'test-cmp', template: 'empty'})
 class TestComponent {
   value: any;
   a: any;
   b: any;
 }
 
-@Component({selector: 'other-cmp', directives: ALL_DIRECTIVES, pipes: ALL_PIPES, template: ''})
+@Component({selector: 'other-cmp', template: 'empty'})
 class AnotherComponent {
 }
 
 @Component({
   selector: 'comp-with-ref',
   template: '<div (event)="noop()" emitterDirective></div>{{value}}',
-  host: {'event': 'noop()'},
-  directives: ALL_DIRECTIVES,
-  pipes: ALL_PIPES
+  host: {'event': 'noop()'}
 })
 class CompWithRef {
   @Input() public value: any;
@@ -1247,16 +1364,25 @@ class CompWithRef {
   noop() {}
 }
 
+@Component({selector: 'wrap-comp-with-ref', template: '<comp-with-ref></comp-with-ref>'})
+class WrapCompWithRef {
+  constructor(public changeDetectorRef: ChangeDetectorRef) {}
+}
+
 @Component({
   selector: 'push-cmp',
-  template: '<div (event)="noop()" emitterDirective></div>{{value}}',
+  template: '<div (event)="noop()" emitterDirective></div>{{value}}{{renderIncrement}}',
   host: {'(event)': 'noop()'},
-  directives: ALL_DIRECTIVES,
-  pipes: ALL_PIPES,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 class PushComp {
   @Input() public value: any;
+  public renderCount: any = 0;
+
+  get renderIncrement() {
+    this.renderCount++;
+    return '';
+  }
 
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
 
@@ -1268,13 +1394,21 @@ class EmitterDirective {
   @Output('event') emitter = new EventEmitter<string>();
 }
 
+@Directive({selector: '[gh9882]'})
+class Gh9882 implements AfterContentInit {
+  constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
+  }
+
+  ngAfterContentInit(): any { this._viewContainer.createEmbeddedView(this._templateRef); }
+}
+
 @Directive({selector: '[testDirective]', exportAs: 'testDirective'})
 class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked,
     AfterViewInit, AfterViewChecked, OnDestroy {
-  @Input() a;
-  @Input() b;
-  changes;
-  event;
+  @Input() a: any;
+  @Input() b: any;
+  changes: any;
+  event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
   @Input('testDirective') name: string;
@@ -1283,61 +1417,76 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   constructor(public log: DirectiveLog) {}
 
-  onEvent(event) { this.event = event; }
+  onEvent(event: any) { this.event = event; }
 
   ngDoCheck() { this.log.add(this.name, 'ngDoCheck'); }
 
   ngOnInit() {
     this.log.add(this.name, 'ngOnInit');
     if (this.throwOn == 'ngOnInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges(changes: SimpleChanges) {
     this.log.add(this.name, 'ngOnChanges');
-    var r = {};
-    StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
+    const r: {[k: string]: string} = {};
+    Object.keys(changes).forEach(key => { r[key] = changes[key].currentValue; });
     this.changes = r;
     if (this.throwOn == 'ngOnChanges') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterContentInit() {
     this.log.add(this.name, 'ngAfterContentInit');
     if (this.throwOn == 'ngAfterContentInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterContentChecked() {
     this.log.add(this.name, 'ngAfterContentChecked');
     if (this.throwOn == 'ngAfterContentChecked') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterViewInit() {
     this.log.add(this.name, 'ngAfterViewInit');
     if (this.throwOn == 'ngAfterViewInit') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngAfterViewChecked() {
     this.log.add(this.name, 'ngAfterViewChecked');
     if (this.throwOn == 'ngAfterViewChecked') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
 
   ngOnDestroy() {
     this.log.add(this.name, 'ngOnDestroy');
     if (this.throwOn == 'ngOnDestroy') {
-      throw new BaseException('Boom!');
+      throw new Error('Boom!');
     }
   }
+}
+
+@Injectable()
+class InjectableWithLifecycle {
+  name = 'injectable';
+  constructor(public log: DirectiveLog) {}
+
+  ngOnDestroy() { this.log.add(this.name, 'ngOnDestroy'); }
+}
+
+@Directive({selector: '[onDestroyDirective]'})
+class OnDestroyDirective implements OnDestroy {
+  @Output('destroy') emitter = new EventEmitter<string>(false);
+
+  ngOnDestroy() { this.emitter.emit('destroyed'); }
 }
 
 @Directive({selector: '[orderCheck0]'})
@@ -1390,23 +1539,24 @@ class TestLocals {
   }
 }
 
-@Component({selector: 'root'})
+@Component({selector: 'root', template: 'emtpy'})
 class Person {
   age: number;
   name: string;
   address: Address = null;
+  phones: number[];
 
   init(name: string, address: Address = null) {
     this.name = name;
     this.address = address;
   }
 
-  sayHi(m) { return `Hi, ${m}`; }
+  sayHi(m: any): string { return `Hi, ${m}`; }
 
-  passThrough(val) { return val; }
+  passThrough(val: any): any { return val; }
 
   toString(): string {
-    var address = this.address == null ? '' : ' address=' + this.address.toString();
+    const address = this.address == null ? '' : ' address=' + this.address.toString();
 
     return 'name=' + this.name + address;
   }
@@ -1416,7 +1566,7 @@ class Address {
   cityGetterCalls: number = 0;
   zipCodeGetterCalls: number = 0;
 
-  constructor(public _city: string, public _zipcode = null) {}
+  constructor(public _city: string, public _zipcode: any = null) {}
 
   get city() {
     this.cityGetterCalls++;
@@ -1432,37 +1582,34 @@ class Address {
 
   set zipcode(v) { this._zipcode = v; }
 
-  toString(): string { return isBlank(this.city) ? '-' : this.city }
+  toString(): string { return this.city || '-'; }
 }
 
-class Logical {
-  trueCalls: number = 0;
-  falseCalls: number = 0;
-
-  getTrue() {
-    this.trueCalls++;
-    return true;
-  }
-
-  getFalse() {
-    this.falseCalls++;
-    return false;
-  }
-}
-
-@Component({selector: 'root'})
+@Component({selector: 'root', template: 'empty'})
 class Uninitialized {
   value: any = null;
 }
 
-@Component({selector: 'root'})
+@Component({selector: 'root', template: 'empty'})
 class TestData {
   public a: any;
 }
 
-@Component({selector: 'root'})
+@Component({selector: 'root', template: 'empty'})
 class TestDataWithGetter {
   public fn: Function;
 
   get a() { return this.fn(); }
+}
+
+class Holder<T> {
+  value: T;
+}
+
+@Component({selector: 'root', template: 'empty'})
+class PersonHolder extends Holder<Person> {
+}
+
+@Component({selector: 'root', template: 'empty'})
+class PersonHolderHolder extends Holder<Holder<Person>> {
 }

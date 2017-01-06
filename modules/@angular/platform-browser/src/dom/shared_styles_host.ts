@@ -1,7 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {SetWrapper} from '../../src/facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {getDOM} from './dom_adapter';
+import {Inject, Injectable} from '@angular/core';
+
 import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
@@ -14,9 +20,9 @@ export class SharedStylesHost {
   constructor() {}
 
   addStyles(styles: string[]) {
-    var additions = [];
+    const additions: any[] /** TODO #9100 */ = [];
     styles.forEach(style => {
-      if (!SetWrapper.has(this._stylesSet, style)) {
+      if (!this._stylesSet.has(style)) {
         this._stylesSet.add(style);
         this._styles.push(style);
         additions.push(style);
@@ -39,16 +45,17 @@ export class DomSharedStylesHost extends SharedStylesHost {
   }
   /** @internal */
   _addStylesToHost(styles: string[], host: Node) {
-    for (var i = 0; i < styles.length; i++) {
-      var style = styles[i];
-      getDOM().appendChild(host, getDOM().createStyleElement(style));
+    for (let i = 0; i < styles.length; i++) {
+      const styleEl = document.createElement('style');
+      styleEl.textContent = styles[i];
+      host.appendChild(styleEl);
     }
   }
   addHost(hostNode: Node) {
     this._addStylesToHost(this._styles, hostNode);
     this._hostNodes.add(hostNode);
   }
-  removeHost(hostNode: Node) { SetWrapper.delete(this._hostNodes, hostNode); }
+  removeHost(hostNode: Node) { this._hostNodes.delete(hostNode); }
 
   onStylesAdded(additions: string[]) {
     this._hostNodes.forEach((hostNode) => { this._addStylesToHost(additions, hostNode); });

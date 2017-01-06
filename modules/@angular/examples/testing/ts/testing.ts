@@ -1,16 +1,13 @@
-import {
-  describe,
-  xdescribe,
-  it,
-  xit,
-  beforeEach,
-  afterEach,
-  beforeEachProviders,
-  inject
-} from '@angular/core/testing/testing_internal';
-import {provide} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var db: any;
+
+let db: any;
 class MyService {}
 class MyMockService implements MyService {}
 
@@ -23,17 +20,20 @@ describe('some component', () => {
 // #enddocregion
 
 // #docregion fdescribe
+/* tslint:disable-next-line:no-jasmine-focus */
 fdescribe('some component', () => {
   it('has a test', () => {
                        // This test will run.
                    });
 });
-describe('another component',
-         () => { it('also has a test', () => { throw 'This test will not run.'; }); });
+describe('another component', () => {
+  it('also has a test', () => { throw 'This test will not run.'; });
+});
 // #enddocregion
 
 // #docregion xdescribe
-xdescribe('some component', () => { it('has a test', () => {throw 'This test will not run.';}); });
+xdescribe(
+    'some component', () => { it('has a test', () => { throw 'This test will not run.'; }); });
 describe('another component', () => {
   it('also has a test', () => {
                             // This test will run.
@@ -43,6 +43,7 @@ describe('another component', () => {
 
 // #docregion fit
 describe('some component', () => {
+  /* tslint:disable-next-line:no-jasmine-focus */
   fit('has a test', () => {
                         // This test will run.
                     });
@@ -65,15 +66,6 @@ describe('some component', () => {
   it('uses the db', () => {
                         // Database is connected.
                     });
-});
-// #enddocregion
-
-// #docregion beforeEachProviders
-describe('some component', () => {
-  beforeEachProviders(() => [provide(MyService, {useClass: MyMockService})]);
-  it('uses MyService', inject([MyService], (service: MyMockService) => {
-                                               // service is an instance of MyMockService.
-                                           }));
 });
 // #enddocregion
 

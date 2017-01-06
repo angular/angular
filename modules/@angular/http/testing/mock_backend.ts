@@ -1,22 +1,27 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Injectable} from '@angular/core';
-import {Request} from '../src/static_request';
-import {Response} from '../src/static_response';
-import {ReadyState} from '../src/enums';
-import {Connection, ConnectionBackend} from '../src/interfaces';
-import {isPresent} from '../src/facade/lang';
-import {BaseException} from '../src/facade/exceptions';
-import {Subject} from 'rxjs/Subject';
+import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
+
 
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
- **/
+ * @experimental
+ */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
-  // descriptive than XHR states.
+  // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
    * additional states. For example, state 5 indicates an aborted connection.
@@ -50,13 +55,14 @@ export class MockConnection implements Connection {
    * var connection;
    * backend.connections.subscribe(c => connection = c);
    * http.request('data.json').subscribe(res => console.log(res.text()));
-   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs 'fake response'
+   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
+   * 'fake response'
    * ```
    *
    */
   mockRespond(res: Response) {
     if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
-      throw new BaseException('Connection has already been resolved');
+      throw new Error('Connection has already been resolved');
     }
     this.readyState = ReadyState.Done;
     this.response.next(res);
@@ -81,7 +87,7 @@ export class MockConnection implements Connection {
    * Emits the provided error object as an error to the {@link Response} {@link EventEmitter}
    * returned
    * from {@link Http}.
-   * 
+   *
    * ### Example
    *
    * ```
@@ -90,10 +96,10 @@ export class MockConnection implements Connection {
    * http.request('data.json').subscribe(res => res, err => console.log(err)));
    * connection.mockError(new Error('error'));
    * ```
-   * 
+   *
    */
   mockError(err?: Error) {
-    // Matches XHR semantics
+    // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
   }
@@ -108,29 +114,84 @@ export class MockConnection implements Connection {
  * ### Example
  *
  * ```
- * import {BaseRequestOptions, Http} from '@angular/http';
- * import {MockBackend} from '@angular/http/testing';
- * it('should get some data', inject([AsyncTestCompleter], (async) => {
- *   var connection;
- *   var injector = Injector.resolveAndCreate([
- *     MockBackend,
- *     provide(Http, {useFactory: (backend, options) => {
- *       return new Http(backend, options);
- *     }, deps: [MockBackend, BaseRequestOptions]})]);
- *   var http = injector.get(Http);
- *   var backend = injector.get(MockBackend);
- *   //Assign any newly-created connection to local variable
- *   backend.connections.subscribe(c => connection = c);
- *   http.request('data.json').subscribe((res) => {
- *     expect(res.text()).toBe('awesome');
- *     async.done();
+ * import {Injectable, ReflectiveInjector} from '@angular/core';
+ * import {async, fakeAsync, tick} from '@angular/core/testing';
+ * import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
+ * import {Response, ResponseOptions} from '@angular/http';
+ * import {MockBackend, MockConnection} from '@angular/http/testing';
+ *
+ * const HERO_ONE = 'HeroNrOne';
+ * const HERO_TWO = 'WillBeAlwaysTheSecond';
+ *
+ * @Injectable()
+ * class HeroService {
+ *   constructor(private http: Http) {}
+ *
+ *   getHeroes(): Promise<String[]> {
+ *     return this.http.get('myservices.de/api/heroes')
+ *         .toPromise()
+ *         .then(response => response.json().data)
+ *         .catch(e => this.handleError(e));
+ *   }
+ *
+ *   private handleError(error: any): Promise<any> {
+ *     console.error('An error occurred', error);
+ *     return Promise.reject(error.message || error);
+ *   }
+ * }
+ *
+ * describe('MockBackend HeroService Example', () => {
+ *   beforeEach(() => {
+ *     this.injector = ReflectiveInjector.resolveAndCreate([
+ *       {provide: ConnectionBackend, useClass: MockBackend},
+ *       {provide: RequestOptions, useClass: BaseRequestOptions},
+ *       Http,
+ *       HeroService,
+ *     ]);
+ *     this.heroService = this.injector.get(HeroService);
+ *     this.backend = this.injector.get(ConnectionBackend) as MockBackend;
+ *     this.backend.connections.subscribe((connection: any) => this.lastConnection = connection);
  *   });
- *   connection.mockRespond(new Response('awesome'));
- * }));
+ *
+ *   it('getHeroes() should query current service url', () => {
+ *     this.heroService.getHeroes();
+ *     expect(this.lastConnection).toBeDefined('no http service connection at all?');
+ *     expect(this.lastConnection.request.url).toMatch(/api\/heroes$/, 'url invalid');
+ *   });
+ *
+ *   it('getHeroes() should return some heroes', fakeAsync(() => {
+ *        let result: String[];
+ *        this.heroService.getHeroes().then((heroes: String[]) => result = heroes);
+ *        this.lastConnection.mockRespond(new Response(new ResponseOptions({
+ *          body: JSON.stringify({data: [HERO_ONE, HERO_TWO]}),
+ *        })));
+ *        tick();
+ *        expect(result.length).toEqual(2, 'should contain given amount of heroes');
+ *        expect(result[0]).toEqual(HERO_ONE, ' HERO_ONE should be the first hero');
+ *        expect(result[1]).toEqual(HERO_TWO, ' HERO_TWO should be the second hero');
+ *      }));
+ *
+ *   it('getHeroes() while server is down', fakeAsync(() => {
+ *        let result: String[];
+ *        let catchedError: any;
+ *        this.heroService.getHeroes()
+ *            .then((heroes: String[]) => result = heroes)
+ *            .catch((error: any) => catchedError = error);
+ *        this.lastConnection.mockRespond(new Response(new ResponseOptions({
+ *          status: 404,
+ *          statusText: 'URL not Found',
+ *        })));
+ *        tick();
+ *        expect(result).toBeUndefined();
+ *        expect(catchedError).toBeDefined();
+ *      }));
+ * });
  * ```
  *
  * This method only exists in the mock implementation, not in real Backends.
- **/
+ *
+ * @experimental
+ */
 @Injectable()
 export class MockBackend implements ConnectionBackend {
   /**
@@ -141,27 +202,30 @@ export class MockBackend implements ConnectionBackend {
    * ### Example
    *
    * ```
-   * import {Http, BaseRequestOptions, Response} from '@angular/http';
-   * import {MockBackend} from '@angular/http/testing';
-   * import {Injector, provide} from '@angular/core';
+   * import {ReflectiveInjector} from '@angular/core';
+   * import {fakeAsync, tick} from '@angular/core/testing';
+   * import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
+   * import {Response, ResponseOptions} from '@angular/http';
+   * import {MockBackend, MockConnection} from '@angular/http/testing';
    *
-   * it('should get a response', () => {
-   *   var connection; //this will be set when a new connection is emitted from the backend.
-   *   var text; //this will be set from mock response
-   *   var injector = Injector.resolveAndCreate([
-   *     MockBackend,
-   *     provide(Http, {useFactory: (backend, options) => {
-   *       return new Http(backend, options);
-   *     }, deps: [MockBackend, BaseRequestOptions]})]);
-   *   var backend = injector.get(MockBackend);
-   *   var http = injector.get(Http);
-   *   backend.connections.subscribe(c => connection = c);
-   *   http.request('something.json').subscribe(res => {
-   *     text = res.text();
-   *   });
-   *   connection.mockRespond(new Response({body: 'Something'}));
-   *   expect(text).toBe('Something');
-   * });
+   * it('should get a response', fakeAsync(() => {
+   *      let connection:
+   *          MockConnection;  // this will be set when a new connection is emitted from the
+   *                           // backend.
+   *      let text: string;    // this will be set from mock response
+   *      let injector = ReflectiveInjector.resolveAndCreate([
+   *        {provide: ConnectionBackend, useClass: MockBackend},
+   *        {provide: RequestOptions, useClass: BaseRequestOptions},
+   *        Http,
+   *      ]);
+   *      let backend = injector.get(ConnectionBackend);
+   *      let http = injector.get(Http);
+   *      backend.connections.subscribe((c: MockConnection) => connection = c);
+   *      http.request('something.json').toPromise().then((res: any) => text = res.text());
+   *      connection.mockRespond(new Response(new ResponseOptions({body: 'Something'})));
+   *      tick();
+   *      expect(text).toBe('Something');
+   *    }));
    * ```
    *
    * This property only exists in the mock implementation, not in real Backends.
@@ -187,8 +251,8 @@ export class MockBackend implements ConnectionBackend {
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
-    this.connections.subscribe((connection: MockConnection) =>
-                                   this.connectionsArray.push(connection));
+    this.connections.subscribe(
+        (connection: MockConnection) => this.connectionsArray.push(connection));
     this.pendingConnections = new Subject();
   }
 
@@ -200,7 +264,7 @@ export class MockBackend implements ConnectionBackend {
   verifyNoPendingRequests() {
     let pending = 0;
     this.pendingConnections.subscribe((c: MockConnection) => pending++);
-    if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
+    if (pending > 0) throw new Error(`${pending} pending connections to be resolved`);
   }
 
   /**
@@ -218,10 +282,10 @@ export class MockBackend implements ConnectionBackend {
    * against the framework itself, not by end-users.
    */
   createConnection(req: Request): MockConnection {
-    if (!isPresent(req) || !(req instanceof Request)) {
-      throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
+    if (!req || !(req instanceof Request)) {
+      throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }
-    let connection = new MockConnection(req);
+    const connection = new MockConnection(req);
     this.connections.next(connection);
     return connection;
   }

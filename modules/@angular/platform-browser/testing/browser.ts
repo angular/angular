@@ -1,35 +1,44 @@
-import {TEST_BROWSER_STATIC_PLATFORM_PROVIDERS, ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS} from "./browser_static";
-import {BROWSER_APP_PROVIDERS, BROWSER_APP_COMPILER_PROVIDERS} from "../index";
-import {DirectiveResolver, ViewResolver} from "@angular/compiler";
-import {
-  MockDirectiveResolver,
-  MockViewResolver,
-  TestComponentRenderer,
-  TestComponentBuilder
-} from "@angular/compiler/testing";
-import {DOMTestComponentRenderer} from "./dom_test_component_renderer";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import {APP_ID, NgModule, NgZone, PLATFORM_INITIALIZER, PlatformRef, Provider, createPlatformFactory, platformCore} from '@angular/core';
+import {AnimationDriver, BrowserModule} from '@angular/platform-browser';
+
+import {BrowserDetection, createNgZone} from './browser_util';
+import {BrowserDomAdapter, ELEMENT_PROBE_PROVIDERS} from './private_import_platform-browser';
+
+function initBrowserTests() {
+  BrowserDomAdapter.makeCurrent();
+  BrowserDetection.setup();
+}
+
+const _TEST_BROWSER_PLATFORM_PROVIDERS: Provider[] =
+    [{provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true}];
 
 /**
- * Default platform providers for testing.
+ * Platform for testing
+ *
+ * @stable
  */
-export const TEST_BROWSER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [TEST_BROWSER_STATIC_PLATFORM_PROVIDERS];
-
-
-export const ADDITIONAL_TEST_BROWSER_PROVIDERS = [
-  {provide: DirectiveResolver, useClass: MockDirectiveResolver},
-  {provide: ViewResolver, useClass: MockViewResolver},
-  TestComponentBuilder,
-  {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
-];
+export const platformBrowserTesting =
+    createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
 
 /**
- * Default application providers for testing.
+ * NgModule for testing.
+ *
+ * @stable
  */
-export const TEST_BROWSER_APPLICATION_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    [
-      BROWSER_APP_PROVIDERS,
-      BROWSER_APP_COMPILER_PROVIDERS,
-      ADDITIONAL_TEST_BROWSER_STATIC_PROVIDERS,
-      ADDITIONAL_TEST_BROWSER_PROVIDERS
-    ];
+@NgModule({
+  exports: [BrowserModule],
+  providers: [
+    {provide: APP_ID, useValue: 'a'}, ELEMENT_PROBE_PROVIDERS,
+    {provide: NgZone, useFactory: createNgZone},
+    {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
+  ]
+})
+export class BrowserTestingModule {
+}

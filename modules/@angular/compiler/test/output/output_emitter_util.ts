@@ -1,45 +1,57 @@
-import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
-import {EventEmitter} from '@angular/core';
-import {ViewType} from '@angular/core/src/linker/view_type';
-import {BaseException} from '../../src/facade/exceptions';
-import {InstanceFactory, DynamicInstance} from '@angular/compiler/src/output/output_interpreter';
-import {assetUrl} from '@angular/compiler/src/util';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
+import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
+import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
+import {assetUrl, createIdentifier} from '@angular/compiler/src/identifiers';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {ImportResolver} from '@angular/compiler/src/output/path_util';
+import {EventEmitter} from '@angular/core';
+import {BaseError} from '@angular/core/src/facade/errors';
+import {ViewType} from '@angular/core/src/linker/view_type';
 
 export class ExternalClass {
   changeable: any;
   constructor(public data: any) { this.changeable = data; }
-  someMethod(a) { return {'param': a, 'data': this.data}; }
+  someMethod(a: any /** TODO #9100 */) { return {'param': a, 'data': this.data}; }
 }
 
-var testDataIdentifier = new CompileIdentifierMetadata({
+const testDataIdentifier = {
   name: 'ExternalClass',
-  moduleUrl: `asset:@angular/lib/compiler/test/output/output_emitter_util`,
+  moduleUrl: `@angular/compiler/test/output/output_emitter_util`,
   runtime: ExternalClass
-});
+};
 
-var eventEmitterIdentifier = new CompileIdentifierMetadata(
-    {name: 'EventEmitter', moduleUrl: assetUrl('core'), runtime: EventEmitter});
+const eventEmitterIdentifier = {
+  name: 'EventEmitter',
+  moduleUrl: assetUrl('core'),
+  runtime: EventEmitter
+};
 
-var enumIdentifier = new CompileIdentifierMetadata({
+const enumIdentifier = {
   name: 'ViewType.HOST',
   moduleUrl: assetUrl('core', 'linker/view_type'),
   runtime: ViewType.HOST
-});
+};
 
-var baseExceptionIdentifier = new CompileIdentifierMetadata(
-    {name: 'BaseException', moduleUrl: assetUrl('core'), runtime: BaseException});
+const baseErrorIdentifier = {
+  name: 'BaseError',
+  moduleUrl: assetUrl('core', 'facade/errors'),
+  runtime: BaseError
+};
 
-export var codegenExportsVars = [
+export const codegenExportsVars = [
   'getExpressions',
 ];
 
 
-var _getExpressionsStmts: o.Statement[] = [
-  o.variable('readVar')
-      .set(o.literal('someValue'))
-      .toDeclStmt(),
+const _getExpressionsStmts: o.Statement[] = [
+  o.variable('readVar').set(o.literal('someValue')).toDeclStmt(),
 
   o.variable('changedVar').set(o.literal('initialValue')).toDeclStmt(),
   o.variable('changedVar').set(o.literal('changedValue')).toStmt(),
@@ -53,39 +65,34 @@ var _getExpressionsStmts: o.Statement[] = [
   o.variable('map').key(o.literal('changeable')).set(o.literal('changedValue')).toStmt(),
 
   o.variable('externalInstance')
-      .set(o.importExpr(testDataIdentifier).instantiate([o.literal('someValue')]))
+      .set(o.importExpr(createIdentifier(testDataIdentifier)).instantiate([o.literal('someValue')]))
       .toDeclStmt(),
   o.variable('externalInstance').prop('changeable').set(o.literal('changedValue')).toStmt(),
 
   o.variable('fn')
-      .set(o.fn([new o.FnParam('param')],
-                [new o.ReturnStatement(o.literalMap([['param', o.variable('param')]]))],
-                o.DYNAMIC_TYPE))
+      .set(o.fn(
+          [new o.FnParam('param')],
+          [new o.ReturnStatement(o.literalMap([['param', o.variable('param')]]))], o.DYNAMIC_TYPE))
       .toDeclStmt(),
 
   o.variable('throwError')
-      .set(o.fn([],
-                [
-                  new o.ThrowStmt(o.importExpr(baseExceptionIdentifier)
-                                      .instantiate([o.literal('someError')]))
-                ]))
+      .set(o.fn([], [new o.ThrowStmt(o.importExpr(createIdentifier(baseErrorIdentifier))
+                                         .instantiate([o.literal('someError')]))]))
       .toDeclStmt(),
 
   o.variable('catchError')
-      .set(o.fn([new o.FnParam('runCb')],
-                [
-                  new o.TryCatchStmt([o.variable('runCb').callFn([]).toStmt()],
-                                     [
-                                       new o.ReturnStatement(
-                                           o.literalArr([o.CATCH_ERROR_VAR, o.CATCH_STACK_VAR]))
-                                     ])
-                ],
-                o.DYNAMIC_TYPE))
+      .set(o.fn(
+          [new o.FnParam('runCb')],
+          [new o.TryCatchStmt(
+              [o.variable('runCb').callFn([]).toStmt()],
+              [new o.ReturnStatement(o.literalArr([o.CATCH_ERROR_VAR, o.CATCH_STACK_VAR]))])],
+          o.DYNAMIC_TYPE))
       .toDeclStmt(),
 
   o.variable('dynamicInstance')
-      .set(o.variable('DynamicClass')
-               .instantiate([o.literal('someValue'), o.literal('dynamicValue')]))
+      .set(o.variable('DynamicClass').instantiate([
+        o.literal('someValue'), o.literal('dynamicValue')
+      ]))
       .toDeclStmt(),
   o.variable('dynamicInstance').prop('dynamicChangeable').set(o.literal('changedValue')).toStmt(),
 
@@ -114,7 +121,7 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodExternalInstanceViaBind',
       o.variable('externalInstance')
           .prop('someMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('externalInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('externalInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
@@ -125,13 +132,12 @@ var _getExpressionsStmts: o.Statement[] = [
       'invokeMethodDynamicInstanceViaBind',
       o.variable('dynamicInstance')
           .prop('dynamicMethod')
-          .callMethod(o.BuiltinMethod.bind, [o.variable('dynamicInstance')])
+          .callMethod(o.BuiltinMethod.Bind, [o.variable('dynamicInstance')])
           .callFn([o.literal('someParam')])
     ],
     [
-      'concatedArray',
-      o.literalArr([o.literal(0)])
-          .callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr([o.literal(1)])])
+      'concatedArray', o.literalArr([o.literal(0)])
+                           .callMethod(o.BuiltinMethod.ConcatArray, [o.literalArr([o.literal(1)])])
     ],
 
     ['fn', o.variable('fn')],
@@ -139,25 +145,23 @@ var _getExpressionsStmts: o.Statement[] = [
     ['invokeFn', o.variable('fn').callFn([o.literal('someParam')])],
 
     [
-      'conditionalTrue',
-      o.literal('')
-          .prop('length')
-          .equals(o.literal(0))
-          .conditional(o.literal('true'), o.literal('false'))
+      'conditionalTrue', o.literal('')
+                             .prop('length')
+                             .equals(o.literal(0))
+                             .conditional(o.literal('true'), o.literal('false'))
     ],
     [
-      'conditionalFalse',
-      o.literal('')
-          .prop('length')
-          .notEquals(o.literal(0))
-          .conditional(o.literal('true'), o.literal('false'))
+      'conditionalFalse', o.literal('')
+                              .prop('length')
+                              .notEquals(o.literal(0))
+                              .conditional(o.literal('true'), o.literal('false'))
     ],
 
     ['not', o.not(o.literal(false))],
 
-    ['externalTestIdentifier', o.importExpr(testDataIdentifier)],
-    ['externalSrcIdentifier', o.importExpr(eventEmitterIdentifier)],
-    ['externalEnumIdentifier', o.importExpr(enumIdentifier)],
+    ['externalTestIdentifier', o.importExpr(createIdentifier(testDataIdentifier))],
+    ['externalSrcIdentifier', o.importExpr(createIdentifier(eventEmitterIdentifier))],
+    ['externalEnumIdentifier', o.importExpr(createIdentifier(enumIdentifier))],
 
     ['externalInstance', o.variable('externalInstance')],
     ['dynamicInstance', o.variable('dynamicInstance')],
@@ -166,8 +170,7 @@ var _getExpressionsStmts: o.Statement[] = [
     ['catchError', o.variable('catchError')],
 
     [
-      'operators',
-      o.literalMap([
+      'operators', o.literalMap([
         ['==', createOperatorFn(o.BinaryOperator.Equals)],
         ['!=', createOperatorFn(o.BinaryOperator.NotEquals)],
         ['===', createOperatorFn(o.BinaryOperator.Identical)],
@@ -188,11 +191,11 @@ var _getExpressionsStmts: o.Statement[] = [
   ]))
 ];
 
-export var codegenStmts: o.Statement[] = [
+export const codegenStmts: o.Statement[] = [
   new o.CommentStmt('This is a comment'),
 
   new o.ClassStmt(
-      'DynamicClass', o.importExpr(testDataIdentifier),
+      'DynamicClass', o.importExpr(createIdentifier(testDataIdentifier)),
       [
         new o.ClassField('dynamicProp', o.DYNAMIC_TYPE),
         new o.ClassField('dynamicChangeable', o.DYNAMIC_TYPE),
@@ -256,20 +259,9 @@ function createOperatorFn(op: o.BinaryOperator) {
       o.DYNAMIC_TYPE);
 }
 
-export class DynamicClassInstanceFactory implements InstanceFactory {
-  createInstance(superClass: any, clazz: any, args: any[], props: Map<string, any>,
-                 getters: Map<string, Function>, methods: Map<string, Function>): any {
-    if (superClass === ExternalClass) {
-      return new _InterpretiveDynamicClass(args, clazz, props, getters, methods);
-    }
-    throw new BaseException(`Can't instantiate class ${superClass} in interpretative mode`);
+export class SimpleJsImportGenerator implements ImportResolver {
+  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
+    return importedUrlStr;
   }
-}
-
-class _InterpretiveDynamicClass extends ExternalClass implements DynamicInstance {
-  constructor(args: any[], public clazz: any, public props: Map<string, any>,
-              public getters: Map<string, Function>, public methods: Map<string, Function>) {
-    super(args[0]);
-  }
-  childMethod(a) { return this.methods.get('childMethod')(a); }
+  getImportAs(symbol: StaticSymbol): StaticSymbol { return null; }
 }

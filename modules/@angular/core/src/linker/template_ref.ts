@@ -1,10 +1,16 @@
-import {isBlank} from '../facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ElementRef} from './element_ref';
-import {AppElement} from './element';
 import {AppView} from './view';
+import {ViewContainer} from './view_container';
 import {EmbeddedViewRef} from './view_ref';
 
-const EMPTY_CONTEXT = /*@ts2dart_const*/ new Object();
 
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
@@ -38,17 +44,16 @@ export abstract class TemplateRef<C> {
 }
 
 export class TemplateRef_<C> extends TemplateRef<C> {
-  constructor(private _appElement: AppElement, private _viewFactory: Function) { super(); }
+  constructor(
+      private _parentView: AppView<any>, private _nodeIndex: number, private _nativeElement: any) {
+    super();
+  }
 
   createEmbeddedView(context: C): EmbeddedViewRef<C> {
-    var view: AppView<C> = this._viewFactory(this._appElement.parentView.viewUtils,
-                                             this._appElement.parentInjector, this._appElement);
-    if (isBlank(context)) {
-      context = <any>EMPTY_CONTEXT;
-    }
-    view.create(context, null, null);
+    const view = this._parentView.createEmbeddedViewInternal(this._nodeIndex);
+    view.create(context || <any>{});
     return view.ref;
   }
 
-  get elementRef(): ElementRef { return this._appElement.elementRef; }
+  get elementRef(): ElementRef { return new ElementRef(this._nativeElement); }
 }

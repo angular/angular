@@ -269,8 +269,6 @@ var StringWrapper = {
 
   replaceAllMapped: function(s, from, cb) {
     return s.replace(from, function(matches) {
-      // Remove offset & string from the result array
-      matches.splice(-2, 2);
       // The callback receives match, p1, ..., pn
       return cb.apply(null, matches);
     });
@@ -285,8 +283,6 @@ var StringWrapper = {
 //TODO: implement?
 // I think it's too heavy to ask 1.x users to bring in Rx for the router...
 function EventEmitter() {}
-
-var BaseException = Error;
 
 var ObservableWrapper = {
   callNext: function(ob, val) {

@@ -1,15 +1,26 @@
-import {ListWrapper} from '../src/facade/collection';
-import {getDOM} from '../src/dom/dom_adapter';
-import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from '../src/facade/lang';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {NgZone} from '@angular/core';
+
+import {global} from './facade/lang';
+import {getDOM} from './private_import_platform-browser';
+
+export let browserDetection: BrowserDetection;
 
 export class BrowserDetection {
   private _overrideUa: string;
   private get _ua(): string {
-    if (isPresent(this._overrideUa)) {
+    if (typeof this._overrideUa === 'string') {
       return this._overrideUa;
-    } else {
-      return isPresent(getDOM()) ? getDOM().getUserAgent() : '';
     }
+
+    return getDOM() ? getDOM().getUserAgent() : '';
   }
 
   static setup() { browserDetection = new BrowserDetection(null); }
@@ -20,7 +31,8 @@ export class BrowserDetection {
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-           this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1;
+        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
@@ -28,31 +40,42 @@ export class BrowserDetection {
   get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1;
+    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isIOS7(): boolean {
-    return this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1;
+    return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
+        this._ua.indexOf('IEMobile') == -1;
   }
 
   get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
 
-  // The Intl API is only properly supported in recent Chrome and Opera.
-  // Note: Edge is disguised as Chrome 42, so checking the "Edge" part is needed,
-  // see https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
-  get supportsIntlApi(): boolean {
-    return this._ua.indexOf('Chrome/4') > -1 && this._ua.indexOf('Edge') == -1;
+  // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
+  // This detector is needed in tests to make the difference between:
+  // 1) IE11/Edge: they have a native Intl API, but with some discrepancies
+  // 2) IE9/IE10: they use the polyfill, and so no discrepancies
+  get supportsNativeIntlApi(): boolean {
+    return !!(<any>global).Intl && (<any>global).Intl !== (<any>global).IntlPolyfill;
   }
 
   get isChromeDesktop(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
-           this._ua.indexOf('Edge') == -1;
+        this._ua.indexOf('Edge') == -1;
+  }
+
+  // "Old Chrome" means Chrome 3X, where there are some discrepancies in the Intl API.
+  // Android 4.4 and 5.X have such browsers by default (respectively 30 and 39).
+  get isOldChrome(): boolean {
+    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
+        this._ua.indexOf('Edge') == -1;
   }
 }
 
 BrowserDetection.setup();
 
-export function dispatchEvent(element, eventType): void {
+export function dispatchEvent(
+    element: any /** TODO #9100 */, eventType: any /** TODO #9100 */): void {
   getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
 }
 
@@ -61,35 +84,30 @@ export function el(html: string): HTMLElement {
 }
 
 export function normalizeCSS(css: string): string {
-  css = StringWrapper.replaceAll(css, /\s+/g, ' ');
-  css = StringWrapper.replaceAll(css, /:\s/g, ':');
-  css = StringWrapper.replaceAll(css, /'/g, '"');
-  css = StringWrapper.replaceAll(css, / }/g, '}');
-  css = StringWrapper.replaceAllMapped(css, /url\((\"|\s)(.+)(\"|\s)\)(\s*)/g,
-                                       (match) => `url("${match[2]}")`);
-  css = StringWrapper.replaceAllMapped(css, /\[(.+)=([^"\]]+)\]/g,
-                                       (match) => `[${match[1]}="${match[2]}"]`);
-  return css;
+  return css.replace(/\s+/g, ' ')
+      .replace(/:\s/g, ':')
+      .replace(/'/g, '"')
+      .replace(/ }/g, '}')
+      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
+      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
-var _singleTagWhitelist = ['br', 'hr', 'input'];
-export function stringifyElement(el): string {
-  var result = '';
+const _singleTagWhitelist = ['br', 'hr', 'input'];
+export function stringifyElement(el: any /** TODO #9100 */): string {
+  let result = '';
   if (getDOM().isElementNode(el)) {
-    var tagName = getDOM().tagName(el).toLowerCase();
+    const tagName = getDOM().tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;
 
     // Attributes in an ordered way
-    var attributeMap = getDOM().attributeMap(el);
-    var keys = [];
-    attributeMap.forEach((v, k) => keys.push(k));
-    ListWrapper.sort(keys);
+    const attributeMap = getDOM().attributeMap(el);
+    const keys: string[] = Array.from(attributeMap.keys()).sort();
     for (let i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var attValue = attributeMap.get(key);
-      if (!isString(attValue)) {
+      const key = keys[i];
+      const attValue = attributeMap.get(key);
+      if (typeof attValue !== 'string') {
         result += ` ${key}`;
       } else {
         result += ` ${key}="${attValue}"`;
@@ -98,14 +116,14 @@ export function stringifyElement(el): string {
     result += '>';
 
     // Children
-    var childrenRoot = getDOM().templateAwareRoot(el);
-    var children = isPresent(childrenRoot) ? getDOM().childNodes(childrenRoot) : [];
+    const childrenRoot = getDOM().templateAwareRoot(el);
+    const children = childrenRoot ? getDOM().childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }
 
     // Closing tag
-    if (!ListWrapper.contains(_singleTagWhitelist, tagName)) {
+    if (_singleTagWhitelist.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
   } else if (getDOM().isCommentNode(el)) {
@@ -117,4 +135,6 @@ export function stringifyElement(el): string {
   return result;
 }
 
-export var browserDetection: BrowserDetection = new BrowserDetection(null);
+export function createNgZone(): NgZone {
+  return new NgZone({enableLongStackTrace: true});
+}

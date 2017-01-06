@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {OpaqueToken} from '@angular/core';
 
 /**
@@ -5,5 +13,7 @@ import {OpaqueToken} from '@angular/core';
  *
  * Note: Document might not be available in the Application Context when Application and Rendering
  * Contexts are not the same (e.g. when running the application into a Web Worker).
+ *
+ * @stable
  */
 export const DOCUMENT: OpaqueToken = new OpaqueToken('DocumentToken');

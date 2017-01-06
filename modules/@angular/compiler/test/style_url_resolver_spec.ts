@@ -1,75 +1,94 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit} from '@angular/core/testing';
-import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
+import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
 import {UrlResolver} from '@angular/compiler/src/url_resolver';
 
 export function main() {
   describe('extractStyleUrls', () => {
-    var urlResolver;
+    let urlResolver: UrlResolver;
 
     beforeEach(() => { urlResolver = new UrlResolver(); });
 
     it('should not resolve "url()" urls', () => {
-      var css = `
+      const css = `
       .foo {
         background-image: url("double.jpg");
         background-image: url('simple.jpg');
         background-image: url(noquote.jpg);
       }`;
-      var resolvedCss = extractStyleUrls(urlResolver, 'http://ng.io', css).style;
+      const resolvedCss = extractStyleUrls(urlResolver, 'http://ng.io', css).style;
       expect(resolvedCss).toEqual(css);
     });
 
     it('should extract "@import" urls', () => {
-      var css = `
+      const css = `
       @import '1.css';
       @import "2.css";
       `;
-      var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
       expect(styleWithImports.styleUrls).toEqual(['http://ng.io/1.css', 'http://ng.io/2.css']);
     });
 
+    it('should ignore "@import" in comments', () => {
+      const css = `
+      @import '1.css';
+      /*@import '2.css';*/
+      `;
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      expect(styleWithImports.style.trim()).toEqual('');
+      expect(styleWithImports.styleUrls).toContain('http://ng.io/1.css');
+      expect(styleWithImports.styleUrls).not.toContain('http://ng.io/2.css');
+    });
+
     it('should extract "@import url()" urls', () => {
-      var css = `
+      const css = `
       @import url('3.css');
       @import url("4.css");
       @import url(5.css);
       `;
-      var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
-      expect(styleWithImports.styleUrls)
-          .toEqual(['http://ng.io/3.css', 'http://ng.io/4.css', 'http://ng.io/5.css']);
+      expect(styleWithImports.styleUrls).toEqual([
+        'http://ng.io/3.css', 'http://ng.io/4.css', 'http://ng.io/5.css'
+      ]);
     });
 
     it('should extract "@import urls and keep rules in the same line', () => {
-      var css = `@import url('some.css');div {color: red};`;
-      var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      const css = `@import url('some.css');div {color: red};`;
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('div {color: red};');
       expect(styleWithImports.styleUrls).toEqual(['http://ng.io/some.css']);
     });
 
     it('should extract media query in "@import"', () => {
-      var css = `
+      const css = `
       @import 'print1.css' print;
       @import url(print2.css) print;
       `;
-      var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
-      expect(styleWithImports.styleUrls)
-          .toEqual(['http://ng.io/print1.css', 'http://ng.io/print2.css']);
+      expect(styleWithImports.styleUrls).toEqual([
+        'http://ng.io/print1.css', 'http://ng.io/print2.css'
+      ]);
     });
 
     it('should leave absolute non-package @import urls intact', () => {
-      var css = `@import url('http://server.com/some.css');`;
-      var styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      const css = `@import url('http://server.com/some.css');`;
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual(`@import url('http://server.com/some.css');`);
       expect(styleWithImports.styleUrls).toEqual([]);
     });
 
     it('should resolve package @import urls', () => {
-      var css = `@import url('package:a/b/some.css');`;
-      var styleWithImports = extractStyleUrls(new FakeUrlResolver(), 'http://ng.io', css);
+      const css = `@import url('package:a/b/some.css');`;
+      const styleWithImports = extractStyleUrls(new FakeUrlResolver(), 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual(``);
       expect(styleWithImports.styleUrls).toEqual(['fake_resolved_url']);
     });
@@ -82,9 +101,6 @@ export function main() {
 
     it('should resolve package: urls',
        () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
-
-    it('should resolve asset: urls',
-       () => { expect(isStyleUrlResolvable('asset:someUrl.css')).toBe(true); });
 
     it('should not resolve empty urls', () => {
       expect(isStyleUrlResolvable(null)).toBe(false);
@@ -101,7 +117,6 @@ export function main() {
   });
 }
 
-/// The real thing behaves differently between Dart and JS for package URIs.
 class FakeUrlResolver extends UrlResolver {
   constructor() { super(); }
 

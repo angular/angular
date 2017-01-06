@@ -1,259 +1,243 @@
-import {
-  beforeEach,
-  ddescribe,
-  describe,
-  iit,
-  inject,
-  it,
-  xit,
-} from '@angular/core/testing/testing_internal';
-import {expect} from '@angular/platform-browser/testing';
-import {TestComponentBuilder} from '@angular/compiler/testing';
-import {AsyncTestCompleter} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
+import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {NgIf} from '@angular/common';
-
-import {IS_DART} from '../../src/facade/lang';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
   describe('ngIf directive', () => {
-    it('should work in a template attribute',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
+    let fixture: ComponentFixture<any>;
 
-         tcb.overrideTemplate(TestComponent, html)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('hello');
-               async.done();
-             });
+    function getComponent(): TestComponent { return fixture.componentInstance; }
+
+    afterEach(() => { fixture = null; });
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComponent],
+        imports: [CommonModule],
+      });
+    });
+
+    it('should work in a template attribute', async(() => {
+         const template = '<div><span template="ngIf booleanCondition">hello</span></div>';
+         fixture = createTestComponent(template);
+
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
        }));
 
-    it('should work in a template element',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html =
-             '<div><template [ngIf]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
+    it('should work in a template element', async(() => {
+         const template =
+             '<div><template [ngIf]="booleanCondition"><span>hello2</span></template></div>';
 
-         tcb.overrideTemplate(TestComponent, html)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('hello2');
-               async.done();
-             });
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello2');
        }));
 
-    it('should toggle node when condition changes',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
+    it('should toggle node when condition changes', async(() => {
+         const template = '<div><span template="ngIf booleanCondition">hello</span></div>';
 
-         tcb.overrideTemplate(TestComponent, html)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.booleanCondition = false;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(0);
-               expect(fixture.debugElement.nativeElement).toHaveText('');
+         fixture = createTestComponent(template);
+         getComponent().booleanCondition = false;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(0);
+         expect(fixture.nativeElement).toHaveText('');
 
-               fixture.debugElement.componentInstance.booleanCondition = true;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('hello');
+         getComponent().booleanCondition = true;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
 
-               fixture.debugElement.componentInstance.booleanCondition = false;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(0);
-               expect(fixture.debugElement.nativeElement).toHaveText('');
-
-               async.done();
-             });
+         getComponent().booleanCondition = false;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(0);
+         expect(fixture.nativeElement).toHaveText('');
        }));
 
-    it('should handle nested if correctly',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html =
-             '<div><template [ngIf]="booleanCondition"><copy-me *ngIf="nestedBooleanCondition">hello</copy-me></template></div>';
+    it('should handle nested if correctly', async(() => {
+         const template =
+             '<div><template [ngIf]="booleanCondition"><span *ngIf="nestedBooleanCondition">hello</span></template></div>';
 
-         tcb.overrideTemplate(TestComponent, html)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.debugElement.componentInstance.booleanCondition = false;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(0);
-               expect(fixture.debugElement.nativeElement).toHaveText('');
+         fixture = createTestComponent(template);
 
-               fixture.debugElement.componentInstance.booleanCondition = true;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('hello');
+         getComponent().booleanCondition = false;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(0);
+         expect(fixture.nativeElement).toHaveText('');
 
-               fixture.debugElement.componentInstance.nestedBooleanCondition = false;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(0);
-               expect(fixture.debugElement.nativeElement).toHaveText('');
+         getComponent().booleanCondition = true;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
 
-               fixture.debugElement.componentInstance.nestedBooleanCondition = true;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('hello');
+         getComponent().nestedBooleanCondition = false;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(0);
+         expect(fixture.nativeElement).toHaveText('');
 
-               fixture.debugElement.componentInstance.booleanCondition = false;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(0);
-               expect(fixture.debugElement.nativeElement).toHaveText('');
+         getComponent().nestedBooleanCondition = true;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
 
-               async.done();
-             });
+         getComponent().booleanCondition = false;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(0);
+         expect(fixture.nativeElement).toHaveText('');
        }));
 
-    it('should update several nodes with if',
-       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html =
-             '<div>' +
-             '<copy-me template="ngIf numberCondition + 1 >= 2">helloNumber</copy-me>' +
-             '<copy-me template="ngIf stringCondition == \'foo\'">helloString</copy-me>' +
-             '<copy-me template="ngIf functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
+    it('should update several nodes with if', async(() => {
+         const template = '<div>' +
+             '<span template="ngIf numberCondition + 1 >= 2">helloNumber</span>' +
+             '<span template="ngIf stringCondition == \'foo\'">helloString</span>' +
+             '<span template="ngIf functionCondition(stringCondition, numberCondition)">helloFunction</span>' +
              '</div>';
 
-         tcb.overrideTemplate(TestComponent, html)
-             .createAsync(TestComponent)
-             .then((fixture) => {
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(3);
-               expect(getDOM().getText(fixture.debugElement.nativeElement))
-                   .toEqual('helloNumberhelloStringhelloFunction');
+         fixture = createTestComponent(template);
 
-               fixture.debugElement.componentInstance.numberCondition = 0;
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('helloString');
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(3);
+         expect(getDOM().getText(fixture.nativeElement))
+             .toEqual('helloNumberhelloStringhelloFunction');
 
-               fixture.debugElement.componentInstance.numberCondition = 1;
-               fixture.debugElement.componentInstance.stringCondition = "bar";
-               fixture.detectChanges();
-               expect(
-                   getDOM().querySelectorAll(fixture.debugElement.nativeElement, 'copy-me').length)
-                   .toEqual(1);
-               expect(fixture.debugElement.nativeElement).toHaveText('helloNumber');
-               async.done();
-             });
+         getComponent().numberCondition = 0;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('helloString');
+
+         getComponent().numberCondition = 1;
+         getComponent().stringCondition = 'bar';
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('helloNumber');
        }));
 
+    it('should not add the element twice if the condition goes from true to true (JS)',
+       async(() => {
+         const template = '<div><span template="ngIf numberCondition">hello</span></div>';
 
-    if (!IS_DART) {
-      it('should not add the element twice if the condition goes from true to true (JS)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
+         fixture = createTestComponent(template);
 
-           tcb.overrideTemplate(TestComponent, html)
-               .createAsync(TestComponent)
-               .then((fixture) => {
-                 fixture.detectChanges();
-                 expect(getDOM()
-                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                            .length)
-                     .toEqual(1);
-                 expect(fixture.debugElement.nativeElement).toHaveText('hello');
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
 
-                 fixture.debugElement.componentInstance.numberCondition = 2;
-                 fixture.detectChanges();
-                 expect(getDOM()
-                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                            .length)
-                     .toEqual(1);
-                 expect(fixture.debugElement.nativeElement).toHaveText('hello');
+         getComponent().numberCondition = 2;
+         fixture.detectChanges();
+         expect(getDOM().querySelectorAll(fixture.nativeElement, 'span').length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('hello');
+       }));
 
-                 async.done();
-               });
+    it('should not recreate the element if the condition goes from true to true (JS)', async(() => {
+         const template = '<div><span template="ngIf numberCondition">hello</span></div>';
+
+         fixture = createTestComponent(template);
+
+         fixture.detectChanges();
+         getDOM().addClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo');
+
+         getComponent().numberCondition = 2;
+         fixture.detectChanges();
+         expect(getDOM().hasClass(getDOM().querySelector(fixture.nativeElement, 'span'), 'foo'))
+             .toBe(true);
+       }));
+
+    describe('else', () => {
+      it('should support else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else elseBlock">TRUE</span>' +
+               '<template #elseBlock>FALSE</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TRUE');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE');
          }));
 
-      it('should not recreate the element if the condition goes from true to true (JS)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
+      it('should support then and else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; then thenBlock; else elseBlock">IGNORE</span>' +
+               '<template #thenBlock>THEN</template>' +
+               '<template #elseBlock>ELSE</template>' +
+               '</div>';
 
-           tcb.overrideTemplate(TestComponent, html)
-               .createAsync(TestComponent)
-               .then((fixture) => {
-                 fixture.detectChanges();
-                 getDOM().addClass(
-                     getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'), "foo");
+           fixture = createTestComponent(template);
 
-                 fixture.debugElement.componentInstance.numberCondition = 2;
-                 fixture.detectChanges();
-                 expect(getDOM().hasClass(
-                            getDOM().querySelector(fixture.debugElement.nativeElement, 'copy-me'),
-                            "foo"))
-                     .toBe(true);
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('THEN');
 
-                 async.done();
-               });
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('ELSE');
          }));
-    }
 
-    if (IS_DART) {
-      it('should not create the element if the condition is not a boolean (DART)',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
+      it('should support dynamic else', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else nestedBooleanCondition ? b1 : b2">TRUE</span>' +
+               '<template #b1>FALSE1</template>' +
+               '<template #b2>FALSE2</template>' +
+               '</div>';
 
-           tcb.overrideTemplate(TestComponent, html)
-               .createAsync(TestComponent)
-               .then((fixture) => {
-                 expect(() => fixture.detectChanges()).toThrowError();
-                 expect(getDOM()
-                            .querySelectorAll(fixture.debugElement.nativeElement, 'copy-me')
-                            .length)
-                     .toEqual(0);
-                 expect(fixture.debugElement.nativeElement).toHaveText('');
-                 async.done();
-               });
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TRUE');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE1');
+
+           getComponent().nestedBooleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('FALSE2');
          }));
-    }
 
+      it('should support binding to variable', async(() => {
+           const template = '<div>' +
+               '<span *ngIf="booleanCondition; else elseBlock; let v">{{v}}</span>' +
+               '<template #elseBlock let-v>{{v}}</template>' +
+               '</div>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('true');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('false');
+         }));
+    });
   });
 }
 
-@Component({selector: 'test-cmp', directives: [NgIf], template: ''})
+@Component({selector: 'test-cmp', template: ''})
 class TestComponent {
-  booleanCondition: boolean;
-  nestedBooleanCondition: boolean;
-  numberCondition: number;
-  stringCondition: string;
-  functionCondition: Function;
-  constructor() {
-    this.booleanCondition = true;
-    this.nestedBooleanCondition = true;
-    this.numberCondition = 1;
-    this.stringCondition = "foo";
-    this.functionCondition = function(s, n) { return s == "foo" && n == 1; };
-  }
+  booleanCondition: boolean = true;
+  nestedBooleanCondition: boolean = true;
+  numberCondition: number = 1;
+  stringCondition: string = 'foo';
+  functionCondition: Function = (s: any, n: any): boolean => s == 'foo' && n == 1;
+}
+
+function createTestComponent(template: string): ComponentFixture<TestComponent> {
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
+      .createComponent(TestComponent);
 }

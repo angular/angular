@@ -1,24 +1,32 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 // compiler benchmark in AngularJS 1.x
 import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
 declare var angular: any;
 
 export function main() {
-  var ngEl = document.createElement('div');
+  const ngEl = document.createElement('div');
   angular.bootstrap(ngEl, ['app']);
 }
 
 function loadTemplate(templateId, repeatCount) {
-  var template = document.querySelectorAll(`#${templateId}`)[0];
-  var content = (<HTMLElement>template).innerHTML;
-  var result = '';
-  for (var i = 0; i < repeatCount; i++) {
+  const template = document.querySelectorAll(`#${templateId}`)[0];
+  const content = (<HTMLElement>template).innerHTML;
+  let result = '';
+  for (let i = 0; i < repeatCount; i++) {
     result += content;
   }
   // replace [] binding syntax
   result = result.replace(/[\[\]]/g, '');
 
   // Use a DIV as container as Angular 1.3 does not know <template> elements...
-  var div = document.createElement('div');
+  const div = document.createElement('div');
   div.innerHTML = result;
   return div;
 }
@@ -30,8 +38,8 @@ angular.module('app', [])
                  function($parse) {
                    return {
                      compile: function($element, $attrs) {
-                       var expr = $parse($attrs.attr0);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       const expr = $parse($attrs.attr0);
+                       return ($scope) => $scope.$watch(expr, angular.noop);
                      }
                    };
                  }
@@ -42,8 +50,8 @@ angular.module('app', [])
                  function($parse) {
                    return {
                      compile: function($element, $attrs) {
-                       var expr = $parse($attrs.attr1);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       const expr = $parse($attrs.attr1);
+                       return ($scope) => $scope.$watch(expr, angular.noop);
                      }
                    };
                  }
@@ -54,8 +62,8 @@ angular.module('app', [])
                  function($parse) {
                    return {
                      compile: function($element, $attrs) {
-                       var expr = $parse($attrs.attr2);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       const expr = $parse($attrs.attr2);
+                       return ($scope) => $scope.$watch(expr, angular.noop);
                      }
                    };
                  }
@@ -66,8 +74,8 @@ angular.module('app', [])
                  function($parse) {
                    return {
                      compile: function($element, $attrs) {
-                       var expr = $parse($attrs.attr3);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       const expr = $parse($attrs.attr3);
+                       return ($scope) => $scope.$watch(expr, angular.noop);
                      }
                    };
                  }
@@ -78,8 +86,8 @@ angular.module('app', [])
                  function($parse) {
                    return {
                      compile: function($element, $attrs) {
-                       var expr = $parse($attrs.attr4);
-                       return function($scope) { $scope.$watch(expr, angular.noop); }
+                       const expr = $parse($attrs.attr4);
+                       return ($scope) => $scope.$watch(expr, angular.noop);
                      }
                    };
                  }
@@ -87,22 +95,22 @@ angular.module('app', [])
     .run([
       '$compile',
       function($compile) {
-        var count = getIntParameter('elements');
-        var templateNoBindings = loadTemplate('templateNoBindings', count);
-        var templateWithBindings = loadTemplate('templateWithBindings', count);
+        const count = getIntParameter('elements');
+        const templateNoBindings = loadTemplate('templateNoBindings', count);
+        const templateWithBindings = loadTemplate('templateWithBindings', count);
 
         bindAction('#compileWithBindings', compileWithBindings);
         bindAction('#compileNoBindings', compileNoBindings);
 
         function compileNoBindings() {
           // Need to clone every time as the compiler might modify the template!
-          var cloned = templateNoBindings.cloneNode(true);
+          const cloned = templateNoBindings.cloneNode(true);
           $compile(cloned);
         }
 
         function compileWithBindings() {
           // Need to clone every time as the compiler might modify the template!
-          var cloned = templateWithBindings.cloneNode(true);
+          const cloned = templateWithBindings.cloneNode(true);
           $compile(cloned);
         }
       }

@@ -1,52 +1,54 @@
-import {
-  IS_DART,
-  StringWrapper,
-  Math,
-  isBlank,
-  isArray,
-  isStrictStringMap,
-  isPrimitive
-} from './facade/lang';
-import {StringMapWrapper} from './facade/collection';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-export var MODULE_SUFFIX = IS_DART ? '.dart' : '';
+import {BaseError} from './facade/errors';
+import {isPrimitive, isStrictStringMap} from './facade/lang';
+export const MODULE_SUFFIX = '';
 
-var CAMEL_CASE_REGEXP = /([A-Z])/g;
-var DASH_CASE_REGEXP = /-([a-z])/g;
+const CAMEL_CASE_REGEXP = /([A-Z])/g;
+const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function camelCaseToDashCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
-                                        (m) => { return '-' + m[1].toLowerCase(); });
+  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
 }
 
 export function dashCaseToCamelCase(input: string): string {
-  return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP,
-                                        (m) => { return m[1].toUpperCase(); });
+  return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
-  var parts = StringWrapper.split(input.trim(), /\s*:\s*/g);
-  if (parts.length > 1) {
-    return parts;
-  } else {
-    return defaultValues;
-  }
+  return _splitAt(input, ':', defaultValues);
 }
 
-export function sanitizeIdentifier(name: string): string {
-  return StringWrapper.replaceAll(name, /\W/g, '_');
+export function splitAtPeriod(input: string, defaultValues: string[]): string[] {
+  return _splitAt(input, '.', defaultValues);
+}
+
+function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
+  const characterIndex = input.indexOf(character);
+  if (characterIndex == -1) return defaultValues;
+  return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
 export function visitValue(value: any, visitor: ValueVisitor, context: any): any {
-  if (isArray(value)) {
+  if (Array.isArray(value)) {
     return visitor.visitArray(<any[]>value, context);
-  } else if (isStrictStringMap(value)) {
-    return visitor.visitStringMap(<{[key: string]: any}>value, context);
-  } else if (isBlank(value) || isPrimitive(value)) {
-    return visitor.visitPrimitive(value, context);
-  } else {
-    return visitor.visitOther(value, context);
   }
+
+  if (isStrictStringMap(value)) {
+    return visitor.visitStringMap(<{[key: string]: any}>value, context);
+  }
+
+  if (value == null || isPrimitive(value)) {
+    return visitor.visitPrimitive(value, context);
+  }
+
+  return visitor.visitOther(value, context);
 }
 
 export interface ValueVisitor {
@@ -61,27 +63,20 @@ export class ValueTransformer implements ValueVisitor {
     return arr.map(value => visitValue(value, this, context));
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
-    var result = {};
-    StringMapWrapper.forEach(map,
-                             (value, key) => { result[key] = visitValue(value, this, context); });
+    const result: {[key: string]: any} = {};
+    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
     return result;
   }
   visitPrimitive(value: any, context: any): any { return value; }
   visitOther(value: any, context: any): any { return value; }
 }
 
-export function assetUrl(pkg: string, path: string = null, type: string = 'src'): string {
-  if (IS_DART) {
-    if (path == null) {
-      return `asset:angular2/${pkg}/${pkg}.dart`;
-    } else {
-      return `asset:angular2/lib/${pkg}/src/${path}.dart`;
-    }
-  } else {
-    if (path == null) {
-      return `asset:@angular/lib/${pkg}/index`;
-    } else {
-      return `asset:@angular/lib/${pkg}/src/${path}`;
+export class SyncAsyncResult<T> {
+  constructor(public syncResult: T, public asyncResult: Promise<T> = null) {
+    if (!asyncResult) {
+      this.asyncResult = Promise.resolve(syncResult);
     }
   }
 }
+
+export class SyntaxError extends BaseError {}

@@ -1,82 +1,75 @@
-import {
-  AsyncTestCompleter,
-  beforeEach,
-  ddescribe,
-  xdescribe,
-  describe,
-  expect,
-  iit,
-  inject,
-  it,
-  xit,
-  beforeEachProviders
-} from '@angular/core/testing/testing_internal';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {trigger, style, animate, group, sequence, transition, AnimationMetadata} from '@angular/core';
-
-import {AnimationCompiler, CompiledAnimation} from '../../src/animation/animation_compiler';
-import {
-  CompileTemplateMetadata,
-  CompileDirectiveMetadata,
-  CompileTypeMetadata
-} from '../../src/compile_metadata';
-
+import {AnimationMetadata, animate, sequence, style, transition, trigger} from '@angular/core';
+import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/testing_internal';
+import {AnimationCompiler, AnimationEntryCompileResult} from '../../src/animation/animation_compiler';
+import {AnimationParser} from '../../src/animation/animation_parser';
+import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileTemplateMetadata, CompileTypeMetadata, identifierName} from '../../src/compile_metadata';
 import {CompileMetadataResolver} from '../../src/metadata_resolver';
+import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
 
 export function main() {
   describe('RuntimeAnimationCompiler', () => {
-    var resolver;
-    beforeEach(inject([CompileMetadataResolver], (res: CompileMetadataResolver) => {
-      resolver = res;
-    }));
+    let resolver: CompileMetadataResolver;
+    let parser: AnimationParser;
+    beforeEach(inject(
+        [CompileMetadataResolver, ElementSchemaRegistry],
+        (res: CompileMetadataResolver, schema: ElementSchemaRegistry) => {
+          resolver = res;
+          parser = new AnimationParser(schema);
+        }));
 
-    var compiler = new AnimationCompiler();
+    const compiler = new AnimationCompiler();
 
-    var compileAnimations = (component: CompileDirectiveMetadata): CompiledAnimation => {
-      return compiler.compileComponent(component)[0];
-    };
+    const compileAnimations =
+        (component: CompileDirectiveMetadata): AnimationEntryCompileResult[] => {
+          const parsedAnimations = parser.parseComponent(component);
+          return compiler.compile(identifierName(component.type), parsedAnimations);
+        };
 
-    var compile = (seq: AnimationMetadata) => {
-      var entry = trigger('myAnimation', [
-        transition('state1 => state2', seq)
-      ]);
+    const compileTriggers = (input: any[]) => {
+      const entries: CompileAnimationEntryMetadata[] = input.map(entry => {
+        const animationTriggerData = trigger(entry[0], entry[1]);
+        return resolver.getAnimationEntryMetadata(animationTriggerData);
+      });
 
-      var compiledAnimationEntry = resolver.getAnimationEntryMetadata(entry);
-      var component = CompileDirectiveMetadata.create({
-        type: new CompileTypeMetadata({
-          name: 'something'
-        }),
-        template: new CompileTemplateMetadata({
-          animations: [compiledAnimationEntry]
-        })
+      const component = CompileDirectiveMetadata.create({
+        type: {reference: {name: 'myCmp', filePath: ''}, diDeps: [], lifecycleHooks: []},
+        template: new CompileTemplateMetadata({animations: entries})
       });
 
       return compileAnimations(component);
     };
 
+    const compileSequence = (seq: AnimationMetadata) => {
+      return compileTriggers([['myAnimation', [transition('state1 => state2', seq)]]]);
+    };
+
     it('should throw an exception containing all the inner animation parser errors', () => {
-      var animation = sequence([
-        style({"color": "red"}),
-        animate(1000, style({"font-size": "100px"})),
-        style({"color": "blue"}),
-        animate(1000, style(":missing_state")),
-        style({"color": "gold"}),
-        animate(1000, style("broken_state"))
+      const animation = sequence([
+        style({'color': 'red'}), animate(1000, style({'font-size': '100px'})),
+        style({'color': 'blue'}), animate(1000, style(':missing_state')), style({'color': 'gold'}),
+        animate(1000, style('broken_state'))
       ]);
 
-      var capturedErrorMessage: string;
+      let capturedErrorMessage: string;
       try {
-        compile(animation);
+        compileSequence(animation);
       } catch (e) {
         capturedErrorMessage = e.message;
       }
 
       expect(capturedErrorMessage)
-          .toMatchPattern(
-              /Unable to apply styles due to missing a state: "missing_state"/g);
+          .toMatch(/Unable to apply styles due to missing a state: "missing_state"/g);
 
       expect(capturedErrorMessage)
-          .toMatchPattern(/Animation states via styles must be prefixed with a ":"/);
+          .toMatch(/Animation states via styles must be prefixed with a ":"/);
     });
   });
 }

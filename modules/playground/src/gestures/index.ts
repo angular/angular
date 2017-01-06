@@ -1,5 +1,14 @@
-import {bootstrap} from '@angular/platform-browser';
-import {Component} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'gestures-app', templateUrl: 'template.html'})
 class GesturesCmp {
@@ -7,13 +16,17 @@ class GesturesCmp {
   pinchScale: number = 1;
   rotateAngle: number = 0;
 
-  onSwipe(event): void { this.swipeDirection = event.deltaX > 0 ? 'right' : 'left'; }
+  onSwipe(event: HammerInput): void { this.swipeDirection = event.deltaX > 0 ? 'right' : 'left'; }
 
-  onPinch(event): void { this.pinchScale = event.scale; }
+  onPinch(event: HammerInput): void { this.pinchScale = event.scale; }
 
-  onRotate(event): void { this.rotateAngle = event.rotation; }
+  onRotate(event: HammerInput): void { this.rotateAngle = event.rotation; }
+}
+
+@NgModule({declarations: [GesturesCmp], bootstrap: [GesturesCmp], imports: [BrowserModule]})
+class ExampleModule {
 }
 
 export function main() {
-  bootstrap(GesturesCmp);
+  platformBrowserDynamic().bootstrapModule(ExampleModule);
 }

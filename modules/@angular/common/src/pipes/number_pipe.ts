@@ -1,143 +1,164 @@
-import {Injectable, PipeTransform, WrappedValue, Pipe} from '@angular/core';
-
-import {
-  isNumber,
-  isPresent,
-  isBlank,
-  NumberWrapper,
-  RegExpWrapper,
-} from '../../src/facade/lang';
-import {BaseException} from '../../src/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from '../../src/facade/intl';
-import {ListWrapper} from '../../src/facade/collection';
-
-import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
-
-var defaultLocale: string = 'en-US';
-var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
-
 /**
- * Internal base class for numeric pipes.
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
-@Injectable()
-export class NumberPipe {
-  /** @internal */
-  static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
-                 currencyAsSymbol: boolean = false): string {
-    if (isBlank(value)) return null;
-    if (!isNumber(value)) {
-      throw new InvalidPipeArgumentException(NumberPipe, value);
-    }
-    var minInt = 1, minFraction = 0, maxFraction = 3;
-    if (isPresent(digits)) {
-      var parts = RegExpWrapper.firstMatch(_re, digits);
-      if (isBlank(parts)) {
-        throw new BaseException(`${digits} is not a valid digit info for number pipes`);
-      }
-      if (isPresent(parts[1])) {  // min integer digits
-        minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
-      }
-      if (isPresent(parts[3])) {  // min fraction digits
-        minFraction = NumberWrapper.parseIntAutoRadix(parts[3]);
-      }
-      if (isPresent(parts[5])) {  // max fraction digits
-        maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
-      }
-    }
-    return NumberFormatter.format(value, defaultLocale, style, {
-      minimumIntegerDigits: minInt,
-      minimumFractionDigits: minFraction,
-      maximumFractionDigits: maxFraction,
-      currency: currency,
-      currencyAsSymbol: currencyAsSymbol
-    });
+
+import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
+
+import {NumberWrapper, isBlank, isPresent} from '../facade/lang';
+
+import {NumberFormatStyle, NumberFormatter} from './intl';
+import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
+
+const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
+
+function formatNumber(
+    pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
+    digits: string, currency: string = null, currencyAsSymbol: boolean = false): string {
+  if (isBlank(value)) return null;
+
+  // Convert strings to numbers
+  value = typeof value === 'string' && NumberWrapper.isNumeric(value) ? +value : value;
+  if (typeof value !== 'number') {
+    throw new InvalidPipeArgumentError(pipe, value);
   }
+
+  let minInt: number;
+  let minFraction: number;
+  let maxFraction: number;
+  if (style !== NumberFormatStyle.Currency) {
+    // rely on Intl default for currency
+    minInt = 1;
+    minFraction = 0;
+    maxFraction = 3;
+  }
+
+  if (digits) {
+    const parts = digits.match(_NUMBER_FORMAT_REGEXP);
+    if (parts === null) {
+      throw new Error(`${digits} is not a valid digit info for number pipes`);
+    }
+    if (isPresent(parts[1])) {  // min integer digits
+      minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
+    }
+    if (isPresent(parts[3])) {  // min fraction digits
+      minFraction = NumberWrapper.parseIntAutoRadix(parts[3]);
+    }
+    if (isPresent(parts[5])) {  // max fraction digits
+      maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
+    }
+  }
+
+  return NumberFormatter.format(value as number, locale, style, {
+    minimumIntegerDigits: minInt,
+    minimumFractionDigits: minFraction,
+    maximumFractionDigits: maxFraction,
+    currency: currency,
+    currencyAsSymbol: currencyAsSymbol,
+  });
 }
 
 /**
- * WARNING: this pipe uses the Internationalization API.
- * Therefore it is only reliable in Chrome and Opera browsers.
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number according to locale rules.
+ * @howToUse `number_expression | number[:digitInfo]`
  *
- * Formats a number as local text. i.e. group sizing and separator and other locale-specific
+ * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
- * ### Usage
- *
- *     expression | number[:digitInfo]
- *
- * where `expression` is a number and `digitInfo` has the following format:
- *
- *     {minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}
- *
- * - minIntegerDigits is the minimum number of integer digits to use. Defaults to 1.
- * - minFractionDigits is the minimum number of digits after fraction. Defaults to 0.
- * - maxFractionDigits is the maximum number of digits after fraction. Defaults to 3.
+ * where `expression` is a number:
+ *  - `digitInfo` is a `string` which has a following format: <br>
+ *     <code>{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}</code>
+ *   - `minIntegerDigits` is the minimum number of integer digits to use. Defaults to `1`.
+ *   - `minFractionDigits` is the minimum number of digits after fraction. Defaults to `0`.
+ *   - `maxFractionDigits` is the maximum number of digits after fraction. Defaults to `3`.
  *
  * For more information on the acceptable range for each of these numbers and other
  * details see your native internationalization library.
  *
+ * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
+ * and may require a polyfill. See {@linkDocs guide/browser-support} for details.
+ *
  * ### Example
  *
- * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
+ * {@example common/pipes/ts/number_pipe.ts region='NumberPipe'}
+ *
+ * @stable
  */
 @Pipe({name: 'number'})
-@Injectable()
-export class DecimalPipe extends NumberPipe implements PipeTransform {
+export class DecimalPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(value: any, digits: string = null): string {
-    return NumberPipe._format(value, NumberFormatStyle.Decimal, digits);
+    return formatNumber(DecimalPipe, this._locale, value, NumberFormatStyle.Decimal, digits);
   }
 }
 
 /**
- * WARNING: this pipe uses the Internationalization API.
- * Therefore it is only reliable in Chrome and Opera browsers.
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number as a percentage according to locale rules.
+ * @howToUse `number_expression | percent[:digitInfo]`
  *
- * Formats a number as local percent.
+ * @description
  *
- * ### Usage
+ * Formats a number as percentage.
  *
- *     expression | percent[:digitInfo]
+ * - `digitInfo` See {@link DecimalPipe} for detailed description.
  *
- * For more information about `digitInfo` see {@link DecimalPipe}
+ * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
+ * and may require a polyfill. See {@linkDocs guide/browser-support} for details.
  *
  * ### Example
  *
- * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
+ * {@example common/pipes/ts/number_pipe.ts region='PercentPipe'}
+ *
+ * @stable
  */
 @Pipe({name: 'percent'})
-@Injectable()
-export class PercentPipe extends NumberPipe implements PipeTransform {
+export class PercentPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
   transform(value: any, digits: string = null): string {
-    return NumberPipe._format(value, NumberFormatStyle.Percent, digits);
+    return formatNumber(PercentPipe, this._locale, value, NumberFormatStyle.Percent, digits);
   }
 }
 
 /**
- * WARNING: this pipe uses the Internationalization API.
- * Therefore it is only reliable in Chrome and Opera browsers.
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number as currency using locale rules.
+ * @howToUse `number_expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]`
+ * @description
  *
- * Formats a number as local currency.
+ * Use `currency` to format a number as currency.
  *
- * ### Usage
+ * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
+ *    as `USD` for the US dollar and `EUR` for the euro.
+ * - `symbolDisplay` is a boolean indicating whether to use the currency symbol or code.
+ *   - `true`: use symbol (e.g. `$`).
+ *   - `false`(default): use code (e.g. `USD`).
+ * - `digitInfo` See {@link DecimalPipe} for detailed description.
  *
- *     expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]
- *
- * where `currencyCode` is the ISO 4217 currency code, such as "USD" for the US dollar and
- * "EUR" for the euro. `symbolDisplay` is a boolean indicating whether to use the currency
- * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
- * is `false`.
- * For more information about `digitInfo` see {@link DecimalPipe}
+ * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
+ * and may require a polyfill. See {@linkDocs guide/browser-support} for details.
  *
  * ### Example
  *
- * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
+ * {@example common/pipes/ts/number_pipe.ts region='CurrencyPipe'}
+ *
+ * @stable
  */
 @Pipe({name: 'currency'})
-@Injectable()
-export class CurrencyPipe extends NumberPipe implements PipeTransform {
-  transform(value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
-            digits: string = null): string {
-    return NumberPipe._format(value, NumberFormatStyle.Currency, digits, currencyCode,
-                              symbolDisplay);
+export class CurrencyPipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+
+  transform(
+      value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
+      digits: string = null): string {
+    return formatNumber(
+        CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
+        symbolDisplay);
   }
 }

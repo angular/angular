@@ -1,31 +1,27 @@
-import {BaseException} from '../../src/facade/exceptions';
-import {isPresent, isBlank, RegExpWrapper, Math} from '../../src/facade/lang';
-import {Injectable} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-// asset:<package-name>/<realm>/<path-to-module>
-var _ASSET_URL_RE = /asset:([^\/]+)\/([^\/]+)\/(.+)/g;
+import {StaticSymbol} from '../aot/static_symbol';
 
 /**
  * Interface that defines how import statements should be generated.
  */
-export abstract class ImportGenerator {
-  static parseAssetUrl(url: string): AssetUrl { return AssetUrl.parse(url); }
+export abstract class ImportResolver {
+  /**
+   * Converts a file path to a module name that can be used as an `import.
+   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
+   */
+  abstract fileNameToModuleName(importedFilePath: string, containingFilePath: string): string
+      /*|null*/;
 
-  abstract getImportPath(moduleUrlStr: string, importedUrlStr: string): string;
-}
-
-export class AssetUrl {
-  static parse(url: string, allowNonMatching: boolean = true): AssetUrl {
-    var match = RegExpWrapper.firstMatch(_ASSET_URL_RE, url);
-    if (isPresent(match)) {
-      return new AssetUrl(match[1], match[2], match[3]);
-    }
-    if (allowNonMatching) {
-      return null;
-    }
-    throw new BaseException(`Url ${url} is not a valid asset: url`);
-  }
-
-  constructor(public packageName: string, public firstLevelDir: string, public modulePath: string) {
-  }
+  /**
+   * Converts the given StaticSymbol into another StaticSymbol that should be used
+   * to generate the import from.
+   */
+  abstract getImportAs(symbol: StaticSymbol): StaticSymbol /*|null*/;
 }

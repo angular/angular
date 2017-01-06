@@ -1,7 +1,15 @@
-import {By} from '@angular/platform-browser';
-import {DebugElement} from '@angular/core';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-var debugElement: DebugElement;
+import {DebugElement} from '@angular/core';
+import {By} from '@angular/platform-browser';
+
+let debugElement: DebugElement;
 class MyDirective {}
 
 // #docregion by_all
