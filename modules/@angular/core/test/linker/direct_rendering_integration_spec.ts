@@ -138,7 +138,7 @@ export function main() {
       @Component({
         selector: 'child',
         template:
-            '(<template [ngTemplateOutlet]="templateRef" [ngOutletContext]="templateCtx"></template>)'
+            '(<ng-container [ngTemplateOutlet]="templateRef" [ngOutletContext]="templateCtx"></ng-container>)'
       })
       class Child {
         @Input()
