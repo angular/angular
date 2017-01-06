@@ -785,6 +785,55 @@ describe('MdSlider', () => {
     });
   });
 
+  describe('slider with input event', () => {
+    let fixture: ComponentFixture<SliderWithChangeHandler>;
+    let sliderDebugElement: DebugElement;
+    let sliderNativeElement: HTMLElement;
+    let sliderTrackElement: HTMLElement;
+    let testComponent: SliderWithChangeHandler;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithChangeHandler);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      spyOn(testComponent, 'onInput');
+      spyOn(testComponent, 'onChange');
+
+      sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+    });
+
+    it('should emit an input event while sliding', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
+      dispatchMouseenterEvent(sliderNativeElement);
+      dispatchSlideEvent(sliderNativeElement, 0.5, gestureConfig);
+      dispatchSlideEvent(sliderNativeElement, 1, gestureConfig);
+      dispatchSlideEndEvent(sliderNativeElement, 1, gestureConfig);
+
+      fixture.detectChanges();
+
+      // The input event should fire twice, because the slider changed two times.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(2);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit an input event when clicking', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.75);
+
+      fixture.detectChanges();
+
+      // The `onInput` event should be emitted once due to a single click.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+    });
+
+  });
+
   describe('keyboard support', () => {
     let fixture: ComponentFixture<StandardSlider>;
     let sliderDebugElement: DebugElement;
@@ -1134,11 +1183,12 @@ class SliderWithValueSmallerThanMin { }
 class SliderWithValueGreaterThanMax { }
 
 @Component({
-  template: `<md-slider (change)="onChange($event)"></md-slider>`,
+  template: `<md-slider (change)="onChange($event)" (input)="onInput($event)"></md-slider>`,
   styles: [styles],
 })
 class SliderWithChangeHandler {
-  onChange() { }
+  onChange() { };
+  onInput() { };
 }
 
 @Component({
