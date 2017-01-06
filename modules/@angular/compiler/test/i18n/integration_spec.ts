@@ -210,5 +210,56 @@ const XMB = `
     <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"/><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
 </msg>
   <msg id="1491627405349178954">it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
-</messagebundle>
+</messagebundle>`;
+
+const HTML = `
+<div>
+    <h1 i18n>i18n attribute on tags</h1>
+    
+    <div id="i18n-1"><p i18n>nested</p></div>
+    
+    <div id="i18n-2"><p i18n="different meaning|">nested</p></div>
+    
+    <div id="i18n-3"><p i18n><i>with placeholders</i></p></div>
+    <div id="i18n-3b"><p i18n><i class="preserved-on-placeholders">with placeholders</i></p></div>
+    
+    <div>
+        <p id="i18n-4" i18n-title title="on not translatable node"></p>
+        <p id="i18n-5" i18n i18n-title title="on translatable node"></p>
+        <p id="i18n-6" i18n-title title></p>
+    </div>
+    
+    <!-- no ph below because the ICU node is the only child of the div, i.e. no text nodes --> 
+    <div i18n id="i18n-7">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
+    
+    <div i18n id="i18n-8">
+        {sex, select, m {male} f {female}}
+    </div>
+    <div i18n id="i18n-8b">
+        {sexB, select, m {male} f {female}}
+    </div>
+    
+    <div i18n id="i18n-9">{{ "count = " + count }}</div>
+    <div i18n id="i18n-10">sex = {{ sex }}</div>
+    <div i18n id="i18n-11">{{ "custom name" //i18n(ph="CUSTOM_NAME") }}</div>    
+</div>
+
+<!-- i18n -->
+    <h1 id="i18n-12" >Markers in html comments</h1>   
+    <div id="i18n-13" i18n-title title="in a translatable section"></div>
+    <div id="i18n-14">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
+<!-- /i18n -->
+
+<div id="i18n-15"><ng-container i18n>it <b>should</b> work</ng-container></div>
+
+<!-- make sure that ICU messages are not treated as text nodes -->
+<div i18n="desc">{
+    response.getItemsList().length,
+    plural,
+    =0 {Found no results}
+    =1 {Found one result}
+    other {Found {{response.getItemsList().length}} results}
+}</div>
+
+<div i18n id="i18n-18">foo<a i18n-title title="in a translatable section">bar</a></div>
 `;
