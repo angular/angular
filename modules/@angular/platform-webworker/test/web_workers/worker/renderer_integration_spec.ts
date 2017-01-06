@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Injectable, Injector} from '@angular/core';
+import {Component, ComponentRef, Injectable} from '@angular/core';
 import {DebugDomRootRenderer} from '@angular/core/src/debug/debug_renderer';
 import {RootRenderer} from '@angular/core/src/render/api';
 import {TestBed} from '@angular/core/testing';
@@ -152,7 +152,7 @@ export function main() {
     it('should update any template comment property/attributes', () => {
 
       TestBed.overrideComponent(
-          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp"></template>'}});
+          MyComp2, {set: {template: '<ng-container *ngIf="ctxBoolProp"></ng-container>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
       (<MyComp2>fixture.componentInstance).ctxBoolProp = true;
@@ -163,7 +163,7 @@ export function main() {
 
     it('should add and remove fragments', () => {
       TestBed.overrideComponent(
-          MyComp2, {set: {template: '<template [ngIf]="ctxBoolProp">hello</template>'}});
+          MyComp2, {set: {template: '<ng-container *ngIf="ctxBoolProp">hello</ng-container>'}});
       const fixture = TestBed.createComponent(MyComp2);
 
       const rootEl = getRenderElement(fixture.nativeElement);
