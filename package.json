@@ -99,7 +99,7 @@
     "strip-ansi": "^3.0.0",
     "stylelint": "^7.7.0",
     "symlink-or-copy": "^1.0.1",
-    "travis-after-modes": "0.0.6-2",
+    "travis-after-modes": "0.0.7",
     "ts-node": "^0.7.3",
     "tslint": "^3.13.0",
     "typedoc": "^0.5.1",
