@@ -116,9 +116,11 @@ export class MdTabGroup {
    * a new selected tab should transition in (from the left or right).
    */
   ngAfterContentChecked(): void {
-    // Clamp the next selected index to the bounds of 0 and the tabs length.
+    // Clamp the next selected index to the bounds of 0 and the tabs length. Note the `|| 0`, which
+    // ensures that values like NaN can't get through and which would otherwise throw the
+    // component into an infinite loop (since Math.max(NaN, 0) === NaN).
     this._indexToSelect =
-        Math.min(this._tabs.length - 1, Math.max(this._indexToSelect, 0));
+        Math.min(this._tabs.length - 1, Math.max(this._indexToSelect || 0, 0));
 
     // If there is a change in selected index, emit a change event. Should not trigger if
     // the selected index has not yet been initialized.

@@ -129,6 +129,15 @@ describe('MdTabGroup', () => {
       fixture.detectChanges();
       expect(component.selectedIndex).toBe(2);
     });
+
+    it('should not crash when setting the selected index to NaN', () => {
+      let component = fixture.debugElement.componentInstance;
+
+      expect(() => {
+        component.selectedIndex = NaN;
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
   });
 
   describe('dynamic binding tabs', () => {
@@ -244,19 +253,19 @@ describe('MdTabGroup', () => {
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
    * respective `active` classes
    */
-  function checkSelectedIndex(index: number, fixture: ComponentFixture<any>) {
+  function checkSelectedIndex(expectedIndex: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
 
     let tabComponent: MdTabGroup = fixture.debugElement
         .query(By.css('md-tab-group')).componentInstance;
-    expect(tabComponent.selectedIndex).toBe(index);
+    expect(tabComponent.selectedIndex).toBe(expectedIndex);
 
     let tabLabelElement = fixture.debugElement
-        .query(By.css(`.md-tab-label:nth-of-type(${index + 1})`)).nativeElement;
+        .query(By.css(`.md-tab-label:nth-of-type(${expectedIndex + 1})`)).nativeElement;
     expect(tabLabelElement.classList.contains('md-tab-label-active')).toBe(true);
 
     let tabContentElement = fixture.debugElement
-        .query(By.css(`md-tab-body:nth-of-type(${index + 1})`)).nativeElement;
+        .query(By.css(`md-tab-body:nth-of-type(${expectedIndex + 1})`)).nativeElement;
     expect(tabContentElement.classList.contains('md-tab-body-active')).toBe(true);
   }
 
