@@ -35,8 +35,6 @@ env:
     - MODE=e2e
     - MODE=saucelabs_required
     - MODE=browserstack_required
-    - MODE=saucelabs_optional
-    - MODE=browserstack_optional
 
 matrix:
   fast_finish: true
