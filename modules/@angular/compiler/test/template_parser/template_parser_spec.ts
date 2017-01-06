@@ -1323,17 +1323,30 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         });
 
+
         it('should work with *... and use the attribute name as property binding name', () => {
           expect(humanizeTplAst(parse('<div *ngIf="test">', [ngIf]))).toEqual([
-            [EmbeddedTemplateAst], [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'test'], [ElementAst, 'div']
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'test'],
+            [ElementAst, 'div'],
+          ]);
+
+          // https://github.com/angular/angular/issues/13800
+          expect(humanizeTplAst(parse('<div *ngIf="-1">', [ngIf]))).toEqual([
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', '0 - 1'],
+            [ElementAst, 'div'],
           ]);
         });
 
         it('should work with *... and empty value', () => {
           expect(humanizeTplAst(parse('<div *ngIf>', [ngIf]))).toEqual([
-            [EmbeddedTemplateAst], [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'null'], [ElementAst, 'div']
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'null'],
+            [ElementAst, 'div'],
           ]);
         });
       });
