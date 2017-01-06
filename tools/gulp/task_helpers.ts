@@ -48,9 +48,7 @@ export function tsBuildTask(tsConfigPath: string, tsConfigName = 'tsconfig.json'
     const tsConfig: any = JSON.parse(fs.readFileSync(tsConfigPath, 'utf-8'));
     const dest: string = path.join(tsConfigDir, tsConfig['compilerOptions']['outDir']);
 
-    const tsProject = gulpTs.createProject(tsConfigPath, {
-      typescript: require('typescript')
-    });
+    const tsProject = gulpTs.createProject(tsConfigPath);
 
     let pipe = tsProject.src()
       .pipe(gulpSourcemaps.init())
