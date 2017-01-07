@@ -466,7 +466,7 @@ export class Router {
       commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo || this.routerState.root;
-    const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
+    const q = preserveQueryParams ? merge(this.currentUrlTree.queryParams, queryParams) : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
