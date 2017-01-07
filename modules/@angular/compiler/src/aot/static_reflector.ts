@@ -84,7 +84,7 @@ export class StaticReflector implements ReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       if (classMetadata['extends']) {
         const parentType = this.simplify(type, classMetadata['extends']);
-        if (parentType instanceof StaticSymbol) {
+        if (parentType && (parentType instanceof StaticSymbol)) {
           const parentAnnotations = this.annotations(parentType);
           annotations.push(...parentAnnotations);
         }
