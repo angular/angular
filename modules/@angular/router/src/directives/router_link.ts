@@ -139,7 +139,7 @@ export class RouterLink {
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
-  @Input() target: string;
+  @HostBinding('attr.target') @Input() target: string;
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
