@@ -998,6 +998,7 @@ describe('Integration', () => {
 
          const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/33/simple');
+         expect(native.getAttribute('target')).toEqual('_self');
          native.click();
          advance(fixture);
 
@@ -2710,7 +2711,8 @@ function expectEvents(events: Event[], pairs: any[]) {
   }
 }
 
-@Component({selector: 'link-cmp', template: `<a routerLink="/team/33/simple">link</a>`})
+@Component(
+    {selector: 'link-cmp', template: `<a routerLink="/team/33/simple" [target]="'_self'">link</a>`})
 class StringLinkCmp {
 }
 
