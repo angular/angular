@@ -39,6 +39,7 @@ function declareTests({useJit}: {useJit: boolean}) {
   describe('animation tests', function() {
     beforeEach(() => {
       InnerContentTrackingAnimationPlayer.initLog = [];
+      InnerContentTrackingAnimationPlayer.constructorLog = [];
 
       TestBed.configureCompiler({useJit: useJit});
       TestBed.configureTestingModule({
@@ -292,6 +293,24 @@ function declareTests({useJit}: {useJit: boolean}) {
                  /the transition alias value ":dont_leave_me" is not supported/);
            }));
       });
+
+      it('should throw an error when an transition state does not contain [abc123_-] characters within the state names',
+         fakeAsync(() => {
+           TestBed.overrideComponent(DummyIfCmp, {
+             set: {
+               template: `
+                  <div *ngIf="exp" [@myAnimation]="exp"></div>
+                `,
+               animations: [trigger(
+                   'myAnimation',
+                   [transition('%a => %b', [animate('444ms', style({opacity: 0}))])])]
+             }
+           });
+
+           expect(() => {
+             let fixture = TestBed.createComponent(DummyIfCmp);
+           }).toThrowError(/the provided transition value "%a => %b" is not of a supported format/);
+         }));
 
       it('should animate between * and void and back even when no expression is assigned',
          fakeAsync(() => {
@@ -1298,6 +1317,10 @@ function declareTests({useJit}: {useJit: boolean}) {
            const innerPlayer: any = <InnerContentTrackingAnimationPlayer>inner['player'];
            const outer: any = driver.log.pop();
            const outerPlayer: any = <InnerContentTrackingAnimationPlayer>outer['player'];
+
+           expect(InnerContentTrackingAnimationPlayer.constructorLog).toEqual([
+             outerPlayer.element, innerPlayer.element
+           ]);
 
            expect(InnerContentTrackingAnimationPlayer.initLog).toEqual([
              outerPlayer.element, innerPlayer.element
@@ -2432,9 +2455,13 @@ class InnerContentTrackingAnimationDriver extends MockAnimationDriver {
 }
 
 class InnerContentTrackingAnimationPlayer extends MockAnimationPlayer {
+  static constructorLog: any[] = [];
   static initLog: any[] = [];
 
-  constructor(public element: any) { super(); }
+  constructor(public element: any) {
+    super();
+    InnerContentTrackingAnimationPlayer.constructorLog.push(this.element);
+  }
 
   public computedHeight: number;
   public capturedInnerText: string;

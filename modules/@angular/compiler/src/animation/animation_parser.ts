@@ -148,7 +148,8 @@ function _parseAnimationTransitionExpr(
   }
   const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (!isPresent(match) || match.length < 4) {
-    errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
+    errors.push(new AnimationParseError(
+        `the provided transition value "${eventStr}" is not of a supported format`));
     return expressions;
   }
 
