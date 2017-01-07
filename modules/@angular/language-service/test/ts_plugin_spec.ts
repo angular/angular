@@ -10,7 +10,7 @@ import 'reflect-metadata';
 
 import * as ts from 'typescript';
 
-import {LanguageServicePlugin} from '../src/ts_plugin';
+import {create} from '../src/ts_plugin';
 
 import {toh} from './test_data';
 import {MockTypescriptHost} from './test_utils';
@@ -21,6 +21,8 @@ describe('plugin', () => {
   let service = ts.createLanguageService(mockHost, documentRegistry);
   let program = service.getProgram();
 
+  const mockProject = {projectService: {logger: {info: function() {}}}};
+
   it('should not report errors on tour of heroes', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
     for (let source of program.getSourceFiles()) {
@@ -29,13 +31,15 @@ describe('plugin', () => {
     }
   });
 
-  let plugin = new LanguageServicePlugin({host: mockHost, service, registry: documentRegistry});
+
+  let plugin = create(
+      {ts: ts, languageService: service, project: mockProject, languageServiceHost: mockHost});
 
   it('should not report template errors on tour of heroes', () => {
     for (let source of program.getSourceFiles()) {
       // Ignore all 'cases.ts' files as they intentionally contain errors.
       if (!source.fileName.endsWith('cases.ts')) {
-        expectNoDiagnostics(plugin.getSemanticDiagnosticsFilter(source.fileName, []));
+        expectNoDiagnostics(plugin.getSemanticDiagnostics(source.fileName));
       }
     }
   });
@@ -109,8 +113,6 @@ describe('plugin', () => {
   describe('with a *ngFor', () => {
     it('should include a let for empty attribute',
        () => { contains('app/parsing-cases.ts', 'for-empty', 'let'); });
-    it('should not suggest any entries if in the name part of a let',
-       () => { expectEmpty('app/parsing-cases.ts', 'for-let-empty'); });
     it('should suggest NgForRow members for let initialization expression', () => {
       contains(
           'app/parsing-cases.ts', 'for-let-i-equal', 'index', 'count', 'first', 'last', 'even',
@@ -206,13 +208,13 @@ describe('plugin', () => {
 
   function expectEmpty(fileName: string, locationMarker: string) {
     const location = getMarkerLocation(fileName, locationMarker);
-    expect(plugin.getCompletionsAtPosition(fileName, location).entries).toEqual([]);
+    expect(plugin.getCompletionsAtPosition(fileName, location).entries || []).toEqual([]);
   }
 
   function expectSemanticError(fileName: string, locationMarker: string, message: string) {
     const start = getMarkerLocation(fileName, locationMarker);
     const end = getMarkerLocation(fileName, locationMarker + '-end');
-    const errors = plugin.getSemanticDiagnosticsFilter(fileName, []);
+    const errors = plugin.getSemanticDiagnostics(fileName);
     for (const error of errors) {
       if (error.messageText.toString().indexOf(message) >= 0) {
         expect(error.start).toEqual(start);
@@ -220,8 +222,9 @@ describe('plugin', () => {
         return;
       }
     }
-    throw new Error(
-        `Expected error messages to contain ${message}, in messages:\n  ${errors.map(e => e.messageText.toString()).join(',\n  ')}`);
+    throw new Error(`Expected error messages to contain ${message}, in messages:\n  ${errors
+                        .map(e => e.messageText.toString())
+                        .join(',\n  ')}`);
   }
 });
 
@@ -229,8 +232,8 @@ describe('plugin', () => {
 function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names: string[]) {
   let entries: {[name: string]: boolean} = {};
   if (!info) {
-    throw new Error(
-        `Expected result from ${locationMarker} to include ${names.join(', ')} but no result provided`);
+    throw new Error(`Expected result from ${locationMarker} to include ${names.join(
+        ', ')} but no result provided`);
   } else {
     for (let entry of info.entries) {
       entries[entry.name] = true;
@@ -240,12 +243,15 @@ function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names
     let missing = shouldContains.filter(name => !entries[name]);
     let present = shouldNotContain.map(name => name.substr(1)).filter(name => entries[name]);
     if (missing.length) {
-      throw new Error(
-          `Expected result from ${locationMarker} to include at least one of the following, ${missing.join(', ')}, in the list of entries ${info.entries.map(entry => entry.name).join(', ')}`);
+      throw new Error(`Expected result from ${locationMarker
+          } to include at least one of the following, ${missing
+              .join(', ')}, in the list of entries ${info.entries.map(entry => entry.name)
+              .join(', ')}`);
     }
     if (present.length) {
-      throw new Error(
-          `Unexpected member${present.length > 1 ? 's': ''} included in result: ${present.join(', ')}`);
+      throw new Error(`Unexpected member${present.length > 1 ? 's' :
+                                                   ''
+                                                   } included in result: ${present.join(', ')}`);
     }
   }
 }
