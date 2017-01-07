@@ -4,11 +4,15 @@ import {
   EventEmitter,
   Input,
   Output,
+  NgModule,
+  ModuleWithProviders,
   Renderer,
   ViewEncapsulation
 } from '@angular/core';
-import {ENTER, SPACE} from '../core/keyboard/keycodes';
-import {coerceBooleanProperty} from '../core/coercion/boolean-property';
+import {CommonModule} from '@angular/common';
+import {ENTER, SPACE} from '../keyboard/keycodes';
+import {coerceBooleanProperty} from '../coercion/boolean-property';
+import {MdRippleModule} from '../ripple/ripple';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -34,7 +38,6 @@ let _uniqueIdCounter = 0;
     '(keydown)': '_handleKeydown($event)'
   },
   templateUrl: 'option.html',
-  styleUrls: ['select.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdOption {
@@ -43,7 +46,7 @@ export class MdOption {
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
 
-  private _id: string = `md-select-option-${_uniqueIdCounter++}`;
+  private _id: string = `md-option-${_uniqueIdCounter++}`;
 
   /** The unique ID of the option. */
   get id() { return this._id; }
@@ -98,7 +101,6 @@ export class MdOption {
     }
   }
 
-
   /**
    * Selects the option while indicating the selection came from the user. Used to
    * determine if the select's view -> model callback should be invoked.
@@ -119,4 +121,18 @@ export class MdOption {
     return this._element.nativeElement;
   }
 
+}
+
+@NgModule({
+  imports: [MdRippleModule, CommonModule],
+  exports: [MdOption],
+  declarations: [MdOption]
+})
+export class MdOptionModule {
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: MdOptionModule,
+      providers: []
+    };
+  }
 }

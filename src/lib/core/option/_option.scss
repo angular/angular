@@ -1,0 +1,34 @@
+@import '../style/menu-common';
+@import '../a11y/a11y';
+
+/**
+ * This mixin contains shared option styles between the select and
+ * autocomplete components.
+ */
+@mixin md-option() {
+  md-option {
+    @include md-menu-item-base();
+    position: relative;
+    cursor: pointer;
+    outline: none;
+
+    &[aria-disabled='true'] {
+      cursor: default;
+      user-select: none;
+    }
+  }
+
+  .md-option-ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    // In high contrast mode this completely covers the text.
+    @include cdk-high-contrast {
+      opacity: 0.5;
+    }
+  }
+}
+

@@ -1,18 +1,24 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import {DefaultStyleCompatibilityModeModule} from '../core';
+import {
+  MdOptionModule, OverlayModule, OVERLAY_PROVIDERS, DefaultStyleCompatibilityModeModule
+} from '../core';
 import {MdAutocomplete} from './autocomplete';
+import {MdAutocompleteTrigger} from './autocomplete-trigger';
 export * from './autocomplete';
+export * from './autocomplete-trigger';
 
 @NgModule({
-  imports: [DefaultStyleCompatibilityModeModule],
-  exports: [MdAutocomplete, DefaultStyleCompatibilityModeModule],
-  declarations: [MdAutocomplete],
+  imports: [MdOptionModule, OverlayModule, DefaultStyleCompatibilityModeModule],
+  exports: [
+      MdAutocomplete, MdOptionModule, MdAutocompleteTrigger, DefaultStyleCompatibilityModeModule
+  ],
+  declarations: [MdAutocomplete, MdAutocompleteTrigger],
 })
 export class MdAutocompleteModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdAutocompleteModule,
-      providers: []
+      providers: [OVERLAY_PROVIDERS]
     };
   }
 }

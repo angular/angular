@@ -1,3 +1,9 @@
 <div class="demo-autocomplete">
-  <md-autocomplete></md-autocomplete>
+  <md-input-container>
+    <input mdInput placeholder="State" [mdAutocomplete]="auto">
+  </md-input-container>
+
+  <md-autocomplete #auto="mdAutocomplete">
+    <md-option *ngFor="let state of states" [value]="state.code"> {{ state.name }} </md-option>
+  </md-autocomplete>
 </div>

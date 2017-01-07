@@ -1,0 +1,5 @@
+@import '../core/style/menu-common';
+
+.md-autocomplete-panel {
+  @include md-menu-base();
+}

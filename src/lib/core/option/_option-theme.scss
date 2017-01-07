@@ -1,0 +1,24 @@
+@import '../theming/palette';
+@import '../theming/theming';
+
+@mixin md-option-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $primary: map-get($theme, primary);
+
+  md-option {
+    &:hover:not(.md-option-disabled), &:focus:not(.md-option-disabled) {
+      background: md-color($background, hover);
+    }
+
+    &.md-selected {
+      background: md-color($background, hover);
+      color: md-color($primary);
+    }
+
+    &.md-option-disabled {
+      color: md-color($foreground, hint-text);
+    }
+
+  }
+}

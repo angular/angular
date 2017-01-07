@@ -4,7 +4,7 @@ import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angu
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
-import {MdOption} from './option';
+import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
@@ -587,6 +587,7 @@ describe('MdSelect', () => {
         select.style.marginRight = '20px';
       });
 
+
       it('should align the first option with the trigger text if no option is selected', () => {
         trigger.click();
         fixture.detectChanges();
@@ -1081,7 +1082,7 @@ describe('MdSelect', () => {
         let firstOptionID = options[0].id;
 
         expect(options[0].id)
-            .toContain('md-select-option', `Expected option ID to have the correct prefix.`);
+            .toContain('md-option', `Expected option ID to have the correct prefix.`);
         expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
 
         const backdrop =
@@ -1096,7 +1097,7 @@ describe('MdSelect', () => {
           options =
               overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
           expect(options[0].id)
-              .toContain('md-select-option', `Expected option ID to have the correct prefix.`);
+              .toContain('md-option', `Expected option ID to have the correct prefix.`);
           expect(options[0].id).not.toEqual(firstOptionID, `Expected option IDs to be unique.`);
           expect(options[0].id).not.toEqual(options[1].id, `Expected option IDs to be unique.`);
         });
@@ -1219,7 +1220,7 @@ class ManySelects {}
         </md-option>
       </md-select>
     </div>
-  `
+  `,
 
 })
 class NgIfSelect {

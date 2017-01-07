@@ -13,7 +13,7 @@ import {
   ViewEncapsulation,
   ViewChild,
 } from '@angular/core';
-import {MdOption} from './option';
+import {MdOption} from '../core/option/option';
 import {ENTER, SPACE} from '../core/keyboard/keycodes';
 import {ListKeyManager} from '../core/a11y/list-key-manager';
 import {Dir} from '../core/rtl/dir';
