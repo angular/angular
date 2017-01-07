@@ -126,6 +126,7 @@ export declare class NavigationError {
 /** @stable */
 export interface NavigationExtras {
     fragment?: string;
+    mergeQueryParams?: boolean;
     preserveFragment?: boolean;
     preserveQueryParams?: boolean;
     queryParams?: Params;
@@ -209,7 +210,7 @@ export declare class Router {
     url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, mergeQueryParams, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
@@ -240,6 +241,7 @@ export declare abstract class RouteReuseStrategy {
 /** @stable */
 export declare class RouterLink {
     fragment: string;
+    mergeQueryParams: boolean;
     preserveFragment: boolean;
     preserveQueryParams: boolean;
     queryParams: {
@@ -272,6 +274,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
+    mergeQueryParams: boolean;
     preserveFragment: boolean;
     preserveQueryParams: boolean;
     queryParams: {

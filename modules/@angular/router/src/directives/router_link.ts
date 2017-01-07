@@ -64,6 +64,13 @@ import {UrlTree} from '../url_tree';
  *   link to user component
  * </a>
  * ```
+ * You can tell the directive to merge current query params with new one
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" mergeQueryParams>
+ *   link to user component
+ * </a>
+ * ```
  *
  * The router link directive always treats the provided input as a delta to the current url.
  *
@@ -84,6 +91,7 @@ export class RouterLink {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
+  @Input() mergeQueryParams: boolean;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
@@ -122,6 +130,7 @@ export class RouterLink {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      mergeQueryParams: attrBoolValue(this.mergeQueryParams),
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
@@ -143,6 +152,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() queryParams: {[k: string]: any};
   @Input() fragment: string;
   @Input() preserveQueryParams: boolean;
+  @Input() mergeQueryParams: boolean;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
@@ -202,6 +212,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserveQueryParams),
+      mergeQueryParams: attrBoolValue(this.mergeQueryParams),
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }

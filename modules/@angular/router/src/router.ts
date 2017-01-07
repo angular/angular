@@ -109,6 +109,15 @@ export interface NavigationExtras {
   */
   preserveQueryParams?: boolean;
   /**
+  * merge the query parameters for the next navigation.
+  *
+  * ```
+  * // Preserve query params from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], { queryParams: { page: 2 },  mergeQueryParams: true });
+  * ```
+  */
+  mergeQueryParams?: boolean;
+  /**
   * Preserves the fragment for the next navigation
   *
   * ```
@@ -463,11 +472,16 @@ export class Router {
    * ```
    */
   createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams,
+      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, mergeQueryParams,
                         preserveFragment}: NavigationExtras = {}): UrlTree {
     const a = relativeTo || this.routerState.root;
-    const q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
+    let q: Params = null;
+    if (mergeQueryParams) {
+      q = merge(this.currentUrlTree.queryParams, queryParams);
+    } else {
+      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams;
+    }
     return createUrlTree(a, this.currentUrlTree, commands, q, f);
   }
 
