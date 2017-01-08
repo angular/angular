@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
 import {take} from 'rxjs/operator/take';
 
 
@@ -195,9 +194,8 @@ export class MockConnection implements Connection {
 @Injectable()
 export class MockBackend implements ConnectionBackend {
   /**
-   * {@link EventEmitter}
-   * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
-   * to in order to respond to connections.
+   * {@link EventEmitter} of {@link MockConnection} instances that have been created by this
+   * backend. Can be subscribed to in order to respond to connections.
    *
    * ### Example
    *
@@ -230,7 +228,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: any;  //<MockConnection>
+  connections: EventEmitter<MockConnection> = new EventEmitter<MockConnection>();
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -247,13 +245,12 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: any;  // Subject<MockConnection>
+  pendingConnections: EventEmitter<MockConnection> = new EventEmitter<MockConnection>();
+
   constructor() {
     this.connectionsArray = [];
-    this.connections = new Subject();
     this.connections.subscribe(
         (connection: MockConnection) => this.connectionsArray.push(connection));
-    this.pendingConnections = new Subject();
   }
 
   /**
@@ -286,7 +283,7 @@ export class MockBackend implements ConnectionBackend {
       throw new Error(`createConnection requires an instance of Request, got ${req}`);
     }
     const connection = new MockConnection(req);
-    this.connections.next(connection);
+    this.connections.emit(connection);
     return connection;
   }
 }
