@@ -664,19 +664,27 @@ export class FormControl extends AbstractControl {
    * specified.
    *
    * If `emitViewToModelChange` is `true`, an ngModelChange event will be fired to update the
-   * model.  This is the default behavior if `emitViewToModelChange` is not specified.
+   * model. This is the default behavior if `emitViewToModelChange` is not specified.
+   *
+   * If `notEqual` is `true`, the control will be updated only if new value is not equal to the
+   * previous one. Defaults to false.
    */
-  setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}: {
-    onlySelf?: boolean,
-    emitEvent?: boolean,
-    emitModelToViewChange?: boolean,
-    emitViewToModelChange?: boolean
-  } = {}): void {
-    this._value = value;
-    if (this._onChange.length && emitModelToViewChange !== false) {
-      this._onChange.forEach((changeFn) => changeFn(this._value, emitViewToModelChange !== false));
+  setValue(
+      value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange, notEqual}: {
+        onlySelf?: boolean,
+        emitEvent?: boolean,
+        emitModelToViewChange?: boolean,
+        emitViewToModelChange?: boolean,
+        notEqual?: boolean,
+      } = {}): void {
+    if (!notEqual || value !== this._value) {
+      this._value = value;
+      if (this._onChange.length && emitModelToViewChange !== false) {
+        this._onChange.forEach(
+            (changeFn) => changeFn(this._value, emitViewToModelChange !== false));
+      }
+      this.updateValueAndValidity({onlySelf, emitEvent});
     }
-    this.updateValueAndValidity({onlySelf, emitEvent});
   }
 
   /**
@@ -690,7 +698,8 @@ export class FormControl extends AbstractControl {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
-    emitViewToModelChange?: boolean
+    emitViewToModelChange?: boolean,
+    notEqual?: boolean,
   } = {}): void {
     this.setValue(value, options);
   }
@@ -921,13 +930,15 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  setValue(
-      value: {[key: string]: any},
-      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  setValue(value: {[key: string]: any}, {onlySelf, emitEvent, notEqual}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    notEqual?: boolean,
+  } = {}): void {
     this._checkAllValuesPresent(value);
     Object.keys(value).forEach(name => {
       this._throwIfControlMissing(name);
-      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent});
+      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent, notEqual});
     });
     this.updateValueAndValidity({onlySelf, emitEvent});
   }
@@ -953,12 +964,14 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  patchValue(
-      value: {[key: string]: any},
-      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  patchValue(value: {[key: string]: any}, {onlySelf, emitEvent, notEqual}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    notEqual?: boolean,
+  } = {}): void {
     Object.keys(value).forEach(name => {
       if (this.controls[name]) {
-        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent});
+        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent, notEqual});
       }
     });
     this.updateValueAndValidity({onlySelf, emitEvent});
@@ -1229,12 +1242,15 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', 'Drew']
    *  ```
    */
-  setValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  setValue(value: any[], {onlySelf, emitEvent, notEqual}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    notEqual?: boolean,
+  } = {}): void {
     this._checkAllValuesPresent(value);
     value.forEach((newValue: any, index: number) => {
       this._throwIfControlMissing(index);
-      this.at(index).setValue(newValue, {onlySelf: true, emitEvent});
+      this.at(index).setValue(newValue, {onlySelf: true, emitEvent, notEqual});
     });
     this.updateValueAndValidity({onlySelf, emitEvent});
   }
@@ -1259,11 +1275,14 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', null]
    *  ```
    */
-  patchValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  patchValue(value: any[], {onlySelf, emitEvent, notEqual}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    notEqual?: boolean,
+  } = {}): void {
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
-        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent});
+        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent, notEqual});
       }
     });
     this.updateValueAndValidity({onlySelf, emitEvent});

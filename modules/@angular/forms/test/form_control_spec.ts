@@ -318,6 +318,15 @@ export function main() {
         expect(onChange).toBeNull();
       });
 
+      it(`should not invoke on change when value hasn't changed`, () => {
+        let onChange: any = null;
+        c.registerOnChange((v: any) => onChange = ['invoked', v]);
+
+        c.setValue('oldValue', {notEqual: true});
+
+        expect(onChange).toBeNull();
+      });
+
       it('should set the parent', () => {
         c.setValue('newValue');
         expect(g.value).toEqual({'one': 'newValue'});
@@ -377,6 +386,15 @@ export function main() {
         c.registerOnChange((v: any) => onChange = ['invoked', v]);
 
         c.patchValue('newValue', {emitModelToViewChange: false});
+
+        expect(onChange).toBeNull();
+      });
+
+      it(`should not invoke on change when value hasn't changed`, () => {
+        let onChange: any = null;
+        c.registerOnChange((v: any) => onChange = ['invoked', v]);
+
+        c.patchValue('oldValue', {notEqual: true});
 
         expect(onChange).toBeNull();
       });

@@ -218,6 +218,7 @@ export declare class FormControl extends AbstractControl {
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
+        notEqual?: boolean;
     }): void;
     registerOnChange(fn: Function): void;
     registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
@@ -225,11 +226,12 @@ export declare class FormControl extends AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}?: {
+    setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange, notEqual}?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
+        notEqual?: boolean;
     }): void;
 }
 
