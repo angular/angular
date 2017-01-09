@@ -667,6 +667,24 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should locate directives in inline templates', () => {
+          const dirTemplate =
+              CompileDirectiveMetadata
+                  .create({
+                    selector: 'template',
+                    type:
+                        createTypeMeta({reference: {filePath: someModuleUrl, name: 'onTemplate'}})
+                  })
+                  .toSummary();
+          expect(humanizeTplAst(parse('<div *ngIf="cond">', [ngIf, dirTemplate]))).toEqual([
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'cond'],
+            [DirectiveAst, dirTemplate],
+            [ElementAst, 'div'],
+          ]);
+        });
+
         it('should locate directives in event bindings', () => {
           const dirA =
               CompileDirectiveMetadata
@@ -1042,7 +1060,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(elAst.providers[2].eager).toBe(false);
         });
 
-        it('should not mark dependencies accross embedded views as eager', () => {
+        it('should not mark dependencies across embedded views as eager', () => {
           const provider0 = createProvider('service0');
           const dirA = createDir('[dirA]', {providers: [provider0]});
           const dirB = createDir('[dirB]', {deps: ['service0']});
@@ -1243,14 +1261,18 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         it('should wrap the element with data-template attribute into an EmbeddedTemplateAST ',
            () => {
-             expect(humanizeTplAst(parse('<div data-template>', [
-             ]))).toEqual([[EmbeddedTemplateAst], [ElementAst, 'div']]);
+             expect(humanizeTplAst(parse('<div data-template>', []))).toEqual([
+               [EmbeddedTemplateAst],
+               [ElementAst, 'div'],
+             ]);
            });
 
         it('should parse bound properties', () => {
           expect(humanizeTplAst(parse('<div template="ngIf test">', [ngIf]))).toEqual([
-            [EmbeddedTemplateAst], [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'test'], [ElementAst, 'div']
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'test'],
+            [ElementAst, 'div'],
           ]);
         });
 
@@ -1329,6 +1351,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             [DirectiveAst, ngIf],
             [BoundDirectivePropertyAst, 'ngIf', 'test'],
             [ElementAst, 'div'],
+
           ]);
 
           // https://github.com/angular/angular/issues/13800
