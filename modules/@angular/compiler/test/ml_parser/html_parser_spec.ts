@@ -31,9 +31,13 @@ export function main() {
           ]);
         });
 
-        it('should parse text nodes inside template elements', () => {
+        it('should parse text nodes inside <ng-template> elements', () => {
+          // deprecated in 4.0
           expect(humanizeDom(parser.parse('<template>a</template>', 'TestComp'))).toEqual([
             [html.Element, 'template', 0], [html.Text, 'a', 1]
+          ]);
+          expect(humanizeDom(parser.parse('<ng-template>a</ng-template>', 'TestComp'))).toEqual([
+            [html.Element, 'ng-template', 0], [html.Text, 'a', 1]
           ]);
         });
 
@@ -57,9 +61,11 @@ export function main() {
           ]);
         });
 
-        it('should parse elements inside of template elements', () => {
+        it('should parse elements inside  <ng-template> elements', () => {
           expect(humanizeDom(parser.parse('<template><span></span></template>', 'TestComp')))
               .toEqual([[html.Element, 'template', 0], [html.Element, 'span', 1]]);
+          expect(humanizeDom(parser.parse('<ng-template><span></span></ng-template>', 'TestComp')))
+              .toEqual([[html.Element, 'ng-template', 0], [html.Element, 'span', 1]]);
         });
 
         it('should support void elements', () => {
@@ -158,11 +164,16 @@ export function main() {
               ]);
         });
 
-        it('should not add the requiredParent when the parent is a template', () => {
+        it('should not add the requiredParent when the parent is a <ng-template>', () => {
           expect(humanizeDom(parser.parse('<template><tr></tr></template>', 'TestComp'))).toEqual([
             [html.Element, 'template', 0],
             [html.Element, 'tr', 1],
           ]);
+          expect(humanizeDom(parser.parse('<ng-template><tr></tr></ng-template>', 'TestComp')))
+              .toEqual([
+                [html.Element, 'ng-template', 0],
+                [html.Element, 'tr', 1],
+              ]);
         });
 
         // https://github.com/angular/angular/issues/5967
@@ -252,11 +263,16 @@ export function main() {
           ]);
         });
 
-        it('should parse attributes on template elements', () => {
+        it('should parse attributes on <ng-template> elements', () => {
           expect(humanizeDom(parser.parse('<template k="v"></template>', 'TestComp'))).toEqual([
             [html.Element, 'template', 0],
             [html.Attribute, 'k', 'v'],
           ]);
+          expect(humanizeDom(parser.parse('<ng-template k="v"></ng-template>', 'TestComp')))
+              .toEqual([
+                [html.Element, 'ng-template', 0],
+                [html.Attribute, 'k', 'v'],
+              ]);
         });
 
         it('should support namespace', () => {

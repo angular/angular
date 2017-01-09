@@ -485,8 +485,8 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
          fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']); }));
 
       it('should read locals', fakeAsync(() => {
-           const ctx =
-               createCompFixture('<template testLocals let-local="someLocal">{{local}}</template>');
+           const ctx = createCompFixture(
+               '<ng-template testLocals let-local="someLocal">{{local}}</ng-template>');
            ctx.detectChanges(false);
 
            expect(renderLog.log).toEqual(['{{someLocalValue}}']);
@@ -1242,7 +1242,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
       it('should recurse into nested view containers even if there are no bindings in the component view',
          () => {
-           @Component({template: '<template #vc>{{name}}</template>'})
+           @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
            class Comp {
              name = 'Tom';
              @ViewChild('vc', {read: ViewContainerRef}) vc: ViewContainerRef;

@@ -363,10 +363,10 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         const fixture = TestBed.createComponent(MyComp);
       });
 
-      it('should support template directives via `<template>` elements.', () => {
+      it('should support template directives via `<ng-template>` elements.', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
         const template =
-            '<template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></template>';
+            '<ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -382,7 +382,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
       it('should not share empty context for template directives - issue #10045', () => {
         TestBed.configureTestingModule({declarations: [MyComp, PollutedContext, NoContext]});
         const template =
-            '<template pollutedContext let-foo="bar">{{foo}}</template><template noContext let-foo="bar">{{foo}}</template>';
+            '<ng-template pollutedContext let-foo="bar">{{foo}}</ng-template><ng-template noContext let-foo="bar">{{foo}}</ng-template>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -393,7 +393,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
       it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
         TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
         const template =
-            '<div *ngIf="ctxBoolProp"><template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></template></div>';
+            '<div *ngIf="ctxBoolProp"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -412,11 +412,11 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         expect(fixture.debugElement.children.length).toBe(0);
       });
 
-      it('should use a comment while stamping out `<template>` elements.', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
-        const template = '<template></template>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
+      it('should use a comment while stamping out `<ng-template>` elements.', () => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(MyComp, {set: {template: '<ng-template></ng-template>'}})
+                .createComponent(MyComp);
 
         const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         expect(childNodesOfWrapper.length).toBe(1);
@@ -448,7 +448,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
           schemas: [NO_ERRORS_SCHEMA],
         });
         const template =
-            '<some-directive><toolbar><template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>';
+            '<some-directive><toolbar><ng-template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></ng-template></toolbar></some-directive>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -484,7 +484,7 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
            () => {
              TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
              const template =
-                 '<template [ngIf]="true">{{alice.ctxProp}}</template>|{{alice.ctxProp}}|<child-cmp ref-alice></child-cmp>';
+                 '<ng-template [ngIf]="true">{{alice.ctxProp}}</ng-template>|{{alice.ctxProp}}|<child-cmp ref-alice></child-cmp>';
              TestBed.overrideComponent(MyComp, {set: {template}});
              const fixture = TestBed.createComponent(MyComp);
 
@@ -530,10 +530,10 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
         });
 
         it('should assign the TemplateRef to a user-defined variable', () => {
-          TestBed.configureTestingModule({declarations: [MyComp]});
-          const template = '<template ref-alice></template>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+          const fixture =
+              TestBed.configureTestingModule({declarations: [MyComp]})
+                  .overrideComponent(MyComp, {set: {template: '<template ref-alice></template>'}})
+                  .createComponent(MyComp);
 
           const value = fixture.debugElement.childNodes[0].references['alice'];
           expect(value.createEmbeddedView).toBeTruthy();
@@ -552,14 +552,16 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
 
       describe('variables', () => {
         it('should allow to use variables in a for loop', () => {
-          TestBed.configureTestingModule({declarations: [MyComp, ChildCompNoTemplate]});
           const template =
-              '<template ngFor [ngForOf]="[1]" let-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+              '<ng-template ngFor [ngForOf]="[1]" let-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</ng-template>';
+
+          const fixture =
+              TestBed.configureTestingModule({declarations: [MyComp, ChildCompNoTemplate]})
+                  .overrideComponent(MyComp, {set: {template}})
+                  .createComponent(MyComp);
 
           fixture.detectChanges();
-          // Get the element at index 2, since index 0 is the <template>.
+          // Get the element at index 2, since index 0 is the <ng-template>.
           expect(getDOM().childNodes(fixture.nativeElement)[2]).toHaveText('1-hello');
         });
       });
@@ -774,11 +776,17 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
          }));
 
       it('should support events via EventEmitter on template elements', async(() => {
-           TestBed.configureTestingModule(
-               {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
-           const template = '<template emitter listener (event)="ctxProp=$event"></template>';
-           TestBed.overrideComponent(MyComp, {set: {template}});
-           const fixture = TestBed.createComponent(MyComp);
+           const fixture =
+               TestBed
+                   .configureTestingModule(
+                       {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]})
+                   .overrideComponent(MyComp, {
+                     set: {
+                       template:
+                           '<ng-template emitter listener (event)="ctxProp=$event"></ng-template>'
+                     }
+                   })
+                   .createComponent(MyComp);
 
            const tc = fixture.debugElement.childNodes[0];
 
@@ -1487,10 +1495,11 @@ function declareTests({useJit, viewEngine}: {useJit: boolean, viewEngine: boolea
       });
 
       it('should reflect property values on template comments', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
-        const template = '<template [ngIf]="ctxBoolProp"></template>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(
+                    MyComp, {set: {template: '<ng-template [ngIf]="ctxBoolProp"></ng-template>'}})
+                .createComponent(MyComp);
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();

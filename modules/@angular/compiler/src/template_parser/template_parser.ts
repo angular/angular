@@ -54,7 +54,10 @@ const IDENT_PROPERTY_IDX = 9;
 // Group 10 = identifier inside ()
 const IDENT_EVENT_IDX = 10;
 
+const NG_TEMPLATE_ELEMENT = 'ng-template';
+// deprecated in 4.x
 const TEMPLATE_ELEMENT = 'template';
+// deprecated in 4.x
 const TEMPLATE_ATTR = 'template';
 const TEMPLATE_ATTR_PREFIX = '*';
 const CLASS_ATTR = 'class';
@@ -269,8 +272,9 @@ class TemplateParseVisitor implements html.Visitor {
 
     let hasInlineTemplates = false;
     const attrs: AttrAst[] = [];
-    const lcElName = splitNsName(nodeName.toLowerCase())[1];
-    const isTemplateElement = lcElName == TEMPLATE_ELEMENT;
+    const isTemplateElement = isTemplate(
+        element,
+        (m: string, span: ParseSourceSpan) => this._reportError(m, span, ParseErrorLevel.WARNING));
 
     element.attrs.forEach(attr => {
       const hasBinding = this._parseAttr(
@@ -282,6 +286,9 @@ class TemplateParseVisitor implements html.Visitor {
       let normalizedName = this._normalizeAttributeName(attr.name);
 
       if (normalizedName == TEMPLATE_ATTR) {
+        this._reportError(
+            `The template attribute is deprecated. Use an ng-template element instead.`,
+            attr.sourceSpan, ParseErrorLevel.WARNING);
         templateBindingsSource = attr.value;
       } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
@@ -379,10 +386,9 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (hasInlineTemplates) {
       const templateQueryStartIndex = this.contentQueryStartId;
-      const templateCssSelector =
-          createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
+      const templateSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
       const {directives: templateDirectiveMetas} =
-          this._parseDirectives(this.selectorMatcher, templateCssSelector);
+          this._parseDirectives(this.selectorMatcher, templateSelector);
       const templateBoundDirectivePropNames = new Set<string>();
       const templateDirectiveAsts = this._createDirectiveAsts(
           true, element.name, templateDirectiveMetas, templateElementOrDirectiveProps, [],
@@ -895,4 +901,20 @@ function isEmptyExpression(ast: AST): boolean {
     ast = ast.ast;
   }
   return ast instanceof EmptyExpr;
+}
+
+// `template` is deprecated in 4.x
+function isTemplate(
+    el: html.Element, reportDeprecation: (m: string, span: ParseSourceSpan) => void): boolean {
+  const tagNoNs = splitNsName(el.name)[1];
+  // `<ng-template>` is an angular construct and is lower case
+  if (tagNoNs === NG_TEMPLATE_ELEMENT) return true;
+  // `<template>` is HTML and case insensitive
+  if (tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
+    reportDeprecation(
+        `The <template> element is deprecated. Use <ng-template> instead`, el.sourceSpan);
+    return true;
+  }
+
+  return false;
 }

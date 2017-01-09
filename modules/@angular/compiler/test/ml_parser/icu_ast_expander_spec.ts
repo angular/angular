@@ -27,7 +27,7 @@ export function main() {
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
         [html.Attribute, '[ngPlural]', 'messages.length'],
-        [html.Element, 'template', 1],
+        [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngPluralCase', '=0'],
         [html.Text, 'zero', 2],
         [html.Element, 'b', 2],
@@ -41,11 +41,11 @@ export function main() {
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
         [html.Attribute, '[ngPlural]', 'messages.length'],
-        [html.Element, 'template', 1],
+        [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngPluralCase', '=0'],
         [html.Element, 'ng-container', 2],
         [html.Attribute, '[ngSwitch]', 'p.gender'],
-        [html.Element, 'template', 3],
+        [html.Element, 'ng-template', 3],
         [html.Attribute, 'ngSwitchCase', '=m'],
         [html.Text, 'm', 4],
         [html.Text, ' ', 2],
@@ -86,10 +86,10 @@ export function main() {
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
         [html.Attribute, '[ngSwitch]', 'person.gender'],
-        [html.Element, 'template', 1],
+        [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngSwitchCase', 'male'],
         [html.Text, 'm', 2],
-        [html.Element, 'template', 1],
+        [html.Element, 'ng-template', 1],
         [html.Attribute, 'ngSwitchDefault', ''],
         [html.Text, 'default', 2],
       ]);
@@ -103,7 +103,7 @@ export function main() {
         [html.Element, 'span', 1],
         [html.Element, 'ng-container', 2],
         [html.Attribute, '[ngSwitch]', 'a'],
-        [html.Element, 'template', 3],
+        [html.Element, 'ng-template', 3],
         [html.Attribute, 'ngSwitchCase', '=4'],
         [html.Text, 'c', 4],
       ]);

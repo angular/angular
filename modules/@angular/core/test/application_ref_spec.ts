@@ -286,7 +286,7 @@ export function main() {
         vc: ViewContainerRef;
       }
 
-      @Component({template: '<template #t>Dynamic content</template>'})
+      @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
         @ViewChild(TemplateRef)
         tplRef: TemplateRef<Object>;

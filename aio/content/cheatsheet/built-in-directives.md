@@ -20,9 +20,9 @@ Turns the li element and its contents into a template, and uses that to instanti
 @cheatsheetItem
 syntax:
 `<div [ngSwitch]="conditionExpression">
-  <template [ngSwitchCase]="case1Exp">...</template>
-  <template ngSwitchCase="case2LiteralString">...</template>
-  <template ngSwitchDefault>...</template>
+  <ng-template [ngSwitchCase]="case1Exp">...</ng-template>
+  <ng-template ngSwitchCase="case2LiteralString">...</ng-template>
+  <ng-template ngSwitchDefault>...</ng-template>
 </div>`|`[ngSwitch]`|`[ngSwitchCase]`|`ngSwitchCase`|`ngSwitchDefault`
 description:
 Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of `conditionExpression`.

@@ -14,7 +14,7 @@ import {CompileQuery} from './compile_query';
 
 
 // Note: We can't do this when we create the CompileElements already,
-// as we create embedded views before the <template> elements themselves.
+// as we create embedded views before the <ng-template> elements themselves.
 export function bindQueryValues(ce: CompileElement) {
   const queriesWithReads: _QueryWithRead[] = [];
 
