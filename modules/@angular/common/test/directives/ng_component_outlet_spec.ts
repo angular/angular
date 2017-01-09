@@ -18,7 +18,7 @@ export function main() {
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
 
     it('should do nothing if component is null', async(() => {
-         const template = `<template *ngComponentOutlet="currentComponent"></template>`;
+         const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
          TestBed.overrideComponent(TestComponent, {set: {template: template}});
          let fixture = TestBed.createComponent(TestComponent);
 
@@ -120,7 +120,7 @@ export function main() {
        }));
 
     it('should render projectable nodes, if supplied', async(() => {
-         const template = `<template>projected foo</template>${TEST_CMP_TEMPLATE}`;
+         const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
          TestBed.overrideComponent(TestComponent, {set: {template: template}})
              .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
 
@@ -221,7 +221,7 @@ class InjectedComponentAgain {
 }
 
 const TEST_CMP_TEMPLATE =
-    `<template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></template>`;
+    `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
   currentComponent: Type<any>;

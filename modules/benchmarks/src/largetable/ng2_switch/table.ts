@@ -15,9 +15,9 @@ import {TableCell, emptyTable} from '../util';
   selector: 'largetable',
   template: `<table><tbody>
     <tr *ngFor="let row of data; trackBy: trackByIndex">
-    <template ngFor [ngForOf]="row" [ngForTrackBy]="trackByIndex" let-cell><ng-container [ngSwitch]="cell.row % 2">
+    <ng-template ngFor [ngForOf]="row" [ngForTrackBy]="trackByIndex" let-cell><ng-container [ngSwitch]="cell.row % 2">
         <td *ngSwitchCase="0" style="background-color: grey">{{cell.value}}</td><td *ngSwitchDefault>{{cell.value}}</td>
-    </ng-container></template>
+    </ng-container></ng-template>
     </tr>
   </tbody></table>`
 })

@@ -225,7 +225,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
     describe('query for TemplateRef', () => {
       it('should find TemplateRefs in the light and shadow dom', () => {
-        const template = '<needs-tpl><template><div>light</div></template></needs-tpl>';
+        const template = '<needs-tpl><ng-template><div>light</div></ng-template></needs-tpl>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
         const needsTpl: NeedsTpl = view.debugElement.children[0].injector.get(NeedsTpl);
 
@@ -237,7 +237,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
       it('should find named TemplateRefs', () => {
         const template =
-            '<needs-named-tpl><template #tpl><div>light</div></template></needs-named-tpl>';
+            '<needs-named-tpl><ng-template #tpl><div>light</div></ng-template></needs-named-tpl>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
         const needsTpl: NeedsNamedTpl = view.debugElement.children[0].injector.get(NeedsNamedTpl);
         expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0])
@@ -308,7 +308,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
       it('should support reading a ViewContainer', () => {
         const template =
-            '<needs-viewcontainer-read><template>hello</template></needs-viewcontainer-read>';
+            '<needs-viewcontainer-read><ng-template>hello</ng-template></needs-viewcontainer-read>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
         const comp: NeedsViewContainerWithRead =
@@ -403,7 +403,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
       it('should contain all the elements in the light dom with the given var binding', () => {
         const template = '<needs-query-by-ref-binding #q>' +
-            '<div template="ngFor: let item of list">' +
+            '<div *ngFor="let item of list">' +
             '<div #textLabel>{{item}}</div>' +
             '</div>' +
             '</needs-query-by-ref-binding>';
@@ -536,7 +536,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
     describe('query over moved templates', () => {
       it('should include manually projected templates in queries', () => {
         const template =
-            '<manual-projecting #q><template><div text="1"></div></template></manual-projecting>';
+            '<manual-projecting #q><ng-template><div text="1"></div></ng-template></manual-projecting>';
         const view = createTestCmpAndDetectChanges(MyComp0, template);
         const q = view.debugElement.children[0].references['q'];
         expect(q.query.length).toBe(0);
@@ -730,14 +730,15 @@ class NeedsViewQueryOrderWithParent {
   list: string[] = ['2', '3'];
 }
 
-@Component({selector: 'needs-tpl', template: '<template><div>shadow</div></template>'})
+@Component({selector: 'needs-tpl', template: '<ng-template><div>shadow</div></ng-template>'})
 class NeedsTpl {
   @ViewChildren(TemplateRef) viewQuery: QueryList<TemplateRef<Object>>;
   @ContentChildren(TemplateRef) query: QueryList<TemplateRef<Object>>;
   constructor(public vc: ViewContainerRef) {}
 }
 
-@Component({selector: 'needs-named-tpl', template: '<template #tpl><div>shadow</div></template>'})
+@Component(
+    {selector: 'needs-named-tpl', template: '<ng-template #tpl><div>shadow</div></ng-template>'})
 class NeedsNamedTpl {
   @ViewChild('tpl') viewTpl: TemplateRef<Object>;
   @ContentChild('tpl') contentTpl: TemplateRef<Object>;
@@ -767,7 +768,7 @@ class NeedsContentChildTemplateRef {
 @Component({
   selector: 'needs-content-child-template-ref-app',
   template: '<needs-content-child-template-ref>' +
-      '<template>OUTER<template>INNER</template></template>' +
+      '<ng-template>OUTER<ng-template>INNER</ng-template></ng-template>' +
       '</needs-content-child-template-ref>'
 })
 class NeedsContentChildTemplateRefApp {

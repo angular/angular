@@ -109,12 +109,15 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
   constructor(@Inject(COMPILER_OPTIONS) defaultOptions: CompilerOptions[]) {
-    this._defaultOptions = [<CompilerOptions>{
-                             useDebug: isDevMode(),
-                             useJit: true,
-                             defaultEncapsulation: ViewEncapsulation.Emulated,
-                             missingTranslation: MissingTranslationStrategy.Warning,
-                           }].concat(defaultOptions);
+    const compilerOptions: CompilerOptions = {
+      useDebug: isDevMode(),
+      useJit: true,
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      missingTranslation: MissingTranslationStrategy.Warning,
+      enableLegacyTemplate: true,
+    };
+
+    this._defaultOptions = [compilerOptions, ...defaultOptions];
   }
   createCompiler(options: CompilerOptions[] = []): Compiler {
     const opts = _mergeOptions(this._defaultOptions.concat(options));
