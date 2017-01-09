@@ -1,0 +1,32 @@
+# Configuration for pullapprove.com
+# See ownership spreadsheet:
+# https://docs.google.com/spreadsheets/d/1-HIlzfbPYGsPr9KuYMe6bLfc4LXzPjpoALqtYRYTZB0/edit?pli=1#gid=0&vpid=A5
+
+version: 2
+
+group_defaults:
+  required: 1
+  reset_on_reopened:
+    enabled: true
+  approve_by_comment:
+    enabled: true
+    approve_regex: '^(Approved|:\+1:|LGTM)'
+
+groups:
+  config:
+    conditions:
+      files:
+        - "*.yml"
+        - "*.json"
+    teams:
+      - repoowners
+
+  compiler:
+    conditions:
+      files:
+        - "tools/@angular/tsc-wrapped/*"
+        - "modules/@angular/compiler/*"
+        - "modules/@angular/compiler-cli/*"
+    teams:
+      - compiler-owners
+      - repoowners
