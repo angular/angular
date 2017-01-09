@@ -1213,6 +1213,22 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/team/22');
        })));
 
+    it('should work with componentless route',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = TestBed.createComponent(RootCmp);
+         advance(fixture);
+
+         router.resetConfig([
+           {path: '', children: [{path: 'simple', component: SimpleCmp}]},
+           {path: '', redirectTo: '/simple', pathMatch: 'full'},
+         ]);
+
+         router.initialNavigation();
+         advance(fixture);
+         expect(location.path()).toEqual('/simple');
+         expect(fixture.nativeElement).toHaveText('simple');
+       })));
+
     it('should not break the back button when trigger by location change',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
