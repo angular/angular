@@ -29,7 +29,7 @@ class NgTemplateOutletSimpleExample {
 // #docregion CompleteExample
 @Injectable()
 class Greeter {
-  suffix = '!'
+  suffix = '!';
 }
 
 @Component({
