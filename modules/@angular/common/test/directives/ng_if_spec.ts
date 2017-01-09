@@ -37,7 +37,7 @@ export function main() {
        }));
 
     it('should work on a template element', async(() => {
-         const template = '<template [ngIf]="booleanCondition">hello2</template>';
+         const template = '<ng-template [ngIf]="booleanCondition">hello2</ng-template>';
          fixture = createTestComponent(template);
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('hello2');
@@ -141,7 +141,7 @@ export function main() {
     describe('else', () => {
       it('should support else', async(() => {
            const template = '<span *ngIf="booleanCondition; else elseBlock">TRUE</span>' +
-               '<template #elseBlock>FALSE</template>';
+               '<ng-template #elseBlock>FALSE</ng-template>';
 
            fixture = createTestComponent(template);
 
@@ -156,8 +156,8 @@ export function main() {
       it('should support then and else', async(() => {
            const template =
                '<span *ngIf="booleanCondition; then thenBlock; else elseBlock">IGNORE</span>' +
-               '<template #thenBlock>THEN</template>' +
-               '<template #elseBlock>ELSE</template>';
+               '<ng-template #thenBlock>THEN</ng-template>' +
+               '<ng-template #elseBlock>ELSE</ng-template>';
 
            fixture = createTestComponent(template);
 
@@ -172,8 +172,8 @@ export function main() {
       it('should support dynamic else', async(() => {
            const template =
                '<span *ngIf="booleanCondition; else nestedBooleanCondition ? b1 : b2">TRUE</span>' +
-               '<template #b1>FALSE1</template>' +
-               '<template #b2>FALSE2</template>';
+               '<ng-template #b1>FALSE1</ng-template>' +
+               '<ng-template #b2>FALSE2</ng-template>';
 
            fixture = createTestComponent(template);
 
@@ -191,7 +191,7 @@ export function main() {
 
       it('should support binding to variable', async(() => {
            const template = '<span *ngIf="booleanCondition; else elseBlock; let v">{{v}}</span>' +
-               '<template #elseBlock let-v>{{v}}</template>';
+               '<ng-template #elseBlock let-v>{{v}}</ng-template>';
 
            fixture = createTestComponent(template);
 

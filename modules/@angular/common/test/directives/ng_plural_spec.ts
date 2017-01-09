@@ -34,8 +34,8 @@ export function main() {
 
     it('should display the template according to the exact value', async(() => {
          const template = '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
-             '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
+             '<ng-template ngPluralCase="=0"><li>you have no messages.</li></ng-template>' +
+             '<ng-template ngPluralCase="=1"><li>you have one message.</li></ng-template>' +
              '</ul>';
 
          fixture = createTestComponent(template);
@@ -67,7 +67,7 @@ export function main() {
     // https://github.com/angular/angular/issues/9882
     it('should not throw when ngPluralCase contains expressions', async(() => {
          const template = '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="=0"><li>{{ switchValue }}</li></template>' +
+             '<ng-template ngPluralCase="=0"><li>{{ switchValue }}</li></ng-template>' +
              '</ul>';
 
          fixture = createTestComponent(template);
@@ -79,8 +79,8 @@ export function main() {
 
     it('should be applicable to <ng-container> elements', async(() => {
          const template = '<ng-container [ngPlural]="switchValue">' +
-             '<template ngPluralCase="=0">you have no messages.</template>' +
-             '<template ngPluralCase="=1">you have one message.</template>' +
+             '<ng-template ngPluralCase="=0">you have no messages.</ng-template>' +
+             '<ng-template ngPluralCase="=1">you have one message.</ng-template>' +
              '</ng-container>';
 
          fixture = createTestComponent(template);
@@ -94,8 +94,8 @@ export function main() {
 
     it('should display the template according to the category', async(() => {
          const template = '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
-             '<template ngPluralCase="many"><li>you have many messages.</li></template>' +
+             '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
+             '<ng-template ngPluralCase="many"><li>you have many messages.</li></ng-template>' +
              '</ul>';
 
          fixture = createTestComponent(template);
@@ -109,8 +109,8 @@ export function main() {
 
     it('should default to other when no matches are found', async(() => {
          const template = '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
-             '<template ngPluralCase="other"><li>default message.</li></template>' +
+             '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
+             '<ng-template ngPluralCase="other"><li>default message.</li></ng-template>' +
              '</ul>';
 
          fixture = createTestComponent(template);
@@ -121,8 +121,8 @@ export function main() {
 
     it('should prioritize value matches over category matches', async(() => {
          const template = '<ul [ngPlural]="switchValue">' +
-             '<template ngPluralCase="few"><li>you have a few messages.</li></template>' +
-             '<template ngPluralCase="=2">you have two messages.</template>' +
+             '<ng-template ngPluralCase="few"><li>you have a few messages.</li></ng-template>' +
+             '<ng-template ngPluralCase="=2">you have two messages.</ng-template>' +
              '</ul>';
 
          fixture = createTestComponent(template);

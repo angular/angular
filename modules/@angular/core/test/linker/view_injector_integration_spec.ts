@@ -656,7 +656,8 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
 
       it('should inject TemplateRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef, NeedsTemplateRef]});
-        const el = createComponent('<template needsViewContainerRef needsTemplateRef></template>');
+        const el =
+            createComponent('<ng-template needsViewContainerRef needsTemplateRef></ng-template>');
         expect(el.childNodes[0].injector.get(NeedsTemplateRef).templateRef.elementRef)
             .toEqual(el.childNodes[0].injector.get(NeedsViewContainerRef).viewContainer.element);
       });

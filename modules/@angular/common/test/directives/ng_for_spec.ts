@@ -243,7 +243,7 @@ export function main() {
     it('should allow to use a custom template', async(() => {
          const template =
              '<ng-container *ngFor="let item of items; template: tpl"></ng-container>' +
-             '<template let-item let-i="index" #tpl><p>{{i}}: {{item}};</p></template>';
+             '<ng-template let-item let-i="index" #tpl><p>{{i}}: {{item}};</p></ng-template>';
          fixture = createTestComponent(template);
          getComponent().items = ['a', 'b', 'c'];
          fixture.detectChanges();
@@ -262,7 +262,7 @@ export function main() {
     it('should use a custom template when both default and a custom one are present', async(() => {
          const template =
              '<ng-container *ngFor="let item of items; template: tpl">{{i}};</ng-container>' +
-             '<template let-item let-i="index" #tpl>{{i}}: {{item}};</template>';
+             '<ng-template let-item let-i="index" #tpl>{{i}}: {{item}};</ng-template>';
          fixture = createTestComponent(template);
          getComponent().items = ['a', 'b', 'c'];
          fixture.detectChanges();
