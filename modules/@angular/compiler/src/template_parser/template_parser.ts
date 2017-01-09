@@ -30,30 +30,28 @@ import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';
 
-
-
-// Group 1 = "bind-"
-// Group 2 = "let-"
-// Group 3 = "ref-/#"
-// Group 4 = "on-"
-// Group 5 = "bindon-"
-// Group 6 = "@"
-// Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
-// Group 8 = identifier inside [()]
-// Group 9 = identifier inside []
-// Group 10 = identifier inside ()
 const BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
 
+// Group 1 = "bind-"
 const KW_BIND_IDX = 1;
+// Group 2 = "let-"
 const KW_LET_IDX = 2;
+// Group 3 = "ref-/#"
 const KW_REF_IDX = 3;
+// Group 4 = "on-"
 const KW_ON_IDX = 4;
+// Group 5 = "bindon-"
 const KW_BINDON_IDX = 5;
+// Group 6 = "@"
 const KW_AT_IDX = 6;
+// Group 7 = the identifier after "bind-", "let-", "ref-/#", "on-", "bindon-" or "@"
 const IDENT_KW_IDX = 7;
+// Group 8 = identifier inside [()]
 const IDENT_BANANA_BOX_IDX = 8;
+// Group 9 = identifier inside []
 const IDENT_PROPERTY_IDX = 9;
+// Group 10 = identifier inside ()
 const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ELEMENT = 'template';
@@ -231,11 +229,8 @@ class TemplateParseVisitor implements html.Visitor {
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR);
     const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan);
-    if (expr) {
-      return new BoundTextAst(expr, ngContentIndex, text.sourceSpan);
-    } else {
-      return new TextAst(text.value, ngContentIndex, text.sourceSpan);
-    }
+    return expr ? new BoundTextAst(expr, ngContentIndex, text.sourceSpan) :
+                  new TextAst(text.value, ngContentIndex, text.sourceSpan);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
