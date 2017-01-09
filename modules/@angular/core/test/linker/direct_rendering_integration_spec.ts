@@ -130,7 +130,7 @@ export function main() {
     it('should support using structural directives with ngTemplateOutlet', () => {
       @Component({
         template:
-            '<child [templateCtx]="templateCtx"><template let-shown="shown" #tpl><span *ngIf="shown">hello</span></template></child>'
+            '<child [templateCtx]="templateCtx"><ng-template let-shown="shown" #tpl><span *ngIf="shown">hello</span></ng-template></child>'
       })
       class Parent {
         templateCtx = {shown: false};

@@ -70,12 +70,12 @@ export class NgForOfRow<T> {
  * - `<li *ngFor="let item of items; let i = index; trackBy: trackByFn">...</li>`
  * - `<li template="ngFor let item of items; let i = index; trackBy: trackByFn">...</li>`
  *
- * With `<template>` element:
+ * With `<ng-template>` element:
  *
  * ```
- * <template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
+ * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
  *   <li>...</li>
- * </template>
+ * </ng-template>
  * ```
  *
  * ### Example

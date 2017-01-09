@@ -26,7 +26,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * # Showing an alternative template using `else`
  *
  * If it is necessary to display a template when the `expression` is falsy use the `else` template
- * binding as shown. Note that the `else` binding points to a `<template>` labeled `#elseBlock`.
+ * binding as shown. Note that the `else` binding points to a `<ng-template>` labeled `#elseBlock`.
  * The template can be defined anywhere in the component view but is typically placed right after
  * `ngIf` for readability.
  *
@@ -76,25 +76,25 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * Simple form:
  * - `<div *ngIf="condition">...</div>`
  * - `<div template="ngIf condition">...</div>`
- * - `<template [ngIf]="condition"><div>...</div></template>`
+ * - `<ng-template [ngIf]="condition"><div>...</div></ng-template>`
  *
  * Form with an else block:
  * ```
  * <div *ngIf="condition; else elseBlock">...</div>
- * <template #elseBlock>...</template>
+ * <ng-template #elseBlock>...</ng-template>
  * ```
  *
  * Form with a `then` and `else` block:
  * ```
  * <div *ngIf="condition; then thenBlock else elseBlock"></div>
- * <template #thenBlock>...</template>
- * <template #elseBlock>...</template>
+ * <ng-template #thenBlock>...</ng-template>
+ * <ng-template #elseBlock>...</ng-template>
  * ```
  *
  * Form with storing the value locally:
  * ```
  * <div *ngIf="condition; else elseBlock; let value">{{value}}</div>
- * <template #elseBlock>...</template>
+ * <ng-template #elseBlock>...</ng-template>
  * ```
  *
  * @stable

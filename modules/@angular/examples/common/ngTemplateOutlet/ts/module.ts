@@ -22,9 +22,9 @@ import {Subject} from 'rxjs/Subject';
     <ng-container *ngTemplateOutlet="svk; context: myContext"></ng-container>
     <hr>
     
-    <template #greet><span>Hello</span></template>
-    <template #eng let-name><span>Hello {{name}}!</span></template>
-    <template #svk let-person="localSk"><span>Ahoj {{person}}!</span></template>
+    <ng-template #greet><span>Hello</span></ng-template>
+    <ng-template #eng let-name><span>Hello {{name}}!</span></ng-template>
+    <ng-template #svk let-person="localSk"><span>Ahoj {{person}}!</span></ng-template>
 `
 })
 class NgTemplateOutletExample {

@@ -57,7 +57,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <template ngFor let-item [ngForOf]="items"></template>
+ *   <ng-template ngFor let-item [ngForOf]="items"></ng-template>
  * </ul>
  * ```
  *
@@ -74,7 +74,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * <!-- ViewRef: outer-0 -->
  * Count: 2
  * <ul>
- *   <template view-container-ref></template>
+ *   <ng-template view-container-ref></ng-template>
  *   <!-- ViewRef: inner-1 --><li>first</li><!-- /ViewRef: inner-1 -->
  *   <!-- ViewRef: inner-2 --><li>second</li><!-- /ViewRef: inner-2 -->
  * </ul>

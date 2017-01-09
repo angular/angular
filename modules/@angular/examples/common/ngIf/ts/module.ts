@@ -34,7 +34,7 @@ class NgIfSimple {
     show = {{show}}
     <br>
     <div *ngIf="show; else elseBlock">Text to show</div>
-    <template #elseBlock>Alternate text while primary text is hidden</template>
+    <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
 `
 })
 class NgIfElse {
@@ -51,9 +51,9 @@ class NgIfElse {
     show = {{show}}
     <br>
     <div *ngIf="show; then thenBlock; else elseBlock">this is ignored</div>
-    <template #primaryBlock>Primary text to show</template>
-    <template #secondaryBlock>Secondary text to show</template>
-    <template #elseBlock>Alternate text while primary text is hidden</template>
+    <ng-template #primaryBlock>Primary text to show</ng-template>
+    <ng-template #secondaryBlock>Secondary text to show</ng-template>
+    <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
 `
 })
 class NgIfThenElse implements OnInit {
@@ -82,7 +82,7 @@ class NgIfThenElse implements OnInit {
     <div *ngIf="userObservable | async; else loading; let user">
       Hello {{user.last}}, {{user.first}}!
     </div>
-    <template #loading let-user>Waiting... (user is {{user|json}})</template>
+    <ng-template #loading let-user>Waiting... (user is {{user|json}})</ng-template>
 `
 })
 class NgIfLet {

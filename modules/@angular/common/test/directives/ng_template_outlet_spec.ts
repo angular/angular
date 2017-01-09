@@ -41,14 +41,14 @@ export function main() {
        }));
 
     it('should insert content specified by TemplateRef', async(() => {
-         const template = `<template #tpl>foo</template>` +
+         const template = `<ng-template #tpl>foo</ng-template>` +
              `<ng-container [ngTemplateOutlet]="tpl"></ng-container>`;
          fixture = createTestComponent(template);
          detectChangesAndExpectText('foo');
        }));
 
     it('should clear content if TemplateRef becomes `null`', async(() => {
-         const template = `<tpl-refs #refs="tplRefs"><template>foo</template></tpl-refs>` +
+         const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
              `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
@@ -63,7 +63,7 @@ export function main() {
 
     it('should swap content if TemplateRef changes', async(() => {
          const template =
-             `<tpl-refs #refs="tplRefs"><template>foo</template><template>bar</template></tpl-refs>` +
+             `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template><ng-template>bar</ng-template></tpl-refs>` +
              `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
 
@@ -78,14 +78,14 @@ export function main() {
        }));
 
     it('should display template if context is `null`', async(() => {
-         const template = `<template #tpl>foo</template>` +
+         const template = `<ng-template #tpl>foo</ng-template>` +
              `<ng-container *ngTemplateOutlet="tpl; context: null"></ng-container>`;
          fixture = createTestComponent(template);
          detectChangesAndExpectText('foo');
        }));
 
     it('should reflect initial context and changes', async(() => {
-         const template = `<template let-foo="foo" #tpl>{{foo}}</template>` +
+         const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
              `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
 
@@ -97,7 +97,7 @@ export function main() {
        }));
 
     it('should reflect user defined `$implicit` property in the context', async(() => {
-         const template = `<template let-ctx #tpl>{{ctx.foo}}</template>` +
+         const template = `<ng-template let-ctx #tpl>{{ctx.foo}}</ng-template>` +
              `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
          fixture.componentInstance.context = {$implicit: {foo: 'bra'}};
@@ -105,7 +105,8 @@ export function main() {
        }));
 
     it('should reflect context re-binding', async(() => {
-         const template = `<template let-shawshank="shawshank" #tpl>{{shawshank}}</template>` +
+         const template =
+             `<ng-template let-shawshank="shawshank" #tpl>{{shawshank}}</ng-template>` +
              `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
          fixture = createTestComponent(template);
 

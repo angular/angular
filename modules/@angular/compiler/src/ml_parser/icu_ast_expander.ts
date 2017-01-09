@@ -30,9 +30,9 @@ const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];
  *
  * ```
  * <ng-container [ngPlural]="messages.length">
- *   <template ngPluralCase="=0">zero</template>
- *   <template ngPluralCase="=1">one</template>
- *   <template ngPluralCase="other">more than one</template>
+ *   <ng-template ngPluralCase="=0">zero</ng-template>
+ *   <ng-template ngPluralCase="=1">one</ng-template>
+ *   <ng-template ngPluralCase="other">more than one</ng-template>
  * </ng-container>
  * ```
  */
@@ -81,6 +81,7 @@ class _Expander implements html.Visitor {
   }
 }
 
+// Plural forms are expanded to `NgPlural` and `NgPluralCase`s
 function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
@@ -93,7 +94,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
     errors.push(...expansionResult.errors);
 
     return new html.Element(
-        `template`, [new html.Attribute('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
   const switchAttr = new html.Attribute('[ngPlural]', ast.switchValue, ast.switchValueSourceSpan);
@@ -101,6 +102,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
 
+// ICU messages (excluding plural form) are expanded to `NgSwitch`  and `NgSwitychCase`s
 function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
   const children = ast.cases.map(c => {
     const expansionResult = expandNodes(c.expression);
@@ -109,12 +111,12 @@ function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Ele
     if (c.value === 'other') {
       // other is the default case when no values match
       return new html.Element(
-          `template`, [new html.Attribute('ngSwitchDefault', '', c.valueSourceSpan)],
+          `ng-template`, [new html.Attribute('ngSwitchDefault', '', c.valueSourceSpan)],
           expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
     }
 
     return new html.Element(
-        `template`, [new html.Attribute('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
   const switchAttr = new html.Attribute('[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan);

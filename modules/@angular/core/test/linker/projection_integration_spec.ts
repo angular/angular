@@ -132,7 +132,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
       TestBed.overrideComponent(MainComp, {
         set: {
           template: '<multiple-content-tags>' +
-              '<template manual class="left"><div>A1</div></template>' +
+              '<ng-template manual class="left"><div>A1</div></ng-template>' +
               '<div>B</div>' +
               '</multiple-content-tags>'
         }
@@ -175,7 +175,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
       TestBed.overrideComponent(MainComp, {
         set: {
           template: '<outer>' +
-              '<template manual class="left"><div>A</div></template>' +
+              '<ng-template manual class="left"><div>A</div></ng-template>' +
               '<div>B</div>' +
               '<div>C</div>' +
               '</outer>'
@@ -260,7 +260,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
       TestBed.overrideComponent(MainComp, {
         set: {
           template: '<empty>' +
-              '  <template manual><div>A</div></template>' +
+              ' <ng-template manual><div>A</div></ng-template>' +
               '</empty>' +
               'START(<div project></div>)END'
         }
@@ -282,7 +282,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
           {declarations: [Empty, ProjectDirective, ManualViewportDirective]});
       TestBed.overrideComponent(MainComp, {
         set: {
-          template: '<simple><template manual><div>A</div></template></simple>' +
+          template: '<simple><ng-template manual><div>A</div></ng-template></simple>' +
               'START(<div project></div>)END'
         }
       });
@@ -488,7 +488,7 @@ function createTests({viewEngine}: {viewEngine: boolean}) {
         set: {
           template: '<conditional-content>' +
               '<div class="left">A</div>' +
-              '<template manual class="left">B</template>' +
+              '<ng-template manual class="left">B</ng-template>' +
               '<div class="left">C</div>' +
               '<div>D</div>' +
               '</conditional-content>'
@@ -628,7 +628,7 @@ class ConditionalContentComponent {
 @Component({
   selector: 'conditional-text',
   template:
-      'MAIN(<template manual>FIRST(<template manual>SECOND(<ng-content></ng-content>)</template>)</template>)',
+      'MAIN(<ng-template manual>FIRST(<ng-template manual>SECOND(<ng-content></ng-content>)</ng-template>)</ng-template>)',
 })
 class ConditionalTextComponent {
 }

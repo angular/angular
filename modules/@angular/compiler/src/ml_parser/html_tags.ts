@@ -58,7 +58,8 @@ export class HtmlTagDefinition implements TagDefinition {
     }
 
     const lcParent = currentParent.toLowerCase();
-    return this.requiredParents[lcParent] != true && lcParent != 'template';
+    const isParentTemplate = lcParent === 'template' || currentParent === 'ng-template';
+    return !isParentTemplate && this.requiredParents[lcParent] != true;
   }
 
   isClosedByChild(name: string): boolean {
