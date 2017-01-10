@@ -162,6 +162,7 @@ export function main() {
           checkAction('{}');
           checkAction('{a: 1}[2]');
           checkAction('{}["a"]');
+          checkAction('{[a + 1]: 1}[2]');
         });
 
         it('should only allow identifier, string, or keyword as map key', () => {

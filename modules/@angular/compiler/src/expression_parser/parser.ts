@@ -600,15 +600,23 @@ export class _ParseAST {
   }
 
   parseLiteralMap(): LiteralMap {
-    const keys: string[] = [];
+    const keys: (string | AST)[] = [];
     const values: AST[] = [];
     const start = this.inputIndex;
     this.expectCharacter(chars.$LBRACE);
     if (!this.optionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
-        const key = this.expectIdentifierOrKeywordOrString();
-        keys.push(key);
+        if (this.optionalCharacter(chars.$LBRACKET)) {
+          this.rbracketsExpected++;
+          const key = this.parsePipe();
+          keys.push(key);
+          this.rbracketsExpected--;
+          this.expectCharacter(chars.$RBRACKET);
+        } else {
+          const key = this.expectIdentifierOrKeywordOrString();
+          keys.push(key);
+        }
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
       } while (this.optionalCharacter(chars.$COMMA));

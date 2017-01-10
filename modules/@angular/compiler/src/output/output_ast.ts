@@ -414,7 +414,8 @@ export class LiteralArrayExpr extends Expression {
 }
 
 export class LiteralMapEntry {
-  constructor(public key: string, public value: Expression, public quoted: boolean = false) {}
+  constructor(
+      public key: string|Expression, public value: Expression, public quoted: boolean = false) {}
 }
 
 export class LiteralMapExpr extends Expression {
@@ -679,9 +680,16 @@ export class ExpressionTransformer implements StatementVisitor, ExpressionVisito
   }
 
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
-    const entries = ast.entries.map(
-        (entry): LiteralMapEntry => new LiteralMapEntry(
-            entry.key, entry.value.visitExpression(this, context), entry.quoted));
+    const entries = ast.entries.map((entry) => {
+      let key = entry.key;
+      if (key instanceof Expression) {
+        return new LiteralMapEntry(
+            key.visitExpression(this, context), entry.value.visitExpression(this, context),
+            entry.quoted);
+      } else if (typeof key === 'string') {
+        return new LiteralMapEntry(key, entry.value.visitExpression(this, context), entry.quoted);
+      }
+    });
     return new LiteralMapExpr(entries);
   }
   visitAllExpressions(exprs: Expression[], context: any): Expression[] {
@@ -895,7 +903,8 @@ export function literalArr(values: Expression[], type: Type = null): LiteralArra
 }
 
 export function literalMap(
-    values: [string, Expression][], type: MapType = null, quoted: boolean = false): LiteralMapExpr {
+    values: [string | Expression, Expression][], type: MapType = null,
+    quoted: boolean = false): LiteralMapExpr {
   return new LiteralMapExpr(
       values.map(entry => new LiteralMapEntry(entry[0], entry[1], quoted)), type);
 }

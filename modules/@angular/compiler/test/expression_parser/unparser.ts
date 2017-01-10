@@ -124,7 +124,14 @@ class Unparser implements AstVisitor {
     for (let i = 0; i < ast.keys.length; i++) {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
-      this._expression += `${ast.keys[i]}: `;
+      let key = ast.keys[i];
+      if (key instanceof AST) {
+        this._expression += '[';
+        this._visit(key);
+        this._expression += ']: ';
+      } else {
+        this._expression += `${ast.keys[i]}: `;
+      }
       this._visit(ast.values[i]);
     }
 

@@ -299,9 +299,15 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return this.visitAllExpressions(ast.entries, ctx);
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
-    const result = {};
-    ast.entries.forEach(
-        (entry) => (result as any)[entry.key] = entry.value.visitExpression(this, ctx));
+    const result: any = {};
+    ast.entries.forEach((entry) => {
+      let key = entry.key;
+      if (key instanceof o.Expression) {
+        result[key.visitExpression(this, ctx)] = entry.value.visitExpression(this, ctx);
+      } else if (typeof key === 'string') {
+        result[key] = entry.value.visitExpression(this, ctx);
+      }
+    });
     return result;
   }
 
