@@ -332,21 +332,42 @@ describe('MdInputContainer', function () {
   });
 
   it('supports the disabled attribute as binding', async(() => {
-    let fixture = TestBed.createComponent(MdInputContainerWithDisabled);
+    const fixture = TestBed.createComponent(MdInputContainerWithDisabled);
     fixture.detectChanges();
 
-    let underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
-    let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+    const underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
-    expect(underlineEl.classList.contains('md-disabled')).toBe(false, 'should not be disabled');
+    expect(underlineEl.classList.contains('md-disabled'))
+        .toBe(false, `Expected underline not to start out disabled.`);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
+    expect(underlineEl.classList.contains('md-disabled'))
+        .toBe(true, `Expected underline to look disabled after property is set.`);
     expect(inputEl.disabled).toBe(true);
-    expect(underlineEl.classList.contains('md-disabled')).toBe(true, 'should be disabled');
   }));
+
+  it('should display disabled styles when using FormControl.disable()', () => {
+    const fixture = TestBed.createComponent(MdInputContainerWithFormControl);
+    fixture.detectChanges();
+
+    const underlineEl = fixture.debugElement.query(By.css('.md-input-underline')).nativeElement;
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(underlineEl.classList)
+        .not.toContain('md-disabled', `Expected underline not to start out disabled.`);
+    expect(inputEl.disabled).toBe(false);
+
+    fixture.componentInstance.formControl.disable();
+    fixture.detectChanges();
+
+    expect(underlineEl.classList)
+        .toContain('md-disabled', `Expected underline to look disabled after disable() is called.`);
+    expect(inputEl.disabled).toBe(true);
+  });
 
   it('supports the required attribute as binding', async(() => {
     let fixture = TestBed.createComponent(MdInputContainerWithRequired);

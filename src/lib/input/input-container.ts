@@ -101,8 +101,13 @@ export class MdInputDirective {
 
   /** Whether the element is disabled. */
   @Input()
-  get disabled() { return this._disabled; }
-  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
+  get disabled() {
+    return this._ngControl ? this._ngControl.disabled : this._disabled;
+  }
+
+  set disabled(value: any) {
+    this._disabled = coerceBooleanProperty(value);
+  }
 
   /** Unique id of the element. */
   @Input()

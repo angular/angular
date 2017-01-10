@@ -253,7 +253,15 @@
   <md-toolbar color="primary">Forms</md-toolbar>
   <md-card-content>
     <md-input-container><input mdInput placeholder="reactive" [formControl]="formControl"></md-input-container>
-    <md-input-container><input mdInput placeholder="template" [(ngModel)]="model" required></md-input-container>
+    <md-input-container>
+      <input mdInput placeholder="template" [(ngModel)]="model" required [disabled]="ctrlDisabled">
+    </md-input-container>
+    <button md-raised-button color="primary" (click)="formControl.enabled ? formControl.disable() : formControl.enable()">
+      DISABLE REACTIVE CTRL
+    </button>
+    <button md-raised-button color="primary" (click)="ctrlDisabled = !ctrlDisabled">
+      DISABLE TD CTRL
+    </button>
   </md-card-content>
 </md-card>
 

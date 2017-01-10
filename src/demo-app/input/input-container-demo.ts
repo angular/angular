@@ -14,6 +14,8 @@ export class InputContainerDemo {
   dividerColor: boolean;
   requiredField: boolean;
   floatingLabel: boolean;
+  ctrlDisabled = false;
+
   name: string;
   items: any[] = [
     { value: 10 },
