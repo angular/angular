@@ -11,10 +11,6 @@ import {isPrimitive, looseIdentical} from '../facade/lang';
 
 export {looseIdentical} from '../facade/lang';
 
-export const UNINITIALIZED = {
-  toString: () => 'CD_INIT_VALUE'
-};
-
 export function devModeEqual(a: any, b: any): boolean {
   if (isListLikeIterable(a) && isListLikeIterable(b)) {
     return areIterablesEqual(a, b, devModeEqual);
@@ -75,10 +71,10 @@ export class ValueUnwrapper {
  * @stable
  */
 export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any) {}
+  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return this.previousValue === UNINITIALIZED; }
+  isFirstChange(): boolean { return this.firstChange; }
 }

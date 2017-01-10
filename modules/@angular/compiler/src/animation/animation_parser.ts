@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from '../aot/static_symbol';
 import {CompileAnimationAnimateMetadata, CompileAnimationEntryMetadata, CompileAnimationGroupMetadata, CompileAnimationKeyframesSequenceMetadata, CompileAnimationMetadata, CompileAnimationSequenceMetadata, CompileAnimationStateDeclarationMetadata, CompileAnimationStateTransitionMetadata, CompileAnimationStyleMetadata, CompileAnimationWithStepsMetadata, CompileDirectiveMetadata, identifierName} from '../compile_metadata';
 import {StringMapWrapper} from '../facade/collection';
 import {isBlank, isPresent} from '../facade/lang';
@@ -14,7 +15,7 @@ import {ParseError} from '../parse_util';
 import {ANY_STATE, FILL_STYLE_FLAG} from '../private_import_core';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 
-import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
+import {AnimationAst, AnimationEntryAst, AnimationGroupAst, AnimationKeyframeAst, AnimationSequenceAst, AnimationStateDeclarationAst, AnimationStateTransitionAst, AnimationStateTransitionExpression, AnimationStateTransitionFnExpression, AnimationStepAst, AnimationStylesAst, AnimationWithStepsAst} from './animation_ast';
 import {StylesCollection} from './styles_collection';
 
 const _INITIAL_KEYFRAME = 0;
@@ -110,9 +111,12 @@ function _parseAnimationStateTransition(
     errors: AnimationParseError[]): AnimationStateTransitionAst {
   const styles = new StylesCollection();
   const transitionExprs: AnimationStateTransitionExpression[] = [];
-  const transitionStates = transitionStateMetadata.stateChangeExpr.split(/\s*,\s*/);
+  const stateChangeExpr = transitionStateMetadata.stateChangeExpr;
+  const transitionStates: Array<Function|StaticSymbol|string> = typeof stateChangeExpr == 'string' ?
+      (<string>stateChangeExpr).split(/\s*,\s*/) :
+      [<Function|StaticSymbol>stateChangeExpr];
   transitionStates.forEach(
-      expr => { transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)); });
+      expr => transitionExprs.push(..._parseAnimationTransitionExpr(expr, errors)));
   const entry = _normalizeAnimationEntry(transitionStateMetadata.steps);
   const animation = _normalizeStyleSteps(entry, stateStyles, schema, errors);
   const animationAst = _parseTransitionAnimation(animation, 0, styles, stateStyles, errors);
@@ -141,25 +145,32 @@ function _parseAnimationAlias(alias: string, errors: AnimationParseError[]): str
 }
 
 function _parseAnimationTransitionExpr(
-    eventStr: string, errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
+    transitionValue: string | Function | StaticSymbol,
+    errors: AnimationParseError[]): AnimationStateTransitionExpression[] {
   const expressions: AnimationStateTransitionExpression[] = [];
-  if (eventStr[0] == ':') {
-    eventStr = _parseAnimationAlias(eventStr, errors);
-  }
-  const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
-  if (!isPresent(match) || match.length < 4) {
-    errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
-    return expressions;
-  }
+  if (typeof transitionValue == 'string') {
+    let eventStr = <string>transitionValue;
+    if (eventStr[0] == ':') {
+      eventStr = _parseAnimationAlias(eventStr, errors);
+    }
+    const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
+    if (!isPresent(match) || match.length < 4) {
+      errors.push(new AnimationParseError(`the provided ${eventStr} is not of a supported format`));
+      return expressions;
+    }
 
-  const fromState = match[1];
-  const separator = match[2];
-  const toState = match[3];
-  expressions.push(new AnimationStateTransitionExpression(fromState, toState));
+    const fromState = match[1];
+    const separator = match[2];
+    const toState = match[3];
+    expressions.push(new AnimationStateTransitionExpression(fromState, toState));
 
-  const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
-  if (separator[0] == '<' && !isFullAnyStateExpr) {
-    expressions.push(new AnimationStateTransitionExpression(toState, fromState));
+    const isFullAnyStateExpr = fromState == ANY_STATE && toState == ANY_STATE;
+    if (separator[0] == '<' && !isFullAnyStateExpr) {
+      expressions.push(new AnimationStateTransitionExpression(toState, fromState));
+    }
+  } else {
+    expressions.push(
+        new AnimationStateTransitionFnExpression(<Function|StaticSymbol>transitionValue));
   }
   return expressions;
 }

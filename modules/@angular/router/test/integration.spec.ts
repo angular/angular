@@ -536,6 +536,17 @@ describe('Integration', () => {
        expect(cmp.recordedParams).toEqual([{name: '1'}]);
      })));
 
+  it('should throw an error when one of the commands is null/undefined',
+     fakeAsync(inject([Router], (router: Router) => {
+       createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
+
+       expect(() => router.navigate([
+         undefined, 'query'
+       ])).toThrowError(`The requested path contains undefined segment at index 0`);
+     })));
+
   it('should push params only when they change', fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
@@ -998,6 +1009,7 @@ describe('Integration', () => {
 
          const native = fixture.nativeElement.querySelector('a');
          expect(native.getAttribute('href')).toEqual('/team/33/simple');
+         expect(native.getAttribute('target')).toEqual('_self');
          native.click();
          advance(fixture);
 
@@ -2710,7 +2722,8 @@ function expectEvents(events: Event[], pairs: any[]) {
   }
 }
 
-@Component({selector: 'link-cmp', template: `<a routerLink="/team/33/simple">link</a>`})
+@Component(
+    {selector: 'link-cmp', template: `<a routerLink="/team/33/simple" [target]="'_self'">link</a>`})
 class StringLinkCmp {
 }
 

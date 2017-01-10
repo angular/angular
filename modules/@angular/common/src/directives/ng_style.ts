@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
+import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -33,7 +33,7 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChangeRecord, KeyValueDif
 @Directive({selector: '[ngStyle]'})
 export class NgStyle implements DoCheck {
   private _ngStyle: {[key: string]: string};
-  private _differ: KeyValueDiffer;
+  private _differ: KeyValueDiffer<string, string|number>;
 
   constructor(
       private _differs: KeyValueDiffers, private _ngEl: ElementRef, private _renderer: Renderer) {}
@@ -55,20 +55,16 @@ export class NgStyle implements DoCheck {
     }
   }
 
-  private _applyChanges(changes: any): void {
-    changes.forEachRemovedItem((record: KeyValueChangeRecord) => this._setStyle(record.key, null));
-
-    changes.forEachAddedItem(
-        (record: KeyValueChangeRecord) => this._setStyle(record.key, record.currentValue));
-
-    changes.forEachChangedItem(
-        (record: KeyValueChangeRecord) => this._setStyle(record.key, record.currentValue));
+  private _applyChanges(changes: KeyValueChanges<string, string|number>): void {
+    changes.forEachRemovedItem((record) => this._setStyle(record.key, null));
+    changes.forEachAddedItem((record) => this._setStyle(record.key, record.currentValue));
+    changes.forEachChangedItem((record) => this._setStyle(record.key, record.currentValue));
   }
 
-  private _setStyle(nameAndUnit: string, value: string): void {
+  private _setStyle(nameAndUnit: string, value: string|number): void {
     const [name, unit] = nameAndUnit.split('.');
-    value = value && unit ? `${value}${unit}` : value;
+    value = value != null && unit ? `${value}${unit}` : value;
 
-    this._renderer.setElementStyle(this._ngEl.nativeElement, name, value);
+    this._renderer.setElementStyle(this._ngEl.nativeElement, name, value as string);
   }
 }

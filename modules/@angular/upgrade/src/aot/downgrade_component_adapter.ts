@@ -62,8 +62,9 @@ export class DowngradeComponentAdapter {
           return (value: any /** TODO #9100 */) => {
             if (this.inputChanges !== null) {
               this.inputChangeCount++;
-              this.inputChanges[prop] =
-                  new Ng1Change(value, prevValue === INITIAL_VALUE ? value : prevValue);
+              this.inputChanges[prop] = new SimpleChange(
+                  value, prevValue === INITIAL_VALUE ? value : prevValue,
+                  prevValue === INITIAL_VALUE);
               prevValue = value;
             }
             this.component[prop] = value;
@@ -82,14 +83,14 @@ export class DowngradeComponentAdapter {
       }
       if (expr != null) {
         const watchFn =
-            ((prop: any /** TODO #9100 */) =>
-                 (value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
-                   if (this.inputChanges != null) {
-                     this.inputChangeCount++;
-                     this.inputChanges[prop] = new Ng1Change(prevValue, value);
-                   }
-                   this.component[prop] = value;
-                 })(input.prop);
+            ((prop: any /** TODO #9100 */) => (
+                 value: any /** TODO #9100 */, prevValue: any /** TODO #9100 */) => {
+              if (this.inputChanges != null) {
+                this.inputChangeCount++;
+                this.inputChanges[prop] = new SimpleChange(prevValue, value, prevValue === value);
+              }
+              this.component[prop] = value;
+            })(input.prop);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -171,10 +172,4 @@ export class DowngradeComponentAdapter {
       this.componentRef.destroy();
     });
   }
-}
-
-class Ng1Change implements SimpleChange {
-  constructor(public previousValue: any, public currentValue: any) {}
-
-  isFirstChange(): boolean { return this.previousValue === this.currentValue; }
 }

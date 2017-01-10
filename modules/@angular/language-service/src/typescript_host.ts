@@ -29,7 +29,17 @@ import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
 
-
+// In TypeScript 2.1 these flags moved
+// These helpers work for both 2.0 and 2.1.
+const isPrivate = (ts as any).ModifierFlags ?
+    ((node: ts.Node) =>
+         !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Private)) :
+    ((node: ts.Node) => !!(node.flags & (ts as any).NodeFlags.Private));
+const isReferenceType = (ts as any).ObjectFlags ?
+    ((type: ts.Type) =>
+         !!(type.flags & (ts as any).TypeFlags.Object &&
+            (type as any).objectFlags & (ts as any).ObjectFlags.Reference)) :
+    ((type: ts.Type) => !!(type.flags & (ts as any).TypeFlags.Reference));
 
 /**
  * Create a `LanguageServiceHost`
@@ -680,7 +690,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       const constructorDeclaration = constructor.declarations[0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
         const type = this.checker.getTypeAtLocation(parameter.type);
-        if (type.symbol.name == 'TemplateRef' && type.flags & ts.TypeFlags.Reference) {
+        if (type.symbol.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
           if (typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
@@ -805,7 +815,7 @@ class SymbolWrapper implements Symbol {
 
   get public(): boolean {
     // Symbols that are not explicitly made private are public.
-    return !(getDeclarationFlagsFromSymbol(this.symbol) & ts.NodeFlags.Private);
+    return !isSymbolPrivate(this.symbol);
   }
 
   get callable(): boolean { return typeCallable(this.tsType); }
@@ -1097,10 +1107,8 @@ function getCombinedNodeFlags(node: ts.Node): ts.NodeFlags {
   return flags;
 }
 
-function getDeclarationFlagsFromSymbol(s: ts.Symbol): ts.NodeFlags {
-  return s.valueDeclaration ?
-      getCombinedNodeFlags(s.valueDeclaration) :
-      s.flags & ts.SymbolFlags.Prototype ? ts.NodeFlags.Public | ts.NodeFlags.Static : 0;
+function isSymbolPrivate(s: ts.Symbol): boolean {
+  return s.valueDeclaration && isPrivate(s.valueDeclaration);
 }
 
 function getBuiltinTypeFromTs(kind: BuiltinType, context: TypeContext): ts.Type {

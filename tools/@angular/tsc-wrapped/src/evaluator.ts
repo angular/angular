@@ -12,6 +12,10 @@ import {CollectorOptions} from './collector';
 import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
+// In TypeScript 2.1 the spread element kind was renamed.
+const spreadElementSyntaxKind: ts.SyntaxKind =
+    (ts.SyntaxKind as any).SpreadElement || (ts.SyntaxKind as any).SpreadElementExpression;
+
 function isMethodCallOf(callExpression: ts.CallExpression, memberName: string): boolean {
   const expression = callExpression.expression;
   if (expression.kind === ts.SyntaxKind.PropertyAccessExpression) {
@@ -282,9 +286,8 @@ export class Evaluator {
         });
         if (error) return error;
         return arr;
-      case ts.SyntaxKind.SpreadElementExpression:
-        let spread = <ts.SpreadElementExpression>node;
-        let spreadExpression = this.evaluateNode(spread.expression);
+      case spreadElementSyntaxKind:
+        let spreadExpression = this.evaluateNode((node as any).expression);
         return recordEntry({__symbolic: 'spread', expression: spreadExpression}, node);
       case ts.SyntaxKind.CallExpression:
         const callExpression = <ts.CallExpression>node;

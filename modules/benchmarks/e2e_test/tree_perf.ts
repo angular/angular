@@ -132,13 +132,25 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
     });
+
+    it('should run ng2 changedetection', (done) => {
+      runTreeBenchmark({
+        id: `deepTree.ng2.changedetection`,
+        url: 'all/benchmarks/src/tree/ng2/index.html',
+        work: () => $('#detectChanges').click(),
+        setup: () => $('#createDom').click(),
+      }).then(done, done.fail);
+    });
+
   });
 
   function runTreeBenchmark(config: {
     id: string,
     url: string, ignoreBrowserSynchronization?: boolean,
     work: () => any,
-    prepare: () => any, extraParams?: {name: string, value: any}[]
+    prepare?: () => any,
+    extraParams?: {name: string, value: any}[],
+    setup?: () => any
   }) {
     let params = [{name: 'depth', value: 11}];
     if (config.extraParams) {
@@ -150,7 +162,8 @@ describe('tree benchmark perf', () => {
       ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
       params: params,
       work: config.work,
-      prepare: config.prepare
+      prepare: config.prepare,
+      setup: config.setup
     });
   }
 });

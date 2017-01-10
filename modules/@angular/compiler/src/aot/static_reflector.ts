@@ -84,7 +84,7 @@ export class StaticReflector implements ReflectorReader {
       const classMetadata = this.getTypeMetadata(type);
       if (classMetadata['extends']) {
         const parentType = this.simplify(type, classMetadata['extends']);
-        if (parentType instanceof StaticSymbol) {
+        if (parentType && (parentType instanceof StaticSymbol)) {
           const parentAnnotations = this.annotations(parentType);
           annotations.push(...parentAnnotations);
         }
@@ -322,6 +322,7 @@ export class StaticReflector implements ReflectorReader {
             if (value && (depth != 0 || value.__symbolic != 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
+              args = args.map(arg => simplifyInContext(context, arg, depth + 1));
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
@@ -511,15 +512,15 @@ export class StaticReflector implements ReflectorReader {
                     return context;
                   }
                   const argExpressions: any[] = expression['arguments'] || [];
-                  const args =
-                      argExpressions.map(arg => simplifyInContext(context, arg, depth + 1));
                   let converter = self.conversionMap.get(staticSymbol);
                   if (converter) {
+                    const args =
+                        argExpressions.map(arg => simplifyInContext(context, arg, depth + 1));
                     return converter(context, args);
                   } else {
                     // Determine if the function is one we can simplify.
                     const targetFunction = resolveReferenceValue(staticSymbol);
-                    return simplifyCall(staticSymbol, targetFunction, args);
+                    return simplifyCall(staticSymbol, targetFunction, argExpressions);
                   }
                 }
                 break;

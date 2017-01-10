@@ -12,15 +12,104 @@ import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 /**
- * A strategy for tracking changes over time to an iterable. Used for {@link NgFor} to
+ * A strategy for tracking changes over time to an iterable. Used by {@link NgFor} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  *
  * @stable
  */
-export interface IterableDiffer {
-  diff(object: any): any;
-  onDestroy(): any /** TODO #9100 */;
+export interface IterableDiffer<V> {
+  /**
+   * Compute a difference between the previous state and the new `object` state.
+   *
+   * @param object containing the new value.
+   * @returns an object describing the difference. The return value is only valid until the next
+   * `diff()` invocation.
+   */
+  diff(object: V[]|Set<V>|any /* |Iterable<V> */): IterableChanges<V>;
+  // TODO(misko): We can't use Iterable as it would break the .d.ts file for ES5 users.
+  // Iterable is not apart of @types/es6-collections since it requires Symbol.
 }
+
+/**
+ * An object describing the changes in the `Iterable` collection since last time
+ * `IterableDiffer#diff()` was invoked.
+ *
+ * @stable
+ */
+export interface IterableChanges<V> {
+  /**
+   * Iterate over all changes. `IterableChangeRecord` will contain information about changes
+   * to each item.
+   */
+  forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
+
+  /**
+   * Iterate over a set of operations which when applied to the original `Iterable` will produce the
+   * new `Iterable`.
+   *
+   * NOTE: These are not necessarily the actual operations which were applied to the original
+   * `Iterable`, rather these are a set of computed operations which may not be the same as the
+   * ones applied.
+   *
+   * @param record A change which needs to be applied
+   * @param previousIndex The `IterableChangeRecord#previousIndex` of the `record` refers to the
+   *        original `Iterable` location, where as `previousIndex` refers to the transient location
+   *        of the item, after applying the operations up to this point.
+   * @param currentIndex The `IterableChangeRecord#currentIndex` of the `record` refers to the
+   *        original `Iterable` location, where as `currentIndex` refers to the transient location
+   *        of the item, after applying the operations up to this point.
+   */
+  forEachOperation(
+      fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void):
+      void;
+
+  /**
+   * Iterate over changes in the order of original `Iterable` showing where the original items
+   * have moved.
+   */
+  forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
+
+  /** Iterate over all added items. */
+  forEachAddedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+
+  /** Iterate over all moved items. */
+  forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+
+  /** Iterate over all removed items. */
+  forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
+
+  /** Iterate over all items which had their identity (as computed by the `trackByFn`) changed. */
+  forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
+}
+
+/**
+ * Record representing the item change information.
+ *
+ * @stable
+ */
+export interface IterableChangeRecord<V> {
+  /** Current index of the item in `Iterable` or null if removed. */
+  // TODO(TS2.1): make readonly once we move to TS v2.1
+  /* readonly */ currentIndex: number;
+
+  /** Previous index of the item in `Iterable` or null if added. */
+  // TODO(TS2.1): make readonly once we move to TS v2.1
+  /* readonly */ previousIndex: number;
+
+  /** The item. */
+  // TODO(TS2.1): make readonly once we move to TS v2.1
+  /* readonly */ item: V;
+
+  /** Track by identity as computed by the `trackByFn`. */
+  // TODO(TS2.1): make readonly once we move to TS v2.1
+  /* readonly */ trackById: any;
+}
+
+/**
+ * @deprecated v4.0.0 - Use IterableChangeRecord instead.
+ */
+export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
+
 
 /**
  * An optional function passed into {@link NgFor} that defines how to track
@@ -38,7 +127,7 @@ export interface TrackByFn { (index: number, item: any): any; }
  */
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
-  create(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer;
+  create<V>(cdRef: ChangeDetectorRef, trackByFn?: TrackByFn): IterableDiffer<V>;
 }
 
 /**
@@ -46,7 +135,11 @@ export interface IterableDifferFactory {
  * @stable
  */
 export class IterableDiffers {
-  constructor(public factories: IterableDifferFactory[]) {}
+  /**
+   * @deprecated v4.0.0 - Should be private
+   */
+  factories: IterableDifferFactory[];
+  constructor(factories: IterableDifferFactory[]) { this.factories = factories; }
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (isPresent(parent)) {
@@ -64,8 +157,8 @@ export class IterableDiffers {
    * {@link IterableDiffers} instance.
    *
    * The following example shows how to extend an existing list of factories,
-         * which will only be applied to the injector for this component and its children.
-         * This step is all that's required to make a new {@link IterableDiffer} available.
+   * which will only be applied to the injector for this component and its children.
+   * This step is all that's required to make a new {@link IterableDiffer} available.
    *
    * ### Example
    *
