@@ -9,7 +9,7 @@
 import {CollectionChangeRecord, Directive, DoCheck, ElementRef, Input, IterableDiffer, IterableDiffers, KeyValueChangeRecord, KeyValueDiffer, KeyValueDiffers, Renderer} from '@angular/core';
 
 import {isListLikeIterable} from '../facade/collection';
-import {isPresent, stringify} from '../facade/lang';
+import {stringify} from '../facade/lang';
 
 /**
  * @ngModule CommonModule
@@ -134,7 +134,7 @@ export class NgClass implements DoCheck {
         (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, !isCleanup));
       } else {
         Object.keys(rawClassVal).forEach(klass => {
-          if (isPresent(rawClassVal[klass])) this._toggleClass(klass, !isCleanup);
+          if (rawClassVal[klass] != null) this._toggleClass(klass, !isCleanup);
         });
       }
     }
