@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MissingTranslationStrategy} from '@angular/core';
+
+import {warn} from '../facade/lang';
 import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
 
+import {serializeNodes} from './digest';
 import * as i18n from './i18n_ast';
-import {I18nError} from './parse_util';
+import {I18nError, I18nWarning} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
 
 /**
@@ -22,21 +26,30 @@ export class TranslationBundle {
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
       public digest: (m: i18n.Message) => string,
-      public mapperFactory?: (m: i18n.Message) => PlaceholderMapper) {
-    this._i18nToHtml = new I18nToHtmlVisitor(_i18nNodesByMsgId, digest, mapperFactory);
+      public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
+      missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning) {
+    this._i18nToHtml =
+        new I18nToHtmlVisitor(_i18nNodesByMsgId, digest, mapperFactory, missingTranslationStrategy);
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
-  static load(content: string, url: string, serializer: Serializer): TranslationBundle {
+  static load(
+      content: string, url: string, serializer: Serializer,
+      missingTranslationStrategy: MissingTranslationStrategy): TranslationBundle {
     const i18nNodesByMsgId = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
     const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m);
-    return new TranslationBundle(i18nNodesByMsgId, digestFn, mapperFactory);
+    return new TranslationBundle(
+        i18nNodesByMsgId, digestFn, mapperFactory, missingTranslationStrategy);
   }
 
   // Returns the translation as HTML nodes from the given source message.
   get(srcMsg: i18n.Message): html.Node[] {
     const html = this._i18nToHtml.convert(srcMsg);
+
+    if (html.warnings.length) {
+      warn(html.warnings.join('\n'));
+    }
 
     if (html.errors.length) {
       throw new Error(html.errors.join('\n'));
@@ -53,15 +66,19 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
   private _errors: I18nError[] = [];
   private _mapper: (name: string) => string;
+  private _warnings: I18nWarning[] = [];
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
       private _digest: (m: i18n.Message) => string,
-      private _mapperFactory: (m: i18n.Message) => PlaceholderMapper) {}
+      private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
+      private _missingTranslationStrategy: MissingTranslationStrategy) {}
 
-  convert(srcMsg: i18n.Message): {nodes: html.Node[], errors: I18nError[]} {
+  convert(srcMsg: i18n.Message):
+      {nodes: html.Node[], errors: I18nError[], warnings: I18nWarning[]} {
     this._contextStack.length = 0;
     this._errors.length = 0;
+
     // i18n to text
     const text = this._convertToText(srcMsg);
 
@@ -72,6 +89,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     return {
       nodes: html.rootNodes,
       errors: [...this._errors, ...html.errors],
+      warnings: this._warnings
     };
   }
 
@@ -134,11 +152,22 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       return text;
     }
 
-    this._addError(srcMsg.nodes[0], `Missing translation for message ${digest}`);
-    return '';
+    // No valid translation found
+    if (this._missingTranslationStrategy === MissingTranslationStrategy.Error) {
+      this._addError(srcMsg.nodes[0], `Missing translation for message ${digest}`);
+    } else if (this._missingTranslationStrategy === MissingTranslationStrategy.Warning) {
+      this._addWarning(srcMsg.nodes[0], `Missing translation for message ${digest}`);
+    }
+
+    // In an case, Warning, Error or Ignore, return the srcMsg without translation
+    return serializeNodes(srcMsg.nodes).join('');
   }
 
   private _addError(el: i18n.Node, msg: string) {
     this._errors.push(new I18nError(el.sourceSpan, msg));
+  }
+
+  private _addWarning(el: i18n.Node, msg: string) {
+    this._warnings.push(new I18nWarning(el.sourceSpan, msg));
   }
 }
