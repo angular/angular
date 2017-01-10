@@ -8,6 +8,9 @@
 [md-button], [md-icon-button] {
   @extend %md-button-base;
 
+  // Only flat button and icon buttons should inherit the color
+  color: currentColor;
+
   // Only flat buttons and icon buttons (not raised or fabs) have a hover style.
   &:hover {
     // Use the same visual treatment for hover as for focus.
