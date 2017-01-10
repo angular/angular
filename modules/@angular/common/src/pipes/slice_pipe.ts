@@ -7,7 +7,6 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {isBlank} from '../facade/lang';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -58,7 +57,7 @@ import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({name: 'slice', pure: false})
 export class SlicePipe implements PipeTransform {
   transform(value: any, start: number, end?: number): any {
-    if (isBlank(value)) return value;
+    if (value == null) return value;
 
     if (!this.supports(value)) {
       throw new InvalidPipeArgumentError(SlicePipe, value);

@@ -8,7 +8,7 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
 
-import {NumberWrapper, isBlank, isPresent} from '../facade/lang';
+import {NumberWrapper} from '../facade/lang';
 
 import {NumberFormatStyle, NumberFormatter} from './intl';
 import {InvalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -18,7 +18,7 @@ const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 function formatNumber(
     pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
     digits: string, currency: string = null, currencyAsSymbol: boolean = false): string {
-  if (isBlank(value)) return null;
+  if (value == null) return null;
 
   // Convert strings to numbers
   value = typeof value === 'string' && NumberWrapper.isNumeric(value) ? +value : value;
@@ -41,13 +41,13 @@ function formatNumber(
     if (parts === null) {
       throw new Error(`${digits} is not a valid digit info for number pipes`);
     }
-    if (isPresent(parts[1])) {  // min integer digits
+    if (parts[1] != null) {  // min integer digits
       minInt = NumberWrapper.parseIntAutoRadix(parts[1]);
     }
-    if (isPresent(parts[3])) {  // min fraction digits
+    if (parts[3] != null) {  // min fraction digits
       minFraction = NumberWrapper.parseIntAutoRadix(parts[3]);
     }
-    if (isPresent(parts[5])) {  // max fraction digits
+    if (parts[5] != null) {  // max fraction digits
       maxFraction = NumberWrapper.parseIntAutoRadix(parts[5]);
     }
   }
