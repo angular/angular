@@ -29,7 +29,7 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
   }
 
   function detectChanges() {
-    for (var i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       appRef.tick();
     }
     detectChangesRuns += 10;
