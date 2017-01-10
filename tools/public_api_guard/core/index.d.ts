@@ -618,6 +618,16 @@ export declare class KeyValueDiffers {
 export declare const LOCALE_ID: InjectionToken<string>;
 
 /** @experimental */
+export declare const MISSING_TRANSLATION_STRATEGY: OpaqueToken;
+
+/** @experimental */
+export declare enum MissingTranslationStrategy {
+    Error = 0,
+    Warning = 1,
+    Ignore = 2,
+}
+
+/** @experimental */
 export declare class ModuleWithComponentFactories<T> {
     componentFactories: ComponentFactory<any>[];
     ngModuleFactory: NgModuleFactory<T>;

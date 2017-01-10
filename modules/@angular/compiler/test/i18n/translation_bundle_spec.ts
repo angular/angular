@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MissingTranslationStrategy} from '@angular/core';
+
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
@@ -20,7 +22,7 @@ export function main(): void {
 
     it('should translate a plain message', () => {
       const msgMap = {foo: [new i18n.Text('bar', null)]};
-      const tb = new TranslationBundle(msgMap, (_) => 'foo');
+      const tb = new TranslationBundle(msgMap, (_) => 'foo', null);
       const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar']);
     });
@@ -35,7 +37,7 @@ export function main(): void {
       const phMap = {
         ph1: '*phContent*',
       };
-      const tb = new TranslationBundle(msgMap, (_) => 'foo');
+      const tb = new TranslationBundle(msgMap, (_) => 'foo', null);
       const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar*phContent*']);
     });
@@ -55,7 +57,7 @@ export function main(): void {
       const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd', 'i');
       let count = 0;
       const digest = (_: any) => count++ ? 'ref' : 'foo';
-      const tb = new TranslationBundle(msgMap, digest);
+      const tb = new TranslationBundle(msgMap, digest, null);
 
       expect(serializeNodes(tb.get(msg))).toEqual(['--*refMsg*++']);
     });
@@ -68,15 +70,36 @@ export function main(): void {
             new i18n.Placeholder('', 'ph1', span),
           ]
         };
-        const tb = new TranslationBundle(msgMap, (_) => 'foo');
+        const tb = new TranslationBundle(msgMap, (_) => 'foo', null);
         const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Unknown placeholder/);
       });
 
       it('should report missing translation', () => {
-        const tb = new TranslationBundle({}, (_) => 'foo');
+        const tb = new TranslationBundle(
+            {}, (_) => 'foo', null, MissingTranslationStrategy.Error);
         const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Missing translation for message foo/);
+      });
+
+      it('should report missing translation with MissingTranslationStrategy.Warning', () => {
+        const tb = new TranslationBundle(
+            {}, (_) => 'foo', null, MissingTranslationStrategy.Warning);
+        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
+        const warn = console.warn;
+        const consoleWarnSpy = spyOn(console, 'warn').and.callThrough();
+
+        expect(() => tb.get(msg)).not.toThrowError();
+        expect(consoleWarnSpy.calls.mostRecent().args[0])
+            .toMatch(/Missing translation for message foo/);
+        console.warn = warn;
+      });
+
+      it('should not report missing translation with MissingTranslationStrategy.Ignore', () => {
+        const tb = new TranslationBundle(
+            {}, (_) => 'foo', null, MissingTranslationStrategy.Ignore);
+        const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
+        expect(() => tb.get(msg)).not.toThrowError();
       });
 
       it('should report missing referenced message', () => {
@@ -87,7 +110,8 @@ export function main(): void {
         const msg = new i18n.Message([srcNode], {}, {ph1: refMsg}, 'm', 'd', 'i');
         let count = 0;
         const digest = (_: any) => count++ ? 'ref' : 'foo';
-        const tb = new TranslationBundle(msgMap, digest);
+        const tb =
+            new TranslationBundle(msgMap, digest, null, MissingTranslationStrategy.Error);
         expect(() => tb.get(msg)).toThrowError(/Missing translation for message ref/);
       });
 
@@ -101,7 +125,7 @@ export function main(): void {
         const phMap = {
           ph1: '</b>',
         };
-        const tb = new TranslationBundle(msgMap, (_) => 'foo');
+        const tb = new TranslationBundle(msgMap, (_) => 'foo', null);
         const msg = new i18n.Message([srcNode], phMap, {}, 'm', 'd', 'i');
         expect(() => tb.get(msg)).toThrowError(/Unexpected closing tag "b"/);
       });
