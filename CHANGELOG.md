@@ -1,3 +1,55 @@
+<a name="4.0.0-beta.3"></a>
+# [4.0.0-beta.3](https://github.com/angular/angular/compare/4.0.0-beta.2...4.0.0-beta.3) (2017-01-11)
+
+
+### Bug Fixes
+
+* **compiler:** avoid evaluating arguments to unknown decorators ([d061adc](https://github.com/angular/angular/commit/d061adc)), closes [#13605](https://github.com/angular/angular/issues/13605)
+* **compiler:** fix template binding parsing (`*directive="-..."`) ([e5c6bb4](https://github.com/angular/angular/commit/e5c6bb4)), closes [#13800](https://github.com/angular/angular/issues/13800)
+* **compiler-cli:** add support for more than 2 levels of nested lazy routes ([5d9cbd7](https://github.com/angular/angular/commit/5d9cbd7)), closes [angular/angular-cli#3663](https://github.com/angular/angular-cli/issues/3663)
+* **compiler-cli:** avoid handling functions in loadChildren as lazy load routes paths ([aeed737](https://github.com/angular/angular/commit/aeed737)), closes [angular/angular-cli#3204](https://github.com/angular/angular-cli/issues/3204)
+* **core:** Add type information to  differs ([8c7e93b](https://github.com/angular/angular/commit/8c7e93b)), closes [#13382](https://github.com/angular/angular/issues/13382)
+* **i18n:** translate attributes inside elements marked for translation ([424e6c4](https://github.com/angular/angular/commit/424e6c4)), closes [#13796](https://github.com/angular/angular/issues/13796) [#13814](https://github.com/angular/angular/issues/13814)
+* **router:** RouterLink mirrors input `target` as attribute ([d9a22da](https://github.com/angular/angular/commit/d9a22da)), closes [#13837](https://github.com/angular/angular/issues/13837)
+* **router:** throw an error when navigate to null/undefined path ([46cb04d](https://github.com/angular/angular/commit/46cb04d)), closes [#10560](https://github.com/angular/angular/issues/10560) [#13384](https://github.com/angular/angular/issues/13384)
+* **router:** fix checking for object intersection ([6d29fae](https://github.com/angular/angular/commit/6d29fae))
+
+
+### Features
+
+* **animations:** expose the `element` value within transition events ([4bae4b3](https://github.com/angular/angular/commit/4bae4b3))
+* **animations:** expose the `triggerName` within the transition event ([3f67ab0](https://github.com/angular/angular/commit/3f67ab0)), closes [#13600](https://github.com/angular/angular/issues/13600)
+* **animations:** support function types in transitions ([9211a22](https://github.com/angular/angular/commit/9211a22)), closes [#13538](https://github.com/angular/angular/issues/13538) [#13537](https://github.com/angular/angular/issues/13537)
+* **language-service:** support TS2.2 plugin model ([99aa49a](https://github.com/angular/angular/commit/99aa49a))
+* **NgComponentOutlet:** add NgComponentOutlet directive ([8578682](https://github.com/angular/angular/commit/8578682)), closes [#11168](https://github.com/angular/angular/issues/11168)
+* **NgTemplateOutlet:** Make NgTemplateOutlet compatible with * syntax ([c0178de](https://github.com/angular/angular/commit/c0178de))
+* **router:** call resolver when upstream params change ([#12942](https://github.com/angular/angular/issues/12942)) ([d4d3782](https://github.com/angular/angular/commit/d4d3782))
+
+
+### BREAKING CHANGES
+
+* core: - `IterableChangeRecord` is now an interface and parameterized on `<V>`.
+  This should not be an issue unless your code does
+  `new IterableChangeRecord` which it should not have a reason to do.
+- `KeyValueChangeRecord` is now an interface and parameterized on `<V>`.
+  This should not be an issue unless your code does
+  `new IterableChangeRecord` which it should not have a reason to do.
+
+### DEPRECATION
+
+* Deprecate `ngOutletContext`. Use `ngTemplateOutletContext` instead.
+* `CollectionChangeRecord` is renamed to `IterableChangeRecord`.
+  `CollectionChangeRecord` is aliased to `IterableChangeRecord` and is
+  marked as `@deprecated`. It will be removed in `v6.x.x`.
+* Deprecate `DefaultIterableDiffer` as it is private class which
+  was erroneously exposed.
+* Deprecate `KeyValueDiffers#factories` as it is private field which
+  was erroneously exposed.
+* Deprecate `IterableDiffers#factories` as it is private field which
+  was erroneously exposed.
+
+
+
 <a name="2.4.3"></a>
 ## [2.4.3](https://github.com/angular/angular/compare/2.4.2...2.4.3) (2017-01-11)
 
