@@ -78,6 +78,9 @@ interface Options extends ts.CompilerOptions {
 
   // Whether to embed debug information in the compiled templates
   debug?: boolean;
+
+  // Whether to enable support for <template> and the template attribute (true by default)
+  enableLegacyTemplate?: boolean;
 }
 
 export default Options;
