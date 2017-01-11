@@ -61,7 +61,8 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
     defaultEncapsulation: ViewEncapsulation.Emulated,
     logBindingUpdate: false,
     useJit: false,
-    useViewEngine: options.useViewEngine
+    useViewEngine: options.useViewEngine,
+    enableLegacyTemplate: options.enableLegacyTemplate !== false,
   });
   const normalizer = new DirectiveNormalizer(
       {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);

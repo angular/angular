@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CompilerConfig} from '@angular/compiler';
 import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
@@ -44,8 +45,13 @@ export function main() {
   function commonBeforeEach() {
     beforeEach(() => {
       console = new ArrayConsole();
-      TestBed.configureCompiler({providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler({
+        providers: [
+          {provide: Console, useValue: console},
+        ],
+      });
     });
+
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
       const someTemplate = new CompileTemplateMetadata({animations: [someAnimation]});
@@ -2021,6 +2027,47 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
           [BoundTextAst, 'escaped {{ "{" }}  }'],
         ]);
       });
+    });
+  });
+
+  describe('Template Parser - opt-out `<template>` support', () => {
+    beforeEach(() => {
+      TestBed.configureCompiler({
+        providers: [{
+          provide: CompilerConfig,
+          useValue: new CompilerConfig({enableLegacyTemplate: false}),
+        }],
+      });
+    });
+
+    commonBeforeEach();
+
+    it('should support * directives', () => {
+      expect(humanizeTplAst(parse('<div *ngIf>', [ngIf]))).toEqual([
+        [EmbeddedTemplateAst],
+        [DirectiveAst, ngIf],
+        [BoundDirectivePropertyAst, 'ngIf', 'null'],
+        [ElementAst, 'div'],
+      ]);
+    });
+
+    it('should support <ng-template>', () => {
+      expect(humanizeTplAst(parse('<ng-template>', []))).toEqual([
+        [EmbeddedTemplateAst],
+      ]);
+    });
+
+    it('should treat <template> as a regular tag', () => {
+      expect(humanizeTplAst(parse('<template>', []))).toEqual([
+        [ElementAst, 'template'],
+      ]);
+    });
+
+    it('should not special case the template attribute', () => {
+      expect(humanizeTplAst(parse('<p template="ngFor">', []))).toEqual([
+        [ElementAst, 'p'],
+        [AttrAst, 'template', 'ngFor'],
+      ]);
     });
   });
 }
