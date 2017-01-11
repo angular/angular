@@ -12,6 +12,7 @@ import {ListE2E} from '../list/list-e2e';
 import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from '../progress-spinner/progress-spinner-e2e';
 import {SlideToggleE2E} from '../slide-toggle/slide-toggle-e2e';
+import {FullscreenE2E} from '../fullscreen/fullscreen-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -26,5 +27,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'list', component: ListE2E},
   {path: 'progress-bar', component: ProgressBarE2E},
   {path: 'progress-spinner', component: ProgressSpinnerE2E},
-  {path: 'slide-toggle', component: SlideToggleE2E}
+  {path: 'slide-toggle', component: SlideToggleE2E},
+  {path: 'fullscreen', component: FullscreenE2E}
 ];

@@ -39,3 +39,9 @@ body {
     font-size: 20px;
   }
 }
+
+// stretch to screen size in fullscreen mode
+.demo-content {
+  width: 100%;
+  height: 100%;
+}

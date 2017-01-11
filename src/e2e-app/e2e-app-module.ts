@@ -13,10 +13,10 @@ import {GridListE2E} from './grid-list/grid-list-e2e';
 import {ListE2E} from './list/list-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from './progress-spinner/progress-spinner-e2e';
-import {MaterialModule} from '@angular/material';
+import {FullscreenE2E, TestDialog as TestDialogFullScreen} from './fullscreen/fullscreen-e2e';
+import {MaterialModule, OverlayContainer, FullscreenOverlayContainer} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
-
 
 @NgModule({
   imports: [
@@ -39,12 +39,15 @@ import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
     ListE2E,
     ProgressBarE2E,
     ProgressSpinnerE2E,
-    SlideToggleE2E
+    SlideToggleE2E,
+    FullscreenE2E,
+    TestDialogFullScreen
   ],
   bootstrap: [E2EApp],
   providers: [
-    {provide: AnimationDriver, useValue: AnimationDriver.NOOP}
+    {provide: AnimationDriver, useValue: AnimationDriver.NOOP},
+    {provide: OverlayContainer, useClass: FullscreenOverlayContainer}
   ],
-  entryComponents: [TestDialog]
+  entryComponents: [TestDialog, TestDialogFullScreen]
 })
 export class E2eAppModule { }

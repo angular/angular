@@ -25,6 +25,9 @@
       </button>
       <div class="demo-toolbar">
         <h1>Angular Material 2 Demos</h1>
+        <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
+          Fullscreen
+        </button>
         <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
           {{root.dir.toUpperCase()}}
         </button>
