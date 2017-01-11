@@ -103,6 +103,7 @@ export class NgPluralCase {
   constructor(
       @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
       viewContainer: ViewContainerRef, @Host() ngPlural: NgPlural) {
-    ngPlural.addCase(value, new SwitchView(viewContainer, template));
+    const isANumber: boolean = !isNaN(Number(value));
+    ngPlural.addCase(isANumber ? `=${value}` : value, new SwitchView(viewContainer, template));
   }
 }
