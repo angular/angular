@@ -1,4 +1,4 @@
-import {Injectable, ElementRef} from '@angular/core';
+import {Injectable, ElementRef, Optional, SkipSelf} from '@angular/core';
 import {Scrollable} from './scrollable';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
@@ -88,3 +88,13 @@ export class ScrollDispatcher {
   }
 }
 
+export function SCROLL_DISPATCHER_PROVIDER_FACTORY(parentDispatcher: ScrollDispatcher) {
+  return parentDispatcher || new ScrollDispatcher();
+};
+
+export const SCROLL_DISPATCHER_PROVIDER = {
+  // If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
+  provide: ScrollDispatcher,
+  deps: [[new Optional(), new SkipSelf(), ScrollDispatcher]],
+  useFactory: SCROLL_DISPATCHER_PROVIDER_FACTORY
+};

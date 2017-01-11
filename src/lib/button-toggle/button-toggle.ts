@@ -24,6 +24,7 @@ import {
   UniqueSelectionDispatcher,
   coerceBooleanProperty,
   DefaultStyleCompatibilityModeModule,
+  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
 } from '../core';
 
 /** Acceptable types for a button toggle. */
@@ -471,12 +472,14 @@ export class MdButtonToggle implements OnInit {
     DefaultStyleCompatibilityModeModule,
   ],
   declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
+  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
 })
 export class MdButtonToggleModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdButtonToggleModule,
-      providers: [UniqueSelectionDispatcher]
+      providers: []
     };
   }
 }

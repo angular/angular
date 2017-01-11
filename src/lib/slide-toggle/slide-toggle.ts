@@ -337,12 +337,14 @@ class SlideToggleRenderer {
   imports: [FormsModule, DefaultStyleCompatibilityModeModule],
   exports: [MdSlideToggle, DefaultStyleCompatibilityModeModule],
   declarations: [MdSlideToggle],
+  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}],
 })
 export class MdSlideToggleModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSlideToggleModule,
-      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
+      providers: []
     };
   }
 }

@@ -30,7 +30,6 @@ import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
-import {OVERLAY_PROVIDERS} from '../core/overlay/overlay';
 import 'rxjs/add/operator/first';
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
@@ -384,10 +383,11 @@ export class TooltipComponent {
   entryComponents: [TooltipComponent],
 })
 export class MdTooltipModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdTooltipModule,
-      providers: [OVERLAY_PROVIDERS]
+      providers: []
     };
   }
 }

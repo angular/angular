@@ -1,4 +1,4 @@
-import {Injector, ComponentRef, Injectable} from '@angular/core';
+import {Injector, ComponentRef, Injectable, Optional, SkipSelf} from '@angular/core';
 
 import {Overlay, OverlayRef, ComponentType, OverlayState, ComponentPortal} from '../core';
 import {extendObject} from '../core/util/object-extend';
@@ -19,10 +19,17 @@ import {MdDialogContainer} from './dialog-container';
  */
 @Injectable()
 export class MdDialog {
-  /** Keeps track of the currently-open dialogs. */
-  private _openDialogs: MdDialogRef<any>[] = [];
+  private _openDialogsAtThisLevel: MdDialogRef<any>[] = [];
 
-  constructor(private _overlay: Overlay, private _injector: Injector) { }
+  /** Keeps track of the currently-open dialogs. */
+  get _openDialogs(): MdDialogRef<any>[] {
+    return this._parentDialog ? this._parentDialog._openDialogs : this._openDialogsAtThisLevel;
+  }
+
+  constructor(
+      private _overlay: Overlay,
+      private _injector: Injector,
+      @Optional() @SkipSelf() private _parentDialog: MdDialog) { }
 
   /**
    * Opens a modal dialog containing the given component.

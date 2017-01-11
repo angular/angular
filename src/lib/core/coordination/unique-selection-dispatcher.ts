@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Optional, SkipSelf} from '@angular/core';
 
 
 // Users of the Dispatcher never need to see this type, but TypeScript requires it to be exported.
@@ -33,3 +33,15 @@ export class UniqueSelectionDispatcher {
     this._listeners.push(listener);
   }
 }
+
+export function UNIQUE_SELECTION_DISPATCHER_PROVIDER_FACTORY(
+    parentDispatcher: UniqueSelectionDispatcher) {
+  return parentDispatcher || new UniqueSelectionDispatcher();
+}
+
+export const UNIQUE_SELECTION_DISPATCHER_PROVIDER = {
+  // If there is already a dispatcher available, use that. Otherwise, provide a new one.
+  provide: UniqueSelectionDispatcher,
+  deps: [[new Optional(), new SkipSelf(), UniqueSelectionDispatcher]],
+  useFactory: UNIQUE_SELECTION_DISPATCHER_PROVIDER_FACTORY
+};

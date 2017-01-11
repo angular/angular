@@ -71,6 +71,7 @@ export class MatPrefixEnforcer {
   }]
 })
 export class DefaultStyleCompatibilityModeModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: DefaultStyleCompatibilityModeModule,

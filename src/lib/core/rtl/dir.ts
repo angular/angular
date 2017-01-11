@@ -52,6 +52,7 @@ export class Dir {
   declarations: [Dir]
 })
 export class RtlModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: RtlModule,

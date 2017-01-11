@@ -130,6 +130,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   declarations: [TemplatePortalDirective, PortalHostDirective],
 })
 export class PortalModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: PortalModule,

@@ -3,6 +3,8 @@ import {
   ModuleWithProviders,
   Injectable,
   ComponentRef,
+  Optional,
+  SkipSelf,
 } from '@angular/core';
 import {
   ComponentType,
@@ -12,9 +14,9 @@ import {
   OverlayRef,
   OverlayState,
   PortalModule,
-  OVERLAY_PROVIDERS,
   LiveAnnouncer,
   DefaultStyleCompatibilityModeModule,
+  LIVE_ANNOUNCER_PROVIDER,
 } from '../core';
 import {CommonModule} from '@angular/common';
 import {MdSnackBarConfig} from './snack-bar-config';
@@ -29,10 +31,31 @@ import {extendObject} from '../core/util/object-extend';
  */
 @Injectable()
 export class MdSnackBar {
-  /** A reference to the current snack bar in the view. */
-  private _snackBarRef: MdSnackBarRef<any>;
+  /**
+   * Reference to the current snack bar in the view *at this level* (in the Angular injector tree).
+   * If there is a parent snack-bar service, all operations should delegate to that parent
+   * via `_openedSnackBarRef`.
+   */
+  private _snackBarRefAtThisLevel: MdSnackBarRef<any>;
 
-  constructor(private _overlay: Overlay, private _live: LiveAnnouncer) {}
+  /** Reference to the currently opened snackbar at *any* level. */
+  get _openedSnackBarRef(): MdSnackBarRef<any> {
+    return this._parentSnackBar ?
+        this._parentSnackBar._openedSnackBarRef : this._snackBarRefAtThisLevel;
+  }
+
+  set _openedSnackBarRef(value: MdSnackBarRef<any>) {
+    if (this._parentSnackBar) {
+      this._parentSnackBar._openedSnackBarRef = value;
+    } else {
+      this._snackBarRefAtThisLevel = value;
+    }
+  }
+
+  constructor(
+      private _overlay: Overlay,
+      private _live: LiveAnnouncer,
+      @Optional() @SkipSelf() private _parentSnackBar: MdSnackBar) {}
 
   /**
    * Creates and dispatches a snack bar with a custom component for the content, removing any
@@ -50,18 +73,18 @@ export class MdSnackBar {
     // When the snackbar is dismissed, clear the reference to it.
     snackBarRef.afterDismissed().subscribe(() => {
       // Clear the snackbar ref if it hasn't already been replaced by a newer snackbar.
-      if (this._snackBarRef == snackBarRef) {
-        this._snackBarRef = null;
+      if (this._openedSnackBarRef == snackBarRef) {
+        this._openedSnackBarRef = null;
       }
     });
 
     // If a snack bar is already in view, dismiss it and enter the new snack bar after exit
     // animation is complete.
-    if (this._snackBarRef) {
-      this._snackBarRef.afterDismissed().subscribe(() => {
+    if (this._openedSnackBarRef) {
+      this._openedSnackBarRef.afterDismissed().subscribe(() => {
         snackBarRef.containerInstance.enter();
       });
-      this._snackBarRef.dismiss();
+      this._openedSnackBarRef.dismiss();
     // If no snack bar is in view, enter the new snack bar.
     } else {
       snackBarRef.containerInstance.enter();
@@ -75,8 +98,8 @@ export class MdSnackBar {
     }
 
     this._live.announce(config.announcementMessage, config.politeness);
-    this._snackBarRef = snackBarRef;
-    return this._snackBarRef;
+    this._openedSnackBarRef = snackBarRef;
+    return this._openedSnackBarRef;
   }
 
   /**
@@ -144,12 +167,14 @@ function _applyConfigDefaults(config: MdSnackBarConfig): MdSnackBarConfig {
   exports: [MdSnackBarContainer, DefaultStyleCompatibilityModeModule],
   declarations: [MdSnackBarContainer, SimpleSnackBar],
   entryComponents: [MdSnackBarContainer, SimpleSnackBar],
+  providers: [MdSnackBar, LIVE_ANNOUNCER_PROVIDER]
 })
 export class MdSnackBarModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSnackBarModule,
-      providers: [MdSnackBar, OVERLAY_PROVIDERS, LiveAnnouncer]
+      providers: []
     };
   }
 }

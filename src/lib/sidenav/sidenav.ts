@@ -21,7 +21,6 @@ import {A11yModule} from '../core/a11y/index';
 import {FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {OverlayModule} from '../core/overlay/overlay-directives';
-import {InteractivityChecker} from '../core/a11y/interactivity-checker';
 
 
 /** Exception thrown when two MdSidenav are matching the same side. */
@@ -512,10 +511,11 @@ export class MdSidenavContainer implements AfterContentInit {
   declarations: [MdSidenavContainer, MdSidenav],
 })
 export class MdSidenavModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSidenavModule,
-      providers: [InteractivityChecker]
+      providers: []
     };
   }
 }

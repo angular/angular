@@ -1,5 +1,4 @@
-import {Injectable} from '@angular/core';
-
+import {Injectable, Optional, SkipSelf} from '@angular/core';
 
 
 /**
@@ -56,3 +55,14 @@ export class ViewportRuler {
     return {top, left};
   }
 }
+
+export function VIEWPORT_RULER_PROVIDER_FACTORY(parentDispatcher: ViewportRuler) {
+  return parentDispatcher || new ViewportRuler();
+};
+
+export const VIEWPORT_RULER_PROVIDER = {
+  // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
+  provide: ViewportRuler,
+  deps: [[new Optional(), new SkipSelf(), ViewportRuler]],
+  useFactory: VIEWPORT_RULER_PROVIDER_FACTORY
+};

@@ -62,6 +62,7 @@ export class MdToolbar {
   declarations: [MdToolbar, MdToolbarRow],
 })
 export class MdToolbarModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdToolbarModule,

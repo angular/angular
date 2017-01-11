@@ -118,6 +118,7 @@ export class MaterialRootModule { }
   exports: MATERIAL_MODULES,
 })
 export class MaterialModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {ngModule: MaterialRootModule};
   }

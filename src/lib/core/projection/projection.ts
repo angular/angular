@@ -81,12 +81,13 @@ export class DomProjection {
 @NgModule({
   exports: [DomProjectionHost],
   declarations: [DomProjectionHost],
+  providers: [DomProjection],
 })
 export class ProjectionModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: ProjectionModule,
-      providers: [DomProjection]
     };
   }
 }

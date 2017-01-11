@@ -17,7 +17,6 @@ import {CommonModule} from '@angular/common';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {MdRippleModule, DefaultStyleCompatibilityModeModule} from '../core';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 
 
 /** Monotonically increasing integer used to auto-generate unique ids for checkbox components. */
@@ -399,10 +398,11 @@ export class MdCheckbox implements ControlValueAccessor {
   declarations: [MdCheckbox],
 })
 export class MdCheckboxModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdCheckboxModule,
-      providers: [ViewportRuler]
+      providers: []
     };
   }
 }

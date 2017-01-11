@@ -579,15 +579,14 @@ export class SliderRenderer {
   imports: [CommonModule, FormsModule, DefaultStyleCompatibilityModeModule],
   exports: [MdSlider, DefaultStyleCompatibilityModeModule],
   declarations: [MdSlider],
-  providers: [
-    {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig},
-  ],
+  providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
 })
 export class MdSliderModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSliderModule,
-      providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
+      providers: []
     };
   }
 }

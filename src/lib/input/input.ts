@@ -430,10 +430,11 @@ export class MdInput implements ControlValueAccessor, AfterContentInit, OnChange
   ],
 })
 export class MdInputModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdInputModule,
-      providers: PlatformModule.forRoot().providers,
+      providers: [],
     };
   }
 }

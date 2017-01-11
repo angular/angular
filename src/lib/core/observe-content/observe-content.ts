@@ -46,6 +46,7 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   declarations: [ObserveContent]
 })
 export class ObserveContentModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: ObserveContentModule,

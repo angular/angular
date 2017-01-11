@@ -115,4 +115,3 @@ class TestApp {
     this.live.announce(message);
   }
 }
-

@@ -91,6 +91,7 @@ function clamp(v: number, min = 0, max = 100) {
   declarations: [MdProgressBar],
 })
 export class MdProgressBarModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdProgressBarModule,

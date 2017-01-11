@@ -84,6 +84,7 @@ export class MdListItem implements AfterContentInit {
   declarations: [MdList, MdListItem, MdListDivider, MdListAvatar],
 })
 export class MdListModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdListModule,

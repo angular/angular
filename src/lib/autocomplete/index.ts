@@ -15,6 +15,7 @@ export * from './autocomplete-trigger';
   declarations: [MdAutocomplete, MdAutocompleteTrigger],
 })
 export class MdAutocompleteModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdAutocompleteModule,

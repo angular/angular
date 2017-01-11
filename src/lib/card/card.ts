@@ -119,6 +119,7 @@ export class MdCardTitleGroup {}
   ],
 })
 export class MdCardModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdCardModule,

@@ -4,7 +4,6 @@ import {MdSelect} from './select';
 import {MdOptionModule} from '../core/option/option';
 import {
   DefaultStyleCompatibilityModeModule,
-  OVERLAY_PROVIDERS,
   OverlayModule,
 } from '../core';
 export * from './select';
@@ -17,10 +16,11 @@ export {fadeInContent, transformPanel, transformPlaceholder} from './select-anim
   declarations: [MdSelect],
 })
 export class MdSelectModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdSelectModule,
-      providers: [OVERLAY_PROVIDERS]
+      providers: []
     };
   }
 }

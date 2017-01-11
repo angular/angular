@@ -2,7 +2,8 @@ import {
   Injectable,
   OpaqueToken,
   Optional,
-  Inject
+  Inject,
+  SkipSelf,
 } from '@angular/core';
 
 export const LIVE_ANNOUNCER_ELEMENT_TOKEN  = new OpaqueToken('liveAnnouncerElement');
@@ -62,3 +63,17 @@ export class LiveAnnouncer {
   }
 
 }
+
+export function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentDispatcher: LiveAnnouncer, liveElement: any) {
+  return parentDispatcher || new LiveAnnouncer(liveElement);
+};
+
+export const LIVE_ANNOUNCER_PROVIDER = {
+  // If there is already a LiveAnnouncer available, use that. Otherwise, provide a new one.
+  provide: LiveAnnouncer,
+  deps: [
+    [new Optional(), new SkipSelf(), LiveAnnouncer],
+    [new Optional(), new Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN)]
+  ],
+  useFactory: LIVE_ANNOUNCER_PROVIDER_FACTORY
+};

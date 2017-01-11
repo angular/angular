@@ -60,6 +60,7 @@ export class MdPrefixEnforcer {
   }],
 })
 export class NoConflictStyleCompatibilityMode {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: NoConflictStyleCompatibilityMode,

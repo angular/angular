@@ -156,6 +156,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   declarations: [MdGridList, MdGridTile, MdGridTileText],
 })
 export class MdGridListModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdGridListModule,

@@ -295,12 +295,14 @@ export class ConnectedOverlayDirective implements OnDestroy {
   imports: [PortalModule],
   exports: [ConnectedOverlayDirective, OverlayOrigin, Scrollable],
   declarations: [ConnectedOverlayDirective, OverlayOrigin, Scrollable],
+  providers: [OVERLAY_PROVIDERS],
 })
 export class OverlayModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: OverlayModule,
-      providers: OVERLAY_PROVIDERS,
+      providers: [],
     };
   }
 }

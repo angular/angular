@@ -346,6 +346,68 @@ describe('MdDialog', () => {
   });
 });
 
+describe('MdDialog with a parent MdDialog', () => {
+  let parentDialog: MdDialog;
+  let childDialog: MdDialog;
+  let overlayContainerElement: HTMLElement;
+  let fixture: ComponentFixture<ComponentThatProvidesMdDialog>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdDialogModule.forRoot(), DialogTestModule],
+      declarations: [ComponentThatProvidesMdDialog],
+      providers: [
+        {provide: OverlayContainer, useFactory: () => {
+          overlayContainerElement = document.createElement('div');
+          return {getContainerElement: () => overlayContainerElement};
+        }}
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([MdDialog], (d: MdDialog) => {
+    parentDialog = d;
+
+    fixture = TestBed.createComponent(ComponentThatProvidesMdDialog);
+    childDialog = fixture.componentInstance.dialog;
+    fixture.detectChanges();
+  }));
+
+  afterEach(() => {
+    overlayContainerElement.innerHTML = '';
+  });
+
+  it('should close dialogs opened by a parent when calling closeAll on a child MdDialog', () => {
+    parentDialog.open(PizzaMsg);
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a dialog to be opened');
+
+    childDialog.closeAll();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent.trim())
+        .toBe('', 'Expected closeAll on child MdDialog to close dialog opened by parent');
+  });
+
+  it('should close dialogs opened by a child when calling closeAll on a parent MdDialog', () => {
+    childDialog.open(PizzaMsg);
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a dialog to be opened');
+
+    parentDialog.closeAll();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent.trim())
+        .toBe('', 'Expected closeAll on parent MdDialog to close dialog opened by child');
+  });
+});
+
 
 @Directive({selector: 'dir-with-view-container'})
 class DirectiveWithViewContainer {
@@ -382,6 +444,14 @@ class PizzaMsg {
 })
 class ContentElementDialog {
   closeButtonAriaLabel: string;
+}
+
+@Component({
+  template: '',
+  providers: [MdDialog]
+})
+class ComponentThatProvidesMdDialog {
+  constructor(public dialog: MdDialog) {}
 }
 
 // Create a real (non-test) NgModule as a workaround for

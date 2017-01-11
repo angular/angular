@@ -1,4 +1,5 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Optional, SkipSelf} from '@angular/core';
+
 
 /**
  * The OverlayContainer is the container in which all overlays will load.
@@ -30,3 +31,14 @@ export class OverlayContainer {
     this._containerElement = container;
   }
 }
+
+export function OVERLAY_CONTAINER_PROVIDER_FACTORY(parentContainer: OverlayContainer) {
+  return parentContainer || new OverlayContainer();
+};
+
+export const OVERLAY_CONTAINER_PROVIDER = {
+  // If there is already an OverlayContainer available, use that. Otherwise, provide a new one.
+  provide: OverlayContainer,
+  deps: [[new Optional(), new SkipSelf(), OverlayContainer]],
+  useFactory: OVERLAY_CONTAINER_PROVIDER_FACTORY
+};

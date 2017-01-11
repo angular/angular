@@ -11,8 +11,11 @@ import {
   SimpleChange,
   ViewEncapsulation,
   AfterViewChecked,
+  Optional,
+  SkipSelf,
 } from '@angular/core';
-import {HttpModule} from '@angular/http';
+import {HttpModule, Http} from '@angular/http';
+import {DomSanitizer} from '@angular/platform-browser';
 import {MdError, DefaultStyleCompatibilityModeModule} from '../core';
 import {MdIconRegistry} from './icon-registry';
 export {MdIconRegistry} from './icon-registry';
@@ -244,17 +247,30 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   }
 }
 
+export function ICON_REGISTRY_PROVIDER_FACTORY(
+    parentRegistry: MdIconRegistry, http: Http, sanitizer: DomSanitizer) {
+  return parentRegistry || new MdIconRegistry(http, sanitizer);
+};
+
+export const ICON_REGISTRY_PROVIDER = {
+  // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.
+  provide: MdIconRegistry,
+  deps: [[new Optional(), new SkipSelf(), MdIconRegistry], Http, DomSanitizer],
+  useFactory: ICON_REGISTRY_PROVIDER_FACTORY,
+};
 
 @NgModule({
   imports: [HttpModule, DefaultStyleCompatibilityModeModule],
   exports: [MdIcon, DefaultStyleCompatibilityModeModule],
   declarations: [MdIcon],
+  providers: [ICON_REGISTRY_PROVIDER],
 })
 export class MdIconModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdIconModule,
-      providers: [MdIconRegistry],
+      providers: [],
     };
   }
 }

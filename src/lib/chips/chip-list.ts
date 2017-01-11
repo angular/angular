@@ -215,6 +215,7 @@ export class MdChipList implements AfterContentInit {
   declarations: [MdChipList, MdChip]
 })
 export class MdChipsModule {
+  /** @deprecated */
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: MdChipsModule,
