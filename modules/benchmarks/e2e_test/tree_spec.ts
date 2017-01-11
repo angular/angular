@@ -21,7 +21,30 @@ describe('tree benchmark spec', () => {
 
   it('should work for ng2 detect changes', () => {
     let params = [{name: 'depth', value: 4}];
-    openBrowser({url: 'all/benchmarks/src/tree/ng2/index.html'});
+    openBrowser({url: 'all/benchmarks/src/tree/ng2/index.html', params});
+    $('#detectChanges').click();
+    expect($('#numberOfChecks').getText()).toContain('10');
+  });
+
+  it('should work for ng2 next', () => {
+    testTreeBenchmark({
+      url: 'all/benchmarks/src/tree/ng2_next/index.html',
+      ignoreBrowserSynchronization: true,
+      // Can't use bundles as we use non exported code
+      extraParams: [{name: 'bundles', value: false}]
+    });
+  });
+
+  it('should work for ng2 next detect changes', () => {
+    let params = [
+      {name: 'depth', value: 4},
+      // Can't use bundles as we use non exported code
+      {name: 'bundles', value: false}
+    ];
+    openBrowser({
+      url: 'all/benchmarks/src/tree/ng2_next/index.html',
+      ignoreBrowserSynchronization: true, params
+    });
     $('#detectChanges').click();
     expect($('#numberOfChecks').getText()).toContain('10');
   });

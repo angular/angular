@@ -46,7 +46,7 @@ export function openBrowser(config: {
   const url = encodeURI(config.url + '?' + urlParams.join('&'));
   browser.get(url);
   if (config.ignoreBrowserSynchronization) {
-    browser.sleep(500);
+    browser.sleep(2000);
   }
 }
 
