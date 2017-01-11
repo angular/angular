@@ -104,7 +104,6 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   AnimationParser,
 ];
 
-
 @CompilerInjectable()
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
@@ -136,7 +135,8 @@ export class JitCompilerFactory implements CompilerFactory {
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
             logBindingUpdate: opts.useDebug,
-            missingTranslation: opts.missingTranslation, useViewEngine
+            missingTranslation: opts.missingTranslation, useViewEngine,
+            enableLegacyTemplate: opts.enableLegacyTemplate,
           });
         },
         deps: [USE_VIEW_ENGINE]

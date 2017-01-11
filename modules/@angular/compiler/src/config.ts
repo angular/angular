@@ -23,22 +23,28 @@ export const USE_VIEW_ENGINE = new InjectionToken<boolean>('UseViewEngine');
 export class CompilerConfig {
   public renderTypes: RenderTypes;
   public defaultEncapsulation: ViewEncapsulation;
-  private _genDebugInfo: boolean;
-  private _logBindingUpdate: boolean;
+  // Whether to support the `<template>` tag and the `template` attribute to define angular
+  // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.
+  public enableLegacyTemplate: boolean;
   public useJit: boolean;
   public useViewEngine: boolean;
   public missingTranslation: MissingTranslationStrategy;
 
+  private _genDebugInfo: boolean;
+  private _logBindingUpdate: boolean;
+
   constructor(
       {renderTypes = new DefaultRenderTypes(), defaultEncapsulation = ViewEncapsulation.Emulated,
-       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation, useViewEngine}: {
+       genDebugInfo, logBindingUpdate, useJit = true, missingTranslation, useViewEngine,
+       enableLegacyTemplate}: {
         renderTypes?: RenderTypes,
         defaultEncapsulation?: ViewEncapsulation,
         genDebugInfo?: boolean,
         logBindingUpdate?: boolean,
         useJit?: boolean,
         missingTranslation?: MissingTranslationStrategy,
-        useViewEngine?: boolean
+        useViewEngine?: boolean,
+        enableLegacyTemplate?: boolean,
       } = {}) {
     this.renderTypes = renderTypes;
     this.defaultEncapsulation = defaultEncapsulation;
@@ -47,6 +53,7 @@ export class CompilerConfig {
     this.useJit = useJit;
     this.missingTranslation = missingTranslation;
     this.useViewEngine = true;
+    this.enableLegacyTemplate = enableLegacyTemplate !== false;
   }
 
   get genDebugInfo(): boolean {

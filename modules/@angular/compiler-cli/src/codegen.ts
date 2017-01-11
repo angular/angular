@@ -75,7 +75,8 @@ export class CodeGenerator {
       debug: options.debug === true,
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale
+      locale: cliOptions.locale,
+      enableLegacyTemplate: options.enableLegacyTemplate !== false,
     });
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
   }

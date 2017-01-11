@@ -7,7 +7,6 @@
  */
 
 import {Injectable, InjectionToken} from '../di';
-import {stringify} from '../facade/lang';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
@@ -99,6 +98,9 @@ export type CompilerOptions = {
   defaultEncapsulation?: ViewEncapsulation,
   providers?: any[],
   missingTranslation?: MissingTranslationStrategy,
+  // Whether to support the `<template>` tag and the `template` attribute to define angular
+  // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.
+  enableLegacyTemplate?: boolean,
 };
 
 /**
