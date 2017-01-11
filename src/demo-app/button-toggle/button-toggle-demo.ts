@@ -9,6 +9,7 @@ import {UniqueSelectionDispatcher} from '@angular/material';
 })
 export class ButtonToggleDemo {
   isVertical = false;
+  isDisabled = false;
   favoritePie = 'Apple';
   pieOptions = [
     'Apple',
