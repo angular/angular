@@ -12,7 +12,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
 
 export function main() {
-  describe('switch', () => {
+  describe('ngPlural', () => {
     let fixture: ComponentFixture<any>;
 
     function getComponent(): TestComponent { return fixture.componentInstance; }
@@ -37,6 +37,22 @@ export function main() {
              '<template ngPluralCase="=0"><li>you have no messages.</li></template>' +
              '<template ngPluralCase="=1"><li>you have one message.</li></template>' +
              '</ul>';
+
+         fixture = createTestComponent(template);
+
+         getComponent().switchValue = 0;
+         detectChangesAndExpectText('you have no messages.');
+
+         getComponent().switchValue = 1;
+         detectChangesAndExpectText('you have one message.');
+       }));
+
+    it('should display the template according to the exact numeric value', async(() => {
+         const template = '<div>' +
+             '<ul [ngPlural]="switchValue">' +
+             '<template ngPluralCase="0"><li>you have no messages.</li></template>' +
+             '<template ngPluralCase="1"><li>you have one message.</li></template>' +
+             '</ul></div>';
 
          fixture = createTestComponent(template);
 
