@@ -64,6 +64,11 @@ export const SELECT_PANEL_PADDING_Y = 16;
  */
 export const SELECT_PANEL_VIEWPORT_PADDING = 8;
 
+/** Change event object that is emitted when the select value has changed. */
+export class MdSelectChange {
+  constructor(public source: MdSelect, public value: any) { }
+}
+
 @Component({
   moduleId: module.id,
   selector: 'md-select, mat-select',
@@ -217,10 +222,13 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   set required(value: any) { this._required = coerceBooleanProperty(value); }
 
   /** Event emitted when the select has been opened. */
-  @Output() onOpen = new EventEmitter();
+  @Output() onOpen: EventEmitter<void> = new EventEmitter<void>();
 
   /** Event emitted when the select has been closed. */
-  @Output() onClose = new EventEmitter();
+  @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
+
+  /** Event emitted when the selected value has been changed by the user. */
+  @Output() change: EventEmitter<MdSelectChange> = new EventEmitter<MdSelectChange>();
 
   constructor(private _element: ElementRef, private _renderer: Renderer,
               private _viewportRuler: ViewportRuler, @Optional() private _dir: Dir,
@@ -434,8 +442,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   private _listenToOptions(): void {
     this.options.forEach((option: MdOption) => {
       const sub = option.onSelect.subscribe((isUserInput: boolean) => {
-        if (isUserInput) {
-          this._onChange(option.value);
+        if (isUserInput && this._selected !== option) {
+          this._emitChangeEvent(option);
         }
         this._onSelect(option);
       });
@@ -447,6 +455,12 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   private _dropSubscriptions(): void {
     this._subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
     this._subscriptions = [];
+  }
+
+  /** Emits an event when the user selects an option. */
+  private _emitChangeEvent(option: MdOption): void {
+    this._onChange(option.value);
+    this.change.emit(new MdSelectChange(this, option.value));
   }
 
   /** Records option IDs to pass to the aria-owns property. */

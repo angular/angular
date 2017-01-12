@@ -16,7 +16,6 @@
     </md-card>
   </div>
 
-
   <md-card>
     <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="isRequired" [disabled]="isDisabled"
       #drinkControl="ngModel">
@@ -33,6 +32,16 @@
     <button md-button (click)="isDisabled=!isDisabled">TOGGLE DISABLED</button>
     <button md-button (click)="drinkControl.reset()">RESET</button>
   </md-card>
+
+  <div *ngIf="showSelect">
+    <md-card>
+      <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
+        <md-option *ngFor="let starter of pokemon" [value]="starter.value"> {{ starter.viewValue }} </md-option>
+      </md-select>
+
+      <p> Change event value: {{ latestChangeEvent?.value }} </p>
+    </md-card>
+  </div>
 
 </div>
 <div style="height: 500px">This div is for testing scrolled selects.</div>

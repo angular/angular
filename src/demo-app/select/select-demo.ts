@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {MdSelectChange} from '@angular/material';
 
 @Component({
     moduleId: module.id,
@@ -12,6 +13,7 @@ export class SelectDemo {
   isDisabled = false;
   showSelect = false;
   currentDrink: string;
+  latestChangeEvent: MdSelectChange;
   foodControl = new FormControl('pizza-1');
 
   foods = [
@@ -32,8 +34,13 @@ export class SelectDemo {
     {value: 'milk-8', viewValue: 'Milk'},
   ];
 
+  pokemon = [
+    {value: 'bulbasaur-0', viewValue: 'Bulbasaur'},
+    {value: 'charizard-1', viewValue: 'Charizard'},
+    {value: 'squirtle-2', viewValue: 'Squirtle'}
+  ];
+
   toggleDisabled() {
     this.foodControl.enabled ? this.foodControl.disable() : this.foodControl.enable();
   }
-
 }
