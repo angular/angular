@@ -27,7 +27,7 @@ You can include a theme file directly into your application from
 `@angular/material/core/theming/prebuilt`
 
 If you're using Angular CLI, this is as simple as including one line
-in your `style.css`  file:
+in your `styles.css`  file:
 ```css
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 ```
