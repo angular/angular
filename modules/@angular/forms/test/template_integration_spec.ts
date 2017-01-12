@@ -42,6 +42,39 @@ export function main() {
            expect(fixture.componentInstance.name).toEqual('updatedValue');
          }));
 
+      it('should ngModel hold ime events until compositionend', fakeAsync(() => {
+           const fixture = TestBed.createComponent(StandaloneNgModel);
+           // model -> view
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+
+           fixture.componentInstance.name = 'oldValue';
+
+           fixture.detectChanges();
+           tick();
+
+           expect(inputNativeEl.value).toEqual('oldValue');
+           // view -> model
+           inputEl.triggerEventHandler('compositionstart', null);
+
+           inputNativeEl.value = 'updatedValue';
+           dispatchEvent(inputNativeEl, 'input');
+           tick();
+
+           // should ngModel not update when compositionstart
+
+           expect(fixture.componentInstance.name).toEqual('oldValue');
+
+           inputEl.triggerEventHandler('compositionend', null);
+
+           fixture.detectChanges();
+           tick();
+
+           // should ngModel update when compositionend
+
+           expect(fixture.componentInstance.name).toEqual('updatedValue');
+         }));
+
       it('should support ngModel registration with a parent form', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
            fixture.componentInstance.name = 'Nancy';
