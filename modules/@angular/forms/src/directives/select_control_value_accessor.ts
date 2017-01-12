@@ -86,7 +86,11 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
-    const valueString = _buildValueString(this._getOptionId(value), value);
+    const id: string = this._getOptionId(value);
+    if (id == null) {
+      this._renderer.setElementProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+    }
+    const valueString = _buildValueString(id, value);
     this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', valueString);
   }
 
