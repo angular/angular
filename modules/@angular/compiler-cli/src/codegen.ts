@@ -36,29 +36,6 @@ export class CodeGenerator {
       public host: ts.CompilerHost, private compiler: compiler.AotCompiler,
       private ngCompilerHost: CompilerHost) {}
 
-  // Write codegen in a directory structure matching the sources.
-  private calculateEmitPath(filePath: string): string {
-    let root = this.options.basePath;
-    for (const eachRootDir of this.options.rootDirs || []) {
-      if (this.options.trace) {
-        console.error(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
-      }
-      if (path.relative(eachRootDir, filePath).indexOf('.') !== 0) {
-        root = eachRootDir;
-      }
-    }
-
-    // transplant the codegen path to be inside the `genDir`
-    let relativePath: string = path.relative(root, filePath);
-    while (relativePath.startsWith('..' + path.sep)) {
-      // Strip out any `..` path such as: `../node_modules/@foo` as we want to put everything
-      // into `genDir`.
-      relativePath = relativePath.substr(3);
-    }
-
-    return path.join(this.options.genDir, relativePath);
-  }
-
   codegen(): Promise<any> {
     return this.compiler
         .compileAll(this.program.getSourceFiles().map(
@@ -66,7 +43,7 @@ export class CodeGenerator {
         .then(generatedModules => {
           generatedModules.forEach(generatedModule => {
             const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
-            const emitPath = this.calculateEmitPath(generatedModule.genFileUrl);
+            const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
             const source = GENERATED_META_FILES.test(emitPath) ? generatedModule.source :
                                                                  PREAMBLE + generatedModule.source;
             this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
