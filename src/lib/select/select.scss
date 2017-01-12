@@ -45,6 +45,7 @@ md-select {
   &.md-floating-placeholder {
     top: -22px;
     left: -2px;
+    text-align: left;
     transform: scale(0.75);
   }
 
@@ -53,6 +54,7 @@ md-select {
 
     &.md-floating-placeholder {
       left: 2px;
+      text-align: right;
     }
   }
 
