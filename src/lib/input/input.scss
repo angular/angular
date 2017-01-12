@@ -11,8 +11,7 @@ $md-input-underline-disabled-background-image:
 // Applies a floating placeholder above the input itself.
 @mixin md-input-placeholder-floating {
   display: block;
-  padding-bottom: 5px;
-  transform: translateY(-100%) scale($md-input-floating-placeholder-scale-factor);
+  transform: translateY(-1.35em) scale($md-input-floating-placeholder-scale-factor);
   width: 100% / $md-input-floating-placeholder-scale-factor;
 }
 
@@ -33,7 +32,9 @@ md-input, md-textarea {
 // Global wrapper. We need to apply margin to the element for spacing, but
 // cannot apply it to the host element directly.
 .md-input-wrapper {
-  margin: 16px 0;
+  margin: 1em 0;
+  // Account for the underline which has 4px of margin + 2px of border.
+  padding-bottom: 6px;
 }
 
 // We use a table layout to baseline align the prefix and suffix classes.
@@ -122,7 +123,6 @@ md-input, md-textarea {
   transform: translateY(0);
   transform-origin: bottom left;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              scale $swift-ease-out-duration $swift-ease-out-timing-function,
               color $swift-ease-out-duration $swift-ease-out-timing-function,
               width $swift-ease-out-duration $swift-ease-out-timing-function;
 
@@ -184,7 +184,7 @@ md-input, md-textarea {
   display: block;
   position: absolute;
   font-size: 75%;
-  bottom: -0.5em;
+  bottom: 0;
 
   &.md-right {
     right: 0;
