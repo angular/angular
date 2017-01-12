@@ -1,4 +1,5 @@
 import {browser, by, element, Key} from 'protractor';
+import {screenshot} from '../../screenshot';
 
 describe('checkbox', function () {
 
@@ -12,15 +13,18 @@ describe('checkbox', function () {
       let checkboxEl = element(by.id('test-checkbox'));
       let inputEl = element(by.css('input[id=input-test-checkbox]'));
 
+      screenshot('start');
       checkboxEl.click();
       inputEl.getAttribute('checked').then((value: string) => {
         expect(value).toBeTruthy('Expect checkbox "checked" property to be true');
       });
+      screenshot('checked');
 
       checkboxEl.click();
       inputEl.getAttribute('checked').then((value: string) => {
         expect(value).toBeFalsy('Expect checkbox "checked" property to be false');
       });
+      screenshot('unchecked');
     });
 
     it('should toggle the checkbox when pressing space', () => {
@@ -28,12 +32,14 @@ describe('checkbox', function () {
 
       inputEl.getAttribute('checked').then((value: string) => {
         expect(value).toBeFalsy('Expect checkbox "checked" property to be false');
+        screenshot('start');
       });
 
       inputEl.sendKeys(Key.SPACE);
 
       inputEl.getAttribute('checked').then((value: string) => {
         expect(value).toBeTruthy('Expect checkbox "checked" property to be true');
+        screenshot('pressed space');
       });
     });
 
