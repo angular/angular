@@ -115,7 +115,7 @@ export class NgModel extends NgControl implements OnChanges,
   _control = new FormControl();
   /** @internal */
   _registered = false;
-  _composing = false;
+  private _composing = false;
   viewModel: any;
 
   @Input() name: string;
@@ -125,13 +125,13 @@ export class NgModel extends NgControl implements OnChanges,
 
   @Output('ngModelChange') update = new EventEmitter();
 
-  @HostListener('compositionstart', ['$event'])
-  public compositionStart(): void {
+  @HostListener('compositionstart')
+  compositionStart(): void {
     this._composing = true;
   }
 
-  @HostListener('compositionend', ['$event'])
-  public compositionEnd(): void {
+  @HostListener('compositionend')
+  compositionEnd(): void {
     this._composing = false;
     this.update.emit(this.viewModel);
   }
