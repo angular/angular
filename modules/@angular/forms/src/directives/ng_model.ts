@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef, HostListener} from '@angular/core';
+import {Directive, Host, HostListener, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {EventEmitter} from '../facade/async';
 import {FormControl} from '../model';
@@ -126,9 +126,7 @@ export class NgModel extends NgControl implements OnChanges,
   @Output('ngModelChange') update = new EventEmitter();
 
   @HostListener('compositionstart')
-  compositionStart(): void {
-    this._composing = true;
-  }
+  compositionStart(): void { this._composing = true; }
 
   @HostListener('compositionend')
   compositionEnd(): void {
