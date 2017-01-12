@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {MdSelectModule} from './index';
@@ -539,6 +539,20 @@ describe('MdSelect', () => {
         expect(fixture.componentInstance.select._placeholderState).toEqual('floating-rtl');
       });
 
+
+      it('should add a class to the panel when the menu is done animating', fakeAsync(() => {
+        trigger.click();
+        fixture.detectChanges();
+
+        const panel = overlayContainerElement.querySelector('.md-select-panel');
+
+        expect(panel.classList).not.toContain('md-select-panel-done-animating');
+
+        tick(250);
+        fixture.detectChanges();
+
+        expect(panel.classList).toContain('md-select-panel-done-animating');
+      }));
   });
 
   describe('positioning', () => {

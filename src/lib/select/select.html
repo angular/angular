@@ -5,11 +5,12 @@
   <span class="md-select-arrow"></span>
 </div>
 
-<template cdk-connected-overlay [origin]="origin"  [open]="panelOpen" hasBackdrop (backdropClick)="close()"
+<template cdk-connected-overlay [origin]="origin" [open]="panelOpen" hasBackdrop (backdropClick)="close()"
   backdropClass="cdk-overlay-transparent-backdrop" [positions]="_positions" [minWidth]="_triggerWidth"
   [offsetY]="_offsetY" [offsetX]="_offsetX" (attach)="_setScrollTop()">
   <div class="md-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
-    (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin">
+    (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin"
+      [class.md-select-panel-done-animating]="_panelDoneAnimating">
     <div class="md-select-content" [@fadeInContent]="'showing'">
       <ng-content></ng-content>
     </div>

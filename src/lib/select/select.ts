@@ -147,6 +147,9 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
   /** The value of the select panel's transform-origin property. */
   _transformOrigin: string = 'top';
 
+  /** Whether the panel's animation is done. */
+  _panelDoneAnimating: boolean = false;
+
   /**
    * The x-offset of the overlay panel in relation to the trigger's top start corner.
    * This must be adjusted to align the selected option text over the trigger text when
@@ -353,6 +356,8 @@ export class MdSelect implements AfterContentInit, ControlValueAccessor, OnDestr
     } else {
       this.onClose.emit();
     }
+
+    this._panelDoneAnimating = this.panelOpen;
   }
 
   /**
