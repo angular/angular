@@ -39,3 +39,9 @@ md-input-container {
     }
   }
 }
+
+// Prevents the prefix and suffix from stretching together with the container.
+.md-input-prefix, .md-input-suffix {
+  width: 0.1px;
+  white-space: nowrap;
+}
