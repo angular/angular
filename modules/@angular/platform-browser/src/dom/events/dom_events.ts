@@ -7,6 +7,9 @@
  */
 
 import {Injectable} from '@angular/core';
+
+import {getDOM} from '../dom_adapter';
+
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
@@ -16,6 +19,28 @@ export class DomEventsPlugin extends EventManagerPlugin {
   supports(eventName: string): boolean { return true; }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+    // IE9 doesn't fire the input event on backspace, delete or cut
+    if (getDOM().msie() === 9 && eventName === 'input') {
+      element.addEventListener('change', handler as any, false);
+
+      const keydownHandler = (event: KeyboardEvent) => {
+        const key: number = event.keyCode;
+
+        // ignore
+        //    command            modifiers                   arrows
+        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+
+        setTimeout(() => handler(event));
+      };
+
+      element.addEventListener('keydown', keydownHandler, false);
+
+      return () => {
+        element.removeEventListener('change', handler as any, false);
+        element.removeEventListener('keydown', keydownHandler, false);
+      };
+    }
+
     element.addEventListener(eventName, handler as any, false);
     return () => element.removeEventListener(eventName, handler as any, false);
   }

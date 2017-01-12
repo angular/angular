@@ -15,7 +15,6 @@ export default {
     '@angular/core': 'ng.core',
     '@angular/common': 'ng.common',
     '@angular/compiler': 'ng.compiler',
-    '@angular/platform-browser': 'ng.platformBrowser',
     'rxjs/Observable': 'Rx',
     'rxjs/Subject': 'Rx',
     'rxjs/observable/fromPromise': 'Rx.Observable',

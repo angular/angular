@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, OnInit, Provider, Renderer, forwardRef} from '@angular/core';
-import {getDOM} from '../private_import_platform-browser';
+import {Directive, ElementRef, Renderer, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const DEFAULT_VALUE_ACCESSOR: Provider = {
+export const DEFAULT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => DefaultValueAccessor),
   multi: true
@@ -34,38 +33,14 @@ export const DEFAULT_VALUE_ACCESSOR: Provider = {
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngControl],[ngModel],[ngFormControl]',
+  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor implements ControlValueAccessor,
-    OnInit {
+export class DefaultValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};
   onTouched = () => {};
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
-
-  ngOnInit(): void {
-    this._renderer.listen(this._elementRef.nativeElement, 'blur', () => this.onTouched());
-
-    // On IE9 the input event is not fired when backspace or delete key are pressed or when
-    // cut is performed. So it's better for us to use keydown/change events instead.
-    if (getDOM().msie() === 9) {
-      this._renderer.listen(this._elementRef.nativeElement, 'change', (event: KeyboardEvent) => {
-        this.onChange((event.target as HTMLInputElement).value);
-      });
-      this._renderer.listen(this._elementRef.nativeElement, 'keydown', (event: KeyboardEvent) => {
-        const key: number = event.keyCode;
-        // ignore
-        //    command            modifiers                   arrows
-        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-
-        this.onChange((event.target as HTMLInputElement).value);
-      });
-    } else {
-      this._renderer.listen(this._elementRef.nativeElement, 'input', (event: KeyboardEvent) => {
-        this.onChange((event.target as HTMLInputElement).value);
-      });
-    }
-  }
 
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
