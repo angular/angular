@@ -2171,6 +2171,48 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
+    it('should instantiate lazy loaded module only once',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             let instantiatedTimes: number = 0;
+             @Component({
+               selector: 'lazy',
+               template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
+             })
+             class ParentLazyLoadedComponent {
+             }
+
+             @Component({selector: 'lazy', template: 'lazy-loaded-child'})
+             class ChildLazyLoadedComponent {
+             }
+
+             @NgModule({
+               declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
+               imports: [RouterModule.forChild([{
+                 path: 'loaded',
+                 component: ParentLazyLoadedComponent,
+                 children: [{path: 'child', component: ChildLazyLoadedComponent}]
+               }])]
+             })
+             class LoadedModule {
+               constructor() { instantiatedTimes++; }
+             }
+
+             loader.stubbedModules = {expected: LoadedModule};
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+             router.navigateByUrl('/lazy/loaded/child');
+             advance(fixture);
+
+             expect(location.path()).toEqual('/lazy/loaded/child');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
+             expect(instantiatedTimes).toEqual(1);
+           })));
+
     it('throws an error when forRoot() is used in a lazy context',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
