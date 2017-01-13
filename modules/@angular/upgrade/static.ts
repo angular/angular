@@ -12,8 +12,8 @@
  * Entry point for all public APIs of the upgrade/static package, allowing
  * Angular 1 and Angular 2+ to run side by side in the same application.
  */
+export {downgradeComponent} from './src/common/downgrade_component';
 export {downgradeInjectable} from './src/common/downgrade_injectable';
-export {downgradeComponent} from './src/static/downgrade_component';
 export {UpgradeComponent} from './src/static/upgrade_component';
 export {UpgradeModule} from './src/static/upgrade_module';
 
