@@ -68,7 +68,11 @@ function publishRepo {
 
 # Publish all individual packages from packages-dist.
 function publishPackages {
-  for dir in dist/packages-dist/*/ dist/tools/@angular/tsc-wrapped
+  PKGS_DIST=dist/packages-dist
+  if [[ -n "${EXPERIMENTAL_ES2015_DISTRO}" ]]; then
+    PKGS_DIST=dist/packages-dist-es2015
+  fi
+  for dir in $PKGS_DIST/*/ dist/tools/@angular/tsc-wrapped
   do
     COMPONENT="$(basename ${dir})"
 
