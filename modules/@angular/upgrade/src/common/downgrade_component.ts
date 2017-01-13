@@ -8,9 +8,8 @@
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-import * as angular from '../common/angular1';
-import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG_MODEL} from '../common/constants';
-
+import * as angular from './angular1';
+import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 
 let downgradeCount = 0;

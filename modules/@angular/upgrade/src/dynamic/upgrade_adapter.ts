@@ -112,7 +112,7 @@ export class UpgradeAdapter {
    * @internal
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
-  private providers: Provider[] = [];
+  private upgradedProviders: Provider[] = [];
   private ngZone: NgZone;
   private ng1Module: angular.IModule;
   private moduleRef: NgModuleRef<any> = null;
@@ -437,11 +437,11 @@ export class UpgradeAdapter {
    *
    * ```
    */
-  public upgradeNg1Provider(name: string, options?: {asToken: any}) {
+  upgradeNg1Provider(name: string, options?: {asToken: any}) {
     const token = options && options.asToken || name;
-    this.providers.push({
+    this.upgradedProviders.push({
       provide: token,
-      useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
+      useFactory: ($injector: angular.IInjectorService) => $injector.get(name),
       deps: [$INJECTOR]
     });
   }
@@ -557,7 +557,7 @@ export class UpgradeAdapter {
                     providers: [
                       {provide: $INJECTOR, useFactory: () => ng1Injector},
                       {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                      this.providers
+                      this.upgradedProviders
                     ],
                     imports: [this.ng2AppModule]
                   }).Class({

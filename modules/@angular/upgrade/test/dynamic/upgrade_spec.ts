@@ -271,6 +271,25 @@ export function main() {
     });
 
     describe('downgrade ng2 component', () => {
+      it('should allow non-element selectors for downgraded components', async(() => {
+           @Component({selector: '[itWorks]', template: 'It works'})
+           class WorksComponent {
+           }
+
+           @NgModule({declarations: [WorksComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(WorksComponent));
+
+           const element = html('<ng2></ng2>');
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(multiTrim(document.body.textContent)).toBe('It works');
+           });
+         }));
+
       it('should bind properties, events', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module('ng1', []);
@@ -457,7 +476,6 @@ export function main() {
              onDestroyed.subscribe(() => { ref.dispose(); });
            });
          }));
-
 
       it('should fallback to the root ng2.injector when compiled outside the dom', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
