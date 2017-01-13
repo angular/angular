@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Class, Component, EventEmitter, NO_ERRORS_SCHEMA, NgModule, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -186,6 +186,87 @@ export function main() {
              ref.dispose();
            });
          }));
+
+
+      it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+           let appComponent: AppComponent;
+           let upgradeRef: UpgradeAdapterRef;
+
+           @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+           class AppComponent {
+             value: number;
+             constructor() { appComponent = this; }
+           }
+
+           @Component({
+             selector: 'my-child',
+             template: '<div>{{valueFromPromise}}',
+           })
+           class ChildComponent {
+             valueFromPromise: number;
+             @Input()
+             set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
+
+             constructor(private zone: NgZone) {}
+
+             ngOnChanges(changes: SimpleChanges) {
+               if (changes['value'].isFirstChange()) return;
+
+               this.zone.onMicrotaskEmpty.subscribe(() => {
+                 expect(element.textContent).toEqual('5');
+                 upgradeRef.dispose();
+               });
+
+               Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+             }
+           }
+
+           @NgModule({declarations: [AppComponent, ChildComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []).directive(
+               'myApp', adapter.downgradeNg2Component(AppComponent));
+
+           const element = html('<my-app></my-app>');
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             upgradeRef = ref;
+             appComponent.value = 5;
+           });
+         }));
+
+      // This test demonstrates https://github.com/angular/angular/issues/6385
+      // which was invalidly fixed by https://github.com/angular/angular/pull/6386
+      // it('should not trigger $digest from an async operation in a watcher', async(() => {
+      //      @Component({selector: 'my-app', template: ''})
+      //      class AppComponent {
+      //      }
+
+      //      @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
+      //      class Ng2Module {
+      //      }
+
+      //      const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+      //      const ng1Module = angular.module('ng1', []).directive(
+      //          'myApp', adapter.downgradeNg2Component(AppComponent));
+
+      //      const element = html('<my-app></my-app>');
+
+      //      adapter.bootstrap(element, ['ng1']).ready((ref) => {
+      //        let doTimeout = false;
+      //        let timeoutId: number;
+      //        ref.ng1RootScope.$watch(() => {
+      //          if (doTimeout && !timeoutId) {
+      //            timeoutId = window.setTimeout(function() {
+      //              timeoutId = null;
+      //            }, 10);
+      //          }
+      //        });
+      //        doTimeout = true;
+      //      });
+      //    }));
     });
 
     describe('downgrade ng2 component', () => {
