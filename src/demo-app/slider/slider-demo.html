@@ -9,8 +9,8 @@ Label <md-slider #slidey></md-slider>
 <input [(ngModel)]="max">
 
 <h1>Disabled Slider</h1>
-<md-slider disabled #slider3></md-slider>
-{{slider3.value}}
+<md-slider disabled [(ngModel)]="disabledValue"></md-slider>
+<input [(ngModel)]="disabledValue">
 
 <h1>Slider with set value</h1>
 <md-slider value="43"></md-slider>

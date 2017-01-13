@@ -11,4 +11,5 @@ export class SliderDemo {
   val: number = 50;
   min: number = 0;
   max: number = 100;
+  disabledValue = 0;
 }

@@ -10,7 +10,7 @@
   $md-slider-focused-color: rgba(black, 0.38);
   $md-slider-disabled-color: rgba(black, 0.26);
 
-  .md-slider-track {
+  .md-slider-track-background {
     background-color: $md-slider-off-color;
   }
 
@@ -28,5 +28,12 @@
 
   .md-slider-thumb-label-text {
     color: md-color($accent, default-contrast);
+  }
+
+  .md-slider-disabled {
+    .md-slider-track-fill,
+    .md-slider-thumb {
+      background-color: $md-slider-off-color;
+    }
   }
 }

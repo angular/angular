@@ -57,7 +57,7 @@ describe('MdSlider', () => {
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
     let trackFillElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(StandardSlider);
@@ -68,7 +68,7 @@ describe('MdSlider', () => {
       sliderInstance = sliderDebugElement.componentInstance;
 
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('should set the default values', () => {
@@ -110,21 +110,21 @@ describe('MdSlider', () => {
     });
 
     it('should update the track fill on click', () => {
-      expect(trackFillElement.style.transform).toBe('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleX(0.39)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.39)');
     });
 
     it('should update the track fill on slide', () => {
-      expect(trackFillElement.style.transform).toBe('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0)');
 
       dispatchSlideEventSequence(sliderNativeElement, 0, 0.86, gestureConfig);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleX(0.86)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.86)');
     });
 
     it('should add the md-slider-active class on click', () => {
@@ -168,8 +168,9 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<StandardSlider>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let sliderInstance: MdSlider;
+    let trackFillElement: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(DisabledSlider);
@@ -177,8 +178,9 @@ describe('MdSlider', () => {
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       sliderInstance = sliderDebugElement.componentInstance;
+      trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
     it('should be disabled', () => {
@@ -218,6 +220,10 @@ describe('MdSlider', () => {
 
       expect(sliderNativeElement.classList).not.toContain('md-slider-sliding');
     });
+
+    it ('should leave thumb gap', () => {
+      expect(trackFillElement.style.transform).toContain('translateX(-7px)');
+    });
   });
 
   describe('slider with set min and max', () => {
@@ -225,7 +231,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let trackFillElement: HTMLElement;
     let ticksContainerElement: HTMLElement;
     let ticksElement: HTMLElement;
@@ -239,7 +245,7 @@ describe('MdSlider', () => {
       testComponent = fixture.debugElement.componentInstance;
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
       ticksContainerElement =
           <HTMLElement>sliderNativeElement.querySelector('.md-slider-ticks-container');
@@ -277,7 +283,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is halfway on the slider.
-      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
     });
 
     it('should snap the fill to the nearest value on slide', () => {
@@ -285,7 +291,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the halfway point on the slider.
-      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
     });
 
     it('should adjust fill and ticks on mouse enter when min changes', () => {
@@ -295,7 +301,7 @@ describe('MdSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
       expect(ticksElement.style.backgroundSize).toBe('75% 2px');
       // Make sure it cuts off the last half tick interval.
       expect(ticksElement.style.transform).toContain('translateX(37.5%)');
@@ -312,7 +318,7 @@ describe('MdSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
       expect(ticksElement.style.backgroundSize).toBe('50% 2px');
       // Make sure it cuts off the last half tick interval.
       expect(ticksElement.style.transform).toContain('translateX(25%)');
@@ -325,7 +331,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SliderWithValue);
@@ -334,7 +340,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('should set the default value from the attribute', () => {
@@ -363,7 +369,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let trackFillElement: HTMLElement;
 
     beforeEach(() => {
@@ -373,7 +379,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
@@ -391,7 +397,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest step is at 75% of the slider.
-      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
     });
 
     it('should set the correct step value on slide', () => {
@@ -406,7 +412,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the end of the slider.
-      expect(trackFillElement.style.transform).toBe('scaleX(1)');
+      expect(trackFillElement.style.transform).toContain('scaleX(1)');
     });
   });
 
@@ -476,7 +482,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let thumbLabelTextElement: Element;
 
     beforeEach(() => {
@@ -486,7 +492,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       thumbLabelTextElement = sliderNativeElement.querySelector('.md-slider-thumb-label-text');
     });
 
@@ -543,7 +549,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let testComponent: SliderWithTwoWayBinding;
 
     beforeEach(() => {
@@ -555,7 +561,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('should not update the control when the value is updated', () => {
@@ -646,7 +652,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let testComponent: SliderWithOneWayBinding;
     let trackFillElement: HTMLElement;
 
@@ -659,13 +665,13 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
     it('should initialize based on bound value', () => {
       expect(sliderInstance.value).toBe(50);
-      expect(trackFillElement.style.transform).toBe('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
     });
 
     it('should update when bound value changes', () => {
@@ -673,7 +679,7 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(75);
-      expect(trackFillElement.style.transform).toBe('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
     });
   });
 
@@ -682,7 +688,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let trackFillElement: HTMLElement;
 
     beforeEach(() => {
@@ -692,7 +698,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
@@ -703,7 +709,7 @@ describe('MdSlider', () => {
     });
 
     it('should set the fill to the min value', () => {
-      expect(trackFillElement.style.transform).toBe('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scaleX(0)');
     });
   });
 
@@ -712,7 +718,7 @@ describe('MdSlider', () => {
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderInstance: MdSlider;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let trackFillElement: HTMLElement;
 
     beforeEach(() => {
@@ -722,7 +728,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
@@ -733,7 +739,7 @@ describe('MdSlider', () => {
     });
 
     it('should set the fill to the max value', () => {
-      expect(trackFillElement.style.transform).toBe('scaleX(1)');
+      expect(trackFillElement.style.transform).toContain('scaleX(1)');
     });
   });
 
@@ -741,7 +747,7 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<SliderWithChangeHandler>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let testComponent: SliderWithChangeHandler;
 
     beforeEach(() => {
@@ -753,7 +759,7 @@ describe('MdSlider', () => {
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('should emit change on click', () => {
@@ -789,7 +795,7 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<SliderWithChangeHandler>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let testComponent: SliderWithChangeHandler;
 
     beforeEach(() => {
@@ -802,7 +808,7 @@ describe('MdSlider', () => {
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('should emit an input event while sliding', () => {
@@ -838,7 +844,7 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<StandardSlider>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let testComponent: StandardSlider;
     let sliderInstance: MdSlider;
 
@@ -849,7 +855,7 @@ describe('MdSlider', () => {
       testComponent = fixture.debugElement.componentInstance;
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
     });
 
@@ -922,7 +928,7 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<SliderWithDirAndInvert>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let sliderInstance: MdSlider;
     let testComponent: SliderWithDirAndInvert;
 
@@ -934,7 +940,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
     });
 
     it('works in inverted mode', () => {
@@ -1038,7 +1044,7 @@ describe('MdSlider', () => {
     let fixture: ComponentFixture<VerticalSlider>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
-    let sliderTrackElement: HTMLElement;
+    let sliderWrapperElement: HTMLElement;
     let trackFillElement: HTMLElement;
     let sliderInstance: MdSlider;
     let testComponent: VerticalSlider;
@@ -1051,7 +1057,7 @@ describe('MdSlider', () => {
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderInstance = sliderDebugElement.injector.get(MdSlider);
       sliderNativeElement = sliderDebugElement.nativeElement;
-      sliderTrackElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track');
+      sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-wrapper');
       trackFillElement = <HTMLElement>sliderNativeElement.querySelector('.md-slider-track-fill');
     });
 
@@ -1073,24 +1079,24 @@ describe('MdSlider', () => {
     });
 
     it('should update the track fill on click', () => {
-      expect(trackFillElement.style.transform).toBe('scaleY(0)');
+      expect(trackFillElement.style.transform).toContain('scaleY(0)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleY(0.61)');
+      expect(trackFillElement.style.transform).toContain('scaleY(0.61)');
     });
 
     it('should update the track fill on click in inverted mode', () => {
       testComponent.invert = true;
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleY(0)');
+      expect(trackFillElement.style.transform).toContain('scaleY(0)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toBe('scaleY(0.39)');
+      expect(trackFillElement.style.transform).toContain('scaleY(0.39)');
     });
   });
 });
@@ -1216,7 +1222,7 @@ class VerticalSlider {
  * physical location of the click.
  */
 function dispatchClickEventSequence(sliderElement: HTMLElement, percentage: number): void {
-  let trackElement = sliderElement.querySelector('.md-slider-track');
+  let trackElement = sliderElement.querySelector('.md-slider-wrapper');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percentage);
   let y = dimensions.top + (dimensions.height * percentage);
@@ -1253,7 +1259,7 @@ function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: nu
  */
 function dispatchSlideEvent(sliderElement: HTMLElement, percent: number,
                             gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.md-slider-track');
+  let trackElement = sliderElement.querySelector('.md-slider-wrapper');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);
@@ -1272,7 +1278,7 @@ function dispatchSlideEvent(sliderElement: HTMLElement, percent: number,
  */
 function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
                                  gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.md-slider-track');
+  let trackElement = sliderElement.querySelector('.md-slider-wrapper');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);
@@ -1293,7 +1299,7 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
  */
 function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number,
                                gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.md-slider-track');
+  let trackElement = sliderElement.querySelector('.md-slider-wrapper');
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);
