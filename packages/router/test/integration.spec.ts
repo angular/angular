@@ -241,8 +241,7 @@ describe('Integration', () => {
 
        let recordedError: any = null;
        router.navigateByUrl('/blank').catch(e => recordedError = e);
-       advance(fixture);
-
+       expect(() => advance(fixture)).toThrow();
        expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
      }));
 
@@ -2018,7 +2017,6 @@ describe('Integration', () => {
            })));
       });
 
-
       describe('should work when returns an observable', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
@@ -2044,6 +2042,129 @@ describe('Integration', () => {
              router.navigateByUrl('/team/33');
              advance(fixture);
              expect(location.path()).toEqual('/team/22');
+           })));
+      });
+
+      describe('should not break the history', () => {
+
+        class CancelFirstNavigation implements CanDeactivate<any> {
+          private firstTime: boolean = true;
+          canDeactivate(): boolean {
+            if (this.firstTime) {
+              this.firstTime = false;
+              return false;
+            }
+            return true;
+          }
+        }
+
+        @Component({selector: 'parent', template: '<router-outlet></router-outlet>'})
+        class Parent {
+        }
+
+        @Component({selector: 'home', template: 'home'})
+        class Home {
+        }
+
+        @Component({selector: 'child1', template: 'child1'})
+        class Child1 {
+        }
+
+        @Component({selector: 'child2', template: 'child2'})
+        class Child2 {
+        }
+
+        @Component({selector: 'child3', template: 'child3'})
+        class Child3 {
+        }
+
+        @NgModule({
+          declarations: [Parent, Home, Child1, Child2, Child3],
+          entryComponents: [Child1, Child2, Child3],
+          imports: [RouterModule]
+        })
+        class TestModule {
+        }
+
+        beforeEach(() => {
+          TestBed.configureTestingModule(
+              {providers: [CancelFirstNavigation], imports: [TestModule]});
+        });
+
+        it('when navigate back using Back button',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, Parent);
+
+             router.resetConfig([
+               {path: '', component: Home}, {path: 'first', component: Child1},
+               {path: 'second', component: Child2},
+               {path: 'third', component: Child3, canDeactivate: [CancelFirstNavigation]}
+             ]);
+
+             router.navigateByUrl('/first');
+             advance(fixture);
+             expect(location.path()).toEqual('/first');
+             expect(fixture.nativeElement).toHaveText('child1');
+
+             router.navigateByUrl('/second');
+             advance(fixture);
+             expect(location.path()).toEqual('/second');
+             expect(fixture.nativeElement).toHaveText('child2');
+
+             router.navigateByUrl('/third');
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             // CanDeactivate false
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             // CanDeactivate true
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/second');
+             expect(fixture.nativeElement).toHaveText('child2');
+           })));
+
+        it('when navigate back imperatively',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, Parent);
+
+             router.resetConfig([
+               {path: '', component: Home}, {path: 'first', component: Child1},
+               {path: 'second', component: Child2},
+               {path: 'third', component: Child3, canDeactivate: [CancelFirstNavigation]}
+             ]);
+
+             router.navigateByUrl('/first');
+             advance(fixture);
+             expect(location.path()).toEqual('/first');
+             expect(fixture.nativeElement).toHaveText('child1');
+
+             router.navigateByUrl('/second');
+             advance(fixture);
+             expect(location.path()).toEqual('/second');
+             expect(fixture.nativeElement).toHaveText('child2');
+
+             router.navigateByUrl('/third');
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             // CanDeactivate false
+             router.navigateByUrl('/second');
+             advance(fixture);
+             expect(location.path()).toEqual('/third');
+             expect(fixture.nativeElement).toHaveText('child3');
+
+             // CanDeactivate true
+             location.back();
+             advance(fixture);
+             expect(location.path()).toEqual('/second');
+             expect(fixture.nativeElement).toHaveText('child2');
            })));
       });
     });
