@@ -39,8 +39,7 @@ export class MenuPage {
 
   // TODO(kara): move to common testing utility
   expectFocusOn(el: any): void {
-    expect(browser.driver.switchTo().activeElement().getInnerHtml())
-        .toBe(el.getInnerHtml());
+    expect(browser.driver.switchTo().activeElement().getId()).toBe(el.getId());
   }
 
   expectMenuPresent(expected: boolean) {

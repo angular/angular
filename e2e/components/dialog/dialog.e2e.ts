@@ -102,6 +102,6 @@ describe('dialog', () => {
 
   // TODO(crisbeto): should be moved to a common util. copied from the menu e2e setup.
   function expectFocusOn(el: any): void {
-    expect(browser.driver.switchTo().activeElement().getInnerHtml()).toBe(el.getInnerHtml());
+    expect(browser.driver.switchTo().activeElement().getId()).toBe(el.getId());
   }
 });
