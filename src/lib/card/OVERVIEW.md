@@ -35,7 +35,7 @@ header to a card. This header can contain:
 
 
 ### Title groups
-An `<md-title-group>` can be used to combine a title, subtitle, and image into a single section.
+An `<md-card-title-group>` can be used to combine a title, subtitle, and image into a single section.
 This element can contain:
 * `<md-card-title>`
 * `<md-card-subtite>`
