@@ -111,7 +111,9 @@
     </p>
     <p>
       <md-input placeholder="Show Hint Label With Character Count" style="width: 100%"
-                hintLabel="Hint label" characterCounter></md-input>
+                hintLabel="Hint label" #characterCountHintExampleInput>
+           <md-hint align="end">{{characterCountHintExampleInput.characterCount}}</md-hint>
+      </md-input>
     </p>
     <p>
       <md-checkbox [(ngModel)]="dividerColor">Check to change the divider color:</md-checkbox>
