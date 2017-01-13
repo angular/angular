@@ -72,6 +72,10 @@ export {
   LIVE_ANNOUNCER_ELEMENT_TOKEN,
   LIVE_ANNOUNCER_PROVIDER,
 } from './a11y/live-announcer';
+
+// Selection
+export * from './selection/selection';
+
 /** @deprecated */
 export {LiveAnnouncer as MdLiveAnnouncer} from './a11y/live-announcer';
 
