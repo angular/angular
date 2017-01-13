@@ -10,8 +10,8 @@ import {InjectionToken, Injector, NgModule, destroyPlatform} from '@angular/core
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/angular_js';
-import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/aot/constants';
+import * as angular from '@angular/upgrade/src/common/angular1';
+import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
 import {UpgradeModule, downgradeInjectable} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';

@@ -8,8 +8,9 @@
 
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges} from '@angular/core';
 
-import * as angular from './angular_js';
-import {NG1_SCOPE} from './constants';
+import * as angular from '../common/angular1';
+import {$SCOPE} from '../common/constants';
+
 import {ComponentInfo} from './metadata';
 import {hookupNgModel} from './util';
 
@@ -35,7 +36,7 @@ export class DowngradeNg2ComponentAdapter {
 
   bootstrapNg2(projectableNodes: Node[][]) {
     const childInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: NG1_SCOPE, useValue: this.componentScope}], this.parentInjector);
+        [{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
 
     this.componentRef =
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);

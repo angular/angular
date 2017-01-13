@@ -10,12 +10,14 @@ import {CssSelector, SelectorMatcher, createElementCssSelector} from '@angular/c
 import {Compiler, CompilerOptions, ComponentFactory, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import * as angular from './angular_js';
-import {NG1_COMPILE, NG1_INJECTOR, NG1_PARSE, NG1_ROOT_SCOPE, NG1_TESTABILITY, NG2_COMPILER, NG2_COMPONENT_FACTORY_REF_MAP, NG2_INJECTOR, NG2_ZONE, REQUIRE_INJECTOR, REQUIRE_NG1_MODEL} from './constants';
+import * as angular from '../common/angular1';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $PARSE, $ROOT_SCOPE, COMPILER_KEY, COMPONENT_FACTORY_REF_MAP_KEY, INJECTOR_KEY, NG_ZONE_KEY, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from '../common/constants';
+import {downgradeInjectable} from '../common/downgrade_injectable';
+import {Deferred, controllerKey, getAttributesAsArray, onError} from '../common/util';
+
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {ComponentInfo, getComponentInfo} from './metadata';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
-import {Deferred, controllerKey, getAttributesAsArray, onError} from './util';
 
 let upgradeCount: number = 0;
 
@@ -138,8 +140,8 @@ export class UpgradeAdapter {
    * 2. Even thought the component is instantiated in AngularJS, it will be using Angular
    *    syntax. This has to be done, this way because we must follow Angular components do not
    *    declare how the attributes should be interpreted.
-   * 3. ng-model is controlled by AngularJS v1 and communicates with the downgraded Ng2 component
-   *    by way of the ControlValueAccessor interface from @angular/forms. Only components that
+   * 3. `ng-model` is controlled by AngularJS and communicates with the downgraded Angular component
+   *    by way of the `ControlValueAccessor` interface from @angular/forms. Only components that
    *    implement this interface are eligible.
    *
    * ## Supported Features
@@ -397,7 +399,7 @@ export class UpgradeAdapter {
     });
 
     Promise.all([this.ng2BootstrapDeferred.promise, ng1BootstrapPromise]).then(([ng1Injector]) => {
-      angular.element(element).data(controllerKey(NG2_INJECTOR), this.moduleRef.injector);
+      angular.element(element).data(controllerKey(INJECTOR_KEY), this.moduleRef.injector);
       this.moduleRef.injector.get(NgZone).run(
           () => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); });
     }, onError);
@@ -440,7 +442,7 @@ export class UpgradeAdapter {
     this.providers.push({
       provide: token,
       useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
-      deps: [NG1_INJECTOR]
+      deps: [$INJECTOR]
     });
   }
 
@@ -465,12 +467,7 @@ export class UpgradeAdapter {
    *
    * ```
    */
-  public downgradeNg2Provider(token: any): Function {
-    const factory = function(injector: Injector) { return injector.get(token); };
-    (<any>factory).$inject = [NG2_INJECTOR];
-    return factory;
-  }
-
+  downgradeNg2Provider(token: any): Function { return downgradeInjectable(token); }
 
   /**
    * Declare the AngularJS upgrade module for this adapter without bootstrapping the whole
@@ -500,14 +497,14 @@ export class UpgradeAdapter {
 
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
-    ng1Module.factory(NG2_INJECTOR, () => this.moduleRef.injector.get(Injector))
-        .constant(NG2_ZONE, this.ngZone)
-        .constant(NG2_COMPONENT_FACTORY_REF_MAP, componentFactoryRefMap)
-        .factory(NG2_COMPILER, () => this.moduleRef.injector.get(Compiler))
+    ng1Module.factory(INJECTOR_KEY, () => this.moduleRef.injector.get(Injector))
+        .constant(NG_ZONE_KEY, this.ngZone)
+        .constant(COMPONENT_FACTORY_REF_MAP_KEY, componentFactoryRefMap)
+        .factory(COMPILER_KEY, () => this.moduleRef.injector.get(Compiler))
         .config([
           '$provide', '$injector',
           (provide: angular.IProvideService, ng1Injector: angular.IInjectorService) => {
-            provide.decorator(NG1_ROOT_SCOPE, [
+            provide.decorator($ROOT_SCOPE, [
               '$delegate',
               function(rootScopeDelegate: angular.IRootScopeService) {
                 // Capture the root apply so that we can delay first call to $apply until we
@@ -522,8 +519,8 @@ export class UpgradeAdapter {
                 return rootScope = rootScopeDelegate;
               }
             ]);
-            if (ng1Injector.has(NG1_TESTABILITY)) {
-              provide.decorator(NG1_TESTABILITY, [
+            if (ng1Injector.has($$TESTABILITY)) {
+              provide.decorator($$TESTABILITY, [
                 '$delegate',
                 function(testabilityDelegate: angular.ITestabilityService) {
                   const originalWhenStable: Function = testabilityDelegate.whenStable;
@@ -558,8 +555,8 @@ export class UpgradeAdapter {
               const DynamicNgUpgradeModule =
                   NgModule({
                     providers: [
-                      {provide: NG1_INJECTOR, useFactory: () => ng1Injector},
-                      {provide: NG1_COMPILE, useFactory: () => ng1Injector.get(NG1_COMPILE)},
+                      {provide: $INJECTOR, useFactory: () => ng1Injector},
+                      {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
                       this.providers
                     ],
                     imports: [this.ng2AppModule]
@@ -620,7 +617,7 @@ class ParentInjectorPromise {
 
   constructor(private element: angular.IAugmentedJQuery) {
     // store the promise on the element
-    element.data(controllerKey(NG2_INJECTOR), this);
+    element.data(controllerKey(INJECTOR_KEY), this);
   }
 
   then(callback: (injector: Injector) => any) {
@@ -635,7 +632,7 @@ class ParentInjectorPromise {
     this.injector = injector;
 
     // reset the element data to point to the real injector
-    this.element.data(controllerKey(NG2_INJECTOR), injector);
+    this.element.data(controllerKey(INJECTOR_KEY), injector);
 
     // clean out the element to prevent memory leaks
     this.element = null;
@@ -648,8 +645,7 @@ class ParentInjectorPromise {
 
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
-  (<any>directiveFactory).$inject =
-      [NG1_INJECTOR, NG1_COMPILE, NG2_COMPONENT_FACTORY_REF_MAP, NG1_PARSE];
+  (<any>directiveFactory).$inject = [$INJECTOR, $COMPILE, COMPONENT_FACTORY_REF_MAP_KEY, $PARSE];
   function directiveFactory(
       ng1Injector: angular.IInjectorService, ng1Compile: angular.ICompileService,
       componentFactoryRefMap: ComponentFactoryRefMap,
@@ -659,7 +655,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
     return {
       restrict: 'E',
       terminal: true,
-      require: [REQUIRE_INJECTOR, REQUIRE_NG1_MODEL],
+      require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
       compile: (templateElement: angular.IAugmentedJQuery, templateAttributes: angular.IAttributes,
                 transclude: angular.ITranscludeFunction) => {
         // We might have compile the contents lazily, because this might have been triggered by the
@@ -671,11 +667,12 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
             let id = idPrefix + (idCount++);
             (<any>element[0]).id = id;
 
-            let parentInjector: Injector|ParentInjectorPromise = required[0];
-            const ngModel: angular.INgModelController = required[1];
+            let parentInjector: Injector | ParentInjectorPromise = required[0];
             let injectorPromise = new ParentInjectorPromise(element);
 
-            const ng2Compiler = ng1Injector.get(NG2_COMPILER) as Compiler;
+            const ngModel: angular.INgModelController = required[1];
+
+            const ng2Compiler = ng1Injector.get(COMPILER_KEY) as Compiler;
             const ngContentSelectors = ng2Compiler.getNgContentSelectors(info.type);
             const linkFns = compileProjectedNodes(templateElement, ngContentSelectors);
 
@@ -693,7 +690,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
               return projectedClone;
             });
 
-            parentInjector = parentInjector || ng1Injector.get(NG2_INJECTOR);
+            parentInjector = parentInjector || ng1Injector.get(INJECTOR_KEY);
 
             if (parentInjector instanceof ParentInjectorPromise) {
               parentInjector.then((resolvedInjector: Injector) => downgrade(resolvedInjector));
@@ -748,7 +745,7 @@ export class UpgradeAdapterRef {
     this.ng2ModuleRef = ngModuleRef;
     this.ng2Injector = ngModuleRef.injector;
     this.ng1Injector = ng1Injector;
-    this.ng1RootScope = ng1Injector.get(NG1_ROOT_SCOPE);
+    this.ng1RootScope = ng1Injector.get($ROOT_SCOPE);
     this._readyFn && this._readyFn(this);
   }
 
@@ -765,7 +762,7 @@ export class UpgradeAdapterRef {
    * Dispose of running hybrid AngularJS / Angular application.
    */
   public dispose() {
-    this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
+    this.ng1Injector.get($ROOT_SCOPE).$destroy();
     this.ng2ModuleRef.destroy();
   }
 }
