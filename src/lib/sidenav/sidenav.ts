@@ -102,6 +102,12 @@ export class MdSidenav implements AfterContentInit {
   /** Mode of the sidenav; whether 'over' or 'side'. */
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
+  /** Whether the sidenav can be closed with the escape key or not. */
+  @Input()
+  get disableClose(): boolean { return this._disableClose; }
+  set disableClose(value: boolean) { this._disableClose = coerceBooleanProperty(value); }
+  private _disableClose: boolean = false;
+
   /** Whether the sidenav is opened. */
   _opened: boolean = false;
 
@@ -232,7 +238,7 @@ export class MdSidenav implements AfterContentInit {
    * @docs-private
    */
   handleKeydown(event: KeyboardEvent) {
-    if (event.keyCode === ESCAPE) {
+    if (event.keyCode === ESCAPE && !this.disableClose) {
       this.close();
       event.stopPropagation();
     }
@@ -327,7 +333,7 @@ export class MdSidenavContainer implements AfterContentInit {
   get end() { return this._end; }
 
   /** Event emitted when the sidenav backdrop is clicked. */
-  @Output('backdrop-clicked') onBackdropClicked = new EventEmitter<void>();
+  @Output() backdropClick = new EventEmitter<void>();
 
   /** The sidenav at the start/end alignment, independent of direction. */
   private _start: MdSidenav;
@@ -434,17 +440,15 @@ export class MdSidenavContainer implements AfterContentInit {
   }
 
   _onBackdropClicked() {
-    this.onBackdropClicked.emit();
+    this.backdropClick.emit();
     this._closeModalSidenav();
   }
 
   _closeModalSidenav() {
-    if (this._start != null && this._start.mode != 'side') {
-      this._start.close();
-    }
-    if (this._end != null && this._end.mode != 'side') {
-      this._end.close();
-    }
+    // Close all open sidenav's where closing is not disabled and the mode is not `side`.
+    [this._start, this._end]
+      .filter(sidenav => sidenav && !sidenav.disableClose && sidenav.mode !== 'side')
+      .forEach(sidenav => sidenav.close());
   }
 
   _isShowingBackdrop(): boolean {
