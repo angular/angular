@@ -23,7 +23,8 @@ describe('tsc-wrapped', () => {
       fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
     };
     write('decorators.ts', '/** @Annotation */ export var Component: Function;');
-    write('dep.ts', `
+    fs.mkdirSync(path.join(basePath, 'dep'));
+    write('dep/index.ts', `
       export const A = 1;
       export const B = 2;
     `);
@@ -59,7 +60,8 @@ describe('tsc-wrapped', () => {
         "types": [],
         "outDir": "built",
         "declaration": true,
-        "module": "es2015"
+        "moduleResolution": "node",
+        "target": "es2015"
       },
       "angularCompilerOptions": {
         "annotateForClosureCompiler": true
@@ -72,8 +74,8 @@ describe('tsc-wrapped', () => {
           const out = readOut('js');
           // No helpers since decorators were lowered
           expect(out).not.toContain('__decorate');
-          // Expand `export *`
-          expect(out).toContain('export { A, B }');
+          // Expand `export *` and fix index import
+          expect(out).toContain(`export { A, B } from './dep/index'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           // Comments should stay multi-line
@@ -96,7 +98,8 @@ describe('tsc-wrapped', () => {
         "types": [],
         "outDir": "built",
         "declaration": false,
-        "module": "es2015"
+        "module": "es2015",
+        "moduleResolution": "node"
       },
       "angularCompilerOptions": {
         "annotateForClosureCompiler": false,
