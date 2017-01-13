@@ -577,10 +577,6 @@ export class UpgradeAdapter {
                       })
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
-                    let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
-                      next: (_: any) => this.ngZone.runOutsideAngular(() => rootScope.$evalAsync())
-                    });
-                    rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                     this.ngZone.run(() => {
                       if (rootScopePrototype) {
                         rootScopePrototype.$apply = original$applyFn;  // restore original $apply
@@ -591,7 +587,12 @@ export class UpgradeAdapter {
                       }
                     });
                   })
-                  .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError);
+                  .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError)
+                  .then(() => {
+                    let subscription =
+                        this.ngZone.onMicrotaskEmpty.subscribe({next: () => rootScope.$digest()});
+                    rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
+                  });
             })
             .catch((e) => this.ng2BootstrapDeferred.reject(e));
       }
