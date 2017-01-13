@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {downgradeComponent} from './src/aot/downgrade_component';
-export {downgradeInjectable} from './src/aot/downgrade_injectable';
-export {UpgradeComponent} from './src/aot/upgrade_component';
-export {UpgradeModule} from './src/aot/upgrade_module';
-// This file only reexports content of the `src` folder. Keep it that way.
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the upgrade/static package, allowing
+ * Angular 1 and Angular 2+ to run side by side in the same application.
+ */
+export {downgradeInjectable} from './src/common/downgrade_injectable';
+export {downgradeComponent} from './src/static/downgrade_component';
+export {UpgradeComponent} from './src/static/upgrade_component';
+export {UpgradeModule} from './src/static/upgrade_module';
+
+// This file only re-exports content of the `src` folder. Keep it that way.

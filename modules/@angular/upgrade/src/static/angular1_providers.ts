@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as angular from '../angular_js';
+import * as angular from '../common/angular1';
 
 // We have to do a little dance to get the ng1 injector into the module injector.
 // We store the ng1 injector so that the provider in the module injector can access it

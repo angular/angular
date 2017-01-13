@@ -8,11 +8,11 @@
 
 import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
-import * as angular from '../angular_js';
-import {controllerKey} from '../util';
+import * as angular from '../common/angular1';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, $ROOT_SCOPE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from './constants';
 
 
 
