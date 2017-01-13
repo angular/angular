@@ -8,9 +8,9 @@
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-import * as angular from '../angular_js';
+import * as angular from '../common/angular1';
+import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG_MODEL} from '../common/constants';
 
-import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG1_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 
 let downgradeCount = 0;
@@ -77,7 +77,7 @@ export function downgradeComponent(info: /* ComponentInfo */ {
 
     return {
       restrict: 'E',
-      require: ['?^' + INJECTOR_KEY, REQUIRE_NG1_MODEL],
+      require: ['?^' + INJECTOR_KEY, REQUIRE_NG_MODEL],
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
              required: any[], transclude: angular.ITranscludeFunction) => {
 
@@ -87,6 +87,7 @@ export function downgradeComponent(info: /* ComponentInfo */ {
         }
 
         const ngModel: angular.INgModelController = required[1];
+        
         const componentFactoryResolver: ComponentFactoryResolver =
             parentInjector.get(ComponentFactoryResolver);
         const componentFactory: ComponentFactory<any> =

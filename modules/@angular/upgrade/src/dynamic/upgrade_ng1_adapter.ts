@@ -8,9 +8,10 @@
 
 import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
-import * as angular from './angular_js';
-import {NG1_COMPILE, NG1_CONTROLLER, NG1_HTTP_BACKEND, NG1_SCOPE, NG1_TEMPLATE_CACHE} from './constants';
-import {controllerKey} from './util';
+import * as angular from '../common/angular1';
+import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $SCOPE, $TEMPLATE_CACHE} from '../common/constants';
+import {controllerKey} from '../common/util';
+
 
 interface IBindingDestination {
   [key: string]: any;
@@ -55,7 +56,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
             .Class({
               constructor: [
-                new Inject(NG1_SCOPE), ElementRef,
+                new Inject($SCOPE), ElementRef,
                 function(scope: angular.IScope, elementRef: ElementRef) {
                   return new UpgradeNg1ComponentAdapter(
                       self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs,
@@ -188,10 +189,10 @@ export class UpgradeNg1ComponentAdapterBuilder {
       exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
       injector: angular.IInjectorService): Promise<angular.ILinkFn[]> {
     const promises: Promise<angular.ILinkFn>[] = [];
-    const compile: angular.ICompileService = injector.get(NG1_COMPILE);
-    const templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
-    const httpBackend: angular.IHttpBackendService = injector.get(NG1_HTTP_BACKEND);
-    const $controller: angular.IControllerService = injector.get(NG1_CONTROLLER);
+    const compile: angular.ICompileService = injector.get($COMPILE);
+    const templateCache: angular.ITemplateCacheService = injector.get($TEMPLATE_CACHE);
+    const httpBackend: angular.IHttpBackendService = injector.get($HTTP_BACKEND);
+    const $controller: angular.IControllerService = injector.get($CONTROLLER);
     for (const name in exportedComponents) {
       if ((<any>exportedComponents).hasOwnProperty(name)) {
         const exportedComponent = exportedComponents[name];
