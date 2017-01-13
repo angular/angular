@@ -10,6 +10,7 @@ import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
 export class DialogDemo {
   dialogRef: MdDialogRef<JazzDialog>;
   lastCloseResult: string;
+  actionsAlignment: string;
   config: MdDialogConfig = {
     disableClose: false,
     width: '',
@@ -34,7 +35,8 @@ export class DialogDemo {
   }
 
   openContentElement() {
-    this.dialog.open(ContentElementDialog, this.config);
+    let dialogRef = this.dialog.open(ContentElementDialog, this.config);
+    dialogRef.componentInstance.actionsAlignment = this.actionsAlignment;
   }
 }
 
@@ -78,7 +80,7 @@ export class JazzDialog {
       </p>
     </md-dialog-content>
 
-    <md-dialog-actions>
+    <md-dialog-actions [attr.align]="actionsAlignment">
       <button
         md-raised-button
         color="primary"
@@ -92,4 +94,6 @@ export class JazzDialog {
     </md-dialog-actions>
   `
 })
-export class ContentElementDialog { }
+export class ContentElementDialog {
+  actionsAlignment: string;
+}

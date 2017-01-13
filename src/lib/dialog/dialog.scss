@@ -43,12 +43,20 @@ md-dialog-content, [md-dialog-content], mat-dialog-content, [mat-dialog-content]
 
 md-dialog-actions, [md-dialog-actions], mat-dialog-actions, [mat-dialog-actions] {
   padding: $md-dialog-padding / 2 0;
-  display: block;
+  display: flex;
 
   &:last-child {
     // If the actions are the last element in a dialog, we need to pull them down
     // over the dialog padding, in order to avoid the action's padding stacking
     // with the dialog's.
     margin-bottom: -$md-dialog-padding;
+  }
+
+  &[align='end'] {
+    justify-content: flex-end;
+  }
+
+  &[align='center'] {
+    justify-content: center;
   }
 }

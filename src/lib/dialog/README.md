@@ -37,7 +37,7 @@ A reference to the dialog created by the MdDialog `open` method.
 | `md-dialog-title`   | Marks the title of the dialog.
 | `md-dialog-content` | Scrollable content of the dialog.
 | `md-dialog-close`   | When added to a `button`, makes the element act as a close button for the dialog.
-| `md-dialog-actions` | Wrapper for the set of actions at the bottom of a dialog. Typically contains buttons.
+| `md-dialog-actions` | Wrapper for the set of actions at the bottom of a dialog. Typically contains buttons. The element's content can be aligned via the `align` attribute either to the `center` or the `end`. |
 
 ## Example
 The service can be injected in a component.

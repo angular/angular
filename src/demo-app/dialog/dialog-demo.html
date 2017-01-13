@@ -26,6 +26,14 @@
 
     <h2>Other options</h2>
 
+    <p>
+      <md-select placeholder="Button alignment" [(ngModel)]="actionsAlignment">
+        <md-option>Start</md-option>
+        <md-option value="end">End</md-option>
+        <md-option value="center">Center</md-option>
+      </md-select>
+    </p>
+
     <md-checkbox [(ngModel)]="config.disableClose">Disable close</md-checkbox>
   </md-card-content>
 </md-card>
