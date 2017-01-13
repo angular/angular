@@ -79,7 +79,7 @@
     "source-map-support": "^0.4.2",
     "systemjs": "0.18.10",
     "ts-api-guardian": "0.1.4",
-    "tsickle": "^0.2.1",
+    "tsickle": "^0.2.4",
     "tslint": "^4.1.1",
     "tslint-eslint-rules": "^3.1.0",
     "typescript": "^2.0.2",
