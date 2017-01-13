@@ -16,7 +16,14 @@ describe('MdSelect', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSelectModule.forRoot(), ReactiveFormsModule, FormsModule],
-      declarations: [BasicSelect, NgModelSelect, ManySelects, NgIfSelect, SelectWithChangeEvent],
+      declarations: [
+        BasicSelect,
+        NgModelSelect,
+        ManySelects,
+        NgIfSelect,
+        SelectInitWithoutOptions,
+        SelectWithChangeEvent
+      ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div') as HTMLElement;
@@ -238,6 +245,27 @@ describe('MdSelect', () => {
     });
 
   });
+
+  it('should select the proper option when the list of options is initialized at a later point',
+    async(() => {
+      let fixture = TestBed.createComponent(SelectInitWithoutOptions);
+      let instance = fixture.componentInstance;
+
+      fixture.detectChanges();
+
+      // Wait for the initial writeValue promise.
+      fixture.whenStable().then(() => {
+        expect(instance.select.selected).toBeFalsy();
+
+        instance.addOptions();
+        fixture.detectChanges();
+
+        // Wait for the next writeValue promise.
+        fixture.whenStable().then(() => {
+          expect(instance.select.selected).toBe(instance.options.toArray()[1]);
+        });
+      });
+    }));
 
   describe('forms integration', () => {
     let fixture: ComponentFixture<BasicSelect>;
@@ -1267,7 +1295,6 @@ class ManySelects {}
       </md-select>
     </div>
   `,
-
 })
 class NgIfSelect {
   isShowing = false;
@@ -1302,6 +1329,32 @@ class SelectWithChangeEvent {
   ];
 
   changeListener = jasmine.createSpy('MdSelect change listener');
+}
+
+@Component({
+  selector: 'select-init-without-options',
+  template: `
+    <md-select placeholder="Food I want to eat right now" [formControl]="control">
+      <md-option *ngFor="let food of foods" [value]="food.value">
+        {{ food.viewValue }}
+      </md-option>
+    </md-select>
+  `
+})
+class SelectInitWithoutOptions {
+  foods: any[];
+  control = new FormControl('pizza-1');
+
+  @ViewChild(MdSelect) select: MdSelect;
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
+
+  addOptions() {
+    this.foods = [
+      { value: 'steak-0', viewValue: 'Steak' },
+      { value: 'pizza-1', viewValue: 'Pizza' },
+      { value: 'tacos-2', viewValue: 'Tacos'}
+    ];
+  }
 }
 
 /**
