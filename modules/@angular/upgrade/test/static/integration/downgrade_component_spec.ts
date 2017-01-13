@@ -273,6 +273,30 @@ export function main() {
          });
        }));
 
+    it('should allow attribute selectors for downgraded components', async(() => {
+         @Component({selector: '[itWorks]', template: 'It works'})
+         class WorksComponent {
+         }
+
+         @NgModule({
+           declarations: [WorksComponent],
+           entryComponents: [WorksComponent],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1', []).directive(
+             'worksComponent', downgradeComponent({component: WorksComponent}));
+
+         const element = html('<works-component></works-component>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           expect(multiTrim(document.body.textContent)).toBe('It works');
+         });
+       }));
+
     it('should allow attribute selectors for components in ng2', async(() => {
          @Component({selector: '[itWorks]', template: 'It works'})
          class WorksComponent {

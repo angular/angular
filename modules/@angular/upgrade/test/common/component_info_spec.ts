@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PropertyBinding} from '@angular/upgrade/src/aot/component_info';
+import {PropertyBinding} from '@angular/upgrade/src/common/component_info';
 
 export function main() {
   describe('PropertyBinding', () => {
