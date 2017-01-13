@@ -8,11 +8,11 @@
 
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
-import * as angular from '../angular_js';
-import {hookupNgModel} from '../util';
+import * as angular from '../common/angular1';
+import {$SCOPE} from '../common/constants';
+import {hookupNgModel} from '../common/util';
 
 import {ComponentInfo, PropertyBinding} from './component_info';
-import {$SCOPE} from './constants';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true

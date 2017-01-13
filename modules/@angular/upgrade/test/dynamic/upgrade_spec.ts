@@ -10,8 +10,9 @@ import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHE
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/angular_js';
-import {UpgradeAdapter, UpgradeAdapterRef, sortProjectableNodes} from '@angular/upgrade/src/upgrade_adapter';
+import * as angular from '@angular/upgrade/src/common/angular1';
+import {UpgradeAdapter, UpgradeAdapterRef, sortProjectableNodes} from '@angular/upgrade/src/dynamic/upgrade_adapter';
+import {html, multiTrim} from './test_helpers';
 
 export function main() {
   describe('adapter: ng1 to ng2', () => {
@@ -1923,23 +1924,7 @@ export function main() {
   });
 }
 
-function multiTrim(text: string): string {
-  return text.replace(/\n/g, '').replace(/\s{2,}/g, ' ').trim();
-}
-
-function html(html: string): Element {
-  const body = document.body;
-  body.innerHTML = html;
-
-  if (body.childNodes.length == 1 && body.firstChild instanceof HTMLElement) {
-    return <Element>body.firstChild;
-  }
-
-  return body;
-}
-
 function nodes(html: string) {
   const element = document.createElement('div');
   element.innerHTML = html;
   return Array.prototype.slice.call(element.childNodes);
-}

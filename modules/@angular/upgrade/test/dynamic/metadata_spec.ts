@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/testing_internal';
-import {getComponentInfo, parseFields} from '@angular/upgrade/src/metadata';
+import {getComponentInfo, parseFields} from '@angular/upgrade/src/dynamic/metadata';
 
 export function main() {
   describe('upgrade metadata', () => {
