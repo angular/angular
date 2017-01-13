@@ -88,9 +88,10 @@ High level items planned for January 2017:
 | datepicker       |                         Not started |           -  |   [#675][0675] |
 | data-table       |                  Design in-progress |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
-| layout           |   see [angular/flex-layout][lay_rp] |           -  |              - |
+| layout           |   See [angular/flex-layout][lay_rp] | [Wiki][0]    |              - |
 
  [lay_rp]:  https://github.com/angular/flex-layout
+ [0]: https://github.com/angular/flex-layout/wiki
  [1]: https://github.com/angular/material2/blob/master/src/lib/button/README.md
  [2]: https://github.com/angular/material2/blob/master/src/lib/card/README.md
  [3]: https://github.com/angular/material2/blob/master/src/lib/checkbox/README.md
