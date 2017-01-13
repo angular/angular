@@ -7,16 +7,14 @@
  */
 
 import {ErrorHandler} from '../src/error_handler';
-import {ListWrapper} from '../src/facade/collection';
 import {unimplemented} from '../src/facade/errors';
 import {stringify} from '../src/facade/lang';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {ChangeDetectorRef} from './change_detection/change_detector_ref';
 import {Console} from './console';
-import {Injectable, Injector, OpaqueToken, Optional, Provider, ReflectiveInjector} from './di';
+import {Injectable, Injector, OpaqueToken, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -260,9 +258,9 @@ export class PlatformRef_ extends PlatformRef {
 
   get injector(): Injector { return this._injector; }
 
-  get destroyed() { return this._destroyed; }
+  get destroyed(): boolean { return this._destroyed; }
 
-  destroy() {
+  destroy(): void {
     if (this._destroyed) {
       throw new Error('The platform has already been destroyed!');
     }
@@ -292,7 +290,12 @@ export class PlatformRef_ extends PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
-      moduleRef.onDestroy(() => ListWrapper.remove(this._modules, moduleRef));
+      moduleRef.onDestroy(() => {
+        const index: number = this._modules.indexOf(moduleRef);
+        if (index > -1) {
+          this._modules.splice(index, 1);
+        }
+      });
       ngZone.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
       return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
@@ -331,7 +334,7 @@ export class PlatformRef_ extends PlatformRef {
         .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
   }
 
-  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>) {
+  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef.bootstrapFactories.length > 0) {
       moduleRef.bootstrapFactories.forEach((compFactory) => appRef.bootstrap(compFactory));
@@ -342,6 +345,7 @@ export class PlatformRef_ extends PlatformRef {
           `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
           `Please define one of these.`);
     }
+    this._modules.push(moduleRef);
   }
 }
 
@@ -422,16 +426,11 @@ export class ApplicationRef_ extends ApplicationRef {
 
   constructor(
       private _zone: NgZone, private _console: Console, private _injector: Injector,
-      private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
-      private _initStatus: ApplicationInitStatus,
-      @Optional() private _testabilityRegistry: TestabilityRegistry,
-      @Optional() private _testability: Testability) {
+      private _initStatus: ApplicationInitStatus) {
     super();
     this._enforceNoNewChanges = isDevMode();
-
-    this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+    this._zone.onMicrotaskEmpty.subscribe({next: () => this._zone.run(() => this.tick())});
   }
 
   attachView(viewRef: ViewRef): void {
@@ -442,7 +441,10 @@ export class ApplicationRef_ extends ApplicationRef {
 
   detachView(viewRef: ViewRef): void {
     const view = (viewRef as ViewRef_<any>).internalView;
-    ListWrapper.remove(this._views, view);
+    const index: number = this._views.indexOf(view);
+    if (index > -1) {
+      this._views.splice(index, 1);
+    }
     view.detach();
   }
 
@@ -459,7 +461,7 @@ export class ApplicationRef_ extends ApplicationRef {
     }
     this._rootComponentTypes.push(componentFactory.componentType);
     const compRef = componentFactory.create(this._injector, [], componentFactory.selector);
-    compRef.onDestroy(() => { this._unloadComponent(compRef); });
+    compRef.onDestroy(() => this._unloadComponent(compRef));
     const testability = compRef.injector.get(Testability, null);
     if (testability) {
       compRef.injector.get(TestabilityRegistry)
@@ -487,7 +489,10 @@ export class ApplicationRef_ extends ApplicationRef {
 
   private _unloadComponent(componentRef: ComponentRef<any>): void {
     this.detachView(componentRef.hostView);
-    ListWrapper.remove(this._rootComponents, componentRef);
+    const index: number = this._rootComponents.indexOf(componentRef);
+    if (index > -1) {
+      this._rootComponents.splice(index, 1);
+    }
   }
 
   tick(): void {
@@ -508,12 +513,12 @@ export class ApplicationRef_ extends ApplicationRef {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // TODO(alxhub): Dispose of the NgZone.
     this._views.slice().forEach((view) => view.destroy());
   }
 
-  get viewCount() { return this._views.length; }
+  get viewCount(): number { return this._views.length; }
 
   get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
 
