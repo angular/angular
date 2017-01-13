@@ -25,14 +25,16 @@ describe('options parsing', () => {
       () => ['tsconfig.json']);
 
   it('should combine all options into ngOptions', () => {
-    const {parsed, ngOptions} = tsc.readConfiguration('projectDir', 'basePath');
+    const {parsed, ngOptions} =
+        tsc.readConfiguration('projectDir', 'basePath', {target: ts.ScriptTarget.ES2015});
 
     expect(ngOptions).toEqual({
       genDir: 'basePath',
       googleClosureOutput: true,
       module: ts.ModuleKind.CommonJS,
       outDir: 'basePath/built',
-      configFilePath: undefined
+      configFilePath: undefined,
+      target: ts.ScriptTarget.ES2015
     });
   });
 });
