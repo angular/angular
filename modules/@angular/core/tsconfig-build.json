@@ -15,7 +15,9 @@
     "inlineSources": true,
     "target": "es5",
     "lib": ["es2015", "dom"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": []
   },
   "files": [
     "index.ts",
