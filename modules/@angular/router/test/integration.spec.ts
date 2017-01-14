@@ -1442,6 +1442,35 @@ describe('Integration', () => {
 
            })));
       });
+
+      describe('should redirect to / when guard returns false', () => {
+        beforeEach(() => TestBed.configureTestingModule({
+          providers: [{
+            provide: 'returnFalseAndNavigate',
+            useFactory: (router: Router) => () => {
+              router.navigate(['/']);
+              return false;
+            },
+            deps: [Router]
+          }]
+        }));
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             router.resetConfig([
+               {
+                 path: '',
+                 component: SimpleCmp,
+               },
+               {path: 'one', component: RouteCmp, canActivate: ['returnFalseAndNavigate']}
+             ]);
+
+             const fixture = TestBed.createComponent(RootCmp);
+             router.navigateByUrl('/one');
+             advance(fixture);
+             expect(location.path()).toEqual('/');
+             expect(fixture.nativeElement).toHaveText('simple');
+           })));
+      });
     });
 
     describe('CanDeactivate', () => {

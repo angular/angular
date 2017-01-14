@@ -757,8 +757,8 @@ export class Router {
           })
           .then(
               () => {
-                this.navigated = true;
                 if (navigationIsSuccessful) {
+                  this.navigated = true;
                   this.routerEvents.next(new NavigationEnd(
                       id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
