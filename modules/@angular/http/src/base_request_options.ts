@@ -46,7 +46,14 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod|string;
+  method: RequestMethod
+    |'Get'
+    |'Post'
+    |'Put'
+    |'Delete'
+    |'Options'
+    |'Head'
+    |'Patch';
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
