@@ -37,6 +37,18 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/simple');
      })));
 
+  it('should navigate from ngOnInit hook',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       router.resetConfig([
+         {path: '', component: SimpleCmp},
+         {path: 'one', component: RouteCmp},
+       ]);
+
+       const fixture = createRoot(router, RootCmpWithOnInit);
+       expect(location.path()).toEqual('/one');
+       expect(fixture.nativeElement).toHaveText('route');
+     })));
+
   describe('should execute navigations serially', () => {
     let log: any[] = [];
 
@@ -2901,6 +2913,13 @@ class ComponentRecordingRoutePathAndUrl {
 class RootCmp {
 }
 
+@Component({selector: 'root-cmp-on-init', template: `<router-outlet></router-outlet>`})
+class RootCmpWithOnInit {
+  constructor(private router: Router) {}
+
+  ngOnInit(): void { this.router.navigate(['one']); }
+}
+
 @Component({
   selector: 'root-cmp',
   template:
@@ -2972,6 +2991,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
+    RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
@@ -2999,6 +3019,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
+    RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
