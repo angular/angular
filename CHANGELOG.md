@@ -33,7 +33,7 @@
   `new IterableChangeRecord` which it should not have a reason to do.
 - `KeyValueChangeRecord` is now an interface and parameterized on `<V>`.
   This should not be an issue unless your code does
-  `new IterableChangeRecord` which it should not have a reason to do.
+  `new KeyValueChangeRecord` which it should not have a reason to do.
 
 ### DEPRECATION
 
