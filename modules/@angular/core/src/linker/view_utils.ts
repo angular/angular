@@ -425,11 +425,14 @@ function camelCaseToDashCase(input: string): string {
 export function createRenderElement(
     renderer: Renderer, parentElement: any, name: string, attrs: InlineArray<string>,
     debugInfo?: RenderDebugInfo): any {
-  const el = renderer.createElement(parentElement, name, debugInfo);
-  for (let i = 0; i < attrs.length; i += 2) {
-    renderer.setElementAttribute(el, attrs.get(i), attrs.get(i + 1));
+  let attrMap: Map<string, string> = null;
+  if (attrs.length > 0) {
+    attrMap = new Map<string, string>();
+    for (let i = 0; i < attrs.length; i += 2) {
+      attrMap.set(attrs.get(i), attrs.get(i + 1));
+    }
   }
-  return el;
+  return renderer.createElement(parentElement, name, debugInfo, attrMap);
 }
 
 export function selectOrCreateRenderHostElement(

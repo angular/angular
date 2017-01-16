@@ -107,11 +107,13 @@ export class WebWorkerRenderer implements Renderer, RenderStoreObject {
     return node;
   }
 
-  createElement(parentElement: any, name: string, debugInfo?: RenderDebugInfo): any {
+  createElement(
+      parentElement: any, name: string, debugInfo?: RenderDebugInfo,
+      attrs?: Map<string, string>): any {
     const node = this._rootRenderer.allocateNode();
     this._runOnService('createElement', [
       new FnArg(parentElement, RenderStoreObject), new FnArg(name, null),
-      new FnArg(node, RenderStoreObject)
+      new FnArg(node, RenderStoreObject), new FnArg(attrs, RenderStoreObject)
     ]);
     return node;
   }

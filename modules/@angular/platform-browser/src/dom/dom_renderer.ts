@@ -105,8 +105,9 @@ export class DomRenderer implements Renderer {
     return el;
   }
 
-  createElement(parent: Element|DocumentFragment, name: string, debugInfo: RenderDebugInfo):
-      Element {
+  createElement(
+      parent: Element|DocumentFragment, name: string, debugInfo: RenderDebugInfo,
+      attrs?: Map<string, string>): Element {
     let el: Element;
     if (isNamespaced(name)) {
       const nsAndName = splitNamespace(name);
@@ -116,6 +117,11 @@ export class DomRenderer implements Renderer {
     }
     if (this._contentAttr) {
       el.setAttribute(this._contentAttr, '');
+    }
+    if (attrs) {
+      attrs.forEach(
+          (attrValue: string, attrName: string) =>
+              this.setElementAttribute(el, attrName, attrValue));
     }
     if (parent) {
       parent.appendChild(el);

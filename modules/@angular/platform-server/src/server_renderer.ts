@@ -70,7 +70,9 @@ export class ServerRenderer implements Renderer {
     return el;
   }
 
-  createElement(parent: Element, name: string, debugInfo: RenderDebugInfo): Node {
+  createElement(
+      parent: Element, name: string, debugInfo: RenderDebugInfo,
+      attrs?: Map<string, string>): Node {
     let el: any;
     if (isNamespaced(name)) {
       const nsAndName = splitNamespace(name);
@@ -80,6 +82,11 @@ export class ServerRenderer implements Renderer {
     }
     if (isPresent(this._contentAttr)) {
       getDOM().setAttribute(el, this._contentAttr, '');
+    }
+    if (attrs) {
+      attrs.forEach(
+          (attrValue: string, attrName: string) =>
+              this.setElementAttribute(el, attrName, attrValue));
     }
     if (isPresent(parent)) {
       getDOM().appendChild(parent, el);
