@@ -9,8 +9,9 @@
 import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 import * as angular from './angular1';
-import {$INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_NG_MODEL} from './constants';
+import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
+import {controllerKey} from './util';
 
 let downgradeCount = 0;
 
@@ -71,43 +72,93 @@ export function downgradeComponent(info: /* ComponentInfo */ {
 
   const directiveFactory:
       angular.IAnnotatedFunction = function(
+                                       $compile: angular.ICompileService,
                                        $injector: angular.IInjectorService,
                                        $parse: angular.IParseService): angular.IDirective {
 
     return {
       restrict: 'E',
-      require: ['?^' + INJECTOR_KEY, REQUIRE_NG_MODEL],
+      terminal: true,
+      require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-             required: any[], transclude: angular.ITranscludeFunction) => {
+             required: any[]) => {
+        // We might have to compile the contents asynchronously, because this might have been
+        // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
+        // been compiled.
 
-        let parentInjector: Injector = required[0];
-        if (parentInjector === null) {
-          parentInjector = $injector.get(INJECTOR_KEY);
-        }
-
+        const parentInjector: Injector | ParentInjectorPromise = required[0] || $injector.get(INJECTOR_KEY);
         const ngModel: angular.INgModelController = required[1];
-        
-        const componentFactoryResolver: ComponentFactoryResolver =
-            parentInjector.get(ComponentFactoryResolver);
-        const componentFactory: ComponentFactory<any> =
-            componentFactoryResolver.resolveComponentFactory(info.component);
 
-        if (!componentFactory) {
-          throw new Error('Expecting ComponentFactory for: ' + info.component);
+        const downgradeFn = (injector: Injector) => {
+          const componentFactoryResolver: ComponentFactoryResolver =
+              injector.get(ComponentFactoryResolver);
+          const componentFactory: ComponentFactory<any> =
+              componentFactoryResolver.resolveComponentFactory(info.component);
+
+          if (!componentFactory) {
+            throw new Error('Expecting ComponentFactory for: ' + info.component);
+          }
+
+          const id = idPrefix + (idCount++);
+          const injectorPromise = new ParentInjectorPromise(element);
+          const facade = new DowngradeComponentAdapter(
+              id, info, element, attrs, scope, ngModel, injector, $compile, $parse, componentFactory);
+
+          const projectableNodes = facade.compileContents();
+          facade.createComponent(projectableNodes);
+          facade.setupInputs();
+          facade.setupOutputs();
+          facade.registerCleanup();
+
+          injectorPromise.resolve(facade.getInjector());
+        };
+
+        if (parentInjector instanceof ParentInjectorPromise) {
+          parentInjector.then(downgradeFn);
+        } else {
+          downgradeFn(parentInjector);
         }
-
-        const facade = new DowngradeComponentAdapter(
-            idPrefix + (idCount++), info, element, attrs, scope, ngModel, parentInjector, $parse,
-            componentFactory);
-        facade.setupInputs();
-        facade.createComponent();
-        facade.projectContent();
-        facade.setupOutputs();
-        facade.registerCleanup();
       }
     };
   };
 
-  directiveFactory.$inject = [$INJECTOR, $PARSE];
+  directiveFactory.$inject = [$COMPILE, $INJECTOR, $PARSE];
   return directiveFactory;
+}
+
+/**
+ * Synchronous promise-like object to wrap parent injectors,
+ * to preserve the synchronous nature of Angular 1's $compile.
+ */
+class ParentInjectorPromise {
+  private injector: Injector;
+  private injectorKey: string = controllerKey(INJECTOR_KEY);
+  private callbacks: ((injector: Injector) => any)[] = [];
+
+  constructor(private element: angular.IAugmentedJQuery) {
+    // Store the promise on the element.
+    element.data(this.injectorKey, this);
+  }
+
+  then(callback: (injector: Injector) => any) {
+    if (this.injector) {
+      callback(this.injector);
+    } else {
+      this.callbacks.push(callback);
+    }
+  }
+
+  resolve(injector: Injector) {
+    this.injector = injector;
+
+    // Store the real injector on the element.
+    this.element.data(this.injectorKey, injector);
+
+    // Release the element to prevent memory leaks.
+    this.element = null;
+
+    // Run the queued callbacks.
+    this.callbacks.forEach(callback => callback(injector));
+    this.callbacks.length = 0;
+  }
 }

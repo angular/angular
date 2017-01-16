@@ -9,42 +9,52 @@
 import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular1';
-import {hookupNgModel} from '../common/util';
 import {ComponentInfo, PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
+import {hookupNgModel} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
 };
 
 export class DowngradeComponentAdapter {
-  component: any = null;
-  inputs: Attr;
-  inputChangeCount: number = 0;
-  inputChanges: SimpleChanges = null;
-  componentRef: ComponentRef<any> = null;
-  changeDetector: ChangeDetectorRef = null;
-  componentScope: angular.IScope;
-  childNodes: Node[];
-  contentInsertionPoint: Node = null;
+  private inputChangeCount: number = 0;
+  private inputChanges: SimpleChanges = null;
+  private componentScope: angular.IScope;
+  private componentRef: ComponentRef<any> = null;
+  private component: any = null;
+  private changeDetector: ChangeDetectorRef = null;
 
   constructor(
       private id: string, private info: ComponentInfo, private element: angular.IAugmentedJQuery,
       private attrs: angular.IAttributes, private scope: angular.IScope,
       private ngModel: angular.INgModelController, private parentInjector: Injector,
-      private parse: angular.IParseService, private componentFactory: ComponentFactory<any>) {
-    (<any>this.element[0]).id = id;
+      private $compile: angular.ICompileService, private $parse: angular.IParseService,
+      private componentFactory: ComponentFactory<any>) {
+    (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
-    this.childNodes = <Node[]><any>element.contents();
   }
 
-  createComponent() {
+  compileContents(): Node[][] {
+    const projectableNodes: Node[][] = [];
+    const linkFn = this.$compile(this.element.contents());
+
+    this.element.empty();
+
+    linkFn(this.scope, (clone: Node[]) => {
+      projectableNodes.push(clone);
+      this.element.append(clone);
+    });
+
+    return projectableNodes;
+  }
+
+  createComponent(projectableNodes: Node[][]) {
     const childInjector = ReflectiveInjector.resolveAndCreate(
         [{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
-    this.contentInsertionPoint = document.createComment('ng1 insertion point');
 
-    this.componentRef = this.componentFactory.create(
-        childInjector, [[this.contentInsertionPoint]], this.element[0]);
+    this.componentRef =
+        this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
 
@@ -110,16 +120,6 @@ export class DowngradeComponentAdapter {
     this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
   }
 
-  projectContent() {
-    const childNodes = this.childNodes;
-    const parent = this.contentInsertionPoint.parentNode;
-    if (parent) {
-      for (let i = 0, ii = childNodes.length; i < ii; i++) {
-        parent.insertBefore(childNodes[i], this.contentInsertionPoint);
-      }
-    }
-  }
-
   setupOutputs() {
     const attrs = this.attrs;
     const outputs = this.info.outputs || [];
@@ -147,7 +147,7 @@ export class DowngradeComponentAdapter {
       }
 
       if (expr != null && assignExpr != null) {
-        const getter = this.parse(expr);
+        const getter = this.$parse(expr);
         const setter = getter.assign;
         if (assignExpr && !setter) {
           throw new Error(`Expression '${expr}' is not assignable!`);
@@ -174,4 +174,6 @@ export class DowngradeComponentAdapter {
       this.componentRef.destroy();
     });
   }
+
+  getInjector(): Injector { return this.componentRef && this.componentRef.injector; }
 }
