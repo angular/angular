@@ -23,6 +23,9 @@
     "rxjs": "^5.0.1",
     "zone.js": "^0.7.2"
   },
+  "optionalDependencies": {
+    "fsevents": "^1.0.14"  
+  },
   "devDependencies": {
     "@types/angularjs": "^1.5.13-alpha",
     "@types/base64-js": "^1.2.5",
@@ -49,7 +52,6 @@
     "entities": "^1.1.1",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.26.3",
-    "fsevents": "^1.0.14",
     "glob": "^4.0.6",
     "gulp": "^3.8.8",
     "gulp-clang-format": "^1.0.23",
