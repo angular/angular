@@ -24,8 +24,10 @@ export function main() {
     it('should instantiate ng2 in ng1 template and project content', async(() => {
 
          // the ng2 component that will be used in ng1 (downgraded)
-         @Component({selector: 'ng2', template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
+         @Component({selector: 'ng2', template: `{{ prop }}(<ng-content></ng-content>)`})
          class Ng2Component {
+           prop = 'NG2';
+           ngContent = 'ng2-content';
          }
 
          // our upgrade module to host the component to downgrade
@@ -42,13 +44,16 @@ export function main() {
          const ng1Module = angular
                                .module('ng1', [])
                                // create an ng1 facade of the ng2 component
-                               .directive('ng2', downgradeComponent({component: Ng2Component}));
+                               .directive('ng2', downgradeComponent({component: Ng2Component}))
+                               .run(($rootScope: angular.IRootScopeService) => {
+                                 $rootScope['prop'] = 'NG1';
+                                 $rootScope['ngContent'] = 'ng1-content';
+                               });
 
-         const element =
-             html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
+         const element = html('<div>{{ \'ng1[\' }}<ng2>~{{ ngContent }}~</ng2>{{ \']\' }}</div>');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-           expect(document.body.textContent).toEqual('ng1[NG2(~ng-content~)]');
+           expect(document.body.textContent).toEqual('ng1[NG2(~ng1-content~)]');
          });
        }));
 
@@ -56,11 +61,12 @@ export function main() {
 
          @Component({
            selector: 'ng2',
-           template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
+           template: `{{ 'ng2(' }}<ng1>{{ transclude }}</ng1>{{ ')' }}`,
          })
          class Ng2Component {
+           prop = 'ng2';
+           transclude = 'ng2-transclude';
          }
-
 
          @Directive({selector: 'ng1'})
          class Ng1WrapperComponent extends UpgradeComponent {
@@ -78,21 +84,22 @@ export function main() {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', [])
-                               .directive(
-                                   'ng1',
-                                   () => {
-                                     return {
-                                       transclude: true,
-                                       template: '{{ "ng1" }}(<ng-transclude></ng-transclude>)'
-                                     };
-                                   })
-                               .directive('ng2', downgradeComponent({component: Ng2Component}));
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive('ng1', () => ({
+                                     transclude: true,
+                                     template: '{{ prop }}(<ng-transclude></ng-transclude>)'
+                                   }))
+                 .directive('ng2', downgradeComponent({component: Ng2Component}))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   $rootScope['prop'] = 'ng1';
+                   $rootScope['transclude'] = 'ng1-transclude';
+                 });
 
-         const element = html('<div>{{\'ng1(\'}}<ng2></ng2>{{\')\'}}</div>');
+         const element = html('<div>{{ \'ng1(\' }}<ng2></ng2>{{ \')\' }}</div>');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-           expect(document.body.textContent).toEqual('ng1(ng2(ng1(transclude)))');
+           expect(document.body.textContent).toEqual('ng1(ng2(ng1(ng2-transclude)))');
          });
        }));
   });

@@ -324,5 +324,36 @@ export function main() {
            expect(multiTrim(document.body.textContent)).toBe('It works!');
          });
        }));
+
+    it('should respect hierarchical dependency injection for ng2', async(() => {
+         @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
+         class ParentComponent {
+         }
+
+         @Component({selector: 'child', template: 'child'})
+         class ChildComponent {
+           constructor(parent: ParentComponent) {}
+         }
+
+         @NgModule({
+           declarations: [ParentComponent, ChildComponent],
+           entryComponents: [ParentComponent, ChildComponent],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive('parent', downgradeComponent({component: ParentComponent}))
+                 .directive('child', downgradeComponent({component: ChildComponent}));
+
+         const element = html('<parent><child></child></parent>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+         });
+       }));
   });
 }
