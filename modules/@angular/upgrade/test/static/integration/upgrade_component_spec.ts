@@ -3028,7 +3028,7 @@ export function main() {
          });
        }));
 
-    it('should ng1 > ng1 > ng2 > ng1 (with `require`)', async(() => {
+    it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', async(() => {
          // Define `ng1Component`
          const ng1ComponentA: angular.IComponent = {
            template: 'ng1A(<ng2-b></ng2-b>)',
