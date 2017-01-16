@@ -30,9 +30,14 @@ import {sanitizeUrl} from './url_sanitizer';
 const VALUES = '[-,."\'%_!# a-zA-Z0-9]+';
 const TRANSFORMATION_FNS = '(?:matrix|translate|scale|rotate|skew|perspective)(?:X|Y|3d)?';
 const COLOR_FNS = '(?:rgb|hsl)a?';
-const FN_ARGS = '\\([-0-9.%, a-zA-Z]+\\)';
-const SAFE_STYLE_VALUE =
-    new RegExp(`^(${VALUES}|(?:${TRANSFORMATION_FNS}|${COLOR_FNS})${FN_ARGS})$`, 'g');
+const GRADIENTS = '(?:repeating-)?(?:linear|radial)-gradient';
+const CSS3_FNS = '(?:calc|attr)';
+const FN_ARGS = '\\([-0-9.%, #a-zA-Z]+\\)';
+const SAFE_STYLE_VALUE = new RegExp(
+    `^(${VALUES}|` +
+        `(?:${TRANSFORMATION_FNS}|${COLOR_FNS}|${GRADIENTS}|${CSS3_FNS})` +
+        `${FN_ARGS})$`,
+    'g');
 
 /**
  * Matches a `url(...)` value with an arbitrary argument as long as it does
