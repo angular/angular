@@ -16,7 +16,7 @@ import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgr
 import {bootstrap, digest, html, multiTrim} from '../test_helpers';
 
 export function main() {
-  describe('upgrade ng1 component', () => {
+  xdescribe('upgrade ng1 component', () => {
 
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());

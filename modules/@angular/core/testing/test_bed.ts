@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type} from '@angular/core';
+import {CompilerOptions, Component, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, OpaqueToken, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, clearDebugNodes} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -216,6 +216,7 @@ export class TestBed implements Injector {
     this._instantiated = false;
     this._activeFixtures.forEach((fixture) => fixture.destroy());
     this._activeFixtures = [];
+    clearDebugNodes();
   }
 
   platform: PlatformRef = null;

@@ -182,3 +182,7 @@ export function indexDebugNode(node: DebugNode) {
 export function removeDebugNodeFromIndex(node: DebugNode) {
   _nativeNodeToDebugNode.delete(node.nativeNode);
 }
+
+export function clearDebugNodes() {
+  _nativeNodeToDebugNode.clear();
+}
